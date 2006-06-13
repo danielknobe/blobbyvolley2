@@ -14,8 +14,6 @@
 
 @SET_MAKE@
 
-SOURCES = $(blobby_SOURCES)
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
