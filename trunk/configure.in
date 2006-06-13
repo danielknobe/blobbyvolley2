@@ -1,0 +1,29 @@
+AC_INIT(src/main.cpp)
+AC_CANONICAL_TARGET()
+AM_INIT_AUTOMAKE(blobby-volley, 0.1.4)
+
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+
+AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug],
+    [Enable debugging support]),
+    [CXXFLAGS=" -O0 -ggdb3"],
+    [CXXFLAGS=" -Os -s"])
+
+AC_ARG_ENABLE(profile, AC_HELP_STRING([--enable-profile],
+    [Enable profiling support]),
+    [CXXFLAGS="$CXXFLAGS -pg"])
+
+AC_CHECK_LIB(SDL,SDL_Init, [], [AC_MSG_ERROR(SDL required)])
+AC_CHECK_LIB(z, inflate, [], [AC_MSG_ERROR(zlib required)])
+AC_CHECK_LIB(physfs,PHYSFS_init, [], [AC_MSG_ERROR(PhysFS required)])
+
+AC_CHECK_LIB(GL, glVertex3f, [], [AC_MSG_WARN(OpenGL support disabled)])
+
+AC_OUTPUT(
+	Makefile \
+	src/Makefile \
+	data/Makefile
+	)
+        
