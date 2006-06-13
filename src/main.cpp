@@ -2,7 +2,7 @@
 
 #ifdef WIN32
 #undef main
-#endif
+#endif 
 
 #include <physfs.h>
 
