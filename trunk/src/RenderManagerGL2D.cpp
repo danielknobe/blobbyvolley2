@@ -1,10 +1,6 @@
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
-#ifdef WIN32
-PFNGLBLENDEQUATIONPROC glBlendEquation;
-#endif
-
 struct FileLoadException
 {
 	std::string filename;
@@ -47,8 +43,8 @@ GLuint RenderManagerGL2D::loadTexture(const std::string& filename)
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
 			convertedTexture->w, convertedTexture->h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, convertedTexture->pixels);
@@ -100,7 +96,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_addToSearchPath("data/glgfx.zip", 1);
-	
+
 	mBackground = loadTexture("glgfx/strand2.bmp");
 	mBallShadow = loadTexture("glgfx/schball.bmp");	
 
@@ -166,14 +162,12 @@ void RenderManagerGL2D::draw()
 	glAlphaFunc(GL_GREATER, 0.5);
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
 	// The Ball
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glLoadIdentity();
 	glBindTexture(GL_TEXTURE_2D, mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
 	glTranslatef(mBallPosition.x, mBallPosition.y, 0.5);
 	drawQuad(64.0, 64.0);
-	
 	// left blob
 	glLoadIdentity();
 	glTranslatef(mLeftBlobPosition.x, mLeftBlobPosition.y, 0.6);
