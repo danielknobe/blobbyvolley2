@@ -2,7 +2,7 @@
 
 #ifdef WIN32
 #undef main
-#endif 
+#endif
 
 #include <physfs.h>
 
@@ -61,7 +61,8 @@ int main(int argc, char* argv[])
 	int servingPlayer = -1;
 	
 	pworld.reset(0);
-	
+	pworld.step();
+    	
 	int running = 1;
 	while (running)
 	{
@@ -83,7 +84,7 @@ int main(int argc, char* argv[])
 			keyState[SDLK_RIGHT], keyState[SDLK_UP]);
 		pworld.setLeftInput(leftInput);
 		pworld.setRightInput(rightInput);
-		
+
 		rmanager->setBlob(0, pworld.getLeftBlob(),
 			pworld.getLeftBlobState());
 		rmanager->setBlob(1, pworld.getRightBlob(),
@@ -114,7 +115,7 @@ int main(int argc, char* argv[])
 		else
 		{
 		squish += 1;
-		if(squish > 25)
+		if(squish > 15)
 			squish=0;
 		}
 
