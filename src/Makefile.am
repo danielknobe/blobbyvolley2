@@ -10,6 +10,8 @@ bin_PROGRAMS = blobby
 
 blobby_SOURCES = \
 	main.cpp \
+	InputSource.h LocalInputSource.h \
+	InputManager.h InputManager.cpp \
 	PhysicWorld.h PhysicWorld.cpp \
 	RenderManager.h RenderManager.cpp \
 	RenderManagerSDL.h RenderManagerSDL.cpp \

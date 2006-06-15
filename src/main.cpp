@@ -2,13 +2,16 @@
 
 #ifdef WIN32
 #undef main
-#endif
+#endif 
 
 #include <physfs.h>
 
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "PhysicWorld.h"
+#include "InputManager.h"
+#include "LocalInputSource.h"
+
 
 void correctFramerate()
 {	int rate = 60;
@@ -37,9 +40,6 @@ int main(int argc, char* argv[])
 	PHYSFS_setWriteDir("data");
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-#if defined(__arm__) && defined(linux)
-	SDL_JoystickOpen(0);
-#endif
 	
 	RenderManager *rmanager = RenderManager::createRenderManagerGL2D();
 //  RenderManager *rmanager = RenderManager::createRenderManagerSDL();
@@ -48,6 +48,10 @@ int main(int argc, char* argv[])
 	smanager->init();
 	smanager->playSound("sounds/bums.wav", 0.0);
 	smanager->playSound("sounds/pfiff.wav", 0.0);
+
+	InputManager* inputmgr = InputManager::createInputManager();
+	InputSource* leftInput = new LocalInputSource(0);
+	InputSource* rightInput = new LocalInputSource(1);
 	
 	PhysicWorld pworld;
 	int squish=0;
@@ -62,29 +66,14 @@ int main(int argc, char* argv[])
 	
 	pworld.reset(0);
 	pworld.step();
-    	
+	
 	int running = 1;
-	while (running)
+	while (inputmgr->running())
 	{
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		switch (event.type)
-		{
-			case SDL_QUIT:
-				running = 0;
-				break;
-			case SDL_JOYBUTTONDOWN:
-				running = 0;
-				break;
-		}
-		Uint8* keyState = SDL_GetKeyState(0);
-		PlayerInput leftInput(keyState[SDLK_a], keyState[SDLK_d],
-			keyState[SDLK_w]);
-		PlayerInput rightInput(keyState[SDLK_LEFT],
-			keyState[SDLK_RIGHT], keyState[SDLK_UP]);
-		pworld.setLeftInput(leftInput);
-		pworld.setRightInput(rightInput);
-
+		inputmgr->updateInput();
+		pworld.setLeftInput(leftInput->getInput());
+		pworld.setRightInput(rightInput->getInput());
+		
 		rmanager->setBlob(0, pworld.getLeftBlob(),
 			pworld.getLeftBlobState());
 		rmanager->setBlob(1, pworld.getRightBlob(),
@@ -115,7 +104,7 @@ int main(int argc, char* argv[])
 		else
 		{
 		squish += 1;
-		if(squish > 15)
+		if(squish > 25)
 			squish=0;
 		}
 
@@ -173,3 +162,4 @@ int main(int argc, char* argv[])
 	PHYSFS_deinit();
 
 }
+
