@@ -28,6 +28,18 @@ struct PlayerInput
 class PhysicWorld
 {
 private:
+	// These methods tell about ball collisions for class-intern use
+	bool int_BallHitLeftPlayerTop();
+	bool int_BallHitRightPlayerTop();
+	bool int_BallHitLeftPlayerBottom();
+	bool int_BallHitRightPlayerBottom();
+	bool int_BallHitLeftPlayer();
+	bool int_BallHitRightPlayer();
+
+	// ball is hit by player?
+	bool hitByLeftBlob;
+	bool hitByRightBlob;
+
 	Vector2 mLeftBlobPosition;
 	Vector2 mRightBlobPosition;
 	Vector2 mBallPosition;
@@ -63,11 +75,7 @@ public:
 	float getRightBlobState();
 	float getBallRotation();
 
-	// These functions tell about ball collisions for game logic and sound
-	bool ballHitLeftPlayerTop();
-	bool ballHitRightPlayerTop();
-	bool ballHitLeftPlayerBottom();
-	bool ballHitRightPlayerBottom();
+	// These functions tell about ball collisions for game logic and sound 
 	bool ballHitLeftPlayer();
 	bool ballHitRightPlayer();
 	bool ballHitLeftGround();
