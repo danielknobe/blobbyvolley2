@@ -41,8 +41,8 @@ int main(int argc, char* argv[])
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	
-//	RenderManager *rmanager = RenderManager::createRenderManagerGL2D();
-  RenderManager *rmanager = RenderManager::createRenderManagerSDL();
+	RenderManager *rmanager = RenderManager::createRenderManagerGL2D();
+//	RenderManager *rmanager = RenderManager::createRenderManagerSDL();
 	rmanager->init(800, 600, false);
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
