@@ -180,7 +180,7 @@ bool PhysicWorld::int_BallHitRightPlayer()
 // externel collision-methods
 bool PhysicWorld::ballHitLeftPlayer()
 {
-	if (hitByLeftBlob)
+	if (mBallHitByLeftBlob)
 	return true;
 	
 	return false;
@@ -189,7 +189,7 @@ bool PhysicWorld::ballHitLeftPlayer()
 
 bool PhysicWorld::ballHitRightPlayer()
 {
-	if (hitByRightBlob)
+	if (mBallHitByRightBlob)
 	return true;
 	
 	return false;
@@ -254,8 +254,8 @@ void PhysicWorld::step()
 		mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
     
 	// Reset the ball-blobby collision
-	hitByRightBlob=false;
-	hitByLeftBlob=false;
+	mBallHitByRightBlob=false;
+	mBallHitByLeftBlob=false;
     
     for (short counter = 1; counter <= TIMESTEP; counter++)
 	{
@@ -289,7 +289,7 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.normalise();
 			mBallPosition -= mBallVelocity.scale(3);
 			mBallVelocity = mBallVelocity.scale(11);
-			hitByLeftBlob=true;
+			mBallHitByLeftBlob=true;
 		}
 	
 		if(int_BallHitRightPlayerTop())
@@ -298,7 +298,7 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.normalise();
 			mBallPosition -= mBallVelocity.scale(3);
 			mBallVelocity = mBallVelocity.scale(11);
-			hitByRightBlob=true;
+			mBallHitByRightBlob=true;
 		}
 		
 		if(int_BallHitLeftPlayerBottom())
@@ -307,7 +307,7 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.normalise();
 			mBallPosition -= mBallVelocity.scale(3);
 			mBallVelocity = mBallVelocity.scale(11);
-			hitByLeftBlob=true;
+			mBallHitByLeftBlob=true;
 		}
 
 		if(int_BallHitRightPlayerBottom())
@@ -316,7 +316,7 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.normalise();
 			mBallPosition -= mBallVelocity.scale(3);
 			mBallVelocity = mBallVelocity.scale(11);
-			hitByRightBlob=true;
+			mBallHitByRightBlob=true;
 		}	
 
 		// Border Collision

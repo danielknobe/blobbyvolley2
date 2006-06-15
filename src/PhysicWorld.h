@@ -37,8 +37,8 @@ private:
 	bool int_BallHitRightPlayer();
 
 	// ball is hit by player?
-	bool hitByLeftBlob;
-	bool hitByRightBlob;
+	bool mBallHitByLeftBlob;
+	bool mBallHitByRightBlob;
 
 	Vector2 mLeftBlobPosition;
 	Vector2 mRightBlobPosition;
