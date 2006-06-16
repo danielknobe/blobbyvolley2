@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include <physfs.h> 
 #include "SoundManager.h"
 
