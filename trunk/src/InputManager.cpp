@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cassert>
 #include <SDL/SDL.h>
 #include "InputManager.h"
 
