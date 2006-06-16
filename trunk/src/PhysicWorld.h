@@ -79,5 +79,8 @@ public:
 
 	// Important: This assumes a fixed framerate of 60 FPS!
 	void step();
+	
+	// For reducing ball speed after rule violation
+	void dampBall();
 };
 
