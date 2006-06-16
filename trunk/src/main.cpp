@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 		else
 		{
 		squish += 1;
-		if(squish > 20)
+		if(squish > 15)
 			squish=0;
 		}
 
