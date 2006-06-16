@@ -85,18 +85,20 @@ void PhysicWorld::reset(int player)
 
 bool PhysicWorld::ballHitRightGround()
 {
-	if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
+	if (mIsBallValid)
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
 			mBallPosition.x > NET_POSITION_X)
-		return true;
-	else return false;
+			return true;
+	return false;
 }
 
 bool PhysicWorld::ballHitLeftGround()
 {
-	if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
+	if (mIsBallValid)
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
 			mBallPosition.x < NET_POSITION_X)
-		return true;
-	else return false;
+			return true;
+	return false;
 }
 
 void PhysicWorld::setBallValidity(bool validity)
@@ -106,10 +108,10 @@ void PhysicWorld::setBallValidity(bool validity)
 
 bool PhysicWorld::roundFinished()
 {
-//	if (!mIsBallValid)
-//		if (mBallVelocity.length() < 10.0)
-//			return true;
-	return !mIsBallValid;
+	if (!mIsBallValid)
+		if (mBallVelocity.length() < 2.0 && mBallPosition.y > GROUND_PLANE_HEIGHT)
+			return true;
+	return false;
 }
 
 float PhysicWorld::lastHitIntensity()
@@ -283,41 +285,54 @@ void PhysicWorld::step()
 			
      
 		// Collision Detection
-		if(int_BallHitLeftPlayerTop())
-		{
-			mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
-			mBallVelocity = mBallVelocity.normalise();
-			mBallPosition -= mBallVelocity.scale(3);
-			mBallVelocity = mBallVelocity.scale(11);
-			mBallHitByLeftBlob=true;
-		}
-	
-		if(int_BallHitRightPlayerTop())
-		{
-			mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
-			mBallVelocity = mBallVelocity.normalise();
-			mBallPosition -= mBallVelocity.scale(3);
-			mBallVelocity = mBallVelocity.scale(11);
-			mBallHitByRightBlob=true;
-		}
-		
-		if(int_BallHitLeftPlayerBottom())
-		{
-			mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
-			mBallVelocity = mBallVelocity.normalise();
-			mBallPosition -= mBallVelocity.scale(3);
-			mBallVelocity = mBallVelocity.scale(11);
-			mBallHitByLeftBlob=true;
-		}
 
-		if(int_BallHitRightPlayerBottom())
+		if(mIsBallValid)
 		{
-			mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
-			mBallVelocity = mBallVelocity.normalise();
-			mBallPosition -= mBallVelocity.scale(3);
-			mBallVelocity = mBallVelocity.scale(11);
-			mBallHitByRightBlob=true;
-		}	
+			if(int_BallHitLeftPlayerTop())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByLeftBlob=true;
+			}
+
+			if(int_BallHitRightPlayerTop())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByRightBlob=true;
+			}
+		
+			if(int_BallHitLeftPlayerBottom())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByLeftBlob=true;
+			}
+
+			if(int_BallHitRightPlayerBottom())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByRightBlob=true;
+			}	
+		}
+		// Ball to ground Collision
+		else
+		{
+			if (mBallPosition.y + BALL_RADIUS > 500.0)
+			{
+				mBallVelocity = mBallVelocity.reflectY().scale(0.6);
+				mBallPosition -= mBallVelocity;
+			}
+		}
 
 		// Border Collision
 		if(mBallPosition.x-BALL_RADIUS<=LEFT_PLANE && mBallVelocity.x>0)
@@ -389,3 +404,9 @@ void PhysicWorld::step()
 	
 	} // Ende der Schleift
 }
+
+void PhysicWorld::dampBall()
+{
+	mBallVelocity = mBallVelocity.scale(0.5);
+}
+

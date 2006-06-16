@@ -111,6 +111,7 @@ int main(int argc, char* argv[])
 
 		if (pworld.ballHitLeftGround() || leftHitcount > 3)
 		{
+			pworld.dampBall();
 			smanager->playSound("sounds/pfiff.wav", 0.3);
 			if (servingPlayer == 1)
 				rightScore++;
@@ -122,6 +123,7 @@ int main(int argc, char* argv[])
 		
 		if (pworld.ballHitRightGround() || rightHitcount > 3)
 		{
+			pworld.dampBall();
 			smanager->playSound("sounds/pfiff.wav", 0.3);
 			if (servingPlayer == 0)
 				leftScore++;
