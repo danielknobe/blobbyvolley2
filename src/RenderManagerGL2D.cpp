@@ -230,21 +230,20 @@ void RenderManagerGL2D::draw()
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-
+	
 	// Blob shadows
 	
 	glLoadIdentity();
 	glTranslatef(mLeftBlobPosition.x + (500.0 - mLeftBlobPosition.y) / 4 + 16.0,
 			500.0 - (500.0 - mLeftBlobPosition.y) / 16.0 - 10.0, 0.2);
-	glColor4f(1.0, 1.0, 1.0, 0.6);
-//	glColor4f(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 0.6);
+	glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
 	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
 	drawQuad(128.0, 32.0);
 	
 	glLoadIdentity();
 	glTranslatef(mRightBlobPosition.x + (500.0 - mRightBlobPosition.y) / 4 + 16.0,
 			500.0 - (500.0 - mRightBlobPosition.y) / 16.0 - 10.0, 0.2);
-	glColor4f(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 0.6);
+	glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
 	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
 	drawQuad(128.0, 32.0);
 
@@ -257,8 +256,8 @@ void RenderManagerGL2D::draw()
 	drawQuad(128.0, 32.0);
 
 	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
 	
+	// Scores
 	char textBuffer[64];
 	snprintf(textBuffer, 8, mLeftPlayerWarning ? "%02d!" : "%02d",
 			mLeftPlayerScore);
