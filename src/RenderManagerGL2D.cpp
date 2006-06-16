@@ -236,7 +236,8 @@ void RenderManagerGL2D::draw()
 	glLoadIdentity();
 	glTranslatef(mLeftBlobPosition.x + (500.0 - mLeftBlobPosition.y) / 4 + 16.0,
 			500.0 - (500.0 - mLeftBlobPosition.y) / 16.0 - 10.0, 0.2);
-	glColor4f(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 0.6);
+	glColor4f(1.0, 1.0, 1.0, 0.6);
+//	glColor4f(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 0.6);
 	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
 	drawQuad(128.0, 32.0);
 	
@@ -386,7 +387,7 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position)
 		glTranslatef(position.x + length + 12.0,
 				position.y + 12.0, 0.0);
 		glBindTexture(GL_TEXTURE_2D, mFont[index]);
-		drawQuad(24.0, 24.0);
+		drawQuad(32.0, 32.0);
 	}
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);
