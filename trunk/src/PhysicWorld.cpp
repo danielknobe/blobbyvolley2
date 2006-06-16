@@ -56,6 +56,7 @@ PhysicWorld::~PhysicWorld()
 
 void PhysicWorld::reset(int player)
 {
+
 	mLeftBlobPosition = Vector2( 200, 
 			GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
 	mRightBlobPosition = Vector2(600,
@@ -116,6 +117,15 @@ bool PhysicWorld::roundFinished()
 
 float PhysicWorld::lastHitIntensity()
 {
+	if(mBallHitByLeftBlob)
+	{
+		return Vector2((mBallVelocity.x-mLeftBlobVelocity.x),(mBallVelocity.y-mLeftBlobVelocity.y)).length()/10;
+    }
+    
+ 	if(mBallHitByRightBlob)
+	{
+		return Vector2((mBallVelocity.x-mRightBlobVelocity.x),(mBallVelocity.y-mRightBlobVelocity.y)).length()/10;
+    }
 //	return mLastHitIntensity;
 //TODO:	implement intensity checking in hit functions and return this value
 //	this is currently 1.0 because it's used for volume regulation
@@ -345,7 +355,7 @@ void PhysicWorld::step()
 		// Net Sphere
 		if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
-			).length() <= NET_RADIUS + BALL_RADIUS)
+			).length() <= NET_RADIUS + BALL_RADIUS - 1)
 			{
 				temp = mBallVelocity.length();
 				mBallVelocity = Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE));
@@ -368,9 +378,17 @@ void PhysicWorld::step()
 				mBallVelocity = mBallVelocity.reflectX();
 		
 		// Velocity Integration
-	 
+		if(mBallVelocity.x<0)
 		mBallRotation += mBallAngularVelocity/TIMESTEP;
-	
+		else
+		mBallRotation -= mBallAngularVelocity/TIMESTEP;
+		
+		//Overflow-Protection
+		if(mBallRotation<=0)
+			mBallRotation=6.25+mBallRotation;
+		if(mBallRotation>=6.25)
+			mBallRotation=mBallRotation-6.25;
+
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
 		mRightBlobPosition += mRightBlobVelocity/TIMESTEP;
 
