@@ -68,8 +68,9 @@ int main(int argc, char* argv[])
 	pworld.step();
 	
 	int running = 1;
-	while (inputmgr->running())
+	while (running)
 	{
+		running = inputmgr->running();
 		inputmgr->updateInput();
 		pworld.setLeftInput(leftInput->getInput());
 		pworld.setRightInput(rightInput->getInput());
