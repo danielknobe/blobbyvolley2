@@ -231,21 +231,23 @@ void PhysicWorld::setRightInput(const PlayerInput& input)
 
 void PhysicWorld::step()
 {
-    // Input Handling
+	// Input Handling
+	if (mIsBallValid)
+	{
 	if (mLeftBlobPosition.y >= GROUND_PLANE_HEIGHT)
 		if (mLeftPlayerInput.up)
 			mLeftBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
 		
-	if (mLeftPlayerInput.up)
-		mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
+		if (mLeftPlayerInput.up)
+			mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
 		
-	if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
-		if (mRightPlayerInput.up)
-			mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
+		if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
+			if (mRightPlayerInput.up)
+				mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
 			
-	if (mRightPlayerInput.up)
-		mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
-    
+		if (mRightPlayerInput.up)
+			mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
+	}    
 	// Reset the ball-blobby collision
 	mBallHitByRightBlob=false;
 	mBallHitByLeftBlob=false;
@@ -275,12 +277,8 @@ void PhysicWorld::step()
 			if (mRightPlayerInput.right)
 				if (mRightBlobPosition.x < RIGHT_PLANE)
 					mRightBlobVelocity.x = +BLOBBY_SPEED;
-		}	
      
 		// Collision Detection
-
-		if(mIsBallValid)
-		{
 			if(int_BallHitLeftPlayerTop())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
