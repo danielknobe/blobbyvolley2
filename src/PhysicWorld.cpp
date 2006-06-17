@@ -336,18 +336,8 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflectX();
 		    	
 		// Net Collision
-
-		// Net Sphere
-		if (Vector2(
-			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
-			).length() <= NET_RADIUS + BALL_RADIUS - 1)
-		{
-			Vector2 reflectionNormal = Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)).normalise();
-			mBallVelocity = mBallVelocity.reflect(reflectionNormal).scale(0.8);
-		}
-		
 		// Left Net Border
-		else if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS
+		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
 	    	&& mBallVelocity.x<0
 	    	&& mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
@@ -359,6 +349,17 @@ void PhysicWorld::step()
 		    && mBallVelocity.x>0
 		    && mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
+		// Net Sphere
+		else if (Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
+			).length() <= NET_RADIUS + BALL_RADIUS - 1)
+		{
+			Vector2 reflectionNormal = 
+				Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
+				.normalise();
+			mBallVelocity = mBallVelocity.reflect(reflectionNormal);
+		}
+
 		
 		// Velocity Integration
 		if(mBallVelocity.x<0)
