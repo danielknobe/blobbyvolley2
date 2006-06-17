@@ -16,6 +16,7 @@ AC_ARG_ENABLE(profile, AC_HELP_STRING([--enable-profile],
     [CXXFLAGS="$CXXFLAGS -pg"])
 
 AC_CHECK_LIB(SDL,SDL_Init, [], [AC_MSG_ERROR(SDL required)])
+AC_CHECK_LIB(SDL_net,SDLNet_Init, [], [AC_MSG_ERROR(SDL_net required)])
 AC_CHECK_LIB(z, inflate, [], [AC_MSG_ERROR(zlib required)])
 AC_CHECK_LIB(physfs,PHYSFS_init, [], [AC_MSG_ERROR(PhysFS required)])
 
