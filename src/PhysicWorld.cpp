@@ -117,19 +117,8 @@ bool PhysicWorld::roundFinished()
 
 float PhysicWorld::lastHitIntensity()
 {
-	if(mBallHitByLeftBlob)
-	{
-		return Vector2((mBallVelocity.x-mLeftBlobVelocity.x),(mBallVelocity.y-mLeftBlobVelocity.y)).length()/10;
-    }
-    
- 	if(mBallHitByRightBlob)
-	{
-		return Vector2((mBallVelocity.x-mRightBlobVelocity.x),(mBallVelocity.y-mRightBlobVelocity.y)).length()/10;
-    }
-//	return mLastHitIntensity;
-//TODO:	implement intensity checking in hit functions and return this value
-//	this is currently 1.0 because it's used for volume regulation
-	return 1.0;
+	float intensity = mLastHitIntensity / 14.0;
+	return intensity < 1.0 ? intensity : 1.0;
 }
 
 // internel collision-methods
@@ -192,20 +181,12 @@ bool PhysicWorld::int_BallHitRightPlayer()
 // externel collision-methods
 bool PhysicWorld::ballHitLeftPlayer()
 {
-	if (mBallHitByLeftBlob)
-	return true;
-	
-	return false;
-	// TODO: Calculate hit intensity
+	return mBallHitByLeftBlob;
 } 
 
 bool PhysicWorld::ballHitRightPlayer()
 {
-	if (mBallHitByRightBlob)
-	return true;
-	
-	return false;
-	// TODO: Calculate hit intensity
+	return mBallHitByRightBlob;
 }   
 
 Vector2 PhysicWorld::getBall()
@@ -304,34 +285,38 @@ void PhysicWorld::step()
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
 				mBallVelocity = mBallVelocity.scale(11);
-				mBallHitByLeftBlob=true;
+				mBallHitByLeftBlob = true;
+				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
 			}
 
-			if(int_BallHitRightPlayerTop())
+			else if(int_BallHitRightPlayerTop())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
 				mBallVelocity = mBallVelocity.scale(11);
 				mBallHitByRightBlob=true;
+				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
 			}
 		
-			if(int_BallHitLeftPlayerBottom())
+			else if(int_BallHitLeftPlayerBottom())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
 				mBallVelocity = mBallVelocity.scale(11);
 				mBallHitByLeftBlob=true;
+				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
 			}
 
-			if(int_BallHitRightPlayerBottom())
+			else if(int_BallHitRightPlayerBottom())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
 				mBallVelocity = mBallVelocity.scale(11);
 				mBallHitByRightBlob=true;
+				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
 			}	
 		}
 		// Ball to ground Collision
@@ -356,22 +341,20 @@ void PhysicWorld::step()
 		if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
 			).length() <= NET_RADIUS + BALL_RADIUS - 1)
-			{
-				temp = mBallVelocity.length();
-				mBallVelocity = Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE));
-				mBallVelocity = mBallVelocity.normalise();
-				mBallVelocity = mBallVelocity.scale(temp).scale(0.8);
-			}
+		{
+			Vector2 reflectionNormal = Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)).normalise();
+			mBallVelocity = mBallVelocity.reflect(reflectionNormal).scale(0.8);
+		}
 		
 		// Left Net Border
-		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS
+		else if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
 	    	&& mBallVelocity.x<0
 	    	&& mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
 		// Right Net Border  
-		if(mBallPosition.x-BALL_RADIUS<=NET_POSITION_X+NET_RADIUS
+		else if(mBallPosition.x-BALL_RADIUS<=NET_POSITION_X+NET_RADIUS
 			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-10
 		    && mBallVelocity.x>0
 		    && mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
