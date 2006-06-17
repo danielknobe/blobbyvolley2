@@ -1,8 +1,9 @@
 #pragma once
 
 #include "NetworkPacket.h"
+#include "InputSource.h"
 
-class NetworkServer
+class NetworkServer : public InputSource
 {
 	friend class NetworkManager;
 private:
@@ -11,7 +12,7 @@ private:
 public:
 	bool connectionReady();
 
-	PlayerInput getLatestInput();
+	virtual PlayerInput getInput();
 	void setNewState(const PhysicState& pstate, PlayerInput input);
 };
 

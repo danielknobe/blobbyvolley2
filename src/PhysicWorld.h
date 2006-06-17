@@ -11,6 +11,8 @@ struct PhysicState
 	Vector2 ballPosition;
 	Vector2 blobVelocity[2];
 	Vector2 ballVelocity;
+	bool gameRunning : 1;
+	bool ballValid : 1;
 };
 
 class PhysicWorld

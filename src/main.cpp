@@ -11,7 +11,7 @@
 #include "PhysicWorld.h"
 #include "InputManager.h"
 #include "LocalInputSource.h"
-
+#include "NetworkManager.h"
 
 void correctFramerate()
 {	int rate = 60;

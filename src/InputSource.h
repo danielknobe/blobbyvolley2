@@ -27,19 +27,3 @@ public:
 	virtual PlayerInput getInput() = 0;
 };
 
-/*
-class RemoteInputSource : public InputSource
-{
-private:
-	NetworkManager* mNetworkManager;
-
-public:
-	RemoteInputSource(NetworkManager* netmgr)
-		: mNetworkManager(netmgr);
-	virtual PlayerInput getInput()
-	{
-		return mNetworkManager->getLatestInput();
-	}
-};
-*/
-
