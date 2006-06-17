@@ -52,9 +52,11 @@ PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = tinystr.$(OBJEXT) tinyxml.$(OBJEXT) \
 	tinyxmlerror.$(OBJEXT) tinyxmlparser.$(OBJEXT)
 am_blobby_OBJECTS = main.$(OBJEXT) InputManager.$(OBJEXT) \
-	PhysicWorld.$(OBJEXT) RenderManager.$(OBJEXT) \
-	RenderManagerSDL.$(OBJEXT) RenderManagerGL2D.$(OBJEXT) \
-	SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) $(am__objects_1)
+	NetworkManager.$(OBJEXT) NetworkServer.$(OBJEXT) \
+	NetworkClient.$(OBJEXT) PhysicWorld.$(OBJEXT) \
+	RenderManager.$(OBJEXT) RenderManagerSDL.$(OBJEXT) \
+	RenderManagerGL2D.$(OBJEXT) SoundManager.$(OBJEXT) \
+	UserConfig.$(OBJEXT) $(am__objects_1)
 blobby_OBJECTS = $(am_blobby_OBJECTS)
 blobby_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
@@ -173,6 +175,10 @@ blobby_SOURCES = \
 	main.cpp \
 	InputSource.h LocalInputSource.h \
 	InputManager.h InputManager.cpp \
+	NetworkPacket.h \
+	NetworkManager.h NetworkManager.cpp \
+	NetworkServer.h NetworkServer.cpp \
+	NetworkClient.h NetworkClient.cpp \
 	PhysicWorld.h PhysicWorld.cpp \
 	RenderManager.h RenderManager.cpp \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
@@ -249,6 +255,9 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InputManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkClient.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkServer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PhysicWorld.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenderManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenderManagerGL2D.Po@am__quote@

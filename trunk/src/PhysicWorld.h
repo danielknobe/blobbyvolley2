@@ -5,6 +5,14 @@
 #include "Vector.h"
 #include "InputSource.h"
 
+struct PhysicState
+{
+	Vector2 blobPosition[2];
+	Vector2 ballPosition;
+	Vector2 blobVelocity[2];
+	Vector2 ballVelocity;
+};
+
 class PhysicWorld
 {
 private:
@@ -82,5 +90,9 @@ public:
 	
 	// For reducing ball speed after rule violation
 	void dampBall();
+
+	// Networking functions
+	PhysicState encodeState();
+	void decodeState(const PhysicState& state);
 };
 
