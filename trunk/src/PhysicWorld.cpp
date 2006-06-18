@@ -424,7 +424,7 @@ void PhysicWorld::step()
 		{
 			mBallVelocity = mBallVelocity.reflect(
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
-			.normalise()).scale(0.8);
+			.normalise());
 		}
 
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
