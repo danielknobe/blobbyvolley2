@@ -1,6 +1,6 @@
 #include "PhysicWorld.h"
 
-const short PHYSIC_STEPS = 3; // calculations per fps
+const short TIMESTEP = 3; // calculations per fps
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -34,7 +34,7 @@ const float RIGHT_PLANE = 800.0;
 
 // Gamefeeling relevant constants:
 
-const float BLOBBY_SPEED = 8.5;
+const float BLOBBY_SPEED = 8;
 const float BLOBBY_JUMP_ACCELERATION = 14;
 const float BLOBBY_JUMP_BUFFER = 0.42;
 const float GRAVITATION = 0.8;
@@ -231,54 +231,47 @@ void PhysicWorld::setRightInput(const PlayerInput& input)
 
 void PhysicWorld::step()
 {
-	// Input Handling
-	if (mIsBallValid)
-	{
+    // Input Handling
 	if (mLeftBlobPosition.y >= GROUND_PLANE_HEIGHT)
 		if (mLeftPlayerInput.up)
 			mLeftBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
 		
-		if (mLeftPlayerInput.up)
-			mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
+	if (mLeftPlayerInput.up)
+		mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
 		
-		if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
-			if (mRightPlayerInput.up)
-				mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
-			
+	if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
 		if (mRightPlayerInput.up)
-			mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
-	}    
+			mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
+			
+	if (mRightPlayerInput.up)
+		mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
+    
 	// Reset the ball-blobby collision
 	mBallHitByRightBlob=false;
 	mBallHitByLeftBlob=false;
     
-    for (short counter = 1; counter <= PHYSIC_STEPS; counter++)
+    for (short counter = 1; counter <= TIMESTEP; counter++)
 	{
 		// This is only influenced by input, so we need to reset this here
 		mLeftBlobVelocity.x = 0.0;
 		mRightBlobVelocity.x = 0.0;
 
-		if (mIsBallValid)
-		{
-			if (mLeftPlayerInput.left)
-				if (mLeftBlobPosition.x > LEFT_PLANE)
-					mLeftBlobVelocity.x = -BLOBBY_SPEED;
+		if (mLeftPlayerInput.left)
+			mLeftBlobVelocity.x -= BLOBBY_SPEED;
 			
-			if (mLeftBlobPosition.x+BLOBBY_LOWER_RADIUS<NET_POSITION_X-NET_RADIUS) // Collision with the net
-				if (mLeftPlayerInput.right)
-					if (mLeftBlobPosition.x < RIGHT_PLANE)
-						mLeftBlobVelocity.x = +BLOBBY_SPEED;
-
-			if (mRightBlobPosition.x-BLOBBY_LOWER_RADIUS>NET_POSITION_X+NET_RADIUS)	// Collision with the net			
-				if (mRightPlayerInput.left)
-					if (mRightBlobPosition.x > LEFT_PLANE)
-						mRightBlobVelocity.x = -BLOBBY_SPEED;
+		if (mLeftPlayerInput.right)
+			mLeftBlobVelocity.x += BLOBBY_SPEED;
+			
+		if (mRightPlayerInput.left)
+			mRightBlobVelocity.x -= BLOBBY_SPEED;
 				
-			if (mRightPlayerInput.right)
-				if (mRightBlobPosition.x < RIGHT_PLANE)
-					mRightBlobVelocity.x = +BLOBBY_SPEED;
-     
+		if (mRightPlayerInput.right)
+			mRightBlobVelocity.x += BLOBBY_SPEED;
+
 		// Collision Detection
+
+		if(mIsBallValid)
+		{
 			if(int_BallHitLeftPlayerTop())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
@@ -354,40 +347,56 @@ void PhysicWorld::step()
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
 			).length() <= NET_RADIUS + BALL_RADIUS - 1)
 		{
-			Vector2 reflectionNormal = 
-				Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
-				.normalise();
-			mBallVelocity = mBallVelocity.reflect(reflectionNormal);
+			mBallVelocity = mBallVelocity.reflect(
+            Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
+			.normalise());
 		}
 
 		
 		// Velocity Integration
 		if(mBallVelocity.x<0)
-		mBallRotation += mBallAngularVelocity/PHYSIC_STEPS;
+		mBallRotation += mBallAngularVelocity/TIMESTEP;
 		else
-		mBallRotation -= mBallAngularVelocity/PHYSIC_STEPS;
+		mBallRotation -= mBallAngularVelocity/TIMESTEP;
 		
 		//Overflow-Protection
-		if(mBallRotation <= 0.0)
-			mBallRotation += 6.25;
-		if(mBallRotation >= 6.25)
-			mBallRotation -= 6.25;
+		if(mBallRotation<=0)
+			mBallRotation=6.25+mBallRotation;
+		if(mBallRotation>=6.25)
+			mBallRotation=mBallRotation-6.25;
 
-		mLeftBlobPosition += mLeftBlobVelocity/PHYSIC_STEPS;
-		mRightBlobPosition += mRightBlobVelocity/PHYSIC_STEPS;
+		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
+		mRightBlobPosition += mRightBlobVelocity/TIMESTEP;
+
+		// Collision between blobby and the net
+		if (mLeftBlobPosition.x+BLOBBY_LOWER_RADIUS>NET_POSITION_X-NET_RADIUS) // Collision with the net
+			mLeftBlobPosition.x=NET_POSITION_X-NET_RADIUS-BLOBBY_LOWER_RADIUS;
+			
+		// Collision between blobby and the net
+		if (mRightBlobPosition.x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS) // Collision with the net
+			mRightBlobPosition.x=NET_POSITION_X+NET_RADIUS+BLOBBY_LOWER_RADIUS;
+		
+		// Collision between blobby and the border
+		if (mLeftBlobPosition.x < LEFT_PLANE)
+			mLeftBlobPosition.x=LEFT_PLANE;
+
+		// Collision between blobby and the border
+		if (mRightBlobPosition.x > RIGHT_PLANE)
+			mRightBlobPosition.x=RIGHT_PLANE;
+			
 
 		// Acceleration Integration
 	
-		mLeftBlobVelocity.y -= -GRAVITATION/PHYSIC_STEPS;
-		mRightBlobVelocity.y -= -GRAVITATION/PHYSIC_STEPS;
+		mLeftBlobVelocity.y -= -GRAVITATION/TIMESTEP;
+		mRightBlobVelocity.y -= -GRAVITATION/TIMESTEP;
 
 		// Ball Gravitation
 		if (mIsGameRunning)
-			mBallVelocity.y -= BALL_GRAVITATION/PHYSIC_STEPS;
+			mBallVelocity.y -= BALL_GRAVITATION/TIMESTEP;
 		else if (ballHitLeftPlayer() || ballHitRightPlayer())
 			mIsGameRunning = true;
 		
-		mBallPosition -= mBallVelocity/PHYSIC_STEPS;
+		mBallPosition -= mBallVelocity/TIMESTEP;
 
 
 	
