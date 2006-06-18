@@ -5,16 +5,6 @@
 #include "Vector.h"
 #include "InputSource.h"
 
-struct PhysicState
-{
-	Vector2 blobPosition[2];
-	Vector2 ballPosition;
-	Vector2 blobVelocity[2];
-	Vector2 ballVelocity;
-	bool gameRunning : 1;
-	bool ballValid : 1;
-};
-
 class PhysicWorld
 {
 private:
@@ -42,6 +32,8 @@ private:
 	float mBallAngularVelocity;
 	float mLeftBlobState;
 	float mRightBlobState;
+	float mLeftBlobbyAnimationSpeedAtm;
+	float mRightBlobbyAnimationSpeedAtm;
 
 	PlayerInput mLeftPlayerInput;
 	PlayerInput mRightPlayerInput;
@@ -70,6 +62,12 @@ public:
 	bool ballHitRightPlayer();
 	bool ballHitLeftGround();
 	bool ballHitRightGround();
+	
+	// Blobby animation methods
+	void leftBlobbyAnimationStep();
+	void leftBlobbyStartAnimation();
+	void rightBlobbyAnimationStep();
+	void rightBlobbyStartAnimation();
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
@@ -92,9 +90,5 @@ public:
 	
 	// For reducing ball speed after rule violation
 	void dampBall();
-
-	// Networking functions
-	PhysicState encodeState();
-	void decodeState(const PhysicState& state);
 };
 
