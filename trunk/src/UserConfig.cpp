@@ -36,7 +36,7 @@ bool UserConfig::loadFile(const std::string& filename)
 		c = varElem->Attribute("value");
 		if (c)
 			value = c;
-		setValue(name, value);
+		createVar(name, value);
 	}
 	return true;
 }
@@ -51,17 +51,17 @@ bool UserConfig::saveFile(const std::string& filename)
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
 	const char xmlFooter[] = "</userconfig>\n\n";
 
-	PHYSFS_write(fileHandle, xmlHeader, 1, sizeof(xmlHeader));
+	PHYSFS_write(fileHandle, xmlHeader, 1, sizeof(xmlHeader) - 1);
 	for (int i = 0; i < mVars.size(); ++i)
 	{
 		char writeBuffer[256];
 		int charsWritten = snprintf(writeBuffer, 256,
-			"\t<var name=\"%s\" value=\"%s\"/>",
+			"\t<var name=\"%s\" value=\"%s\"/>\n",
 			mVars[i]->Name.c_str(), mVars[i]->Value.c_str());
 		PHYSFS_write (fileHandle, writeBuffer, 1, charsWritten);
 	}
 
-	PHYSFS_write(fileHandle, xmlFooter, 1, sizeof(xmlFooter));
+	PHYSFS_write(fileHandle, xmlFooter, 1, sizeof(xmlFooter) - 1);
 	PHYSFS_close(fileHandle);
 	return true;
 }
@@ -126,8 +126,8 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
 	{
-		std::cout << "Warning: impossible to set value of \
-			unknown configuration variable " << name << std::endl;
+		std::cout << "Warning: impossible to set value of " <<
+			"unknown configuration variable " << name << std::endl;
 		return;
 	}
 
@@ -140,8 +140,8 @@ std::string UserConfig::getValue(const std::string& name)
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
 	{
-		std::cout << "Warning: impossible to get value of \
-			unknown configuration variable " << name << std::endl;
+		std::cout << "Warning: impossible to get value of" <<
+			"unknown configuration variable " << name << std::endl;
 		return "";
 	}
 	return var->Value;
