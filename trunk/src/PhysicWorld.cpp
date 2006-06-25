@@ -347,7 +347,26 @@ void PhysicWorld::step()
 		// Collision detection
 		if(mIsBallValid)
 		{
-			if(int_BallHitLeftPlayerTop())
+			if(int_BallHitLeftPlayerBottom())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByLeftBlob=true;
+				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
+			}
+
+			else if(int_BallHitRightPlayerBottom())
+			{
+				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = mBallVelocity.normalise();
+				mBallPosition -= mBallVelocity.scale(3);
+				mBallVelocity = mBallVelocity.scale(11);
+				mBallHitByRightBlob=true;
+				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
+			}	
+			else if(int_BallHitLeftPlayerTop())
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
@@ -367,25 +386,7 @@ void PhysicWorld::step()
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
 			}
 		
-			else if(int_BallHitLeftPlayerBottom())
-			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
-				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(11);
-				mBallHitByLeftBlob=true;
-				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
-			}
 
-			else if(int_BallHitRightPlayerBottom())
-			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
-				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(11);
-				mBallHitByRightBlob=true;
-				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
-			}	
 		}
 		// Ball to ground Collision
 		else
