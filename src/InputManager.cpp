@@ -57,3 +57,25 @@ bool InputManager::running()
 	return mRunning;
 }
 
+// Configmethods
+void InputManager::writeConfigInFile()
+{
+	mConfigManager.loadFile("InputConfig.ini");
+	mConfigManager.setInteger("asdasd",67);
+	mConfigManager.saveFile("InputConfig.ini");
+}
+
+void InputManager::loadConfigFromFile()
+{
+	
+}
+
+void InputManager::getCurrentConfig()
+{
+	
+}
+
+void InputManager::setCurrentConfig()
+{
+	
+}
