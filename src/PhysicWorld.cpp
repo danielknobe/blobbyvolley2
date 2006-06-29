@@ -30,9 +30,9 @@ const float RIGHT_PLANE = 800.0;
 
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
-const float BLOBBY_SPEED = 8;
-const float BLOBBY_JUMP_ACCELERATION = 13.5;
-const float BLOBBY_JUMP_BUFFER = 0.40;
+const float BLOBBY_SPEED = 6.5;
+const float BLOBBY_JUMP_ACCELERATION = 13.52;
+const float BLOBBY_JUMP_BUFFER = 0.39;
 const float GRAVITATION = 0.8;
 const float BALL_GRAVITATION = 0.22;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
@@ -405,8 +405,17 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflectX();
 		    	
 		// Net Collision
+		// Net Sphere
+		if (Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
+			).length() <= NET_RADIUS + BALL_RADIUS - 1)
+		{
+			mBallVelocity = mBallVelocity.reflect(
+            Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
+			.normalise());
+		}
 		// Left Net Border
-		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS
+		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS // <- here please no else, it's important!
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
 	    	&& mBallVelocity.x<0
 	    	&& mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
@@ -418,15 +427,7 @@ void PhysicWorld::step()
 		    && mBallVelocity.x>0
 		    && mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
-		// Net Sphere
-		else if (Vector2(
-			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
-			).length() <= NET_RADIUS + BALL_RADIUS - 1)
-		{
-			mBallVelocity = mBallVelocity.reflect(
-            Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
-			.normalise());
-		}
+
 
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
 		mRightBlobPosition += mRightBlobVelocity/TIMESTEP;
