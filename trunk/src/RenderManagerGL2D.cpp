@@ -13,7 +13,16 @@ struct ExtensionUnsupportedException
 	ExtensionUnsupportedException(std::string name) : extension(name) {}
 };
 
-GLuint RenderManagerGL2D::loadTexture(const std::string& filename)
+int RenderManagerGL2D::getNextPOT(int npot)
+{
+	int pot = 1;
+	while (pot < npot)
+		pot *= 2;
+	return pot;
+}
+
+GLuint RenderManagerGL2D::loadTexture(const std::string& filename, 
+	bool specular)
 {
 	SDL_Surface* textureSurface;
 	SDL_Surface* convertedTexture;
@@ -32,13 +41,42 @@ GLuint RenderManagerGL2D::loadTexture(const std::string& filename)
 	delete[] fileBuffer;
 	PHYSFS_close(fileHandle);
 
+	// Determine size of padding for 2^n format
+	int oldX = textureSurface->w;
+	int oldY = textureSurface->h;
+	int paddedX = getNextPOT(textureSurface->w);
+	int paddedY = getNextPOT(textureSurface->h);
+
+	SDL_Rect targetRect;
+	targetRect.w = oldX;
+	targetRect.h = oldY;
+	targetRect.x = (paddedX - oldX) / 2;
+	targetRect.y = (paddedY - oldY) / 2;
+
 	SDL_SetColorKey(textureSurface, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(textureSurface->format, 0, 0, 0));
 	convertedTexture = 
 		SDL_CreateRGBSurface(SDL_SWSURFACE,
-			textureSurface->w, textureSurface->h, 32,
+			paddedX, paddedY, 32,
 			0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
-	SDL_BlitSurface(textureSurface, 0, convertedTexture, 0);
+	SDL_BlitSurface(textureSurface, 0, convertedTexture, &targetRect);
+
+	if (specular)
+	{
+		for (int y = 0; y < convertedTexture->h; ++y)
+		for (int x = 0; x < convertedTexture->w; ++x)
+		{
+			SDL_Color* pixel = 
+				&(((SDL_Color*)convertedTexture->pixels)
+				[y * convertedTexture->w +x]);
+			int luminance = int(pixel->r) * 5 - 4 * 256 - 138;
+			luminance = luminance > 0 ? luminance : 0;
+			luminance = luminance < 255 ? luminance : 255;
+			pixel->r = luminance;
+			pixel->g = luminance;
+			pixel->b = luminance;
+		}
+	}
 
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -95,38 +133,38 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	mRightBlobColor = Color(0, 255, 0);
 
 	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_addToSearchPath("data/glgfx.zip", 1);
+	PHYSFS_addToSearchPath("data/gfx.zip", 1);
 
-	mBackground = loadTexture("glgfx/strand2.bmp");
-	mBallShadow = loadTexture("glgfx/schball.bmp");	
+	mBackground = loadTexture("gfx/strand2.bmp", false);
+	mBallShadow = loadTexture("gfx/schball.bmp", false);	
 
 	for (int i = 1; i <= 16; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "glgfx/ball%02d.bmp", i);
-		GLuint ballImage = loadTexture(filename);
+		sprintf(filename, "gfx/ball%02d.bmp", i);
+		GLuint ballImage = loadTexture(filename, false);
 		mBall.push_back(ballImage);
 	}
 
 	for (int i = 1; i <= 5; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "glgfx/blobbym%d.bmp", i);
-		GLuint blobImage = loadTexture(filename);
+		sprintf(filename, "gfx/blobbym%d.bmp", i);
+		GLuint blobImage = loadTexture(filename, false);
 		mBlob.push_back(blobImage);
-		sprintf(filename, "glgfx/blobbys%d.bmp", i);
-		GLuint blobSpecular = loadTexture(filename);
+		sprintf(filename, "gfx/blobbym%d.bmp", i);
+		GLuint blobSpecular = loadTexture(filename, true);
 		mBlobSpecular.push_back(blobSpecular);
-		sprintf(filename, "glgfx/sch1%d.bmp", i);
-		GLuint blobShadow = loadTexture(filename);
+		sprintf(filename, "gfx/sch1%d.bmp", i);
+		GLuint blobShadow = loadTexture(filename, false);
 		mBlobShadow.push_back(blobShadow);
 	}
 
 	for (int i = 0; i <= 50; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "glgfx/font%02d.bmp", i);
-		GLuint newFont = loadTexture(filename);
+		sprintf(filename, "gfx/font%02d.bmp", i);
+		GLuint newFont = loadTexture(filename, false);
 		mFont.push_back(newFont);
 	}
 
@@ -272,7 +310,7 @@ bool RenderManagerGL2D::setBackground(const std::string& filename)
 	GLuint newBackground;
 	try
 	{
-		newBackground = loadTexture(filename);
+		newBackground = loadTexture(filename, false);
 	}
 	catch (FileLoadException)
 	{
