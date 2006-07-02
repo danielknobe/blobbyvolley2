@@ -35,7 +35,8 @@ private:
 	Color mRightBlobColor;
 
 	void drawQuad(float x, float y);
-	GLuint loadTexture(const std::string& filename);	
+	GLuint loadTexture(const std::string& filename, bool specular);
+	int getNextPOT(int npot);
 public:
 	RenderManagerGL2D();
 
