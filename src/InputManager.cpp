@@ -40,6 +40,10 @@ void InputManager::updateInput()
 	while (SDL_PollEvent(&event))
 	switch (event.type)
 	{
+		case SDL_KEYDOWN:
+			if (event.key.keysym.sym == SDLK_ESCAPE)
+				mRunning = 0;
+			break;
 		case SDL_QUIT:
 			mRunning = 0;
 			break;

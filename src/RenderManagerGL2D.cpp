@@ -128,6 +128,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
+	SDL_ShowCursor(0);
 
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
