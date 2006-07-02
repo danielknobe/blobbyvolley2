@@ -57,6 +57,10 @@ int main(int argc, char* argv[])
 	rmanager->init(800, 600, true);
 	else
 	rmanager->init(800, 600, false);
+	// Only for Alpha2 Release!!!
+	globalConfigManager.loadFile("colorconfig.xml");
+	rmanager->setBlobColor(0,Color(globalConfigManager.getInteger("r1"),globalConfigManager.getInteger("g1"),globalConfigManager.getInteger("b1")));
+	rmanager->setBlobColor(1,Color(globalConfigManager.getInteger("r2"),globalConfigManager.getInteger("g2"),globalConfigManager.getInteger("b2")));
 	
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
@@ -151,7 +155,9 @@ int main(int argc, char* argv[])
 		
 		pworld.step();
 	
-		float time = float(SDL_GetTicks()) / 1000.0;
+	
+
+		/*float time = float(SDL_GetTicks()) / 1000.0;
 		rmanager->setBlobColor(0, Color(
 			int((sin(time*2) + 1.0) * 128),
 			int((sin(time*4) + 1.0) * 128),
@@ -159,7 +165,7 @@ int main(int argc, char* argv[])
 		rmanager->setBlobColor(1, Color(
 			int((cos(time*2) + 1.0) * 128),
 			int((cos(time*4) + 1.0) * 128),
-			int((cos(time*3) + 1.0) * 128)));
+			int((cos(time*3) + 1.0) * 128)));*/
 			
 		rmanager->draw();
 		rmanager->refresh();

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<userconfig>
+<!-- Left Blobby Inputconfiguration -->
+	<var name="r1" value="255"/>
+	<var name="g1" value="0"/>
+	<var name="b1" value="0"/>
+
+<!-- Right Blobby Inputconfiguration -->
+	<var name="r2" value="0"/>
+	<var name="g2" value="255"/>
+	<var name="b2" value="0"/>
+</userconfig>
+
