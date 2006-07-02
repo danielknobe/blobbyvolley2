@@ -81,6 +81,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
 	mScreen = SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
+	SDL_ShowCursor(0);
 
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_addToSearchPath("data/gfx.zip", 1);
@@ -192,14 +193,14 @@ void RenderManagerSDL::draw()
 	// Left blob shadow
 	position.x = lround(mLeftBlobPosition.x) +
 		(500 - lround(mLeftBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mLeftBlobPosition.y)) / 16 - 22;
+	position.y = 500 - (500 - lround(mLeftBlobPosition.y)) / 16 - 25;
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
 
 	// Right blob shadow
 	position.x = lround(mRightBlobPosition.x) +
 		(500 - lround(mRightBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mRightBlobPosition.y)) / 16 - 22;
+	position.y = 500 - (500 - lround(mRightBlobPosition.y)) / 16 - 25;
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlobShadow[animationState], 0,
 			mScreen, &position);
