@@ -45,23 +45,30 @@ int main(int argc, char* argv[])
 	// Default is OpenGL and false
 	// choose renderer
 	RenderManager *rmanager;
-	UserConfig globalConfigManager;
-	globalConfigManager.loadFile("config.xml");
-	if(globalConfigManager.getString("device")=="SDL")
-	rmanager = RenderManager::createRenderManagerSDL();
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	if(gameConfig.getString("device") == "SDL")
+		rmanager = RenderManager::createRenderManagerSDL();
+	else if (gameConfig.getString("device") == "OpenGL")
+		rmanager = RenderManager::createRenderManagerGL2D();
 	else
-	rmanager = RenderManager::createRenderManagerGL2D();
+		rmanager = RenderManager::createRenderManagerGL2D();
 
 	// fullscreen?
-	if(globalConfigManager.getString("fullscreen")=="true")
-	rmanager->init(800, 600, true);
+	if(gameConfig.getString("fullscreen") == "true")
+		rmanager->init(800, 600, true);
 	else
-	rmanager->init(800, 600, false);
+		rmanager->init(800, 600, false);
 	// Only for Alpha2 Release!!!
-	globalConfigManager.loadFile("colorconfig.xml");
-	rmanager->setBlobColor(0,Color(globalConfigManager.getInteger("r1"),globalConfigManager.getInteger("g1"),globalConfigManager.getInteger("b1")));
-	rmanager->setBlobColor(1,Color(globalConfigManager.getInteger("r2"),globalConfigManager.getInteger("g2"),globalConfigManager.getInteger("b2")));
-	
+	rmanager->setBlobColor(0, 
+		Color(gameConfig.getInteger("r1"),
+		gameConfig.getInteger("g1"),
+		gameConfig.getInteger("b1")));
+	rmanager->setBlobColor(1,	
+		Color(gameConfig.getInteger("r2"),
+		gameConfig.getInteger("g2"),
+		gameConfig.getInteger("b2")));
+		
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
 	smanager->playSound("sounds/bums.wav", 0.0);
@@ -157,15 +164,17 @@ int main(int argc, char* argv[])
 	
 	
 
-		/*float time = float(SDL_GetTicks()) / 1000.0;
-		rmanager->setBlobColor(0, Color(
-			int((sin(time*2) + 1.0) * 128),
-			int((sin(time*4) + 1.0) * 128),
-			int((sin(time*3) + 1.0) * 128)));
-		rmanager->setBlobColor(1, Color(
-			int((cos(time*2) + 1.0) * 128),
-			int((cos(time*4) + 1.0) * 128),
-			int((cos(time*3) + 1.0) * 128)));*/
+		float time = float(SDL_GetTicks()) / 1000.0;
+		if (gameConfig.getBool("left_blobby_oscillate"))
+			rmanager->setBlobColor(0, Color(
+				int((sin(time*2) + 1.0) * 128),
+				int((sin(time*4) + 1.0) * 128),
+				int((sin(time*3) + 1.0) * 128)));
+		if (gameConfig.getBool("right_blobby_oscillate"))
+			rmanager->setBlobColor(1, Color(
+				int((cos(time*2) + 1.0) * 128),
+				int((cos(time*4) + 1.0) * 128),
+				int((cos(time*3) + 1.0) * 128)));
 			
 		rmanager->draw();
 		rmanager->refresh();
