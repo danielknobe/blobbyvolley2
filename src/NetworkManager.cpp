@@ -20,15 +20,17 @@ NetworkManager* NetworkManager::createNetworkManager()
 NetworkManager::NetworkManager()
 {
 	mSingleton = this;
+/*
 	if (SDLNet_Init() != 0)
 	{
 		std::cerr << "SDLNet_Init: " << SDLNet_GetError() << std::endl;
 		exit (1);
 	}
+*/
 }
 
 NetworkManager::~NetworkManager()
 {
-	SDLNet_Quit();
+//	SDLNet_Quit();
 }
 
