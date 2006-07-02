@@ -1,0 +1,38 @@
+==============================================================
+====================Blobby Volley 2 README====================
+=============The head-to-head multiplayer ball game===========
+==============================================================
+=================http://blobby.sourceforge.net================
+==============================================================
+
+Changelog:
+
+Since Alpha 1
+- New OpenGL-based Renderer
+- Configurable Input mapping
+- Better and more accurate Physics
+
+
+System requirements:
+
+Either Windows 95 or later, or Linux
+Graphics card with DirectDraw-Acceleration (on Windows)
+OpenGL-compliant graphics card recommended (both systems)
+
+Source code:
+
+On Linux, with Subversion installed just type:
+ svn co https://svn.sourceforge.net/svnroot/blobby blobby
+
+For further instructions see
+http://sourceforge.net/svn/?group_id=169341
+
+Credits:
+
+Programming:
+Jonathan Sieber	(Mail: jonathan_sieber@yahoo.de)
+Daniel Knobe	(Mail: daniel-knobe@web.de)
+
+Special Thanks:
+Daniel Skoraszewsky (Mail: skoraszewsky@t-online.de )
+Silvio Mummert      (Mail: mummertathome@t-online.de )
