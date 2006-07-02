@@ -12,6 +12,7 @@
 #include "InputManager.h"
 #include "LocalInputSource.h"
 #include "NetworkManager.h"
+#include "UserConfig.h"
 
 void correctFramerate()
 {	int rate = 60;
@@ -40,10 +41,23 @@ int main(int argc, char* argv[])
 	PHYSFS_setWriteDir("data");
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-	
-	RenderManager *rmanager = RenderManager::createRenderManagerGL2D();
-//	RenderManager *rmanager = RenderManager::createRenderManagerSDL();
+
+	// Default is OpenGL and false
+	// choose renderer
+	RenderManager *rmanager;
+	UserConfig globalConfigManager;
+	globalConfigManager.loadFile("config.xml");
+	if(globalConfigManager.getString("device")=="SDL")
+	rmanager = RenderManager::createRenderManagerSDL();
+	else
+	rmanager = RenderManager::createRenderManagerGL2D();
+
+	// fullscreen?
+	if(globalConfigManager.getString("fullscreen")=="true")
+	rmanager->init(800, 600, true);
+	else
 	rmanager->init(800, 600, false);
+	
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
 	smanager->playSound("sounds/bums.wav", 0.0);
@@ -55,7 +69,6 @@ int main(int argc, char* argv[])
 	
 	PhysicWorld pworld;
 	int squish=0;
-
 
 	int leftScore = 0;
 	int rightScore = 0;
@@ -105,7 +118,7 @@ int main(int argc, char* argv[])
 		else
 		{
 		squish += 1;
-		if(squish > 15)
+		if(squish > 13)
 			squish=0;
 		}
 

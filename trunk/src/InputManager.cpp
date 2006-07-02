@@ -351,7 +351,7 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 
 void InputManager::configFileToCurrentConfig()
 {
-	mConfigManager.loadFile("InputConfig.ini");
+	mConfigManager.loadFile("inputconfig.xml");
 	mLeftBlobbyLeftMove=stringToKey(mConfigManager.getString("left_blobby_left_move"));
 	mLeftBlobbyRightMove=stringToKey(mConfigManager.getString("left_blobby_right_move"));
 	mLeftBlobbyJump=stringToKey(mConfigManager.getString("left_blobby_jump"));
@@ -362,7 +362,7 @@ void InputManager::configFileToCurrentConfig()
 
 void InputManager::currentConfigToConfigFile()
 {
-	mConfigManager.loadFile("InputConfig.ini");
+	mConfigManager.loadFile("inputconfig.xml");
 	mConfigManager.setString("left_blobby_left_move",keyToString(mLeftBlobbyLeftMove));
 	mConfigManager.setString("left_blobby_right_move",keyToString(mLeftBlobbyRightMove));
 	mConfigManager.setString("left_blobby_jump",keyToString(mLeftBlobbyJump));
@@ -371,4 +371,3 @@ void InputManager::currentConfigToConfigFile()
 	mConfigManager.setString("right_blobby_jump",keyToString(mRightBlobbyJump));
 	mConfigManager.saveFile("InputConfig.ini");
 }
-
