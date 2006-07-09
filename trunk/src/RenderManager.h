@@ -63,6 +63,7 @@ protected:
 	
 public:
 	static RenderManager* createRenderManagerSDL();
+	static RenderManager* createRenderManagerGP2X();
 	static RenderManager* createRenderManagerGL2D();
 
 	static RenderManager& getSingleton()

@@ -19,6 +19,7 @@ blobby_SOURCES = \
 	PhysicWorld.h PhysicWorld.cpp \
 	RenderManager.h RenderManager.cpp \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
+	RenderManagerGP2X.h RenderManagerGP2X.cpp \
 	RenderManagerGL2D.h RenderManagerGL2D.cpp \
 	SoundManager.h SoundManager.cpp \
 	Vector.h \

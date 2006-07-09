@@ -1,1 +1,1 @@
-EXTRA_DIST = gfx glgfx sounds
+EXTRA_DIST = gfx gf2x glgfx sounds 

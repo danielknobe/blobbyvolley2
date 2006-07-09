@@ -1,6 +1,6 @@
 #include <iostream>
 #include <physfs.h>
-#include "RenderManagerSDL.h"
+#include "RenderManagerGP2X.h"
 
 struct FileLoadException
 {
@@ -8,7 +8,7 @@ struct FileLoadException
 	FileLoadException(std::string name) : filename(name) {}
 };
 
-SDL_Surface* RenderManagerSDL::loadImage(std::string filename)
+SDL_Surface* RenderManagerGP2X::loadImage(std::string filename)
 {
 	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
 	if (!fileHandle)
@@ -26,7 +26,7 @@ SDL_Surface* RenderManagerSDL::loadImage(std::string filename)
 	return newSurface;
 }
 
-SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
+SDL_Surface* RenderManagerGP2X::colorSurface(SDL_Surface *surface, Color color)
 {
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(
 		SDL_SWSURFACE | SDL_SRCALPHA | SDL_SRCCOLORKEY,
@@ -67,35 +67,34 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 	return convSurface;
 }
 
-RenderManagerSDL::RenderManagerSDL()
+RenderManagerGP2X::RenderManagerGP2X()
 	: RenderManager()
 {
 }
 
-RenderManager* RenderManager::createRenderManagerSDL()
+RenderManager* RenderManager::createRenderManagerGP2X()
 {
-	return new RenderManagerSDL();
+	return new RenderManagerGP2X();
 }
 
-void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
+void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 {
 	Uint32 screenFlags = SDL_HWSURFACE | SDL_HWACCEL | SDL_DOUBLEBUF;
-	if (fullscreen)
-		screenFlags |= SDL_FULLSCREEN;
-	mScreen = SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
+//	screenFlags |= SDL_FULLSCREEN;
+	mScreen = SDL_SetVideoMode(320, 240, 0, screenFlags);
 	SDL_ShowCursor(0);
 
 	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_addToSearchPath("data/gfx.zip", 1);
+	PHYSFS_addToSearchPath("data/gf2x.zip", 1);
 	
-	SDL_Surface* tempBackground = loadImage("gfx/strand2.bmp");
+	SDL_Surface* tempBackground = loadImage("gf2x/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
 	SDL_FreeSurface(tempBackground);
 	
 	for (int i = 1; i <= 16; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "gfx/ball%02d.bmp", i);
+		sprintf(filename, "gf2x/ball%02d.bmp", i);
 		SDL_Surface* ballImage = loadImage(filename);
 		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(ballImage->format, 0, 0, 0));
@@ -104,7 +103,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		mBall.push_back(convertedBallImage);
 	}
 	
-	SDL_Surface *tempBallShadow = loadImage("gfx/schball.bmp");
+	SDL_Surface *tempBallShadow = loadImage("gf2x/schball.bmp");
 	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(tempBallShadow->format, 0, 0, 0));
 	SDL_SetAlpha(tempBallShadow, SDL_SRCALPHA, 127);
@@ -114,13 +113,13 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	for (int i = 1; i <= 5; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "gfx/blobbym%d.bmp", i);
+		sprintf(filename, "gf2x/blobbym%d.bmp", i);
 		SDL_Surface* blobImage = loadImage(filename);
 		mStandardBlob.push_back(blobImage);
 		mLeftBlob.push_back(colorSurface(blobImage, Color(255, 0, 0)));
 		mRightBlob.push_back(colorSurface(blobImage, Color(0, 255, 0)));
 		
-		sprintf(filename, "gfx/sch1%d.bmp", i);
+		sprintf(filename, "gf2x/sch1%d.bmp", i);
 		SDL_Surface* blobShadow = loadImage(filename);
 		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(blobShadow->format, 0, 0, 0));
@@ -136,7 +135,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	for (int i = 0; i <= 50; ++i)
 	{
 		char filename[64];
-		sprintf(filename, "gfx/font%02d.bmp", i);
+		sprintf(filename, "gf2x/font%02d.bmp", i);
 		SDL_Surface *tempFont = loadImage(filename);
 		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
@@ -146,7 +145,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	}
 }
 
-void RenderManagerSDL::deinit()
+void RenderManagerGP2X::deinit()
 {
 	SDL_FreeSurface(mBackground);
 	SDL_FreeSurface(mBallShadow);
@@ -166,7 +165,7 @@ void RenderManagerSDL::deinit()
 		SDL_FreeSurface(mFont[i]);
 }
 
-void RenderManagerSDL::draw()
+void RenderManagerGP2X::draw()
 {
 	SDL_BlitSurface(mBackground, 0, mScreen, 0);
 	
@@ -184,52 +183,52 @@ void RenderManagerSDL::draw()
 	
 	// Ball Shadow
 	position.x = lround(mBallPosition.x) +
-		(500 - lround(mBallPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mBallPosition.y)) / 16 - 12;
+		(200 - lround(mBallPosition.y)) / 4 - 19;
+	position.y = 200 - (200 - lround(mBallPosition.y)) / 16 - 5;
 	SDL_BlitSurface(mBallShadow, 0, mScreen, &position);
 		
 	// Left blob shadow
 	position.x = lround(mLeftBlobPosition.x) +
-		(500 - lround(mLeftBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mLeftBlobPosition.y)) / 16 - 25;
+		(200 - lround(mLeftBlobPosition.y)) / 4 - 19;
+	position.y = 200 - (200 - lround(mLeftBlobPosition.y)) / 16 - 10;
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
 
 	// Right blob shadow
 	position.x = lround(mRightBlobPosition.x) +
-		(500 - lround(mRightBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mRightBlobPosition.y)) / 16 - 25;
+		(200 - lround(mRightBlobPosition.y)) / 4 - 19;
+	position.y = 200 - (200 - lround(mRightBlobPosition.y)) / 16 - 10;
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlobShadow[animationState], 0,
 			mScreen, &position);
 
 	// Restore the rod
-	position.x = 400 - 7;
-	position.y = 300;
+	position.x = 160 - 3;
+	position.y = 120;
 	SDL_Rect rodPosition;
-	rodPosition.x = 400 - 7;
-	rodPosition.y = 300;
-	rodPosition.w = 14;
-	rodPosition.h = 300;
+	rodPosition.x = 160 - 3;
+	rodPosition.y = 120;
+	rodPosition.w = 7;
+	rodPosition.h = 120;
 	SDL_BlitSurface(mBackground, &rodPosition, mScreen, &position);
 	
 	// Drawing the Ball
-	position.x = lround(mBallPosition.x) - 32;
-	position.y = lround(mBallPosition.y) - 32;
+	position.x = lround(mBallPosition.x) - 13;
+	position.y = lround(mBallPosition.y) - 13;
 	animationState = int(mBallRotation / M_PI / 2 * 16) % 16;
 	SDL_BlitSurface(mBall[animationState], 0, mScreen, &position);
 
 	// Drawing left blob
 	
-	position.x = lround(mLeftBlobPosition.x) - 37;
-	position.y = lround(mLeftBlobPosition.y) - 44;
+	position.x = lround(mLeftBlobPosition.x) - 13;
+	position.y = lround(mLeftBlobPosition.y) - 18;
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
 	
 	// Drawing right blob
 	
-	position.x = lround(mRightBlobPosition.x) - 37;
-	position.y = lround(mRightBlobPosition.y) - 44;
+	position.x = lround(mRightBlobPosition.x) - 13;
+	position.y = lround(mRightBlobPosition.y) - 18;
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);
 
@@ -237,13 +236,13 @@ void RenderManagerSDL::draw()
 	char textBuffer[8];
 	snprintf(textBuffer, 8, mLeftPlayerWarning ? "%02d!" : "%02d",
 			mLeftPlayerScore);
-	drawText(textBuffer, Vector2(24, 24));
+	drawText(textBuffer, Vector2(20, 10));
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);	
-	drawText(textBuffer, Vector2(800 - 96, 24));
+	drawText(textBuffer, Vector2(320 - 65, 10));
 }
 
-bool RenderManagerSDL::setBackground(const std::string& filename)
+bool RenderManagerGP2X::setBackground(const std::string& filename)
 {
 	SDL_Surface *newBackground;
 	try
@@ -259,7 +258,7 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 	return true;
 }
 
-void RenderManagerSDL::setBlobColor(int player, Color color)
+void RenderManagerGP2X::setBlobColor(int player, Color color)
 {
 	std::vector<SDL_Surface*> *handledBlob;
 	std::vector<SDL_Surface*> *handledBlobShadow;
@@ -300,29 +299,29 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 	}
 }
 
-void RenderManagerSDL::setBall(const Vector2& position, float rotation)
+void RenderManagerGP2X::setBall(const Vector2& position, float rotation)
 {
-	mBallPosition = position;
+	mBallPosition = position * 0.4;
 	mBallRotation = rotation;
 }
 
-void RenderManagerSDL::setBlob(int player, 
+void RenderManagerGP2X::setBlob(int player, 
 		const Vector2& position, float animationState)
 {
 	if (player == 0)
 	{
-		mLeftBlobPosition = position;
+		mLeftBlobPosition = position * 0.4;
 		mLeftBlobAnimationState = animationState;
 	}
 
 	if (player == 1)
 	{
-		mRightBlobPosition = position;
+		mRightBlobPosition = position * 0.4;
 		mRightBlobAnimationState = animationState;
 	}
 }
 
-void RenderManagerSDL::setScore(int leftScore, int rightScore,
+void RenderManagerGP2X::setScore(int leftScore, int rightScore,
 	       bool leftWarning, bool rightWarning)
 {
 	mLeftPlayerScore = leftScore;
@@ -331,7 +330,7 @@ void RenderManagerSDL::setScore(int leftScore, int rightScore,
 	mRightPlayerWarning = rightWarning;
 }
 
-void RenderManagerSDL::drawText(const std::string& text, Vector2 position)
+void RenderManagerGP2X::drawText(const std::string& text, Vector2 position)
 {
 	int length = 0;
 	for (int i = 0; i < text.length(); i++)
@@ -393,7 +392,7 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position)
 	}
 }
 
-void RenderManagerSDL::refresh()
+void RenderManagerGP2X::refresh()
 {
 	SDL_Flip(mScreen);
 }
