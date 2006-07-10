@@ -88,7 +88,7 @@ bool SoundManager::init()
 	desiredSpec.freq = 44100;
 	desiredSpec.format = AUDIO_S16SYS;
 	desiredSpec.channels = 1;
-	desiredSpec.samples = 4096;
+	desiredSpec.samples = 1024;
 	desiredSpec.callback = playCallback;
 	desiredSpec.userdata = mSingleton;
 
@@ -166,5 +166,6 @@ SoundManager& SoundManager::getSingleton()
 
 void SoundManager::setVolume(float volume)
 {
+	volume = volume > 0.0 ? (volume < 1.0 ? volume : 1.0) : 0.0;
 	mVolume = volume;
 }

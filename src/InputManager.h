@@ -27,6 +27,8 @@ private:
 	bool mRunning;
 	UserConfig mConfigManager;
 	
+	SDL_Joystick* mJoystick;
+	
 	InputManager();
 public:
 	static InputManager* createInputManager();

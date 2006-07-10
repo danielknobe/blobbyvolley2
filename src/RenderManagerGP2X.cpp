@@ -220,14 +220,14 @@ void RenderManagerGP2X::draw()
 
 	// Drawing left blob
 	
-	position.x = lround(mLeftBlobPosition.x) - 13;
+	position.x = lround(mLeftBlobPosition.x) - 15;
 	position.y = lround(mLeftBlobPosition.y) - 18;
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
 	
 	// Drawing right blob
 	
-	position.x = lround(mRightBlobPosition.x) - 13;
+	position.x = lround(mRightBlobPosition.x) - 15;
 	position.y = lround(mRightBlobPosition.y) - 18;
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);

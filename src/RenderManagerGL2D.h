@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef HAVE_GL
+
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -57,3 +59,5 @@ public:
 		       
 	virtual void drawText(const std::string& text, Vector2 position);
 };
+
+#endif
