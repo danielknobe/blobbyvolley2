@@ -2,6 +2,8 @@
 #include <SDL/SDL.h>
 #include "InputManager.h"
 
+#include "SoundManager.h"
+
 InputManager* InputManager::mSingleton = 0;
 
 InputManager::InputManager()
@@ -9,8 +11,10 @@ InputManager::InputManager()
 	assert (mSingleton == 0);
 	mSingleton = this;
 	mRunning = true;
+	mJoystick = 0;
 #if defined(__arm__) && defined(linux)
-	SDL_JoystickOpen(0);
+	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	mJoystick = SDL_JoystickOpen(0);
 #endif
 
 	// initialize the SDLKeys for ingame input
@@ -36,7 +40,11 @@ InputManager* InputManager::createInputManager()
 
 void InputManager::updateInput()
 {
+	static float volume = 1.0;
 	SDL_Event event;
+	
+	if (mJoystick)
+		SDL_JoystickUpdate();
 	while (SDL_PollEvent(&event))
 	switch (event.type)
 	{
@@ -47,17 +55,49 @@ void InputManager::updateInput()
 		case SDL_QUIT:
 			mRunning = 0;
 			break;
+#if defined(__arm__) && defined(linux)
 		case SDL_JOYBUTTONDOWN:
-			mRunning = 0;
+			switch (event.jbutton.button)
+			{
+				case 17:
+					volume -= 0.15;
+				break;
+				case 16:
+					volume += 0.15;
+				break;
+			}
+			SoundManager::getSingleton().setVolume(volume);
 			break;
+#endif
 	}
 
+#if defined(__arm__) && defined(linux)
+	mInput[0] = PlayerInput(
+		SDL_JoystickGetButton(mJoystick, 2) ||
+			SDL_JoystickGetButton(mJoystick, 1),
+		SDL_JoystickGetButton(mJoystick, 6) ||
+			SDL_JoystickGetButton(mJoystick, 7),
+		SDL_JoystickGetButton(mJoystick, 0) ||
+			SDL_JoystickGetButton(mJoystick, 1) ||
+			SDL_JoystickGetButton(mJoystick, 7));
+	mInput[1] = PlayerInput(
+		SDL_JoystickGetButton(mJoystick, 12),
+		SDL_JoystickGetButton(mJoystick, 13),
+		SDL_JoystickGetButton(mJoystick, 14)
+	);
+	if (
+		SDL_JoystickGetButton(mJoystick, 10) &&
+		SDL_JoystickGetButton(mJoystick, 11)
+	)
+		mRunning = false;
+#else
 	Uint8* keyState = SDL_GetKeyState(0);
 	// Set Inputkeys
 	mInput[0] = PlayerInput(keyState[mLeftBlobbyLeftMove], keyState[mLeftBlobbyRightMove], 
 		keyState[mLeftBlobbyJump]);
 	mInput[1] = PlayerInput(keyState[mRightBlobbyLeftMove],
 			keyState[mRightBlobbyRightMove], keyState[mRightBlobbyJump]);
+#endif
 }
 
 bool InputManager::running()

@@ -1,3 +1,7 @@
+#include "RenderManager.h"
+
+#ifdef HAVE_GL
+
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
@@ -436,3 +440,12 @@ void RenderManagerGL2D::refresh()
 {
 	SDL_GL_SwapBuffers();
 }
+
+#else
+
+RenderManager* RenderManager::createRenderManagerGL2D()
+{
+	return 0;
+}
+
+#endif
