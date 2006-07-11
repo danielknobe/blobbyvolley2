@@ -1,6 +1,6 @@
 #include "RenderManager.h"
 
-#ifdef HAVE_GL
+#ifdef HAVE_LIBGL
 
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
