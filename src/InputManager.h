@@ -38,6 +38,14 @@ public:
 	PlayerInput getGameInput(int player);
 	void updateInput();
 
+	// For GUI navigation
+	bool up();
+	bool down();
+	bool left();
+	bool right();
+	bool select();
+	bool exit();
+
 	// Configmethods
 	
 	// EXPERIMENTAL

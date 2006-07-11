@@ -12,6 +12,7 @@ blobby_SOURCES = \
 	main.cpp \
 	InputSource.h LocalInputSource.h \
 	InputManager.h InputManager.cpp \
+	GUIManager.h GUIManager.cpp \
 	NetworkPacket.h \
 	NetworkManager.h NetworkManager.cpp \
 	NetworkServer.h NetworkServer.cpp \
