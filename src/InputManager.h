@@ -2,6 +2,7 @@
 
 #include "InputSource.h"
 #include "UserConfig.h"
+#include "Vector.h"
 
 struct InputKeyMap
 {
@@ -14,6 +15,7 @@ class InputManager
 private:
 	static InputManager* mSingleton;
 	
+	// Keyboard
 	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
 	SDLKey mLeftBlobbyLeftMove;
@@ -23,13 +25,28 @@ private:
 	SDLKey mRightBlobbyRightMove;
 	SDLKey mRightBlobbyJump;
 	
-	PlayerInput mInput[2];
-	bool mRunning;
-	UserConfig mConfigManager;
+	// GUI storage (because in the gui we need a botton hit methods and not a button down methods)
+	bool mUp;
+	bool mDown;
+	bool mLeft;
+	bool mRight;
+	bool mSelect;
+	bool mExit;
+	bool mClick;
 	
-	SDL_Joystick* mJoystick;
+	int mouseX;
+	int mouseY;
+	
+	// Inputdevices
+	SDL_Joystick* mJoystick;	// Gamepad or Joystick
+	Uint8* keyState;			// Keyboard 
+	
+	UserConfig mConfigManager;
+	PlayerInput mInput[2];	
+	bool mRunning;
 	
 	InputManager();
+	
 public:
 	static InputManager* createInputManager();
 	static InputManager* getSingleton();
@@ -38,17 +55,19 @@ public:
 	PlayerInput getGameInput(int player);
 	void updateInput();
 
-	// For GUI navigation
+	// For GUI navigation (Gamepad, Joystick or Keyboard)
 	bool up();
 	bool down();
 	bool left();
 	bool right();
 	bool select();
-	bool exit();
+	bool exit(); // extention for mouse included, so that right click = exit
 
-	// Configmethods
+	// For GUI navigation (Mouse)
+	Vector2 position();
+	bool click();
 	
-	// EXPERIMENTAL
+	// Configmethods
 	std::string keyToString(const SDLKey key);
 	SDLKey stringToKey(const std::string& keyname);
 
