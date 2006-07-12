@@ -16,7 +16,15 @@ InputManager::InputManager()
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	mJoystick = SDL_JoystickOpen(0);
 #endif
-
+	// No key in the GUI is pressed
+	mUp = false;
+	mDown = false;
+	mLeft = false;
+	mRight = false;
+	mSelect = false;
+	mExit = false;
+	mClick = false;
+	
 	// initialize the SDLKeys for ingame input
 	configFileToCurrentConfig();
 }
@@ -41,17 +49,22 @@ InputManager* InputManager::createInputManager()
 void InputManager::updateInput()
 {
 	static float volume = 1.0;
+	SDL_PumpEvents();
 	SDL_Event event;
-	
+	keyState = SDL_GetKeyState(0);
+
 	if (mJoystick)
 		SDL_JoystickUpdate();
+
+	// AUSLAUFMODELLAUFBAU==================================================
 	while (SDL_PollEvent(&event))
 	switch (event.type)
 	{
+		case SDL_MOUSEBUTTONDOWN:
 		case SDL_KEYDOWN:
-			if (event.key.keysym.sym == SDLK_ESCAPE)
+			if (exit())
 				mRunning = 0;
-			break;
+			break;		
 		case SDL_QUIT:
 			mRunning = 0;
 			break;
@@ -90,14 +103,158 @@ void InputManager::updateInput()
 		SDL_JoystickGetButton(mJoystick, 11)
 	)
 		mRunning = false;
+	// AUSLAUFMODELLAUFBAU==================================================
 #else
-	Uint8* keyState = SDL_GetKeyState(0);
+
+
+
+	// Later in seperat method
 	// Set Inputkeys
 	mInput[0] = PlayerInput(keyState[mLeftBlobbyLeftMove], keyState[mLeftBlobbyRightMove], 
 		keyState[mLeftBlobbyJump]);
 	mInput[1] = PlayerInput(keyState[mRightBlobbyLeftMove],
 			keyState[mRightBlobbyRightMove], keyState[mRightBlobbyJump]);
 #endif
+}
+
+// GUI-Methods
+bool InputManager::up()
+{
+	if(keyState[SDLK_UP])
+	{
+		if(mUp==false)
+		{
+			mUp=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mUp=false;
+		return false;	
+	}
+}
+
+bool InputManager::down()
+{
+	if(keyState[SDLK_DOWN])
+	{
+		if(mDown==false)
+		{
+			mDown=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mDown=false;
+		return false;	
+	}
+}
+     
+bool InputManager::left()
+{
+	if(keyState[SDLK_LEFT])
+	{
+		if(mLeft==false)
+		{
+			mLeft=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mLeft=false;
+		return false;	
+	}
+}
+
+bool InputManager::right()
+{
+	if(keyState[SDLK_RIGHT])
+	{
+		if(mRight==false)
+		{
+			mRight=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mRight=false;
+		return false;	
+	}
+}
+
+bool InputManager::select()
+{
+	if(keyState[SDLK_RETURN] || keyState[SDLK_SPACE])
+	{
+		if(mSelect==false)
+		{
+			mSelect=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mSelect=false;
+		return false;	
+	}
+}
+
+bool InputManager::exit()
+{
+	if(keyState[SDLK_ESCAPE] || keyState[SDLK_BACKSPACE] || SDL_GetMouseState(NULL,NULL)&SDL_BUTTON(3))
+	{
+		if(mExit==false)
+		{
+			mExit=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mExit=false;
+		return false;	
+	}
+}
+
+Vector2 InputManager::position()
+{
+	SDL_GetMouseState(&mouseX,&mouseY);
+	return Vector2(mouseX,mouseY);
+}
+
+bool InputManager::click()
+{
+	if(SDL_GetMouseState(NULL,NULL)&SDL_BUTTON(1))
+	{
+		if(mClick==false)
+		{
+			mClick=true;
+			return true;
+    	}
+    	else
+    		return false;
+	}
+	else
+	{
+		mClick=false;
+		return false;	
+	}
 }
 
 bool InputManager::running()
