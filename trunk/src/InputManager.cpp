@@ -234,8 +234,8 @@ bool InputManager::exit()
 
 Vector2 InputManager::position()
 {
-	SDL_GetMouseState(&mouseX,&mouseY);
-	return Vector2(mouseX,mouseY);
+	SDL_GetMouseState(&mMouseX,&mMouseY);
+	return Vector2(mMouseX,mMouseY);
 }
 
 bool InputManager::click()

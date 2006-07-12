@@ -34,8 +34,8 @@ private:
 	bool mExit;
 	bool mClick;
 	
-	int mouseX;
-	int mouseY;
+	int mMouseX;
+	int mMouseY;
 	
 	// Inputdevices
 	SDL_Joystick* mJoystick;	// Gamepad or Joystick
