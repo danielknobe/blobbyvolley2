@@ -68,15 +68,14 @@ public:
 	bool click();
 	
 	// Configmethods
-	std::string keyToString(const SDLKey key);
+	std::string keyToString(const SDLKey& key);
 	SDLKey stringToKey(const std::string& keyname);
 
 	void configFileToCurrentConfig();
-	void currentConfigToConfigFile();
+	void currentConfigToConfigFile() const;
 
 
 
 
 
 };
-
