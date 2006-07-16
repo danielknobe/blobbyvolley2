@@ -1,7 +1,5 @@
 #include "RenderManager.h"
 
-#ifdef HAVE_LIBGL
-
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
@@ -113,9 +111,9 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	Uint32 screenFlags = SDL_OPENGL;
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
+	SDL_WM_SetCaption("Blobby Volley 2 Alpha 3", "");
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
-	SDL_WM_SetCaption("Blobby Volley 2 Alpha 3", "");
 	
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
@@ -470,12 +468,3 @@ void RenderManagerGL2D::refresh()
 {
 	SDL_GL_SwapBuffers();
 }
-
-#else
-
-RenderManager* RenderManager::createRenderManagerGL2D()
-{
-	return 0;
-}
-
-#endif
