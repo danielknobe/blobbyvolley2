@@ -2,7 +2,7 @@
 FileName=blobby.dev
 Name=blobby
 UnitCount=35
-Type=0
+Type=1
 Ver=1
 ObjFiles=
 Includes=C:\Dev-Cpp\SDL-1.2.11\include

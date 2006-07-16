@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <list>
+#include <map>
 #include <SDL/SDL.h>
 
 #include "Vector.h"
@@ -21,6 +22,24 @@ struct Color
 		};
 		Uint8 val[3];
 	};
+};
+
+struct BufferedImage
+{
+	int w;
+	int h;
+	union
+	{
+		SDL_Surface* sdlImage;
+		unsigned glHandle;		
+	};
+	
+};
+
+struct FileLoadException
+{
+	std::string filename;
+	FileLoadException(std::string name) : filename(name) {}
 };
 
 // This rendering class reduces all drawing stuff to a few calls
@@ -60,6 +79,13 @@ protected:
 		assert(!mSingleton);
 		mSingleton = this;
 	}
+	// Returns -1 on EOF
+	// Returns index for ? on unknown char
+	int getNextFontIndex(std::string& string);
+	SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
+	SDL_Surface* loadSurface(std::string filename);
+	
+	std::map<std::string, BufferedImage*> mImageMap;
 	
 public:
 	static RenderManager* createRenderManagerSDL();
@@ -108,5 +134,12 @@ public:
 		
 	// This simply draws the given text with its top left corner at the
 	// given position and doesn't care about line feeds.
-	virtual void drawText(const std::string& text, Vector2 position) = 0;
+	virtual void drawText(const std::string& text, Vector2 position, bool highlight) = 0;
+	
+	// This loads and draws an image by name
+	// The according Surface is automatically colorkeyed
+	// The image is centered around position
+	virtual void drawImage(const std::string& filename, Vector2 position) = 0;
+	
+	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2) {}
 };
