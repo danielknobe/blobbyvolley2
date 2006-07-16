@@ -5,12 +5,6 @@
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
-struct FileLoadException
-{
-	std::string filename;
-	FileLoadException(std::string name) : filename(name) {}
-};
-
 struct ExtensionUnsupportedException
 {
 	std::string extension;
@@ -25,25 +19,13 @@ int RenderManagerGL2D::getNextPOT(int npot)
 	return pot;
 }
 
-GLuint RenderManagerGL2D::loadTexture(const std::string& filename, 
+GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, 
 	bool specular)
 {
 	SDL_Surface* textureSurface;
 	SDL_Surface* convertedTexture;
-
-	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
-	if (!fileHandle)
-		throw FileLoadException(std::string(filename));
-	int fileLength = PHYSFS_fileLength(fileHandle);
-	PHYSFS_uint8* fileBuffer = 
-		new PHYSFS_uint8[fileLength];
-	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
-	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer, fileLength);
-	textureSurface = SDL_LoadBMP_RW(rwops , 1);
-	if (!textureSurface)
-		throw FileLoadException(filename);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
+	
+	textureSurface = surface;
 
 	// Determine size of padding for 2^n format
 	int oldX = textureSurface->w;
@@ -133,21 +115,22 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
-
+	SDL_WM_SetCaption("Blobby Volley 2 Alpha 3", "");
+	
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
 
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_addToSearchPath("data/gfx.zip", 1);
 
-	mBackground = loadTexture("gfx/strand2.bmp", false);
-	mBallShadow = loadTexture("gfx/schball.bmp", false);	
+	mBackground = loadTexture(loadSurface("gfx/strand2.bmp"), false);
+	mBallShadow = loadTexture(loadSurface("gfx/schball.bmp"), false);	
 
 	for (int i = 1; i <= 16; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/ball%02d.bmp", i);
-		GLuint ballImage = loadTexture(filename, false);
+		GLuint ballImage = loadTexture(loadSurface(filename), false);
 		mBall.push_back(ballImage);
 	}
 
@@ -155,21 +138,26 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/blobbym%d.bmp", i);
-		GLuint blobImage = loadTexture(filename, false);
+		GLuint blobImage = loadTexture(loadSurface(filename), false);
 		mBlob.push_back(blobImage);
 		sprintf(filename, "gfx/blobbym%d.bmp", i);
-		GLuint blobSpecular = loadTexture(filename, true);
+		GLuint blobSpecular = loadTexture(loadSurface(filename), true);
 		mBlobSpecular.push_back(blobSpecular);
 		sprintf(filename, "gfx/sch1%d.bmp", i);
-		GLuint blobShadow = loadTexture(filename, false);
+		GLuint blobShadow = loadTexture(loadSurface(filename), false);
 		mBlobShadow.push_back(blobShadow);
 	}
 
-	for (int i = 0; i <= 50; ++i)
+	for (int i = 0; i <= 51; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
-		GLuint newFont = loadTexture(filename, false);
+		GLuint newFont = loadTexture(loadSurface(filename), false);
+		SDL_Surface* fontSurface = loadSurface(filename);
+		SDL_Surface* highlight = highlightSurface(fontSurface, 60);
+		SDL_FreeSurface(fontSurface);
+		
+		mHighlightFont.push_back(loadTexture(highlight, false));		
 		mFont.push_back(newFont);
 	}
 
@@ -194,6 +182,13 @@ void RenderManagerGL2D::deinit()
 	glDeleteTextures(mBlobSpecular.size(), &mBlobSpecular[0]);
 	glDeleteTextures(mBlobShadow.size(), &mBlobShadow[0]);
 	glDeleteTextures(mFont.size(), &mFont[0]);
+	
+	for (std::map<std::string, BufferedImage*>::iterator iter = mImageMap.begin();
+		iter != mImageMap.end(); ++iter)
+	{
+		glDeleteTextures(1, &(*iter).second->glHandle);
+		delete iter->second;
+	}
 }
 
 void RenderManagerGL2D::draw()
@@ -206,11 +201,35 @@ void RenderManagerGL2D::draw()
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	// The Ball
+	
+	const int MotionBlurIterations = 10; 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glLoadIdentity();
 	glBindTexture(GL_TEXTURE_2D, mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
-	glTranslatef(mBallPosition.x, mBallPosition.y, 0.5);
-	drawQuad(64.0, 64.0);
+/*
+	float opacity = 0.0;
+	for (std::list<Vector2>::iterator iter = mLastBallStates.begin();
+		iter != mLastBallStates.end(); ++iter)
+	{
+//		glColor4f(1.0 / MotionBlurIterations, 
+//			1.0 / MotionBlurIterations, 1.0 / MotionBlurIterations, 1.0 - opacity);
+		glColor4f(1.0, 1.0, 1.0, opacity);
+		
+		
+		Vector2& ballPosition = *iter;
+*/
+		glLoadIdentity();
+		glTranslatef(mBallPosition.x, mBallPosition.y, 0.5);
+
+		drawQuad(64.0, 64.0);
+/*
+		opacity += 0.1;
+	}
+	if (mLastBallStates.size() > MotionBlurIterations)
+			mLastBallStates.pop_back();
+	glDisable(GL_BLEND);
+*/	
+	
+	
 	// left blob
 	glLoadIdentity();
 	glTranslatef(mLeftBlobPosition.x, mLeftBlobPosition.y, 0.6);
@@ -304,10 +323,11 @@ void RenderManagerGL2D::draw()
 	char textBuffer[64];
 	snprintf(textBuffer, 8, mLeftPlayerWarning ? "%02d!" : "%02d",
 			mLeftPlayerScore);
-	drawText(textBuffer, Vector2(24, 24));
+	drawText(textBuffer, Vector2(24, 24), false);
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);	
-	drawText(textBuffer, Vector2(800 - 96, 24));
+	drawText(textBuffer, Vector2(800 - 96, 24), false);
+
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)
@@ -315,7 +335,7 @@ bool RenderManagerGL2D::setBackground(const std::string& filename)
 	GLuint newBackground;
 	try
 	{
-		newBackground = loadTexture(filename, false);
+		newBackground = loadTexture(loadSurface(filename), false);
 	}
 	catch (FileLoadException)
 	{
@@ -339,6 +359,14 @@ void RenderManagerGL2D::setBall(const Vector2& position, float rotation)
 {
 	mBallPosition = position;
 	mBallRotation = rotation;
+	
+	static int mbCounter = 0;
+	mbCounter++;
+	if (mbCounter > 1)
+	{
+		mLastBallStates.push_front(position);
+		mbCounter = 0;
+	}
 }
 
 void RenderManagerGL2D::setBlob(int player, 
@@ -366,7 +394,7 @@ void RenderManagerGL2D::setScore(int leftScore, int rightScore,
 	mRightPlayerWarning = rightWarning;
 }
 
-void RenderManagerGL2D::drawText(const std::string& text, Vector2 position)
+void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool highlight)
 {
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glEnable(GL_TEXTURE_2D);
@@ -374,67 +402,69 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position)
 	glAlphaFunc(GL_GREATER, 0.5);
 	glEnable(GL_ALPHA_TEST);
 	int length = 0;
-	for (int i = 0; i < text.length(); i++)
+	std::string string = text;
+	int index = getNextFontIndex(string);
+	while (index != -1)
 	{
-		int index = 0;
-		wchar_t testChar = text[i];
-		if (testChar >= '0' && testChar <= '9')
-			index = testChar - '0';
-		else if (testChar >= 'a' && testChar <= 'z')
-			index = testChar - 'a' + 10;
-		else if (testChar >= 'A' && testChar <= 'Z')
-			index = testChar - 'A' + 10;
-		else if (testChar == '.')
-			index = 36;
-		else if (testChar == '!')
-			index = 37;
-		else if (testChar == '(')
-			index = 38;
-		else if (testChar == ')')
-			index = 39;
-		else if (testChar == '\'')
-			index = 44;
-		else if (testChar == ':')
-			index = 45;
-		else if (testChar == ';')
-			index = 46;
-		else if (testChar == '?')
-			index = 47;
-		else if (testChar == ',')
-			index = 48;
-		else if (testChar == '/')
-			index = 49;
-		else if (testChar == '_')
-			index = 50;
-		else if (testChar == std::string("ß")[0]) // UTF-8 escape
-		{
-			testChar = text[++i];
-			if (testChar == std::string("ß")[1])
-				index = 40;
-			else if (testChar == std::string("Ä")[1])
-				index = 41;
-			else if (testChar == std::string("Ö")[1])
-				index = 42;
-			else if (testChar == std::string("Ü")[1])
-				index = 43;
-		}
-		else if (testChar == ' ')
-		{
-			length += 24;
-			continue;
-		}
-		else index = 47;
 		length += 24;
 		glLoadIdentity();
 		glTranslatef(position.x + length + 12.0,
 				position.y + 12.0, 0.0);
-		glBindTexture(GL_TEXTURE_2D, mFont[index]);
+		if (highlight)
+			glBindTexture(GL_TEXTURE_2D, mHighlightFont[index]);
+		else
+			glBindTexture(GL_TEXTURE_2D, mFont[index]);
 		drawQuad(32.0, 32.0);
+		index = getNextFontIndex(string);
 	}
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
 }
+
+void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
+{
+	BufferedImage* imageBuffer = mImageMap[filename];
+	if (!imageBuffer)
+	{
+		imageBuffer = new BufferedImage;
+		SDL_Surface* newSurface = loadSurface(filename);
+		imageBuffer->w = getNextPOT(newSurface->w);
+		imageBuffer->h = getNextPOT(newSurface->h);
+		imageBuffer->glHandle = loadTexture(loadSurface(filename), false);
+		mImageMap[filename] = imageBuffer;
+	}
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
+	glAlphaFunc(GL_GREATER, 0.5);
+	glEnable(GL_ALPHA_TEST);
+	glLoadIdentity();
+	glTranslatef(position.x , position.y, 0.0);
+	glBindTexture(GL_TEXTURE_2D, imageBuffer->glHandle);
+	drawQuad(imageBuffer->w, imageBuffer->h);
+
+	glDisable(GL_ALPHA_TEST);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_TEXTURE_2D);
+}
+void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
+{
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	
+	glColor4f(0.0, 0.0, 0.0, opacity);
+	glLoadIdentity();
+	glBegin(GL_QUADS);
+		glVertex2f(pos1.x, pos1.y);
+		glVertex2f(pos1.x, pos2.y);
+		glVertex2f(pos2.x, pos2.y);
+		glVertex2f(pos2.x, pos1.y);
+	glEnd();
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+}
+
 
 void RenderManagerGL2D::refresh()
 {

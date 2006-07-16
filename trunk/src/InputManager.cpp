@@ -16,14 +16,6 @@ InputManager::InputManager()
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	mJoystick = SDL_JoystickOpen(0);
 #endif
-	// No key in the GUI is pressed
-	mUp = false;
-	mDown = false;
-	mLeft = false;
-	mRight = false;
-	mSelect = false;
-	mExit = false;
-	mClick = false;
 	
 	// initialize the SDLKeys for ingame input
 	configFileToCurrentConfig();
@@ -47,7 +39,16 @@ InputManager* InputManager::createInputManager()
 }
 
 void InputManager::updateInput()
-{
+{	
+	// Init GUI Events for buffered Input
+	mUp = false;
+	mDown = false;
+	mLeft = false;
+	mRight = false;
+	mSelect = false;
+	mExit = false;
+	mClick = false;
+	
 	static float volume = 1.0;
 	SDL_PumpEvents();
 	SDL_Event event;
@@ -61,12 +62,9 @@ void InputManager::updateInput()
 	switch (event.type)
 	{
 		case SDL_MOUSEBUTTONDOWN:
-		case SDL_KEYDOWN:
-			if (exit())
-				mRunning = 0;
-			break;		
+			break;
 		case SDL_QUIT:
-			mRunning = 0;
+			mRunning = false;
 			break;
 #if defined(__arm__) && defined(linux)
 		case SDL_JOYBUTTONDOWN:
@@ -566,5 +564,5 @@ void InputManager::currentConfigToConfigFile()
 	mConfigManager.setString("right_blobby_left_move",keyToString(mRightBlobbyLeftMove));
 	mConfigManager.setString("right_blobby_right_move",keyToString(mRightBlobbyRightMove));
 	mConfigManager.setString("right_blobby_jump",keyToString(mRightBlobbyJump));
-	mConfigManager.saveFile("InputConfig.ini");
+	mConfigManager.saveFile("inputconfig.xml");
 }

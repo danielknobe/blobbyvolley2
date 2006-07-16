@@ -38,6 +38,11 @@ class Vector2
 	float unitVectorY() const;
 	Vector2 normalise();
 	Vector2 contraVector();
+	
+	inline Vector2 halfVector(const Vector2& vec)
+	{
+		return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
+	}
 
 //---
 	inline Vector2& operator = (const Vector2& newVector)
@@ -210,3 +215,21 @@ inline void Vector2::clear()
 	x = 0.0;
 	y = 0.0;
 }
+
+inline bool operator < (Vector2 v1, Vector2 v2)
+{
+	if (v1.x < v2.x)
+	if (v1.y < v2.y)
+		return true;
+	return false;
+	
+}
+
+inline bool operator > (Vector2 v1, Vector2 v2)
+{
+	if (v1.x > v2.x)
+	if (v1.y > v2.y)
+		return true;
+	return false;
+}
+

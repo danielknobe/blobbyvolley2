@@ -19,6 +19,7 @@ class RenderManagerSDL : public RenderManager
 	std::vector<SDL_Surface*> mRightBlobShadow;
 
 	std::vector<SDL_Surface*> mFont;
+	std::vector<SDL_Surface*> mHighlightFont;
 	
 	SDL_Surface *mScreen;
 
@@ -34,7 +35,6 @@ class RenderManagerSDL : public RenderManager
 	bool mLeftPlayerWarning;
 	bool mRightPlayerWarning;
 
-	SDL_Surface* loadImage(std::string filename);
 	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
 	
 public:
@@ -55,7 +55,8 @@ public:
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
 		       
-	virtual void drawText(const std::string& text, Vector2 position);
+	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
+	virtual void drawImage(const std::string& filename, Vector2 position) {};
 
 };
 

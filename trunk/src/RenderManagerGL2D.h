@@ -6,6 +6,7 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <vector>
+#include <list>
 
 #include "RenderManager.h"
 
@@ -20,6 +21,9 @@ private:
 	std::vector<GLuint> mBlobSpecular;
 	std::vector<GLuint> mBlobShadow;
 	std::vector<GLuint> mFont;
+	std::vector<GLuint> mHighlightFont;
+	
+	std::list<Vector2> mLastBallStates;
 
 	Vector2 mBallPosition;
 	float mBallRotation;
@@ -37,7 +41,7 @@ private:
 	Color mRightBlobColor;
 
 	void drawQuad(float x, float y);
-	GLuint loadTexture(const std::string& filename, bool specular);
+	GLuint loadTexture(SDL_Surface* surface, bool specular);
 	int getNextPOT(int npot);
 public:
 	RenderManagerGL2D();
@@ -57,7 +61,9 @@ public:
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
 		       
-	virtual void drawText(const std::string& text, Vector2 position);
+	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
+	virtual void drawImage(const std::string& filename, Vector2 position);
+	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2);
 };
 
 #endif

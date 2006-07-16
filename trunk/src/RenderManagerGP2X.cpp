@@ -2,29 +2,6 @@
 #include <physfs.h>
 #include "RenderManagerGP2X.h"
 
-struct FileLoadException
-{
-	std::string filename;
-	FileLoadException(std::string name) : filename(name) {}
-};
-
-SDL_Surface* RenderManagerGP2X::loadImage(std::string filename)
-{
-	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
-	if (!fileHandle)
-		throw FileLoadException(std::string(filename));
-	int fileLength = PHYSFS_fileLength(fileHandle);
-	PHYSFS_uint8* fileBuffer = 
-		new PHYSFS_uint8[fileLength];
-	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
-	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer, fileLength);
-	SDL_Surface* newSurface = SDL_LoadBMP_RW(rwops , 1);
-	if (!newSurface)
-		throw FileLoadException(filename);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
-	return newSurface;
-}
 
 SDL_Surface* RenderManagerGP2X::colorSurface(SDL_Surface *surface, Color color)
 {
@@ -87,7 +64,7 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_addToSearchPath("data/gf2x.zip", 1);
 	
-	SDL_Surface* tempBackground = loadImage("gf2x/strand2.bmp");
+	SDL_Surface* tempBackground = loadSurface("gf2x/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
 	SDL_FreeSurface(tempBackground);
 	
@@ -95,7 +72,7 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 	{
 		char filename[64];
 		sprintf(filename, "gf2x/ball%02d.bmp", i);
-		SDL_Surface* ballImage = loadImage(filename);
+		SDL_Surface* ballImage = loadSurface(filename);
 		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(ballImage->format, 0, 0, 0));
 		SDL_Surface *convertedBallImage = SDL_DisplayFormat(ballImage);
@@ -103,7 +80,7 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 		mBall.push_back(convertedBallImage);
 	}
 	
-	SDL_Surface *tempBallShadow = loadImage("gf2x/schball.bmp");
+	SDL_Surface *tempBallShadow = loadSurface("gf2x/schball.bmp");
 	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(tempBallShadow->format, 0, 0, 0));
 	SDL_SetAlpha(tempBallShadow, SDL_SRCALPHA, 127);
@@ -114,13 +91,13 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 	{
 		char filename[64];
 		sprintf(filename, "gf2x/blobbym%d.bmp", i);
-		SDL_Surface* blobImage = loadImage(filename);
+		SDL_Surface* blobImage = loadSurface(filename);
 		mStandardBlob.push_back(blobImage);
 		mLeftBlob.push_back(colorSurface(blobImage, Color(255, 0, 0)));
 		mRightBlob.push_back(colorSurface(blobImage, Color(0, 255, 0)));
 		
 		sprintf(filename, "gf2x/sch1%d.bmp", i);
-		SDL_Surface* blobShadow = loadImage(filename);
+		SDL_Surface* blobShadow = loadSurface(filename);
 		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(blobShadow->format, 0, 0, 0));
 		SDL_SetAlpha(blobShadow, SDL_SRCALPHA, 127);
@@ -132,16 +109,17 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 			
 	}
 
-	for (int i = 0; i <= 50; ++i)
+	for (int i = 0; i <= 51; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gf2x/font%02d.bmp", i);
-		SDL_Surface *tempFont = loadImage(filename);
+		SDL_Surface *tempFont = loadSurface(filename);
 		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY, 
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
 		SDL_Surface *newFont = SDL_DisplayFormat(tempFont);
 		SDL_FreeSurface(tempFont);
 		mFont.push_back(newFont);
+		mHighlightFont.push_back(highlightSurface(newFont, 60));
 	}
 }
 
@@ -236,10 +214,10 @@ void RenderManagerGP2X::draw()
 	char textBuffer[8];
 	snprintf(textBuffer, 8, mLeftPlayerWarning ? "%02d!" : "%02d",
 			mLeftPlayerScore);
-	drawText(textBuffer, Vector2(20, 10));
+	drawText(textBuffer, Vector2(20, 10), false);
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);	
-	drawText(textBuffer, Vector2(320 - 65, 10));
+	drawText(textBuffer, Vector2(320 - 65, 10), false);
 }
 
 bool RenderManagerGP2X::setBackground(const std::string& filename)
@@ -247,7 +225,7 @@ bool RenderManagerGP2X::setBackground(const std::string& filename)
 	SDL_Surface *newBackground;
 	try
 	{
-		SDL_Surface *tempBackground = loadImage(filename);
+		SDL_Surface *tempBackground = loadSurface(filename);
 		mBackground = SDL_DisplayFormat(tempBackground);
 		SDL_FreeSurface(tempBackground);
 	}
@@ -330,65 +308,22 @@ void RenderManagerGP2X::setScore(int leftScore, int rightScore,
 	mRightPlayerWarning = rightWarning;
 }
 
-void RenderManagerGP2X::drawText(const std::string& text, Vector2 position)
+void RenderManagerGP2X::drawText(const std::string& text, Vector2 position, bool highlight)
 {
 	int length = 0;
-	for (int i = 0; i < text.length(); i++)
+	std::string string = text;
+	int index = getNextFontIndex(string);
+	while (index != -1)
 	{
-		int index = 0;
-		wchar_t testChar = text[i];
-		if (testChar >= '0' && testChar <= '9')
-			index = testChar - '0';
-		else if (testChar >= 'a' && testChar <= 'z')
-			index = testChar - 'a' + 10;
-		else if (testChar >= 'A' && testChar <= 'Z')
-			index = testChar - 'A' + 10;
-		else if (testChar == '.')
-			index = 36;
-		else if (testChar == '!')
-			index = 37;
-		else if (testChar == '(')
-			index = 38;
-		else if (testChar == ')')
-			index = 39;
-		else if (testChar == '\'')
-			index = 44;
-		else if (testChar == ':')
-			index = 45;
-		else if (testChar == ';')
-			index = 46;
-		else if (testChar == '?')
-			index = 47;
-		else if (testChar == ',')
-			index = 48;
-		else if (testChar == '/')
-			index = 49;
-		else if (testChar == '_')
-			index = 50;
-		else if (testChar == std::string("ß")[0]) // UTF-8 escape
-		{
-			testChar = text[++i];
-//			length -= 24;
-			if (testChar == std::string("ß")[1])
-				index = 40;
-			else if (testChar == std::string("Ä")[1])
-				index = 41;
-			else if (testChar == std::string("Ö")[1])
-				index = 42;
-			else if (testChar == std::string("Ü")[1])
-				index = 43;
-		}
-		else if (testChar == ' ')
-		{
-			length += 24;
-			continue;
-		}
-		else index = 47;
 		length += 24;
 		SDL_Rect charPosition;
 		charPosition.x = lround(position.x) + length - 24;
 		charPosition.y = lround(position.y);
-		SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
+		if (highlight)
+			SDL_BlitSurface(mHighlightFont[index], 0, mScreen, &charPosition);
+		else
+			SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
+		index = getNextFontIndex(string);
 	}
 }
 
