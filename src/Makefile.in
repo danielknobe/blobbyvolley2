@@ -56,8 +56,8 @@ am_blobby_OBJECTS = main.$(OBJEXT) InputManager.$(OBJEXT) \
 	NetworkServer.$(OBJEXT) NetworkClient.$(OBJEXT) \
 	PhysicWorld.$(OBJEXT) RenderManager.$(OBJEXT) \
 	RenderManagerSDL.$(OBJEXT) RenderManagerGP2X.$(OBJEXT) \
-	RenderManagerGL2D.$(OBJEXT) SoundManager.$(OBJEXT) \
-	UserConfig.$(OBJEXT) $(am__objects_1)
+	RenderManagerGL2D.$(OBJEXT) State.$(OBJEXT) \
+	SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) $(am__objects_1)
 blobby_OBJECTS = $(am_blobby_OBJECTS)
 blobby_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
@@ -122,7 +122,6 @@ STRIP = @STRIP@
 VERSION = @VERSION@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -139,23 +138,30 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
@@ -186,6 +192,7 @@ blobby_SOURCES = \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
 	RenderManagerGP2X.h RenderManagerGP2X.cpp \
 	RenderManagerGL2D.h RenderManagerGL2D.cpp \
+	State.h State.cpp\
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
 	UserConfig.cpp UserConfig.h \
@@ -268,6 +275,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenderManagerGP2X.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenderManagerSDL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SoundManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/State.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserConfig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tinystr.Po@am__quote@

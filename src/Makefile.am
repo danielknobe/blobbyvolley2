@@ -22,6 +22,7 @@ blobby_SOURCES = \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
 	RenderManagerGP2X.h RenderManagerGP2X.cpp \
 	RenderManagerGL2D.h RenderManagerGL2D.cpp \
+	State.h State.cpp\
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
 	UserConfig.cpp UserConfig.h \
