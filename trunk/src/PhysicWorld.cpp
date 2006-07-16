@@ -30,8 +30,8 @@ const float RIGHT_PLANE = 800.0;
 
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
-const float BLOBBY_SPEED = 6.5;
-const float BLOBBY_JUMP_ACCELERATION = 13.52;
+const float BLOBBY_SPEED = 5;
+const float BLOBBY_JUMP_ACCELERATION = 13.62;
 const float BLOBBY_JUMP_BUFFER = 0.39;
 const float GRAVITATION = 0.8;
 const float BALL_GRAVITATION = 0.22;
@@ -403,17 +403,25 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflectX();
 		if(mBallPosition.x+BALL_RADIUS>=RIGHT_PLANE && mBallVelocity.x<0)
 			mBallVelocity = mBallVelocity.reflectX();
-		    	
+
 		// Net Collision
 		// Net Sphere
 		if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
 			).length() <= NET_RADIUS + BALL_RADIUS - 1)
 		{
-			mBallVelocity = mBallVelocity.reflect(
+			if(mBallNetOverlapped==0)
+			{
+			mBallVelocityTemp=mBallVelocity;
+			mBallNetOverlapped=1;
+			}
+			mBallVelocity = mBallVelocityTemp.reflect(
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
-			.normalise());
+			.normalise()).scale(0.7);
 		}
+		else
+		mBallNetOverlapped=0;
+		
 		// Left Net Border
 		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS // <- here please no else, it's important!
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
