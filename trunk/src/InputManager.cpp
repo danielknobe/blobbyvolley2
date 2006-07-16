@@ -96,8 +96,10 @@ void InputManager::updateInput()
 			{
 				case 1:
 					mClick = true;
+					break;
 				case 3:
 					mExit = true;
+					break;
 			}
 			break;		
 #if defined(__arm__) && defined(linux)
