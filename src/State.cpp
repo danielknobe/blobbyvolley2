@@ -42,6 +42,8 @@ LocalGameState::LocalGameState(UserConfig& gameConfig)
 	mSquish = 0;
 	
 	mPhysicWorld.step();
+	
+	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2); // Like in the original
 }
 
 void LocalGameState::step()
