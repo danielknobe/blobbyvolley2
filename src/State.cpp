@@ -7,6 +7,7 @@
 
 State::State()
 {
+
 }
 
 State* State::getCurrentState()
@@ -39,6 +40,8 @@ LocalGameState::LocalGameState(UserConfig& gameConfig)
 	mRightHitcount = 0;
 	
 	mSquish = 0;
+	
+	mPhysicWorld.step();
 }
 
 void LocalGameState::step()
@@ -47,7 +50,6 @@ void LocalGameState::step()
 	SoundManager* smanager = &SoundManager::getSingleton();
 	mPhysicWorld.setLeftInput(mLeftInput->getInput());
 	mPhysicWorld.setRightInput(mRightInput->getInput());
-	
 	rmanager->setBlob(0, mPhysicWorld.getLeftBlob(),
 		mPhysicWorld.getLeftBlobState());
 	rmanager->setBlob(1, mPhysicWorld.getRightBlob(),
