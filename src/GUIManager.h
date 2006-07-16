@@ -14,7 +14,8 @@ struct GUIObject
 		GUI_OVERLAY,
 		GUI_TEXT,
 		GUI_TEXTBUTTON,
-		GUI_IMAGE
+		GUI_IMAGE,
+		GUI_SLIDER
 	} type;
 	Vector2 pos1;
 	Vector2 pos2;
@@ -31,6 +32,7 @@ private:
 	std::vector<GUIObject> mObjectMap;
 	std::vector<int> mSelectableObjects;
 	int  mSelectedObject;
+	bool mDrawCursor;
 	
 	Vector2 mCursorPosition;
 	
@@ -47,8 +49,15 @@ public:
 	int createText(const std::string& text, Vector2 position);
 	int createTextButton(const std::string& text, int length, Vector2 position);
 	int createImage(const std::string& filename, Vector2 position);
+// This is set to a fixed length because of the huge additional work which  had
+// to be done in the RenderManager. With a fixed length, we can just take a 
+// slider image and blit a positioner around it.
+	int createSlider(Vector2 position float setting);
+	
+	void drawCursor(bool draw);
 	
 	bool getClick(int object);
+	float getFloat(int object);
 
 	// Called once per frame
 	void processInput();

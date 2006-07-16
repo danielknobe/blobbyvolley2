@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL/SDL.h>
+
 #include "InputSource.h"
 #include "UserConfig.h"
 #include "Vector.h"
@@ -9,6 +11,10 @@ struct InputKeyMap
         const char *keyname;
         SDLKey key;
 };
+
+// TODO: Gepufferten Input einbauen! Das bedeutet, dass für die GUI-Funktionen
+// nicht einfach der aktuelle Wert zurückgegeben wird, sondern ein Tastendruck
+// nur ein einziges Mal angezeigt wird, so wie beim Polling mit SDl_KEYDOWN
 
 class InputManager
 {
@@ -68,11 +74,11 @@ public:
 	bool click();
 	
 	// Configmethods
-	std::string keyToString(const SDLKey& key);
+	std::string keyToString(SDLKey key);
 	SDLKey stringToKey(const std::string& keyname);
 
 	void configFileToCurrentConfig();
-	void currentConfigToConfigFile() const;
+	void currentConfigToConfigFile();
 
 
 

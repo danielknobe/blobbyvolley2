@@ -1,7 +1,7 @@
 [Project]
 FileName=blobby.dev
 Name=blobby
-UnitCount=35
+UnitCount=37
 Type=1
 Ver=1
 ObjFiles=
@@ -396,4 +396,24 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
+[Unit36]
+FileName=src\State.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit37]
+FileName=src\State.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
