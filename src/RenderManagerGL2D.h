@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef HAVE_LIBGL
+
 
 #include <SDL/SDL.h>
 #include <GL/gl.h>
@@ -66,4 +66,4 @@ public:
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2);
 };
 
-#endif
+
