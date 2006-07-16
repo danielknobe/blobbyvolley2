@@ -74,6 +74,19 @@ int GUIManager::createText(const std::string& text, Vector2 position)
 	mObjectMap.push_back(textObject);
 	return mObjectMap.size() - 1;
 }
+
+int GUIManager::createSlider(Vector2 position, float setting)
+{
+	GUIObject sliderObject;
+	sliderObject.type = GUIObject::GUI_SLIDER;
+	sliderObject.pos1 = position;
+	sliderObject.floatValue = setting;	
+}
+
+void GUIManager::drawCursor(bool draw)
+{
+	mDrawCursor = draw;
+}
 	
 void GUIManager::processInput()
 {
@@ -102,9 +115,17 @@ void GUIManager::processInput()
 bool GUIManager::getClick(int object)
 {
 	InputManager* inputmgr = InputManager::getSingleton();
+if (object > mObjectMap.size()) printf("%d of %d\n", object, mObjectMap.size());
 	bool mouseClick = mObjectMap.at(object).selected && inputmgr->click();
 	bool keyClick = mSelectableObjects[mSelectedObject] == object && inputmgr->select();
 	return mouseClick || keyClick;
+
+}
+
+float GUIManager::getFloat(int object)
+{
+	if (mObjectMap[object].type == GUIObject::GUI_SLIDER)
+		return mObjectMap[object].floatValue;
 }
 
 void GUIManager::render()
@@ -128,8 +149,8 @@ void GUIManager::render()
 		{
 			rmanager->drawImage(object.stringValue, object.pos1);
 		}
-		
 	}
-	
-	rmanager->drawImage("gfx/cursor.bmp", mCursorPosition + Vector2(24.0, 24.0));
+	if (mDrawCursor)
+		rmanager->drawImage("gfx/cursor.bmp", 
+			mCursorPosition + Vector2(24.0, 24.0));
 }
