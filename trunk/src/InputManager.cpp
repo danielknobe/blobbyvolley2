@@ -12,6 +12,13 @@ InputManager::InputManager()
 	mSingleton = this;
 	mRunning = true;
 	mJoystick = 0;
+	mUp = false;
+	mDown = false;
+	mLeft = false;
+	mRight = false;
+	mSelect = false;
+	mExit = false;
+	mClick = false;
 #if defined(__arm__) && defined(linux)
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	mJoystick = SDL_JoystickOpen(0);
@@ -41,18 +48,12 @@ InputManager* InputManager::createInputManager()
 void InputManager::updateInput()
 {	
 	// Init GUI Events for buffered Input
-	mUp = false;
-	mDown = false;
-	mLeft = false;
-	mRight = false;
-	mSelect = false;
-	mExit = false;
-	mClick = false;
-	
+
+	keyState = SDL_GetKeyState(0);	
 	static float volume = 1.0;
 	SDL_PumpEvents();
 	SDL_Event event;
-	keyState = SDL_GetKeyState(0);
+
 
 	if (mJoystick)
 		SDL_JoystickUpdate();
@@ -66,6 +67,9 @@ void InputManager::updateInput()
 		case SDL_QUIT:
 			mRunning = false;
 			break;
+		case SDL_KEYDOWN:
+
+			break;			
 #if defined(__arm__) && defined(linux)
 		case SDL_JOYBUTTONDOWN:
 			switch (event.jbutton.button)
@@ -126,7 +130,9 @@ bool InputManager::up()
 			return true;
     	}
     	else
+    	{
     		return false;
+        }
 	}
 	else
 	{
