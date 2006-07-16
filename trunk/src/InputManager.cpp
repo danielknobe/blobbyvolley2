@@ -12,13 +12,7 @@ InputManager::InputManager()
 	mSingleton = this;
 	mRunning = true;
 	mJoystick = 0;
-	mUp = false;
-	mDown = false;
-	mLeft = false;
-	mRight = false;
-	mSelect = false;
-	mExit = false;
-	mClick = false;
+
 #if defined(__arm__) && defined(linux)
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	mJoystick = SDL_JoystickOpen(0);
@@ -47,6 +41,13 @@ InputManager* InputManager::createInputManager()
 
 void InputManager::updateInput()
 {	
+	mUp = false;
+	mDown = false;
+	mLeft = false;
+	mRight = false;
+	mSelect = false;
+	mExit = false;
+	mClick = false;
 	// Init GUI Events for buffered Input
 
 	keyState = SDL_GetKeyState(0);	
@@ -62,14 +63,43 @@ void InputManager::updateInput()
 	while (SDL_PollEvent(&event))
 	switch (event.type)
 	{
-		case SDL_MOUSEBUTTONDOWN:
-			break;
 		case SDL_QUIT:
 			mRunning = false;
 			break;
 		case SDL_KEYDOWN:
-
-			break;			
+			switch (event.key.keysym.sym)
+			{
+				case SDLK_UP:
+					mUp = true;
+					break;
+				case SDLK_DOWN:
+					mDown = true;
+					break;
+				case SDLK_LEFT:
+					mLeft = true;
+					break;
+				case SDLK_RIGHT:
+					mRight = true;
+					break;
+				case SDLK_RETURN:
+				case SDLK_SPACE:
+					mSelect = true;
+					break;
+				case SDLK_ESCAPE:
+				case SDLK_BACKSPACE:
+					mExit = true;
+					break;
+			}
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			switch (event.button.button)
+			{
+				case 1:
+					mClick = true;
+				case 3:
+					mExit = true;
+			}
+			break;		
 #if defined(__arm__) && defined(linux)
 		case SDL_JOYBUTTONDOWN:
 			switch (event.jbutton.button)
@@ -122,118 +152,32 @@ void InputManager::updateInput()
 // GUI-Methods
 bool InputManager::up()
 {
-	if(keyState[SDLK_UP])
-	{
-		if(mUp==false)
-		{
-			mUp=true;
-			return true;
-    	}
-    	else
-    	{
-    		return false;
-        }
-	}
-	else
-	{
-		mUp=false;
-		return false;	
-	}
+	return mUp;
 }
 
 bool InputManager::down()
 {
-	if(keyState[SDLK_DOWN])
-	{
-		if(mDown==false)
-		{
-			mDown=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mDown=false;
-		return false;	
-	}
+	return mDown;
 }
      
 bool InputManager::left()
 {
-	if(keyState[SDLK_LEFT])
-	{
-		if(mLeft==false)
-		{
-			mLeft=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mLeft=false;
-		return false;	
-	}
+	return mLeft;
 }
 
 bool InputManager::right()
 {
-	if(keyState[SDLK_RIGHT])
-	{
-		if(mRight==false)
-		{
-			mRight=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mRight=false;
-		return false;	
-	}
+	return mRight;
 }
 
 bool InputManager::select()
 {
-	if(keyState[SDLK_RETURN] || keyState[SDLK_SPACE])
-	{
-		if(mSelect==false)
-		{
-			mSelect=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mSelect=false;
-		return false;	
-	}
+	return mSelect;
 }
 
 bool InputManager::exit()
 {
-	if(keyState[SDLK_ESCAPE] || keyState[SDLK_BACKSPACE] || SDL_GetMouseState(NULL,NULL)&SDL_BUTTON(3))
-	{
-		if(mExit==false)
-		{
-			mExit=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mExit=false;
-		return false;	
-	}
+	return mExit;
 }
 
 Vector2 InputManager::position()
@@ -244,21 +188,7 @@ Vector2 InputManager::position()
 
 bool InputManager::click()
 {
-	if(SDL_GetMouseState(NULL,NULL)&SDL_BUTTON(1))
-	{
-		if(mClick==false)
-		{
-			mClick=true;
-			return true;
-    	}
-    	else
-    		return false;
-	}
-	else
-	{
-		mClick=false;
-		return false;	
-	}
+	return mClick;
 }
 
 bool InputManager::running()
