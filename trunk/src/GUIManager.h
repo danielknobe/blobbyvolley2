@@ -52,7 +52,7 @@ public:
 // This is set to a fixed length because of the huge additional work which  had
 // to be done in the RenderManager. With a fixed length, we can just take a 
 // slider image and blit a positioner around it.
-	int createSlider(Vector2 position float setting);
+	int createSlider(Vector2 position, float setting);
 	
 	void drawCursor(bool draw);
 	
