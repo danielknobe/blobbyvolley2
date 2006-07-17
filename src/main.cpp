@@ -16,9 +16,6 @@
 #include "GUIManager.h"
 #include "State.h"
 
-// Temporary solution until LocalGameState gets an own config
-UserConfig gameConfig;
-
 void correctFramerate()
 {	int rate = 60;
 	float rateTicks = 1000.0 / ((float)rate);
@@ -39,14 +36,6 @@ void correctFramerate()
 	}
 }
 
-int mainmenu()
-{
-
-	
-}
-
-int gameStep(UserConfig& gameConfig, PhysicWorld& pworld);
-
 int main(int argc, char* argv[])
 {
 	PHYSFS_init(argv[0]);
@@ -59,6 +48,7 @@ int main(int argc, char* argv[])
 	// choose renderer
 	RenderManager *rmanager;
 
+	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 	if(gameConfig.getString("device") == "SDL")
 		rmanager = RenderManager::createRenderManagerSDL();
@@ -76,15 +66,8 @@ int main(int argc, char* argv[])
 	else
 		rmanager->init(800, 600, false);
 	// Only for Alpha2 Release!!!
-	rmanager->setBlobColor(0, 
-		Color(gameConfig.getInteger("r1"),
-		gameConfig.getInteger("g1"),
-		gameConfig.getInteger("b1")));
-	rmanager->setBlobColor(1,	
-		Color(gameConfig.getInteger("r2"),
-		gameConfig.getInteger("g2"),
-		gameConfig.getInteger("b2")));
-		
+
+
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
 	smanager->playSound("sounds/bums.wav", 0.0);
