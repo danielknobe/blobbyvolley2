@@ -3,11 +3,7 @@
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
-struct ExtensionUnsupportedException
-{
-	std::string extension;
-	ExtensionUnsupportedException(std::string name) : extension(name) {}
-};
+#ifdef HAVE_LIBGL
 
 int RenderManagerGL2D::getNextPOT(int npot)
 {
@@ -468,3 +464,15 @@ void RenderManagerGL2D::refresh()
 {
 	SDL_GL_SwapBuffers();
 }
+
+#else
+
+RenderManager* RenderManager::createRenderManagerGL2D()
+{
+	std::cerr << "OpenGL not available! Falling back to SDL renderer" <<
+		std::endl;
+	return new RenderManagerSDL();
+}
+        
+
+#endif

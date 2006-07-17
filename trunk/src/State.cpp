@@ -25,9 +25,23 @@ LocalGameState::~LocalGameState()
 	delete mRightInput;
 }
 
-LocalGameState::LocalGameState(UserConfig& gameConfig)
-	: State(), mGameConfig(gameConfig)
+LocalGameState::LocalGameState()
+	: State()
 {
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	mLeftColor = Color(gameConfig.getInteger("r1"),
+		gameConfig.getInteger("g1"),
+		gameConfig.getInteger("b1"));
+	mRightColor = Color(gameConfig.getInteger("r2"),
+		gameConfig.getInteger("g2"),
+		gameConfig.getInteger("b2"));
+	mLeftOscillate = gameConfig.getBool("left_blobby_oscillate");
+	mRightOscillate = gameConfig.getBool("right_blobby_oscillate");
+
+	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
+	RenderManager::getSingleton().setBlobColor(0, mRightColor);
+
 	GUIManager::getSingleton()->drawCursor(false);
 	mLeftInput = new LocalInputSource(0);
 	mRightInput = new LocalInputSource(1);
@@ -115,12 +129,12 @@ void LocalGameState::step()
 	mPhysicWorld.step();
 
 	float time = float(SDL_GetTicks()) / 1000.0;
-	if (mGameConfig.getBool("left_blobby_oscillate"))
+	if (mLeftOscillate)
 		rmanager->setBlobColor(0, Color(
 			int((sin(time*2) + 1.0) * 128),
 			int((sin(time*4) + 1.0) * 128),
 			int((sin(time*3) + 1.0) * 128)));
-	if (mGameConfig.getBool("right_blobby_oscillate"))
+	if (mRightOscillate)
 		rmanager->setBlobColor(1, Color(
 			int((cos(time*2) + 1.0) * 128),
 			int((cos(time*4) + 1.0) * 128),
@@ -158,7 +172,6 @@ MainMenuState::~MainMenuState()
 	GUIManager::getSingleton()->clear();
 }
 
-extern UserConfig gameConfig;
 void MainMenuState::step()
 {
 	GUIManager* gmgr = GUIManager::getSingleton();
@@ -171,7 +184,7 @@ void MainMenuState::step()
 	if (gmgr->getClick(mStartButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState(gameConfig);
+		mCurrentState = new LocalGameState();
 	}
 	
 	else if (gmgr->getClick(mExitButton)) 

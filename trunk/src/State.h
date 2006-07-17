@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Global.h"
 #include "UserConfig.h"
 #include "PhysicWorld.h"
 
@@ -52,8 +53,6 @@ public:
 class LocalGameState : public State
 {
 private:
-	UserConfig& mGameConfig;
-	
 	PhysicWorld mPhysicWorld;
 	
 	InputSource* mLeftInput;
@@ -67,8 +66,14 @@ private:
 	int mRightHitcount;
 	
 	int mSquish;
+
+	Color mLeftColor;
+	Color mRightColor;
+	bool mLeftOscillate;
+	bool mRightOscillate;
+
 public:
-	LocalGameState(UserConfig& gameConfig);
+	LocalGameState();
 	virtual ~LocalGameState();
 	virtual void step();
 	

@@ -1,6 +1,6 @@
 #pragma once
 
-
+#ifdef HAVE_LIBGL
 
 #include <SDL/SDL.h>
 #include <GL/gl.h>
@@ -67,3 +67,4 @@ public:
 };
 
 
+#endif

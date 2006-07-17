@@ -140,7 +140,7 @@ std::string UserConfig::getValue(const std::string& name)
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
 	{
-		std::cout << "Warning: impossible to get value of" <<
+		std::cout << "Warning: impossible to get value of " <<
 			"unknown configuration variable " << name << std::endl;
 		return "";
 	}

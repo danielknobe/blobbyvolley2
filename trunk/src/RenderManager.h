@@ -6,41 +6,7 @@
 #include <SDL/SDL.h>
 
 #include "Vector.h"
-
-struct Color
-{
-	Color(int red, int green, int blue)
-		: r(red), g(green), b(blue) {}
-	Color() {}
-	union
-	{
-		struct
-		{
-			Uint8 r;
-			Uint8 g;
-			Uint8 b;
-		};
-		Uint8 val[3];
-	};
-};
-
-struct BufferedImage
-{
-	int w;
-	int h;
-	union
-	{
-		SDL_Surface* sdlImage;
-		unsigned glHandle;		
-	};
-	
-};
-
-struct FileLoadException
-{
-	std::string filename;
-	FileLoadException(std::string name) : filename(name) {}
-};
+#include "Global.h"
 
 // This rendering class reduces all drawing stuff to a few calls
 // to refresh the objects states. It also abstracts from specific
