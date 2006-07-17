@@ -44,6 +44,7 @@ private:
 	bool mIsBallValid;
 
 	float mLastHitIntensity;
+	float mTimeSinceBallout;
 public:
 	PhysicWorld();
 	~PhysicWorld();
@@ -86,6 +87,9 @@ public:
 	// This resets everything to the starting situation and
 	// wants to know, which player begins.
 	void reset(int player);
+	
+	// This resets the player to their starting Positions
+	void resetPlayer();
 
 	// Important: This assumes a fixed framerate of 60 FPS!
 	void step();

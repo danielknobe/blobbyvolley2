@@ -1,6 +1,8 @@
 #include "PhysicWorld.h"
 
-const short TIMESTEP = 3; // calculations per frame
+const int TIMESTEP = 3; // calculations per frame
+
+const float TIMEOUT = 3.0;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -48,6 +50,7 @@ PhysicWorld::PhysicWorld()
 	reset(0);
 	mLeftBlobbyAnimationSpeedAtm = 0.0;
 	mRightBlobbyAnimationSpeedAtm = 0.0;
+	mTimeSinceBallout = 0.0;
 }
 
 PhysicWorld::~PhysicWorld()
@@ -56,11 +59,6 @@ PhysicWorld::~PhysicWorld()
 
 void PhysicWorld::reset(int player)
 {
-
-	mLeftBlobPosition = Vector2( 200, 
-			GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
-	mRightBlobPosition = Vector2(600,
-			GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
 	if (player == 0)
 		mBallPosition = Vector2(200, STANDARD_BALL_HEIGHT);
 	else if (player == 1)
@@ -82,6 +80,14 @@ void PhysicWorld::reset(int player)
 	mIsBallValid = true;
 	
 	mLastHitIntensity = 0.0;
+}
+
+void PhysicWorld::resetPlayer()
+{
+	mLeftBlobPosition = Vector2( 200,
+		GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
+        mRightBlobPosition = Vector2(600,
+		GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
 }
 
 bool PhysicWorld::ballHitRightGround()
@@ -112,6 +118,8 @@ bool PhysicWorld::roundFinished()
 	if (!mIsBallValid)
 		if (mBallVelocity.length() < 2.0 && mBallPosition.y > GROUND_PLANE_HEIGHT)
 			return true;
+	if (mTimeSinceBallout > TIMEOUT)
+		return true;
 	return false;
 }
 
@@ -290,54 +298,50 @@ void PhysicWorld::step()
 		{
 			mLeftBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
 			leftBlobbyStartAnimation();
-        }
-		
+		}
 	if (mLeftPlayerInput.up)
 		mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
-		
+	
 	if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
 		if (mRightPlayerInput.up)
 		{
 			mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
 			rightBlobbyStartAnimation();
-        }
-			
-			
+		}
+		
 	if (mRightPlayerInput.up)
 		mRightBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
-
-	// This is only influenced by input, so we need to reset this here
+		// This is only influenced by input, so we need to reset this here
 	mLeftBlobVelocity.x = 0.0;
 	mRightBlobVelocity.x = 0.0;
-
-	if (mLeftPlayerInput.left)
+		if (mLeftPlayerInput.left)
 	{
 		if(GROUND_PLANE_HEIGHT<=mLeftBlobPosition.y)
 			leftBlobbyStartAnimation();
 		mLeftBlobVelocity.x -= BLOBBY_SPEED;
-    }
-		
+	}
+	
 	if (mLeftPlayerInput.right)
 	{
 		if(GROUND_PLANE_HEIGHT<=mLeftBlobPosition.y)
 			leftBlobbyStartAnimation();
 		mLeftBlobVelocity.x += BLOBBY_SPEED;
-    }
-		
+	}
+	
 	if (mRightPlayerInput.left)
 	{
 		if(GROUND_PLANE_HEIGHT<=mRightBlobPosition.y)
 			rightBlobbyStartAnimation();
 		mRightBlobVelocity.x -= BLOBBY_SPEED;
 	}	
-		
+	
 	if (mRightPlayerInput.right)
 	{
 		if(GROUND_PLANE_HEIGHT<=mRightBlobPosition.y)
 			rightBlobbyStartAnimation();
 		mRightBlobVelocity.x += BLOBBY_SPEED;
-    }
-   
+	}
+
 	// Reset the ball-blobby collision
 	mBallHitByRightBlob=false;
 	mBallHitByLeftBlob=false;
@@ -507,6 +511,9 @@ void PhysicWorld::step()
 	// Blobbyanimationstep
 	leftBlobbyAnimationStep();
 	rightBlobbyAnimationStep();
+	
+	mTimeSinceBallout = mIsBallValid ? 0.0 : 
+		mTimeSinceBallout + 1.0 / 60;
 }
 
 void PhysicWorld::dampBall()

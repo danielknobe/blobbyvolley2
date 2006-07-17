@@ -54,7 +54,7 @@ LocalGameState::LocalGameState()
 	mRightHitcount = 0;
 	
 	mSquish = 0;
-	
+	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2); // Like in the original
