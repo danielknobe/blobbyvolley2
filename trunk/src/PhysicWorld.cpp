@@ -66,9 +66,6 @@ void PhysicWorld::reset(int player)
 	else 
 		mBallPosition = Vector2(400, 450);
 	
-	
-	mLeftBlobVelocity.clear();
-	mRightBlobVelocity.clear();
 	mBallVelocity.clear();
 
 	mBallRotation = 0.0;
