@@ -1,7 +1,3 @@
-/*
-	Vektorklasse
-*/
-
 #pragma once
 
 #include <cassert>
@@ -21,11 +17,10 @@ class Vector2
 			float val[2];
 		};
 	
-	// Konstruktoren
 	Vector2();
 	Vector2(float x, float y);
 	Vector2(const Vector2& v1, const Vector2& v2);
-	// Vektormethoden
+
 	void clear();
 	
 	Vector2 reflectX();
@@ -44,7 +39,6 @@ class Vector2
 		return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
 	}
 
-//---
 	inline Vector2& operator = (const Vector2& newVector)
 	{
 		x = newVector.x;
@@ -116,8 +110,6 @@ class Vector2
 	}
 
 
-
-//---
 	inline float dotProduct(const Vector2& vector)
 	{
 		return x * vector.x + y * vector.y;
@@ -136,8 +128,6 @@ class Vector2
 
 };
 
-
-// Konstruktoren
 inline Vector2::Vector2()
 {
 	this->x=0;
@@ -156,7 +146,6 @@ inline Vector2::Vector2(const Vector2& v1, const Vector2& v2)
 	y = v2.y - v1.y;
 }
 
-// Vektormethoden
 inline Vector2 Vector2::reflectX()
 {
 	return Vector2(-x, y);
