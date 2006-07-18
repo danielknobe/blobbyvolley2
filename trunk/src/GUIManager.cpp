@@ -98,9 +98,9 @@ void GUIManager::processInput()
 	{
 		GUIObject& object = mObjectMap[mSelectableObjects[i]];
 		object.selected = false;
-		if (mCursorPosition.x > object.pos1.x &&
+		if (mCursorPosition.x > object.pos1.x + 24.0 &&
 			mCursorPosition.y > object.pos1.y &&
-			mCursorPosition.x < object.pos2.x &&
+			mCursorPosition.x < object.pos2.x + 24.0 &&
 			mCursorPosition.y < object.pos2.y)
 		{
 			if (mCursorPosition != oldCursorPosition)
