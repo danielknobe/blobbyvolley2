@@ -4,6 +4,13 @@
 
 RenderManager* RenderManager::mSingleton = 0;
 
+RenderManager::RenderManager()
+{
+	assert(!mSingleton);
+	mSingleton = this;
+	mMouseMarkerPosition = -100.0;
+}
+
 SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance)
 {
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(
@@ -91,24 +98,29 @@ int RenderManager::getNextFontIndex(std::string& string)
 		index = 50;
 	else if (testChar == ' ')
 		index = 51;
-	else if (testChar == std::string("ß")[0]) // UTF-8 escape
+	else if (testChar == std::string("ÃŸ")[0]) // UTF-8 escape
 	{
 		testChar = testChar = string.at(0);
 			string.erase(string.begin());
-		if (testChar == std::string("ß")[1])
+		if (testChar == std::string("ÃŸ")[1])
 			index = 40;
-		else if (testChar == std::string("Ä")[1])
+		else if (testChar == std::string("Ã¤")[1])
 			index = 41;
-		else if (testChar == std::string("Ö")[1])
+		else if (testChar == std::string("Ã¶")[1])
 			index = 42;
-		else if (testChar == std::string("Ü")[1])
+		else if (testChar == std::string("Ã¼")[1])
 			index = 43;
-		else if (testChar == std::string("ä")[1])
+		else if (testChar == std::string("Ã„")[1])
 			index = 41;
-		else if (testChar == std::string("ö")[1])
+		else if (testChar == std::string("Ã–")[1])
 			index = 42;
-		else if (testChar == std::string("ü")[1])
+		else if (testChar == std::string("Ãœ")[1])
 			index = 43;
 	}
 	return index;
+}
+
+void RenderManager::setMouseMarker(float position)
+{
+	mMouseMarkerPosition = position;
 }

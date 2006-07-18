@@ -282,6 +282,12 @@ void RenderManagerGL2D::draw()
 	glTranslatef(mBallPosition.x, 7.5, -0.4);
 	drawQuad(5.0, 5.0);
 
+	// Mouse marker
+
+	glLoadIdentity();
+	glTranslatef(mMouseMarkerPosition, 592.5, -0.4);
+	drawQuad(5.0, 5.0);
+
 	// Generic shadow settings
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -425,7 +431,7 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 		SDL_Surface* newSurface = loadSurface(filename);
 		imageBuffer->w = getNextPOT(newSurface->w);
 		imageBuffer->h = getNextPOT(newSurface->h);
-		imageBuffer->glHandle = loadTexture(loadSurface(filename), false);
+		imageBuffer->glHandle = loadTexture(newSurface, false);
 		mImageMap[filename] = imageBuffer;
 	}
 	glColor4f(1.0, 1.0, 1.0, 1.0);

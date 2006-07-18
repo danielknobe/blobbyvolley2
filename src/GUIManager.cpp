@@ -104,18 +104,20 @@ void GUIManager::processInput()
 		if (object.selected)
 			mSelectedObject = i;	
 	}
-	if (inputmgr->down())
-		mSelectedObject = mSelectedObject + 1 < mSelectableObjects.size() ? 
-			mSelectedObject + 1 : 0;
-	if (inputmgr->up())
-		mSelectedObject = mSelectedObject > 0 ? 
-			mSelectedObject - 1 : mSelectableObjects.size() - 1;
+	if (!mSelectableObjects.empty())
+	{
+		if (inputmgr->down())
+			mSelectedObject = mSelectedObject + 1 < mSelectableObjects.size() ? 
+				mSelectedObject + 1 : 0;
+		if (inputmgr->up())
+			mSelectedObject = mSelectedObject > 0 ? 
+				mSelectedObject - 1 : mSelectableObjects.size() - 1;
+	}
 	
 }
 bool GUIManager::getClick(int object)
 {
 	InputManager* inputmgr = InputManager::getSingleton();
-if (object > mObjectMap.size()) printf("%d of %d\n", object, mObjectMap.size());
 	bool mouseClick = mObjectMap.at(object).selected && inputmgr->click();
 	bool keyClick = mSelectableObjects[mSelectedObject] == object && inputmgr->select();
 	return mouseClick || keyClick;
