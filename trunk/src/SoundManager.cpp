@@ -87,7 +87,7 @@ bool SoundManager::init()
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
 	desiredSpec.format = AUDIO_S16SYS;
-	desiredSpec.channels = 1;
+	desiredSpec.channels = 2;
 	desiredSpec.samples = 1024;
 	desiredSpec.callback = playCallback;
 	desiredSpec.userdata = mSingleton;
