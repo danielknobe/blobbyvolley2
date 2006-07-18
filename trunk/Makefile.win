@@ -7,9 +7,9 @@ WINDRES = windres.exe
 RES  = 
 OBJ  = src/GUIManager.o src/InputManager.o src/main.o src/NetworkClient.o src/NetworkManager.o src/NetworkServer.o src/PhysicWorld.o src/RenderManager.o src/RenderManagerGL2D.o src/RenderManagerGP2X.o src/RenderManagerSDL.o src/SoundManager.o src/UserConfig.o src/tinyxml/tinyxmlparser.o src/tinyxml/tinystr.o src/tinyxml/tinyxml.o src/tinyxml/tinyxmlerror.o src/State.o $(RES)
 LINKOBJ  = src/GUIManager.o src/InputManager.o src/main.o src/NetworkClient.o src/NetworkManager.o src/NetworkServer.o src/PhysicWorld.o src/RenderManager.o src/RenderManagerGL2D.o src/RenderManagerGP2X.o src/RenderManagerSDL.o src/SoundManager.o src/UserConfig.o src/tinyxml/tinyxmlparser.o src/tinyxml/tinystr.o src/tinyxml/tinyxml.o src/tinyxml/tinyxmlerror.o src/State.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib" -L"C:/Dev-Cpp/SDL-1.2.11/lib" -lSDL -lphysfs -lopengl32  -g3 
-INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/SDL-1.2.11/include" 
-CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/SDL-1.2.11/include" 
+LIBS =  -L"D:/Programme/Dev-Cpp/lib" -L"C:/Dev-Cpp/SDL-1.2.11/lib" -lSDL -lphysfs -lopengl32  -g3 
+INCS =  -I"D:/Programme/Dev-Cpp/include" 
+CXXINCS =  -I"D:/Programme/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"D:/Programme/Dev-Cpp/include/c++/3.4.2/backward"  -I"D:/Programme/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"D:/Programme/Dev-Cpp/include/c++/3.4.2"  -I"D:/Programme/Dev-Cpp/include" 
 BIN  = blobby.exe
 CXXFLAGS = $(CXXINCS) -DHAVE_LIBGL=1   -g3
 CFLAGS = $(INCS)   -g3

@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_setWriteDir("data");
 	
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
 
 	// Default is OpenGL and false
 	// choose renderer
