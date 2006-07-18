@@ -40,11 +40,7 @@ private:
 	static RenderManager *mSingleton;
 
 protected:
-	RenderManager()
-	{
-		assert(!mSingleton);
-		mSingleton = this;
-	}
+	RenderManager();
 	// Returns -1 on EOF
 	// Returns index for ? on unknown char
 	int getNextFontIndex(std::string& string);
@@ -52,6 +48,8 @@ protected:
 	SDL_Surface* loadSurface(std::string filename);
 	
 	std::map<std::string, BufferedImage*> mImageMap;
+
+	float mMouseMarkerPosition;
 	
 public:
 	static RenderManager* createRenderManagerSDL();
@@ -68,44 +66,47 @@ public:
 	
 	// This swaps the screen buffers and should be called
 	// after all draw calls
-	virtual void refresh() = 0;
+	virtual void refresh() {};
 
 	// Init with the desired Resolution.
 	// Note: It is not guaranteed that this resolution will be selected
 	virtual void init(int xResolution, int yResolution,
-		bool fullscreen) = 0;
+		bool fullscreen) {};
 
 	// Frees all internal data
-	virtual void deinit() = 0;
+	virtual void deinit() {};
 
 	// Set a background image by filename
 	// Note: There is a default, you dont need to do this
 	// Returns true on success
-	virtual bool setBackground(const std::string& filename) = 0;
+	virtual bool setBackground(const std::string& filename) {};
 
 	// Colors the standard blob image, which are red and green by default
-	virtual void setBlobColor(int player, Color color) = 0;
+	virtual void setBlobColor(int player, Color color) {};
 	
 	// Takes the new balls position and its rotation in radians
-	virtual void setBall(const Vector2& position, float rotation) = 0;
+	virtual void setBall(const Vector2& position, float rotation) {};
 
 	// Takes the new position and the animation state as a float,
 	// because some renderers may interpolate the animation
 	virtual void setBlob(int player, const Vector2& position, 
-			float animationState) = 0;
+			float animationState) {};
+
+	void setMouseMarker(float position);
 	
 	// Set the displayed score values and the serve notifications
 	virtual void setScore(int leftScore, int rightScore,
-		bool leftWarning, bool rightWarning) = 0;
+		bool leftWarning, bool rightWarning) {};
 		
 	// This simply draws the given text with its top left corner at the
 	// given position and doesn't care about line feeds.
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight) = 0;
+	virtual void drawText(const std::string& text, Vector2 position, bool highlight) {};
 	
 	// This loads and draws an image by name
 	// The according Surface is automatically colorkeyed
 	// The image is centered around position
-	virtual void drawImage(const std::string& filename, Vector2 position) = 0;
+	virtual void drawImage(const std::string& filename, Vector2 position) {};
 	
+	// This draws a greyed-out area
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2) {}
 };

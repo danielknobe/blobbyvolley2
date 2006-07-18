@@ -66,6 +66,14 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	PHYSFS_addToSearchPath("data", 0);
 	PHYSFS_addToSearchPath("data/gfx.zip", 1);
 	
+	mOverlaySurface = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA,
+		mScreen->w, mScreen->h, mScreen->format->BitsPerPixel,
+		mScreen->format->Rmask, mScreen->format->Gmask,
+		mScreen->format->Bmask, mScreen->format->Amask);
+	SDL_Rect screenRect = {0, 0, xResolution, yResolution};
+	SDL_FillRect(mOverlaySurface, &screenRect, SDL_MapRGB(mScreen->format, 0, 0, 0));
+	
+	
 	SDL_Surface* tempBackground = loadSurface("gfx/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
 	SDL_FreeSurface(tempBackground);
@@ -127,6 +135,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 void RenderManagerSDL::deinit()
 {
+	SDL_FreeSurface(mOverlaySurface);
 	SDL_FreeSurface(mBackground);
 	SDL_FreeSurface(mBallShadow);
 	for (int i = 0; i < mBall.size(); ++i)
@@ -160,6 +169,15 @@ void RenderManagerSDL::draw()
 	position.h = 5;
 	SDL_FillRect(mScreen, &position, SDL_MapRGB(mScreen->format,
 			markerColor, markerColor, markerColor));
+	
+	// Mouse marker
+	
+	position.y = 590;
+	position.x = lround(mMouseMarkerPosition - 2.5);
+	position.w = 5;
+	position.h = 5;
+	SDL_FillRect(mScreen, &position, SDL_MapRGB(mScreen->format,
+		     markerColor, markerColor, markerColor));
 	
 	// Ball Shadow
 	position.x = lround(mBallPosition.x) +
@@ -327,6 +345,42 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool 
 			SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
 		index = getNextFontIndex(string);
 	}
+}
+
+void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
+{
+	BufferedImage* imageBuffer = mImageMap[filename];
+	if (!imageBuffer)
+	{
+		imageBuffer = new BufferedImage;
+		imageBuffer->sdlImage = loadSurface(filename);
+		SDL_SetColorKey(imageBuffer->sdlImage, SDL_SRCCOLORKEY, 
+			SDL_MapRGB(mScreen->format, 0, 0, 0));
+		mImageMap[filename] = imageBuffer;
+	}
+	
+	SDL_Rect blitRect = {
+		lround(position.x - float(imageBuffer->sdlImage->w) / 2.0),
+		lround(position.y - float(imageBuffer->sdlImage->h) / 2.0),
+		lround(position.x + float(imageBuffer->sdlImage->w) / 2.0),
+		lround(position.y + float(imageBuffer->sdlImage->h) / 2.0),
+	};
+	
+	SDL_BlitSurface(imageBuffer->sdlImage, 0, mScreen, &blitRect);
+}
+
+void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
+{
+	SDL_Rect ovRect;
+	ovRect.x = lround(pos1.x);
+	ovRect.y = lround(pos1.y);
+	ovRect.w = lround(pos2.x - pos1.x);
+	ovRect.h = lround(pos2.y - pos1.y);
+	SDL_SetAlpha(mOverlaySurface, SDL_SRCALPHA, lround(opacity * 255));
+	
+	SDL_SetClipRect(mScreen, &ovRect);
+	SDL_BlitSurface(mOverlaySurface, 0, mScreen, 0);
+	SDL_SetClipRect(mScreen, 0);
 }
 
 void RenderManagerSDL::refresh()
