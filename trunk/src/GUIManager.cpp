@@ -91,18 +91,24 @@ void GUIManager::drawCursor(bool draw)
 void GUIManager::processInput()
 {
 	InputManager* inputmgr = InputManager::getSingleton();
+	Vector2 oldCursorPosition = mCursorPosition;
 	mCursorPosition = inputmgr->position();
 	
 	for (int i = 0; i != mSelectableObjects.size(); ++i)
 	{
 		GUIObject& object = mObjectMap[mSelectableObjects[i]];
-		object.selected = 
-			mCursorPosition.x > object.pos1.x &&
+		object.selected = false;
+		if (mCursorPosition.x > object.pos1.x &&
 			mCursorPosition.y > object.pos1.y &&
 			mCursorPosition.x < object.pos2.x &&
-			mCursorPosition.y < object.pos2.y;
-		if (object.selected)
-			mSelectedObject = i;	
+			mCursorPosition.y < object.pos2.y)
+		{
+			if (mCursorPosition != oldCursorPosition)
+			{
+				mSelectedObject = i;
+				object.selected = true;
+			}
+		}
 	}
 	if (!mSelectableObjects.empty())
 	{
