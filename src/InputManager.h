@@ -45,6 +45,7 @@ private:
 	
 	// Inputdevices
 	SDL_Joystick* mJoystick;	// Gamepad or Joystick
+	int mNumberOfJoysticks;	// How much Joysticks?
 	Uint8* keyState;			// Keyboard 
 	
 	UserConfig mConfigManager;

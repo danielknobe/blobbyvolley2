@@ -13,10 +13,11 @@ InputManager::InputManager()
 	mRunning = true;
 	mJoystick = 0;
 
-#if defined(__arm__) && defined(linux)
-	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-	mJoystick = SDL_JoystickOpen(0);
-#endif
+	mNumberOfJoysticks = SDL_NumJoysticks();
+	if (mNumberOfJoysticks)
+	{
+		mJoystick = SDL_JoystickOpen(0);
+	}
 	
 	// initialize the SDLKeys for ingame input
 	configFileToCurrentConfig();
@@ -137,7 +138,7 @@ void InputManager::updateInput()
 		SDL_JoystickGetButton(mJoystick, 11)
 	)
 		mRunning = false;
-	// AUSLAUFMODELLAUFBAU==================================================
+
 #else
 
 
@@ -148,6 +149,7 @@ void InputManager::updateInput()
 		keyState[mLeftBlobbyJump]);
 	mInput[1] = PlayerInput(keyState[mRightBlobbyLeftMove],
 			keyState[mRightBlobbyRightMove], keyState[mRightBlobbyJump]);
+
 #endif
 }
 
@@ -197,11 +199,6 @@ bool InputManager::running()
 {
 	return mRunning;
 }
-
-
-
-
-// =================================EXPERIMENTAL!!!
 
 // declaration of the keymap
 InputKeyMap InputManager::mKeyMap[] = {
