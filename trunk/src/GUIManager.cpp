@@ -58,9 +58,9 @@ int GUIManager::createTextButton(const std::string& text, int length, Vector2 po
 	buttonObject.stringValue = text;
 	mObjectMap.push_back(buttonObject);
 	int index = mObjectMap.size() - 1;
+	if (mSelectableObjects.empty())
+		mSelectedObject = -1;
 	mSelectableObjects.push_back(index);
-	if (mSelectedObject)
-		mSelectedObject = index;
 	return index;
 	
 }
@@ -106,8 +106,8 @@ void GUIManager::processInput()
 			if (mCursorPosition != oldCursorPosition)
 			{
 				mSelectedObject = i;
-				object.selected = true;
 			}
+			object.selected = true;
 		}
 	}
 	if (!mSelectableObjects.empty())
@@ -142,8 +142,6 @@ void GUIManager::render()
 	for (int i = 0; i < mObjectMap.size(); ++i)
 	{
 		GUIObject& object = mObjectMap[i];
-		if (mSelectableObjects[mSelectedObject] == i)
-			object.selected = true; 
 		if (mObjectMap[i].type == GUIObject::GUI_OVERLAY)
 		{
 			rmanager->drawOverlay(object.floatValue, object.pos1, object.pos2);
@@ -151,7 +149,8 @@ void GUIManager::render()
 		if (mObjectMap[i].type == GUIObject::GUI_TEXT || 
 			mObjectMap[i].type == GUIObject::GUI_TEXTBUTTON)
 		{
-			rmanager->drawText(object.stringValue, object.pos1, object.selected);
+			rmanager->drawText(object.stringValue, object.pos1,
+				i == mSelectableObjects[mSelectedObject]);
 		}
 		if (mObjectMap[i].type == GUIObject::GUI_IMAGE)
 		{
