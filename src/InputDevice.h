@@ -5,10 +5,10 @@
 
 class InputDevice
 {
-private:
+public:
 	InputDevice();
 
-public:
+
 	virtual PlayerInput getInput() = 0;
 };
 
@@ -28,17 +28,17 @@ public:
 		// und die position per setMouseMarkerPosition setzen
 	}
 	
-}
+};
 
 class KeyboardInputDevice : public InputDevice
 {
 private:
-	SDL_Key mLeftKey;
-	SDL_Key mRightKey;
-	SDL_Key mJumpKey;
+	SDLKey mLeftKey;
+	SDLKey mRightKey;
+	SDLKey mJumpKey;
 	
 public:
-	KeyboardInputDevice(SDL_Key leftKey, SDL_Key rightKey, SDL_Key jumpKey)
+	KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey)
 		: InputDevice()
 	{
 		mLeftKey = leftKey;
@@ -51,7 +51,7 @@ public:
 	
 	}
 	
-}
+};
 
 class JoystickInputDevice : public InputDevice
 {
