@@ -477,7 +477,7 @@ RenderManager* RenderManager::createRenderManagerGL2D()
 {
 	std::cerr << "OpenGL not available! Falling back to SDL renderer" <<
 		std::endl;
-	return new RenderManagerSDL();
+	return RenderManager::createRenderManagerSDL();
 }
         
 
