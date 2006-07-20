@@ -1,15 +1,14 @@
 #pragma once
 
 #include <SDL/SDL.h>
-#include "InputSource.h"
 
 class InputDevice
 {
 public:
-	InputDevice();
+       
+	InputDevice(){};
 
-
-	virtual PlayerInput getInput() = 0;
+	virtual void transferInput(PlayerInput& mInput) = 0;
 };
 
 class MouseInputDevice : public InputDevice
@@ -22,8 +21,9 @@ public:
 	{
 	}
 	
-	virtual PlayerInput getInput()
+	void transferInput(PlayerInput& mInput)
 	{
+
 		// Wichtig: Muss sich das RenderManager-Singleton holen
 		// und die position per setMouseMarkerPosition setzen
 	}
@@ -36,7 +36,7 @@ private:
 	SDLKey mLeftKey;
 	SDLKey mRightKey;
 	SDLKey mJumpKey;
-	
+	Uint8* mKeyState;
 public:
 	KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey)
 		: InputDevice()
@@ -46,11 +46,13 @@ public:
 		mJumpKey = jumpKey;	
 	}
 	
-	virtual PlayerInput getInput()
+	void transferInput(PlayerInput& mInput)
 	{
-	
+	mKeyState = SDL_GetKeyState(0);	
+	mInput = PlayerInput( mKeyState[mLeftKey]
+						, mKeyState[mRightKey]
+						, mKeyState[mJumpKey]);
 	}
-	
 };
 
 class JoystickInputDevice : public InputDevice
@@ -66,7 +68,7 @@ public:
 	
 	}
 
-	virtual PlayerInput getInput()
+	void transferInput(PlayerInput& mInput)
 	{
 	
 	}
