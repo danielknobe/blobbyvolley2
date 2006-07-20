@@ -3,6 +3,7 @@
 #include <SDL/SDL.h>
 
 #include "InputSource.h"
+#include "InputDevice.h"
 #include "UserConfig.h"
 #include "Vector.h"
 
@@ -45,11 +46,11 @@ private:
 	
 	// Inputdevices
 	SDL_Joystick* mJoystick;	// Gamepad or Joystick
-	int mNumberOfJoysticks;	// How much Joysticks?
-	Uint8* keyState;			// Keyboard 
+	int mNumberOfJoysticks;		// How much Joysticks?
 	
 	UserConfig mConfigManager;
 	PlayerInput mInput[2];	
+	InputDevice *mInputDevice[2];	
 	bool mRunning;
 	
 	InputManager();
@@ -78,8 +79,10 @@ public:
 	std::string keyToString(SDLKey key);
 	SDLKey stringToKey(const std::string& keyname);
 
-	void configFileToCurrentConfig();
-	void currentConfigToConfigFile();
+	void configFileToCurrentConfigForLeftKeyboard();
+	void configFileToCurrentConfigForRightKeyboard();
+	void currentConfigToConfigFileForLeftKeyboard();
+	void currentConfigToConfigFileForRightKeyboard();
 
 
 

@@ -20,8 +20,18 @@ InputManager::InputManager()
 	}
 	
 	// initialize the SDLKeys for ingame input
-	configFileToCurrentConfig();
-}
+	configFileToCurrentConfigForLeftKeyboard();
+	configFileToCurrentConfigForRightKeyboard();
+	
+	mInputDevice[0] = new KeyboardInputDevice(mLeftBlobbyLeftMove,
+	mLeftBlobbyRightMove,mLeftBlobbyJump);
+    
+	mInputDevice[1] = new KeyboardInputDevice(mRightBlobbyLeftMove,
+	mRightBlobbyRightMove,mRightBlobbyJump);
+	
+
+
+ }
 
 InputManager* InputManager::getSingleton()
 {
@@ -51,7 +61,7 @@ void InputManager::updateInput()
 	mClick = false;
 	// Init GUI Events for buffered Input
 
-	keyState = SDL_GetKeyState(0);	
+	
 	static float volume = 1.0;
 	SDL_PumpEvents();
 	SDL_Event event;
@@ -138,18 +148,10 @@ void InputManager::updateInput()
 		SDL_JoystickGetButton(mJoystick, 11)
 	)
 		mRunning = false;
-
 #else
-
-
-
-	// Later in seperat method
-	// Set Inputkeys
-	mInput[0] = PlayerInput(keyState[mLeftBlobbyLeftMove], keyState[mLeftBlobbyRightMove], 
-		keyState[mLeftBlobbyJump]);
-	mInput[1] = PlayerInput(keyState[mRightBlobbyLeftMove],
-			keyState[mRightBlobbyRightMove], keyState[mRightBlobbyJump]);
-
+	// Device gives status to the playerinput
+	mInputDevice[0]->transferInput(mInput[0]);
+	mInputDevice[1]->transferInput(mInput[1]);
 #endif
 }
 
@@ -479,23 +481,34 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 	return SDLK_UNKNOWN; // stringinformation = ""
 }
 
-void InputManager::configFileToCurrentConfig()
+void InputManager::configFileToCurrentConfigForLeftKeyboard()
 {
 	mConfigManager.loadFile("inputconfig.xml");
 	mLeftBlobbyLeftMove=stringToKey(mConfigManager.getString("left_blobby_left_move"));
 	mLeftBlobbyRightMove=stringToKey(mConfigManager.getString("left_blobby_right_move"));
 	mLeftBlobbyJump=stringToKey(mConfigManager.getString("left_blobby_jump"));
+}
+
+void InputManager::configFileToCurrentConfigForRightKeyboard()
+{
+	mConfigManager.loadFile("inputconfig.xml");
 	mRightBlobbyLeftMove=stringToKey(mConfigManager.getString("right_blobby_left_move"));
 	mRightBlobbyRightMove=stringToKey(mConfigManager.getString("right_blobby_right_move"));
 	mRightBlobbyJump=stringToKey(mConfigManager.getString("right_blobby_jump"));
 }
 
-void InputManager::currentConfigToConfigFile()
+void InputManager::currentConfigToConfigFileForLeftKeyboard()
 {
 	mConfigManager.loadFile("inputconfig.xml");
 	mConfigManager.setString("left_blobby_left_move",keyToString(mLeftBlobbyLeftMove));
 	mConfigManager.setString("left_blobby_right_move",keyToString(mLeftBlobbyRightMove));
 	mConfigManager.setString("left_blobby_jump",keyToString(mLeftBlobbyJump));
+	mConfigManager.saveFile("inputconfig.xml");
+}
+
+void InputManager::currentConfigToConfigFileForRightKeyboard()
+{
+	mConfigManager.loadFile("inputconfig.xml");
 	mConfigManager.setString("right_blobby_left_move",keyToString(mRightBlobbyLeftMove));
 	mConfigManager.setString("right_blobby_right_move",keyToString(mRightBlobbyRightMove));
 	mConfigManager.setString("right_blobby_jump",keyToString(mRightBlobbyJump));
