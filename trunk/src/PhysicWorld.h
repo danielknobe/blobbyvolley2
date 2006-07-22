@@ -90,7 +90,11 @@ public:
 	// This resets everything to the starting situation and
 	// wants to know, which player begins.
 	void reset(int player);
-	
+
+	// Returns a bool if a reset is possible
+	bool resetPossiblityLeftSite();
+	bool resetPossiblityRightSite();
+    	
 	// This resets the player to their starting Positions
 	void resetPlayer();
 
