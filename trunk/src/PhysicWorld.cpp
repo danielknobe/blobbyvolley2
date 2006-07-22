@@ -105,6 +105,23 @@ bool PhysicWorld::ballHitLeftGround()
 	return false;
 }
 
+bool PhysicWorld::leftBlobbyHitGround()
+{
+	if (getLeftBlob().y >= GROUND_PLANE_HEIGHT)
+		return true;
+	else
+		return false;
+}
+
+bool PhysicWorld::rightBlobbyHitGround()
+{
+	if (getRightBlob().y >= GROUND_PLANE_HEIGHT)
+		return true;
+	else
+		return false;
+}
+
+
 void PhysicWorld::setBallValidity(bool validity)
 {
 	mIsBallValid = validity;
@@ -290,7 +307,7 @@ void PhysicWorld::rightBlobbyStartAnimation()
 void PhysicWorld::step()
 {
     // Input Handling
-	if (mLeftBlobPosition.y >= GROUND_PLANE_HEIGHT)
+	if (leftBlobbyHitGround())
 		if (mLeftPlayerInput.up)
 		{
 			mLeftBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
@@ -299,7 +316,7 @@ void PhysicWorld::step()
 	if (mLeftPlayerInput.up)
 		mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
 	
-	if (mRightBlobPosition.y >= GROUND_PLANE_HEIGHT)
+	if (rightBlobbyHitGround())
 		if (mRightPlayerInput.up)
 		{
 			mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
@@ -313,28 +330,28 @@ void PhysicWorld::step()
 	mRightBlobVelocity.x = 0.0;
 		if (mLeftPlayerInput.left)
 	{
-		if(GROUND_PLANE_HEIGHT<=mLeftBlobPosition.y)
+		if(leftBlobbyHitGround())
 			leftBlobbyStartAnimation();
 		mLeftBlobVelocity.x -= BLOBBY_SPEED;
 	}
 	
 	if (mLeftPlayerInput.right)
 	{
-		if(GROUND_PLANE_HEIGHT<=mLeftBlobPosition.y)
+		if(leftBlobbyHitGround())
 			leftBlobbyStartAnimation();
 		mLeftBlobVelocity.x += BLOBBY_SPEED;
 	}
 	
 	if (mRightPlayerInput.left)
 	{
-		if(GROUND_PLANE_HEIGHT<=mRightBlobPosition.y)
+		if(rightBlobbyHitGround())
 			rightBlobbyStartAnimation();
 		mRightBlobVelocity.x -= BLOBBY_SPEED;
 	}	
 	
 	if (mRightPlayerInput.right)
 	{
-		if(GROUND_PLANE_HEIGHT<=mRightBlobPosition.y)
+		if(rightBlobbyHitGround())
 			rightBlobbyStartAnimation();
 		mRightBlobVelocity.x += BLOBBY_SPEED;
 	}
@@ -394,8 +411,10 @@ void PhysicWorld::step()
 		{
 			if (mBallPosition.y + BALL_RADIUS > 500.0)
 			{
-				mBallVelocity = mBallVelocity.reflectY().scale(0.6);
+
+				mBallVelocity = mBallVelocity.reflectY().scale(0.75);
 				mBallPosition -= mBallVelocity;
+				mBallPosition.y=500 - BALL_RADIUS;
 			}
 		}
 
