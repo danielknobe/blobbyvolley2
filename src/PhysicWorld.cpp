@@ -2,7 +2,8 @@
 
 const int TIMESTEP = 3; // calculations per frame
 
-const float TIMEOUT = 4.5;
+const float TIMEOUT_MIN = 0.8;
+const float TIMEOUT_MAX = 5.0;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -55,6 +56,20 @@ PhysicWorld::PhysicWorld()
 
 PhysicWorld::~PhysicWorld()
 {
+}
+
+bool PhysicWorld::resetPossiblityLeftSite()
+{
+	if (STANDARD_BALL_HEIGHT + BALL_RADIUS < mLeftBlobPosition.y - BLOBBY_HEIGHT / 2.0)
+		return true;
+	return false;
+}
+
+bool PhysicWorld::resetPossiblityRightSite()
+{
+	if (STANDARD_BALL_HEIGHT + BALL_RADIUS < mRightBlobPosition.y - BLOBBY_HEIGHT / 2.0)
+		return true;
+	return false;
 }
 
 void PhysicWorld::reset(int player)
@@ -130,9 +145,9 @@ void PhysicWorld::setBallValidity(bool validity)
 bool PhysicWorld::roundFinished()
 {
 	if (!mIsBallValid)
-		if (mBallVelocity.y < 4 && mBallVelocity.y > -4 && mBallPosition.y > GROUND_PLANE_HEIGHT)
+		if (mBallVelocity.y < 3.0 && mBallVelocity.y > -3.0 && mTimeSinceBallout > TIMEOUT_MIN)
 			return true;
-	if (mTimeSinceBallout > TIMEOUT)
+	if (mTimeSinceBallout > TIMEOUT_MAX)
 		return true;
 	return false;
 }
@@ -412,11 +427,12 @@ void PhysicWorld::step()
 			if (mBallPosition.y + BALL_RADIUS > 500.0)
 			{
 
-				mBallVelocity = mBallVelocity.reflectY().scaleY(0.65);
-				mBallVelocity = mBallVelocity.scaleX(0.7);
-				mBallPosition -= mBallVelocity;
+				mBallVelocity = mBallVelocity.reflectY().scaleY(0.6);
+				mBallVelocity = mBallVelocity.scaleX(0.65);
+
 				mBallPosition.y=500 - BALL_RADIUS;
 			}
+
 		}
 
 		// Border Collision

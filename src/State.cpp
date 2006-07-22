@@ -126,10 +126,10 @@ void LocalGameState::step()
 	}
 	
     if(mServingPlayer==0)
-	if (mPhysicWorld.roundFinished() && mPhysicWorld.leftBlobbyHitGround())
+	if (mPhysicWorld.roundFinished() && mPhysicWorld.resetPossiblityLeftSite())
 		mPhysicWorld.reset(mServingPlayer);
 	if(mServingPlayer==1)
-	if (mPhysicWorld.roundFinished() && mPhysicWorld.rightBlobbyHitGround())
+	if (mPhysicWorld.roundFinished() && mPhysicWorld.resetPossiblityRightSite())
 		mPhysicWorld.reset(mServingPlayer);
 		
 	mPhysicWorld.step();
