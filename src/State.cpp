@@ -123,9 +123,13 @@ void LocalGameState::step()
 		mLeftHitcount = 0;		
 	}
 	
-	if (mPhysicWorld.roundFinished())
+    if(mServingPlayer==0)
+	if (mPhysicWorld.roundFinished() && mPhysicWorld.leftBlobbyHitGround())
 		mPhysicWorld.reset(mServingPlayer);
-	
+	if(mServingPlayer==1)
+	if (mPhysicWorld.roundFinished() && mPhysicWorld.rightBlobbyHitGround())
+		mPhysicWorld.reset(mServingPlayer);
+		
 	mPhysicWorld.step();
 
 	float time = float(SDL_GetTicks()) / 1000.0;

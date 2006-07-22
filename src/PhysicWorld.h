@@ -66,6 +66,9 @@ public:
 	bool ballHitLeftGround();
 	bool ballHitRightGround();
 	
+	bool leftBlobbyHitGround();
+	bool rightBlobbyHitGround();
+	
 	// Blobby animation methods
 	void leftBlobbyAnimationStep();
 	void leftBlobbyStartAnimation();
