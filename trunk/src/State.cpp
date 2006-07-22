@@ -101,6 +101,7 @@ void LocalGameState::step()
 
 	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
 	{
+	if(mLeftHitcount > 3)
 		mPhysicWorld.dampBall();
 		smanager->playSound("sounds/pfiff.wav", 0.2);
 		if (mServingPlayer == 1)
@@ -113,6 +114,7 @@ void LocalGameState::step()
 		
 	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
 	{
+	if(mRightHitcount > 3)
 		mPhysicWorld.dampBall();
 		smanager->playSound("sounds/pfiff.wav", 0.2);
 		if (mServingPlayer == 0)
@@ -146,7 +148,7 @@ void LocalGameState::step()
 		
 		
 	if (((mLeftScore >= 15 && mLeftScore >= mRightScore + 2) ||
-		(mRightScore >= 0 && mRightScore >= mLeftScore + 2)) &&
+		(mRightScore >= 15 && mRightScore >= mLeftScore + 2)) &&
 		mPhysicWorld.roundFinished())
 	{
 		delete this;

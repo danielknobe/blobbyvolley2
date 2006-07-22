@@ -2,7 +2,7 @@
 
 const int TIMESTEP = 3; // calculations per frame
 
-const float TIMEOUT = 1.0;
+const float TIMEOUT = 4.5;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -130,7 +130,7 @@ void PhysicWorld::setBallValidity(bool validity)
 bool PhysicWorld::roundFinished()
 {
 	if (!mIsBallValid)
-		if (mBallVelocity.length() < 2.0 && mBallPosition.y > GROUND_PLANE_HEIGHT)
+		if (mBallVelocity.y < 4 && mBallVelocity.y > -4 && mBallPosition.y > GROUND_PLANE_HEIGHT)
 			return true;
 	if (mTimeSinceBallout > TIMEOUT)
 		return true;
@@ -412,7 +412,8 @@ void PhysicWorld::step()
 			if (mBallPosition.y + BALL_RADIUS > 500.0)
 			{
 
-				mBallVelocity = mBallVelocity.reflectY().scale(0.7);
+				mBallVelocity = mBallVelocity.reflectY().scaleY(0.65);
+				mBallVelocity = mBallVelocity.scaleX(0.7);
 				mBallPosition -= mBallVelocity;
 				mBallPosition.y=500 - BALL_RADIUS;
 			}
@@ -534,6 +535,6 @@ void PhysicWorld::step()
 
 void PhysicWorld::dampBall()
 {
-	mBallVelocity = mBallVelocity.scale(0.5);
+	mBallVelocity = mBallVelocity.scale(0.6);
 }
 
