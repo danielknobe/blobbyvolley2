@@ -3,7 +3,7 @@
 const int TIMESTEP = 3; // calculations per frame
 
 const float TIMEOUT_MIN = 0.8;
-const float TIMEOUT_MAX = 5.0;
+const float TIMEOUT_MAX = 4.0;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -145,7 +145,8 @@ void PhysicWorld::setBallValidity(bool validity)
 bool PhysicWorld::roundFinished()
 {
 	if (!mIsBallValid)
-		if (mBallVelocity.y < 3.0 && mBallVelocity.y > -3.0 && mTimeSinceBallout > TIMEOUT_MIN)
+		if (mBallVelocity.y < 2.5 && mBallVelocity.y > -2.5 && mTimeSinceBallout > TIMEOUT_MIN
+			&& mBallPosition.y > 425)
 			return true;
 	if (mTimeSinceBallout > TIMEOUT_MAX)
 		return true;
