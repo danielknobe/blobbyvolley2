@@ -1,4 +1,15 @@
+Primary:
+Important:
+- Ballshadowfix for SDL/OpenGL Renderer (may be for the Handheldversion too)
+
+
+Near aims:
+- Implementation of LUA-Script for external KI
+- Gamepadsupport
+
+
+
+Secondary:
 - Add option for old and new volleyball ruleset
 - Add time-capped game option
-
 - Add speed option
