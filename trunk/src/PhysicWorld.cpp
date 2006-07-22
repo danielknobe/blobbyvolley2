@@ -2,7 +2,7 @@
 
 const int TIMESTEP = 3; // calculations per frame
 
-const float TIMEOUT = 3.0;
+const float TIMEOUT = 1.0;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -412,7 +412,7 @@ void PhysicWorld::step()
 			if (mBallPosition.y + BALL_RADIUS > 500.0)
 			{
 
-				mBallVelocity = mBallVelocity.reflectY().scale(0.75);
+				mBallVelocity = mBallVelocity.reflectY().scale(0.7);
 				mBallPosition -= mBallVelocity;
 				mBallPosition.y=500 - BALL_RADIUS;
 			}
