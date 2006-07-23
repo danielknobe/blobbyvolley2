@@ -2,7 +2,6 @@
 
 const int TIMESTEP = 3; // calculations per frame
 
-const float TIMEOUT_MIN = 0.8;
 const float TIMEOUT_MAX = 4.0;
 
 // Blobby Settings
@@ -145,8 +144,7 @@ void PhysicWorld::setBallValidity(bool validity)
 bool PhysicWorld::roundFinished()
 {
 	if (!mIsBallValid)
-		if (mBallVelocity.y < 2.5 && mBallVelocity.y > -2.5 && mTimeSinceBallout > TIMEOUT_MIN
-			&& mBallPosition.y > 425)
+		if (mBallVelocity.y < 1.5 && mBallVelocity.y > -1.5 && mBallPosition.y > 430)
 			return true;
 	if (mTimeSinceBallout > TIMEOUT_MAX)
 		return true;
@@ -428,8 +426,8 @@ void PhysicWorld::step()
 			if (mBallPosition.y + BALL_RADIUS > 500.0)
 			{
 
-				mBallVelocity = mBallVelocity.reflectY().scaleY(0.6);
-				mBallVelocity = mBallVelocity.scaleX(0.65);
+				mBallVelocity = mBallVelocity.reflectY().scaleY(0.5);
+				mBallVelocity = mBallVelocity.scaleX(0.55);
 
 				mBallPosition.y=500 - BALL_RADIUS;
 			}
