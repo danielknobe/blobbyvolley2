@@ -1,3 +1,24 @@
+- Add animated background (prerendered Animations, at least for SDL and GL2D)
+
+- Make rendering frame independent, so the same gameplay can be provided on
+	older machindes with a lower rendering framerate
+
+
+- Configurable Physic
+
+Possible options:
+	Reflection Protection (Ball is never reflected downwards)
+	Kind of collision handling (spherical or plane)
+	Inclusion of the net sphere radius for net border collision 
+	Net overlapping fix (I don't know exactly what this fix does)
+	
+Possible parameters:
+	Upper net collision damping	
+	Jump acceleration
+	Blobby gravitation (the jump damping is fixed, it's just the double of
+		the gravitation)
+	Ball graviation
+=======
 Primary:
 Important:
 - Ballshadowfix for SDL/OpenGL Renderer (may be for the Handheldversion too)
