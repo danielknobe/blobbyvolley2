@@ -95,7 +95,7 @@ void LocalGameState::step()
 	else
 	{
 		mSquish += 1;
-	if(mSquish > 9)
+	if(mSquish > 5)
 		mSquish=0;
 	}
 
