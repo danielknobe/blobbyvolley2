@@ -40,7 +40,7 @@ LocalGameState::LocalGameState()
 	mRightOscillate = gameConfig.getBool("right_blobby_oscillate");
 
 	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
-	RenderManager::getSingleton().setBlobColor(0, mRightColor);
+	RenderManager::getSingleton().setBlobColor(1, mRightColor);
 
 	GUIManager::getSingleton()->drawCursor(false);
 	mLeftInput = new LocalInputSource(0);
