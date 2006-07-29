@@ -13,10 +13,13 @@ Secondary:
 - Add option for old and new volleyball ruleset
 - Add time-capped game option
 - Add speed option
-- Configurable Physic (only for Alpha and Betaphase)
 
-Possible parameters (danielknobe don't supports this idea):
-- Upper net collision damping	
+Possible Changes at Physics (may be exported as configurable parameters if 
+	disagreements do occur):
+- Upper net collision damping
 - Jump acceleration
-- Blobby gravitation (the jump damping is fixed, it's just the double of	the gravitation)
+- Blobby gravitation (the jump damping is fixed, it's just the double of the gravitation)
 - Ball graviation
+- Protection of downward reflections
+- New Reflection models for net sphere 
+	(for example: planar, sphere with bigger radius)
