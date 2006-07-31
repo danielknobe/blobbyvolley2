@@ -110,6 +110,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	SDL_WM_SetCaption("Blobby Volley 2 Alpha 3", "");
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
+	glDisable(GL_MULTISAMPLE);
 	
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
