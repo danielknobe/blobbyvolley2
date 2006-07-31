@@ -65,8 +65,8 @@ private:
 	int mLeftHitcount;
 	int mRightHitcount;
 	
-	int mSquish;
-
+	int mSquishLeft;
+	int mSquishRight;
 	Color mLeftColor;
 	Color mRightColor;
 	bool mLeftOscillate;
