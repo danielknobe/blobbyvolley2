@@ -53,7 +53,8 @@ LocalGameState::LocalGameState()
 	mLeftHitcount = 0;
 	mRightHitcount = 0;
 	
-	mSquish = 0;
+	mSquishLeft = 0;
+	mSquishRight = 0;
 	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
 	
@@ -73,7 +74,7 @@ void LocalGameState::step()
 	rmanager->setBall(mPhysicWorld.getBall(), mPhysicWorld.getBallRotation());
 	rmanager->setScore(mLeftScore, mRightScore, 
 		mServingPlayer == 0, mServingPlayer == 1);
-		if(0 == mSquish) // protection Of A Bug (mSquish)
+		if(0 == mSquishLeft) // protection Of A Bug (mSquish)
 	{
 		if (mPhysicWorld.ballHitLeftPlayer())
 		{
@@ -81,22 +82,32 @@ void LocalGameState::step()
 				mPhysicWorld.lastHitIntensity() + 0.4);
 			mLeftHitcount++;
 			mRightHitcount = 0;	
-			mSquish=1;
-		}		
+			mSquishLeft=1;
+		}
+	}
+	else
+	{
+		mSquishLeft += 1;
+		if(mSquishLeft > 5)
+			mSquishLeft=0;
+	}	
+
+	if(0 == mSquishRight) // protection Of A Bug (mSquish)
+	{  	
 		if (mPhysicWorld.ballHitRightPlayer())
 		{
 			smanager->playSound("sounds/bums.wav",
 				mPhysicWorld.lastHitIntensity() + 0.4);
 			mRightHitcount++;
 			mLeftHitcount = 0;		
-			mSquish = 1;
+			mSquishRight = 1;
 	        }
 	}
 	else
 	{
-		mSquish += 1;
-	if(mSquish > 5)
-		mSquish=0;
+		mSquishRight += 1;
+		if(mSquishRight > 5)
+			mSquishRight=0;
 	}
 
 	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
