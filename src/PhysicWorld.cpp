@@ -441,8 +441,27 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflectX();
 
 		// Net Collision
+		
+		// Left Net Border
+		if(Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
+			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
+			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
+	    	&& mBallVelocity.x<0
+	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE-1)
+				mBallVelocity = mBallVelocity.reflectX();
+
+		// Right Net Border  
+		else if(Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
+			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
+			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-10
+		    && mBallVelocity.x>0
+		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE-1)
+				mBallVelocity = mBallVelocity.reflectX();
+				
 		// Net Sphere
-		if (Vector2(
+		else if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
 			).length() <= NET_RADIUS + BALL_RADIUS)
 		{
@@ -458,25 +477,6 @@ void PhysicWorld::step()
 		else
 			mBallNetOverlapped=0;
 		
-		// Left Net Border
-		if(Vector2(
-			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
-			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
-			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
-	    	&& mBallVelocity.x<0
-	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
-				mBallVelocity = mBallVelocity.reflectX();
-
-		// Right Net Border  
-		else if(Vector2(
-			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
-			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
-			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-10
-		    && mBallVelocity.x>0
-		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
-				mBallVelocity = mBallVelocity.reflectX();
-
-
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
 		mRightBlobPosition += mRightBlobVelocity/TIMESTEP;
 
