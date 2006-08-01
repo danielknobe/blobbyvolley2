@@ -444,7 +444,7 @@ void PhysicWorld::step()
 		// Net Sphere
 		if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
-			).length() <= NET_RADIUS + BALL_RADIUS - 1)
+			).length() <= NET_RADIUS + BALL_RADIUS)
 		{
 			if(mBallNetOverlapped==0)
 			{
@@ -456,20 +456,24 @@ void PhysicWorld::step()
 			.normalise()).scale(0.7);
 		}
 		else
-		mBallNetOverlapped=0;
+			mBallNetOverlapped=0;
 		
 		// Left Net Border
-		if(mBallPosition.x+BALL_RADIUS>=NET_POSITION_X-NET_RADIUS // <- here please no else, it's important!
+		if(Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
+			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
 	    	&& mBallVelocity.x<0
-	    	&& mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
+	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
 		// Right Net Border  
-		else if(mBallPosition.x-BALL_RADIUS<=NET_POSITION_X+NET_RADIUS
+		else if(Vector2(
+			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
+			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
 			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-10
 		    && mBallVelocity.x>0
-		    && mBallPosition.y > NET_POSITION_Y-NET_SPHERE)
+		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
 
