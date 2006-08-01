@@ -156,7 +156,11 @@ void RenderManagerSDL::deinit()
 
 void RenderManagerSDL::draw()
 {
-	SDL_BlitSurface(mBackground, 0, mScreen, 0);
+	if (mNeedRedraw)
+	{
+		SDL_BlitSurface(mBackground, 0, mScreen, 0);
+		mNeedRedraw = false;
+	}
 	
 	int animationState;
 	SDL_Rect position;
@@ -180,22 +184,16 @@ void RenderManagerSDL::draw()
 		     markerColor, markerColor, markerColor));
 	
 	// Ball Shadow
-	position.x = lround(mBallPosition.x) +
-		(500 - lround(mBallPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mBallPosition.y)) / 16 - 12;
+	position = ballShadowRect(ballShadowPosition(mBallPosition));
 	SDL_BlitSurface(mBallShadow, 0, mScreen, &position);
 		
 	// Left blob shadow
-	position.x = lround(mLeftBlobPosition.x) +
-		(500 - lround(mLeftBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mLeftBlobPosition.y)) / 16 - 25;
+	position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
 
 	// Right blob shadow
-	position.x = lround(mRightBlobPosition.x) +
-		(500 - lround(mRightBlobPosition.y)) / 4 - 48;
-	position.y = 500 - (500 - lround(mRightBlobPosition.y)) / 16 - 25;
+	position = blobShadowRect(blobShadowPosition(mRightBlobPosition));
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlobShadow[animationState], 0,
 			mScreen, &position);
@@ -211,22 +209,19 @@ void RenderManagerSDL::draw()
 	SDL_BlitSurface(mBackground, &rodPosition, mScreen, &position);
 	
 	// Drawing the Ball
-	position.x = lround(mBallPosition.x) - 32;
-	position.y = lround(mBallPosition.y) - 32;
+	position = ballRect(mBallPosition);
 	animationState = int(mBallRotation / M_PI / 2 * 16) % 16;
 	SDL_BlitSurface(mBall[animationState], 0, mScreen, &position);
 
 	// Drawing left blob
 	
-	position.x = lround(mLeftBlobPosition.x) - 37;
-	position.y = lround(mLeftBlobPosition.y) - 44;
+	position = blobRect(mLeftBlobPosition);
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
 	
 	// Drawing right blob
-	
-	position.x = lround(mRightBlobPosition.x) - 37;
-	position.y = lround(mRightBlobPosition.y) - 44;
+
+	position = blobRect(mRightBlobPosition);	
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);
 
@@ -299,29 +294,71 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 
 void RenderManagerSDL::setBall(const Vector2& position, float rotation)
 {
+	SDL_Rect restore = ballRect(mBallPosition);
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+	restore = ballShadowRect(ballShadowPosition(mBallPosition));
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+	restore.x = lround(mBallPosition.x - 2.5);
+	restore.y = 5;
+	restore.w = 5;
+	restore.h = 5;
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+
 	mBallPosition = position;
 	mBallRotation = rotation;
 }
 
+void RenderManagerSDL::setMouseMarker(float position)
+{
+	SDL_Rect restore = {
+		lround(mMouseMarkerPosition - 2.5),
+		5,
+		5,
+		5
+	};
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+	mMouseMarkerPosition = position;
+}
+        
 void RenderManagerSDL::setBlob(int player, 
 		const Vector2& position, float animationState)
 {
+	SDL_Rect blobRestore;
+	SDL_Rect shadowRestore;
 	if (player == 0)
 	{
+		blobRestore = blobRect(mLeftBlobPosition);
+		shadowRestore = blobShadowRect(
+			blobShadowPosition(mLeftBlobPosition));
 		mLeftBlobPosition = position;
 		mLeftBlobAnimationState = animationState;
 	}
 
 	if (player == 1)
 	{
+		blobRestore = blobRect(mRightBlobPosition);
+		shadowRestore = blobShadowRect(
+			blobShadowPosition(mRightBlobPosition));
 		mRightBlobPosition = position;
 		mRightBlobAnimationState = animationState;
 	}
+	SDL_BlitSurface(mBackground, &blobRestore, mScreen, &blobRestore);
+	SDL_BlitSurface(mBackground, &shadowRestore, mScreen, &shadowRestore);
 }
 
 void RenderManagerSDL::setScore(int leftScore, int rightScore,
 	       bool leftWarning, bool rightWarning)
 {
+	SDL_Rect restore = {
+		24,
+		24,
+		96,
+		24
+	};
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+	restore.x = 800 - 96;
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);	
+	
 	mLeftPlayerScore = leftScore;
 	mRightPlayerScore = rightScore;
 	mLeftPlayerWarning = leftWarning;
@@ -371,6 +408,7 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 
 void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
 {
+	redraw();
 	SDL_Rect ovRect;
 	ovRect.x = lround(pos1.x);
 	ovRect.y = lround(pos1.y);

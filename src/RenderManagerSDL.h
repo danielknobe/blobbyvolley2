@@ -56,6 +56,8 @@ public:
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
 		       
+	virtual void setMouseMarker(float position);
+			       
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
 	virtual void drawImage(const std::string& filename, Vector2 position);
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2);

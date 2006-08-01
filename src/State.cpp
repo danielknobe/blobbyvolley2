@@ -41,6 +41,7 @@ LocalGameState::LocalGameState()
 
 	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
 	RenderManager::getSingleton().setBlobColor(1, mRightColor);
+	RenderManager::getSingleton().redraw();
 
 	GUIManager::getSingleton()->drawCursor(false);
 	mLeftInput = new LocalInputSource(0);
