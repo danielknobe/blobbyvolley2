@@ -47,9 +47,18 @@ protected:
 	SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
 	SDL_Surface* loadSurface(std::string filename);
 	
+	Vector2 blobShadowPosition(const Vector2& position);
+	Vector2 ballShadowPosition(const Vector2& position);
+	
+	SDL_Rect blobRect(const Vector2& position);
+	SDL_Rect blobShadowRect(const Vector2& position);
+	SDL_Rect ballRect(const Vector2& position);
+	SDL_Rect ballShadowRect(const Vector2& position);
+	
 	std::map<std::string, BufferedImage*> mImageMap;
 
 	float mMouseMarkerPosition;
+	bool mNeedRedraw;
 	
 public:
 	static RenderManager* createRenderManagerSDL();
@@ -92,7 +101,7 @@ public:
 	virtual void setBlob(int player, const Vector2& position, 
 			float animationState) {};
 
-	void setMouseMarker(float position);
+	virtual void setMouseMarker(float position);
 	
 	// Set the displayed score values and the serve notifications
 	virtual void setScore(int leftScore, int rightScore,
@@ -109,4 +118,8 @@ public:
 	
 	// This draws a greyed-out area
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2) {}
+	
+	// This forces a redraw of the background, for example
+	// when the windows was minimized
+	void redraw();
 };

@@ -295,25 +295,26 @@ void RenderManagerGL2D::draw()
 	glEnable(GL_BLEND);
 	
 	// Blob shadows
+	Vector2 pos;
 	
 	glLoadIdentity();
-	glTranslatef(mLeftBlobPosition.x + (500.0 - mLeftBlobPosition.y) / 4 + 16.0,
-			500.0 - (500.0 - mLeftBlobPosition.y) / 16.0 - 10.0, 0.2);
+	pos = blobShadowPosition(mLeftBlobPosition);
+	glTranslatef(pos.x, pos.y, 0.2);
 	glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
 	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
 	drawQuad(128.0, 32.0);
 	
 	glLoadIdentity();
-	glTranslatef(mRightBlobPosition.x + (500.0 - mRightBlobPosition.y) / 4 + 16.0,
-			500.0 - (500.0 - mRightBlobPosition.y) / 16.0 - 10.0, 0.2);
+	pos = blobShadowPosition(mRightBlobPosition);
+	glTranslatef(pos.x, pos.y, 0.2);
 	glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
 	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
 	drawQuad(128.0, 32.0);
 
 	// Ball shadow	
 	glLoadIdentity();
-	glTranslatef(mBallPosition.x + (500.0 - mBallPosition.y) / 4 + 16.0,
-			500.0 - (500.0 - mBallPosition.y) / 16.0 - 10.0, 0.3);
+	pos = ballShadowPosition(mBallPosition);
+	glTranslatef(pos.x, pos.y, 0.2);
 	glColor4f(1.0, 1.0, 1.0, 0.5);
 	glBindTexture(GL_TEXTURE_2D, mBallShadow);
 	drawQuad(128.0, 32.0);

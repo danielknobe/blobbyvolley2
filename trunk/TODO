@@ -23,3 +23,5 @@ Possible Changes at Physics (may be exported as configurable parameters if
 - Protection of downward reflections
 - New Reflection models for net sphere 
 	(for example: planar, sphere with bigger radius)
+
+- Make Code compatible with gcc -Wall

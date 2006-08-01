@@ -9,6 +9,7 @@ RenderManager::RenderManager()
 	assert(!mSingleton);
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
+	mNeedRedraw = true;
 }
 
 SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance)
@@ -123,4 +124,69 @@ int RenderManager::getNextFontIndex(std::string& string)
 void RenderManager::setMouseMarker(float position)
 {
 	mMouseMarkerPosition = position;
+}
+
+SDL_Rect RenderManager::blobRect(const Vector2& position)
+{
+	SDL_Rect rect = {
+		lround(position.x) - 37,
+		lround(position.y) - 44,
+		75,
+		89
+	};
+	return rect;
+}
+
+SDL_Rect RenderManager::ballRect(const Vector2& position)
+{
+	SDL_Rect rect = {
+		lround(position.x) - 32,
+		lround(position.y) - 32,
+		64,
+		64
+	};        
+	return rect;
+}
+
+Vector2 RenderManager::ballShadowPosition(const Vector2& position)
+{
+	return Vector2(
+		position.x + (500.0 - position.y) / 4 + 16.0,
+		500.0 - (500.0 - position.y) / 16.0 - 10.0		
+	);
+}
+
+SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
+{
+	SDL_Rect rect = {
+		lround(position.x) - 64,
+		lround(position.y) - 16,
+		128,
+		32
+	};
+	return rect;
+}
+
+Vector2 RenderManager::blobShadowPosition(const Vector2& position)
+{
+	return Vector2(
+		position.x + (500.0 - position.y) / 4 + 16.0,
+		500.0 - (500.0 - position.y) / 16.0 - 10.0
+	);
+}
+
+SDL_Rect RenderManager::blobShadowRect(const Vector2& position)
+{
+	SDL_Rect rect = {
+		lround(position.x) - 64,
+		lround(position.y) - 16,
+		128,
+		32
+	};
+	return rect;
+}
+
+void RenderManager::redraw()
+{
+	mNeedRedraw = true;
 }
