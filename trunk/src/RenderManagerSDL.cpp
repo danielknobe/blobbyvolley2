@@ -26,17 +26,33 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		int rg = (int(pixel->g) * int(color.g)) >> 8;
 		int rb = (int(pixel->b) * int(color.b)) >> 8;
 		int fak = int(pixel->r) * 5 - 4 * 256 - 138;
+		
+		bool colorkey = !(pixel->r | pixel->g | pixel->b);
+		
 		if (fak > 0)
 		{
 			rr += fak;
 			rg += fak;
 			rb += fak;
 		}
-		pixel->r = rr < 255 ? rr : 255;
-		pixel->g = rg < 255 ? rg : 255;
-		pixel->b = rb < 255 ? rb : 255;
-
-
+		rr = rr < 255 ? rr : 255;
+		rg = rg < 255 ? rg : 255;
+		rb = rb < 255 ? rb : 255;
+		
+		// This is clamped to 1 because dark colors would be
+		// colorkeyed otherwise
+		if (colorkey)
+		{
+			pixel->r = 0;
+			pixel->g = 0;
+			pixel->b = 0;
+		}
+		else
+		{
+			pixel->r = rr > 0 ? rr : 1;
+			pixel->g = rg > 0 ? rg : 1;
+			pixel->b = rb > 0 ? rb : 1;
+		}
 	}
 	SDL_UnlockSurface(newSurface);
 	SDL_Surface *convSurface = SDL_DisplayFormat(newSurface);
