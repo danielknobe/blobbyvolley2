@@ -34,7 +34,10 @@ const float RIGHT_PLANE = 800.0;
 const float BLOBBY_ANIMATION_SPEED = 0.5;
 const float BLOBBY_SPEED = 5;
 const float BLOBBY_JUMP_ACCELERATION = 13.62;
-const float BLOBBY_JUMP_BUFFER = 0.39;
+
+// This is exactly the half of the gravitation, i checked it in
+// the original code
+const float BLOBBY_JUMP_BUFFER = 0.40;
 const float GRAVITATION = 0.8;
 const float BALL_GRAVITATION = 0.232;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
