@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Global.h"
 #include "Vector.h"
 #include "InputSource.h"
 
@@ -15,8 +16,10 @@ private:
 	bool int_BallHitRightPlayerBottom();
 	bool int_BallHitLeftPlayer();
 	bool int_BallHitRightPlayer();
+	
+	bool resetAreaClear();
 
-	// ball is hit by player?
+	// is ball hit by player?
 	bool mBallHitByLeftBlob;
 	bool mBallHitByRightBlob;
 
@@ -91,10 +94,6 @@ public:
 	// wants to know, which player begins.
 	void reset(int player);
 
-	// Returns a bool if a reset is possible
-	bool resetPossiblityLeftSite();
-	bool resetPossiblityRightSite();
-    	
 	// This resets the player to their starting Positions
 	void resetPlayer();
 

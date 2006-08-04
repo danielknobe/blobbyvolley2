@@ -2,7 +2,9 @@
 
 #include "Global.h"
 #include "UserConfig.h"
-#include "PhysicWorld.h"
+
+class DuelMatch;
+class InputSource;
 
 class State
 {
@@ -53,27 +55,18 @@ public:
 class LocalGameState : public State
 {
 private:
-	PhysicWorld mPhysicWorld;
-	
 	InputSource* mLeftInput;
 	InputSource* mRightInput;
 	
-	int mLeftScore;
-	int mRightScore;
-	int mServingPlayer;
-	
-	int mLeftHitcount;
-	int mRightHitcount;
-	
-	int mSquishLeft;
-	int mSquishRight;
 	Color mLeftColor;
 	Color mRightColor;
 	bool mLeftOscillate;
 	bool mRightOscillate;
+	
+	DuelMatch* mMatch;
 
 public:
-	LocalGameState();
+	LocalGameState(GameMode mode);
 	virtual ~LocalGameState();
 	virtual void step();
 	
