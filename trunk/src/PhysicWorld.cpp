@@ -60,18 +60,24 @@ PhysicWorld::~PhysicWorld()
 {
 }
 
-bool PhysicWorld::resetPossiblityLeftSite()
+bool PhysicWorld::resetAreaClear()
 {
-	if (STANDARD_BALL_HEIGHT + BALL_RADIUS < mLeftBlobPosition.y - BLOBBY_HEIGHT / 2.0)
-		return true;
-	return false;
-}
-
-bool PhysicWorld::resetPossiblityRightSite()
-{
-	if (STANDARD_BALL_HEIGHT + BALL_RADIUS < mRightBlobPosition.y - BLOBBY_HEIGHT / 2.0)
-		return true;
-	return false;
+	Vector2 oldBallPos = mBallPosition;
+	mBallPosition = Vector2(200, STANDARD_BALL_HEIGHT);
+	if (int_BallHitLeftPlayer())
+	{
+		mBallPosition = oldBallPos;
+		return false;
+	}
+	
+	mBallPosition = Vector2(600, STANDARD_BALL_HEIGHT);
+	if (int_BallHitRightPlayer())
+	{
+		mBallPosition = oldBallPos;
+		return false;
+	}
+	mBallPosition = oldBallPos;
+	return true;
 }
 
 void PhysicWorld::reset(int player)
@@ -146,11 +152,15 @@ void PhysicWorld::setBallValidity(bool validity)
 
 bool PhysicWorld::roundFinished()
 {
-	if (!mIsBallValid)
-		if (mBallVelocity.y < 1.5 && mBallVelocity.y > -1.5 && mBallPosition.y > 430)
+	if (resetAreaClear())
+	{
+		if (!mIsBallValid)
+			if (mBallVelocity.y < 1.5 &&
+				mBallVelocity.y > -1.5 && mBallPosition.y > 430)
+				return true;
+		if (mTimeSinceBallout > TIMEOUT_MAX)
 			return true;
-	if (mTimeSinceBallout > TIMEOUT_MAX)
-		return true;
+	}
 	return false;
 }
 

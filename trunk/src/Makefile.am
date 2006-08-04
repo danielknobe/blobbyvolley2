@@ -9,6 +9,7 @@ tinyxml_SOURCES = \
 bin_PROGRAMS = blobby
 
 blobby_SOURCES = \
+	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
 	InputSource.h LocalInputSource.h \
 	InputManager.h InputManager.cpp \

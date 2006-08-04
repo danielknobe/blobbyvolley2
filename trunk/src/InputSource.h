@@ -1,5 +1,7 @@
 #pragma once
 
+// This struct exists for easy exchange of a single player input frame
+
 struct PlayerInput
 {
 	PlayerInput()
@@ -20,6 +22,12 @@ struct PlayerInput
 	bool right : 1;
 	bool up : 1;
 };
+
+// This class abstracts several possible input sources, like local input 
+// from InputManager, input from a scripted player or input over network
+// which in turn can all be recorded over a decorator
+// It should be only called once per frame because some implementations
+// may use this to activate a refresh routine on their actual source
 
 class InputSource
 {

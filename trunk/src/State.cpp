@@ -3,7 +3,7 @@
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "GUIManager.h"
-
+#include "DuelMatch.h"
 
 State::State()
 {
@@ -23,9 +23,10 @@ LocalGameState::~LocalGameState()
 {
 	delete mLeftInput;
 	delete mRightInput;
+	delete mMatch;
 }
 
-LocalGameState::LocalGameState()
+LocalGameState::LocalGameState(GameMode mode)
 	: State()
 {
 	UserConfig gameConfig;
@@ -44,107 +45,19 @@ LocalGameState::LocalGameState()
 	RenderManager::getSingleton().redraw();
 
 	GUIManager::getSingleton()->drawCursor(false);
-	mLeftInput = new LocalInputSource(0);
-	mRightInput = new LocalInputSource(1);
-	
-	mLeftScore = 0;
-	mRightScore = 0;
-	mServingPlayer = -1;
-	
-	mLeftHitcount = 0;
-	mRightHitcount = 0;
-	
-	mSquishLeft = 0;
-	mSquishRight = 0;
-	mPhysicWorld.resetPlayer();
-	mPhysicWorld.step();
-	
-	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2); // Like in the original
+	mLeftInput = new LocalInputSource(LEFT_PLAYER);
+	mRightInput = new LocalInputSource(RIGHT_PLAYER);
+
+	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
+	mMatch = new DuelMatch(mLeftInput, mRightInput, true);
 }
 
 void LocalGameState::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
-	mPhysicWorld.setLeftInput(mLeftInput->getInput());
-	mPhysicWorld.setRightInput(mRightInput->getInput());
-	rmanager->setBlob(0, mPhysicWorld.getLeftBlob(),
-		mPhysicWorld.getLeftBlobState());
-	rmanager->setBlob(1, mPhysicWorld.getRightBlob(),
-		mPhysicWorld.getRightBlobState());
-	rmanager->setBall(mPhysicWorld.getBall(), mPhysicWorld.getBallRotation());
-	rmanager->setScore(mLeftScore, mRightScore, 
-		mServingPlayer == 0, mServingPlayer == 1);
-		if(0 == mSquishLeft) // protection Of A Bug (mSquish)
-	{
-		if (mPhysicWorld.ballHitLeftPlayer())
-		{
-			smanager->playSound("sounds/bums.wav", 
-				mPhysicWorld.lastHitIntensity() + 0.4);
-			mLeftHitcount++;
-			mRightHitcount = 0;	
-			mSquishLeft=1;
-		}
-	}
-	else
-	{
-		mSquishLeft += 1;
-		if(mSquishLeft > 5)
-			mSquishLeft=0;
-	}	
-
-	if(0 == mSquishRight) // protection Of A Bug (mSquish)
-	{  	
-		if (mPhysicWorld.ballHitRightPlayer())
-		{
-			smanager->playSound("sounds/bums.wav",
-				mPhysicWorld.lastHitIntensity() + 0.4);
-			mRightHitcount++;
-			mLeftHitcount = 0;		
-			mSquishRight = 1;
-	        }
-	}
-	else
-	{
-		mSquishRight += 1;
-		if(mSquishRight > 5)
-			mSquishRight=0;
-	}
-
-	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
-	{
-	if(mLeftHitcount > 3)
-		mPhysicWorld.dampBall();
-		smanager->playSound("sounds/pfiff.wav", 0.2);
-		if (mServingPlayer == 1)
-			mRightScore++;
-		mServingPlayer = 1;
-		mPhysicWorld.setBallValidity(0);
-		mRightHitcount = 0;
-		mLeftHitcount = 0;
-	}
-		
-	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
-	{
-	if(mRightHitcount > 3)
-		mPhysicWorld.dampBall();
-		smanager->playSound("sounds/pfiff.wav", 0.2);
-		if (mServingPlayer == 0)
-			mLeftScore++;
-		mServingPlayer = 0;
-		mPhysicWorld.setBallValidity(0);
-		mRightHitcount = 0;
-		mLeftHitcount = 0;		
-	}
 	
-    if(mServingPlayer==0)
-	if (mPhysicWorld.roundFinished() && mPhysicWorld.resetPossiblityLeftSite())
-		mPhysicWorld.reset(mServingPlayer);
-	if(mServingPlayer==1)
-	if (mPhysicWorld.roundFinished() && mPhysicWorld.resetPossiblityRightSite())
-		mPhysicWorld.reset(mServingPlayer);
-		
-	mPhysicWorld.step();
+	mMatch->step();
 
 	float time = float(SDL_GetTicks()) / 1000.0;
 	if (mLeftOscillate)
@@ -158,13 +71,11 @@ void LocalGameState::step()
 			int((cos(time*4) + 1.0) * 128),
 			int((cos(time*3) + 1.0) * 128)));
 		
-		
-	if (((mLeftScore >= 15 && mLeftScore >= mRightScore + 2) ||
-		(mRightScore >= 15 && mRightScore >= mLeftScore + 2)) &&
-		mPhysicWorld.roundFinished())
+	PlayerSide side = mMatch->winningPlayer();
+	if (side != NO_PLAYER)
 	{
 		delete this;
-		mCurrentState = new WinState(mServingPlayer);
+		mCurrentState = new WinState(side);
 	}
 	if (InputManager::getSingleton()->exit())
 	{
@@ -202,7 +113,7 @@ void MainMenuState::step()
 	if (gmgr->getClick(mStartButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState();
+		mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
 	}
 	
 	else if (gmgr->getClick(mExitButton)) 

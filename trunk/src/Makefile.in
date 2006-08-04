@@ -51,13 +51,14 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = tinystr.$(OBJEXT) tinyxml.$(OBJEXT) \
 	tinyxmlerror.$(OBJEXT) tinyxmlparser.$(OBJEXT)
-am_blobby_OBJECTS = main.$(OBJEXT) InputManager.$(OBJEXT) \
-	GUIManager.$(OBJEXT) NetworkManager.$(OBJEXT) \
-	NetworkServer.$(OBJEXT) NetworkClient.$(OBJEXT) \
-	PhysicWorld.$(OBJEXT) RenderManager.$(OBJEXT) \
-	RenderManagerSDL.$(OBJEXT) RenderManagerGP2X.$(OBJEXT) \
-	RenderManagerGL2D.$(OBJEXT) State.$(OBJEXT) \
-	SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) $(am__objects_1)
+am_blobby_OBJECTS = DuelMatch.$(OBJEXT) main.$(OBJEXT) \
+	InputManager.$(OBJEXT) GUIManager.$(OBJEXT) \
+	NetworkManager.$(OBJEXT) NetworkServer.$(OBJEXT) \
+	NetworkClient.$(OBJEXT) PhysicWorld.$(OBJEXT) \
+	RenderManager.$(OBJEXT) RenderManagerSDL.$(OBJEXT) \
+	RenderManagerGP2X.$(OBJEXT) RenderManagerGL2D.$(OBJEXT) \
+	State.$(OBJEXT) SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) \
+	$(am__objects_1)
 blobby_OBJECTS = $(am_blobby_OBJECTS)
 blobby_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
@@ -179,6 +180,7 @@ tinyxml_SOURCES = \
 	tinyxml/tinyxml.h
 
 blobby_SOURCES = \
+	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
 	InputSource.h LocalInputSource.h \
 	InputManager.h InputManager.cpp \
@@ -264,6 +266,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DuelMatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GUIManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/InputManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NetworkClient.Po@am__quote@

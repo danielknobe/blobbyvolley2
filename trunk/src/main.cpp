@@ -17,7 +17,8 @@
 #include "State.h"
 
 void correctFramerate()
-{	int rate = 60;
+{
+	int rate = 60;
 	float rateTicks = 1000.0 / ((float)rate);
 	static int frameCount = 0;
 	static int lastTicks = SDL_GetTicks();
