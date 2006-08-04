@@ -13,10 +13,6 @@ struct InputKeyMap
         SDLKey key;
 };
 
-// TODO: Gepufferten Input einbauen! Das bedeutet, dass für die GUI-Funktionen
-// nicht einfach der aktuelle Wert zurückgegeben wird, sondern ein Tastendruck
-// nur ein einziges Mal angezeigt wird, so wie beim Polling mit SDl_KEYDOWN
-
 class InputManager
 {
 private:

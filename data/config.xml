@@ -9,12 +9,12 @@
 	<var name="r1" value="0"/>
 	<var name="g1" value="0"/>
 	<var name="b1" value="0"/>
-	<var name="left_blobby_oscillate" value="false" />
+	<var name="left_blobby_oscillate" value="true" />
 
 <!-- Right blobby color configuration -->
 	<var name="r2" value="255"/>
 	<var name="g2" value="255"/>
 	<var name="b2" value="255"/>
-	<var name="right_blobby_oscillate" value="false" />
+	<var name="right_blobby_oscillate" value="true" />
 </userconfig>
 

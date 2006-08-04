@@ -4,6 +4,8 @@
 #include "SoundManager.h"
 #include "GUIManager.h"
 #include "DuelMatch.h"
+#include "ReplayRecorder.h"
+#include "ReplayInputSource.h"
 
 State::State()
 {
@@ -24,11 +26,15 @@ LocalGameState::~LocalGameState()
 	delete mLeftInput;
 	delete mRightInput;
 	delete mMatch;
+	if (mRecorder)
+		delete mRecorder;
 }
 
 LocalGameState::LocalGameState(GameMode mode)
 	: State()
 {
+	mRecorder = 0;
+
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 	mLeftColor = Color(gameConfig.getInteger("r1"),
@@ -45,10 +51,18 @@ LocalGameState::LocalGameState(GameMode mode)
 	RenderManager::getSingleton().redraw();
 
 	GUIManager::getSingleton()->drawCursor(false);
-	mLeftInput = new LocalInputSource(LEFT_PLAYER);
-	mRightInput = new LocalInputSource(RIGHT_PLAYER);
-
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
+	
+	mRecorder = new ReplayRecorder(mode, "record.xml");
+
+	InputSource* linput = new LocalInputSource(LEFT_PLAYER);
+	InputSource* rinput = new LocalInputSource(RIGHT_PLAYER);
+	
+	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
+			new LocalInputSource(LEFT_PLAYER));
+	mRightInput = mRecorder->createReplayInputSource(RIGHT_PLAYER,
+			new LocalInputSource(RIGHT_PLAYER));
+
 	mMatch = new DuelMatch(mLeftInput, mRightInput, true);
 }
 
@@ -77,7 +91,12 @@ void LocalGameState::step()
 		delete this;
 		mCurrentState = new WinState(side);
 	}
-	if (InputManager::getSingleton()->exit())
+	else if (InputManager::getSingleton()->exit())
+	{
+		delete this;
+		mCurrentState = new MainMenuState;
+	}
+	else if (mRecorder->endOfFile())
 	{
 		delete this;
 		mCurrentState = new MainMenuState;
@@ -92,7 +111,11 @@ MainMenuState::MainMenuState()
 	gmgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	gmgr->createImage("gfx/titel.bmp", Vector2(250.0, 210.0));
 	gmgr->drawCursor(true);
-	mStartButton = gmgr->createTextButton("start", 5, Vector2(500.0, 460.0));
+	mStartButton = gmgr->createTextButton("start", 5, Vector2(500.0, 400.0));
+	mStartRecordButton = 
+		gmgr->createTextButton("record match", 12, Vector2(500.0, 430.0));
+	mStartReplayButton = 
+		gmgr->createTextButton("watch replay", 12, Vector2(500.0, 460.0));
 	mExitButton = gmgr->createTextButton("exit", 4, Vector2(500, 490.0));
 }
 
@@ -114,6 +137,18 @@ void MainMenuState::step()
 	{
 		delete mCurrentState;
 		mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
+	}
+	
+	else if (gmgr->getClick(mStartRecordButton))
+	{
+		delete mCurrentState;
+		mCurrentState = new LocalGameState(MODE_RECORDING_DUEL);
+	}
+
+	else if (gmgr->getClick(mStartReplayButton))
+	{
+		delete mCurrentState;
+		 mCurrentState = new LocalGameState(MODE_REPLAY_DUEL);
 	}
 	
 	else if (gmgr->getClick(mExitButton)) 

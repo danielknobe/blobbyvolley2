@@ -23,7 +23,9 @@ enum PlayerSide
 {
 	NO_PLAYER = -1,
 	LEFT_PLAYER = 0,
-	RIGHT_PLAYER = 1
+	RIGHT_PLAYER = 1,
+	MAX_PLAYERS // This is always one more than the highest player enum
+			// and can be used to declare arrays
 };
 
 struct Color

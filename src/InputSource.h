@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 // This struct exists for easy exchange of a single player input frame
 
 struct PlayerInput
@@ -10,6 +12,8 @@ struct PlayerInput
 		right = false;
 		up = false;
 	}
+	
+	PlayerInput(const std::string& string);
 	
 	PlayerInput(bool l, bool r, bool u)
 	{
@@ -33,5 +37,12 @@ class InputSource
 {
 public:
 	virtual PlayerInput getInput() = 0;
+	virtual ~InputSource()
+	{
+	}
 };
 
+// This operator converts a PlayerInput structure in a packed string
+// suitable for saving
+
+std::string& operator<< (std::string& out, const PlayerInput& input);

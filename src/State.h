@@ -5,6 +5,7 @@
 
 class DuelMatch;
 class InputSource;
+class ReplayRecorder;
 
 class State
 {
@@ -26,6 +27,8 @@ class MainMenuState : public State
 {
 private:
 	int mStartButton;
+	int mStartReplayButton;
+	int mStartRecordButton;
 	int mExitButton;
 public:
 	MainMenuState();
@@ -64,6 +67,7 @@ private:
 	bool mRightOscillate;
 	
 	DuelMatch* mMatch;
+	ReplayRecorder* mRecorder;
 
 public:
 	LocalGameState(GameMode mode);
