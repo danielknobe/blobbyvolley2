@@ -21,7 +21,7 @@ struct TwoPlayerInput
 	PlayerInput input[2];
 	
 	std::string getXMLString();
-	std::string parseXMLValues(const std::string& lvalue,
+	void parseXMLValues(const std::string& lvalue,
 					const std::string& rvalue);
 };
 

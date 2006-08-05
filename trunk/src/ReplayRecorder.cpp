@@ -31,7 +31,7 @@ std::string TwoPlayerInput::getXMLString()
 	return buffer;
 }
 
-std::string TwoPlayerInput::parseXMLValues(const std::string& lvalue,
+void TwoPlayerInput::parseXMLValues(const std::string& lvalue,
 				const std::string& rvalue)
 {
 	input[0] = PlayerInput(lvalue);
