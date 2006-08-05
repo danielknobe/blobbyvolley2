@@ -17,14 +17,23 @@ public:
 	// results to the user through RenderManager and SoundManager.
 	// A deacivation of the output is useful on dedicated servers
 	
-	// Although DuelMatch is only ment to implement the ruleset
+	// Allthough DuelMatch is only ment to implement the ruleset
 	// and combine input and physics, it would be unpractical to
-	// export the attributes necessary for output. 
+	// export the attributes necessary for output.
+	
+	// If global is true, the instance registered as the main
+	// game and can be accessed from everywhere. There can only
+	// be one global game at a time, otherwise an assertion fails.
 	
 	DuelMatch(InputSource* linput, InputSource* rinput,
-					bool output);
+				bool output, bool global);
 				
 	~DuelMatch();
+	
+	// Allthough DuelMatch can be instantiated multiple times, a
+	// singleton may be registered for the purpose of scripted or
+	// interactive input. Note this can return 0.
+	static DuelMatch* getMainGame();
 	
 	// This steps through one frame
 	void step();
@@ -38,20 +47,23 @@ public:
 	// positions and for lua export, which makes them accessable
 	// for scripted input sources
 	
-	int getScore(int player);
-	int servingPlayer();
+	int getScore(PlayerSide player);
+	PlayerSide servingPlayer();
 	
-	int getHitcount(int player);
+	int getHitcount(PlayerSide player);
 	
 	Vector2 getBallPosition();
 	Vector2 getBallVelocity();
-	Vector2 getBlobPosition(int player);
+	Vector2 getBlobPosition(PlayerSide player);
 	
 	// This functions returns true if the player launched
 	// and is jumping at the moment
 	bool getBlobJump(int player);
 	
 private:
+	static DuelMatch* mMainGame;
+	bool mGlobal;
+
 	PhysicWorld mPhysicWorld;
 	
 	InputSource* mLeftInput;

@@ -2,8 +2,20 @@
 #include "SoundManager.h"
 #include "DuelMatch.h"
 
-DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool output)
+#include <cassert>
+
+DuelMatch* DuelMatch::mMainGame = 0;
+
+DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
+				bool output, bool global)
 {
+	mGlobal = global;
+	if (mGlobal)
+	{
+		assert(mMainGame == 0);
+		mMainGame = this;
+	}
+
 	mLeftInput = linput;
 	mRightInput = rinput;
 	mOutput = output;
@@ -25,7 +37,15 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool output)
 
 DuelMatch::~DuelMatch()
 {
-	
+	if (mGlobal)
+	{
+		mMainGame = 0;
+	}
+}
+
+DuelMatch* DuelMatch::getMainGame()
+{
+	return mMainGame;
 }
 
 void DuelMatch::step()
