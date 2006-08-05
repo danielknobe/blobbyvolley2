@@ -128,22 +128,25 @@ bool PhysicWorld::ballHitLeftGround()
 	return false;
 }
 
-bool PhysicWorld::leftBlobbyHitGround()
+bool PhysicWorld::blobbyHitGround(int player)
 {
-	if (getLeftBlob().y >= GROUND_PLANE_HEIGHT)
-		return true;
+	if (player == 0)
+	{ 
+		if (getLeftBlob().y >= GROUND_PLANE_HEIGHT)
+			return true;
+		else
+			return false;
+	}
+	else if (player == 1)
+	{
+		if (getRightBlob().y >= GROUND_PLANE_HEIGHT)
+			return true;
+		else
+			return false;
+	}
 	else
 		return false;
 }
-
-bool PhysicWorld::rightBlobbyHitGround()
-{
-	if (getRightBlob().y >= GROUND_PLANE_HEIGHT)
-		return true;
-	else
-		return false;
-}
-
 
 void PhysicWorld::setBallValidity(bool validity)
 {
@@ -279,75 +282,79 @@ void PhysicWorld::setRightInput(const PlayerInput& input)
 }
 
 // Blobby animation methods
-void PhysicWorld::leftBlobbyAnimationStep()
+void PhysicWorld::blobbyAnimationStep(int player)
 {
-if(mLeftBlobState<0.0)
+	if (player == 0)
 	{
-		mLeftBlobbyAnimationSpeedAtm=0;
-		mLeftBlobState=0;
+		if (mLeftBlobState < 0.0)
+		{
+			mLeftBlobbyAnimationSpeedAtm = 0;
+			mLeftBlobState = 0;
+		}
+
+		if (mLeftBlobState >= 4.5)
+		{		
+			mLeftBlobbyAnimationSpeedAtm =- BLOBBY_ANIMATION_SPEED;
+		}
+		
+		mLeftBlobState += mLeftBlobbyAnimationSpeedAtm;
+		
+		if (mLeftBlobState >= 5)
+		{		
+			mLeftBlobState = 4.99;
+   		}
 	}
-	
-	if(mLeftBlobState>=4.5)
-	{		
-		mLeftBlobbyAnimationSpeedAtm=-BLOBBY_ANIMATION_SPEED;
-    }
-	mLeftBlobState+=mLeftBlobbyAnimationSpeedAtm;
-	if(mLeftBlobState>=5)
-	{		
-		mLeftBlobState=4.99;
-    }
-}
-
-void PhysicWorld::leftBlobbyStartAnimation()
-{
-	if(mLeftBlobbyAnimationSpeedAtm==0)
-	mLeftBlobbyAnimationSpeedAtm=BLOBBY_ANIMATION_SPEED;
-}
-
-void PhysicWorld::rightBlobbyAnimationStep()
-{
-if(mRightBlobState<0.0)
+	else if (player == 1)
 	{
-		mRightBlobbyAnimationSpeedAtm=0;
-		mRightBlobState=0;
-	}
+		if (mRightBlobState < 0.0)
+		{
+			mRightBlobbyAnimationSpeedAtm = 0;
+			mRightBlobState = 0;
+		}
 	
-	if(mRightBlobState>=4.5)
-	{		
-		mRightBlobbyAnimationSpeedAtm=-BLOBBY_ANIMATION_SPEED;
-    }
-	mRightBlobState+=mRightBlobbyAnimationSpeedAtm;
-	if(mRightBlobState>=5)
-	{		
-		mRightBlobState=4.99;
-    }
+		if (mRightBlobState >= 4.5)
+		{		
+			mRightBlobbyAnimationSpeedAtm =- BLOBBY_ANIMATION_SPEED;
+    	}
+		mRightBlobState += mRightBlobbyAnimationSpeedAtm;
+		if (mRightBlobState >= 5)
+		{		
+			mRightBlobState = 4.99;
+ 		}
+	}
 }
 
-void PhysicWorld::rightBlobbyStartAnimation()
+void PhysicWorld::blobbyStartAnimation(int player)
 {
-	if(mRightBlobbyAnimationSpeedAtm==0)
-	mRightBlobbyAnimationSpeedAtm=BLOBBY_ANIMATION_SPEED;
+	if (player == 0)
+	{
+		if (mLeftBlobbyAnimationSpeedAtm == 0)
+		mLeftBlobbyAnimationSpeedAtm = BLOBBY_ANIMATION_SPEED;
+	}
+	else if (player == 1)
+	{
+		if (mRightBlobbyAnimationSpeedAtm == 0)
+		mRightBlobbyAnimationSpeedAtm = BLOBBY_ANIMATION_SPEED;
+	}
 }
-
-
 
 void PhysicWorld::step()
 {
     // Input Handling
-	if (leftBlobbyHitGround())
+	if (blobbyHitGround(LEFT_PLAYER))
 		if (mLeftPlayerInput.up)
 		{
 			mLeftBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
-			leftBlobbyStartAnimation();
+			blobbyStartAnimation(LEFT_PLAYER);
 		}
 	if (mLeftPlayerInput.up)
 		mLeftBlobVelocity.y -= BLOBBY_JUMP_BUFFER;
 	
-	if (rightBlobbyHitGround())
+	if (blobbyHitGround(RIGHT_PLAYER))
 		if (mRightPlayerInput.up)
 		{
 			mRightBlobVelocity.y = -BLOBBY_JUMP_ACCELERATION;
-			rightBlobbyStartAnimation();
+			blobbyStartAnimation(RIGHT_PLAYER);
 		}
 		
 	if (mRightPlayerInput.up)
@@ -357,29 +364,29 @@ void PhysicWorld::step()
 	mRightBlobVelocity.x = 0.0;
 		if (mLeftPlayerInput.left)
 	{
-		if(leftBlobbyHitGround())
-			leftBlobbyStartAnimation();
+		if(blobbyHitGround(LEFT_PLAYER))
+			blobbyStartAnimation(LEFT_PLAYER);
 		mLeftBlobVelocity.x -= BLOBBY_SPEED;
 	}
 	
 	if (mLeftPlayerInput.right)
 	{
-		if(leftBlobbyHitGround())
-			leftBlobbyStartAnimation();
+		if(blobbyHitGround(LEFT_PLAYER))
+			blobbyStartAnimation(LEFT_PLAYER);
 		mLeftBlobVelocity.x += BLOBBY_SPEED;
 	}
 	
 	if (mRightPlayerInput.left)
 	{
-		if(rightBlobbyHitGround())
-			rightBlobbyStartAnimation();
+		if(blobbyHitGround(RIGHT_PLAYER))
+			blobbyStartAnimation(RIGHT_PLAYER);
 		mRightBlobVelocity.x -= BLOBBY_SPEED;
 	}	
 	
 	if (mRightPlayerInput.right)
 	{
-		if(rightBlobbyHitGround())
-			rightBlobbyStartAnimation();
+		if(blobbyHitGround(RIGHT_PLAYER))
+			blobbyStartAnimation(RIGHT_PLAYER);
 		mRightBlobVelocity.x += BLOBBY_SPEED;
 	}
 
@@ -528,7 +535,7 @@ void PhysicWorld::step()
 		if (mLeftBlobPosition.y > GROUND_PLANE_HEIGHT)
 		{
 			if(mLeftBlobVelocity.y>0.7)
-				leftBlobbyStartAnimation();
+				blobbyStartAnimation(LEFT_PLAYER);
 			mLeftBlobPosition.y = GROUND_PLANE_HEIGHT;
 			mLeftBlobVelocity.y = 0.0;
 			// We need an error correction here because the y coordinate
@@ -537,7 +544,7 @@ void PhysicWorld::step()
 		if (mRightBlobPosition.y > GROUND_PLANE_HEIGHT)
 		{
  			if(mRightBlobVelocity.y>0.7)
-				rightBlobbyStartAnimation();
+				blobbyStartAnimation(RIGHT_PLAYER);
 			mRightBlobPosition.y = GROUND_PLANE_HEIGHT;
 			mRightBlobVelocity.y = 0.0;
 		}
@@ -558,8 +565,8 @@ void PhysicWorld::step()
 		mBallRotation=0;
 
 	// Blobbyanimationstep
-	leftBlobbyAnimationStep();
-	rightBlobbyAnimationStep();
+	blobbyAnimationStep(LEFT_PLAYER);
+	blobbyAnimationStep(RIGHT_PLAYER);
 	
 	mTimeSinceBallout = mIsBallValid ? 0.0 : 
 		mTimeSinceBallout + 1.0 / 60;

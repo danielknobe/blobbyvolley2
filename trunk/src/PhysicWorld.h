@@ -69,14 +69,11 @@ public:
 	bool ballHitLeftGround();
 	bool ballHitRightGround();
 	
-	bool leftBlobbyHitGround();
-	bool rightBlobbyHitGround();
+	bool blobbyHitGround(int player);
 	
 	// Blobby animation methods
-	void leftBlobbyAnimationStep();
-	void leftBlobbyStartAnimation();
-	void rightBlobbyAnimationStep();
-	void rightBlobbyStartAnimation();
+	void blobbyAnimationStep(int player);
+	void blobbyStartAnimation(int player);
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
