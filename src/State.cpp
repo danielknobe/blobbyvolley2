@@ -63,7 +63,7 @@ LocalGameState::LocalGameState(GameMode mode)
 	mRightInput = mRecorder->createReplayInputSource(RIGHT_PLAYER,
 			new LocalInputSource(RIGHT_PLAYER));
 
-	mMatch = new DuelMatch(mLeftInput, mRightInput, true);
+	mMatch = new DuelMatch(mLeftInput, mRightInput, true, true);
 }
 
 void LocalGameState::step()
