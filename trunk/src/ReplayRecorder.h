@@ -50,7 +50,8 @@ public:
 	
 	// This reports whether the record is played to the end, so the 
 	// blobbys don't have to stand around bored after an incomplete
-	// input record
+	// input record. This returns true if ReplayRecorder is not in
+	// replay mode, so the method can be used directly as exit condition
 	bool endOfFile();
 	
 	// This creates a ReplayInputSource as a hook to a real input source
