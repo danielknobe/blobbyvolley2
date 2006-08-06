@@ -26,7 +26,7 @@ public:
 class MainMenuState : public State
 {
 private:
-	int mStartButton;
+	int mStartSingleplayerButton;
 	int mStartReplayButton;
 	int mStartRecordButton;
 	int mExitButton;

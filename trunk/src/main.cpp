@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 	PHYSFS_setWriteDir("data");
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
-
+	srand(SDL_GetTicks());
 	// Default is OpenGL and false
 	// choose renderer
 	RenderManager *rmanager;

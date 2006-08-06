@@ -577,3 +577,30 @@ void PhysicWorld::dampBall()
 	mBallVelocity = mBallVelocity.scale(0.6);
 }
 
+Vector2 PhysicWorld::getBallVelocity()
+{
+	return mBallVelocity;
+}
+
+bool PhysicWorld::getBlobJump(PlayerSide player)
+{
+	return blobbyHitGround(player);
+}
+
+float PhysicWorld::estimateBallImpact()
+{
+// v = a*t + v0
+// sy = 1/2 * v * t
+// sy = (a * t * t + v0 * t) / 2
+
+// sx = vx * t
+
+// t = (sqrt(v0*v0 + 8 * a * s) + v0) / (2 *a)  
+// sx = (sqrt(v0*v0 + 8 * a * s) + v0) / (2 *a) * vx
+
+	const float v0 = mBallVelocity.y;
+	const float a = BALL_GRAVITATION;
+	float height = GROUND_PLANE_HEIGHT - mBallPosition.y;
+	float delta = (sqrt(v0 * v0 + 8 * a * height) + v0) / (2 * a);
+	return mBallPosition.x + mBallVelocity.y * delta;
+}

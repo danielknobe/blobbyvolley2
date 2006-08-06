@@ -6,6 +6,7 @@
 #include "DuelMatch.h"
 #include "ReplayRecorder.h"
 #include "ReplayInputSource.h"
+#include "ScriptedInputSource.h"
 
 State::State()
 {
@@ -54,14 +55,23 @@ LocalGameState::LocalGameState(GameMode mode)
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
 	
 	mRecorder = new ReplayRecorder(mode, "record.xml");
-
-	InputSource* linput = new LocalInputSource(LEFT_PLAYER);
+	
+	InputSource* linput;
+	if (mode == MODE_AI_DUEL)
+	{
+		linput = new ScriptedInputSource("scripts/adam.ai",
+							LEFT_PLAYER);
+	}
+	else
+	{
+		linput = new LocalInputSource(LEFT_PLAYER);
+	}
 	InputSource* rinput = new LocalInputSource(RIGHT_PLAYER);
 	
 	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
-			new LocalInputSource(LEFT_PLAYER));
+			linput);
 	mRightInput = mRecorder->createReplayInputSource(RIGHT_PLAYER,
-			new LocalInputSource(RIGHT_PLAYER));
+			rinput);
 
 	mMatch = new DuelMatch(mLeftInput, mRightInput, true, true);
 }
@@ -111,7 +121,8 @@ MainMenuState::MainMenuState()
 	gmgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	gmgr->createImage("gfx/titel.bmp", Vector2(250.0, 210.0));
 	gmgr->drawCursor(true);
-	mStartButton = gmgr->createTextButton("start", 5, Vector2(500.0, 400.0));
+	mStartSingleplayerButton = gmgr->createTextButton("singleplayer",
+					12, Vector2(500.0, 400.0));
 	mStartRecordButton = 
 		gmgr->createTextButton("record match", 12, Vector2(500.0, 430.0));
 	mStartReplayButton = 
@@ -133,10 +144,10 @@ void MainMenuState::step()
 	rmanager->setBlob(1, Vector2(-2000, 0.0), 0.0);
 	rmanager->setScore(0, 0, false, false);
 	
-	if (gmgr->getClick(mStartButton))
+	if (gmgr->getClick(mStartSingleplayerButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
+		mCurrentState = new LocalGameState(MODE_AI_DUEL);
 	}
 	
 	else if (gmgr->getClick(mStartRecordButton))

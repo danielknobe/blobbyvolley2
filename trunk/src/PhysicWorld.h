@@ -51,6 +51,10 @@ private:
 public:
 	PhysicWorld();
 	~PhysicWorld();
+	
+	Vector2 getBallVelocity();
+	bool getBlobJump(PlayerSide player);
+	float estimateBallImpact();
 
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);

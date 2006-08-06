@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <exception>
 #include <SDL/SDL.h>
 
 
@@ -16,7 +17,8 @@ enum GameMode
 {
 	MODE_NORMAL_DUEL,
 	MODE_RECORDING_DUEL,
-	MODE_REPLAY_DUEL
+	MODE_REPLAY_DUEL,
+	MODE_AI_DUEL
 };
 
 enum PlayerSide
@@ -56,16 +58,22 @@ struct BufferedImage
 	};
 };
 
-struct FileLoadException
+struct FileLoadException : public std::exception
 {
 	std::string filename;
 	FileLoadException(std::string name) : filename(name) {}
+	~FileLoadException() throw() {}
 };
 
 
-struct ExtensionUnsupportedException
+struct ExtensionUnsupportedException : public std::exception
 {
 	std::string extension;
 	ExtensionUnsupportedException(std::string name) : extension(name) {}
+	~ExtensionUnsupportedException() throw() {}
 };
 
+struct ScriptException : public std::exception
+{
+	~ScriptException() throw() {}
+};
