@@ -46,11 +46,7 @@
 //       standard Lua mathematical library.
 // abs(number) : Returns the unsigned value of the given number
 //
-// random(number) : (Unsure) This returns a random number in a range which
-//               one limit equal to the parameter. I am quite unsure about
-//               this function. The return value could be either an integer
-//               or a float, but this unimportant because Lua treats all
-//               numbers as doubles by default.
+// random(number) ; This returns a random number between zero and parameter - 1
 
 // stop() : Releases the side steering keys
 //
@@ -81,7 +77,7 @@
 //
 // posy() : y component of own position
 //
-// estimate() : (Unsure) y component of estimated ball impact point
+// estimate(number) : (Unsure) y component of estimated ball impact point
 
 class lua_State;
 

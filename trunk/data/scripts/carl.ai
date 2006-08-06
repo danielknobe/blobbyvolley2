@@ -1,107 +1,121 @@
-// Note: This still needs to be ported to lua
+cpud1 = 0
+bsizx = 0
+bsizy = 0
+--  var i,alti,j,factor,direct,
+--      jmpattack,touchcnt,x,y,delay,bx,by,vbx,vby
 
+bsizx=64
+bsizy=64
 
-var bsizx,bsizy,cpud1;
-
-function main() {
-  var i,alti,j,factor,direct,
-      jmpattack,touchcnt,x,y,delay,bx,by,vbx,vby;
-
-  bsizx=64;
-  bsizy=64;
-
-  j=side();
-  factor=j*2-1;
+j=side()
+factor=j*2-1
   
-  delay=0;
-  while (1) {
-    stop();
-    stopjump();
+delay=0
+function step()
+    stop()
+    stopjump()
 
-    bx=ballx();
-    by=bally();
-    vbx=bspeedx();
-    vby=bspeedy();
-    touchcnt=touches();
-    x=posx();
-    y=posy();
+    bx=ballx()
+    by=bally()
+    vbx=bspeedx()
+    vby=bspeedy()
+    touchcnt=touches()
+    x=posx()
+    y=posy()
 
-    direct=1;
+    direct=1
 
-    i=estimate(200);
-    jmpattack=0;
+    i=estimate(200)
+    jmpattack=0
 
-    if (i>-9000) {
-      alti=i;
+    if (i>-9000) then
+      alti=i
       
-      if ((bx-400)*-factor>abs(vbx)*4) {
-        //block
-        jmpattack=1;
-        i=400;
-      }
-      if (abs(i-400)>100) {
-        i=estimate(350);
-        if ((i<-9000) || (by<300) || (touchcnt>1)) {
-          i=alti;
-        } else {
-          jmpattack=1;
-        }
-      }
+      if ((bx-400)*-factor>abs(vbx)*4) then
+        -- block
+        jmpattack=1
+        i=400
+      end
+      if (abs(i-400)>100) then
+        i=estimate(350)
+        if ((i<-9000) or (by<300) or (touchcnt>1)) then
+          i=alti
+        else
+          jmpattack=1
+        end
+      end
       
               
-      if (j==1) {
-        if (i<500) {
-          if (touchcnt<2) {
-            i=i-bsizx /2;
-          }
-        }
-      } else {    
-        if (i>300) {
-          if (touchcnt<2) {
-            i=i+bsizx /2;
-          }
-        }
-      }
+      if (j==1) then
+        if (i<500) then
+          if (touchcnt<2) then
+            i=i-bsizx /2
+          end
+        end
+      else
+        if (i>300) then
+          if (touchcnt<2) then
+            i=i+bsizx /2
+          end
+        end
+      end
 
-      if ((ballx()-400)*factor<-100) i=400+factor*200;
+      if ((ballx()-400)*factor<-100) then
+        i=400+factor*200
+      end
 
-      i=i+(bsizx / 3)*factor;
+      i=i+(bsizx / 3)*factor
 
-      //if (i>=x+7) right();
-      //if (i<=x-7) left();
-      moveto(i);
-    }
-    stopjump();
-    if(vby<=10)
-      if (factor*(x-bx)<21) 
-        if (factor*(bx-x)<7)
-          if (abs(bx-x)<120)
-            if (abs(vby)<65)
-              if (by>200)
-                if (by-y>70)
-                  if ((by<400) || (vby==0))
-                    if (abs(vbx)<20)
-                      if (!balldown()) jump();
-    if (random(300)==0) jump();
-    if (i>-9000) {
-      if (jmpattack) {
-        i=i+factor*5;                                 
-        if ((abs(i-x)<45) && (by>250) && (abs(x-bx)<abs(vbx)) && (by<600)) {
-          jump();
-        }
-      }
-    }
-    if (touching()) {
-      stop();
-    }
+      -- if (i>=x+7) right()
+      -- if (i<=x-7) left()
+      moveto(i)
+    end
+    stopjump()
+    if(vby<=10) then
+      if (factor*(x-bx)<21) then
+        if (factor*(bx-x)<7) then
+          if (abs(bx-x)<120) then
+            if (abs(vby)<65) then
+              if (by>200) then
+                if (by-y>70) then
+                  if ((by<400) or (vby==0)) then
+                    if (abs(vbx)<20) then
+                      if (not balldown()) then
+                        jump()
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+
+    if (random(300)==0) then
+      jump()
+    end
+    if (i>-9000) then
+      if (jmpattack) then
+        i=i+factor*5                                 
+        if ((abs(i-x)<45) and (by>250) and (abs(x-bx)<abs(vbx)) and (by<600)) then
+          jump()
+        end
+      end
+    end
+
+    if (touching()) then
+      stop()
+    end
       
-    if (!launched()) {
-      delay+=1;
-      stopjump();
-      if (delay>=30) jump();
-    }
-    debug(i);
-    wait();
-  }  //while
-}  //function
-
+    if (not launched()) then
+      delay = delay + 1
+      stopjump()
+      if (delay>=30) then 
+        jump()
+      end
+    end
+    debug(i)
+    wait()
+  end
+end

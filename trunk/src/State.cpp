@@ -54,17 +54,18 @@ LocalGameState::LocalGameState(GameMode mode)
 	GUIManager::getSingleton()->drawCursor(false);
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
 	
-	mRecorder = new ReplayRecorder(mode, "record.xml");
-	
 	InputSource* linput;
 	if (mode == MODE_AI_DUEL)
 	{
-		linput = new ScriptedInputSource("scripts/adam.ai",
+		linput = new ScriptedInputSource("scripts/simple.lua",
 							LEFT_PLAYER);
+		mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL,
+						"record.xml");
 	}
 	else
 	{
 		linput = new LocalInputSource(LEFT_PLAYER);
+		mRecorder = new ReplayRecorder(mode, "record.xml");
 	}
 	InputSource* rinput = new LocalInputSource(RIGHT_PLAYER);
 	
