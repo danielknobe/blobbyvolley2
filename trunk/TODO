@@ -2,6 +2,7 @@
 Primary:
 Important:
 - Ballshadowfix for SDL/OpenGL Renderer (may be for the Handheldversion too)
+- Compilation tutorial for Win32-Users
 
 Near aims:
 - Implementation of LUA-Script for external KI
