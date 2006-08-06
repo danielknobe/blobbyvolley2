@@ -29,6 +29,7 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	mSquishLeft = 0;
 	mSquishRight = 0;
 	
+	mBallDown = false;	
 	mWinningPlayer = 0;
 
 	mPhysicWorld.resetPlayer();
@@ -116,6 +117,7 @@ void DuelMatch::step()
 			mRightScore++;
 		mServingPlayer = 1;
 		mPhysicWorld.setBallValidity(0);
+		mBallDown = true;
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
 	}
@@ -130,6 +132,7 @@ void DuelMatch::step()
 			mLeftScore++;
 		mServingPlayer = 0;
 		mPhysicWorld.setBallValidity(0);
+		mBallDown = true;
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
 	}
@@ -143,7 +146,10 @@ void DuelMatch::step()
 	}
 	
 	if (mPhysicWorld.roundFinished())
+	{
+		mBallDown = false;
 		mPhysicWorld.reset(mServingPlayer);
+	}
 }
 
 
@@ -154,4 +160,49 @@ PlayerSide DuelMatch::winningPlayer()
 	if (mRightScore >= 15 && mRightScore >= mLeftScore + 2)
 		return RIGHT_PLAYER;
 	return NO_PLAYER;
+}
+
+int DuelMatch::getHitcount(PlayerSide player)
+{
+	if (player == LEFT_PLAYER)
+		return mLeftHitcount;
+	else if (player == RIGHT_PLAYER)
+		return mRightHitcount;
+	else
+		return 0;
+}
+
+bool DuelMatch::getBallDown()
+{
+	return mBallDown;
+}
+
+bool DuelMatch::getBlobJump(PlayerSide player)
+{
+	return mPhysicWorld.getBlobJump(player);
+}
+
+Vector2 DuelMatch::getBlobPosition(PlayerSide player)
+{
+	if (player == LEFT_PLAYER)
+		return mPhysicWorld.getLeftBlob();
+	else if (player == RIGHT_PLAYER)
+		return mPhysicWorld.getRightBlob();
+	else
+		return Vector2(0.0, 0.0);
+}
+
+Vector2 DuelMatch::getBallPosition()
+{
+	return mPhysicWorld.getBall();
+}
+
+Vector2 DuelMatch::getBallVelocity()
+{
+	return mPhysicWorld.getBallVelocity();
+}
+
+float DuelMatch::getBallEstimation()
+{
+	return mPhysicWorld.estimateBallImpact();
 }

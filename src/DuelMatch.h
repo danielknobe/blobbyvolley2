@@ -55,10 +55,15 @@ public:
 	Vector2 getBallPosition();
 	Vector2 getBallVelocity();
 	Vector2 getBlobPosition(PlayerSide player);
+
+	bool getBallDown();
+	
+	// Estimates Ball impact point
+	float getBallEstimation();
 	
 	// This functions returns true if the player launched
 	// and is jumping at the moment
-	bool getBlobJump(int player);
+	bool getBlobJump(PlayerSide player);
 	
 private:
 	static DuelMatch* mMainGame;
@@ -78,6 +83,8 @@ private:
 
 	int mSquishLeft;
 	int mSquishRight;
+
+	bool mBallDown;
 	
 	bool mOutput;
 	int mWinningPlayer;

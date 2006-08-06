@@ -85,7 +85,7 @@
 
 class lua_State;
 
-class ScriptedInputSource
+class ScriptedInputSource : public InputSource
 {
 public:
 	// The constructor automatically loads and initializes the script
@@ -97,7 +97,27 @@ public:
 	virtual PlayerInput getInput();
 	
 private:
-	PlayerSide mSide;
-	lua_State* mState;
+	static int side(lua_State* state);
+	static int touches(lua_State* state);
+	static int balldown(lua_State* state);
+	static int touching(lua_State* state);
+	static int launched(lua_State* state);
+	static int debug(lua_State* state);
+	static int abs(lua_State* state);
+	static int random(lua_State* state);
+	static int stop(lua_State* state);
+	static int stopjump(lua_State* state);
+	static int jump(lua_State* state);
+	static int left(lua_State* state);
+	static int right(lua_State* state);
+	static int moveto(lua_State* state);
+	static int ballx(lua_State* state);
+	static int bally(lua_State* state);
+	static int bspeedx(lua_State* state);
+	static int bspeedy(lua_State* state);
+	static int posx(lua_State* state);
+	static int posy(lua_State* state);
+	static int estimate(lua_State* state);
 
+	lua_State* mState;
 };
