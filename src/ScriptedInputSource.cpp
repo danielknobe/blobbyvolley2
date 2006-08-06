@@ -78,8 +78,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 		lua_close(mState);
 		throw ScriptException();
 	}
-	
-	}
+	lua_pop(mState, lua_gettop(mState));
+}
 
 ScriptedInputSource::~ScriptedInputSource()
 {
@@ -109,6 +109,15 @@ PlayerInput ScriptedInputSource::getInput()
 	PlayerInput currentInput = PlayerInput(lua_toboolean(mState, -3),
 		lua_toboolean(mState, -2), lua_toboolean(mState, -1));
 	lua_pop(mState, 3);
+	int stacksize = lua_gettop(mState);
+	if (stacksize > 0)
+	{
+		std::cerr << "Warning: Stack messed up!" << std::endl;
+		std::cerr << "Element on stack is a ";
+		std::cerr << lua_typename(mState, -1) << std::endl;
+		lua_pop(mState, stacksize);
+	}
+	
 	return currentInput;
 }
 
@@ -183,11 +192,9 @@ int ScriptedInputSource::abs(lua_State* state)
 
 int ScriptedInputSource::random(lua_State* state)
 {
-// TODO: check if this the correct behaviour.
-//       Anyway, the current implementation isn't very optimal.
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	lua_pushnumber(state, rand() % num);
+	lua_pushnumber(state, round(float(rand()) / RAND_MAX * num));
 	return 1;
 }
 
@@ -238,9 +245,9 @@ int ScriptedInputSource::moveto(lua_State* state)
 	if (match != 0)
 	{
 		float position = match->getBlobPosition(player).x;
-		if (position > target)
+		if (position > target + 2)
 			left(state);
-		if (position < target)
+		if (position < target - 2)
 			right(state);
 	}	
 	return 0;
@@ -327,6 +334,7 @@ int ScriptedInputSource::posy(lua_State* state)
 int ScriptedInputSource::estimate(lua_State* state)
 {
 // TODO: implement this extremly important function
+	lua_pop(state, 1);
 	DuelMatch* match = DuelMatch::getMainGame();
 	if (match == 0)
 	{
