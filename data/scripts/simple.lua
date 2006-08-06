@@ -1,6 +1,9 @@
 ballPosX = 0
 ballPosY = 0
 
+moodCounter = 0
+mood = 0
+
 serving = false
 readyToServe = false
 mySide = side()
@@ -46,7 +49,7 @@ function step()
     targetDiff = 0
     
 --    target = target - bspeedx() * 4
-    targetDiff = targetDiff - abs(bspeedx())
+--    targetDiff = targetDiff - abs(bspeedx())
     
 -- Attack if near by net
     if ballx() > 300 and ballx() < 400 and ballx() > posx() then
@@ -55,18 +58,24 @@ function step()
     end
     
     if touches() > 1 then
-    	targetDiff = targetDiff - 30
+    	targetDiff = targetDiff - 55 + (400.0 - ballx()) / 10
     end
     if touches() > 2 then
         targetDiff = -200
     end
     
---    targetDiff = targetDiff + 5 * (bspeedx() / bspeedy() / bspeedy())
-    targetDiff = targetDiff + 3 * abs(bspeedx() / bspeedy())
+    if bspeedx() > 0 then
+--      targetDiff = targetDiff + 3 * abs(bspeedx() / bspeedy())
+      targetDiff = targetDiff + bspeedx() * 15
+    end
     
-    if abs(bspeedx()) > abs(bspeedy() * 1.5) then
---        targetDiff = targetDiff + 150
-    end 
+    if moodCounter == 100 then
+      mood = (random(100) + random(100) + random(100)) / 3 - 50
+      moodCounter = 0
+    else
+      moodCounter = moodCounter + 1
+    end
+    targetDiff = targetDiff + mood
     
     if ballx() > 500.0 then
       moveto (100.0)
@@ -79,9 +88,10 @@ function step()
       left()
     end
     
-    
-    if ballDistance() < 7000.0 then
-      jump()
+    if abs(posx() - ballx()) < 50 and abs(posy() - bally()) < 300 then
+      if abs(estimate(0) - posx()) < 60 then
+        jump()
+      end
     end
   
   end

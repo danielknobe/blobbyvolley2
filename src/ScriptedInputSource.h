@@ -93,6 +93,8 @@ public:
 	virtual PlayerInput getInput();
 	
 private:
+	static PlayerSide getSide(lua_State* state);
+
 	static int side(lua_State* state);
 	static int touches(lua_State* state);
 	static int balldown(lua_State* state);

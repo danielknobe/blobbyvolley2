@@ -1,0 +1,64 @@
+This document tries to design a new API for the Lua scripting interface
+for bots. This API is based on the old API, but replaces ugly functions
+and provides a more sophisticated way to implement serving behaviour.
+
+The main difference of the new API is, that the bot is always programmed
+for the left side. If the controlled blob is actually on the other side,
+the API converts all values automatically.
+
+These are the proposed function:
+
+touches() : Number of own ball touches since last ball exchange.
+
+launched() : Tells whether the player is jumping at the moment.
+
+balldown(): Tells whether the ball is valid at the moment
+
+ballx() : x component of the ball position
+
+bally() : y component of the ball position
+
+bspeedx() : x component of the ball velocity
+
+bspeedy() : y component of the ball velocity
+
+posx() : x component of own position
+
+posy() : y component of own position
+
+debug(number) : Prints a number to stderr for debugging purposes
+
+
+Scripts MUST provide these entry point:
+
+function OnServe(ballready) : Called when the ball went down and the controlled
+	blob has to serve it next. The boolean parameter is true when the ball
+	is already placed.
+function OnOpponentServe() : Called after balldown when the opponent has to
+				serve the next ball
+function OnGame() : Called during the normal game
+
+
+The following global variables are accessable to a script:
+
+blobby_moveleft :
+blobby_moveright :
+blobby_moveup : These three variables control the blobby movement
+
+
+What is missing:
+
+- Functions to query score (for dynamic strength bots)
+
+- Function to simplify ball impact estimation
+
+- Controlling Functions:
+	The controls should now be accessed through the globals
+	blobby_moveleft, blobby_moveright, blobby_moveup.
+	But a moveto()-like function could be handy.
+
+- Mathematical Functions:
+	These should be provided by the standard Lua mathematical library
+	of lualib
+
+
