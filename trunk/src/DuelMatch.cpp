@@ -84,7 +84,7 @@ void DuelMatch::step()
 	else
 	{
 		mSquishLeft += 1;
-		if(mSquishLeft > 5)
+		if(mSquishLeft > 10)
 			mSquishLeft=0;
 	}
 	
@@ -103,7 +103,7 @@ void DuelMatch::step()
 	else
 	{
 		mSquishRight += 1;
-		if(mSquishRight > 5)
+		if(mSquishRight > 10)
 			mSquishRight=0;	
 	}
 	

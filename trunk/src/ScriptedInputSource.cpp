@@ -103,12 +103,16 @@ PlayerInput ScriptedInputSource::getInput()
 		std::cerr << std::endl;
 		lua_pop(mState, 1);
 	}
+	PlayerSide player = getSide(mState);
 	lua_getglobal(mState, "blobby_moveleft");
 	lua_getglobal(mState, "blobby_moveright");
 	lua_getglobal(mState, "blobby_moveup");
-	PlayerInput currentInput = PlayerInput(lua_toboolean(mState, -3),
-		lua_toboolean(mState, -2), lua_toboolean(mState, -1));
+	bool wantLeft = lua_toboolean(mState, -3);
+	bool wantRight = lua_toboolean(mState, -2);
+	bool wantUp = lua_toboolean(mState, -1);
 	lua_pop(mState, 3);
+	PlayerInput currentInput = PlayerInput(wantLeft, wantRight, wantUp);
+
 	int stacksize = lua_gettop(mState);
 	if (stacksize > 0)
 	{
@@ -119,6 +123,14 @@ PlayerInput ScriptedInputSource::getInput()
 	}
 	
 	return currentInput;
+}
+
+PlayerSide ScriptedInputSource::getSide(lua_State* state)
+{
+	lua_getglobal(state, "blobby_side");
+	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	return player;
 }
 
 int ScriptedInputSource::side(lua_State* state)
@@ -169,17 +181,16 @@ int ScriptedInputSource::launched(lua_State* state)
 		lua_pushboolean(state, false);
 		return 1;
 	}
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, -1);
-	lua_pushboolean(state, match->getBlobJump(player));
+	lua_pushboolean(state, match->getBlobJump(getSide(state)));
 	return 1;
 }
 
 int ScriptedInputSource::debug(lua_State* state)
 {
-// TODO: implement this correctly or leave it out
+	float number = lua_tonumber(state, -1);
 	lua_pop(state, 1);
+	std::cerr << "Lua Debug: " << number << std::endl;
+	return 0;
 }
 
 int ScriptedInputSource::abs(lua_State* state)
@@ -224,27 +235,41 @@ int ScriptedInputSource::jump(lua_State* state)
 int ScriptedInputSource::left(lua_State* state)
 {
 	lua_pushboolean(state, true);
-	lua_setglobal(state, "blobby_moveleft");
+	if (getSide(state) == LEFT_PLAYER)
+		lua_setglobal(state, "blobby_moveleft");
+	else if (getSide(state) == RIGHT_PLAYER)
+		lua_setglobal(state, "blobby_moveright");
+	else
+		lua_pop(state, 1);
 	return 0;
 }
 
 int ScriptedInputSource::right(lua_State* state)
 {
 	lua_pushboolean(state, true);
-	lua_setglobal(state, "blobby_moveright");
+	if (getSide(state) == LEFT_PLAYER)
+		lua_setglobal(state, "blobby_moveright");
+	else if (getSide(state) == RIGHT_PLAYER)
+		lua_setglobal(state, "blobby_moveleft");
+	else
+		lua_pop(state, 1);
 	return 0;
 }
 
 int ScriptedInputSource::moveto(lua_State* state)
 {
 	float target = lua_tonumber(state, -1);
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, 2);
+	lua_pop(state, 1);
 	DuelMatch* match = DuelMatch::getMainGame();
 	if (match != 0)
 	{
+		PlayerSide player = getSide(state);
 		float position = match->getBlobPosition(player).x;
+		if (player == RIGHT_PLAYER)
+		{
+//			target = 800.0 - target;
+			position = 800.0 - position;
+		}
 		if (position > target + 2)
 			left(state);
 		if (position < target - 2)
@@ -261,7 +286,10 @@ int ScriptedInputSource::ballx(lua_State* state)
 		lua_pushnumber(state, 400.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBallPosition().x);
+	float pos = match->getBallPosition().x;
+	if (getSide(state) == RIGHT_PLAYER)
+		pos = 800.0 - pos;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
@@ -273,7 +301,8 @@ int ScriptedInputSource::bally(lua_State* state)
 		lua_pushnumber(state, 150.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBallPosition().y);
+	float pos = match->getBallPosition().y;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
@@ -285,7 +314,10 @@ int ScriptedInputSource::bspeedx(lua_State* state)
 		lua_pushnumber(state, 0.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBallVelocity().x);
+	float vel = match->getBallVelocity().x;
+	if (getSide(state) == RIGHT_PLAYER)
+		vel = -vel;
+	lua_pushnumber(state, vel);
 	return 1;
 }
 
@@ -303,16 +335,17 @@ int ScriptedInputSource::bspeedy(lua_State* state)
 
 int ScriptedInputSource::posx(lua_State* state)
 {
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, 1);
+	PlayerSide player = getSide(state);
 	DuelMatch* match = DuelMatch::getMainGame();
 	if (match == 0)
 	{
 		lua_pushnumber(state, 0.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBlobPosition(player).x);
+	float pos = match->getBlobPosition(player).x;
+	if (player == RIGHT_PLAYER)
+		pos = 800.0 - pos;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
@@ -341,7 +374,10 @@ int ScriptedInputSource::estimate(lua_State* state)
 		lua_pushnumber(state, 400.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBallEstimation());
+	float estim = match->getBallEstimation();
+	if (getSide(state) == RIGHT_PLAYER)
+		estim = 800.0 - estim;
+	lua_pushnumber(state, estim);
 	return 1;
 }
 

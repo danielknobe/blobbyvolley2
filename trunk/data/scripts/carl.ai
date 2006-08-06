@@ -116,6 +116,5 @@ function step()
       end
     end
     debug(i)
-    wait()
   end
 end
