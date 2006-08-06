@@ -26,6 +26,7 @@ blobby_SOURCES = \
 	RenderManagerGL2D.h RenderManagerGL2D.cpp \
 	ReplayInputSource.h ReplayInputSource.cpp \
 	ReplayRecorder.h ReplayRecorder.cpp \
+	ScriptedInputSource.h ScriptedInputSource.cpp \
 	State.h State.cpp\
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
