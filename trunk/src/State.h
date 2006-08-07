@@ -26,23 +26,15 @@ public:
 class MainMenuState : public State
 {
 private:
-	int mStartSingleplayerButton;
-	int mStartReplayButton;
-	int mStartRecordButton;
+	int mStartButton;
+	int mWatchReplayButton;
+	int mOptionButton;
 	int mExitButton;
 public:
 	MainMenuState();
 	virtual ~MainMenuState();
 	
 	virtual void step();
-};
-
-class OptionMenuState : public State
-{
-private:
-	
-public:
-		
 };
 
 class WinState : public State
@@ -76,3 +68,26 @@ public:
 	
 };
 
+class OptionState : public State
+{
+public:
+	OptionState();
+	virtual ~OptionState();
+	virtual void step();
+
+private:
+	void rebuildGUI();
+
+	UserConfig mOptionConfig;
+	std::vector<std::string> mScriptNames;
+	std::vector<int> mLeftPlayerButtons;
+	std::vector<int> mRightPlayerButtons;
+	int mPlayerOptions[MAX_PLAYERS];
+	bool mReplayActivated;
+
+	int mReplayButton;	
+	int mOkButton;
+	int mCancelButton;
+
+	bool mSaveConfig;	
+};
