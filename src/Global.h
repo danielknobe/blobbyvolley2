@@ -16,9 +16,8 @@
 enum GameMode
 {
 	MODE_NORMAL_DUEL,
-	MODE_RECORDING_DUEL,
 	MODE_REPLAY_DUEL,
-	MODE_AI_DUEL
+	MODE_RECORDING_DUEL
 };
 
 enum PlayerSide
@@ -63,6 +62,11 @@ struct FileLoadException : public std::exception
 	std::string filename;
 	FileLoadException(std::string name) : filename(name) {}
 	~FileLoadException() throw() {}
+	
+	virtual const char* what() const throw()
+	{
+		return std::string("Couldn't load " + filename).c_str();
+	}
 };
 
 

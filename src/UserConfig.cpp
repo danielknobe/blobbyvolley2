@@ -17,7 +17,10 @@ bool UserConfig::loadFile(const std::string& filename)
 	PHYSFS_close(fileHandle);
 	
 	if (configDoc.Error())
-		std::cout << "Warning: Parse error in user.cfg!" << std::endl;
+	{
+		std::cerr << "Warning: Parse error in " << filename;
+		std::cerr << "!" << std::endl;
+	}
 	
 	TiXmlElement* userConfigElem = 
 		configDoc.FirstChildElement("userconfig");
@@ -126,7 +129,7 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
 	{
-		std::cout << "Warning: impossible to set value of " <<
+		std::cerr << "Warning: impossible to set value of " <<
 			"unknown configuration variable " << name << std::endl;
 		return;
 	}
@@ -140,7 +143,7 @@ std::string UserConfig::getValue(const std::string& name)
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
 	{
-		std::cout << "Warning: impossible to get value of " <<
+		std::cerr << "Warning: impossible to get value of " <<
 			"unknown configuration variable " << name << std::endl;
 		return "";
 	}

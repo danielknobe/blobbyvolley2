@@ -45,13 +45,13 @@ function step()
     
     targetDiff = 0
     
---    target = target - bspeedx() * 4
---    targetDiff = targetDiff - abs(bspeedx())
-    
 -- Attack if near by net
-    if ballx() > 300 and ballx() < 400 and ballx() > posx() then
+    if ballx() > 280 and ballx() < 400 and ballx() > posx() then
       jump()
-      targetDiff = targetDiff - 15
+      targetDiff = targetDiff - 25
+      if (posy() - bally()) < 90 then
+        right()
+      end
     end
     
 -- Try to get rid of the ball with third strike
@@ -68,7 +68,7 @@ function step()
     
     if bspeedx() < 0 then
 --      targetDiff = targetDiff + 3 * abs(bspeedx() / bspeedy())
-      targetDiff = targetDiff - bspeedx() * 5
+      targetDiff = targetDiff + bspeedx() * 5 + 40
     end
     
     if ballx() > 500.0 then

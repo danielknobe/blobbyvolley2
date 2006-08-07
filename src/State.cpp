@@ -8,6 +8,8 @@
 #include "ReplayInputSource.h"
 #include "ScriptedInputSource.h"
 
+#include <physfs.h>
+
 State::State()
 {
 
@@ -55,21 +57,33 @@ LocalGameState::LocalGameState(GameMode mode)
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
 	
 	InputSource* linput;
-	if (mode == MODE_AI_DUEL)
+	InputSource* rinput;
+	
+	if (gameConfig.getBool("left_player_human"))
 	{
-		linput = new ScriptedInputSource("scripts/simple.lua",
-							LEFT_PLAYER);
-		mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL,
-						"record.xml");
+		linput = new LocalInputSource(LEFT_PLAYER);
 	}
 	else
 	{
-		linput = new LocalInputSource(LEFT_PLAYER);
-		mRecorder = new ReplayRecorder(mode, "record.xml");
+		linput = new ScriptedInputSource("scripts/" +
+			gameConfig.getString("left_script_name"), LEFT_PLAYER);
 	}
-//	InputSource* rinput = new LocalInputSource(RIGHT_PLAYER);
-	InputSource* rinput = new ScriptedInputSource("scripts/jump.lua",
-					RIGHT_PLAYER);
+	
+	if (gameConfig.getBool("right_player_human"))
+	{
+		rinput = new LocalInputSource(RIGHT_PLAYER);
+	}
+	else
+	{
+		rinput = new ScriptedInputSource("scripts/" +
+			gameConfig.getString("right_script_name"),
+						RIGHT_PLAYER);
+	}
+	if (gameConfig.getBool("record_replay"))
+	{
+		mode = MODE_RECORDING_DUEL;
+	}
+	mRecorder = new ReplayRecorder(mode, "record.xml");
 	
 	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
 			linput);
@@ -124,11 +138,11 @@ MainMenuState::MainMenuState()
 	gmgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	gmgr->createImage("gfx/titel.bmp", Vector2(250.0, 210.0));
 	gmgr->drawCursor(true);
-	mStartSingleplayerButton = gmgr->createTextButton("singleplayer",
-					12, Vector2(500.0, 400.0));
-	mStartRecordButton = 
-		gmgr->createTextButton("record match", 12, Vector2(500.0, 430.0));
-	mStartReplayButton = 
+	mStartButton = gmgr->createTextButton("start",
+					5, Vector2(500.0, 400.0));
+	mOptionButton = 
+		gmgr->createTextButton("options", 7, Vector2(500.0, 430.0));
+	mWatchReplayButton = 
 		gmgr->createTextButton("watch replay", 12, Vector2(500.0, 460.0));
 	mExitButton = gmgr->createTextButton("exit", 4, Vector2(500, 490.0));
 }
@@ -147,22 +161,22 @@ void MainMenuState::step()
 	rmanager->setBlob(1, Vector2(-2000, 0.0), 0.0);
 	rmanager->setScore(0, 0, false, false);
 	
-	if (gmgr->getClick(mStartSingleplayerButton))
+	if (gmgr->getClick(mStartButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState(MODE_AI_DUEL);
+		mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
 	}
 	
-	else if (gmgr->getClick(mStartRecordButton))
+	else if (gmgr->getClick(mOptionButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState(MODE_RECORDING_DUEL);
+		mCurrentState = new OptionState();
 	}
 
-	else if (gmgr->getClick(mStartReplayButton))
+	else if (gmgr->getClick(mWatchReplayButton))
 	{
-		delete mCurrentState;
-		 mCurrentState = new LocalGameState(MODE_REPLAY_DUEL);
+//		delete mCurrentState;
+//		 mCurrentState = new LocalGameState(MODE_REPLAY_DUEL);
 	}
 	
 	else if (gmgr->getClick(mExitButton)) 
@@ -196,6 +210,158 @@ void WinState::step()
 	if (inputmgr->click() || inputmgr->select())
 	{
 		delete mCurrentState;
+		mCurrentState = new MainMenuState();
+	}
+}
+
+OptionState::OptionState()
+{
+	mSaveConfig = false;
+	mOptionConfig.loadFile("config.xml");
+	mPlayerOptions[LEFT_PLAYER] = 0;
+	mPlayerOptions[RIGHT_PLAYER] = 0;
+	mScriptNames.push_back("");
+	std::string leftScript = mOptionConfig.getString("left_script_name");
+	std::string rightScript = mOptionConfig.getString("right_script_name");
+	char** filenames = PHYSFS_enumerateFiles("scripts");
+	for (int i = 0; filenames[i] != 0; ++i)
+	{
+		std::string tmp(filenames[i]);
+		if (tmp.find(".lua") != std::string::npos)
+		{
+			mScriptNames.push_back(tmp);
+			int pos = mScriptNames.size() - 1;
+			if (tmp == leftScript)
+				mPlayerOptions[LEFT_PLAYER] = pos;
+			if (tmp == rightScript)
+				mPlayerOptions[RIGHT_PLAYER] = pos;
+		}
+			
+	}
+	if (mOptionConfig.getBool("left_player_human"))
+		mPlayerOptions[LEFT_PLAYER] = 0;
+	if (mOptionConfig.getBool("right_player_human"))
+		mPlayerOptions[RIGHT_PLAYER] = 0;
+	PHYSFS_freeList(filenames);
+	mReplayActivated = mOptionConfig.getBool("record_replay");
+	rebuildGUI();
+}
+
+OptionState::~OptionState()
+{
+	GUIManager::getSingleton()->clear();
+	if (mSaveConfig)
+	{
+		mOptionConfig.setBool("record_replay", mReplayActivated);
+		if (mPlayerOptions[LEFT_PLAYER] == 0)
+		{
+			mOptionConfig.setBool(
+				"left_player_human", true);
+		}
+		else
+		{
+			mOptionConfig.setBool(
+				"left_player_human", false);
+			mOptionConfig.setString("left_script_name",
+				mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
+		}
+		
+		if (mPlayerOptions[RIGHT_PLAYER] == 0)
+		{
+			mOptionConfig.setBool(
+				"right_player_human", true);
+		}
+		else
+		{
+			mOptionConfig.setBool(
+				"right_player_human", false);
+			mOptionConfig.setString("right_script_name",
+				mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
+		}
+		mOptionConfig.saveFile("config.xml");
+	}
+}
+
+void OptionState::rebuildGUI()
+{
+	GUIManager* guimgr = GUIManager::getSingleton();
+	guimgr->clear();
+	guimgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	guimgr->createText("left player", Vector2(10.0, 10.0));
+	guimgr->createText("right player", Vector2(410.0, 10.0));
+	guimgr->createImage("gfx/pfeil_rechts.bmp", Vector2(12.0 + 4.0,
+		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0));
+	guimgr->createImage("gfx/pfeil_rechts.bmp", Vector2(12.0 + 404.0,
+		mPlayerOptions[RIGHT_PLAYER] * 28.0 + 12.0 + 50.0));
+
+	mLeftPlayerButtons.push_back(
+		guimgr->createTextButton("human", 5, Vector2(10.0, 50.0)));
+	for (int i = 1; i < mScriptNames.size(); i++)
+	{
+		mLeftPlayerButtons.push_back(guimgr->createTextButton(
+			mScriptNames[i], mScriptNames[i].length(),
+			Vector2(10.0, 50.0 + i * 28.0)));
+	}
+	
+	mRightPlayerButtons.push_back(
+		guimgr->createTextButton("human", 5, Vector2(410.0, 50.0)));
+	for (int i = 1; i < mScriptNames.size(); i++)
+	{
+		mRightPlayerButtons.push_back(guimgr->createTextButton(
+			mScriptNames[i], mScriptNames[i].length(),
+			Vector2(410.0, 50.0 + i * 28.0)));
+	}
+
+	if (mReplayActivated)
+	{
+		guimgr->createImage("gfx/pfeil_rechts.bmp",
+						Vector2(108.0, 472.0));
+	}
+	mReplayButton = guimgr->createTextButton("record replays", 14,
+						Vector2(100.0, 460.0));
+	mOkButton = guimgr->createTextButton("ok", 2, Vector2(200.0, 530.0));
+	mCancelButton = guimgr->createTextButton("cancel", 6, 
+					Vector2(400.0, 530.0));
+}
+
+void OptionState::step()
+{
+	GUIManager* guimgr = GUIManager::getSingleton();
+	for (int i = 0; i < mLeftPlayerButtons.size(); i++)
+	{
+		if (guimgr->getClick(mLeftPlayerButtons[i]))
+		{
+			mPlayerOptions[LEFT_PLAYER] = i;
+			rebuildGUI();
+			break;
+		}
+	}
+	
+	for (int i = 0; i < mRightPlayerButtons.size(); i++)
+	{
+		if (guimgr->getClick(mRightPlayerButtons[i]))
+		{
+			mPlayerOptions[RIGHT_PLAYER] = i;
+			rebuildGUI();
+			break;
+		}
+	}
+	
+	if (guimgr->getClick(mReplayButton))
+	{
+		mReplayActivated = !mReplayActivated;
+		rebuildGUI();
+	}
+	
+	if (guimgr->getClick(mOkButton))
+	{
+		mSaveConfig = true;
+		delete this;
+		mCurrentState = new MainMenuState();
+	}
+	else if (guimgr->getClick(mCancelButton))
+	{
+		delete this;
 		mCurrentState = new MainMenuState();
 	}
 }

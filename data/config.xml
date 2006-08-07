@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <userconfig>
-<!-- Rendersettings Options: OpenGL or SDL -->
 	<var name="device" value="OpenGL"/>
 	<var name="fullscreen" value="false"/>
-
-<!-- Left blobby color configuration -->
 	<var name="r1" value="0"/>
 	<var name="g1" value="0"/>
 	<var name="b1" value="0"/>
-	<var name="left_blobby_oscillate" value="true" />
-
-<!-- Right blobby color configuration -->
+	<var name="left_blobby_oscillate" value="true"/>
 	<var name="r2" value="255"/>
 	<var name="g2" value="255"/>
 	<var name="b2" value="255"/>
-	<var name="right_blobby_oscillate" value="true" />
+	<var name="right_blobby_oscillate" value="true"/>
+	<var name="record_replay" value="true"/>
+	<var name="left_script_name" value="simple.lua"/>
+	<var name="right_script_name" value="jump.lua"/>
+	<var name="left_player_human" value="false"/>
+	<var name="right_player_human" value="false"/>
 </userconfig>
 
