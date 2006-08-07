@@ -68,7 +68,7 @@ LocalGameState::LocalGameState(GameMode mode)
 		mRecorder = new ReplayRecorder(mode, "record.xml");
 	}
 //	InputSource* rinput = new LocalInputSource(RIGHT_PLAYER);
-	InputSource* rinput = new ScriptedInputSource("scripts/simple.lua",
+	InputSource* rinput = new ScriptedInputSource("scripts/jump.lua",
 					RIGHT_PLAYER);
 	
 	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
