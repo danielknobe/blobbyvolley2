@@ -579,7 +579,7 @@ void PhysicWorld::dampBall()
 
 Vector2 PhysicWorld::getBallVelocity()
 {
-	return mBallVelocity;
+	return -mBallVelocity;
 }
 
 bool PhysicWorld::getBlobJump(PlayerSide player)

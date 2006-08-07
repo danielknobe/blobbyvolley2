@@ -1,9 +1,6 @@
 ballPosX = 0
 ballPosY = 0
 
-moodCounter = 0
-mood = 0
-
 serving = false
 readyToServe = false
 mySide = side()
@@ -57,25 +54,22 @@ function step()
       targetDiff = targetDiff - 15
     end
     
+-- Try to get rid of the ball with third strike
     if touches() > 1 then
-    	targetDiff = targetDiff - 55 + (400.0 - ballx()) / 10
+    	targetDiff = targetDiff - 55 + (400.0 - ballx()) / 15
+    	if abs(posx() - ballx()) < 64 and bally() > 350 then
+    	  jump()
+    	end
     end
+    
     if touches() > 2 then
         targetDiff = -200
     end
     
-    if bspeedx() > 0 then
+    if bspeedx() < 0 then
 --      targetDiff = targetDiff + 3 * abs(bspeedx() / bspeedy())
-      targetDiff = targetDiff + bspeedx() * 15
+      targetDiff = targetDiff - bspeedx() * 5
     end
-    
-    if moodCounter == 100 then
-      mood = (random(100) + random(100) + random(100)) / 3 - 50
-      moodCounter = 0
-    else
-      moodCounter = moodCounter + 1
-    end
-    targetDiff = targetDiff + mood
     
     if ballx() > 500.0 then
       moveto (100.0)
@@ -88,11 +82,11 @@ function step()
       left()
     end
     
-    if abs(posx() - ballx()) < 50 and abs(posy() - bally()) < 300 then
-      if abs(estimate(0) - posx()) < 60 then
-        jump()
-      end
-    end
+--    if abs(posx() - ballx()) < 50 and abs(posy() - bally()) < 300 then
+--      if abs(estimate(0) - posx()) < 60 then
+--        jump()
+--      end
+--    end
   
   end
   
