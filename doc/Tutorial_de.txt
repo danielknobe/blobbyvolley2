@@ -1,0 +1,75 @@
+In diesem Tutorial werden die Grundlagen von Lua und der Botprogrammierung
+von Blobby Volley 2 erläutert. Für weiterführende Informationen gibt es die
+Dokumentation der Script-API.
+
+Für Leute, die noch nie programmiert haben, empfehle ich folgendes Tutorial,
+um die wichtigsten Grundlagen zu erlernen:
+http://robertico.ro.funpic.de/index.php
+
+Vor der Programmierung ist zu beachten, dass Blobby-Skripte in 
+'data/scripts' abgelegt werden müssen und die Dateiendung '.lua' tragen
+müssen, um vom Spiel erkannt zu werden
+
+Für ein gültiges Blobby-Script müsst ihr 3 Funktionen festlegen:
+
+function OnServe(parameter)
+  -- Wird aufgerufen wenn der Ball abgepfiffen wurde und man selber angeben
+  -- soll. Der Parameter gibt an, ob der Ball schon in der Schwebe plaziert ist
+end
+
+function OnOpponentServe()
+  -- Wird aufgerufen wenn der Gegner angeben soll
+end
+
+function OnGame()
+  -- Wird ansonsten während des gesamten Spieles aufgerufen
+  -- Mit -- werden übrigens Kommentare markiert, solltet ihr es noch nicht bemerkt haben ;D
+end
+
+Bevor ihr jetzt loslegt, noch etwas zum Koordinatensystem:
+Das Spielfeld ist 800 Einheiten breit und 600 Einheiten hoch, ganz an der
+alten Blobby-Auflösung orientiert. X wächst dabei nach rechts und Y nach oben.
+Damit wäre also 0,0 unten links und 800,600 oben rechts.
+Falls ihr euch wundert dass es keine Möglichkeit gibt die eigene Seite
+zu bestimmen, das ist Absicht. Programmiert einfach als ob der Bot immer
+links stehen würde, das Programm dreht gegebenenfalls alle Koordinaten um.
+
+Ich werde jetzt einfach mal ein Beispiel zeigen, wie ein simpler Bot aufgebaut
+sein kann:
+
+function OnOpponentServe()
+  moveto(130) -- Wenn der Gegner spielt, in Ausgangsposition gehen
+end
+
+function onServer(ballready)
+  moveto(ballx() - 40) -- Etwas links vom Ball hinstellen
+  if posx() < ballx() - 37 and posx() > ballx() - 43 then
+       -- Dieser zugegeben etwas komplizierte Ausdruck bewirkt, dass
+       -- man sich erstmal unterhalb des Balles befinden muss. Leider muss
+       -- das so aufwendig gemacht werden, weil moveto() niemals eine Stelle
+       -- ganz exakt erreicht.
+    if ballready then 
+      jump() -- Natürlich nur springen wenn der Ball schon bereitsteht
+    end
+  end
+end
+
+function OnGame()
+  if ballx() < 400 then -- Wenn sich der Ball links von der Mitte,
+                        -- also auf unserer Seite befindet
+    moveto(ballx() - 20) -- Etwas links vom Ball ausrichten
+    if ballx() < posx() + 50 then
+      jump() -- Wenn der Ball kurz vor oder hinter dem Blobby ist, springen
+    end
+  end
+end
+
+
+Ich hoffe, dieses Tutorial hat einen Eindruck entwickelt, wie man einen Bot
+programmiert. Für weitere Informationen gibt es wie gesagt die 
+Script-API-Doku. Um fortgeschrittene Bots zu programmieren, solltet ihr
+auch nicht immer blind dem Ball hinterherrennen, sondern mit den 
+estim*-Funktionen Vorhersagen machen.
+Ansonsten kann ich euch nur als Tip mitgeben, euren Bot immer wieder zu
+beobachten und gegen jede gefundene Schwäche einen Schutzmechanismus
+zu entwickeln.
