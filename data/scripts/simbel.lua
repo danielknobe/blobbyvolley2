@@ -20,7 +20,7 @@ function OnServe(ballready)
 end
     
 function OnGame()
-  target = estimx(150 / bspeedy())
+  target = estimx(150 / math.abs(bspeedy()))
   if target < 0 then
     target = math.abs(target)
   end
