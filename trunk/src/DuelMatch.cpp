@@ -60,10 +60,10 @@ void DuelMatch::step()
 
 	if (mOutput)
 	{
-		rmanager->setBlob(0, mPhysicWorld.getLeftBlob(),
-			mPhysicWorld.getLeftBlobState());
-		rmanager->setBlob(1, mPhysicWorld.getRightBlob(),
-			mPhysicWorld.getRightBlobState());
+		rmanager->setBlob(0, mPhysicWorld.getBlob(LEFT_PLAYER),
+			mPhysicWorld.getBlobState(LEFT_PLAYER));
+		rmanager->setBlob(1, mPhysicWorld.getBlob(RIGHT_PLAYER),
+			mPhysicWorld.getBlobState(RIGHT_PLAYER));
 		rmanager->setBall(mPhysicWorld.getBall(), 
 				mPhysicWorld.getBallRotation());
 	}
@@ -191,9 +191,9 @@ bool DuelMatch::getBlobJump(PlayerSide player)
 Vector2 DuelMatch::getBlobPosition(PlayerSide player)
 {
 	if (player == LEFT_PLAYER)
-		return mPhysicWorld.getLeftBlob();
+		return mPhysicWorld.getBlob(LEFT_PLAYER);
 	else if (player == RIGHT_PLAYER)
-		return mPhysicWorld.getRightBlob();
+		return mPhysicWorld.getBlob(RIGHT_PLAYER);
 	else
 		return Vector2(0.0, 0.0);
 }

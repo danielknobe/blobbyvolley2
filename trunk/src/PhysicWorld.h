@@ -61,12 +61,10 @@ public:
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);
 
-	Vector2 getLeftBlob();
-	Vector2 getRightBlob();
+	Vector2 getBlob(int player);
 	Vector2 getBall();
 
-	float getLeftBlobState();
-	float getRightBlobState();
+	float getBlobState(int player);
 	float getBallRotation();
 
 	// These functions tell about ball collisions for game logic and sound 
