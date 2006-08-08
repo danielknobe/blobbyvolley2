@@ -601,6 +601,16 @@ float PhysicWorld::estimateBallImpact()
 	const float v0 = mBallVelocity.y;
 	const float a = BALL_GRAVITATION;
 	float height = GROUND_PLANE_HEIGHT - mBallPosition.y;
-	float delta = -fabs((sqrt(v0 * v0 + 8 * a * height) + v0) / (2 * a));
-	return mBallPosition.x + mBallVelocity.x * delta;
+	float delta = fabs((sqrt(v0 * v0 + 8 * a * height) + v0) / (2 * a));
+	return mBallPosition.x - mBallVelocity.x * delta;
+}
+
+Vector2 PhysicWorld::estimateBallPosition(int steps)
+{
+	return mBallPosition + mBallVelocity * float(steps);
+}
+
+bool PhysicWorld::getBallActive()
+{
+	return mIsGameRunning;
 }

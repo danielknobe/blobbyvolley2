@@ -3,7 +3,8 @@
 
 extern "C"
 {
-#include <lua.h>
+#include <lua50/lua.h>
+#include <lua50/lualib.h>
 }
 
 #include <physfs.h>
@@ -36,17 +37,10 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	mState = lua_open();
 	lua_pushnumber(mState, playerside);
 	lua_setglobal(mState, "blobby_side");
-	
-	lua_register(mState, "side", side);
+	luaopen_math(mState);
 	lua_register(mState, "touches", touches);
-	lua_register(mState, "balldown", balldown);
-	lua_register(mState, "touching", touching);
 	lua_register(mState, "launched", launched);
 	lua_register(mState, "debug", debug);
-	lua_register(mState, "abs", abs);
-	lua_register(mState, "random", random);
-	lua_register(mState, "stop", stop);
-	lua_register(mState, "stopjump", stopjump);
 	lua_register(mState, "jump", jump);
 	lua_register(mState, "moveto", moveto);
 	lua_register(mState, "left", left);
@@ -57,7 +51,11 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_register(mState, "bspeedy", bspeedy);
 	lua_register(mState, "posx", posx);
 	lua_register(mState, "posy", posy);
+	lua_register(mState, "oppx", oppx);
+	lua_register(mState, "oppy", oppy);
 	lua_register(mState, "estimate", estimate);
+	lua_register(mState, "estimx", estimx);
+	lua_register(mState, "estimy", estimy);
 
 	ReaderInfo info;
 	info.handle = PHYSFS_openRead(filename.c_str());
@@ -74,9 +72,11 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
+		ScriptException except;
+		except.luaerror = lua_tostring(mState, -1);
 		lua_pop(mState, 1);
 		lua_close(mState);
-		throw ScriptException();
+		throw except;
 	}
 	lua_pop(mState, lua_gettop(mState));
 }
@@ -88,22 +88,65 @@ ScriptedInputSource::~ScriptedInputSource()
 
 PlayerInput ScriptedInputSource::getInput()
 {
-	lua_getglobal(mState, "step");
-	if (!lua_isfunction(mState, -1))
+	lua_pushboolean(mState, false);
+	lua_pushboolean(mState, false);
+	lua_pushboolean(mState, false);
+	lua_setglobal(mState, "blobby_moveleft");
+	lua_setglobal(mState, "blobby_moveright");
+	lua_setglobal(mState, "blobby_moveup");
+
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
 	{
-		lua_pop(mState, 1);
-		std::cerr << "Lua Error: Could not find function step()";
-		std::cerr << std::endl;
 		return PlayerInput();
 	}
-	int error = lua_pcall(mState, 0, 0, 0);
+	
+	PlayerSide player = getSide(mState);
+	int error;
+	if (!match->getBallActive() && player == match->getServingPlayer())
+	{
+		lua_getglobal(mState, "OnServe");
+		if (!lua_isfunction(mState, -1))
+		{
+			lua_pop(mState, 1);
+			std::cerr << "Lua Error: Could not find function ";
+			std::cerr << "OnServe()" << std::endl;
+			return PlayerInput();
+		}
+		lua_pushboolean(mState, !match->getBallDown());
+		error = lua_pcall(mState, 1, 0, 0);
+	}
+	else if (!match->getBallActive() && player != match->getServingPlayer())
+	{
+		lua_getglobal(mState, "OnOpponentServe");
+		if (!lua_isfunction(mState, -1))
+		{
+			lua_pop(mState, 1);
+			std::cerr << "Lua Error: Could not find function ";
+			std::cerr << "OnOpponentServe()" << std::endl;
+			return PlayerInput();
+		}
+		error = lua_pcall(mState, 0, 0, 0);
+	}
+	else
+	{
+		lua_getglobal(mState, "OnGame");
+		if (!lua_isfunction(mState, -1))
+		{
+			lua_pop(mState, 1);
+			std::cerr << "Lua Error: Could not find function ";
+			std::cerr << "OnGame()" << std::endl;
+			return PlayerInput();
+		}
+		error = lua_pcall(mState, 0, 0, 0);
+	}
 	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
 		lua_pop(mState, 1);
 	}
-	PlayerSide player = getSide(mState);
+
 	lua_getglobal(mState, "blobby_moveleft");
 	lua_getglobal(mState, "blobby_moveright");
 	lua_getglobal(mState, "blobby_moveup");
@@ -133,12 +176,6 @@ PlayerSide ScriptedInputSource::getSide(lua_State* state)
 	return player;
 }
 
-int ScriptedInputSource::side(lua_State* state)
-{
-	lua_getglobal(state, "blobby_side");
-	return 1;
-}
-
 int ScriptedInputSource::touches(lua_State* state)
 {
 	DuelMatch* match = DuelMatch::getMainGame();
@@ -151,25 +188,6 @@ int ScriptedInputSource::touches(lua_State* state)
 	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
 	lua_pop(state, -1);
 	lua_pushnumber(state, match->getHitcount(player));
-	return 1;
-}
-
-int ScriptedInputSource::balldown(lua_State* state)
-{
-	DuelMatch* match = DuelMatch::getMainGame();
-	if (match == 0)
-	{
-		lua_pushboolean(state, false);
-		return 1;
-	}
-	lua_pushboolean(state, match->getBallDown());
-	return 1;
-}
-
-int ScriptedInputSource::touching(lua_State* state)
-{
-// TODO: Implement this correctly
-	lua_pushboolean(state, false);
 	return 1;
 }
 
@@ -190,38 +208,6 @@ int ScriptedInputSource::debug(lua_State* state)
 	float number = lua_tonumber(state, -1);
 	lua_pop(state, 1);
 	std::cerr << "Lua Debug: " << number << std::endl;
-	return 0;
-}
-
-int ScriptedInputSource::abs(lua_State* state)
-{
-	double num = lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	lua_pushnumber(state, fabs(num));
-	return 1;
-}
-
-int ScriptedInputSource::random(lua_State* state)
-{
-	int num = lround(lua_tonumber(state, -1));
-	lua_pop(state, 1);
-	lua_pushnumber(state, round(float(rand()) / RAND_MAX * num));
-	return 1;
-}
-
-int ScriptedInputSource::stop(lua_State* state)
-{
-	lua_pushboolean(state, false);
-	lua_pushboolean(state, false);
-	lua_setglobal(state, "blobby_moveleft");
-	lua_setglobal(state, "blobby_moveright");
-	return 0;
-}
-
-int ScriptedInputSource::stopjump(lua_State* state)
-{
-	lua_pushboolean(state, false);
-	lua_setglobal(state, "blobby_moveup");
 	return 0;
 }
 
@@ -364,10 +350,38 @@ int ScriptedInputSource::posy(lua_State* state)
 	return 1;
 }
 
+int ScriptedInputSource::oppx(lua_State* state)
+{
+	PlayerSide player = getSide(state);
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0.0);
+		return 1;
+	}
+	PlayerSide invPlayer = 
+		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
+	lua_pushnumber(state, match->getBlobPosition(invPlayer).x);
+	return 1;
+}
+
+int ScriptedInputSource::oppy(lua_State* state)
+{
+	PlayerSide player = getSide(state);
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0.0);
+		return 1;
+	}
+	PlayerSide invPlayer =
+		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
+	lua_pushnumber(state, match->getBlobPosition(invPlayer).y);
+	return 1;
+}
+
 int ScriptedInputSource::estimate(lua_State* state)
 {
-// TODO: implement this extremly important function
-	lua_pop(state, 1);
 	DuelMatch* match = DuelMatch::getMainGame();
 	if (match == 0)
 	{
@@ -381,3 +395,36 @@ int ScriptedInputSource::estimate(lua_State* state)
 	return 1;
 }
 
+int ScriptedInputSource::estimx(lua_State* state)
+{
+	int num = lround(lua_tonumber(state, -1));
+	lua_pop(state, 1);
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0.0);
+		return 1;
+	}
+	float estim = match->getBallTimeEstimation(num).x;
+	if (getSide(state) == RIGHT_PLAYER)
+		estim = 800.0 - estim;
+	lua_pushnumber(state, estim);
+	return 1;
+}
+
+int ScriptedInputSource::estimy(lua_State* state)
+{
+	int num = lround(lua_tonumber(state, -1));
+	lua_pop(state, 1);
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0.0);
+		return 1;
+	}
+	float estim = match->getBallTimeEstimation(num).y;
+	if (getSide(state) == RIGHT_PLAYER)
+		estim = 600.0 - estim;
+	lua_pushnumber(state, estim);
+	return 1;
+}

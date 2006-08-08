@@ -22,14 +22,14 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	mLeftScore = 0;
 	mRightScore = 0;
-	mServingPlayer = -1;                
+	mServingPlayer = NO_PLAYER;
 	mLeftHitcount = 0;
 	mRightHitcount = 0;
 
 	mSquishLeft = 0;
 	mSquishRight = 0;
 	
-	mBallDown = false;	
+	mBallDown = false;
 	mWinningPlayer = 0;
 
 	mPhysicWorld.resetPlayer();
@@ -115,7 +115,7 @@ void DuelMatch::step()
 			smanager->playSound("sounds/pfiff.wav", 0.2);
 		if (mServingPlayer == 1)
 			mRightScore++;
-		mServingPlayer = 1;
+		mServingPlayer = RIGHT_PLAYER;
 		mPhysicWorld.setBallValidity(0);
 		mBallDown = true;
 		mRightHitcount = 0;
@@ -130,7 +130,7 @@ void DuelMatch::step()
 			smanager->playSound("sounds/pfiff.wav", 0.2);
 		if (mServingPlayer == 0)
 			mLeftScore++;
-		mServingPlayer = 0;
+		mServingPlayer = LEFT_PLAYER;
 		mPhysicWorld.setBallValidity(0);
 		mBallDown = true;
 		mRightHitcount = 0;
@@ -177,6 +177,12 @@ bool DuelMatch::getBallDown()
 	return mBallDown;
 }
 
+bool DuelMatch::getBallActive()
+{
+	return mPhysicWorld.getBallActive();
+}
+        
+
 bool DuelMatch::getBlobJump(PlayerSide player)
 {
 	return mPhysicWorld.getBlobJump(player);
@@ -205,4 +211,21 @@ Vector2 DuelMatch::getBallVelocity()
 float DuelMatch::getBallEstimation()
 {
 	return mPhysicWorld.estimateBallImpact();
+}
+
+Vector2 DuelMatch::getBallTimeEstimation(int steps)
+{
+	return mPhysicWorld.estimateBallPosition(steps);
+}
+
+PlayerSide DuelMatch::getServingPlayer()
+{
+	PlayerSide side = mServingPlayer;
+	if (side == NO_PLAYER)
+	{
+		// This not exactly the situation, but it is necessary to tell
+		// the script system this value, so it doesn't get confused.
+		side = LEFT_PLAYER;
+	}
+	return side;
 }

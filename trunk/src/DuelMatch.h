@@ -48,7 +48,7 @@ public:
 	// for scripted input sources
 	
 	int getScore(PlayerSide player);
-	PlayerSide servingPlayer();
+	PlayerSide getServingPlayer();
 	
 	int getHitcount(PlayerSide player);
 	
@@ -57,9 +57,12 @@ public:
 	Vector2 getBlobPosition(PlayerSide player);
 
 	bool getBallDown();
+	bool getBallActive();
 	
 	// Estimates Ball impact point
 	float getBallEstimation();
+	
+	Vector2 getBallTimeEstimation(int steps);
 	
 	// This functions returns true if the player launched
 	// and is jumping at the moment
@@ -76,7 +79,7 @@ private:
 
 	int mLeftScore;
 	int mRightScore;
-	int mServingPlayer;
+	PlayerSide mServingPlayer;
 
 	int mLeftHitcount;
 	int mRightHitcount;

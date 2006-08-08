@@ -1,0 +1,72 @@
+Dieses Dokument beschreibt die neue Lua-Schnittstelle, mit der Bots
+für Blobby Volley 2 gescriptet werden.
+Sie basiert auf der alten Schnittstelle von Blobby Volley 1, ersetzt aber
+hässliche Funktionen und stellt bessere Möglichkeit zur Programmierung
+von korrektem Aufschlagsverhalten bereit.
+
+Die wichtigste Neuerung ist aber, dass der Bot immer für die linke Seite
+programmiert wird. Wenn der Bot auf der rechten Seite spielt, dreht
+Blobby Volley 2 automatisch alle Werte um.
+
+Folgende Funktionen können aufgerufen werden:
+
+left() :	Ein Tastendruck nach links
+
+right() :	Ein Tastendruck nach rechts
+
+jump() :	Ein Tastendruck der Sprungtaste
+
+moveto(zahl) :	Läuft zur angegebenen X-Koordinate. Die Bewegung ist leicht
+		gepuffert, sonst würde der Blobby immer um die Zielstelle
+		"vibrieren", da er sie niemals exakt erreichen kann.
+		
+touches() :	Gibt die Anzahl der Ballberührungen zurück.
+
+launched() :	Gibt zurück ob der Blobby gerade springt und in der Luft ist.
+
+estimate() :	Gibt die X-Koordinate der Stelle zurück, an der der Ball
+		vorraussichtlich auftreffen wird. Kollisionen am Netz oder
+		am Rand werden aber nicht miteinkalkuliert!
+
+estimx(zahl) :	Gibt die X-Koordinate der Stelle zurück, in der sich der Ball
+		nach der angegebenen Zahl von Physikschritten befinden wird.
+		Auch hier ohne Kollisionsberechnung.
+
+estimy(zahl) :	Gibt die Y-Koordinate der Stelle zurück, in der sich der Ball
+		nach der angegebenen Zahl von Physikschritten befinden wird.
+		Auch hier ohne Kollisionsberechnung.
+		
+ballx()	:	Gibt die X-Koordinate der Ballposition zurück.
+
+bally() :	Gibt die Y-Koordinate der Ballposition zurück.
+
+bspeedx() :	Gibt die X-Koordinate der Ballgeschwindigkeit zurück.
+
+bspeedy() :	Gibt die Y-Koordinate der Ballgeschwindigkeit zurück.
+
+posx() : 	Gibt die X-Koordinate der Spielerposition zurück.
+
+posy() :	Gibt die Y-Koordinate der Spielerposition zurück.
+
+oppx() :	Gibt die X-Koordinate der Gegnerposition zurück.
+
+oppy() :	Gibt die Y-Koordinate der Gegnerposition zurück.
+
+debug(zahl) :	Gibt die angegebene Zahl auf der Konsole aus.
+		Nützlich zur Fehlersuche
+
+Zusätzlich kann der Funktionsumfang der Lua-Mathematikbibliothek genutzt
+werden. Deren Funktionen sind hier dokumentiert:
+http://www.lua.org/manual/5.1/manual.html#5.6
+
+Ein Skript muss selber die folgenden Funktionen enthalten:
+
+function OnServe(ballready) :	Wird aufgerufen nachdem der Ball abgepfiffen
+				wurde und der gesteuerte Spieler nun
+				aufschlägt. ballready gibt an, ob der Ball
+				schon zurückgesetzt wurde.
+				
+function OnOpponentServe() :	Wird aufgerufen nachdem der Ball abgepfiffen
+				und nun der Gegner aufschlägt.
+				
+function OnGame() :		Wird während des regulären Spiels aufgerufen

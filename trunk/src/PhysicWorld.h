@@ -54,7 +54,9 @@ public:
 	
 	Vector2 getBallVelocity();
 	bool getBlobJump(PlayerSide player);
+	bool getBallActive();
 	float estimateBallImpact();
+	Vector2 estimateBallPosition(int steps);
 
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);

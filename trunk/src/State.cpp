@@ -165,7 +165,18 @@ void MainMenuState::step()
 	if (gmgr->getClick(mStartButton))
 	{
 		delete mCurrentState;
-		mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
+		try
+		{
+			mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
+		}
+		catch (ScriptException except)
+		{
+			FILE* file = fopen("lualog.txt", "wb");
+			fprintf(file, "Lua Error: %s\n",
+				except.luaerror.c_str());
+			fclose(file);
+			mCurrentState = new MainMenuState();
+		}
 	}
 	
 	else if (gmgr->getClick(mOptionButton))
@@ -432,7 +443,6 @@ void ReplayMenuState::rebuildGUI()
 					Vector2(400.0, 10.0));
 	mDeleteButton = guimgr->createTextButton("delete", 6,
 					Vector2(620.0, 60.0));
-
 	for (int i = 0; i < mReplayFiles.size(); i++)
 	{
 		mReplayButtons.push_back(guimgr->createTextButton(
@@ -453,7 +463,6 @@ void ReplayMenuState::step()
 	if (mReplaying)
 	{
 		RenderManager* rmanager = &RenderManager::getSingleton();
-		SoundManager* smanager = &SoundManager::getSingleton();
 		
 		mReplayMatch->step();
 		float time = float(SDL_GetTicks()) / 1000.0;
@@ -500,7 +509,8 @@ void ReplayMenuState::step()
 				break;
 			}
 		}
-		if (guimgr->getClick(mDeleteButton))
+		if (guimgr->getClick(mDeleteButton) &&
+					mSelectedReplay != -1)
 		{
 			PHYSFS_delete(std::string("replays/" +
 				mReplayFiles[mSelectedReplay]).c_str());
@@ -512,7 +522,8 @@ void ReplayMenuState::step()
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
-		else if (guimgr->getClick(mPlayButton))
+		else if (guimgr->getClick(mPlayButton) && 
+					mSelectedReplay != -1)
 		{
 			guimgr->clear();
 			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL,
