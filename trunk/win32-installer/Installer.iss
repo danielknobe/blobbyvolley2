@@ -17,22 +17,28 @@ Name: "nl"; MessagesFile: "languages\Dutch.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Alpha 4"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Alpha 4b"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2.0 Alpha 4
-AppVerName=Blobby Volley 2.0 Alpha 4
-DefaultDirName={pf}\Blobby Volley 2.0 Alpha 4
-DefaultGroupName=Blobby Volley 2.0 Alpha 4
+AppName=Blobby Volley 2.0 Alpha 4b
+AppVerName=Blobby Volley 2.0 Alpha 4b
+DefaultDirName={pf}\Blobby Volley 2.0 Alpha 4b
+DefaultGroupName=Blobby Volley 2.0 Alpha 4b
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
 
+[dirs]
+Name:"{app}/data/replays"
+
 [Files]
 Source: "../blobby.exe"; DestDir: "{app}"
-Source: "../README"; DestDir: "{app}"; Flags: isreadme
-Source: "../COPYING";DestDir: "{app}";
-;Source: "SDL.dll"; DestDir: "{app}"
+Source: "../README.txt"; DestDir: "{app}"; Flags: isreadme
+Source: "../COPYING.txt";DestDir: "{app}";
+Source: "../SDL.dll"; DestDir: "{app}"
 Source: "../data/*"; DestDir: "{app}/data"
+Source: "../data/scripts/*"; DestDir: "{app}/data/scripts"
+
+Source: "../doc/*"; DestDir: "{app}/doc"
