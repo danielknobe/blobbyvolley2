@@ -9,6 +9,7 @@
 #include "ScriptedInputSource.h"
 
 #include <physfs.h>
+#include <ctime>
 
 State::State()
 {
@@ -83,7 +84,7 @@ LocalGameState::LocalGameState(GameMode mode)
 	{
 		mode = MODE_RECORDING_DUEL;
 	}
-	mRecorder = new ReplayRecorder(mode, "record.xml");
+	mRecorder = new ReplayRecorder(mode, ReplayMenuState::getRecordName());
 	
 	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
 			linput);
@@ -175,8 +176,8 @@ void MainMenuState::step()
 
 	else if (gmgr->getClick(mWatchReplayButton))
 	{
-//		delete mCurrentState;
-//		 mCurrentState = new LocalGameState(MODE_REPLAY_DUEL);
+		delete mCurrentState;
+		 mCurrentState = new ReplayMenuState();
 	}
 	
 	else if (gmgr->getClick(mExitButton)) 
@@ -363,5 +364,172 @@ void OptionState::step()
 	{
 		delete this;
 		mCurrentState = new MainMenuState();
+	}
+}
+
+ReplayMenuState::ReplayMenuState()
+{
+	mReplaying = false;
+	mReplayMatch = 0;
+	mReplayRecorder = 0;
+	mSelectedReplay = -1;
+	char** filenames = PHYSFS_enumerateFiles("replays");
+	for (int i = 0; filenames[i] != 0; ++i)
+	{
+		std::string tmp(filenames[i]);
+		if (tmp.find(".xml") != std::string::npos)
+		{
+			mReplayFiles.push_back(tmp);
+		}
+	}
+	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
+
+	rebuildGUI();
+	
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	mLeftOscillate = gameConfig.getBool("left_blobby_oscillate");
+	mRightOscillate = gameConfig.getBool("right_blobby_oscillate");
+	RenderManager::getSingleton().setBlobColor(LEFT_PLAYER, 
+		Color(gameConfig.getInteger("r1"),
+		gameConfig.getInteger("g1"),
+		gameConfig.getInteger("b1")));
+	RenderManager::getSingleton().setBlobColor(RIGHT_PLAYER,
+		Color(gameConfig.getInteger("r2"),
+		gameConfig.getInteger("g2"),
+		gameConfig.getInteger("b2")));
+}
+
+ReplayMenuState::~ReplayMenuState()
+{
+	GUIManager::getSingleton()->clear();
+	if (mReplayMatch)
+	{
+		delete mReplayMatch;
+	}
+	if (mReplayRecorder)
+	{
+		delete mReplayRecorder;
+	}
+}
+
+std::string ReplayMenuState::getRecordName()
+{
+	char buf[256];
+	snprintf(buf, 256, "replays/replay_%d.xml", time(0));
+	return std::string(buf);
+}
+
+void ReplayMenuState::rebuildGUI()
+{
+	GUIManager* guimgr = GUIManager::getSingleton();
+	guimgr->drawCursor(true);
+	guimgr->clear();
+	guimgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	mPlayButton = guimgr->createTextButton("play", 4,
+					Vector2(200.0, 10.0));
+	mCancelButton = guimgr->createTextButton("cancel", 6,
+					Vector2(400.0, 10.0));
+	mDeleteButton = guimgr->createTextButton("delete", 6,
+					Vector2(620.0, 60.0));
+
+	for (int i = 0; i < mReplayFiles.size(); i++)
+	{
+		mReplayButtons.push_back(guimgr->createTextButton(
+				mReplayFiles[i], mReplayFiles[i].length(),
+				Vector2(10.0, 50.0 + 30.0 * i)));
+	}
+	
+	if (mSelectedReplay != -1)
+	{
+		guimgr->createImage("gfx/pfeil_rechts.bmp",
+			Vector2(16.0, 62.0 + 30.0 * mSelectedReplay));
+	}
+}
+
+void ReplayMenuState::step()
+{
+	GUIManager* guimgr = GUIManager::getSingleton();
+	if (mReplaying)
+	{
+		RenderManager* rmanager = &RenderManager::getSingleton();
+		SoundManager* smanager = &SoundManager::getSingleton();
+		
+		mReplayMatch->step();
+		float time = float(SDL_GetTicks()) / 1000.0;
+		if (mLeftOscillate)
+		{
+			rmanager->setBlobColor(0, Color(
+				int((sin(time*2) + 1.0) * 128),
+				int((sin(time*4) + 1.0) * 128),
+				int((sin(time*3) + 1.0) * 128)));
+		}
+		if (mRightOscillate)
+		{
+			rmanager->setBlobColor(1, Color(
+				int((cos(time*2) + 1.0) * 128),
+				int((cos(time*4) + 1.0) * 128),
+				int((cos(time*3) + 1.0) * 128)));
+		}
+		
+		PlayerSide side = mReplayMatch->winningPlayer();
+		if (side != NO_PLAYER)
+		{
+			delete this;
+			mCurrentState = new WinState(side);
+		}
+		else if (InputManager::getSingleton()->exit())
+		{
+			delete this;
+			mCurrentState = new MainMenuState();
+		}
+		else if (mReplayRecorder->endOfFile())
+		{
+			delete this;
+			mCurrentState = new MainMenuState();
+		}
+	}
+	else
+	{
+		for (int i = 0; i < mReplayButtons.size(); i++)
+		{
+			if (guimgr->getClick(mReplayButtons[i]))
+			{
+				mSelectedReplay = i;
+				rebuildGUI();
+				break;
+			}
+		}
+		if (guimgr->getClick(mDeleteButton))
+		{
+			PHYSFS_delete(std::string("replays/" +
+				mReplayFiles[mSelectedReplay]).c_str());
+			delete this;
+			mCurrentState = new ReplayMenuState();
+		}
+		else if (guimgr->getClick(mCancelButton))
+		{
+			delete this;
+			mCurrentState = new MainMenuState();
+		}
+		else if (guimgr->getClick(mPlayButton))
+		{
+			guimgr->clear();
+			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL,
+				std::string("replays/" +
+					mReplayFiles[mSelectedReplay]));
+			InputSource* linput = mReplayRecorder->
+					createReplayInputSource(LEFT_PLAYER,
+					new DummyInputSource);
+			 InputSource* rinput = mReplayRecorder->
+			 		createReplayInputSource(RIGHT_PLAYER,
+			 		new DummyInputSource);
+			mReplaying = true;
+			mReplayMatch = new DuelMatch(linput, rinput,
+							true, true);
+			SoundManager::getSingleton().playSound(
+					"sounds/pfiff.wav", 0.2);
+			guimgr->drawCursor(false);
+		}
 	}
 }
