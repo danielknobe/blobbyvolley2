@@ -38,7 +38,7 @@ function OnGame()
     
 -- Try to get rid of the ball with third strike
   if touches() > 1 then
-    targetDiff = targetDiff - 42 + (400.0 - ballx()) / 15
+    targetDiff = targetDiff - 45 + (400 - ballx()) / 12
     if math.abs(posx() - ballx()) < 64 and bally() < 350 then
       if math.abs(bspeedx()) * 1.3 < math.abs(bspeedy()) then
         jump()
@@ -51,7 +51,6 @@ function OnGame()
   end
     
   if bspeedx() < 0 then
---      targetDiff = targetDiff + 3 * math.abs(bspeedx() / bspeedy())
     targetDiff = targetDiff + bspeedx() * 5 + 40
   end
     
@@ -62,7 +61,7 @@ function OnGame()
   end
     
 -- Protection against balls from back
-  if ballx() < posx() then
+  if ballx() + 20 < posx() and ballx() < 200 then
     left()
   end
     
