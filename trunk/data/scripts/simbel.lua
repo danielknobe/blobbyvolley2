@@ -20,10 +20,14 @@ function OnServe(ballready)
 end
     
 function OnGame()
-  target = estimate()
+  target = estimx(150 / bspeedy())
   if target < 0 then
     target = math.abs(target)
   end
+  if target > 400 then
+    target = 800 - target + 100
+  end
+  
   
   targetDiff = 0
    
@@ -37,9 +41,9 @@ function OnGame()
   end
     
 -- Try to get rid of the ball with third strike
-  if touches() > 1 then
-    targetDiff = targetDiff - 45 + (400 - ballx()) / 12
-    if math.abs(posx() - ballx()) < 64 and bally() < 350 then
+  if touches() > 0 then
+    targetDiff = targetDiff - 40 + (400 - ballx()) / 15
+    if math.abs(posx() - ballx()) < 20 and bally() < 350 then
       if math.abs(bspeedx()) * 1.3 < math.abs(bspeedy()) then
         jump()
       end
@@ -48,10 +52,6 @@ function OnGame()
    
   if touches() > 2 then
     targetDiff = -200
-  end
-    
-  if bspeedx() < 0 then
-    targetDiff = targetDiff + bspeedx() * 5 + 40
   end
     
   if ballx() > 500.0 then
