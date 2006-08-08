@@ -1,11 +1,10 @@
 =======
 Primary:
 Important:
-- Ballshadowfix for SDL/OpenGL Renderer (may be for the Handheldversion too)
-- Compilation tutorial for Win32-Users
+- Compilation tutorial for Linux-Users
 
 Near aims:
-- Implementation of LUA-Script for external KI
+- Implementation of LUA-Script for external KI (done)
 - Gamepadsupport
 - Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate
 - Redesign of the GUI system, it is designed too simple and doesn't allow
