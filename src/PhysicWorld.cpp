@@ -132,14 +132,14 @@ bool PhysicWorld::blobbyHitGround(int player)
 {
 	if (player == 0)
 	{ 
-		if (getLeftBlob().y >= GROUND_PLANE_HEIGHT)
+		if (getBlob(LEFT_PLAYER).y >= GROUND_PLANE_HEIGHT)
 			return true;
 		else
 			return false;
 	}
 	else if (player == 1)
 	{
-		if (getRightBlob().y >= GROUND_PLANE_HEIGHT)
+		if (getBlob(RIGHT_PLAYER).y >= GROUND_PLANE_HEIGHT)
 			return true;
 		else
 			return false;
@@ -190,7 +190,7 @@ bool PhysicWorld::int_BallHitRightPlayerTop()
 	mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE)
 	).length() <= BALL_RADIUS + BLOBBY_UPPER_RADIUS)
 	return true;
-    
+
     return false;
 }
 
@@ -212,15 +212,15 @@ bool PhysicWorld::int_BallHitRightPlayerBottom()
 	return true;
 	
 	return false;
-}   
-     
+}
+
 bool PhysicWorld::int_BallHitLeftPlayer()
 {
 	if (int_BallHitLeftPlayerTop() || int_BallHitLeftPlayerBottom())
 	return true;
 	
 	return false;
-} 
+}
 
 bool PhysicWorld::int_BallHitRightPlayer()
 {
@@ -228,7 +228,7 @@ bool PhysicWorld::int_BallHitRightPlayer()
 	return true;
 	
 	return false;
-}   
+}
 
 // externel collision-methods
 bool PhysicWorld::ballHitLeftPlayer()
@@ -239,7 +239,7 @@ bool PhysicWorld::ballHitLeftPlayer()
 bool PhysicWorld::ballHitRightPlayer()
 {
 	return mBallHitByRightBlob;
-}   
+}
 
 Vector2 PhysicWorld::getBall()
 {
@@ -251,24 +251,26 @@ float PhysicWorld::getBallRotation()
 	return mBallRotation;
 }
 
-Vector2 PhysicWorld::getLeftBlob()
+Vector2 PhysicWorld::getBlob(int player)
 {
-	return mLeftBlobPosition;
+	if (player == 0)
+		return mLeftBlobPosition;
+	else if (player == 1)
+		return mRightBlobPosition;
+	else
+		return Vector2(0,0);
 }
 
-Vector2 PhysicWorld::getRightBlob()
-{
-	return mRightBlobPosition;
-}
 
-float PhysicWorld::getLeftBlobState()
-{
-	return mLeftBlobState;
-}
 
-float PhysicWorld::getRightBlobState()
+float PhysicWorld::getBlobState(int player)
 {
-	return mRightBlobState;
+	if (player == 0)
+		return mLeftBlobState;
+	else if (player == 1)
+		return mRightBlobState;
+	else
+		return 0;
 }
 
 void PhysicWorld::setLeftInput(const PlayerInput& input)
@@ -293,14 +295,14 @@ void PhysicWorld::blobbyAnimationStep(int player)
 		}
 
 		if (mLeftBlobState >= 4.5)
-		{		
+		{
 			mLeftBlobbyAnimationSpeedAtm =- BLOBBY_ANIMATION_SPEED;
 		}
 		
 		mLeftBlobState += mLeftBlobbyAnimationSpeedAtm;
 		
 		if (mLeftBlobState >= 5)
-		{		
+		{
 			mLeftBlobState = 4.99;
    		}
 	}
@@ -313,12 +315,12 @@ void PhysicWorld::blobbyAnimationStep(int player)
 		}
 	
 		if (mRightBlobState >= 4.5)
-		{		
+		{
 			mRightBlobbyAnimationSpeedAtm =- BLOBBY_ANIMATION_SPEED;
     	}
 		mRightBlobState += mRightBlobbyAnimationSpeedAtm;
 		if (mRightBlobState >= 5)
-		{		
+		{
 			mRightBlobState = 4.99;
  		}
 	}
@@ -391,8 +393,8 @@ void PhysicWorld::step()
 	}
 
 	// Reset the ball-blobby collision
-	mBallHitByRightBlob=false;
-	mBallHitByLeftBlob=false;
+	mBallHitByRightBlob = false;
+	mBallHitByLeftBlob = false;
 
     for (short counter = 1; counter <= TIMESTEP; counter++)
 	{
