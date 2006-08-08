@@ -42,6 +42,18 @@ public:
 	}
 };
 
+class DummyInputSource : public InputSource
+{
+public:
+	virtual PlayerInput getInput()
+	{
+		return PlayerInput();
+	}
+	virtual ~DummyInputSource()
+	{
+	}
+};
+
 // This operator converts a PlayerInput structure in a packed string
 // suitable for saving
 

@@ -91,3 +91,31 @@ private:
 
 	bool mSaveConfig;	
 };
+
+class ReplayMenuState : public State
+{
+public:
+	ReplayMenuState();
+	virtual ~ReplayMenuState();
+	virtual void step();
+	
+	static std::string getRecordName();
+	
+private:
+	void rebuildGUI();
+	
+	DuelMatch* mReplayMatch;
+	ReplayRecorder* mReplayRecorder;
+
+	std::vector<std::string> mReplayFiles;
+	std::vector<int> mReplayButtons;
+	int mSelectedReplay;
+	bool mReplaying;
+	
+	int mPlayButton;
+	int mCancelButton;
+	int mDeleteButton;
+
+	bool mLeftOscillate;
+	bool mRightOscillate;
+};
