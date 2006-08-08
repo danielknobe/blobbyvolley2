@@ -79,5 +79,6 @@ struct ExtensionUnsupportedException : public std::exception
 
 struct ScriptException : public std::exception
 {
+	std::string luaerror;
 	~ScriptException() throw() {}
 };

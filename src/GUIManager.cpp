@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 #include "InputManager.h"
 
-GUIManager* GUIManager::mSingleton= 0;
+GUIManager* GUIManager::mSingleton = 0;
 
 GUIManager* GUIManager::getSingleton()
 {

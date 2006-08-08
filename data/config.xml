@@ -13,8 +13,8 @@
 	<var name="right_blobby_oscillate" value="true"/>
 	<var name="record_replay" value="true"/>
 	<var name="left_script_name" value="simple.lua"/>
-	<var name="right_script_name" value="jump.lua"/>
-	<var name="left_player_human" value="true"/>
-	<var name="right_player_human" value="true"/>
+	<var name="right_script_name" value="dumbjump.lua"/>
+	<var name="left_player_human" value="false"/>
+	<var name="right_player_human" value="false"/>
 </userconfig>
 
