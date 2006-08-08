@@ -3,8 +3,9 @@
 
 extern "C"
 {
-#include <lua50/lua.h>
-#include <lua50/lualib.h>
+#include <lua5.1/lua.h>
+#include <lua5.1/lauxlib.h>
+#include <lua5.1/lualib.h>
 }
 
 #include <physfs.h>
@@ -288,6 +289,7 @@ int ScriptedInputSource::bally(lua_State* state)
 		return 1;
 	}
 	float pos = match->getBallPosition().y;
+	pos = 600.0 - pos;
 	lua_pushnumber(state, pos);
 	return 1;
 }
@@ -315,7 +317,9 @@ int ScriptedInputSource::bspeedy(lua_State* state)
 		lua_pushnumber(state, 0.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBallVelocity().y);
+	float vel = match->getBallVelocity().y;
+	vel = 600.0 - vel;
+	lua_pushnumber(state, vel);
 	return 1;
 }
 
@@ -346,7 +350,9 @@ int ScriptedInputSource::posy(lua_State* state)
 		lua_pushnumber(state, 0.0);
 		return 1;
 	}
-	lua_pushnumber(state, match->getBlobPosition(player).y);
+	float pos = match->getBlobPosition(player).y;
+	pos = 600.0 - pos;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
@@ -376,7 +382,9 @@ int ScriptedInputSource::oppy(lua_State* state)
 	}
 	PlayerSide invPlayer =
 		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
-	lua_pushnumber(state, match->getBlobPosition(invPlayer).y);
+	float pos = match->getBlobPosition(invPlayer).y;
+	pos = 600.0 - pos;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
@@ -423,8 +431,7 @@ int ScriptedInputSource::estimy(lua_State* state)
 		return 1;
 	}
 	float estim = match->getBallTimeEstimation(num).y;
-	if (getSide(state) == RIGHT_PLAYER)
-		estim = 600.0 - estim;
+	estim = 600.0 - estim;
 	lua_pushnumber(state, estim);
 	return 1;
 }

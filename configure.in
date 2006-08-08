@@ -21,8 +21,7 @@ AC_CHECK_LIB(physfs,PHYSFS_init, [], [AC_MSG_ERROR(PhysFS required)])
 
 AC_CHECK_LIB(GL, glVertex3f, [], [AC_MSG_WARN(OpenGL support disabled)])
 
-AC_CHECK_LIB(lua50, lua_pushboolean, [], [AC_MSG_ERROR(Lua 5.0 required)])
-AC_CHECK_LIB(lualib50, luaopen_math, [], [AC_MSG_ERROR(Lualib 5.0 required)])
+AC_CHECK_LIB(lua5.1, lua_pushboolean, [], [AC_MSG_ERROR(Lua 5.1 required)])
 
 AC_OUTPUT(
 	Makefile \
