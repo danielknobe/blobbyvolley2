@@ -5,11 +5,10 @@ end
 function OnServe(ballready)
   serveTarget = ballx() - 25
   if (posx() < serveTarget + 3) and (posx() > serveTarget - 3) then
-    jump()
-    readyToServe = true
-    if posy() < 400 then
-      right()
+    if ballready then
+      jump()
     end
+    readyToServe = true
   else 
     readyToServe = false
     if posx() < serveTarget then
@@ -32,7 +31,7 @@ function OnGame()
   if ballx() > 280 and ballx() < 400 and ballx() > posx() then
     jump()
     targetDiff = targetDiff - 25
-    if (posy() - bally()) < 90 then
+    if math.abs(posy() - bally()) < 90 then
       right()
     end
   end
@@ -40,7 +39,7 @@ function OnGame()
 -- Try to get rid of the ball with third strike
   if touches() > 1 then
     targetDiff = targetDiff - 42 + (400.0 - ballx()) / 15
-    if math.abs(posx() - ballx()) < 64 and bally() > 350 then
+    if math.abs(posx() - ballx()) < 64 and bally() < 350 then
       if math.abs(bspeedx()) * 1.3 < math.abs(bspeedy()) then
         jump()
       end
