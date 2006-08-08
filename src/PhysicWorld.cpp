@@ -1,6 +1,6 @@
 #include "PhysicWorld.h"
 
-const int TIMESTEP = 4; // calculations per frame
+const int TIMESTEP = 5; // calculations per frame
 
 const float TIMEOUT_MAX = 4.0;
 
@@ -39,7 +39,7 @@ const float BLOBBY_JUMP_ACCELERATION = 13.50;
 // the original code
 const float BLOBBY_JUMP_BUFFER = 0.39;
 const float GRAVITATION = 0.78;
-const float BALL_GRAVITATION = 0.232;
+const float BALL_GRAVITATION = 0.248;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
@@ -404,7 +404,7 @@ void PhysicWorld::step()
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(12);
+				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByLeftBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
 			}
@@ -414,7 +414,7 @@ void PhysicWorld::step()
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(12);
+				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
 			}	
@@ -423,7 +423,7 @@ void PhysicWorld::step()
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(12);
+				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByLeftBlob = true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
 			}
@@ -433,7 +433,7 @@ void PhysicWorld::step()
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
 				mBallPosition -= mBallVelocity.scale(3);
-				mBallVelocity = mBallVelocity.scale(12);
+				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
 			}
