@@ -23,11 +23,10 @@ InputManager::InputManager()
 	configFileToCurrentConfigForLeftKeyboard();
 	configFileToCurrentConfigForRightKeyboard();
 	
-	mInputDevice[0] = new KeyboardInputDevice(mLeftBlobbyLeftMove,
-	mLeftBlobbyRightMove,mLeftBlobbyJump);
+	mInputDevice[0] = new MouseInputDevice(LEFT_PLAYER);
     
-	mInputDevice[1] = new KeyboardInputDevice(mRightBlobbyLeftMove,
-	mRightBlobbyRightMove,mRightBlobbyJump);
+	mInputDevice[1] = new KeyboardInputDevice(mLeftBlobbyLeftMove,
+	mLeftBlobbyRightMove,mLeftBlobbyJump);
 	
 
 
