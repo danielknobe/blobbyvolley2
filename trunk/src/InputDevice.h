@@ -39,7 +39,7 @@ public:
 								, 0
 								, 0);
                                      
-			if(SDL_GetMouseState(&mMousePosition, NULL))
+			if(SDL_GetMouseState(&mMousePosition, NULL)&SDL_BUTTON(1))
 			{
             	if (mDelay == true)
     				mInput.up = true;      
