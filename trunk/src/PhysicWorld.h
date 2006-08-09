@@ -6,6 +6,10 @@
 #include "Vector.h"
 #include "InputSource.h"
 
+
+const float BLOBBY_SPEED = 4.5; // BLOBBY_SPEED is necessary to determine the size of the input buffer
+
+
 class PhysicWorld
 {
 private:
