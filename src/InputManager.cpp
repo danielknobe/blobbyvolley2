@@ -22,15 +22,24 @@ InputManager::InputManager()
 	// initialize the SDLKeys for ingame input
 	configFileToCurrentConfigForLeftKeyboard();
 	configFileToCurrentConfigForRightKeyboard();
+	// set inputdevices
+	configFileToCurrentConfigForLeftDevice();
+	configFileToCurrentConfigForRightDevice();
+// ====================== ÜBERGANGSLÖSUNG	
+	if (mLeftBlobbyInputDevice == MOUSE)
+	mInputDevice[LEFT_PLAYER] = new MouseInputDevice(LEFT_PLAYER);
 	
-	mInputDevice[0] = new MouseInputDevice(LEFT_PLAYER);
-    
-	mInputDevice[1] = new KeyboardInputDevice(mLeftBlobbyLeftMove,
+	if (mLeftBlobbyInputDevice == KEYBOARD)
+	mInputDevice[LEFT_PLAYER] = new KeyboardInputDevice(mLeftBlobbyLeftMove,
 	mLeftBlobbyRightMove,mLeftBlobbyJump);
 	
-
-
- }
+	if (mRightBlobbyInputDevice == MOUSE)
+	mInputDevice[RIGHT_PLAYER] = new MouseInputDevice(RIGHT_PLAYER);	
+	
+	if (mRightBlobbyInputDevice == KEYBOARD)
+	mInputDevice[RIGHT_PLAYER] = new KeyboardInputDevice(mRightBlobbyLeftMove,
+	mRightBlobbyRightMove,mRightBlobbyJump);
+}
 
 InputManager* InputManager::getSingleton()
 {
@@ -505,11 +514,58 @@ void InputManager::currentConfigToConfigFileForLeftKeyboard()
 	mConfigManager.saveFile("inputconfig.xml");
 }
 
+
+
 void InputManager::currentConfigToConfigFileForRightKeyboard()
 {
 	mConfigManager.loadFile("inputconfig.xml");
 	mConfigManager.setString("right_blobby_left_move",keyToString(mRightBlobbyLeftMove));
 	mConfigManager.setString("right_blobby_right_move",keyToString(mRightBlobbyRightMove));
 	mConfigManager.setString("right_blobby_jump",keyToString(mRightBlobbyJump));
+	mConfigManager.saveFile("inputconfig.xml");
+}
+
+void InputManager::configFileToCurrentConfigForLeftDevice()
+{
+	mConfigManager.loadFile("inputconfig.xml");
+	if ("mouse" == mConfigManager.getString("left_blobby_device"))
+		mLeftBlobbyInputDevice = MOUSE;
+	if ("keyboard" == mConfigManager.getString("left_blobby_device"))
+		mLeftBlobbyInputDevice = KEYBOARD;
+	if ("joystick" == mConfigManager.getString("left_blobby_device"))
+		mLeftBlobbyInputDevice = JOYSTICK;
+}
+void InputManager::configFileToCurrentConfigForRightDevice()
+{
+	mConfigManager.loadFile("inputconfig.xml");
+	if ("mouse" == mConfigManager.getString("right_blobby_device"))
+		mRightBlobbyInputDevice = MOUSE;
+	if ("keyboard" == mConfigManager.getString("right_blobby_device"))
+		mRightBlobbyInputDevice = KEYBOARD;
+	if ("joystick" == mConfigManager.getString("right_blobby_device"))
+		mRightBlobbyInputDevice = JOYSTICK;
+}
+
+void InputManager::currentConfigToConfigFileForLeftDevice()
+{
+	mConfigManager.loadFile("inputconfig.xml");
+	if (mLeftBlobbyInputDevice == MOUSE)
+		mConfigManager.setString("left_blobby_device","mouse");
+	if (mLeftBlobbyInputDevice == KEYBOARD)
+		mConfigManager.setString("left_blobby_device","keyboard");
+	if (mLeftBlobbyInputDevice == JOYSTICK)
+		mConfigManager.setString("left_blobby_device","joystick");
+	mConfigManager.saveFile("inputconfig.xml");
+}
+
+void InputManager::currentConfigToConfigFileForRightDevice()
+{
+	mConfigManager.loadFile("inputconfig.xml");
+	if (mRightBlobbyInputDevice == MOUSE)
+		mConfigManager.setString("right_blobby_device","mouse");
+	if (mRightBlobbyInputDevice == KEYBOARD)
+		mConfigManager.setString("right_blobby_device","keyboard");
+	if (mRightBlobbyInputDevice == JOYSTICK)
+		mConfigManager.setString("right_blobby_device","joystick");
 	mConfigManager.saveFile("inputconfig.xml");
 }

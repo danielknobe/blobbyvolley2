@@ -29,6 +29,13 @@ enum PlayerSide
 			// and can be used to declare arrays
 };
 
+enum InputDeviceName
+{
+	KEYBOARD = 1,
+	MOUSE = 2,
+	JOYSTICK = 3
+};
+
 struct Color
 {
 	Color(int red, int green, int blue)
