@@ -21,6 +21,9 @@ private:
 	// Keyboard
 	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
+	int mLeftBlobbyInputDevice;
+	int mRightBlobbyInputDevice;
+
 	SDLKey mLeftBlobbyLeftMove;
 	SDLKey mLeftBlobbyRightMove;
 	SDLKey mLeftBlobbyJump;
@@ -79,8 +82,11 @@ public:
 	void configFileToCurrentConfigForRightKeyboard();
 	void currentConfigToConfigFileForLeftKeyboard();
 	void currentConfigToConfigFileForRightKeyboard();
-
-
+	
+	void configFileToCurrentConfigForRightDevice();
+	void configFileToCurrentConfigForLeftDevice();
+	void currentConfigToConfigFileForLeftDevice();
+	void currentConfigToConfigFileForRightDevice();
 
 
 
