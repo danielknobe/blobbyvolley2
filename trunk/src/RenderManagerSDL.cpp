@@ -75,7 +75,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	Uint32 screenFlags = SDL_HWSURFACE | SDL_HWACCEL | SDL_DOUBLEBUF;
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
-	SDL_WM_SetCaption("Blobby Volley 2 Alpha 4b", "");
+	SDL_WM_SetCaption("Blobby Volley 2 Alpha 5", "");
 	mScreen = SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
 
