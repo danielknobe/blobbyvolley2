@@ -14,10 +14,10 @@ public:
 	{
 		return InputManager::getSingleton()->getGameInput(mPlayer);
 	}
-	
+
 	~LocalInputSource()
 	{
-            RenderManager::getSingleton().setMouseMarker(-6);           
-                       }
+		RenderManager::getSingleton().setMouseMarker(-6);           
+	}
 };
 

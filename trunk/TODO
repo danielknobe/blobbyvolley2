@@ -5,7 +5,6 @@ Important:
 - Redesign of the GUI system, it is designed too simple and doesn't allow
 	many features of the original GUI
 - New RenderMangerfunctions to hide ingamegraphics
-
 Near aims:
 - Gamepadsupport
 - Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate

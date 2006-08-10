@@ -7,6 +7,11 @@
 
 struct Sound
 {
+	Sound()
+	{
+		data = 0;
+	}
+	
 	Uint8* data;
 	Uint32 length;
 	int position;
@@ -17,6 +22,7 @@ class SoundManager
 {
 private:
 	SoundManager();
+	~SoundManager();
 
 	static SoundManager* mSingleton;
 	

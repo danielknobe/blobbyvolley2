@@ -8,34 +8,11 @@
 
 #include "RenderManager.h"
 #include "SoundManager.h"
-#include "PhysicWorld.h"
 #include "InputManager.h"
-#include "LocalInputSource.h"
-#include "NetworkManager.h"
 #include "UserConfig.h"
 #include "GUIManager.h"
 #include "State.h"
-
-void correctFramerate()
-{
-	int rate = 60;
-	float rateTicks = 1000.0 / ((float)rate);
-	static int frameCount = 0;
-	static int lastTicks = SDL_GetTicks();
-	
-	int currentTicks;
-	int targetTicks;
-	++frameCount;
-	currentTicks = SDL_GetTicks();
-	targetTicks = (int)(((float)frameCount) * rateTicks) + lastTicks;
-	if (currentTicks <= targetTicks)
-		SDL_Delay(targetTicks - currentTicks);
-	else
-	{
-		frameCount = 0;
-		lastTicks = SDL_GetTicks();
-	}
-}
+#include "SpeedController.h"
 
 int main(int argc, char* argv[])
 {
@@ -58,7 +35,11 @@ int main(int argc, char* argv[])
 	else if (gameConfig.getString("device") == "OpenGL")
 		rmanager = RenderManager::createRenderManagerGL2D();
 	else
+	{
+		std::cerr << "Warning: Unknown renderer selected!";
+		std::cerr << "Falling back to OpenGL" << std::endl;
 		rmanager = RenderManager::createRenderManagerGL2D();
+	}
 	GUIManager::createGUIManager();
 
 	// fullscreen?
@@ -68,6 +49,8 @@ int main(int argc, char* argv[])
 		rmanager->init(800, 600, false);
 	// Only for Alpha2 Release!!!
 
+	SpeedController scontroller(gameConfig.getFloat("gamefps"),
+					gameConfig.getFloat("realfps"));
 
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
@@ -86,11 +69,13 @@ int main(int argc, char* argv[])
 		GUIManager::getSingleton()->processInput();
 		State::getCurrentState()->step();
 
-		rmanager->draw();
-		GUIManager::getSingleton()->render();
-		rmanager->refresh();
-		correctFramerate();
-
+		if (!scontroller.doFramedrop())
+		{
+			rmanager->draw();
+			GUIManager::getSingleton()->render();
+			rmanager->refresh();
+		}
+		scontroller.update();
 	}
 	rmanager->deinit();
 	smanager->deinit();

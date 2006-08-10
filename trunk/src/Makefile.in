@@ -59,8 +59,8 @@ am_blobby_OBJECTS = DuelMatch.$(OBJEXT) main.$(OBJEXT) \
 	RenderManagerSDL.$(OBJEXT) RenderManagerGP2X.$(OBJEXT) \
 	RenderManagerGL2D.$(OBJEXT) ReplayInputSource.$(OBJEXT) \
 	ReplayRecorder.$(OBJEXT) ScriptedInputSource.$(OBJEXT) \
-	State.$(OBJEXT) SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) \
-	$(am__objects_1)
+	SpeedController.$(OBJEXT) State.$(OBJEXT) \
+	SoundManager.$(OBJEXT) UserConfig.$(OBJEXT) $(am__objects_1)
 blobby_OBJECTS = $(am_blobby_OBJECTS)
 blobby_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
@@ -200,6 +200,7 @@ blobby_SOURCES = \
 	ReplayInputSource.h ReplayInputSource.cpp \
 	ReplayRecorder.h ReplayRecorder.cpp \
 	ScriptedInputSource.h ScriptedInputSource.cpp \
+	SpeedController.h SpeedController.cpp \
 	State.h State.cpp\
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
@@ -288,6 +289,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReplayRecorder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptedInputSource.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SoundManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpeedController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/State.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserConfig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
