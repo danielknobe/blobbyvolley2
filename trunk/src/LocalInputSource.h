@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InputManager.h"
+#include "RenderManager.h"
 
 class LocalInputSource : public InputSource
 {
@@ -13,5 +14,10 @@ public:
 	{
 		return InputManager::getSingleton()->getGameInput(mPlayer);
 	}
+	
+	~LocalInputSource()
+	{
+            RenderManager::getSingleton().setMouseMarker(-6);           
+                       }
 };
 
