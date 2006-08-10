@@ -2,10 +2,10 @@
 [Languages]
 Name: "de"; MessagesFile: "languages\German.isl"
 Name: "nl"; MessagesFile: "languages\Dutch.isl"
-;Name: "ru"; MessagesFile: "languages\Russian.isl"
+Name: "ru"; MessagesFile: "languages\Russian.isl"
 ;Name: "pt"; MessagesFile: "languages\Portuguese.isl"
 ;Name: "sk"; MessagesFile: "languages\Slovak.isl"
-;Name: "pl"; MessagesFile: "languages\Polish.isl"
+Name: "pl"; MessagesFile: "languages\Polish.isl"
 ;Name: "no"; MessagesFile: "languages\Norwegian.isl"
 ;Name: "it"; MessagesFile: "languages\Italian.isl"
 ;Name: "hu"; MessagesFile: "languages\Hungarian.isl"
@@ -17,15 +17,15 @@ Name: "nl"; MessagesFile: "languages\Dutch.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Alpha 4b"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Alpha 5"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2.0 Alpha 4b
-AppVerName=Blobby Volley 2.0 Alpha 4b
-DefaultDirName={pf}\Blobby Volley 2.0 Alpha 4b
-DefaultGroupName=Blobby Volley 2.0 Alpha 4b
+AppName=Blobby Volley 2.0 Alpha 5
+AppVerName=Blobby Volley 2.0 Alpha 5
+DefaultDirName={pf}\Blobby Volley 2.0 Alpha 5
+DefaultGroupName=Blobby Volley 2.0 Alpha 5
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
