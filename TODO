@@ -1,29 +1,18 @@
-=======
+======= TODO
 Primary:
 Important:
-- Compilation tutorial for Linux-Users
-
-Near aims:
-- Implementation of LUA-Script for external KI (done)
-- Gamepadsupport
-- Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate
+- Compilation tutorial for Linux-Users (for Linux allready done)
 - Redesign of the GUI system, it is designed too simple and doesn't allow
 	many features of the original GUI
+- New RenderMangerfunctions to hide ingamegraphics
+
+Near aims:
+- Gamepadsupport
+- Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate
 
 Secondary:
 - Add animated background (prerendered Animations, at least for SDL and GL2D)
 - Add option for old and new volleyball ruleset
 - Add time-capped game option
 - Add speed option
-
-Possible Changes at Physics (may be exported as configurable parameters if 
-	disagreements do occur):
-- Upper net collision damping
-- Jump acceleration
-- Blobby gravitation (the jump damping is fixed, it's just the double of the gravitation)
-- Ball graviation
-- Protection of downward reflections
-- New Reflection models for net sphere 
-	(for example: planar, sphere with bigger radius)
-
 - Make Code compatible with gcc -Wall
