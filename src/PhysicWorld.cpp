@@ -404,7 +404,7 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
+				mBallPosition -= mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByLeftBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
@@ -414,7 +414,7 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
+				mBallPosition -= mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
@@ -423,7 +423,7 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
+				mBallPosition -= mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByLeftBlob = true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
@@ -433,7 +433,7 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(3);
+				mBallPosition -= mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(13);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
@@ -467,36 +467,30 @@ void PhysicWorld::step()
 		if(Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
 			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
-			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+10
+			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+15.1
 	    	&& mBallVelocity.x<0
-	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE-1)
+	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
 		// Right Net Border  
 		else if(Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
 			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
-			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-10
+			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-15.1
 		    && mBallVelocity.x>0
-		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE-1)
+		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 				
 		// Net Sphere
 		else if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
-			).length() <= NET_RADIUS + BALL_RADIUS)
+			).length() <= NET_RADIUS + BALL_RADIUS && mBallPosition.y < NET_POSITION_Y-NET_SPHERE)
 		{
-			if(mBallNetOverlapped==0)
-			{
-			mBallVelocityTemp=mBallVelocity;
-			mBallNetOverlapped=1;
-			}
-			mBallVelocity = mBallVelocityTemp.reflect(
+			mBallVelocity = mBallVelocity.reflect(
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
-			.normalise()).scale(0.7);
+			.normalise()).scale(0.75);
+			mBallPosition -= mBallVelocity;
 		}
-		else
-			mBallNetOverlapped=0;
 		
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
 		mRightBlobPosition += mRightBlobVelocity/TIMESTEP;

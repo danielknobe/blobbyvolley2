@@ -34,8 +34,6 @@ private:
 	Vector2 mLeftBlobVelocity;
 	Vector2 mRightBlobVelocity;
 	Vector2 mBallVelocity;
-	Vector2 mBallVelocityTemp; // important to solve the netbug
-	bool mBallNetOverlapped;   // important to solve the netbug
 	
 	float mBallRotation;
 	float mBallAngularVelocity;
