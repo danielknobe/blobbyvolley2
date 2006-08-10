@@ -2,12 +2,7 @@
 #include <cassert>
 #include <physfs.h> 
 #include "SoundManager.h"
-
-struct FileLoadException
-{
-	std::string filename;
-	FileLoadException(std::string name) : filename(name) {}
-};
+#include "Global.h"
 
 SoundManager* SoundManager::mSingleton;
 
@@ -58,27 +53,27 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 {
 	if (!mInitialised)
 		return false;
-	Sound* soundBuffer = mSound[filename];
-	if (!soundBuffer)
+	try
 	{
-		try
+		Sound* soundBuffer = mSound[filename];
+		if (!soundBuffer)
 		{
 			soundBuffer = loadSound(filename);
+			mSound[filename] = soundBuffer;
 		}
-		catch (FileLoadException exception)
-		{
-			std::cerr << "Warning: Couldn't load "
-				<< exception.filename << " !" << std::endl;
-			return false;
-		}
-		mSound[filename] = soundBuffer;
+		Sound soundInstance = Sound(*soundBuffer);
+		soundInstance.volume = 
+			(volume < 1.0 ? volume : 1.0) > 0.0 ? volume : 0.0;
+		SDL_LockAudio();
+		mPlayingSound.push_back(soundInstance);
+		SDL_UnlockAudio();
 	}
-	Sound soundInstance = Sound(*soundBuffer);
-	soundInstance.volume = 
-		(volume < 1.0 ? volume : 1.0) > 0.0 ? volume : 0.0;
-	SDL_LockAudio();
-	mPlayingSound.push_back(soundInstance);
-	SDL_UnlockAudio();
+	catch (FileLoadException exception)
+	{
+		std::cerr << "Warning: Couldn't load "
+			<< exception.filename << " !" << std::endl;
+		return false;
+	}
 	return true;
 }
 
@@ -142,10 +137,17 @@ void SoundManager::deinit()
 	for (std::map<std::string, Sound*>::iterator iter = mSound.begin();
 			iter != mSound.end(); ++iter)
 	{
-		delete[] iter->second->data;
-		delete iter->second;
+		if (iter->second)
+		{
+			if (iter->second->data != 0)
+			{
+				delete[] iter->second->data;
+			}
+			delete iter->second;
+		}
 	}
 	SDL_CloseAudio();
+	mInitialised = false;
 }
 
 SoundManager* SoundManager::createSoundManager()
@@ -157,6 +159,14 @@ SoundManager::SoundManager()
 {
 	mSingleton = this;
 	mInitialised = false;
+}
+
+SoundManager::~SoundManager()
+{
+	if (mInitialised)
+	{
+		deinit();
+	}
 }
 
 SoundManager& SoundManager::getSingleton()
