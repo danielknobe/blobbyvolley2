@@ -16,6 +16,12 @@
 
 #include <cstring>
 
+#if defined(WIN32)
+#ifndef GAMEDATADIR
+#define GAMEDATADIR "."
+#endif
+#endif
+
 void probeDir(const std::string& dirname)
 {
 	if (PHYSFS_isDirectory(dirname.c_str()) == 0)
