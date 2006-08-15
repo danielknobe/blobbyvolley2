@@ -79,9 +79,6 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	mScreen = SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
 
-	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_addToSearchPath("data/gfx.zip", 1);
-	
 	mOverlaySurface = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCALPHA,
 		mScreen->w, mScreen->h, mScreen->format->BitsPerPixel,
 		mScreen->format->Rmask, mScreen->format->Gmask,

@@ -142,7 +142,12 @@ void ReplayRecorder::save()
 	
 	PHYSFS_file* fileHandle = PHYSFS_openWrite(mRecordFilename.c_str());
 	if (!fileHandle)
+	{
+		std::cerr << "Warning: Unable to write to ";
+		std::cerr << PHYSFS_getWriteDir() << mRecordFilename;
+		std::cerr << std::endl;
 		return;
+	}
 	
 	PHYSFS_write(fileHandle, xmlHeader, 1, sizeof(xmlHeader) - 1);
 	for (InputListIterator iter = mRecordData.begin();

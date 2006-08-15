@@ -115,9 +115,6 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
 
-	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_addToSearchPath("data/gfx.zip", 1);
-
 	mBackground = loadTexture(loadSurface("gfx/strand2.bmp"), false);
 	mBallShadow = loadTexture(loadSurface("gfx/schball.bmp"), false);	
 

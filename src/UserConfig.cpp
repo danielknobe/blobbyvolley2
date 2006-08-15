@@ -2,12 +2,16 @@
 #include <physfs.h>
 #include "tinyxml/tinyxml.h"
 #include "UserConfig.h"
+#include "Global.h"
 
 bool UserConfig::loadFile(const std::string& filename)
 {
 	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
 	if (!fileHandle)
-		return false;
+	{
+		throw FileLoadException(filename);
+	}
+	
 	int fileLength = PHYSFS_fileLength(fileHandle);
 	char* fileBuffer = new char[fileLength];
 	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
