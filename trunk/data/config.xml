@@ -13,9 +13,9 @@
 	<var name="right_blobby_oscillate" value="true"/>
 	<var name="record_replay" value="false"/>
 	<var name="left_script_name" value="dumbjump.lua"/>
-	<var name="right_script_name" value="simbel.lua"/>
+	<var name="right_script_name" value="dumbjump.lua"/>
 	<var name="left_player_human" value="false"/>
-	<var name="right_player_human" value="true"/>
+	<var name="right_player_human" value="false"/>
 	<var name="gamefps" value="60"/>
 	<var name="realfps" value="60"/>
 </userconfig>

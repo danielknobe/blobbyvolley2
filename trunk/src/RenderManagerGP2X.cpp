@@ -61,9 +61,6 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 	mScreen = SDL_SetVideoMode(320, 240, 0, screenFlags);
 	SDL_ShowCursor(0);
 
-	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_addToSearchPath("data/gf2x.zip", 1);
-	
 	SDL_Surface* tempBackground = loadSurface("gf2x/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
 	SDL_FreeSurface(tempBackground);

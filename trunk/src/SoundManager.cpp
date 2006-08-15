@@ -79,7 +79,6 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 
 bool SoundManager::init()
 {
-	PHYSFS_addToSearchPath("data/sounds.zip", 1);
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
 	desiredSpec.format = AUDIO_S16SYS;

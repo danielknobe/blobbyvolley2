@@ -1,3 +1,5 @@
+AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\"
+
 tinyxml_SOURCES = \
 	tinyxml/tinystr.cpp \
 	tinyxml/tinyxml.cpp \
@@ -11,9 +13,11 @@ bin_PROGRAMS = blobby
 blobby_SOURCES = \
 	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
+	InputDevice.h \
 	InputSource.h InputSource.cpp \
 	LocalInputSource.h \
 	InputManager.h InputManager.cpp \
+	Global.h \
 	GUIManager.h GUIManager.cpp \
 	NetworkPacket.h \
 	NetworkManager.h NetworkManager.cpp \

@@ -14,11 +14,64 @@
 #include "State.h"
 #include "SpeedController.h"
 
+#include <cstring>
+
+void probeDir(const std::string& dirname)
+{
+	if (PHYSFS_isDirectory(dirname.c_str()) == 0)
+	{
+		if (PHYSFS_exists(dirname.c_str()))
+		{
+			PHYSFS_delete(dirname.c_str());
+		}
+		if (PHYSFS_mkdir(dirname.c_str()))
+		{
+			std::cout << PHYSFS_getWriteDir() <<
+				dirname << " created" << std::endl;
+		}
+		else
+		{
+			std::cout << "Warning: Creation of" << 
+				PHYSFS_getWriteDir() << dirname <<
+				" failed!" << std::endl;
+		}
+	}
+}
+
+void setupPHYSFS()
+{
+	std::string userdir = PHYSFS_getUserDir();
+	std::string basedir = GAMEDATADIR;
+	std::string separator = PHYSFS_getDirSeparator();
+#if defined(WIN32)
+	std::string userAppend = "Blobby Saves";
+#else
+	std::string userAppend = ".blobby";
+#endif
+	std::string homedir = userdir + userAppend;
+	PHYSFS_addToSearchPath(userdir.c_str(), 0);
+	PHYSFS_setWriteDir(userdir.c_str());
+	probeDir(userAppend);
+	probeDir(userAppend + separator + "replays");
+	probeDir(userAppend + separator + "gfx");
+	probeDir(userAppend + separator + "sounds");
+	probeDir(userAppend + separator + "scripts");
+	PHYSFS_removeFromSearchPath(userdir.c_str());
+	PHYSFS_setWriteDir(homedir.c_str());
+	PHYSFS_addToSearchPath(homedir.c_str(), 0);
+	PHYSFS_addToSearchPath(basedir.c_str(), 1);
+	PHYSFS_addToSearchPath((basedir + separator + "gfx.zip").c_str(),
+									1);
+	PHYSFS_addToSearchPath((basedir + separator + "sounds.zip").c_str(),
+									1);
+	PHYSFS_addToSearchPath((basedir + separator + "scripts.zip").c_str(),
+									1);
+}
+
 int main(int argc, char* argv[])
 {
 	PHYSFS_init(argv[0]);
-	PHYSFS_addToSearchPath("data", 0);
-	PHYSFS_setWriteDir("data");
+	setupPHYSFS();
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
 	srand(SDL_GetTicks());
