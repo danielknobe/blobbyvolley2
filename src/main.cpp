@@ -18,7 +18,7 @@
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR
-#define GAMEDATADIR "."
+#define GAMEDATADIR "data"
 #endif
 #endif
 
