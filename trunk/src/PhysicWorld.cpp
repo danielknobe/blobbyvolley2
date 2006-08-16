@@ -38,7 +38,7 @@ const float BLOBBY_JUMP_ACCELERATION = 13.50;
 // the original code
 const float BLOBBY_JUMP_BUFFER = 0.39;
 const float GRAVITATION = 0.78;
-const float BALL_GRAVITATION = 0.3;
+const float BALL_GRAVITATION = 0.29;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
