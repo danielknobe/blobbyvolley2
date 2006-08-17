@@ -32,12 +32,12 @@ const float RIGHT_PLANE = 800.0;
 
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
-const float BLOBBY_JUMP_ACCELERATION = 13.5;
+const float BLOBBY_JUMP_ACCELERATION = 14.5;
 
 // This is exactly the half of the gravitation, i checked it in
 // the original code
 const float BLOBBY_JUMP_BUFFER = 0.47;
-const float GRAVITATION = 0.835;
+const float GRAVITATION = 0.88;
 const float BALL_GRAVITATION = 0.29;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
