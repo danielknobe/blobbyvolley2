@@ -69,6 +69,7 @@ public:
 	bool right();
 	bool select();
 	bool exit(); // extention for mouse included, so that right click = exit
+	SDLKey grabKey();
 
 	// For GUI navigation (Mouse)
 	Vector2 position();

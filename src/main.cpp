@@ -46,14 +46,21 @@ void probeDir(const std::string& dirname)
 
 void setupPHYSFS()
 {
-	std::string userdir = PHYSFS_getUserDir();
-	std::string basedir = GAMEDATADIR;
 	std::string separator = PHYSFS_getDirSeparator();
+	// Game should be playable out of the source package on all 
+	// platforms
+	PHYSFS_addToSearchPath("data", 1);
+	PHYSFS_addToSearchPath("data/gfx.zip", 1);
+	PHYSFS_addToSearchPath("data/sounds.zip", 1);
+	PHYSFS_addToSearchPath("data/scripts.zip", 1);
 #if defined(WIN32)
-	std::string userAppend = "Blobby Saves";
+	// Just write in installation directory
+	PHYSFS_setWriteDir("data");
 #else
+	// Create a search path in the home directory and ensure that
+	// all paths exist and are actually directories
+	std::string userdir = PHYSFS_getUserDir();
 	std::string userAppend = ".blobby";
-#endif
 	std::string homedir = userdir + userAppend;
 	PHYSFS_addToSearchPath(userdir.c_str(), 0);
 	PHYSFS_setWriteDir(userdir.c_str());
@@ -65,6 +72,10 @@ void setupPHYSFS()
 	PHYSFS_removeFromSearchPath(userdir.c_str());
 	PHYSFS_setWriteDir(homedir.c_str());
 	PHYSFS_addToSearchPath(homedir.c_str(), 0);
+#if defined(GAMEDATADIR)
+	// A global installation path makes only sense on non-Windows
+	// platforms
+	std::string basedir = GAMEDATADIR;
 	PHYSFS_addToSearchPath(basedir.c_str(), 1);
 	PHYSFS_addToSearchPath((basedir + separator + "gfx.zip").c_str(),
 									1);
@@ -72,6 +83,8 @@ void setupPHYSFS()
 									1);
 	PHYSFS_addToSearchPath((basedir + separator + "scripts.zip").c_str(),
 									1);
+#endif
+#endif
 }
 
 int main(int argc, char* argv[])
