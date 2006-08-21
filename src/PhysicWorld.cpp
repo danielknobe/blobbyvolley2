@@ -402,9 +402,9 @@ void PhysicWorld::step()
 		{
 			if(int_BallHitLeftPlayerBottom())
 			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = -Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(2);
+				mBallPosition += mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(14);
 				mBallHitByLeftBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
@@ -412,18 +412,18 @@ void PhysicWorld::step()
 
 			else if(int_BallHitRightPlayerBottom())
 			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
+				mBallVelocity = -Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(2);
+				mBallPosition += mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(14);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mRightBlobVelocity).length();
 			}	
 			else if(int_BallHitLeftPlayerTop())
 			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
+				mBallVelocity = -Vector2(mBallPosition,Vector2(mLeftBlobPosition.x,mLeftBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(2);
+				mBallPosition += mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(14);
 				mBallHitByLeftBlob = true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
@@ -431,9 +431,9 @@ void PhysicWorld::step()
 
 			else if(int_BallHitRightPlayerTop())
 			{
-				mBallVelocity = Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
+				mBallVelocity = -Vector2(mBallPosition,Vector2(mRightBlobPosition.x,mRightBlobPosition.y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition -= mBallVelocity.scale(2);
+				mBallPosition += mBallVelocity.scale(2);
 				mBallVelocity = mBallVelocity.scale(14);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mLeftBlobVelocity).length();
@@ -456,9 +456,9 @@ void PhysicWorld::step()
 		}
 
 		// Border Collision
-		if(mBallPosition.x-BALL_RADIUS<=LEFT_PLANE && mBallVelocity.x>0)
+		if(mBallPosition.x-BALL_RADIUS<=LEFT_PLANE && mBallVelocity.x < 0.0)
 			mBallVelocity = mBallVelocity.reflectX();
-		if(mBallPosition.x+BALL_RADIUS>=RIGHT_PLANE && mBallVelocity.x<0)
+		if(mBallPosition.x+BALL_RADIUS>=RIGHT_PLANE && mBallVelocity.x > 0.0)
 			mBallVelocity = mBallVelocity.reflectX();
 
 		// Net Collision
@@ -468,7 +468,7 @@ void PhysicWorld::step()
 			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
 			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+15.1
-	    	&& mBallVelocity.x<0
+	    	&& mBallVelocity.x > 0.0
 	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
@@ -477,7 +477,7 @@ void PhysicWorld::step()
 			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
 			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
 			&& mBallPosition.x-BALL_RADIUS>=NET_POSITION_X-NET_RADIUS-15.1
-		    && mBallVelocity.x>0
+		    && mBallVelocity.x < 0.0
 		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 				
@@ -489,7 +489,7 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflect(
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
 			.normalise()).scale(0.75);
-			mBallPosition -= mBallVelocity;
+			mBallPosition += mBallVelocity;
 		}
 		
 		mLeftBlobPosition += mLeftBlobVelocity/TIMESTEP;
@@ -514,16 +514,16 @@ void PhysicWorld::step()
 
 		// Acceleration Integration
 	
-		mLeftBlobVelocity.y -= -GRAVITATION/TIMESTEP;
-		mRightBlobVelocity.y -= -GRAVITATION/TIMESTEP;
+		mLeftBlobVelocity.y += GRAVITATION/TIMESTEP;
+		mRightBlobVelocity.y += GRAVITATION/TIMESTEP;
 
 		// Ball Gravitation
 		if (mIsGameRunning)
-			mBallVelocity.y -= BALL_GRAVITATION/TIMESTEP;
+			mBallVelocity.y += BALL_GRAVITATION/TIMESTEP;
 		else if (ballHitLeftPlayer() || ballHitRightPlayer())
 			mIsGameRunning = true;
 		
-		mBallPosition -= mBallVelocity/TIMESTEP;
+		mBallPosition += mBallVelocity/TIMESTEP;
 
 
 	
@@ -547,7 +547,7 @@ void PhysicWorld::step()
 	} // Ende der Schleife
 	
 	// Velocity Integration
-	if(mBallVelocity.x<0)
+	if(mBallVelocity.x > 0.0)
 		mBallRotation += mBallAngularVelocity;
 		else
 		mBallRotation -= mBallAngularVelocity;
@@ -574,7 +574,7 @@ void PhysicWorld::dampBall()
 
 Vector2 PhysicWorld::getBallVelocity()
 {
-	return -mBallVelocity;
+	return mBallVelocity;
 }
 
 bool PhysicWorld::getBlobJump(PlayerSide player)
@@ -582,27 +582,27 @@ bool PhysicWorld::getBlobJump(PlayerSide player)
 	return blobbyHitGround(player);
 }
 
+#include "RenderManager.h"
+
 float PhysicWorld::estimateBallImpact()
 {
-// v = a*t + v0
-// sy = 1/2 * v * t
-// sy = (a * t * t + v0 * t) / 2
-
-// sx = vx * t
-
-// t = (sqrt(v0*v0 + 8 * a * s) + v0) / (2 *a)  
-// sx = (sqrt(v0*v0 + 8 * a * s) + v0) / (2 *a) * vx
-
-	const float v0 = mBallVelocity.y;
 	const float a = BALL_GRAVITATION;
-	float height = GROUND_PLANE_HEIGHT - mBallPosition.y;
-	float delta = fabs((sqrt(v0 * v0 + 8 * a * height) + v0) / (2 * a));
-	return mBallPosition.x - mBallVelocity.x * delta;
+	const float height = GROUND_PLANE_HEIGHT - mBallPosition.y - BALL_RADIUS;
+	const float vby = mBallVelocity.y;
+	float delta1 = -(sqrt(vby * vby + 8 * a * height) + vby) / (2 * a);
+	float delta2 = (sqrt(vby * vby + 8 * a * height) - vby) / (2 * a);
+
+	float delta = delta1 > delta2 ? delta1 : delta2;
+	RenderManager::getSingleton().setMouseMarker(mBallPosition.x + mBallVelocity.x * delta);
+	return mBallPosition.x + mBallVelocity.x * delta;
 }
 
 Vector2 PhysicWorld::estimateBallPosition(int steps)
 {
-	return mBallPosition + mBallVelocity * float(steps);
+	Vector2 ret;
+	ret.x = mBallVelocity.x * float(steps);
+	ret.y = (mBallVelocity.y + 0.5 * (BALL_GRAVITATION * float(steps))) * float(steps);
+	return mBallPosition + ret;
 }
 
 bool PhysicWorld::getBallActive()

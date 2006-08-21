@@ -1,7 +1,6 @@
 ======= TODO
 Primary:
 Important:
-- Fix estimation functions (and probably audit Physic code)
 - Compilation tutorial for Linux-Users (for Linux allready done)
 - Redesign of the GUI system, it is designed too simple and doesn't allow
 	many features of the original GUI
