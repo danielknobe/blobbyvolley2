@@ -404,7 +404,9 @@ int ScriptedInputSource::oppx(lua_State* state)
 	}
 	PlayerSide invPlayer = 
 		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
-	lua_pushnumber(state, match->getBlobPosition(invPlayer).x);
+	float pos = match->getBlobPosition(invPlayer).x;
+	pos = 800.0 - pos;
+	lua_pushnumber(state, pos);
 	return 1;
 }
 
