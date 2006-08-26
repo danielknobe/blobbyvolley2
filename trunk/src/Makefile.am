@@ -1,14 +1,11 @@
-AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\"
+SUBDIRS = lua tinyxml
 
-tinyxml_SOURCES = \
-	tinyxml/tinystr.cpp \
-	tinyxml/tinyxml.cpp \
-	tinyxml/tinyxmlerror.cpp \
-	tinyxml/tinyxmlparser.cpp \
-	tinyxml/tinystr.h \
-	tinyxml/tinyxml.h
+AM_CXXFLAGS = -DGAMEDATADIR=\"$(GAMEDATADIR)\"
+AM_LDFLAGS = -Llua -Ltinyxml
 
 bin_PROGRAMS = blobby
+
+blobby_LDADD = -llua -ltinyxml
 
 blobby_SOURCES = \
 	DuelMatch.h DuelMatch.cpp \
@@ -36,4 +33,4 @@ blobby_SOURCES = \
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
 	UserConfig.cpp UserConfig.h \
-	$(tinyxml_SOURCES)
+

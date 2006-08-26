@@ -8,7 +8,7 @@
 	<var name="left_blobby_jump" value="w"/>
 
 <!-- Right Blobby Inputconfiguration -->
-	<var name="right_blobby_device" value="keyboard"/>
+	<var name="right_blobby_device" value="mouse"/>
 	<var name="right_blobby_left_move" value="left"/>
 	<var name="right_blobby_right_move" value="right"/>
 	<var name="right_blobby_jump" value="up"/>
