@@ -1,6 +1,6 @@
 SUBDIRS = lua tinyxml
 
-AM_CXXFLAGS = -DGAMEDATADIR=\"$(GAMEDATADIR)\"
+AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\"
 AM_LDFLAGS = -Llua -Ltinyxml
 
 bin_PROGRAMS = blobby
@@ -32,5 +32,5 @@ blobby_SOURCES = \
 	State.h State.cpp\
 	SoundManager.h SoundManager.cpp \
 	Vector.h \
-	UserConfig.cpp UserConfig.h \
+	UserConfig.cpp UserConfig.h
 
