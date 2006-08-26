@@ -1,6 +1,7 @@
 ======= TODO
 Primary:
 Important:
+- Better configure script for lua
 - Compilation tutorial for Linux-Users (for Linux allready done)
 - Redesign of the GUI system, it is designed too simple and doesn't allow
 	many features of the original GUI
