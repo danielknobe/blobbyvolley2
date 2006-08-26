@@ -2,22 +2,22 @@
 
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo;
-	echo "You must have automake installed to compile xmoto";
+	echo "You must have automake installed to compile blobby";
 	echo;
 	exit;
 }
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo;
-	echo "You must have autoconf installed to compile xmoto";
+	echo "You must have autoconf installed to compile blobby";
 	echo;
 	exit;
 }
 
-echo "Generating configuration files for xmoto, please wait..."
+echo "Generating configuration files for blobby, please wait..."
 echo;
 
-aclocal -I config $ACLOCAL_FLAGS\
+aclocal $ACLOCAL_FLAGS\
 && automake --gnu --add-missing --copy \
 && autoconf \
 && echo "You can now run ./configure"
