@@ -20,7 +20,11 @@ AC_CHECK_LIB(SDL,SDL_Init, [], [AC_MSG_ERROR(SDL required)])
 AC_CHECK_LIB(z, inflate, [], [AC_MSG_ERROR(zlib required)])
 AC_CHECK_LIB(physfs,PHYSFS_init, [], [AC_MSG_ERROR(PhysFS required)])
 
-AC_CHECK_LIB(GL, glVertex3f, [], [AC_MSG_WARN(OpenGL support disabled)])
+AX_CHECK_GL()
+
+if test no_gl != "yes"; then
+AC_DEFINE(HAVE_LIBGL)
+fi
 
 AC_ARG_WITH([gamedatadir],
 	[AS_HELP_STRING([--with-gamedatadir=DIR],

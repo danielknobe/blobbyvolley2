@@ -1,8 +1,8 @@
 #!/bin/sh
 
-(automake --version) < /dev/null > /dev/null 2>&1 || {
+(automake-1.9 --version) < /dev/null > /dev/null 2>&1 || {
 	echo;
-	echo "You must have automake installed to compile blobby";
+	echo "You must have automake1.9 installed to compile blobby";
 	echo;
 	exit;
 }
@@ -17,8 +17,8 @@
 echo "Generating configuration files for blobby, please wait..."
 echo;
 
-aclocal $ACLOCAL_FLAGS\
-&& automake --gnu --add-missing --copy \
+aclocal -I config $ACLOCAL_FLAGS \
+&& automake-1.9 --gnu --add-missing --copy \
 && autoconf \
 && echo "You can now run ./configure"
 

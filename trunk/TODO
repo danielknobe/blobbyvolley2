@@ -12,6 +12,7 @@ Near aims:
 - Polish Linux integration and release installable source tarballs and eventually debs
 
 Secondary:
+- Fix GUI behaviour of SDL renderer
 - Seperate left/right blobby graphics for skin-creation
 - Add animated background (prerendered Animations, at least for SDL and GL2D)
 - Add option for old and new volleyball ruleset
