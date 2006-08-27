@@ -5,7 +5,7 @@ AM_LDFLAGS = -Llua -Ltinyxml
 
 bin_PROGRAMS = blobby
 
-blobby_LDADD = -llua -ltinyxml
+blobby_LDADD = -llua -ltinyxml $(GL_LIBS)
 
 blobby_SOURCES = \
 	DuelMatch.h DuelMatch.cpp \
