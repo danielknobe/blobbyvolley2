@@ -19,3 +19,4 @@ Secondary:
 - Add time-capped game option
 - Add speed option
 - Make Code compatible with gcc -Wall
+- Add waiting time for bots and recommend this for new bots in the doc
