@@ -142,6 +142,8 @@ void RenderManagerGP2X::deinit()
 
 void RenderManagerGP2X::draw()
 {
+	if (!mDrawGame)
+		return;
 	SDL_BlitSurface(mBackground, 0, mScreen, 0);
 	
 	int animationState;

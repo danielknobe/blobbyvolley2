@@ -13,6 +13,7 @@ blobby_SOURCES = \
 	InputDevice.h \
 	InputSource.h InputSource.cpp \
 	LocalInputSource.h \
+	IMGUI.h IMGUI.cpp \
 	InputManager.h InputManager.cpp \
 	Global.h \
 	GUIManager.h GUIManager.cpp \

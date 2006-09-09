@@ -186,7 +186,9 @@ void RenderManagerGL2D::deinit()
 void RenderManagerGL2D::draw()
 {
 	glClear(GL_DEPTH_BUFFER_BIT);
-	
+	if (!mDrawGame)
+		return;
+		
 	// General object settings
 	glEnable(GL_TEXTURE_2D);
 	glAlphaFunc(GL_GREATER, 0.5);
@@ -435,6 +437,7 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 	}
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 	glAlphaFunc(GL_GREATER, 0.5);
 	glEnable(GL_ALPHA_TEST);
@@ -449,6 +452,8 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 }
 void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
 {
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	

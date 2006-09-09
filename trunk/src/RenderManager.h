@@ -55,6 +55,8 @@ protected:
 	SDL_Rect ballRect(const Vector2& position);
 	SDL_Rect ballShadowRect(const Vector2& position);
 	
+	bool mDrawGame;
+	
 	std::map<std::string, BufferedImage*> mImageMap;
 
 	float mMouseMarkerPosition;
@@ -122,4 +124,9 @@ public:
 	// This forces a redraw of the background, for example
 	// when the windows was minimized
 	void redraw();
+	
+	
+	// This can disable the rendering of ingame graphics, for example for
+	// the main menu
+	void drawGame(bool draw);
 };

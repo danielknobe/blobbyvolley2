@@ -7,6 +7,8 @@
 #include "ReplayRecorder.h"
 #include "ReplayInputSource.h"
 #include "ScriptedInputSource.h"
+#include "IMGUI.h"
+
 
 #include <physfs.h>
 #include <ctime>
@@ -134,35 +136,23 @@ void LocalGameState::step()
 
 MainMenuState::MainMenuState()
 {
-	GUIManager* gmgr = GUIManager::getSingleton();
-	gmgr->clear();
-	gmgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	gmgr->createImage("gfx/titel.bmp", Vector2(250.0, 210.0));
-	gmgr->drawCursor(true);
-	mStartButton = gmgr->createTextButton("start",
-					5, Vector2(500.0, 400.0));
-	mOptionButton = 
-		gmgr->createTextButton("options", 7, Vector2(500.0, 430.0));
-	mWatchReplayButton = 
-		gmgr->createTextButton("watch replay", 12, Vector2(500.0, 460.0));
-	mExitButton = gmgr->createTextButton("exit", 4, Vector2(500, 490.0));
 }
 
 MainMenuState::~MainMenuState()
 {
-	GUIManager::getSingleton()->clear();
 }
 
 void MainMenuState::step()
 {
-	GUIManager* gmgr = GUIManager::getSingleton();
-	RenderManager* rmanager = &RenderManager::getSingleton();
-	rmanager->setBall(Vector2(-2000.0, 0.0), 0.0);
-	rmanager->setBlob(0, Vector2(-2000, 0.0), 0.0);
-	rmanager->setBlob(1, Vector2(-2000, 0.0), 0.0);
-	rmanager->setScore(0, 0, false, false);
+	RenderManager::getSingleton().drawGame(false);
+	IMGUI& imgui = IMGUI::getSingleton();
 	
-	if (gmgr->getClick(mStartButton))
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
+
+	if (imgui.doButton(GEN_ID, Vector2(500.0, 400.0), "start"))
 	{
 		delete mCurrentState;
 		try
@@ -179,28 +169,25 @@ void MainMenuState::step()
 		}
 	}
 	
-	else if (gmgr->getClick(mOptionButton))
+	if (imgui.doButton(GEN_ID, Vector2(500.0, 430.0), "options"))
 	{
 		delete mCurrentState;
 		mCurrentState = new OptionState();
 	}
 
-	else if (gmgr->getClick(mWatchReplayButton))
+	if (imgui.doButton(GEN_ID, Vector2(500.0, 460.0), "watch replay"))
 	{
 		delete mCurrentState;
-		 mCurrentState = new ReplayMenuState();
+		mCurrentState = new ReplayMenuState();
 	}
 	
-	else if (gmgr->getClick(mExitButton)) 
+	if (imgui.doButton(GEN_ID, Vector2(500.0, 490.0), "exit")) 
 	{
-		// TODO: Create a global exit function
-		
-		rmanager->deinit();
+		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
 		SDL_Quit();
 		exit(0);
 	}
-
 }
 
 WinState::WinState(int player)
