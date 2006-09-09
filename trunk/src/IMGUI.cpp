@@ -12,7 +12,9 @@ enum ObjectType
 	OVERLAY,
 	TEXT,
 	HIGHLIGHTTEXT,
-	BUTTON
+	BUTTON,
+	SCROLLBAR,
+	ACTIVESCROLLBAR
 };
 
 struct QueueObject
@@ -87,6 +89,11 @@ void IMGUI::end()
 				break;
 			case HIGHLIGHTTEXT:
 				rmanager.drawText(obj.text, obj.pos1, true);
+				break;
+			case SCROLLBAR:
+			case ACTIVESCROLLBAR:
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
+				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0));
 				break;
 		}
 		mQueue->pop();
@@ -186,7 +193,55 @@ void IMGUI::doCursor()
 
 bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 {
-	return false;
+	if (mActiveButton == 0 && !mButtonReset)
+		mActiveButton = id;
+	
+	float oldvalue = value;
+	QueueObject obj;
+	obj.id = id;
+	obj.pos1 = position;
+	obj.type = SCROLLBAR;
+	
+	if (id == mActiveButton)
+	{
+		obj.type = ACTIVESCROLLBAR;
+		switch (mLastKeyAction)
+		{
+			case DOWN:
+				mActiveButton = 0;
+				mLastKeyAction = NONE;
+				break;
+			case UP:
+				mActiveButton = mLastWidget;
+				mLastKeyAction = NONE;
+				break;
+			case LEFT:
+				value -= 0.1;
+				mLastKeyAction = NONE;
+				break;
+			case RIGHT:
+				value += 0.1;
+				mLastKeyAction = NONE;
+				break;
+		}
+	}
+	mLastWidget = id;
+
+	Vector2 mousepos = InputManager::getSingleton()->position();
+	if (mousepos.x > position.x + 24.0 &&
+		mousepos.y > position.y &&
+		mousepos.x < position.x + 200 + 24.0 &&
+		mousepos.y < position.y + 24.0)
+	{
+		if (InputManager::getSingleton()->click())
+			value = (mousepos.x - position.x) / 200.0;
+	}
+
+	value = value > 0.0 ? (value < 1.0 ? value : 1.0) : 0.0;
+	obj.pos2.x = value;
+	mQueue->push(obj);
+
+	return oldvalue != value;
 }
 
 void IMGUI::resetSelection()
