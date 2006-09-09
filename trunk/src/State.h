@@ -53,6 +53,7 @@ private:
 	Color mRightColor;
 	bool mLeftOscillate;
 	bool mRightOscillate;
+	bool mPaused;
 	
 	DuelMatch* mMatch;
 	ReplayRecorder* mRecorder;

@@ -39,6 +39,7 @@ LocalGameState::LocalGameState(GameMode mode)
 	: State()
 {
 	mRecorder = 0;
+	mPaused = false;
 
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
@@ -99,7 +100,20 @@ void LocalGameState::step()
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
 	
-	mMatch->step();
+
+	if (mPaused)
+	{
+		IMGUI& imgui = IMGUI::getSingleton();
+		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
+		imgui.doText(GEN_ID, Vector2(210, 280), "Wirklich Beenden?");
+		if (InputManager::getSingleton()->select() &&
+				InputManager::getSingleton()->click())
+			mPaused = false;
+	}
+	else
+	{
+		mMatch->step();
+	}
 
 	float time = float(SDL_GetTicks()) / 1000.0;
 	if (mLeftOscillate)
@@ -121,8 +135,13 @@ void LocalGameState::step()
 	}
 	else if (InputManager::getSingleton()->exit())
 	{
-		delete this;
-		mCurrentState = new MainMenuState;
+		if (mPaused == true)
+		{
+			delete this;
+			mCurrentState = new MainMenuState;
+		}
+		else
+			mPaused = true;
 	}
 	else if (mRecorder->endOfFile())
 	{
