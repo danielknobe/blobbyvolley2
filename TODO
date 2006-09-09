@@ -13,6 +13,7 @@ Near aims:
 - Polish Linux integration and release installable source tarballs and eventually debs
 
 Secondary:
+- Implement a pause function
 - Make Physfs actions more transparent, for example show added search paths
 - Fix GUI behaviour of SDL renderer
 - Seperate left/right blobby graphics for skin-creation

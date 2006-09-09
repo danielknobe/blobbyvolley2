@@ -25,6 +25,7 @@ public:
 	
 	void begin();
 	void end();
+	void resetSelection();
 	
 	void doImage(int id, const Vector2& position, const std::string& name);
 	void doText(int id, const Vector2& position, const std::string& text);
@@ -32,6 +33,7 @@ public:
 	void doCursor();
 
 	bool doButton(int id, const Vector2& position, const std::string& text);
+	bool doScrollbar(int id, const Vector2& position, float& value);
 private:
 	IMGUI();
 	~IMGUI();
@@ -42,4 +44,5 @@ private:
 	KeyAction mLastKeyAction;
 	int mLastWidget;
 	bool mDrawCursor;
+	bool mButtonReset;
 };

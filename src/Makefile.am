@@ -16,7 +16,6 @@ blobby_SOURCES = \
 	IMGUI.h IMGUI.cpp \
 	InputManager.h InputManager.cpp \
 	Global.h \
-	GUIManager.h GUIManager.cpp \
 	NetworkPacket.h \
 	NetworkManager.h NetworkManager.cpp \
 	NetworkServer.h NetworkServer.cpp \

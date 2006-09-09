@@ -35,6 +35,7 @@ IMGUI::IMGUI()
 	mActiveButton = 0;
 	mLastKeyAction = NONE;
 	mLastWidget = 0;
+	mButtonReset = false;
 }
 
 IMGUI::~IMGUI()
@@ -51,6 +52,7 @@ IMGUI& IMGUI::getSingleton()
 
 void IMGUI::begin()
 {
+	mButtonReset = false;
 	while (!mQueue->empty())
 		mQueue->pop();
 	
@@ -131,7 +133,7 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2)
 
 bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 {
-	if (mActiveButton == 0)
+	if (mActiveButton == 0 && !mButtonReset)
 		mActiveButton = id;
 			
 	bool clicked = false;
@@ -144,9 +146,6 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 	if (id == mActiveButton)
 	{
 		obj.type = HIGHLIGHTTEXT;
-		if (InputManager::getSingleton()->select())
-		clicked = true;
-	
 		switch (mLastKeyAction)
 		{
 			case DOWN:
@@ -157,9 +156,12 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 				mActiveButton = mLastWidget;
 				mLastKeyAction = NONE;
 				break;
+			case SELECT:
+				clicked = true;
+				mLastKeyAction = NONE;
+				break;
 		}
 	}
-
 	mLastWidget = id;
 	Vector2 mousepos = InputManager::getSingleton()->position();
 
@@ -172,13 +174,6 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 		if (InputManager::getSingleton()->click())
 			clicked = true;
 	}
-	
-	if (id == mActiveButton)
-	{
-		obj.type = HIGHLIGHTTEXT;
-		if (InputManager::getSingleton()->select())
-			clicked = true;
-	}
 
 	mQueue->push(obj);
 	return clicked;
@@ -187,4 +182,15 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 void IMGUI::doCursor()
 {
 	mDrawCursor = true;
+}
+
+bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
+{
+	return false;
+}
+
+void IMGUI::resetSelection()
+{
+	mActiveButton = 0;
+	mButtonReset = true;
 }

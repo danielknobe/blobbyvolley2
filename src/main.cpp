@@ -10,7 +10,6 @@
 #include "SoundManager.h"
 #include "InputManager.h"
 #include "UserConfig.h"
-#include "GUIManager.h"
 #include "IMGUI.h"
 #include "State.h"
 #include "SpeedController.h"
@@ -113,7 +112,6 @@ int main(int argc, char* argv[])
 		std::cerr << "Falling back to OpenGL" << std::endl;
 		rmanager = RenderManager::createRenderManagerGL2D();
 	}
-	GUIManager::createGUIManager();
 
 	// fullscreen?
 	if(gameConfig.getString("fullscreen") == "true")
@@ -142,14 +140,12 @@ int main(int argc, char* argv[])
 		// This is true by default for compatibility, GUI states may
 		// disable it if necessary
 		rmanager->drawGame(true);
-		GUIManager::getSingleton()->processInput();
 		IMGUI::getSingleton().begin();
 		State::getCurrentState()->step();
 
 		if (!scontroller.doFramedrop())
 		{
 			rmanager->draw();
-			GUIManager::getSingleton()->render();
 			IMGUI::getSingleton().end();
 			rmanager->refresh();
 		}
