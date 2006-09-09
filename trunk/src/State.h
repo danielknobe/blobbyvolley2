@@ -36,9 +36,9 @@ public:
 class WinState : public State
 {
 private:
-	
+	PlayerSide mPlayer;
 public:
-	WinState(int winningPlayer);	
+	WinState(PlayerSide winningPlayer);	
 	virtual ~WinState() {}
 	virtual void step();	
 };
@@ -72,19 +72,10 @@ public:
 	virtual void step();
 
 private:
-	void rebuildGUI();
-
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
-	std::vector<int> mLeftPlayerButtons;
-	std::vector<int> mRightPlayerButtons;
 	int mPlayerOptions[MAX_PLAYERS];
 	bool mReplayActivated;
-
-	int mReplayButton;	
-	int mOkButton;
-	int mCancelButton;
-
 	bool mSaveConfig;	
 };
 
@@ -98,13 +89,10 @@ public:
 	static std::string getRecordName();
 	
 private:
-	void rebuildGUI();
-	
 	DuelMatch* mReplayMatch;
 	ReplayRecorder* mReplayRecorder;
 
 	std::vector<std::string> mReplayFiles;
-	std::vector<int> mReplayButtons;
 	int mSelectedReplay;
 	bool mReplaying;
 	

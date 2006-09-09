@@ -2,7 +2,6 @@
 #include "LocalInputSource.h"
 #include "RenderManager.h"
 #include "SoundManager.h"
-#include "GUIManager.h"
 #include "DuelMatch.h"
 #include "ReplayRecorder.h"
 #include "ReplayInputSource.h"
@@ -56,7 +55,6 @@ LocalGameState::LocalGameState(GameMode mode)
 	RenderManager::getSingleton().setBlobColor(1, mRightColor);
 	RenderManager::getSingleton().redraw();
 
-	GUIManager::getSingleton()->drawCursor(false);
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
 	
 	InputSource* linput;
@@ -136,6 +134,7 @@ void LocalGameState::step()
 
 MainMenuState::MainMenuState()
 {
+	IMGUI::getSingleton().resetSelection();
 }
 
 MainMenuState::~MainMenuState()
@@ -190,21 +189,21 @@ void MainMenuState::step()
 	}
 }
 
-WinState::WinState(int player)
+WinState::WinState(PlayerSide player)
 {
-	GUIManager* gmgr = GUIManager::getSingleton();
-	
-	gmgr->clear();
-	gmgr->createOverlay(0.5, Vector2(200, 150), Vector2(650, 450));
-	gmgr->createImage("gfx/pokal.bmp", Vector2(200, 250));
-	char buf[64];
-	snprintf(buf, 64, "Spieler %d", player + 1);
-	gmgr->createText(buf, Vector2(250, 250));
-	gmgr->createText("hat gewonnen!", Vector2(250, 300));	
+	mPlayer = player;
 }
 
 void WinState::step()
 {
+	char buf[64];
+	snprintf(buf, 64, "Spieler %d", mPlayer + 1);
+	
+	IMGUI::getSingleton().doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+	IMGUI::getSingleton().doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(250, 250), buf);
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(250, 300), "hat gewonnen!");
+	
 	InputManager* inputmgr = InputManager::getSingleton();
 	if (inputmgr->click() || inputmgr->select())
 	{
@@ -215,6 +214,7 @@ void WinState::step()
 
 OptionState::OptionState()
 {
+	IMGUI::getSingleton().resetSelection();
 	mSaveConfig = false;
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
@@ -243,12 +243,10 @@ OptionState::OptionState()
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
 	mReplayActivated = mOptionConfig.getBool("record_replay");
-	rebuildGUI();
 }
 
 OptionState::~OptionState()
 {
-	GUIManager::getSingleton()->clear();
 	if (mSaveConfig)
 	{
 		mOptionConfig.setBool("record_replay", mReplayActivated);
@@ -281,84 +279,54 @@ OptionState::~OptionState()
 	}
 }
 
-void OptionState::rebuildGUI()
+void OptionState::step()
 {
-	GUIManager* guimgr = GUIManager::getSingleton();
-	guimgr->clear();
-	guimgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	guimgr->createText("left player", Vector2(10.0, 10.0));
-	guimgr->createText("right player", Vector2(410.0, 10.0));
-	guimgr->createImage("gfx/pfeil_rechts.bmp", Vector2(12.0 + 4.0,
-		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0));
-	guimgr->createImage("gfx/pfeil_rechts.bmp", Vector2(12.0 + 404.0,
-		mPlayerOptions[RIGHT_PLAYER] * 28.0 + 12.0 + 50.0));
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	imgui.doText(GEN_ID, Vector2(10.0, 10.0), "left player");
+	imgui.doText(GEN_ID, Vector2(410.0, 10.0), "right player");
 
-	mLeftPlayerButtons.push_back(
-		guimgr->createTextButton("human", 5, Vector2(10.0, 50.0)));
+	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
+		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
+	imgui.doImage(GEN_ID, Vector2(12.0 + 404.0,
+		mPlayerOptions[RIGHT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
+
+	if (imgui.doButton(GEN_ID, Vector2(10.0, 50.0), "human"))
+		mPlayerOptions[LEFT_PLAYER] = 0;
 	for (int i = 1; i < mScriptNames.size(); i++)
 	{
-		mLeftPlayerButtons.push_back(guimgr->createTextButton(
-			mScriptNames[i], mScriptNames[i].length(),
-			Vector2(10.0, 50.0 + i * 28.0)));
+		if (imgui.doButton(GEN_ID << 4 + i,
+				Vector2(10.0, 50.0 + i * 28.0), mScriptNames[i]))
+			mPlayerOptions[LEFT_PLAYER] = i;
 	}
 	
-	mRightPlayerButtons.push_back(
-		guimgr->createTextButton("human", 5, Vector2(410.0, 50.0)));
+	if (imgui.doButton(GEN_ID, Vector2(410.0, 50.0), "human"))
+		mPlayerOptions[RIGHT_PLAYER] = 0;
 	for (int i = 1; i < mScriptNames.size(); i++)
 	{
-		mRightPlayerButtons.push_back(guimgr->createTextButton(
-			mScriptNames[i], mScriptNames[i].length(),
-			Vector2(410.0, 50.0 + i * 28.0)));
+		if (imgui.doButton(GEN_ID << 5 + i,
+					Vector2(410.0, 50.0 + i * 28.0), mScriptNames[i]))
+			mPlayerOptions[RIGHT_PLAYER] = i;
 	}
 
 	if (mReplayActivated)
 	{
-		guimgr->createImage("gfx/pfeil_rechts.bmp",
-						Vector2(108.0, 472.0));
+		imgui.doImage(GEN_ID, Vector2(108.0, 472.0), "gfx/pfeil_rechts.bmp");
 	}
-	mReplayButton = guimgr->createTextButton("record replays", 14,
-						Vector2(100.0, 460.0));
-	mOkButton = guimgr->createTextButton("ok", 2, Vector2(200.0, 530.0));
-	mCancelButton = guimgr->createTextButton("cancel", 6, 
-					Vector2(400.0, 530.0));
-}
-
-void OptionState::step()
-{
-	GUIManager* guimgr = GUIManager::getSingleton();
-	for (int i = 0; i < mLeftPlayerButtons.size(); i++)
-	{
-		if (guimgr->getClick(mLeftPlayerButtons[i]))
-		{
-			mPlayerOptions[LEFT_PLAYER] = i;
-			rebuildGUI();
-			break;
-		}
-	}
-	
-	for (int i = 0; i < mRightPlayerButtons.size(); i++)
-	{
-		if (guimgr->getClick(mRightPlayerButtons[i]))
-		{
-			mPlayerOptions[RIGHT_PLAYER] = i;
-			rebuildGUI();
-			break;
-		}
-	}
-	
-	if (guimgr->getClick(mReplayButton))
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 460.0), "record replays"))
 	{
 		mReplayActivated = !mReplayActivated;
-		rebuildGUI();
 	}
-	
-	if (guimgr->getClick(mOkButton))
+
+	if (imgui.doButton(GEN_ID, Vector2(200.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MainMenuState();
 	}
-	else if (guimgr->getClick(mCancelButton))
+	if (imgui.doButton(GEN_ID, Vector2(400.0, 530.0), "cancel"))
 	{
 		delete this;
 		mCurrentState = new MainMenuState();
@@ -367,6 +335,7 @@ void OptionState::step()
 
 ReplayMenuState::ReplayMenuState()
 {
+	IMGUI::getSingleton().resetSelection();
 	mReplaying = false;
 	mReplayMatch = 0;
 	mReplayRecorder = 0;
@@ -381,8 +350,6 @@ ReplayMenuState::ReplayMenuState()
 		}
 	}
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
-
-	rebuildGUI();
 	
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
@@ -400,7 +367,6 @@ ReplayMenuState::ReplayMenuState()
 
 ReplayMenuState::~ReplayMenuState()
 {
-	GUIManager::getSingleton()->clear();
 	if (mReplayMatch)
 	{
 		delete mReplayMatch;
@@ -418,35 +384,8 @@ std::string ReplayMenuState::getRecordName()
 	return std::string(buf);
 }
 
-void ReplayMenuState::rebuildGUI()
-{
-	GUIManager* guimgr = GUIManager::getSingleton();
-	guimgr->drawCursor(true);
-	guimgr->clear();
-	guimgr->createOverlay(0.5, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	mPlayButton = guimgr->createTextButton("play", 4,
-					Vector2(200.0, 10.0));
-	mCancelButton = guimgr->createTextButton("cancel", 6,
-					Vector2(400.0, 10.0));
-	mDeleteButton = guimgr->createTextButton("delete", 6,
-					Vector2(620.0, 60.0));
-	for (int i = 0; i < mReplayFiles.size(); i++)
-	{
-		mReplayButtons.push_back(guimgr->createTextButton(
-				mReplayFiles[i], mReplayFiles[i].length(),
-				Vector2(10.0, 50.0 + 30.0 * i)));
-	}
-	
-	if (mSelectedReplay != -1)
-	{
-		guimgr->createImage("gfx/pfeil_rechts.bmp",
-			Vector2(16.0, 62.0 + 30.0 * mSelectedReplay));
-	}
-}
-
 void ReplayMenuState::step()
 {
-	GUIManager* guimgr = GUIManager::getSingleton();
 	if (mReplaying)
 	{
 		RenderManager* rmanager = &RenderManager::getSingleton();
@@ -487,32 +426,19 @@ void ReplayMenuState::step()
 	}
 	else
 	{
-		for (int i = 0; i < mReplayButtons.size(); i++)
+		IMGUI& imgui = IMGUI::getSingleton();
+		imgui.doCursor();
+		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+		if (mSelectedReplay != -1)
 		{
-			if (guimgr->getClick(mReplayButtons[i]))
-			{
-				mSelectedReplay = i;
-				rebuildGUI();
-				break;
-			}
+			imgui.doImage(GEN_ID, Vector2(16.0, 62.0 + 30.0 * mSelectedReplay),
+					"gfx/pfeil_rechts.bmp");
 		}
-		if (guimgr->getClick(mDeleteButton) &&
+
+		if (imgui.doButton(GEN_ID, Vector2(200.0, 10.0), "play") && 
 					mSelectedReplay != -1)
 		{
-			PHYSFS_delete(std::string("replays/" +
-				mReplayFiles[mSelectedReplay]).c_str());
-			delete this;
-			mCurrentState = new ReplayMenuState();
-		}
-		else if (guimgr->getClick(mCancelButton))
-		{
-			delete this;
-			mCurrentState = new MainMenuState();
-		}
-		else if (guimgr->getClick(mPlayButton) && 
-					mSelectedReplay != -1)
-		{
-			guimgr->clear();
 			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL,
 				std::string("replays/" +
 					mReplayFiles[mSelectedReplay]));
@@ -527,7 +453,30 @@ void ReplayMenuState::step()
 							true, true);
 			SoundManager::getSingleton().playSound(
 					"sounds/pfiff.wav", 0.2);
-			guimgr->drawCursor(false);
 		}
+		else if (imgui.doButton(GEN_ID, Vector2(400.0, 10.0), "cancel"))
+		{
+			delete this;
+			mCurrentState = new MainMenuState();
+		}
+		else for (int i = 0; i < mReplayFiles.size(); i++)
+		{
+			if (imgui.doButton(GEN_ID << 6 + i, Vector2(10.0, 50.0 + 30.0 * i),
+						mReplayFiles[i]))
+			{
+				mSelectedReplay = i;
+				break;
+			}
+		}
+		if (imgui.doButton(GEN_ID, Vector2(620.0, 60.0), "delete") &&
+					mSelectedReplay != -1)
+		{
+			PHYSFS_delete(std::string("replays/" +
+				mReplayFiles[mSelectedReplay]).c_str());
+			delete this;
+			mCurrentState = new ReplayMenuState();
+		}
+
+
 	}
 }
