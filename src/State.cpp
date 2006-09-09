@@ -332,9 +332,16 @@ void OptionState::step()
 
 	if (mReplayActivated)
 	{
-		imgui.doImage(GEN_ID, Vector2(108.0, 472.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(108.0, 482.0), "gfx/pfeil_rechts.bmp");
 	}
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 460.0), "record replays"))
+	float volume = mOptionConfig.getFloat("global_volume");
+	if (imgui.doScrollbar(GEN_ID, Vector2(100.0, 440.0), volume))
+	{
+		mOptionConfig.setFloat("global_volume", volume);
+		SoundManager::getSingleton().setVolume(volume);
+		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+	}
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 470.0), "record replays"))
 	{
 		mReplayActivated = !mReplayActivated;
 	}
