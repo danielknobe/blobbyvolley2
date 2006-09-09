@@ -4,8 +4,6 @@ Important:
 - Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
 - Better configure script for lua
 - Compilation tutorial for Linux-Users (for Linux allready done)
-- Redesign of the GUI system, it is designed too simple and doesn't allow
-	many features of the original GUI
 - New RenderMangerfunctions to hide ingamegraphics
 Near aims:
 - Gamepadsupport
@@ -13,7 +11,6 @@ Near aims:
 - Polish Linux integration and release installable source tarballs and eventually debs
 
 Secondary:
-- Implement a pause function
 - Make Physfs actions more transparent, for example show added search paths
 - Fix GUI behaviour of SDL renderer
 - Seperate left/right blobby graphics for skin-creation
