@@ -169,6 +169,9 @@ void RenderManagerSDL::deinit()
 
 void RenderManagerSDL::draw()
 {
+	if (!mDrawGame)
+		return;
+
 	if (mNeedRedraw)
 	{
 		SDL_BlitSurface(mBackground, 0, mScreen, 0);

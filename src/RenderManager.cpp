@@ -190,3 +190,8 @@ void RenderManager::redraw()
 {
 	mNeedRedraw = true;
 }
+
+void RenderManager::drawGame(bool draw)
+{
+	mDrawGame = draw;
+}

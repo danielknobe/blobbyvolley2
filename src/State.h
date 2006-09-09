@@ -26,10 +26,6 @@ public:
 class MainMenuState : public State
 {
 private:
-	int mStartButton;
-	int mWatchReplayButton;
-	int mOptionButton;
-	int mExitButton;
 public:
 	MainMenuState();
 	virtual ~MainMenuState();

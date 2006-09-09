@@ -11,6 +11,7 @@
 #include "InputManager.h"
 #include "UserConfig.h"
 #include "GUIManager.h"
+#include "IMGUI.h"
 #include "State.h"
 #include "SpeedController.h"
 
@@ -138,13 +139,18 @@ int main(int argc, char* argv[])
 		inputmgr->updateInput();
 		running = inputmgr->running();
 		
+		// This is true by default for compatibility, GUI states may
+		// disable it if necessary
+		rmanager->drawGame(true);
 		GUIManager::getSingleton()->processInput();
+		IMGUI::getSingleton().begin();
 		State::getCurrentState()->step();
 
 		if (!scontroller.doFramedrop())
 		{
 			rmanager->draw();
 			GUIManager::getSingleton()->render();
+			IMGUI::getSingleton().end();
 			rmanager->refresh();
 		}
 		scontroller.update();
@@ -156,3 +162,4 @@ int main(int argc, char* argv[])
 	PHYSFS_deinit();
 
 }
+

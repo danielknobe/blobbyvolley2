@@ -1,6 +1,7 @@
 ======= TODO
 Primary:
 Important:
+- Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
 - Better configure script for lua
 - Compilation tutorial for Linux-Users (for Linux allready done)
 - Redesign of the GUI system, it is designed too simple and doesn't allow
@@ -12,6 +13,7 @@ Near aims:
 - Polish Linux integration and release installable source tarballs and eventually debs
 
 Secondary:
+- Make Physfs actions more transparent, for example show added search paths
 - Fix GUI behaviour of SDL renderer
 - Seperate left/right blobby graphics for skin-creation
 - Add animated background (prerendered Animations, at least for SDL and GL2D)
