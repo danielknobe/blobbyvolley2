@@ -1,3 +1,4 @@
+#include "UserConfig.h"
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "DuelMatch.h"
@@ -34,6 +35,13 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
+	
+	
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	mScoreToWin = gameConfig.getInteger("scoretowin");
+	if(mScoreToWin < 0)
+		mScoreToWin = 15;
 };
 
 DuelMatch::~DuelMatch()
@@ -155,9 +163,9 @@ void DuelMatch::step()
 
 PlayerSide DuelMatch::winningPlayer()
 {
-	if (mLeftScore >= 15 && mLeftScore >= mRightScore + 2)
+	if (mLeftScore >= mScoreToWin && mLeftScore >= mRightScore + 2)
 		return LEFT_PLAYER;
-	if (mRightScore >= 15 && mRightScore >= mLeftScore + 2)
+	if (mRightScore >= mScoreToWin && mRightScore >= mLeftScore + 2)
 		return RIGHT_PLAYER;
 	return NO_PLAYER;
 }
