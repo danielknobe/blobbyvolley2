@@ -24,7 +24,6 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 			SDL_MapRGB(newSurface->format, 0, 0, 0));
 	
     SDL_LockSurface(newSurface);
-	SDL_PixelFormat* format = newSurface->format;
 	for (int y = 0; y < surface->h; ++y)
 	for (int x = 0; x < surface->w; ++x)
 	{
@@ -101,7 +100,7 @@ int RenderManager::getNextFontIndex(std::string& string)
 		index = 51;
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape
 	{
-		testChar = testChar = string.at(0);
+		testChar = string.at(0);
 			string.erase(string.begin());
 		if (testChar == std::string("ß")[1])
 			index = 40;

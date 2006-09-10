@@ -63,6 +63,8 @@ protected:
 	bool mNeedRedraw;
 	
 public:
+	virtual ~RenderManager(){};
+
 	static RenderManager* createRenderManagerSDL();
 	static RenderManager* createRenderManagerGP2X();
 	static RenderManager* createRenderManagerGL2D();
@@ -90,7 +92,7 @@ public:
 	// Set a background image by filename
 	// Note: There is a default, you dont need to do this
 	// Returns true on success
-	virtual bool setBackground(const std::string& filename) {};
+	virtual bool setBackground(const std::string& filename) { return true; };
 
 	// Colors the standard blob image, which are red and green by default
 	virtual void setBlobColor(int player, Color color) {};

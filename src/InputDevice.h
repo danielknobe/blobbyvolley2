@@ -9,7 +9,7 @@ class InputDevice
 public:
        
 	InputDevice(){};
-
+	virtual ~InputDevice(){};
 	virtual void transferInput(PlayerInput& mInput) = 0;
 };
 

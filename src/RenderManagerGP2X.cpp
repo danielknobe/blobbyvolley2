@@ -15,7 +15,6 @@ SDL_Surface* RenderManagerGP2X::colorSurface(SDL_Surface *surface, Color color)
 			SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	SDL_LockSurface(newSurface);
-	SDL_PixelFormat* format = newSurface->format;
 	for (int y = 0; y < surface->h; ++y)
 	for (int x = 0; x < surface->w; ++x)
 	{
@@ -124,9 +123,9 @@ void RenderManagerGP2X::deinit()
 {
 	SDL_FreeSurface(mBackground);
 	SDL_FreeSurface(mBallShadow);
-	for (int i = 0; i < mBall.size(); ++i)
+	for (unsigned int i = 0; i < mBall.size(); ++i)
 		SDL_FreeSurface(mBall[i]);
-	for (int i = 0; i < mStandardBlob.size(); ++i)
+	for (unsigned int i = 0; i < mStandardBlob.size(); ++i)
 	{
 		SDL_FreeSurface(mStandardBlob[i]);
 		SDL_FreeSurface(mStandardBlobShadow[i]);
@@ -136,7 +135,7 @@ void RenderManagerGP2X::deinit()
 		SDL_FreeSurface(mRightBlobShadow[i]);
 	}
 
-	for (int i = 0; i < mFont.size(); ++i)
+	for (unsigned int i = 0; i < mFont.size(); ++i)
 		SDL_FreeSurface(mFont[i]);
 }
 
@@ -221,7 +220,6 @@ void RenderManagerGP2X::draw()
 
 bool RenderManagerGP2X::setBackground(const std::string& filename)
 {
-	SDL_Surface *newBackground;
 	try
 	{
 		SDL_Surface *tempBackground = loadSurface(filename);
@@ -237,8 +235,8 @@ bool RenderManagerGP2X::setBackground(const std::string& filename)
 
 void RenderManagerGP2X::setBlobColor(int player, Color color)
 {
-	std::vector<SDL_Surface*> *handledBlob;
-	std::vector<SDL_Surface*> *handledBlobShadow;
+	std::vector<SDL_Surface*> *handledBlob = 0;
+	std::vector<SDL_Surface*> *handledBlobShadow = 0;
 
 	if (player == 0)
 	{

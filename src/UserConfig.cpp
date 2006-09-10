@@ -59,7 +59,7 @@ bool UserConfig::saveFile(const std::string& filename)
 	const char xmlFooter[] = "</userconfig>\n\n";
 
 	PHYSFS_write(fileHandle, xmlHeader, 1, sizeof(xmlHeader) - 1);
-	for (int i = 0; i < mVars.size(); ++i)
+	for (unsigned int i = 0; i < mVars.size(); ++i)
 	{
 		char writeBuffer[256];
 		int charsWritten = snprintf(writeBuffer, 256,
@@ -156,13 +156,13 @@ std::string UserConfig::getValue(const std::string& name)
 
 UserConfig::~UserConfig()
 {
-	for (int i = 0; i < mVars.size(); ++i)
+	for (unsigned int i = 0; i < mVars.size(); ++i)
 		delete mVars[i];
 }
 
 UserConfigVar* UserConfig::findVarByName(const std::string& name)
 {
-	for (int i = 0; i < mVars.size(); ++i)
+	for (unsigned int i = 0; i < mVars.size(); ++i)
 		if (mVars[i]->Name == name) return mVars[i];
 	return NULL;
 }

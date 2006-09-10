@@ -98,7 +98,6 @@ LocalGameState::LocalGameState(GameMode mode)
 void LocalGameState::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
-	SoundManager* smanager = &SoundManager::getSingleton();
 	
 
 	if (mPaused)
@@ -314,7 +313,7 @@ void OptionState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(10.0, 50.0), "human"))
 		mPlayerOptions[LEFT_PLAYER] = 0;
-	for (int i = 1; i < mScriptNames.size(); i++)
+	for (unsigned int i = 1; i < mScriptNames.size(); i++)
 	{
 		if (imgui.doButton(GEN_ID << 4 + i,
 				Vector2(10.0, 50.0 + i * 28.0), mScriptNames[i]))
@@ -323,7 +322,7 @@ void OptionState::step()
 	
 	if (imgui.doButton(GEN_ID, Vector2(410.0, 50.0), "human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
-	for (int i = 1; i < mScriptNames.size(); i++)
+	for (unsigned int i = 1; i < mScriptNames.size(); i++)
 	{
 		if (imgui.doButton(GEN_ID << 5 + i,
 					Vector2(410.0, 50.0 + i * 28.0), mScriptNames[i]))
@@ -406,7 +405,7 @@ ReplayMenuState::~ReplayMenuState()
 std::string ReplayMenuState::getRecordName()
 {
 	char buf[256];
-	snprintf(buf, 256, "replays/replay_%d.xml", time(0));
+	snprintf(buf, 256, "replays/replay_%d.xml", static_cast<int>(time(0)));
 	return std::string(buf);
 }
 
@@ -485,7 +484,7 @@ void ReplayMenuState::step()
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
-		else for (int i = 0; i < mReplayFiles.size(); i++)
+		else for (unsigned int i = 0; i < mReplayFiles.size(); i++)
 		{
 			if (imgui.doButton(GEN_ID << 6 + i, Vector2(10.0, 50.0 + 30.0 * i),
 						mReplayFiles[i]))

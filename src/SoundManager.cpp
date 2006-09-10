@@ -87,7 +87,6 @@ bool SoundManager::init()
 	desiredSpec.callback = playCallback;
 	desiredSpec.userdata = mSingleton;
 
-	SDL_AudioSpec obtainedSpec;
 	
 	if (SDL_OpenAudio(&desiredSpec, &mAudioSpec))
 	{
