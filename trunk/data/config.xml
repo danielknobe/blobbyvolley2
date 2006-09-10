@@ -2,7 +2,7 @@
 
 <userconfig>
 	<var name="device" value="OpenGL"/>
-	<var name="fullscreen" value="false"/>
+	<var name="fullscreen" value="true"/>
 	<var name="r1" value="0"/>
 	<var name="g1" value="0"/>
 	<var name="b1" value="0"/>
@@ -19,5 +19,6 @@
 	<var name="gamefps" value="60"/>
 	<var name="realfps" value="60"/>
 	<var name="global_volume" value="1.0" />
+	<var name="scoretowin" value="15"/>
 </userconfig>
 
