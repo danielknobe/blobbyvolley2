@@ -95,6 +95,8 @@ void IMGUI::end()
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
 				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0));
 				break;
+			default:
+				break;		
 		}
 		mQueue->pop();
 	}
@@ -167,6 +169,8 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 				clicked = true;
 				mLastKeyAction = NONE;
 				break;
+			default:
+				break;
 		}
 	}
 	mLastWidget = id;
@@ -222,6 +226,8 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			case RIGHT:
 				value += 0.1;
 				mLastKeyAction = NONE;
+				break;
+			default:
 				break;
 		}
 	}

@@ -19,7 +19,7 @@ private:
 	static InputManager* mSingleton;
 	
 	// Keyboard
-	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
+	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey 233 Objects + null Object
 
 	int mLeftBlobbyInputDevice;
 	int mRightBlobbyInputDevice;

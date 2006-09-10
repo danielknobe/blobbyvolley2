@@ -196,7 +196,6 @@ void RenderManagerGL2D::draw()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	// The Ball
 	
-	const int MotionBlurIterations = 10; 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
 /*
