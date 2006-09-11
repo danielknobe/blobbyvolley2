@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <userconfig>
-<!-- Left Blobby Inputconfiguration -->
-	<var name="left_blobby_device" value="keyboard"/>
-	<var name="left_blobby_left_move" value="a"/>
-	<var name="left_blobby_right_move" value="d"/>
-	<var name="left_blobby_jump" value="w"/>
+	<!-- Left Blobby Inputconfiguration -->
+	<var name="left_blobby_device" value="joystick"/>
+	<!-- Keyboard -->
+	<var name="left_blobby_left_keyboard_move" value="a"/>
+	<var name="left_blobby_right_keyboard_move" value="d"/>
+	<var name="left_blobby_keyboard_jump" value="w"/>
+	<!-- Gamepad/Joystick -->
+	<var name="left_blobby_left_joystick_move" value="left"/>
+	<var name="left_blobby_right_joystick_move" value="right"/>
+	<var name="left_blobby_joystick_jump" value="3"/>
+	<var name="left_blobby_joystick_diagonal" value="false"/>
+	<var name="left_blobby_left_joystick_jump" value="11"/>
+	<var name="left_blobby_right_joystick_jump" value="12"/>
 
-<!-- Right Blobby Inputconfiguration -->
-	<var name="right_blobby_device" value="keyboard"/>
-	<var name="right_blobby_left_move" value="left"/>
-	<var name="right_blobby_right_move" value="right"/>
-	<var name="right_blobby_jump" value="up"/>
+	<!-- Right Blobby Inputconfiguration -->
+	<var name="right_blobby_device" value="mouse"/>
+	<!-- Keyboard -->
+	<var name="right_blobby_left_keyboard_move" value="left"/>
+	<var name="right_blobby_right_keyboard_move" value="right"/>
+	<var name="right_blobby_keyboard_jump" value="up"/>
+	<!-- Gamepad/Joystick -->
+	<var name="right_blobby_left_joystick_move" value="left"/>
+	<var name="right_blobby_right_joystick_move" value="right"/>
+	<var name="right_blobby_joystick_jump" value="up"/>
+	<var name="right_blobby_joystick_diagonal" value="false"/>
+	<var name="right_blobby_left_joystick_jump" value="11"/>
+	<var name="right_blobby_right_joystick_jump" value="12"/>
 </userconfig>
 

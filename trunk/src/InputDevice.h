@@ -3,19 +3,26 @@
 #include <SDL/SDL.h>
 #include "RenderManager.h"
 #include "DuelMatch.h"
+enum JoystickCross
+{
+	JOY_LEFT = 101,
+	JOY_RIGHT = 102,
+	JOY_UP = 103,
+	JOY_DOWN = 104
+};
 
 class InputDevice
 {
 public:
-       
 	InputDevice(){};
-	virtual ~InputDevice(){};
+
 	virtual void transferInput(PlayerInput& mInput) = 0;
 };
 
 class MouseInputDevice : public InputDevice
 {
 private:
+// TODO: CLEANUP!!! -> after the new input management is acted
 	int mPlayer;
 	float mMarkerPosition;
 	bool mGameInit;
@@ -28,21 +35,19 @@ public:
 		mPlayer = player;
 		mGameInit = false;
 		mDelay = false;
-   	}
+	}
 	
 	void transferInput(PlayerInput& mInput)
 	{
 		if (DuelMatch::getMainGame() != NULL)
 		{
 			// clean up
-			mInput = PlayerInput( 0
-								, 0
-								, 0);
-                                     
+			mInput = PlayerInput( 0, 0, 0);
+
 			if(SDL_GetMouseState(&mMousePosition, NULL)&SDL_BUTTON(1))
 			{
-            	if (mDelay == true)
-    				mInput.up = true;      
+		if (mDelay == true)
+			mInput.up = true;      
 			}
             else
 			{
@@ -56,12 +61,12 @@ public:
 					mMarkerPosition = (DuelMatch::getMainGame()->getBlobPosition(LEFT_PLAYER)).x;
 
 		        if (mPlayer == 1)
-					mMarkerPosition = (DuelMatch::getMainGame()->getBlobPosition(RIGHT_PLAYER)).x;
-					
+				mMarkerPosition = (DuelMatch::getMainGame()->getBlobPosition(RIGHT_PLAYER)).x;
+
 				SDL_WarpMouse(400, 300);
 				mGameInit = true;
 				mInput.up = false;
-						mDelay = false;
+				mDelay = false;
 			}
 			
 
@@ -132,28 +137,52 @@ public:
 	void transferInput(PlayerInput& mInput)
 	{
 	mKeyState = SDL_GetKeyState(0);	
-	mInput = PlayerInput( mKeyState[mLeftKey]
-						, mKeyState[mRightKey]
-						, mKeyState[mJumpKey]);
+	mInput = PlayerInput( mKeyState[mLeftKey], mKeyState[mRightKey], mKeyState[mJumpKey]);
 	}
 };
 
+//TODO: second analogstick
 class JoystickInputDevice : public InputDevice
 {
 private:
-	
-
+	SDL_Joystick* mJoystickNumber;
+	int mLeftInput;
+	int mRightInput;
+	int mJumpInput;
+	bool mDiagonal;
 public:
-	JoystickInputDevice(SDL_Joystick* joy, int leftButton, int rightButton, int jumpButton,
-		int walkAxis = -1, int jumpAxis = -1, int secondaryLeftButton = -1, 
-		int secondaryRightButton = -1, int secondaryJumpButton = -1)
+	JoystickInputDevice(SDL_Joystick* joystickNumber, int leftInput, int rightInput, int jumpInput,
+		bool diagonal, int leftJumpInput, int rightJumpInput)
 	{
-	
+		mJoystickNumber = joystickNumber;
+		mLeftInput = leftInput;
+		mRightInput = rightInput;
+		mJumpInput = jumpInput;
+		mDiagonal = diagonal;
+		// Button: 1-100
+	}
+
+	bool inputToBool(int &input)
+	{
+		if( input <= 100 )
+			return SDL_JoystickGetButton(mJoystickNumber, input);
+		if (input == 101)
+			return (-10 > SDL_JoystickGetAxis(mJoystickNumber, 0));
+		if (input == 102)
+			return (10 < SDL_JoystickGetAxis(mJoystickNumber, 0));
+		if (input == 103)
+			return (10 < SDL_JoystickGetAxis(mJoystickNumber, 1));
+		if (input == 104)
+			return (-10 > SDL_JoystickGetAxis(mJoystickNumber, 1));
+		return false;
 	}
 
 	void transferInput(PlayerInput& mInput)
 	{
-	
+	// clean up
+	mInput = PlayerInput( 0, 0, 0);
+
+	mInput = PlayerInput(inputToBool(mLeftInput), inputToBool(mRightInput), inputToBool(mJumpInput));
 	}
 };
 

@@ -19,18 +19,33 @@ private:
 	static InputManager* mSingleton;
 	
 	// Keyboard
-	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey 233 Objects + null Object
+	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
 	int mLeftBlobbyInputDevice;
 	int mRightBlobbyInputDevice;
 
-	SDLKey mLeftBlobbyLeftMove;
-	SDLKey mLeftBlobbyRightMove;
-	SDLKey mLeftBlobbyJump;
-	SDLKey mRightBlobbyLeftMove;
-	SDLKey mRightBlobbyRightMove;
-	SDLKey mRightBlobbyJump;
-	
+	SDLKey mLeftBlobbyLeftKeyboardMove;
+	SDLKey mLeftBlobbyRightKeyboardMove;
+	SDLKey mLeftBlobbyKeyboardJump;
+	SDLKey mRightBlobbyLeftKeyboardMove;
+	SDLKey mRightBlobbyRightKeyboardMove;
+	SDLKey mRightBlobbyKeyboardJump;
+
+	// Joystick
+	int mLeftBlobbyLeftJoystickMove;
+	int mLeftBlobbyRightJoystickMove;
+	int mLeftBlobbyJoystickJump;
+	bool mLeftBlobbyJoystickDiagonal;
+	int mLeftBlobbyJoystickLeftJump;
+	int mLeftBlobbyJoystickRightJump;
+
+	int mRightBlobbyLeftJoystickMove;
+	int mRightBlobbyRightJoystickMove;
+	int mRightBlobbyJoystickJump;
+	bool mRightBlobbyJoystickDiagonal;
+	int mRightBlobbyJoystickLeftJump;
+	int mRightBlobbyJoystickRightJump;
+
 	// GUI storage (because in the gui we need a botton hit methods and not a button down methods)
 	bool mUp;
 	bool mDown;
@@ -57,7 +72,8 @@ private:
 public:
 	static InputManager* createInputManager();
 	static InputManager* getSingleton();
-	
+	~InputManager();
+
 	bool running();
 	PlayerInput getGameInput(int player);
 	void updateInput();
@@ -78,11 +94,18 @@ public:
 	// Configmethods
 	std::string keyToString(SDLKey key);
 	SDLKey stringToKey(const std::string& keyname);
+	std::string intToString(int input);
+	int stringToInt(const std::string& inputname);
 
 	void configFileToCurrentConfigForLeftKeyboard();
 	void configFileToCurrentConfigForRightKeyboard();
 	void currentConfigToConfigFileForLeftKeyboard();
 	void currentConfigToConfigFileForRightKeyboard();
+
+	void configFileToCurrentConfigForLeftJoystick();
+	void configFileToCurrentConfigForRightJoystick();
+	void currentConfigToConfigFileForLeftJoystick();
+	void currentConfigToConfigFileForRightJoystick();
 	
 	void configFileToCurrentConfigForRightDevice();
 	void configFileToCurrentConfigForLeftDevice();
