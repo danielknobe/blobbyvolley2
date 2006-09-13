@@ -1,7 +1,6 @@
 SUBDIRS = lua tinyxml
 
 AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\" -Wall
-AM_CFLAGS = -Wall
 AM_LDFLAGS = -Llua -Ltinyxml
 
 bin_PROGRAMS = blobby

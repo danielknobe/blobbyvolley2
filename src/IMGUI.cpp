@@ -1,6 +1,8 @@
 #include <queue>
 #include <cassert>
 
+#include <SDL/SDL.h>
+
 #include "InputManager.h"
 #include "RenderManager.h"
 
@@ -14,7 +16,8 @@ enum ObjectType
 	HIGHLIGHTTEXT,
 	BUTTON,
 	SCROLLBAR,
-	ACTIVESCROLLBAR
+	ACTIVESCROLLBAR,
+	EDITBOX
 };
 
 struct QueueObject
@@ -254,4 +257,51 @@ void IMGUI::resetSelection()
 {
 	mActiveButton = 0;
 	mButtonReset = true;
+}
+
+bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& cpos)
+{
+	if (mActiveButton == 0 && !mButtonReset)
+		mActiveButton = id;
+
+	QueueObject obj;
+	obj.id = id;
+	obj.pos1 = position;
+	obj.type = EDITBOX;
+
+	if (id == mActiveButton)
+	{
+		obj.type = ACTIVESCROLLBAR;
+		switch (mLastKeyAction)
+		{
+			case DOWN:
+				mActiveButton = 0;
+				mLastKeyAction = NONE;
+				break;
+			case UP:
+				mActiveButton = mLastWidget;
+				mLastKeyAction = NONE;
+				break;
+			case LEFT:
+				if (cpos > 0)
+					cpos--;
+				mLastKeyAction = NONE;
+				break;
+			case RIGHT:
+				if (cpos < text.length())
+					cpos++;
+				mLastKeyAction = NONE;
+				break;
+		}
+	}
+
+/*	
+	if (InputManager::getSingleton()->grabKey() != SDLK_UNKNOWN)
+	{
+		text.append();
+	}
+*/	
+	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1;
+
+	return false;
 }
