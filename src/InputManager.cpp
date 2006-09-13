@@ -626,9 +626,8 @@ void InputManager::configFileToCurrentConfigForRightJoystick()
 {
 	mConfigManager.loadFile("inputconfig.xml");
 	mRightBlobbyJoystickNumber = mConfigManager.getInteger("right_blobby_joystick_number");
-	mRightBlobbyLeftKeyboardMove = stringToKey(mConfigManager.getString("right_blobby_left_joystick_move"));
-	mRightBlobbyRightKeyboardMove = stringToKey(mConfigManager.getString("right_blobby_right_joystick_move"));
-	mRightBlobbyKeyboardJump = stringToKey(mConfigManager.getString("right_blobby_joystick_jump"));
+	mRightBlobbyLeftJoystickMove = stringToInt(mConfigManager.getString("right_blobby_left_joystick_move"));
+	mRightBlobbyRightJoystickMove = stringToInt(mConfigManager.getString("right_blobby_right_joystick_move"));
 	mRightBlobbyJoystickJump = stringToInt(mConfigManager.getString("right_blobby_joystick_jump"));
 	mRightBlobbyJoystickDiagonal = stringToInt(mConfigManager.getString("right_blobby_joystick_diagonal"));
 	mRightBlobbyJoystickLeftJump = stringToInt(mConfigManager.getString("right_blobby_left_joystick_jump"));
