@@ -2,7 +2,7 @@
 
 <userconfig>
 	<var name="device" value="OpenGL"/>
-	<var name="fullscreen" value="true"/>
+	<var name="fullscreen" value="false"/>
 	<var name="r1" value="0"/>
 	<var name="g1" value="0"/>
 	<var name="b1" value="255"/>

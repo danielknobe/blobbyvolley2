@@ -2,12 +2,13 @@
 
 <userconfig>
 	<!-- Left Blobby Inputconfiguration -->
-	<var name="left_blobby_device" value="joystick"/>
+	<var name="left_blobby_device" value="keyboard"/>
 	<!-- Keyboard -->
 	<var name="left_blobby_left_keyboard_move" value="a"/>
 	<var name="left_blobby_right_keyboard_move" value="d"/>
 	<var name="left_blobby_keyboard_jump" value="w"/>
 	<!-- Gamepad/Joystick -->
+	<var name="left_blobby_joystick_number" value="1"/>
 	<var name="left_blobby_left_joystick_move" value="left"/>
 	<var name="left_blobby_right_joystick_move" value="right"/>
 	<var name="left_blobby_joystick_jump" value="3"/>
@@ -16,12 +17,13 @@
 	<var name="left_blobby_right_joystick_jump" value="12"/>
 
 	<!-- Right Blobby Inputconfiguration -->
-	<var name="right_blobby_device" value="mouse"/>
+	<var name="right_blobby_device" value="joystick"/>
 	<!-- Keyboard -->
 	<var name="right_blobby_left_keyboard_move" value="left"/>
 	<var name="right_blobby_right_keyboard_move" value="right"/>
 	<var name="right_blobby_keyboard_jump" value="up"/>
 	<!-- Gamepad/Joystick -->
+	<var name="right_blobby_joystick_number" value="0"/>
 	<var name="right_blobby_left_joystick_move" value="left"/>
 	<var name="right_blobby_right_joystick_move" value="right"/>
 	<var name="right_blobby_joystick_jump" value="up"/>

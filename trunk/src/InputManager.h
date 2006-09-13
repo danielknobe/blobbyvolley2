@@ -32,6 +32,7 @@ private:
 	SDLKey mRightBlobbyKeyboardJump;
 
 	// Joystick
+	int mLeftBlobbyJoystickNumber;
 	int mLeftBlobbyLeftJoystickMove;
 	int mLeftBlobbyRightJoystickMove;
 	int mLeftBlobbyJoystickJump;
@@ -39,6 +40,7 @@ private:
 	int mLeftBlobbyJoystickLeftJump;
 	int mLeftBlobbyJoystickRightJump;
 
+	int mRightBlobbyJoystickNumber;
 	int mRightBlobbyLeftJoystickMove;
 	int mRightBlobbyRightJoystickMove;
 	int mRightBlobbyJoystickJump;
@@ -46,7 +48,8 @@ private:
 	int mRightBlobbyJoystickLeftJump;
 	int mRightBlobbyJoystickRightJump;
 
-	bool mIngameDevicesAvailable;
+	bool mLeftDeviceAvailable;
+	bool mRightDeviceAvailable;
 
 	// GUI storage (because in the gui we need a botton hit methods and not a button down methods)
 	bool mUp;
@@ -61,7 +64,9 @@ private:
 	int mMouseY;
 	
 	// Inputdevices
-	SDL_Joystick* mJoystick;	// Gamepad or Joystick
+	SDL_Joystick* mJoystickLeft;	// Gamepad or Joystick
+	SDL_Joystick* mJoystickRight;
+
 	int mNumberOfJoysticks;		// How much Joysticks?
 	
 	UserConfig mConfigManager;
@@ -76,8 +81,8 @@ public:
 	static InputManager* getSingleton();
 	~InputManager();
 
-	bool createIngameInputDevices();
-	bool deleteIngameInputDevices();
+	bool beginGame(int side);
+	bool endGame();
 
 	bool running();
 	PlayerInput getGameInput(int player);
