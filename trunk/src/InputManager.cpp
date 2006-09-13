@@ -27,30 +27,8 @@ InputManager::InputManager()
 	// set inputdevices
 	configFileToCurrentConfigForLeftDevice();
 	configFileToCurrentConfigForRightDevice();
-// ====================== �ERGANGSL�UNG
-	if (mLeftBlobbyInputDevice == MOUSE)
-	mInputDevice[LEFT_PLAYER] = new MouseInputDevice(LEFT_PLAYER);
-	
-	if (mLeftBlobbyInputDevice == KEYBOARD)
-	mInputDevice[LEFT_PLAYER] = new KeyboardInputDevice(mLeftBlobbyLeftKeyboardMove,
-	mLeftBlobbyRightKeyboardMove,mLeftBlobbyKeyboardJump);
 
-	if (mLeftBlobbyInputDevice == JOYSTICK)
-	mInputDevice[LEFT_PLAYER] = new JoystickInputDevice(mJoystick, mLeftBlobbyLeftJoystickMove, mLeftBlobbyRightJoystickMove,
-		mLeftBlobbyJoystickJump, mLeftBlobbyJoystickDiagonal, mLeftBlobbyJoystickLeftJump,
-		mLeftBlobbyJoystickRightJump);
-	
-	if (mRightBlobbyInputDevice == MOUSE)
-	mInputDevice[RIGHT_PLAYER] = new MouseInputDevice(RIGHT_PLAYER);	
-	
-	if (mRightBlobbyInputDevice == KEYBOARD)
-	mInputDevice[RIGHT_PLAYER] = new KeyboardInputDevice(mRightBlobbyLeftKeyboardMove,
-	mRightBlobbyRightKeyboardMove,mRightBlobbyKeyboardJump);
-
-	if (mRightBlobbyInputDevice == JOYSTICK)
-	mInputDevice[RIGHT_PLAYER] = new JoystickInputDevice(0, mRightBlobbyLeftJoystickMove, mRightBlobbyRightJoystickMove,
-		mRightBlobbyJoystickJump, mRightBlobbyJoystickDiagonal, mRightBlobbyJoystickLeftJump,
-		 mRightBlobbyJoystickRightJump);
+	mIngameDevicesAvailable = false;
 }
 
 InputManager::~InputManager()
@@ -61,6 +39,58 @@ InputManager::~InputManager()
 	currentConfigToConfigFileForRightJoystick();
 	currentConfigToConfigFileForLeftDevice();
 	currentConfigToConfigFileForRightDevice();
+}
+
+bool InputManager::createIngameInputDevices()
+{
+	if (mIngameDevicesAvailable == false)
+	{
+		if (mLeftBlobbyInputDevice == MOUSE)
+			mInputDevice[LEFT_PLAYER] = new MouseInputDevice(LEFT_PLAYER);
+
+		if (mLeftBlobbyInputDevice == KEYBOARD)
+			mInputDevice[LEFT_PLAYER] = new KeyboardInputDevice(mLeftBlobbyLeftKeyboardMove,
+			mLeftBlobbyRightKeyboardMove,
+			mLeftBlobbyKeyboardJump);
+
+		if (mLeftBlobbyInputDevice == JOYSTICK)
+			mInputDevice[LEFT_PLAYER] = new JoystickInputDevice(mJoystick,
+			mLeftBlobbyLeftJoystickMove,
+			mLeftBlobbyRightJoystickMove,
+			mLeftBlobbyJoystickJump,
+			mLeftBlobbyJoystickDiagonal,
+			mLeftBlobbyJoystickLeftJump,
+			mLeftBlobbyJoystickRightJump);
+
+		if (mRightBlobbyInputDevice == MOUSE)
+			mInputDevice[RIGHT_PLAYER] = new MouseInputDevice(RIGHT_PLAYER);	
+
+		if (mRightBlobbyInputDevice == KEYBOARD)
+			mInputDevice[RIGHT_PLAYER] = new KeyboardInputDevice(mRightBlobbyLeftKeyboardMove,
+			mRightBlobbyRightKeyboardMove,
+			mRightBlobbyKeyboardJump);
+
+		if (mRightBlobbyInputDevice == JOYSTICK)
+			mInputDevice[RIGHT_PLAYER] = new JoystickInputDevice(0,
+			mRightBlobbyLeftJoystickMove,
+			mRightBlobbyRightJoystickMove,
+			mRightBlobbyJoystickJump,
+			mRightBlobbyJoystickDiagonal,
+			mRightBlobbyJoystickLeftJump,
+			mRightBlobbyJoystickRightJump);
+	}
+}
+
+bool InputManager::deleteIngameInputDevices()
+{
+if (mIngameDevicesAvailable == true)
+	{
+		delete mInputDevice[LEFT_PLAYER];
+		mInputDevice[LEFT_PLAYER] = NULL;
+
+		delete mInputDevice[RIGHT_PLAYER];
+		mInputDevice[RIGHT_PLAYER] = NULL;
+	}
 }
 
 InputManager* InputManager::getSingleton()
@@ -74,6 +104,7 @@ PlayerInput InputManager::getGameInput(int player)
 	assert (player >= 0 && player < 2);
 	return mInput[player];
 }
+
 
 InputManager* InputManager::createInputManager()
 {
@@ -181,8 +212,11 @@ void InputManager::updateInput()
 #else
 
 	// Device gives status to the playerinput
-	mInputDevice[0]->transferInput(mInput[0]);
-	mInputDevice[1]->transferInput(mInput[1]);
+	if (mIngameDevicesAvailable == true)
+	{
+		mInputDevice[0]->transferInput(mInput[0]);
+		mInputDevice[1]->transferInput(mInput[1]);
+	}
 #endif
 }
 

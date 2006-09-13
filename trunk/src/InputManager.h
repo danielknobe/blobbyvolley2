@@ -46,6 +46,8 @@ private:
 	int mRightBlobbyJoystickLeftJump;
 	int mRightBlobbyJoystickRightJump;
 
+	bool mIngameDevicesAvailable;
+
 	// GUI storage (because in the gui we need a botton hit methods and not a button down methods)
 	bool mUp;
 	bool mDown;
@@ -73,6 +75,9 @@ public:
 	static InputManager* createInputManager();
 	static InputManager* getSingleton();
 	~InputManager();
+
+	bool createIngameInputDevices();
+	bool deleteIngameInputDevices();
 
 	bool running();
 	PlayerInput getGameInput(int player);
