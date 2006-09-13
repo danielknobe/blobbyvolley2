@@ -388,7 +388,7 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool 
 	{
 		length += 24;
 		SDL_Rect charPosition;
-		charPosition.x = lround(position.x) + length - 24;
+		charPosition.x = lround(position.x) + length;
 		charPosition.y = lround(position.y);
 		if (highlight)
 			SDL_BlitSurface(mHighlightFont[index], 0, mScreen, &charPosition);

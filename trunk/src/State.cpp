@@ -109,7 +109,7 @@ void LocalGameState::step()
 		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
 		imgui.doText(GEN_ID, Vector2(210, 280), "Wirklich Beenden?");
-		if (InputManager::getSingleton()->select() &&
+		if (InputManager::getSingleton()->select() ||
 				InputManager::getSingleton()->click())
 			mPaused = false;
 	}
