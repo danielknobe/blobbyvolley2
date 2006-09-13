@@ -2,7 +2,7 @@
 
 <userconfig>
 	<!-- Left Blobby Inputconfiguration -->
-	<var name="left_blobby_device" value="joystick"/>
+	<var name="left_blobby_device" value="keyboard"/>
 	<!-- Keyboard -->
 	<var name="left_blobby_left_keyboard_move" value="a"/>
 	<var name="left_blobby_right_keyboard_move" value="d"/>
@@ -17,7 +17,7 @@
 	<var name="left_blobby_right_joystick_jump" value="12"/>
 
 	<!-- Right Blobby Inputconfiguration -->
-	<var name="right_blobby_device" value="joystick"/>
+	<var name="right_blobby_device" value="keyboard"/>
 	<!-- Keyboard -->
 	<var name="right_blobby_left_keyboard_move" value="left"/>
 	<var name="right_blobby_right_keyboard_move" value="right"/>

@@ -29,3 +29,8 @@ http://sourceforge.net/svn/?group_id=169341
 
 Credits:
 See AUTHORS
+
+HINT:
+you can activate your Joystick (SDL compatible) !
+Change the value of device @date/inputconfig.xml to joystick, you will be
+able to play with Joystick. Have fun ;)
