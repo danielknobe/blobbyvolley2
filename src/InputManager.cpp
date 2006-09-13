@@ -90,23 +90,26 @@ bool InputManager::beginGame(int side)
 
 		mRightDeviceAvailable = true;
 	}
-
+	// TODO InputManager::beginGame(int side) need a BOOL RETURN !
+	return true;
 }
 
 bool InputManager::endGame()
 {
-if (mLeftDeviceAvailable == true)
-	{
-		delete mInputDevice[LEFT_PLAYER];
-		mInputDevice[LEFT_PLAYER] = NULL;
-		mLeftDeviceAvailable = false;
-	}
-if (mRightDeviceAvailable == true)
-	{
-		delete mInputDevice[RIGHT_PLAYER];
-		mInputDevice[RIGHT_PLAYER] = NULL;
-		mRightDeviceAvailable = false;
-	}
+	if (mLeftDeviceAvailable == true)
+		{
+			delete mInputDevice[LEFT_PLAYER];
+			mInputDevice[LEFT_PLAYER] = NULL;
+			mLeftDeviceAvailable = false;
+		}
+	if (mRightDeviceAvailable == true)
+		{
+			delete mInputDevice[RIGHT_PLAYER];
+			mInputDevice[RIGHT_PLAYER] = NULL;
+			mRightDeviceAvailable = false;
+		}
+	// TODO InputManager::endGame() need a RETURN !!!
+	return true;
 }
 
 InputManager* InputManager::getSingleton()
@@ -138,7 +141,6 @@ void InputManager::updateInput()
 	mClick = false;
 	// Init GUI Events for buffered Input
 
-	static float volume = 1.0;
 	SDL_PumpEvents();
 	SDL_Event event;
 
@@ -174,6 +176,8 @@ void InputManager::updateInput()
 				case SDLK_ESCAPE:
 				case SDLK_BACKSPACE:
 					mExit = true;
+					break;
+				default:
 					break;
 			}
 			break;
@@ -511,7 +515,7 @@ InputKeyMap InputManager::mKeyMap[] = {
 	{ "power",SDLK_POWER },	/* Power Macintosh power key */
 	{ "euro",SDLK_EURO },		/* Some european keyboards */
 	{ "undo",SDLK_UNDO },		/* Atari keyboard has Undo */
-	NULL				// end of the keymap
+	{NULL}			// end of the keymap
 };	
 
 std::string InputManager::keyToString (const SDLKey key)
