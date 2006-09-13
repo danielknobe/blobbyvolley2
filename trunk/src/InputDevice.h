@@ -15,6 +15,7 @@ class InputDevice
 {
 public:
 	InputDevice(){};
+	virtual ~InputDevice(){};
 
 	virtual void transferInput(PlayerInput& mInput) = 0;
 };
@@ -29,6 +30,7 @@ private:
 	int mMousePosition;
 	bool mDelay; // The pressed button of the mainmenu must be ignored
 public:
+	virtual ~MouseInputDevice(){};
 	MouseInputDevice(int player)
 		: InputDevice()
 	{
@@ -126,6 +128,7 @@ private:
 	SDLKey mJumpKey;
 	Uint8* mKeyState;
 public:
+	virtual ~KeyboardInputDevice(){};
 	KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey)
 		: InputDevice()
 	{
@@ -151,6 +154,7 @@ private:
 	int mJumpInput;
 	bool mDiagonal;
 public:
+	~JoystickInputDevice() {};
 	JoystickInputDevice(SDL_Joystick* joystickNumber, int leftInput, int rightInput, int jumpInput,
 		bool diagonal, int leftJumpInput, int rightJumpInput)
 	{
