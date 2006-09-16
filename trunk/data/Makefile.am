@@ -1,6 +1,20 @@
 pkgdatadir = $(datadir)/@PACKAGE@
 
-pkgdata_DATA = gfx.zip sounds.zip config.xml inputconfig.xml \
-	scripts.zip
+gfx.zip: gfx/*
+	zip gfx.zip gfx/*
+
+gf2x.zip: gf2x/*
+	zip gf2x.zip gf2x/*
+
+sounds.zip: sounds/*
+	zip sounds.zip sounds/*
+
+scripts.zip: scripts/*
+	zip scripts.zip scripts/*
+
+zipfiles = gfx.zip gf2x.zip sounds.zip scripts.zip
+pkgdata_DATA = $(zipfiles) config.xml inputconfig.xml
 
 EXTRA_DIST = $(pkgdata_DATA)
+
+DISTCLEANFILES = $(zipfiles)
