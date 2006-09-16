@@ -5,7 +5,6 @@ Important:
 
 Near aims:
 - Gamepadsupport
-- Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate
 - Polish Linux integration and release installable source tarballs and eventually debs
 
 Secondary:
