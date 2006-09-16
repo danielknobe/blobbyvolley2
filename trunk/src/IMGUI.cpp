@@ -17,7 +17,8 @@ enum ObjectType
 	BUTTON,
 	SCROLLBAR,
 	ACTIVESCROLLBAR,
-	EDITBOX
+	EDITBOX,
+	ACTIVEEDITBOX
 };
 
 struct QueueObject
@@ -97,6 +98,18 @@ void IMGUI::end()
 			case ACTIVESCROLLBAR:
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
 				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0));
+				break;
+			case EDITBOX:
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.text.length()*24.0, 10.0+24.0));
+				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), false);
+				if (obj.pos2.x >= 0)
+					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0));
+				break;
+			case ACTIVEEDITBOX:
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(10.0+obj.text.length()*24.0, 10.0+24.0));
+				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
+				if (obj.pos2.x >= 0)
+					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0));
 				break;
 			default:
 				break;		
@@ -271,7 +284,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 
 	if (id == mActiveButton)
 	{
-		obj.type = ACTIVESCROLLBAR;
+		obj.type = ACTIVEEDITBOX;
 		switch (mLastKeyAction)
 		{
 			case DOWN:
@@ -301,7 +314,24 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 		text.append();
 	}
 */	
+
+	mLastWidget = id;
+	Vector2 mousepos = InputManager::getSingleton()->position();
+
+	if (mousepos.x > position.x &&
+		mousepos.y > position.y &&
+		mousepos.x < position.x + text.length() * 24.0 + 10.0 &&
+		mousepos.y < position.y + 24.0 + 10.0)
+	{
+		obj.type = ACTIVEEDITBOX;
+		if (InputManager::getSingleton()->click())
+			cpos = (int)(mousepos.x-position.x-5.0)/24;
+	}
+
 	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1;
+	obj.text = text;
+
+	mQueue->push(obj);
 
 	return false;
 }

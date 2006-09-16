@@ -386,7 +386,6 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool 
 	int index = getNextFontIndex(string);
 	while (index != -1)
 	{
-		length += 24;
 		SDL_Rect charPosition;
 		charPosition.x = lround(position.x) + length;
 		charPosition.y = lround(position.y);
@@ -395,6 +394,7 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool 
 		else
 			SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
 		index = getNextFontIndex(string);
+		length += 24;
 	}
 }
 
