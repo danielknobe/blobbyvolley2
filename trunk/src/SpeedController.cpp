@@ -1,6 +1,7 @@
 #include "SpeedController.h"
 
 #include <SDL/SDL.h>
+#include <limits.h>
 
 SpeedController::SpeedController(float gameFPS, float realFPS)
 {
@@ -36,8 +37,22 @@ bool SpeedController::doFramedrop()
 
 void SpeedController::update()
 {
+	mFramedrop = false;
+	int rateTicks = 1000 / mGameFPS;
+	static int lastTicks = SDL_GetTicks();
+	int FPS = 1000;
+	if ((SDL_GetTicks()-lastTicks) > 0)
+		FPS = 1000 / (SDL_GetTicks()-lastTicks);
+
+	if (FPS > mGameFPS)
+		SDL_Delay(rateTicks-(SDL_GetTicks()-lastTicks));
+	else if (FPS < mGameFPS)
+		mFramedrop = true;
+
+	lastTicks = SDL_GetTicks();
+
 // This is the old correctFramerate-function, please replace it
-        float rateTicks = 1000.0 / mGameFPS;
+        /*float rateTicks = 1000.0 / mGameFPS;
         static int frameCount = 0;
         static int lastTicks = SDL_GetTicks();
 
@@ -52,6 +67,6 @@ void SpeedController::update()
         {
                 frameCount = 0;
                 lastTicks = SDL_GetTicks();
-        }
+        }*/
 }
 
