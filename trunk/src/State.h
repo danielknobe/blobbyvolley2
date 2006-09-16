@@ -104,3 +104,17 @@ private:
 	bool mLeftOscillate;
 	bool mRightOscillate;
 };
+
+class GraphicOptionsState : public State
+{
+public:
+	GraphicOptionsState(State* lastState, UserConfig& optionConfig);
+	virtual ~GraphicOptionsState();
+	virtual void step();
+private:
+	State* mLastState;
+	UserConfig& mOptionConfig;
+	bool mSaveConfig;
+	bool mFullscreen;
+	std::string mRenderer;
+};

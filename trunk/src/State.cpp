@@ -347,11 +347,15 @@ void OptionState::step()
 		SoundManager::getSingleton().setVolume(volume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
+	if (imgui.doButton(GEN_ID, Vector2(108.0, 400.0), "graphic options"))
+	{
+		mCurrentState = new GraphicOptionsState(this, mOptionConfig);
+		return;
+	}
 	if (imgui.doButton(GEN_ID, Vector2(124.0, 470.0), "record replays"))
 	{
 		mReplayActivated = !mReplayActivated;
 	}
-
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
@@ -508,7 +512,68 @@ void ReplayMenuState::step()
 			delete this;
 			mCurrentState = new ReplayMenuState();
 		}
-
-
 	}
+}
+
+GraphicOptionsState::GraphicOptionsState(State* lastState, UserConfig& optionConfig) : mLastState(lastState), mOptionConfig(optionConfig)
+{
+	IMGUI::getSingleton().resetSelection();
+	mSaveConfig = false;
+	mFullscreen = mOptionConfig.getBool("fullscreen");
+	mRenderer = mOptionConfig.getString("device");
+}
+
+GraphicOptionsState::~GraphicOptionsState()
+{
+	if (mSaveConfig)
+	{
+		if ((mOptionConfig.getBool("fullscreen") != mFullscreen) ||
+			(mOptionConfig.getString("device") != mRenderer))
+		{
+			mOptionConfig.setBool("fullscreen", mFullscreen);
+			mOptionConfig.setString("device", mRenderer);
+			if (mRenderer == "OpenGL")
+				RenderManager::createRenderManagerGL2D()->init(800, 600, mFullscreen);
+			else
+				RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
+		}
+	}
+	mCurrentState = mLastState;
+}
+
+void GraphicOptionsState::step()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
+	imgui.doText(GEN_ID, Vector2(100.0, 20.0), "Video Settings");
+	
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 50.0), "Fullscreen Mode"))
+		mFullscreen = true;
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 80.0), "Window Mode"))
+		mFullscreen = false;
+	if (mFullscreen)
+		imgui.doImage(GEN_ID, Vector2(84.0, 62.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(84.0, 92.0), "gfx/pfeil_rechts.bmp");
+
+	imgui.doText(GEN_ID, Vector2(100.0, 120.0), "Render Device");
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 150.0), "OpenGL"))
+		mRenderer = "OpenGL";
+	if (imgui.doButton(GEN_ID, Vector2(100.0, 180.0), "SDL"))
+		mRenderer = "SDL";
+	if (mRenderer == "OpenGL")
+		imgui.doImage(GEN_ID, Vector2(84.0, 166.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(84.0, 196.0), "gfx/pfeil_rechts.bmp");
+
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	{
+		mSaveConfig = true;
+		delete this;
+	}
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+		delete this;
 }
