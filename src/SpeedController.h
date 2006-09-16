@@ -19,8 +19,6 @@ public:
 	void setGameSpeed(float fps);
 	void setRealSpeed(float fps);
 
-// This reports the amount of seconds spent in last waiting call
-	float getWaitingTime();
 // This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop();
 
@@ -29,6 +27,5 @@ public:
 private:
 	float mGameFPS;
 	float mRealFPS;
-	float mWaitingTime;
 	bool mFramedrop;
 };
