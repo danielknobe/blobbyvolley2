@@ -6,7 +6,12 @@ RenderManager* RenderManager::mSingleton = 0;
 
 RenderManager::RenderManager()
 {
-	assert(!mSingleton);
+	//assert(!mSingleton);
+	if (mSingleton)
+	{
+		mSingleton->deinit();
+		delete mSingleton;
+	}
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
 	mNeedRedraw = true;
