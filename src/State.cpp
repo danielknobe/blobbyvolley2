@@ -65,7 +65,6 @@ LocalGameState::LocalGameState(GameMode mode)
 
 	if (gameConfig.getBool("left_player_human"))
 	{
-		InputManager::getSingleton()->beginGame(LEFT_PLAYER);
 		linput = new LocalInputSource(LEFT_PLAYER);
 	}
 	else
@@ -76,7 +75,6 @@ LocalGameState::LocalGameState(GameMode mode)
 	
 	if (gameConfig.getBool("right_player_human"))
 	{
-		InputManager::getSingleton()->beginGame(RIGHT_PLAYER);
 		rinput = new LocalInputSource(RIGHT_PLAYER);
 	}
 	else
