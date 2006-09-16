@@ -400,6 +400,7 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool 
 
 void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 {
+	mNeedRedraw = true;
 	BufferedImage* imageBuffer = mImageMap[filename];
 	if (!imageBuffer)
 	{

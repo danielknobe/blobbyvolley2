@@ -10,7 +10,7 @@ blobby_LDADD = -llua -ltinyxml $(GL_LIBS)
 blobby_SOURCES = \
 	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
-	InputDevice.h \
+	InputDevice.h InputDevice.cpp \
 	InputSource.h InputSource.cpp \
 	LocalInputSource.h \
 	IMGUI.h IMGUI.cpp \

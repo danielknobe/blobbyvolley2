@@ -305,6 +305,8 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 					cpos++;
 				mLastKeyAction = NONE;
 				break;
+			default:
+				break;
 		}
 	}
 

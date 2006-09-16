@@ -14,3 +14,6 @@ Secondary:
 - Add option for old and new volleyball ruleset
 - Add time-capped game option
 - Add speed option
+
+- Fix SDL bug that the cursor if still visible after game selection with mouse
+- Fix SDL bug with mouse marker

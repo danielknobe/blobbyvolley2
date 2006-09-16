@@ -8,8 +8,11 @@ class LocalInputSource : public InputSource
 private:
 	int mPlayer;
 public:
-	LocalInputSource(int player)
-		: mPlayer(player) {}
+	LocalInputSource(PlayerSide player)
+		: mPlayer(player)
+	{
+		 InputManager::getSingleton()->beginGame(player);
+	}
 	virtual PlayerInput getInput()
 	{
 		return InputManager::getSingleton()->getGameInput(mPlayer);
@@ -17,7 +20,8 @@ public:
 
 	~LocalInputSource()
 	{
-		RenderManager::getSingleton().setMouseMarker(-6);           
+		RenderManager::getSingleton().setMouseMarker(-6);
+		InputManager::getSingleton()->endGame();           
 	}
 };
 

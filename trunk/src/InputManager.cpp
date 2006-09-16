@@ -8,108 +8,71 @@ InputManager* InputManager::mSingleton = 0;
 
 InputManager::InputManager()
 {
+	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	assert (mSingleton == 0);
 	mSingleton = this;
 	mRunning = true;
-	mJoystickLeft = 0;
-	mJoystickRight = 0;
 
-	// initialize the SDLKeys for ingame input
-	configFileToCurrentConfigForLeftKeyboard();
-	configFileToCurrentConfigForRightKeyboard();
-	configFileToCurrentConfigForLeftJoystick();
-	configFileToCurrentConfigForRightJoystick();
-	// set inputdevices
-	configFileToCurrentConfigForLeftDevice();
-	configFileToCurrentConfigForRightDevice();
-
-	mNumberOfJoysticks = SDL_NumJoysticks();
-	if (mNumberOfJoysticks)
-	{
-		mJoystickLeft = SDL_JoystickOpen(mLeftBlobbyJoystickNumber);
-		mJoystickRight = SDL_JoystickOpen(mRightBlobbyJoystickNumber);
-	}
-
-	mLeftDeviceAvailable = false;
-	mRightDeviceAvailable = false;
+	mInputDevice[LEFT_PLAYER] = 0;
+	mInputDevice[RIGHT_PLAYER] = 0;
 }
 
 InputManager::~InputManager()
 {
-	currentConfigToConfigFileForLeftKeyboard();
-	currentConfigToConfigFileForRightKeyboard();
-	currentConfigToConfigFileForLeftJoystick();
-	currentConfigToConfigFileForRightJoystick();
-	currentConfigToConfigFileForLeftDevice();
-	currentConfigToConfigFileForRightDevice();
 }
 
-bool InputManager::beginGame(int side)
+void InputManager::beginGame(PlayerSide side)
 {
+	std::string prefix;
+	if (side == LEFT_PLAYER)
+		prefix = "left_blobby_";
+	if (side == RIGHT_PLAYER)
+		prefix = "right_blobby_";
+	
+	UserConfig config;
+	config.loadFile("inputconfig.xml");
+	std::string device = config.getString(prefix + "device");
 
-	if (side == LEFT_PLAYER && mLeftDeviceAvailable == false)
+	if (device == "mouse")
 	{
-		if (mLeftBlobbyInputDevice == MOUSE)
-			mInputDevice[LEFT_PLAYER] = new MouseInputDevice(LEFT_PLAYER);
-
-		if (mLeftBlobbyInputDevice == KEYBOARD)
-			mInputDevice[LEFT_PLAYER] = new KeyboardInputDevice(mLeftBlobbyLeftKeyboardMove,
-			mLeftBlobbyRightKeyboardMove,
-			mLeftBlobbyKeyboardJump);
-
-		if (mLeftBlobbyInputDevice == JOYSTICK)
-			mInputDevice[LEFT_PLAYER] = new JoystickInputDevice(mJoystickLeft,
-			mLeftBlobbyLeftJoystickMove,
-			mLeftBlobbyRightJoystickMove,
-			mLeftBlobbyJoystickJump,
-			mLeftBlobbyJoystickDiagonal,
-			mLeftBlobbyJoystickLeftJump,
-			mLeftBlobbyJoystickRightJump);
-
-		mLeftDeviceAvailable = true;
+		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
+		mInputDevice[side] = new MouseInputDevice(side, jumpbutton);
 	}
-
-	if (side == RIGHT_PLAYER && mRightDeviceAvailable == false)
+	else if (device == "keyboard")
 	{
-		if (mRightBlobbyInputDevice == MOUSE)
-			mInputDevice[RIGHT_PLAYER] = new MouseInputDevice(RIGHT_PLAYER);	
-
-		if (mRightBlobbyInputDevice == KEYBOARD)
-			mInputDevice[RIGHT_PLAYER] = new KeyboardInputDevice(mRightBlobbyLeftKeyboardMove,
-			mRightBlobbyRightKeyboardMove,
-			mRightBlobbyKeyboardJump);
-
-		if (mRightBlobbyInputDevice == JOYSTICK)
-			mInputDevice[RIGHT_PLAYER] = new JoystickInputDevice(mJoystickRight,
-			mRightBlobbyLeftJoystickMove,
-			mRightBlobbyRightJoystickMove,
-			mRightBlobbyJoystickJump,
-			mRightBlobbyJoystickDiagonal,
-			mRightBlobbyJoystickLeftJump,
-			mRightBlobbyJoystickRightJump);
-
-		mRightDeviceAvailable = true;
+		SDLKey lkey = stringToKey(config.getString(prefix +
+					"keyboard_left"));
+		SDLKey rkey = stringToKey(config.getString(prefix +
+					"keyboard_right"));
+		SDLKey jkey = stringToKey(config.getString(prefix +
+					"keyboard_jump"));
+		mInputDevice[side] = new KeyboardInputDevice(lkey, rkey, jkey);
 	}
-	// TODO InputManager::beginGame(int side) need a BOOL RETURN !
-	return true;
+	else if (device == "joystick")
+	{
+		JoystickAction laction(config.getString("joystick_left"));
+		JoystickAction raction(config.getString("joystick_right"));
+		JoystickAction jaction(config.getString("joystick_jump"));
+		mInputDevice[side] = new JoystickInputDevice(laction, raction,
+								jaction);
+	}
+	else 
+		std::cerr << "Error: unknown input device: " << device << std::endl;
 }
 
-bool InputManager::endGame()
+void InputManager::endGame()
 {
-	if (mLeftDeviceAvailable == true)
-		{
-			delete mInputDevice[LEFT_PLAYER];
-			mInputDevice[LEFT_PLAYER] = NULL;
-			mLeftDeviceAvailable = false;
-		}
-	if (mRightDeviceAvailable == true)
-		{
-			delete mInputDevice[RIGHT_PLAYER];
-			mInputDevice[RIGHT_PLAYER] = NULL;
-			mRightDeviceAvailable = false;
-		}
-	// TODO InputManager::endGame() need a RETURN !!!
-	return true;
+	if (mInputDevice[LEFT_PLAYER])
+	{
+		delete mInputDevice[LEFT_PLAYER];
+		mInputDevice[LEFT_PLAYER] = 0;
+	}
+	if (mInputDevice[RIGHT_PLAYER])
+	{
+		delete mInputDevice[RIGHT_PLAYER];
+		mInputDevice[RIGHT_PLAYER] = 0;
+	}
+
 }
 
 InputManager* InputManager::getSingleton()
@@ -143,10 +106,7 @@ void InputManager::updateInput()
 
 	SDL_PumpEvents();
 	SDL_Event event;
-
-
-	if (mJoystickLeft || mJoystickRight)
-		SDL_JoystickUpdate();
+	SDL_JoystickUpdate();
 
 	while (SDL_PollEvent(&event))
 	switch (event.type)
@@ -187,9 +147,6 @@ void InputManager::updateInput()
 				case 1:
 					mClick = true;
 					break;
-				case 3:
-					mExit = true;
-					break;
 			}
 			break;		
 #if defined(__arm__) && defined(linux)
@@ -209,10 +166,10 @@ void InputManager::updateInput()
 	}
 
 	// Device gives status to the playerinput
-	if (mLeftDeviceAvailable == true)
-		mInputDevice[0]->transferInput(mInput[0]);
-	if (mRightDeviceAvailable == true)
-		mInputDevice[1]->transferInput(mInput[1]);
+	if (mInputDevice[LEFT_PLAYER])
+		mInputDevice[LEFT_PLAYER]->transferInput(mInput[0]);
+	if (mInputDevice[RIGHT_PLAYER])
+		mInputDevice[RIGHT_PLAYER]->transferInput(mInput[1]);
 }
 
 
@@ -542,161 +499,3 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 	return SDLK_UNKNOWN; // stringinformation = ""
 }
 
-std::string InputManager::intToString (const int input)
-{
-	if (input == JOY_LEFT)
-		return "left";
-	else if (input == JOY_RIGHT)
-		return "right";
-	else if (input == JOY_UP)
-		return "up";
-	else if (input == JOY_DOWN)
-		return "down";
-	else if (input == 0)
-		return "false";
-	else if (input == 1)
-		return "true";
-	return "";
-}
-
-int InputManager::stringToInt (const std::string& inputname)
-{
-	if (inputname == "left")
-		return JOY_LEFT;
-	else if (inputname == "right")
-		return JOY_RIGHT;
-	else if (inputname == "up")
-		return JOY_UP;
-	else if (inputname == "down")
-		return JOY_DOWN;
-	else if (inputname == "false")
-		return 0;
-	else if (inputname == "true")
-		return 1;
-	return 0;
-}
-
-// Inputconfig methods
-
-// Keyboard
-void InputManager::configFileToCurrentConfigForLeftKeyboard()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mLeftBlobbyLeftKeyboardMove = stringToKey(mConfigManager.getString("left_blobby_left_keyboard_move"));
-	mLeftBlobbyRightKeyboardMove = stringToKey(mConfigManager.getString("left_blobby_right_keyboard_move"));
-	mLeftBlobbyKeyboardJump = stringToKey(mConfigManager.getString("left_blobby_keyboard_jump"));
-}
-
-void InputManager::configFileToCurrentConfigForRightKeyboard()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mRightBlobbyLeftKeyboardMove = stringToKey(mConfigManager.getString("right_blobby_left_keyboard_move"));
-	mRightBlobbyRightKeyboardMove = stringToKey(mConfigManager.getString("right_blobby_right_keyboard_move"));
-	mRightBlobbyKeyboardJump = stringToKey(mConfigManager.getString("right_blobby_keyboard_jump"));
-}
-
-void InputManager::currentConfigToConfigFileForLeftKeyboard()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mConfigManager.setString("left_blobby_left_keyboard_move",keyToString(mLeftBlobbyLeftKeyboardMove));
-	mConfigManager.setString("left_blobby_right_keyboard_move",keyToString(mLeftBlobbyRightKeyboardMove));
-	mConfigManager.setString("left_blobby_keyboard_jump",keyToString(mLeftBlobbyKeyboardJump));
-	mConfigManager.saveFile("inputconfig.xml");
-}
-
-void InputManager::currentConfigToConfigFileForRightKeyboard()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mConfigManager.setString("right_blobby_left_keyboard_move",keyToString(mRightBlobbyLeftKeyboardMove));
-	mConfigManager.setString("right_blobby_right_keyboard_move",keyToString(mRightBlobbyRightKeyboardMove));
-	mConfigManager.setString("right_blobby_keyboard_jump",keyToString(mRightBlobbyKeyboardJump));
-	mConfigManager.saveFile("inputconfig.xml");
-}
-
-// Joystick
-void InputManager::configFileToCurrentConfigForLeftJoystick()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mLeftBlobbyJoystickNumber = mConfigManager.getInteger("left_blobby_joystick_number");
-	mLeftBlobbyLeftJoystickMove = stringToInt(mConfigManager.getString("left_blobby_left_joystick_move"));
-	mLeftBlobbyRightJoystickMove = stringToInt(mConfigManager.getString("left_blobby_right_joystick_move"));
-	mLeftBlobbyJoystickJump = stringToInt(mConfigManager.getString("left_blobby_joystick_jump"));
-	mLeftBlobbyJoystickDiagonal = stringToInt(mConfigManager.getString("left_blobby_joystick_diagonal"));
-	mLeftBlobbyJoystickLeftJump = stringToInt(mConfigManager.getString("left_blobby_left_joystick_jump"));
-	mLeftBlobbyJoystickRightJump = stringToInt(mConfigManager.getString("left_blobby_right_joystick_jump"));
-}
-
-void InputManager::configFileToCurrentConfigForRightJoystick()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mRightBlobbyJoystickNumber = mConfigManager.getInteger("right_blobby_joystick_number");
-	mRightBlobbyLeftJoystickMove = stringToInt(mConfigManager.getString("right_blobby_left_joystick_move"));
-	mRightBlobbyRightJoystickMove = stringToInt(mConfigManager.getString("right_blobby_right_joystick_move"));
-	mRightBlobbyJoystickJump = stringToInt(mConfigManager.getString("right_blobby_joystick_jump"));
-	mRightBlobbyJoystickDiagonal = stringToInt(mConfigManager.getString("right_blobby_joystick_diagonal"));
-	mRightBlobbyJoystickLeftJump = stringToInt(mConfigManager.getString("right_blobby_left_joystick_jump"));
-	mRightBlobbyJoystickRightJump = stringToInt(mConfigManager.getString("right_blobby_right_joystick_jump"));
-}
-
-void InputManager::currentConfigToConfigFileForLeftJoystick()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mConfigManager.setString("left_blobby_left_joystick_move",keyToString(mLeftBlobbyLeftKeyboardMove));
-	mConfigManager.setString("left_blobby_right_joystick_move",keyToString(mLeftBlobbyRightKeyboardMove));
-	mConfigManager.setString("left_blobby_joystick_jump",keyToString(mLeftBlobbyKeyboardJump));
-	mConfigManager.saveFile("inputconfig.xml");
-}
-
-void InputManager::currentConfigToConfigFileForRightJoystick()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	mConfigManager.setString("right_blobby_left_joystick_move",keyToString(mRightBlobbyLeftKeyboardMove));
-	mConfigManager.setString("right_blobby_right_joystick_move",keyToString(mRightBlobbyRightKeyboardMove));
-	mConfigManager.setString("right_blobby_joystick_jump",keyToString(mRightBlobbyKeyboardJump));
-	mConfigManager.saveFile("inputconfig.xml");
-}
-
-void InputManager::configFileToCurrentConfigForLeftDevice()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	if ("mouse" == mConfigManager.getString("left_blobby_device"))
-		mLeftBlobbyInputDevice = MOUSE;
-	if ("keyboard" == mConfigManager.getString("left_blobby_device"))
-		mLeftBlobbyInputDevice = KEYBOARD;
-	if ("joystick" == mConfigManager.getString("left_blobby_device"))
-		mLeftBlobbyInputDevice = JOYSTICK;
-}
-void InputManager::configFileToCurrentConfigForRightDevice()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	if ("mouse" == mConfigManager.getString("right_blobby_device"))
-		mRightBlobbyInputDevice = MOUSE;
-	if ("keyboard" == mConfigManager.getString("right_blobby_device"))
-		mRightBlobbyInputDevice = KEYBOARD;
-	if ("joystick" == mConfigManager.getString("right_blobby_device"))
-		mRightBlobbyInputDevice = JOYSTICK;
-}
-
-void InputManager::currentConfigToConfigFileForLeftDevice()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	if (mLeftBlobbyInputDevice == MOUSE)
-		mConfigManager.setString("left_blobby_device","mouse");
-	if (mLeftBlobbyInputDevice == KEYBOARD)
-		mConfigManager.setString("left_blobby_device","keyboard");
-	if (mLeftBlobbyInputDevice == JOYSTICK)
-		mConfigManager.setString("left_blobby_device","joystick");
-	mConfigManager.saveFile("inputconfig.xml");
-}
-
-void InputManager::currentConfigToConfigFileForRightDevice()
-{
-	mConfigManager.loadFile("inputconfig.xml");
-	if (mRightBlobbyInputDevice == MOUSE)
-		mConfigManager.setString("right_blobby_device","mouse");
-	if (mRightBlobbyInputDevice == KEYBOARD)
-		mConfigManager.setString("right_blobby_device","keyboard");
-	if (mRightBlobbyInputDevice == JOYSTICK)
-		mConfigManager.setString("right_blobby_device","joystick");
-	mConfigManager.saveFile("inputconfig.xml");
-}

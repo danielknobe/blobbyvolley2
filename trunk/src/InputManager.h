@@ -21,37 +21,7 @@ private:
 	// Keyboard
 	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
-	int mLeftBlobbyInputDevice;
-	int mRightBlobbyInputDevice;
-
-	SDLKey mLeftBlobbyLeftKeyboardMove;
-	SDLKey mLeftBlobbyRightKeyboardMove;
-	SDLKey mLeftBlobbyKeyboardJump;
-	SDLKey mRightBlobbyLeftKeyboardMove;
-	SDLKey mRightBlobbyRightKeyboardMove;
-	SDLKey mRightBlobbyKeyboardJump;
-
-	// Joystick
-	int mLeftBlobbyJoystickNumber;
-	int mLeftBlobbyLeftJoystickMove;
-	int mLeftBlobbyRightJoystickMove;
-	int mLeftBlobbyJoystickJump;
-	bool mLeftBlobbyJoystickDiagonal;
-	int mLeftBlobbyJoystickLeftJump;
-	int mLeftBlobbyJoystickRightJump;
-
-	int mRightBlobbyJoystickNumber;
-	int mRightBlobbyLeftJoystickMove;
-	int mRightBlobbyRightJoystickMove;
-	int mRightBlobbyJoystickJump;
-	bool mRightBlobbyJoystickDiagonal;
-	int mRightBlobbyJoystickLeftJump;
-	int mRightBlobbyJoystickRightJump;
-
-	bool mLeftDeviceAvailable;
-	bool mRightDeviceAvailable;
-
-	// GUI storage (because in the gui we need a botton hit methods and not a button down methods)
+	// GUI storage (because we need event based input for the GUI)
 	bool mUp;
 	bool mDown;
 	bool mLeft;
@@ -62,16 +32,9 @@ private:
 	
 	int mMouseX;
 	int mMouseY;
-	
-	// Inputdevices
-	SDL_Joystick* mJoystickLeft;	// Gamepad or Joystick
-	SDL_Joystick* mJoystickRight;
 
-	int mNumberOfJoysticks;		// How much Joysticks?
-	
-	UserConfig mConfigManager;
-	PlayerInput mInput[2];	
-	InputDevice *mInputDevice[2];	
+	PlayerInput mInput[MAX_PLAYERS];	
+	InputDevice *mInputDevice[MAX_PLAYERS];	
 	bool mRunning;
 	
 	InputManager();
@@ -81,8 +44,8 @@ public:
 	static InputManager* getSingleton();
 	~InputManager();
 
-	bool beginGame(int side);
-	bool endGame();
+	void beginGame(PlayerSide side);
+	void endGame();
 
 	bool running();
 	PlayerInput getGameInput(int player);
@@ -95,33 +58,14 @@ public:
 	bool right();
 	bool select();
 	bool exit(); // extention for mouse included, so that right click = exit
-	SDLKey grabKey();
+
+	std::string getLastTextKey();
 
 	// For GUI navigation (Mouse)
 	Vector2 position();
 	bool click();
 	
-	// Configmethods
+	// config conversion methods
 	std::string keyToString(SDLKey key);
 	SDLKey stringToKey(const std::string& keyname);
-	std::string intToString(int input);
-	int stringToInt(const std::string& inputname);
-
-	void configFileToCurrentConfigForLeftKeyboard();
-	void configFileToCurrentConfigForRightKeyboard();
-	void currentConfigToConfigFileForLeftKeyboard();
-	void currentConfigToConfigFileForRightKeyboard();
-
-	void configFileToCurrentConfigForLeftJoystick();
-	void configFileToCurrentConfigForRightJoystick();
-	void currentConfigToConfigFileForLeftJoystick();
-	void currentConfigToConfigFileForRightJoystick();
-	
-	void configFileToCurrentConfigForRightDevice();
-	void configFileToCurrentConfigForLeftDevice();
-	void currentConfigToConfigFileForLeftDevice();
-	void currentConfigToConfigFileForRightDevice();
-
-
-
 };
