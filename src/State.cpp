@@ -108,7 +108,7 @@ void LocalGameState::step()
 	{
 		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(210, 280), "Wirklich Beenden?");
+		imgui.doText(GEN_ID, Vector2(234, 280), "Wirklich Beenden?");
 		if (InputManager::getSingleton()->select() ||
 				InputManager::getSingleton()->click())
 			mPaused = false;
@@ -173,7 +173,7 @@ void MainMenuState::step()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
 
-	if (imgui.doButton(GEN_ID, Vector2(500.0, 400.0), "start"))
+	if (imgui.doButton(GEN_ID, Vector2(524.0, 400.0), "start"))
 	{
 		delete mCurrentState;
 		try
@@ -190,19 +190,19 @@ void MainMenuState::step()
 		}
 	}
 	
-	if (imgui.doButton(GEN_ID, Vector2(500.0, 430.0), "options"))
+	if (imgui.doButton(GEN_ID, Vector2(524.0, 430.0), "options"))
 	{
 		delete mCurrentState;
 		mCurrentState = new OptionState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(500.0, 460.0), "watch replay"))
+	if (imgui.doButton(GEN_ID, Vector2(524.0, 460.0), "watch replay"))
 	{
 		delete mCurrentState;
 		mCurrentState = new ReplayMenuState();
 	}
 	
-	if (imgui.doButton(GEN_ID, Vector2(500.0, 490.0), "exit")) 
+	if (imgui.doButton(GEN_ID, Vector2(524.0, 490.0), "exit")) 
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
@@ -223,8 +223,8 @@ void WinState::step()
 	
 	IMGUI::getSingleton().doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
 	IMGUI::getSingleton().doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(250, 250), buf);
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(250, 300), "hat gewonnen!");
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(274, 250), buf);
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
 	
 	InputManager* inputmgr = InputManager::getSingleton();
 	if (inputmgr->click() || inputmgr->select())
@@ -307,29 +307,34 @@ void OptionState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	imgui.doText(GEN_ID, Vector2(10.0, 10.0), "left player");
-	imgui.doText(GEN_ID, Vector2(410.0, 10.0), "right player");
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
+	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
+
+	//Nur zum test:
+	std::string bla = "TEST";
+	int cpos = 3;
+	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);
 
 	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
 		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
 	imgui.doImage(GEN_ID, Vector2(12.0 + 404.0,
 		mPlayerOptions[RIGHT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
 
-	if (imgui.doButton(GEN_ID, Vector2(10.0, 50.0), "human"))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 50.0), "human"))
 		mPlayerOptions[LEFT_PLAYER] = 0;
 	for (unsigned int i = 1; i < mScriptNames.size(); i++)
 	{
 		if (imgui.doButton(GEN_ID << 4 + i,
-				Vector2(10.0, 50.0 + i * 28.0), mScriptNames[i]))
+				Vector2(34.0, 50.0 + i * 28.0), mScriptNames[i]))
 			mPlayerOptions[LEFT_PLAYER] = i;
 	}
 	
-	if (imgui.doButton(GEN_ID, Vector2(410.0, 50.0), "human"))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 50.0), "human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	for (unsigned int i = 1; i < mScriptNames.size(); i++)
 	{
 		if (imgui.doButton(GEN_ID << 5 + i,
-					Vector2(410.0, 50.0 + i * 28.0), mScriptNames[i]))
+					Vector2(434.0, 50.0 + i * 28.0), mScriptNames[i]))
 			mPlayerOptions[RIGHT_PLAYER] = i;
 	}
 
@@ -344,18 +349,18 @@ void OptionState::step()
 		SoundManager::getSingleton().setVolume(volume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 470.0), "record replays"))
+	if (imgui.doButton(GEN_ID, Vector2(124.0, 470.0), "record replays"))
 	{
 		mReplayActivated = !mReplayActivated;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(200.0, 530.0), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MainMenuState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(400.0, 530.0), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
 	{
 		delete this;
 		mCurrentState = new MainMenuState();
@@ -465,7 +470,7 @@ void ReplayMenuState::step()
 					"gfx/pfeil_rechts.bmp");
 		}
 
-		if (imgui.doButton(GEN_ID, Vector2(200.0, 10.0), "play") && 
+		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
 					mSelectedReplay != -1)
 		{
 			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL,
@@ -483,21 +488,21 @@ void ReplayMenuState::step()
 			SoundManager::getSingleton().playSound(
 					"sounds/pfiff.wav", 0.2);
 		}
-		else if (imgui.doButton(GEN_ID, Vector2(400.0, 10.0), "cancel"))
+		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), "cancel"))
 		{
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
 		else for (unsigned int i = 0; i < mReplayFiles.size(); i++)
 		{
-			if (imgui.doButton(GEN_ID << 6 + i, Vector2(10.0, 50.0 + 30.0 * i),
+			if (imgui.doButton(GEN_ID << 6 + i, Vector2(34.0, 50.0 + 30.0 * i),
 						mReplayFiles[i]))
 			{
 				mSelectedReplay = i;
 				break;
 			}
 		}
-		if (imgui.doButton(GEN_ID, Vector2(620.0, 60.0), "delete") &&
+		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete") &&
 					mSelectedReplay != -1)
 		{
 			PHYSFS_delete(std::string("replays/" +

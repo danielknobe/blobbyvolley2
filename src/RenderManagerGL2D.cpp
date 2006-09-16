@@ -406,7 +406,6 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool
 	int index = getNextFontIndex(string);
 	while (index != -1)
 	{
-		length += 24;
 		glLoadIdentity();
 		glTranslatef(position.x + length + 12.0,
 				position.y + 12.0, 0.0);
@@ -416,6 +415,7 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool
 			glBindTexture(GL_TEXTURE_2D, mFont[index]);
 		drawQuad(32.0, 32.0);
 		index = getNextFontIndex(string);
+		length += 24;
 	}
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);
