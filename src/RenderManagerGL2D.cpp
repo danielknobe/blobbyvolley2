@@ -3,7 +3,7 @@
 #include "RenderManagerGL2D.h"
 #include <physfs.h>
 
-#ifdef HAVE_LIBGL
+#if HAVE_LIBGL
 
 int RenderManagerGL2D::getNextPOT(int npot)
 {

@@ -17,7 +17,7 @@
 echo "Generating configuration files for blobby, please wait..."
 echo;
 
-aclocal -I config $ACLOCAL_FLAGS \
+aclocal -I m4 $ACLOCAL_FLAGS \
 && automake-1.9 --gnu --add-missing --copy \
 && autoconf \
 && echo "You can now run ./configure"

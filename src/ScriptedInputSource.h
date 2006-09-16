@@ -11,6 +11,9 @@
 
 // The API documentation can now be found in doc/ScriptAPI.txt
 
+// The time the bot waits after game start
+const int WAITING_TIME = 1500;
+
 class lua_State;
 
 class ScriptedInputSource : public InputSource
@@ -49,4 +52,5 @@ private:
 	static int estimy(lua_State* state);
 
 	lua_State* mState;
+	unsigned int mStartTime;
 };
