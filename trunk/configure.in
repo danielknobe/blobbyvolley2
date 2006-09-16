@@ -23,8 +23,11 @@ AC_CHECK_LIB(physfs,PHYSFS_init, [], [AC_MSG_ERROR(PhysFS required)])
 AX_CHECK_GL()
 
 if test no_gl != "yes"; then
-AC_DEFINE(HAVE_LIBGL)
+HAVE_LIBGL=1
+else
+HAVE_LIBGL=0
 fi
+AC_SUBST([HAVE_LIBGL])
 
 AC_ARG_WITH([gamedatadir],
 	[AS_HELP_STRING([--with-gamedatadir=DIR],

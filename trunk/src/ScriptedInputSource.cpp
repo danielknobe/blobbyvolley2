@@ -8,8 +8,10 @@ extern "C"
 #include "lua/lualib.h"
 }
 
+#include <SDL/SDL.h>
 #include <physfs.h>
 #include <cmath>
+
 
 struct ReaderInfo
 {
@@ -35,6 +37,7 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 						PlayerSide playerside)
 {
+	mStartTime = SDL_GetTicks();
 	mState = lua_open();
 	lua_pushnumber(mState, playerside);
 	lua_setglobal(mState, "blobby_side");
@@ -89,6 +92,7 @@ ScriptedInputSource::~ScriptedInputSource()
 
 PlayerInput ScriptedInputSource::getInput()
 {
+	bool serving = false;
 	lua_pushboolean(mState, false);
 	lua_pushboolean(mState, false);
 	lua_pushboolean(mState, false);
@@ -106,6 +110,7 @@ PlayerInput ScriptedInputSource::getInput()
 	int error;
 	if (!match->getBallActive() && player == match->getServingPlayer())
 	{
+		serving = true;
 		lua_getglobal(mState, "OnServe");
 		if (!lua_isfunction(mState, -1))
 		{
@@ -166,7 +171,10 @@ PlayerInput ScriptedInputSource::getInput()
 		lua_pop(mState, stacksize);
 	}
 	
-	return currentInput;
+	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
+		return PlayerInput();
+	else
+		return currentInput;
 }
 
 PlayerSide ScriptedInputSource::getSide(lua_State* state)

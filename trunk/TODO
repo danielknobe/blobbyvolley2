@@ -2,9 +2,7 @@
 Primary:
 Important:
 - Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
-- Better configure script for lua
-- Compilation tutorial for Linux-Users (for Linux allready done)
-- New RenderMangerfunctions to hide ingamegraphics
+
 Near aims:
 - Gamepadsupport
 - Make rendering frame independent, so the same gameplay can be provided on older machindes with a lower rendering framerate
@@ -12,10 +10,8 @@ Near aims:
 
 Secondary:
 - Make Physfs actions more transparent, for example show added search paths
-- Fix GUI behaviour of SDL renderer
 - Seperate left/right blobby graphics for skin-creation
 - Add animated background (prerendered Animations, at least for SDL and GL2D)
 - Add option for old and new volleyball ruleset
 - Add time-capped game option
 - Add speed option
-- Add waiting time for bots and recommend this for new bots in the doc
