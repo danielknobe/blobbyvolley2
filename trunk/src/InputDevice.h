@@ -1,8 +1,40 @@
 #pragma once
 
 #include <SDL/SDL.h>
+#include <map>
 #include "RenderManager.h"
 #include "DuelMatch.h"
+
+class JoystickPool
+{
+	std::map<SDL_Joystick*, int> refCounter;
+	static JoystickPool* mSingleton;
+public:
+	SDL_Joystick* openJoystick(int joyid)
+	{
+		SDL_Joystick* joy = SDL_JoystickOpen(joyid);
+		refCounter[joy]++;
+		return joy;
+	}
+	void closeJoystick(SDL_Joystick* joy)
+	{
+		if (refCounter[joy] < 1)
+			throw std::string("failed to close joystick!");
+		if (refCounter[joy] == 1)
+		{
+			refCounter[joy] = 0;
+			SDL_JoystickClose(joy);
+		}
+		else
+			refCounter[joy]--;
+	}
+	static JoystickPool& getSingleton()
+	{
+		if (mSingleton == NULL)
+			mSingleton = new JoystickPool();	
+		return *mSingleton;
+	}
+};
 
 struct JoystickAction
 {

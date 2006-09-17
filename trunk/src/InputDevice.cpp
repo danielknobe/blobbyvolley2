@@ -1,5 +1,7 @@
 #include "InputDevice.h"
 
+JoystickPool* JoystickPool::mSingleton = NULL; //static
+
 JoystickAction::JoystickAction(std::string string)
 {
 	type = AXIS;
@@ -22,7 +24,7 @@ JoystickAction::JoystickAction(std::string string)
 				throw string;
 		}
 
-		joy = SDL_JoystickOpen(joyid);
+		joy = JoystickPool::getSingleton().openJoystick(joyid);
 		if (joy != 0)
 			close = true;
 	}
@@ -35,15 +37,15 @@ JoystickAction::JoystickAction(std::string string)
 JoystickAction::JoystickAction(const JoystickAction& action)
 {
 	type = action.type;
-	joy = action.joy;
+	joy = JoystickPool::getSingleton().openJoystick(action.joyid);
+	joyid = action.joyid;
 	number = action.number;
 	close = false;
 }
 
 JoystickAction::~JoystickAction()
 {
-	if (close && joy != 0)
-		SDL_JoystickClose(joy);
+	JoystickPool::getSingleton().closeJoystick(joy);
 }
 
 std::string JoystickAction::toString()
