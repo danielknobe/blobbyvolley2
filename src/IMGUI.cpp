@@ -256,9 +256,9 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	mLastWidget = id;
 
 	Vector2 mousepos = InputManager::getSingleton()->position();
-	if (mousepos.x > position.x + 24.0 &&
+	if (mousepos.x > position.x &&
 		mousepos.y > position.y &&
-		mousepos.x < position.x + 200 + 24.0 &&
+		mousepos.x < position.x + 200 &&
 		mousepos.y < position.y + 24.0)
 	{
 		if (InputManager::getSingleton()->click())
