@@ -283,6 +283,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 	if (mActiveButton == 0 && !mButtonReset)
 		mActiveButton = id;
 
+	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = position;
@@ -316,12 +317,13 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 		}
 	}
 
-/*	
-	if (InputManager::getSingleton()->grabKey() != SDLK_UNKNOWN)
+	std::string input = InputManager::getSingleton()->getLastTextKey();
+	if (!input.empty())
 	{
-		text.append();
+		text.insert(cpos, input);
+		changed = true;
 	}
-*/	
+	
 
 	mLastWidget = id;
 	Vector2 mousepos = InputManager::getSingleton()->position();
@@ -341,7 +343,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 
 	mQueue->push(obj);
 
-	return false;
+	return changed;
 }
 
 bool IMGUI::doBlob(int id, const Vector2& position, const Color& col)

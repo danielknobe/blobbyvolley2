@@ -2,7 +2,7 @@
 
 <userconfig>
 	<!-- Left Blobby Inputconfiguration -->
-	<var name="left_blobby_device" value="mouse"/>
+	<var name="left_blobby_device" value="joystick"/>
 	
 	<var name="left_blobby_mouse_jumpbutton" value="1" />
 

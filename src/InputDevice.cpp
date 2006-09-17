@@ -6,6 +6,7 @@ JoystickAction::JoystickAction(std::string string)
 	number = 0;
 	joy = 0;
 	joyid = 0;
+	close = false;
 	try
 	{
 		const char* str = string.c_str();
@@ -22,6 +23,8 @@ JoystickAction::JoystickAction(std::string string)
 		}
 
 		joy = SDL_JoystickOpen(joyid);
+		if (joy != 0)
+			close = true;
 	}
 	catch (std::string e)
 	{
@@ -34,13 +37,13 @@ JoystickAction::JoystickAction(const JoystickAction& action)
 	type = action.type;
 	joy = action.joy;
 	number = action.number;
-	// We open a dummy joystick so that SDL's reference counting works
-	SDL_JoystickOpen(joyid);
+	close = false;
 }
 
 JoystickAction::~JoystickAction()
 {
-	SDL_JoystickClose(joy);
+	if (close && joy != 0)
+		SDL_JoystickClose(joy);
 }
 
 std::string JoystickAction::toString()
@@ -55,3 +58,26 @@ std::string JoystickAction::toString()
 	snprintf(buf, 64, "joy_%d_%s_%d", joyid, typestr, number);
 	return buf;
 }
+
+bool JoystickInputDevice::getAction(const JoystickAction& action)
+{
+	if (action.joy != 0)
+	switch (action.type)
+	{
+		case JoystickAction::AXIS:
+			if (SDL_JoystickGetAxis(action.joy,
+				-action.number - 1) < 10)
+				return true;
+			if (SDL_JoystickGetAxis(action.joy,
+				action.number - 1) > 10)
+				return true;
+			break;
+		case JoystickAction::BUTTON:
+			if (SDL_JoystickGetButton(action.joy,
+						action.number))
+				return true;
+			break;
+	}
+	return false;
+}
+
