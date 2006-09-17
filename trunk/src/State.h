@@ -119,3 +119,32 @@ private:
 	int mR1, mG1, mB1, mR2, mG2, mB2;
 	bool mLeftMorphing, mRightMorphing;
 };
+
+class InputOptionsState : public State
+{
+public:
+	InputOptionsState();
+	virtual ~InputOptionsState();
+	virtual void step();
+private:
+	UserConfig mOptionConfig;
+	bool mSaveConfig;
+	//left data:
+	std::string mLeftBlobbyDevice;
+	int mLeftBlobbyMouseJumpbutton;
+	char mLeftBlobbyKeyboardLeft;
+	char mLeftBlobbyKeyboardRight;
+	char mLeftBlobbyKeyboardJump;
+	std::string mLeftBlobbyJoystickLeft;
+	std::string mLeftBlobbyJoystickRight;
+	std::string mLeftBlobbyJoystickJump;
+	//right data:
+	std::string mRightBlobbyDevice;
+	int mRightBlobbyMouseJumpbutton;
+	char mRightBlobbyKeyboardLeft;
+	char mRightBlobbyKeyboardRight;
+	char mRightBlobbyKeyboardJump;
+	std::string mRightBlobbyJoystickLeft;
+	std::string mRightBlobbyJoystickRight;
+	std::string mRightBlobbyJoystickJump;
+};

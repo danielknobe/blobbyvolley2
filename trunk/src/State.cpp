@@ -347,9 +347,16 @@ void OptionState::step()
 		SoundManager::getSingleton().setVolume(volume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
+	if (imgui.doButton(GEN_ID, Vector2(108.0, 370.0), "input options"))
+	{
+		mCurrentState = new InputOptionsState();
+		delete this;
+		return;
+	}
 	if (imgui.doButton(GEN_ID, Vector2(108.0, 400.0), "graphic options"))
 	{
 		mCurrentState = new GraphicOptionsState();
+		delete this;
 		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(124.0, 470.0), "record replays"))
@@ -361,6 +368,7 @@ void OptionState::step()
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MainMenuState();
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
 	{
@@ -554,8 +562,9 @@ GraphicOptionsState::~GraphicOptionsState()
 		mOptionConfig.setInteger("b2", mB2);
 		mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
 		mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
+
+		mOptionConfig.saveFile("config.xml");
 	}
-	mOptionConfig.saveFile("config.xml");
 }
 
 void GraphicOptionsState::step()
@@ -667,6 +676,80 @@ void GraphicOptionsState::step()
 							int((cos(time*3) + 1.0) * 128));
 		imgui.doBlob(GEN_ID, Vector2(660, 490), ourCol);
 	}
+
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	{
+		mSaveConfig = true;
+		delete this;
+		mCurrentState = new OptionState();
+	}
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	{
+		delete this;
+		mCurrentState = new OptionState();
+	}
+}
+
+InputOptionsState::InputOptionsState()
+{
+	IMGUI::getSingleton().resetSelection();
+	mSaveConfig = false;
+	mOptionConfig.loadFile("inputconfig.xml");
+	//left data:
+	mLeftBlobbyDevice = mOptionConfig.getString("left_blobby_device");
+	mLeftBlobbyMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
+	mLeftBlobbyKeyboardLeft = mOptionConfig.getString("left_blobby_keyboard_left")[0];
+	mLeftBlobbyKeyboardRight = mOptionConfig.getString("left_blobby_keyboard_right")[0];
+	mLeftBlobbyKeyboardJump = mOptionConfig.getString("left_blobby_keyboard_jump")[0];
+	mLeftBlobbyJoystickLeft = mOptionConfig.getString("left_blobby_joystick_left");
+	mLeftBlobbyJoystickRight = mOptionConfig.getString("left_blobby_joystick_right");
+	mLeftBlobbyJoystickJump = mOptionConfig.getString("left_blobby_joystick_jump");
+	//right data:
+	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
+	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
+	mRightBlobbyKeyboardLeft = mOptionConfig.getString("right_blobby_keyboard_left")[0];
+	mRightBlobbyKeyboardRight = mOptionConfig.getString("right_blobby_keyboard_right")[0];
+	mRightBlobbyKeyboardJump = mOptionConfig.getString("right_blobby_keyboard_jump")[0];
+	mRightBlobbyJoystickLeft = mOptionConfig.getString("right_blobby_joystick_left");
+	mRightBlobbyJoystickRight = mOptionConfig.getString("right_blobby_joystick_right");
+	mRightBlobbyJoystickJump = mOptionConfig.getString("right_blobby_joystick_jump");
+}
+
+InputOptionsState::~InputOptionsState()
+{
+	if (mSaveConfig)
+	{
+		//left data:
+		mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
+		mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
+		mOptionConfig.setString("left_blobby_keyboard_left", std::string()+mLeftBlobbyKeyboardLeft);
+		mOptionConfig.setString("left_blobby_keyboard_right", std::string()+mLeftBlobbyKeyboardRight);
+		mOptionConfig.setString("left_blobby_keyboard_jump", std::string()+mLeftBlobbyKeyboardJump);
+		mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
+		mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
+		mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
+		//right data:
+		mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
+		mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
+		mOptionConfig.setString("right_blobby_keyboard_left", std::string()+mRightBlobbyKeyboardLeft);
+		mOptionConfig.setString("right_blobby_keyboard_right", std::string()+mRightBlobbyKeyboardRight);
+		mOptionConfig.setString("right_blobby_keyboard_jump", std::string()+mRightBlobbyKeyboardJump);
+		mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
+		mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
+		mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
+
+		mOptionConfig.saveFile("inputconfig.xml");
+	}
+}
+
+void InputOptionsState::step()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
+	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
