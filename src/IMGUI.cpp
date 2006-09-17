@@ -194,9 +194,9 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 	mLastWidget = id;
 	Vector2 mousepos = InputManager::getSingleton()->position();
 
-	if (mousepos.x > position.x + 24.0 &&
+	if (mousepos.x > position.x &&
 		mousepos.y > position.y &&
-		mousepos.x < position.x + text.length() * 24 + 24.0 &&
+		mousepos.x < position.x + text.length() * 24 &&
 		mousepos.y < position.y + 24.0)
 	{
 		obj.type = HIGHLIGHTTEXT;
