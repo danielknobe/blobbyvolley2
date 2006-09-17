@@ -11,6 +11,7 @@
 
 #include <physfs.h>
 #include <ctime>
+#include <sstream>
 
 State::State()
 {
@@ -758,6 +759,21 @@ void InputOptionsState::step()
 			mLeftBlobbyDevice = "joystick";
 		else if (mLeftBlobbyDevice == "joystick")
 			mLeftBlobbyDevice = "mouse";
+	}
+	if (mLeftBlobbyDevice == "mouse")
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Mouse Jump Button");
+		std::ostringstream text;
+		text << "Button " << mLeftBlobbyMouseJumpbutton;
+		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), text.str()))
+			mLeftBlobbyMouseJumpbutton = -1;
+	}
+	if (mLeftBlobbyMouseJumpbutton == -1)
+	{
+		//TODO: grab Mousebuttonpress
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
 	}
 	
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
