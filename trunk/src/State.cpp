@@ -662,9 +662,9 @@ void GraphicOptionsState::step()
 		float time = float(SDL_GetTicks()) / 1000.0;
 		Color ourCol = Color(mR2, mG2, mB2);
 		if (mRightMorphing)
-			ourCol = Color(int((sin(time*2) + 1.0) * 128),
-							int((sin(time*4) + 1.0) * 128),
-							int((sin(time*3) + 1.0) * 128));
+			ourCol = Color(int((cos(time*2) + 1.0) * 128),
+							int((cos(time*4) + 1.0) * 128),
+							int((cos(time*3) + 1.0) * 128));
 		imgui.doBlob(GEN_ID, Vector2(660, 490), ourCol);
 	}
 
