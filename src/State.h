@@ -108,12 +108,11 @@ private:
 class GraphicOptionsState : public State
 {
 public:
-	GraphicOptionsState(State* lastState, UserConfig& optionConfig);
+	GraphicOptionsState();
 	virtual ~GraphicOptionsState();
 	virtual void step();
 private:
-	State* mLastState;
-	UserConfig& mOptionConfig;
+	UserConfig mOptionConfig;
 	bool mSaveConfig;
 	bool mFullscreen;
 	std::string mRenderer;
