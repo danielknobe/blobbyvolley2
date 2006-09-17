@@ -18,7 +18,8 @@ enum ObjectType
 	SCROLLBAR,
 	ACTIVESCROLLBAR,
 	EDITBOX,
-	ACTIVEEDITBOX
+	ACTIVEEDITBOX,
+	BLOB
 };
 
 struct QueueObject
@@ -111,6 +112,9 @@ void IMGUI::end()
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
 				if (obj.pos2.x >= 0)
 					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
+				break;
+			case BLOB:
+				rmanager.drawBlob(obj.pos1, obj.col);
 				break;
 			default:
 				break;		
@@ -337,5 +341,16 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 
 	mQueue->push(obj);
 
+	return false;
+}
+
+bool IMGUI::doBlob(int id, const Vector2& position, const Color& col)
+{
+	QueueObject obj;
+	obj.id = id;
+	obj.pos1 = position;
+	obj.type = BLOB;
+	obj.col = col;
+	mQueue->push(obj);
 	return false;
 }

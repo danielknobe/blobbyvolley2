@@ -94,9 +94,6 @@ public:
 	// Returns true on success
 	virtual bool setBackground(const std::string& filename) { return true; };
 
-	//Draws a blob 
-	virtual void drawBlob(int x, int y, Color col){};
-
 	// Colors the standard blob image, which are red and green by default
 	virtual void setBlobColor(int player, Color color) {};
 	
@@ -126,6 +123,9 @@ public:
 	// This draws a greyed-out area
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
 	
+	//Draws a blob 
+	virtual void drawBlob(const Vector2& pos, const Color& col){};
+
 	// This forces a redraw of the background, for example
 	// when the windows was minimized
 	void redraw();

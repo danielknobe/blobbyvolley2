@@ -166,14 +166,6 @@ void RenderManagerSDL::deinit()
 		SDL_FreeSurface(mFont[i]);
 }
 
-void RenderManagerSDL::drawBlob(int x, int y, Color col)
-{
-	SDL_Rect position;
-	position.x = x;
-	position.y = y;
-	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
-}
-
 void RenderManagerSDL::draw()
 {
 	if (!mDrawGame)
@@ -444,6 +436,15 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Co
 	SDL_SetClipRect(mScreen, &ovRect);
 	SDL_BlitSurface(mOverlaySurface, 0, mScreen, 0);
 	SDL_SetClipRect(mScreen, 0);
+}
+
+void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
+{
+	SDL_Rect position;
+	position.x = pos.x;
+	position.y = pos.y;
+	//Farbe muss noch berücksichtigt werden irgendwie
+	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
 }
 
 void RenderManagerSDL::refresh()

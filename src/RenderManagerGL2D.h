@@ -48,7 +48,6 @@ public:
 
 	virtual void init(int xResolution, int yResolution, bool fullscreen);
 	virtual void deinit();
-	virtual void drawBlob(int x, int y, Color col);
 	virtual void draw();
 	virtual void refresh();
 
@@ -65,6 +64,7 @@ public:
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
 	virtual void drawImage(const std::string& filename, Vector2 position);
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
+	virtual void drawBlob(const Vector2& pos, const Color& col);
 };
 
 
