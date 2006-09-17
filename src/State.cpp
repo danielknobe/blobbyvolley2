@@ -521,6 +521,14 @@ GraphicOptionsState::GraphicOptionsState(State* lastState, UserConfig& optionCon
 	mSaveConfig = false;
 	mFullscreen = mOptionConfig.getBool("fullscreen");
 	mRenderer = mOptionConfig.getString("device");
+	mR1 = mOptionConfig.getInteger("r1");
+	mG1 = mOptionConfig.getInteger("g1");
+	mB1 = mOptionConfig.getInteger("b1");
+	mR2 = mOptionConfig.getInteger("r2");
+	mG2 = mOptionConfig.getInteger("g2");
+	mB2 = mOptionConfig.getInteger("b2");
+	mLeftMorphing = mOptionConfig.getBool("left_blobby_oscillate");
+	mRightMorphing = mOptionConfig.getBool("right_blobby_oscillate");
 }
 
 GraphicOptionsState::~GraphicOptionsState()
@@ -537,6 +545,14 @@ GraphicOptionsState::~GraphicOptionsState()
 			else
 				RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
 		}
+		mOptionConfig.setInteger("r1", mR1);
+		mOptionConfig.setInteger("g1", mG1);
+		mOptionConfig.setInteger("b1", mB1);
+		mOptionConfig.setInteger("r2", mR2);
+		mOptionConfig.setInteger("g2", mG2);
+		mOptionConfig.setInteger("b2", mB2);
+		mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
+		mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
 	}
 	mCurrentState = mLastState;
 }
@@ -548,26 +564,90 @@ void GraphicOptionsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	imgui.doText(GEN_ID, Vector2(100.0, 20.0), "Video Settings");
+	imgui.doText(GEN_ID, Vector2(34.0, 50.0), "Video Settings");
 	
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 50.0), "Fullscreen Mode"))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 80.0), "Fullscreen Mode"))
 		mFullscreen = true;
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 80.0), "Window Mode"))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 110.0), "Window Mode"))
 		mFullscreen = false;
 	if (mFullscreen)
-		imgui.doImage(GEN_ID, Vector2(84.0, 62.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(18.0, 92.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(84.0, 92.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(18.0, 122.0), "gfx/pfeil_rechts.bmp");
 
-	imgui.doText(GEN_ID, Vector2(100.0, 120.0), "Render Device");
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 150.0), "OpenGL"))
+	imgui.doText(GEN_ID, Vector2(444.0, 50.0), "Render Device");
+	if (imgui.doButton(GEN_ID, Vector2(444.0, 80.0), "OpenGL"))
 		mRenderer = "OpenGL";
-	if (imgui.doButton(GEN_ID, Vector2(100.0, 180.0), "SDL"))
+	if (imgui.doButton(GEN_ID, Vector2(444.0, 110.0), "SDL"))
 		mRenderer = "SDL";
 	if (mRenderer == "OpenGL")
-		imgui.doImage(GEN_ID, Vector2(84.0, 166.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(428.0, 92.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(84.0, 196.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(428.0, 122.0), "gfx/pfeil_rechts.bmp");
+
+	//Blob colors:
+	imgui.doText(GEN_ID, Vector2(290.0, 210.0), "blob colors");
+	//left blob:
+	imgui.doText(GEN_ID, Vector2(34.0, 250.0), "left player");
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 280), "red");
+		float r1 = (float)mR1/255;
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 280.0), r1);
+		mR1 = (int)(r1*255);
+	}
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 310), "green");
+		float g1 = (float)mG1/255;
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 310.0), g1);
+		mG1 = (int)(g1*255);
+	}
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 340), "blue");
+		float b1 = (float)mB1/255;
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 340), b1);
+		mB1 = (int)(b1*255);
+	}
+	imgui.doText(GEN_ID, Vector2(34.0, 380), "morphing blob?");
+	if (imgui.doButton(GEN_ID, Vector2(72.0, 410), "yes"))
+		mLeftMorphing = true;
+	if (imgui.doButton(GEN_ID, Vector2(220.0, 410), "no"))
+		mLeftMorphing = false;
+	if (mLeftMorphing)
+		imgui.doImage(GEN_ID, Vector2(54.0, 422.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(204.0, 422.0), "gfx/pfeil_rechts.bmp");
+	//TODO: render blob
+
+	//right blob:
+	imgui.doText(GEN_ID, Vector2(434.0, 250.0), "right player");
+	{
+		imgui.doText(GEN_ID, Vector2(434.0, 280), "red");
+		float r2 = (float)mR2/255;
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 280.0), r2);
+		mR2 = (int)(r2*255);
+	}
+	{
+		imgui.doText(GEN_ID, Vector2(434.0, 310), "green");
+		float g2 = (float)mG2/255;
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 310.0), g2);
+		mG2 = (int)(g2*255);
+	}
+	{
+		imgui.doText(GEN_ID, Vector2(434.0, 340), "blue");
+		float b2 = (float)mB2/255;
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 340), b2);
+		mB2 = (int)(b2*255);
+	}
+	imgui.doText(GEN_ID, Vector2(434.0, 380), "morphing blob?");
+	if (imgui.doButton(GEN_ID, Vector2(472.0, 410), "yes"))
+		mRightMorphing = true;
+	if (imgui.doButton(GEN_ID, Vector2(620.0, 410), "no"))
+		mRightMorphing = false;
+	if (mRightMorphing)
+		imgui.doImage(GEN_ID, Vector2(454.0, 422.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(604.0, 422.0), "gfx/pfeil_rechts.bmp");
+	//TODO: render blob
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
