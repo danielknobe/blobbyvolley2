@@ -124,7 +124,7 @@ public:
 	virtual void drawImage(const std::string& filename, Vector2 position) {};
 	
 	// This draws a greyed-out area
-	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2) {}
+	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
 	
 	// This forces a redraw of the background, for example
 	// when the windows was minimized

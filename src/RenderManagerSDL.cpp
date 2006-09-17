@@ -429,7 +429,7 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 	SDL_BlitSurface(imageBuffer->sdlImage, 0, mScreen, &blitRect);
 }
 
-void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
+void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)
 {
 	redraw();
 	SDL_Rect ovRect;
@@ -439,6 +439,8 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
 	ovRect.h = lround(pos2.y - pos1.y);
 	SDL_SetAlpha(mOverlaySurface, SDL_SRCALPHA, lround(opacity * 255));
 	
+	SDL_FillRect(mOverlaySurface, NULL, SDL_MapRGB(mScreen->format, col.r, col.g, col.b));
+
 	SDL_SetClipRect(mScreen, &ovRect);
 	SDL_BlitSurface(mOverlaySurface, 0, mScreen, 0);
 	SDL_SetClipRect(mScreen, 0);

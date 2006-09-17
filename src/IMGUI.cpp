@@ -27,6 +27,7 @@ struct QueueObject
 	int id;
 	Vector2 pos1;
 	Vector2 pos2;
+	Color col;
 	std::string text;
 };
 
@@ -86,7 +87,7 @@ void IMGUI::end()
 				rmanager.drawImage(obj.text, obj.pos1);
 				break;
 			case OVERLAY:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2, obj.col);
 				break;
 			case TEXT:
 				rmanager.drawText(obj.text, obj.pos1, false);
@@ -97,19 +98,19 @@ void IMGUI::end()
 			case SCROLLBAR:
 			case ACTIVESCROLLBAR:
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
-				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0));
+				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0), Color(255, 255, 255));
 				break;
 			case EDITBOX:
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.text.length()*24.0, 10.0+24.0));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), false);
 				if (obj.pos2.x >= 0)
-					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0));
+					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
 				break;
 			case ACTIVEEDITBOX:
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(10.0+obj.text.length()*24.0, 10.0+24.0));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
 				if (obj.pos2.x >= 0)
-					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0));
+					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
 				break;
 			default:
 				break;		
@@ -145,13 +146,14 @@ void IMGUI::doText(int id, const Vector2& position, const std::string& text)
 	mQueue->push(obj);
 }
 
-void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2)
+void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col)
 {
 	QueueObject obj;
 	obj.type = OVERLAY;
 	obj.id = id;
 	obj.pos1 = pos1;
 	obj.pos2 = pos2;
+	obj.col = col;
 	mQueue->push(obj);
 	RenderManager::getSingleton().redraw();
 }

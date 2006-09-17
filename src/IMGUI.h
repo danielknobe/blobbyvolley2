@@ -29,7 +29,7 @@ public:
 	
 	void doImage(int id, const Vector2& position, const std::string& name);
 	void doText(int id, const Vector2& position, const std::string& text);
-	void doOverlay(int id, const Vector2& pos1, const Vector2& pos2);
+	void doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col = Color(0, 0, 0));
 	void doCursor();
 
 	bool doButton(int id, const Vector2& position, const std::string& text);

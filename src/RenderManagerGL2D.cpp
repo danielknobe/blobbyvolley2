@@ -463,14 +463,14 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_TEXTURE_2D);
 }
-void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2)
+void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	
-	glColor4f(0.0, 0.0, 0.0, opacity);
+	glColor4f(col.r, col.g, col.b, opacity);
 	glLoadIdentity();
 	glBegin(GL_QUADS);
 		glVertex2f(pos1.x, pos1.y);
