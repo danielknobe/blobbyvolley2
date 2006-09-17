@@ -310,7 +310,7 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
 	//Nur zum test:
-	std::string bla = "TEST";
+	static std::string bla = "TEST";
 	static int cpos = 3;
 	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);
 

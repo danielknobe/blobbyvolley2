@@ -505,8 +505,9 @@ std::string InputManager::getLastTextKey()
 {
 	if (mLastTextInputKey != SDLK_UNKNOWN)
 	{
-		return SDL_GetKeyName(mLastTextInputKey);
+		std::string tmp = SDL_GetKeyName(mLastTextInputKey);
 		mLastTextInputKey = SDLK_UNKNOWN;
+		return tmp;
 	}
 	else 
 		return "";
