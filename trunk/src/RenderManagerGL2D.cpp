@@ -183,6 +183,21 @@ void RenderManagerGL2D::deinit()
 	}
 }
 
+void RenderManagerGL2D::drawBlob(int x, int y, Color col)
+{
+	glLoadIdentity();
+	glTranslatef(x, y, 0.6);
+	glBindTexture(GL_TEXTURE_2D, mBlob[0]);
+	glColor3ubv(col.val);
+	drawQuad(128.0, 128.0);
+
+	glEnable(GL_BLEND);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[0]);
+	drawQuad(128.0, 128.0);
+	glDisable(GL_BLEND);
+}
+
 void RenderManagerGL2D::draw()
 {
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -221,7 +236,6 @@ void RenderManagerGL2D::draw()
 			mLastBallStates.pop_back();
 	glDisable(GL_BLEND);
 */	
-	
 	
 	// left blob
 	glLoadIdentity();
