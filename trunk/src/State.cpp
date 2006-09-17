@@ -586,67 +586,67 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(428.0, 122.0), "gfx/pfeil_rechts.bmp");
 
 	//Blob colors:
-	imgui.doText(GEN_ID, Vector2(290.0, 210.0), "blob colors");
+	imgui.doText(GEN_ID, Vector2(280.0, 170.0), "blob colors");
 	//left blob:
-	imgui.doText(GEN_ID, Vector2(34.0, 250.0), "left player");
+	imgui.doText(GEN_ID, Vector2(34.0, 220.0), "left player");
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 280), "red");
+		imgui.doText(GEN_ID, Vector2(34.0, 250), "red");
 		float r1 = (float)mR1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 280.0), r1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 250.0), r1);
 		mR1 = (int)(r1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 310), "green");
+		imgui.doText(GEN_ID, Vector2(34.0, 280), "green");
 		float g1 = (float)mG1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 310.0), g1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 280.0), g1);
 		mG1 = (int)(g1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 340), "blue");
+		imgui.doText(GEN_ID, Vector2(34.0, 310), "blue");
 		float b1 = (float)mB1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 340), b1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 310), b1);
 		mB1 = (int)(b1*255);
 	}
-	imgui.doText(GEN_ID, Vector2(34.0, 380), "morphing blob?");
-	if (imgui.doButton(GEN_ID, Vector2(72.0, 410), "yes"))
+	imgui.doText(GEN_ID, Vector2(34.0, 350), "morphing blob?");
+	if (imgui.doButton(GEN_ID, Vector2(72.0, 380), "yes"))
 		mLeftMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(220.0, 410), "no"))
+	if (imgui.doButton(GEN_ID, Vector2(220.0, 380), "no"))
 		mLeftMorphing = false;
 	if (mLeftMorphing)
-		imgui.doImage(GEN_ID, Vector2(54.0, 422.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(54.0, 392.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(204.0, 422.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(204.0, 392.0), "gfx/pfeil_rechts.bmp");
 	RenderManager::getSingleton().drawBlob(100, 450, Color(mR1, mG1, mB1));
 
 	//right blob:
-	imgui.doText(GEN_ID, Vector2(434.0, 250.0), "right player");
+	imgui.doText(GEN_ID, Vector2(434.0, 220.0), "right player");
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 280), "red");
+		imgui.doText(GEN_ID, Vector2(434.0, 250), "red");
 		float r2 = (float)mR2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 280.0), r2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 250.0), r2);
 		mR2 = (int)(r2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 310), "green");
+		imgui.doText(GEN_ID, Vector2(434.0, 280), "green");
 		float g2 = (float)mG2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 310.0), g2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 280.0), g2);
 		mG2 = (int)(g2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 340), "blue");
+		imgui.doText(GEN_ID, Vector2(434.0, 310), "blue");
 		float b2 = (float)mB2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 340), b2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 310), b2);
 		mB2 = (int)(b2*255);
 	}
-	imgui.doText(GEN_ID, Vector2(434.0, 380), "morphing blob?");
-	if (imgui.doButton(GEN_ID, Vector2(472.0, 410), "yes"))
+	imgui.doText(GEN_ID, Vector2(434.0, 350), "morphing blob?");
+	if (imgui.doButton(GEN_ID, Vector2(472.0, 380), "yes"))
 		mRightMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(620.0, 410), "no"))
+	if (imgui.doButton(GEN_ID, Vector2(620.0, 380), "no"))
 		mRightMorphing = false;
 	if (mRightMorphing)
-		imgui.doImage(GEN_ID, Vector2(454.0, 422.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(454.0, 392.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(604.0, 422.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(604.0, 392.0), "gfx/pfeil_rechts.bmp");
 	//TODO: render blob
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
