@@ -349,7 +349,7 @@ void OptionState::step()
 	}
 	if (imgui.doButton(GEN_ID, Vector2(108.0, 400.0), "graphic options"))
 	{
-		mCurrentState = new GraphicOptionsState(this, mOptionConfig);
+		mCurrentState = new GraphicOptionsState();
 		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(124.0, 470.0), "record replays"))
@@ -515,10 +515,11 @@ void ReplayMenuState::step()
 	}
 }
 
-GraphicOptionsState::GraphicOptionsState(State* lastState, UserConfig& optionConfig) : mLastState(lastState), mOptionConfig(optionConfig)
+GraphicOptionsState::GraphicOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
 	mSaveConfig = false;
+	mOptionConfig.loadFile("config.xml");
 	mFullscreen = mOptionConfig.getBool("fullscreen");
 	mRenderer = mOptionConfig.getString("device");
 	mR1 = mOptionConfig.getInteger("r1");
@@ -554,7 +555,7 @@ GraphicOptionsState::~GraphicOptionsState()
 		mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
 		mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
 	}
-	mCurrentState = mLastState;
+	mOptionConfig.saveFile("config.xml");
 }
 
 void GraphicOptionsState::step()
@@ -671,7 +672,11 @@ void GraphicOptionsState::step()
 	{
 		mSaveConfig = true;
 		delete this;
+		mCurrentState = new OptionState();
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	{
 		delete this;
+		mCurrentState = new OptionState();
+	}
 }
