@@ -624,7 +624,7 @@ void GraphicOptionsState::step()
 			ourCol = Color(int((sin(time*2) + 1.0) * 128),
 							int((sin(time*4) + 1.0) * 128),
 							int((sin(time*3) + 1.0) * 128));
-		RenderManager::getSingleton().drawBlob(100, 430, ourCol);
+		imgui.doBlob(GEN_ID, Vector2(120, 490), ourCol);
 	}
 
 	//right blob:
@@ -664,7 +664,7 @@ void GraphicOptionsState::step()
 			ourCol = Color(int((sin(time*2) + 1.0) * 128),
 							int((sin(time*4) + 1.0) * 128),
 							int((sin(time*3) + 1.0) * 128));
-		RenderManager::getSingleton().drawBlob(500, 430, ourCol);
+		imgui.doBlob(GEN_ID, Vector2(660, 490), ourCol);
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
