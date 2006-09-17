@@ -166,6 +166,14 @@ void RenderManagerSDL::deinit()
 		SDL_FreeSurface(mFont[i]);
 }
 
+void RenderManagerSDL::drawBlob(int x, int y, Color col)
+{
+	SDL_Rect position;
+	position.x = x;
+	position.y = y;
+	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
+}
+
 void RenderManagerSDL::draw()
 {
 	if (!mDrawGame)

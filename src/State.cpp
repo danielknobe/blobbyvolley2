@@ -616,7 +616,7 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(54.0, 422.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(204.0, 422.0), "gfx/pfeil_rechts.bmp");
-	//TODO: render blob
+	RenderManager::getSingleton().drawBlob(100, 450, Color(mR1, mG1, mB1));
 
 	//right blob:
 	imgui.doText(GEN_ID, Vector2(434.0, 250.0), "right player");

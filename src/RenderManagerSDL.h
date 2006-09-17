@@ -43,6 +43,7 @@ public:
 
 	virtual void init(int xResolution, int yResolution, bool fullscreen);
 	virtual void deinit();
+	virtual void drawBlob(int x, int y, Color col);
 	virtual void draw();
 	virtual void refresh();
 

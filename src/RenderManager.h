@@ -94,6 +94,9 @@ public:
 	// Returns true on success
 	virtual bool setBackground(const std::string& filename) { return true; };
 
+	//Draws a blob 
+	virtual void drawBlob(int x, int y, Color col){};
+
 	// Colors the standard blob image, which are red and green by default
 	virtual void setBlobColor(int player, Color color) {};
 	
