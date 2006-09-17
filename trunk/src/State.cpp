@@ -616,7 +616,16 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(54.0, 392.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(204.0, 392.0), "gfx/pfeil_rechts.bmp");
-	RenderManager::getSingleton().drawBlob(100, 450, Color(mR1, mG1, mB1));
+	//draw left blob:
+	{
+		float time = float(SDL_GetTicks()) / 1000.0;
+		Color ourCol = Color(mR1, mG1, mB1);
+		if (mLeftMorphing)
+			ourCol = Color(int((sin(time*2) + 1.0) * 128),
+							int((sin(time*4) + 1.0) * 128),
+							int((sin(time*3) + 1.0) * 128));
+		RenderManager::getSingleton().drawBlob(100, 430, ourCol);
+	}
 
 	//right blob:
 	imgui.doText(GEN_ID, Vector2(434.0, 220.0), "right player");
@@ -647,7 +656,16 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(454.0, 392.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(604.0, 392.0), "gfx/pfeil_rechts.bmp");
-	//TODO: render blob
+	//draw right blob:
+	{
+		float time = float(SDL_GetTicks()) / 1000.0;
+		Color ourCol = Color(mR2, mG2, mB2);
+		if (mLeftMorphing)
+			ourCol = Color(int((sin(time*2) + 1.0) * 128),
+							int((sin(time*4) + 1.0) * 128),
+							int((sin(time*3) + 1.0) * 128));
+		RenderManager::getSingleton().drawBlob(500, 430, ourCol);
+	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
