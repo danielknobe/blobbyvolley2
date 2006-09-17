@@ -443,7 +443,12 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 	SDL_Rect position;
 	position.x = lround(pos.x);
 	position.y = lround(pos.y);
-	setBlobColor(0, col);
+	static Color lastColor = Color(0, 0, 0);
+	if (lastColor.val != col.val)
+	{
+		setBlobColor(0, col);
+		lastColor = col;
+	}
 	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
 }
 
