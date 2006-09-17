@@ -748,8 +748,28 @@ void InputOptionsState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
+	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
+	{
+		if (mLeftBlobbyDevice == "mouse")
+			mLeftBlobbyDevice = "keyboard";
+		else if (mLeftBlobbyDevice == "keyboard")
+			mLeftBlobbyDevice = "joystick";
+		else if (mLeftBlobbyDevice == "joystick")
+			mLeftBlobbyDevice = "mouse";
+	}
+	
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
+	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), mRightBlobbyDevice))
+	{
+		if (mRightBlobbyDevice == "mouse")
+			mRightBlobbyDevice = "keyboard";
+		else if (mRightBlobbyDevice == "keyboard")
+			mRightBlobbyDevice = "joystick";
+		else if (mRightBlobbyDevice == "joystick")
+			mRightBlobbyDevice = "mouse";
+	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
