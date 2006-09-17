@@ -441,8 +441,8 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Co
 void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 {
 	SDL_Rect position;
-	position.x = pos.x;
-	position.y = pos.y;
+	position.x = lround(pos.x);
+	position.y = lround(pos.y);
 	setBlobColor(0, col);
 	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
 }

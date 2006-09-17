@@ -27,6 +27,7 @@ struct JoystickAction
 	// Note: Axis are stored as the SDL axis +1, so we can used
 	// the signedness as direction indication
 	int number;
+	bool close;
 };
 
 class InputDevice
@@ -121,27 +122,8 @@ public:
 class JoystickInputDevice : public InputDevice
 {
 private:
-	bool getAction(const JoystickAction& action)
-	{
-		switch (action.type)
-		{
-			case JoystickAction::AXIS:
-				if (SDL_JoystickGetAxis(action.joy,
-					-action.number - 1) < 10)
-					return true;
-				if (SDL_JoystickGetAxis(action.joy,
-					action.number - 1) > 10)
-					return true;
-				break;
-			case JoystickAction::BUTTON:
-				if (SDL_JoystickGetButton(action.joy,
-							action.number))
-					return true;
-				break;
-		}
-		return false;
-	}
-	
+	bool getAction(const JoystickAction& action);
+
 	JoystickAction mLeftAction;
 	JoystickAction mRightAction;
 	JoystickAction mJumpAction;

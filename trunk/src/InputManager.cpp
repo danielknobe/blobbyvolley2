@@ -15,6 +15,7 @@ InputManager::InputManager()
 
 	mInputDevice[LEFT_PLAYER] = 0;
 	mInputDevice[RIGHT_PLAYER] = 0;
+	mLastTextInputKey = SDLK_UNKNOWN;
 }
 
 InputManager::~InputManager()
@@ -50,9 +51,9 @@ void InputManager::beginGame(PlayerSide side)
 	}
 	else if (device == "joystick")
 	{
-		JoystickAction laction(config.getString("joystick_left"));
-		JoystickAction raction(config.getString("joystick_right"));
-		JoystickAction jaction(config.getString("joystick_jump"));
+		JoystickAction laction(config.getString(prefix + "joystick_left"));
+		JoystickAction raction(config.getString(prefix + "joystick_right"));
+		JoystickAction jaction(config.getString(prefix + "joystick_jump"));
 		mInputDevice[side] = new JoystickInputDevice(laction, raction,
 								jaction);
 	}
@@ -138,6 +139,7 @@ void InputManager::updateInput()
 					mExit = true;
 					break;
 				default:
+					mLastTextInputKey = event.key.keysym.sym;
 					break;
 			}
 			break;
@@ -499,3 +501,13 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 	return SDLK_UNKNOWN; // stringinformation = ""
 }
 
+std::string InputManager::getLastTextKey()
+{
+	if (mLastTextInputKey != SDLK_UNKNOWN)
+	{
+		return SDL_GetKeyName(mLastTextInputKey);
+		mLastTextInputKey = SDLK_UNKNOWN;
+	}
+	else 
+		return "";
+}

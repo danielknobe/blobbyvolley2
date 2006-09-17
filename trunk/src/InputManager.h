@@ -32,6 +32,8 @@ private:
 	
 	int mMouseX;
 	int mMouseY;
+	
+	SDLKey mLastTextInputKey;
 
 	PlayerInput mInput[MAX_PLAYERS];	
 	InputDevice *mInputDevice[MAX_PLAYERS];	
