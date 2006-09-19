@@ -21,9 +21,9 @@
 	
 	<var name="right_blobby_mouse_jumpbutton" value="1" />
 	<!-- Keyboard -->
-	<var name="right_blobby_keyboard_left" value="a"/>
-	<var name="right_blobby_keyboard_right" value="d"/>
-	<var name="right_blobby_keyboard_jump" value="w"/>
+	<var name="right_blobby_keyboard_left" value="left"/>
+	<var name="right_blobby_keyboard_right" value="right"/>
+	<var name="right_blobby_keyboard_jump" value="up"/>
 	
 	<!-- Gamepad/Joystick -->
 	<var name="right_blobby_joystick_left" value="joy_0_button_0" />

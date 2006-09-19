@@ -13,37 +13,26 @@ const float BLOBBY_SPEED = 4.5; // BLOBBY_SPEED is necessary to determine the si
 class PhysicWorld
 {
 private:
-	// These methods tell about ball collisions for class-intern use
-	bool int_BallHitLeftPlayerTop();
-	bool int_BallHitRightPlayerTop();
-	bool int_BallHitLeftPlayerBottom();
-	bool int_BallHitRightPlayerBottom();
-	bool int_BallHitLeftPlayer();
-	bool int_BallHitRightPlayer();
-	
+	inline bool playerTopBallCollision(PlayerSide player);
+	inline bool playerBottomBallCollision(PlayerSide player);
 	bool resetAreaClear();
 
 	// is ball hit by player?
 	bool mBallHitByLeftBlob;
 	bool mBallHitByRightBlob;
 
-	Vector2 mLeftBlobPosition;
-	Vector2 mRightBlobPosition;
+	Vector2 mBlobPosition[MAX_PLAYERS];
 	Vector2 mBallPosition;
 
-	Vector2 mLeftBlobVelocity;
-	Vector2 mRightBlobVelocity;
+	Vector2 mBlobVelocity[MAX_PLAYERS];
 	Vector2 mBallVelocity;
 	
 	float mBallRotation;
 	float mBallAngularVelocity;
-	float mLeftBlobState;
-	float mRightBlobState;
-	float mLeftBlobbyAnimationSpeedAtm;
-	float mRightBlobbyAnimationSpeedAtm;
+	float mBlobState[MAX_PLAYERS];
+	float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
 
-	PlayerInput mLeftPlayerInput;
-	PlayerInput mRightPlayerInput;
+	PlayerInput mPlayerInput[MAX_PLAYERS];
 
 	bool mIsGameRunning;
 	bool mIsBallValid;
@@ -63,10 +52,10 @@ public:
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);
 
-	Vector2 getBlob(int player);
+	Vector2 getBlob(PlayerSide player);
 	Vector2 getBall();
 
-	float getBlobState(int player);
+	float getBlobState(PlayerSide player);
 	float getBallRotation();
 
 	// These functions tell about ball collisions for game logic and sound 
@@ -78,8 +67,8 @@ public:
 	bool blobbyHitGround(int player);
 	
 	// Blobby animation methods
-	void blobbyAnimationStep(int player);
-	void blobbyStartAnimation(int player);
+	void blobbyAnimationStep(PlayerSide player);
+	void blobbyStartAnimation(PlayerSide player);
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
