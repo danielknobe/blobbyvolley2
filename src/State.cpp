@@ -770,10 +770,12 @@ void InputOptionsState::step()
 	}
 	if (mLeftBlobbyMouseJumpbutton == -1)
 	{
-		//TODO: grab Mousebuttonpress
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
+		//TODO: grab mouseclick and return to active mode + draw cursor again
 	}
 	
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");

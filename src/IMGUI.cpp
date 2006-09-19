@@ -44,6 +44,7 @@ IMGUI::IMGUI()
 	mLastKeyAction = NONE;
 	mLastWidget = 0;
 	mButtonReset = false;
+	mInactive = false;
 }
 
 IMGUI::~IMGUI()
@@ -174,47 +175,45 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 	obj.text = text;
 	obj.type = TEXT;
 	
-	if (id == mActiveButton)
+	if (!mInactive)
 	{
-		obj.type = HIGHLIGHTTEXT;
-		switch (mLastKeyAction)
+		if (id == mActiveButton)
 		{
-			case DOWN:
-				mActiveButton = 0;
-				mLastKeyAction = NONE;
-				break;
-			case UP:
-				mActiveButton = mLastWidget;
-				mLastKeyAction = NONE;
-				break;
-			case SELECT:
+			obj.type = HIGHLIGHTTEXT;
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				case SELECT:
+					clicked = true;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		if (mousepos.x > position.x &&
+			mousepos.y > position.y &&
+			mousepos.x < position.x + text.length() * 24 &&
+			mousepos.y < position.y + 24.0)
+		{
+			obj.type = HIGHLIGHTTEXT;
+			if (InputManager::getSingleton()->click())
 				clicked = true;
-				mLastKeyAction = NONE;
-				break;
-			default:
-				break;
 		}
 	}
+
 	mLastWidget = id;
-	Vector2 mousepos = InputManager::getSingleton()->position();
-
-	if (mousepos.x > position.x &&
-		mousepos.y > position.y &&
-		mousepos.x < position.x + text.length() * 24 &&
-		mousepos.y < position.y + 24.0)
-	{
-		obj.type = HIGHLIGHTTEXT;
-		if (InputManager::getSingleton()->click())
-			clicked = true;
-	}
-
 	mQueue->push(obj);
 	return clicked;
-}
-
-void IMGUI::doCursor()
-{
-	mDrawCursor = true;
 }
 
 bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
@@ -228,45 +227,49 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	obj.pos1 = position;
 	obj.type = SCROLLBAR;
 	
-	if (id == mActiveButton)
+	if (!mInactive)
 	{
-		obj.type = ACTIVESCROLLBAR;
-		switch (mLastKeyAction)
+		if (id == mActiveButton)
 		{
-			case DOWN:
-				mActiveButton = 0;
-				mLastKeyAction = NONE;
-				break;
-			case UP:
-				mActiveButton = mLastWidget;
-				mLastKeyAction = NONE;
-				break;
-			case LEFT:
-				value -= 0.1;
-				mLastKeyAction = NONE;
-				break;
-			case RIGHT:
-				value += 0.1;
-				mLastKeyAction = NONE;
-				break;
-			default:
-				break;
+			obj.type = ACTIVESCROLLBAR;
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				case LEFT:
+					value -= 0.1;
+					mLastKeyAction = NONE;
+					break;
+				case RIGHT:
+					value += 0.1;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
 		}
-	}
-	mLastWidget = id;
 
-	Vector2 mousepos = InputManager::getSingleton()->position();
-	if (mousepos.x > position.x &&
-		mousepos.y > position.y &&
-		mousepos.x < position.x + 200 &&
-		mousepos.y < position.y + 24.0)
-	{
-		if (InputManager::getSingleton()->click())
-			value = (mousepos.x - position.x) / 200.0;
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		if (mousepos.x > position.x &&
+			mousepos.y > position.y &&
+			mousepos.x < position.x + 200 &&
+			mousepos.y < position.y + 24.0)
+		{
+			if (InputManager::getSingleton()->click())
+				value = (mousepos.x - position.x) / 200.0;
+		}
 	}
 
 	value = value > 0.0 ? (value < 1.0 ? value : 1.0) : 0.0;
 	obj.pos2.x = value;
+
+	mLastWidget = id;
 	mQueue->push(obj);
 
 	return oldvalue != value;
@@ -289,58 +292,59 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 	obj.pos1 = position;
 	obj.type = EDITBOX;
 
-	if (id == mActiveButton)
+	if (!mInactive)
 	{
-		obj.type = ACTIVEEDITBOX;
-		switch (mLastKeyAction)
+		if (id == mActiveButton)
 		{
-			case DOWN:
-				mActiveButton = 0;
-				mLastKeyAction = NONE;
-				break;
-			case UP:
-				mActiveButton = mLastWidget;
-				mLastKeyAction = NONE;
-				break;
-			case LEFT:
-				if (cpos > 0)
-					cpos--;
-				mLastKeyAction = NONE;
-				break;
-			case RIGHT:
-				if (cpos < text.length())
-					cpos++;
-				mLastKeyAction = NONE;
-				break;
-			default:
-				break;
+			obj.type = ACTIVEEDITBOX;
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				case LEFT:
+					if (cpos > 0)
+						cpos--;
+					mLastKeyAction = NONE;
+					break;
+				case RIGHT:
+					if (cpos < text.length())
+						cpos++;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
 		}
-	}
 
-	std::string input = InputManager::getSingleton()->getLastTextKey();
-	if (!input.empty())
-	{
-		text.insert(cpos, input);
-		changed = true;
-	}
-	
+		std::string input = InputManager::getSingleton()->getLastTextKey();
+		if (!input.empty())
+		{
+			text.insert(cpos, input);
+			changed = true;
+		}
 
-	mLastWidget = id;
-	Vector2 mousepos = InputManager::getSingleton()->position();
-
-	if (mousepos.x > position.x &&
-		mousepos.y > position.y &&
-		mousepos.x < position.x + text.length() * 24.0 + 10.0 &&
-		mousepos.y < position.y + 24.0 + 10.0)
-	{
-		obj.type = ACTIVEEDITBOX;
-		if (InputManager::getSingleton()->click())
-			cpos = (int)(mousepos.x-position.x-5.0)/24;
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		if (mousepos.x > position.x &&
+			mousepos.y > position.y &&
+			mousepos.x < position.x + text.length() * 24.0 + 10.0 &&
+			mousepos.y < position.y + 24.0 + 10.0)
+		{
+			obj.type = ACTIVEEDITBOX;
+			if (InputManager::getSingleton()->click())
+				cpos = (int)(mousepos.x-position.x-5.0)/24;
+		}
 	}
 
 	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1;
 	obj.text = text;
 
+	mLastWidget = id;
 	mQueue->push(obj);
 
 	return changed;
