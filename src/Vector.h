@@ -29,8 +29,6 @@ class Vector2
 	Vector2 scaleX(float factor);
 	Vector2 scaleY(float factor);
 	float length() const;
-	float unitVectorX() const;
-	float unitVectorY() const;
 	Vector2 normalise();
 	Vector2 contraVector();
 	
@@ -173,17 +171,24 @@ inline Vector2 Vector2::scaleY(float factor)
 
 inline float Vector2::length() const
 {
+#ifdef USE_SSE
+	float ret;
+	asm (
+		"movss 	%0,	%%xmm0	\n"
+		"movss 	%1,	%%xmm1	\n"
+		"mulss 	%%xmm0,	%%xmm0	\n"
+		"mulss 	%%xmm1,	%%xmm1	\n"
+		"addps 	%%xmm1,	%%xmm0	\n"
+		"sqrtps %%xmm0,	%%xmm0	\n"
+		"movss 	%%xmm0,	%2	\n"
+		:
+		: "m"(x), "m"(y), "m"(ret)
+		: "%xmm0", "%xmm1"
+	);
+	return ret;
+#else
 	return sqrt(this->x * this->x + this->y * this->y);
-}
-
-inline float Vector2::unitVectorX() const
-{
-	return 1.0/this->length()*x;   
-}
-
-inline float Vector2::unitVectorY() const
-{
-	return 1.0/this->length()*y;   
+#endif
 }
 
 inline Vector2 Vector2::normalise()

@@ -9,12 +9,19 @@ AC_PROG_INSTALL
 
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug],
     [Enable debugging support]),
-    [CXXFLAGS=" -O0 -ggdb3"],
-    [CXXFLAGS=" -Os -s"])
+    [CFLAGS=" -O0 -ggdb3"],
+    [CFLAGS=" -Os"])
 
 AC_ARG_ENABLE(profile, AC_HELP_STRING([--enable-profile],
     [Enable profiling support]),
-    [CXXFLAGS="$CXXFLAGS -pg"])
+    [CFLAGS="$CFLAGS -pg"])
+    
+AC_ARG_ENABLE(sse, AC_HELP_STRING([--enable-sse],
+	[Enable SSE optimisations]),
+	[AC_DEFINE(USE_SSE)
+	CFLAGS="$CFLAGS -mfpmath=sse -msse"])
+
+CXXFLAGS="$CFLAGS"
 
 AC_CHECK_LIB(SDL,SDL_Init, [], [AC_MSG_ERROR(SDL required)])
 AC_CHECK_LIB(z, inflate, [], [AC_MSG_ERROR(zlib required)])
