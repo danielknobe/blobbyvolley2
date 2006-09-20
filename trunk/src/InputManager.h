@@ -34,6 +34,7 @@ private:
 	int mMouseY;
 	
 	SDLKey mLastTextInputKey;
+	int mLastMouseButton; 
 
 	PlayerInput mInput[MAX_PLAYERS];	
 	InputDevice *mInputDevice[MAX_PLAYERS];	
@@ -62,6 +63,7 @@ public:
 	bool exit(); // extention for mouse included, so that right click = exit
 
 	std::string getLastTextKey();
+	int getLastMouseButton() { return mLastMouseButton; }
 
 	// For GUI navigation (Mouse)
 	Vector2 position();

@@ -103,6 +103,7 @@ void InputManager::updateInput()
 	mSelect = false;
 	mExit = false;
 	mClick = false;
+	mLastMouseButton = -1;
 	// Init GUI Events for buffered Input
 
 	SDL_PumpEvents();
@@ -144,6 +145,7 @@ void InputManager::updateInput()
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
+			mLastMouseButton = event.button.button;
 			switch (event.button.button)
 			{
 				case 1:
