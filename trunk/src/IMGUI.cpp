@@ -207,7 +207,10 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 		{
 			obj.type = HIGHLIGHTTEXT;
 			if (InputManager::getSingleton()->click())
+			{
 				clicked = true;
+				mActiveButton = id;
+			}
 		}
 	}
 
@@ -262,7 +265,10 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			mousepos.y < position.y + 24.0)
 		{
 			if (InputManager::getSingleton()->click())
+			{
 				value = (mousepos.x - position.x) / 200.0;
+				mActiveButton = id;
+			}
 		}
 	}
 
@@ -337,7 +343,10 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 		{
 			obj.type = ACTIVEEDITBOX;
 			if (InputManager::getSingleton()->click())
+			{
 				cpos = (int)(mousepos.x-position.x-5.0)/24;
+				mActiveButton = id;
+			}
 		}
 	}
 
