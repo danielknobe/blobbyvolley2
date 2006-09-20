@@ -63,6 +63,7 @@ public:
 	bool exit(); // extention for mouse included, so that right click = exit
 
 	std::string getLastTextKey();
+	std::string getLastActionKey();
 	int getLastMouseButton() { return mLastMouseButton; }
 
 	// For GUI navigation (Mouse)

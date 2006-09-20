@@ -132,18 +132,18 @@ private:
 	//left data:
 	std::string mLeftBlobbyDevice;
 	int mLeftBlobbyMouseJumpbutton;
-	char mLeftBlobbyKeyboardLeft;
-	char mLeftBlobbyKeyboardRight;
-	char mLeftBlobbyKeyboardJump;
+	std::string mLeftBlobbyKeyboardLeft;
+	std::string mLeftBlobbyKeyboardRight;
+	std::string mLeftBlobbyKeyboardJump;
 	std::string mLeftBlobbyJoystickLeft;
 	std::string mLeftBlobbyJoystickRight;
 	std::string mLeftBlobbyJoystickJump;
 	//right data:
 	std::string mRightBlobbyDevice;
 	int mRightBlobbyMouseJumpbutton;
-	char mRightBlobbyKeyboardLeft;
-	char mRightBlobbyKeyboardRight;
-	char mRightBlobbyKeyboardJump;
+	std::string mRightBlobbyKeyboardLeft;
+	std::string mRightBlobbyKeyboardRight;
+	std::string mRightBlobbyKeyboardJump;
 	std::string mRightBlobbyJoystickLeft;
 	std::string mRightBlobbyJoystickRight;
 	std::string mRightBlobbyJoystickJump;

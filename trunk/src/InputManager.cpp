@@ -514,3 +514,15 @@ std::string InputManager::getLastTextKey()
 	else 
 		return "";
 }
+
+std::string InputManager::getLastActionKey()
+{
+	if (mLastTextInputKey != SDLK_UNKNOWN)
+	{
+		std::string tmp = SDL_GetKeyName(mLastTextInputKey);
+		mLastTextInputKey = SDLK_UNKNOWN;
+		return tmp;
+	}
+	else 
+		return "";
+}
