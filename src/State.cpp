@@ -699,18 +699,18 @@ InputOptionsState::InputOptionsState()
 	//left data:
 	mLeftBlobbyDevice = mOptionConfig.getString("left_blobby_device");
 	mLeftBlobbyMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
-	mLeftBlobbyKeyboardLeft = mOptionConfig.getString("left_blobby_keyboard_left")[0];
-	mLeftBlobbyKeyboardRight = mOptionConfig.getString("left_blobby_keyboard_right")[0];
-	mLeftBlobbyKeyboardJump = mOptionConfig.getString("left_blobby_keyboard_jump")[0];
+	mLeftBlobbyKeyboardLeft = mOptionConfig.getString("left_blobby_keyboard_left");
+	mLeftBlobbyKeyboardRight = mOptionConfig.getString("left_blobby_keyboard_right");
+	mLeftBlobbyKeyboardJump = mOptionConfig.getString("left_blobby_keyboard_jump");
 	mLeftBlobbyJoystickLeft = mOptionConfig.getString("left_blobby_joystick_left");
 	mLeftBlobbyJoystickRight = mOptionConfig.getString("left_blobby_joystick_right");
 	mLeftBlobbyJoystickJump = mOptionConfig.getString("left_blobby_joystick_jump");
 	//right data:
 	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
 	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
-	mRightBlobbyKeyboardLeft = mOptionConfig.getString("right_blobby_keyboard_left")[0];
-	mRightBlobbyKeyboardRight = mOptionConfig.getString("right_blobby_keyboard_right")[0];
-	mRightBlobbyKeyboardJump = mOptionConfig.getString("right_blobby_keyboard_jump")[0];
+	mRightBlobbyKeyboardLeft = mOptionConfig.getString("right_blobby_keyboard_left");
+	mRightBlobbyKeyboardRight = mOptionConfig.getString("right_blobby_keyboard_right");
+	mRightBlobbyKeyboardJump = mOptionConfig.getString("right_blobby_keyboard_jump");
 	mRightBlobbyJoystickLeft = mOptionConfig.getString("right_blobby_joystick_left");
 	mRightBlobbyJoystickRight = mOptionConfig.getString("right_blobby_joystick_right");
 	mRightBlobbyJoystickJump = mOptionConfig.getString("right_blobby_joystick_jump");
@@ -723,18 +723,18 @@ InputOptionsState::~InputOptionsState()
 		//left data:
 		mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
 		mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
-		mOptionConfig.setString("left_blobby_keyboard_left", std::string()+mLeftBlobbyKeyboardLeft);
-		mOptionConfig.setString("left_blobby_keyboard_right", std::string()+mLeftBlobbyKeyboardRight);
-		mOptionConfig.setString("left_blobby_keyboard_jump", std::string()+mLeftBlobbyKeyboardJump);
+		mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboardLeft);
+		mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboardRight);
+		mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboardJump);
 		mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
 		mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
 		mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
 		//right data:
 		mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
 		mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
-		mOptionConfig.setString("right_blobby_keyboard_left", std::string()+mRightBlobbyKeyboardLeft);
-		mOptionConfig.setString("right_blobby_keyboard_right", std::string()+mRightBlobbyKeyboardRight);
-		mOptionConfig.setString("right_blobby_keyboard_jump", std::string()+mRightBlobbyKeyboardJump);
+		mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboardLeft);
+		mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboardRight);
+		mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboardJump);
 		mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
 		mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
 		mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
@@ -785,7 +785,62 @@ void InputOptionsState::step()
 			imgui.doInactiveMode(false);
 		}
 	}
-	
+	//if keyboard device is selected:
+	if (mLeftBlobbyDevice == "keyboard")
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Key");
+		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft))
+			mLeftBlobbyKeyboardLeft = "";
+		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Key");
+		if (imgui.doButton(GEN_ID, Vector2(80, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight))
+			mLeftBlobbyKeyboardRight = "";
+		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Key");
+		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
+			mLeftBlobbyKeyboardJump = "";
+	}
+	if (mLeftBlobbyKeyboardLeft == "")
+	{
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Moving Left");
+		mLeftBlobbyKeyboardLeft = InputManager::getSingleton()->getLastActionKey();
+		if (mLeftBlobbyKeyboardLeft != "")
+		{
+			imgui.doCursor(true);
+			imgui.doInactiveMode(false);
+		}
+	}
+	if (mLeftBlobbyKeyboardRight == "")
+	{
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Moving Right");
+		mLeftBlobbyKeyboardRight = InputManager::getSingleton()->getLastActionKey();
+		if (mLeftBlobbyKeyboardRight != "")
+		{
+			imgui.doCursor(true);
+			imgui.doInactiveMode(false);
+		}
+	}
+	if (mLeftBlobbyKeyboardJump == "")
+	{
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Jumping");
+		mLeftBlobbyKeyboardJump = InputManager::getSingleton()->getLastActionKey();
+		if (mLeftBlobbyKeyboardJump != "")
+		{
+			imgui.doCursor(true);
+			imgui.doInactiveMode(false);
+		}
+	}
+
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), mRightBlobbyDevice))
 	{
