@@ -24,6 +24,9 @@ InputManager::~InputManager()
 
 void InputManager::beginGame(PlayerSide side)
 {
+	// Move Mouse to default position
+	SDL_WarpMouse(400, 300);
+
 	std::string prefix;
 	if (side == LEFT_PLAYER)
 		prefix = "left_blobby_";
@@ -66,12 +69,12 @@ void InputManager::endGame()
 	if (mInputDevice[LEFT_PLAYER])
 	{
 		delete mInputDevice[LEFT_PLAYER];
-		mInputDevice[LEFT_PLAYER] = 0;
+		mInputDevice[LEFT_PLAYER] = NULL;
 	}
 	if (mInputDevice[RIGHT_PLAYER])
 	{
 		delete mInputDevice[RIGHT_PLAYER];
-		mInputDevice[RIGHT_PLAYER] = 0;
+		mInputDevice[RIGHT_PLAYER] = NULL;
 	}
 
 }
