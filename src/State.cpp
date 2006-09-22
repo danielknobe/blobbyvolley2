@@ -752,6 +752,11 @@ void InputOptionsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
+	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
+	static bool readyForDialog = true;	//prevents from opening dialog twice if pressing space key there
+	if (!readyForDialog && lastActionKey == "") //does not work yet
+		readyForDialog = true;
+
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
 	{
@@ -792,13 +797,16 @@ void InputOptionsState::step()
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Key");
 		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft))
-			mLeftBlobbyKeyboardLeft = "";
+			if (readyForDialog)
+				mLeftBlobbyKeyboardLeft = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Key");
 		if (imgui.doButton(GEN_ID, Vector2(80, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight))
-			mLeftBlobbyKeyboardRight = "";
+			if (readyForDialog)
+				mLeftBlobbyKeyboardRight = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Key");
 		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
-			mLeftBlobbyKeyboardJump = "";
+			if (readyForDialog)
+				mLeftBlobbyKeyboardJump = "";
 	}
 	if (mLeftBlobbyKeyboardLeft == "")
 	{
@@ -807,11 +815,12 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Moving Left");
-		mLeftBlobbyKeyboardLeft = InputManager::getSingleton()->getLastActionKey();
+		mLeftBlobbyKeyboardLeft = lastActionKey;
 		if (mLeftBlobbyKeyboardLeft != "")
 		{
 			imgui.doCursor(true);
 			imgui.doInactiveMode(false);
+			readyForDialog = false;
 		}
 	}
 	if (mLeftBlobbyKeyboardRight == "")
@@ -821,11 +830,12 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Moving Right");
-		mLeftBlobbyKeyboardRight = InputManager::getSingleton()->getLastActionKey();
+		mLeftBlobbyKeyboardRight = lastActionKey;
 		if (mLeftBlobbyKeyboardRight != "")
 		{
 			imgui.doCursor(true);
 			imgui.doInactiveMode(false);
+			readyForDialog = false;
 		}
 	}
 	if (mLeftBlobbyKeyboardJump == "")
@@ -835,11 +845,12 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "Jumping");
-		mLeftBlobbyKeyboardJump = InputManager::getSingleton()->getLastActionKey();
+		mLeftBlobbyKeyboardJump = lastActionKey;
 		if (mLeftBlobbyKeyboardJump != "")
 		{
 			imgui.doCursor(true);
 			imgui.doInactiveMode(false);
+			readyForDialog = false;
 		}
 	}
 
