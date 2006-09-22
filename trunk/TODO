@@ -6,7 +6,6 @@ For Alpha 5 Release!
 - make the bgcolor in the mainmenu a little bit darker (like in old blobby)
 - BUG: it is not possible to move the panel total in the right/left corner
 - InputconfigGUI must be able to use 100%
-- BUG: sry my english is very bad: Wenn man eine Taste vor dem Konfigurieren drückt [sei es die Taste "a" und man klickt ANSCHLIESSEND auf den Button der das Konfigmenue öffnet] wird die Taste "a" gesetzt)
 - Das Eingabesystem muss in der Lage sein linke und rechte Eingaben 100%ig korrekt zu verarbeiten
 - brauchen eine setMarker methode für den Fall das beide Eingaben via Maus erfolgen
 

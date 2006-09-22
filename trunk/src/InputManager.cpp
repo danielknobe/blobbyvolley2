@@ -15,7 +15,7 @@ InputManager::InputManager()
 
 	mInputDevice[LEFT_PLAYER] = 0;
 	mInputDevice[RIGHT_PLAYER] = 0;
-	mLastTextInputKey = SDLK_UNKNOWN;
+	mLastInputKey = SDLK_UNKNOWN;
 }
 
 InputManager::~InputManager()
@@ -107,6 +107,7 @@ void InputManager::updateInput()
 	mExit = false;
 	mClick = false;
 	mLastMouseButton = -1;
+	mLastInputKey = SDLK_UNKNOWN;
 	// Init GUI Events for buffered Input
 
 	SDL_PumpEvents();
@@ -120,6 +121,7 @@ void InputManager::updateInput()
 			mRunning = false;
 			break;
 		case SDL_KEYDOWN:
+			mLastInputKey = event.key.keysym.sym;
 			switch (event.key.keysym.sym)
 			{
 				case SDLK_UP:
@@ -141,9 +143,6 @@ void InputManager::updateInput()
 				case SDLK_ESCAPE:
 				case SDLK_BACKSPACE:
 					mExit = true;
-					break;
-				default:
-					mLastTextInputKey = event.key.keysym.sym;
 					break;
 			}
 			break;
@@ -508,24 +507,15 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 
 std::string InputManager::getLastTextKey()
 {
-	if (mLastTextInputKey != SDLK_UNKNOWN)
-	{
-		std::string tmp = SDL_GetKeyName(mLastTextInputKey);
-		mLastTextInputKey = SDLK_UNKNOWN;
-		return tmp;
-	}
-	else 
-		return "";
+	std::string key = getLastActionKey();
+	//Filterfunktionen
+	return key;
 }
 
 std::string InputManager::getLastActionKey()
 {
-	if (mLastTextInputKey != SDLK_UNKNOWN)
-	{
-		std::string tmp = SDL_GetKeyName(mLastTextInputKey);
-		mLastTextInputKey = SDLK_UNKNOWN;
-		return tmp;
-	}
+	if (mLastInputKey != SDLK_UNKNOWN)
+		return keyToString(mLastInputKey);
 	else 
 		return "";
 }
