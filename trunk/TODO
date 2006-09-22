@@ -4,10 +4,11 @@ For Alpha 5 Release!
 
 - full Gamepadsupport
 - make the bgcolor in the mainmenu a little bit darker (like in old blobby)
-- it is not possible to move the panel total in the right/left corner
+- BUG: it is not possible to move the panel total in the right/left corner
 - InputconfigGUI must be able to use 100%
-- sry my english is very bad: Beim konfigurieren der Tasten, kann man im Hintergrund weitere Buttons anklicken, somit ist es möglich einfach z.B. 10 mal das Konfigurationsfenster der linken Maustaste zu öffnen (d.h. beim konfigurieren der Tasten, MUSS alles andere im Hintergrund nicht anklickbar sein [sei es Maus, Tastatur oder whatever])
+- BUG: sry my english is very bad: Wenn man eine Taste vor dem Konfigurieren drückt [sei es die Taste "a" und man klickt ANSCHLIESSEND auf den Button der das Konfigmenue öffnet] wird die Taste "a" gesetzt)
 - Das Eingabesystem muss in der Lage sein linke und rechte Eingaben 100%ig korrekt zu verarbeiten
+- brauchen eine setMarker methode für den Fall das beide Eingaben via Maus erfolgen
 
 
 
