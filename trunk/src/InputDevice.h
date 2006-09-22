@@ -96,7 +96,7 @@ public:
 		input = PlayerInput();
 		DuelMatch* match = DuelMatch::getMainGame();
 		if (match == 0)
-		{	
+		{
 			return;
 		}
 		
