@@ -96,44 +96,41 @@ public:
 		input = PlayerInput();
 		DuelMatch* match = DuelMatch::getMainGame();
 		if (match == 0)
-		{
 			return;
-		}
 		
-		SDL_WarpMouse(400, 300);
-
 		int mMouseXPos;
 
 		int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
-		
-		mMarkerX += mMouseXPos-400;
 
+		SDL_WarpMouse(mMouseXPos, 300);
+		
 		if (mouseState == 0)
 			mDelay = false;
 
 		if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
 			input.up = true;
 
+		const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
 
-		const int playerOffset = mPlayer == RIGHT_PLAYER ? 400 : 0;
+		mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
+		if (mMouseXPos <= 201)
+			SDL_WarpMouse(201, 300);
 
-		mMarkerX = mMarkerX < 1 ? 1 : mMarkerX;
-		mMarkerX = mMarkerX > 400 ? 400 : mMarkerX;
+		mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
+		if (mMouseXPos >= 600)
+			SDL_WarpMouse(600, 300);
 
 		float blobpos = match->getBlobPosition(mPlayer).x;
-		if (mPlayer == RIGHT_PLAYER)
-			blobpos = blobpos - 400;
 
-		
+		mMarkerX = mMouseXPos + playerOffset;
+
 		if (blobpos + BLOBBY_SPEED < mMarkerX)
 			input.right = true;
 		if (blobpos - BLOBBY_SPEED > mMarkerX)
 			input.left = true;
-		
 
-
-		RenderManager::getSingleton().setMouseMarker(mMarkerX + playerOffset);
-	}	
+		RenderManager::getSingleton().setMouseMarker(mMarkerX);
+	}
 };
 
 class KeyboardInputDevice : public InputDevice
