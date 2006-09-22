@@ -7,7 +7,6 @@ For Alpha 5 Release!
 - it is not possible to move the panel total in the right/left corner
 - InputconfigGUI must be able to use 100%
 - sry my english is very bad: Beim konfigurieren der Tasten, kann man im Hintergrund weitere Buttons anklicken, somit ist es möglich einfach z.B. 10 mal das Konfigurationsfenster der linken Maustaste zu öffnen (d.h. beim konfigurieren der Tasten, MUSS alles andere im Hintergrund nicht anklickbar sein [sei es Maus, Tastatur oder whatever])
-- wenn man im ersten Optionsmenü etwas verändert und anschließent sofort in das Graphicmenu sich begiebt, werden die Einstellungen im ersten Menü nicht übernommen
 - Das Eingabesystem muss in der Lage sein linke und rechte Eingaben 100%ig korrekt zu verarbeiten
 
 

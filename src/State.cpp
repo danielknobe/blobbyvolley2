@@ -351,12 +351,14 @@ void OptionState::step()
 	if (imgui.doButton(GEN_ID, Vector2(108.0, 370.0), "input options"))
 	{
 		mCurrentState = new InputOptionsState();
+		mSaveConfig = true;
 		delete this;
 		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(108.0, 400.0), "graphic options"))
 	{
 		mCurrentState = new GraphicOptionsState();
+		mSaveConfig = true;
 		delete this;
 		return;
 	}
