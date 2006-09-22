@@ -76,6 +76,7 @@ class MouseInputDevice : public InputDevice
 private:
 	PlayerSide mPlayer;
 	int mJumpButton;
+	int mMarkerX;
 	bool mDelay; // The pressed button of the mainmenu must be ignored
 public:
 	virtual ~MouseInputDevice(){};
@@ -99,32 +100,39 @@ public:
 			return;
 		}
 		
-  		int mousexpos;
-		int mouseState = SDL_GetMouseState(&mousexpos, NULL);
+		SDL_WarpMouse(400, 300);
+
+		int mMouseXPos;
+
+		int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
+		
+		mMarkerX += mMouseXPos-400;
+
 		if (mouseState == 0)
 			mDelay = false;
 
 		if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
-		{
 			input.up = true;
-		}
+
 
 		const int playerOffset = mPlayer == RIGHT_PLAYER ? 400 : 0;
-		mousexpos = mousexpos < 1 ? 1 : mousexpos;
-		mousexpos = mousexpos > 393 ? 393 : mousexpos;
+
+		mMarkerX = mMarkerX < 1 ? 1 : mMarkerX;
+		mMarkerX = mMarkerX > 400 ? 400 : mMarkerX;
 
 		float blobpos = match->getBlobPosition(mPlayer).x;
 		if (mPlayer == RIGHT_PLAYER)
-			blobpos = 400 - blobpos;
+			blobpos = blobpos - 400;
 
 		
-		if (blobpos + BLOBBY_SPEED < mousexpos)
+		if (blobpos + BLOBBY_SPEED < mMarkerX)
 			input.right = true;
-		if (blobpos - BLOBBY_SPEED > mousexpos)
+		if (blobpos - BLOBBY_SPEED > mMarkerX)
 			input.left = true;
 		
-		SDL_WarpMouse(mousexpos + playerOffset, 300);
-		RenderManager::getSingleton().setMouseMarker(mousexpos + playerOffset);
+
+
+		RenderManager::getSingleton().setMouseMarker(mMarkerX + playerOffset);
 	}	
 };
 
