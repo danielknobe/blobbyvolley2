@@ -1,33 +1,43 @@
 ======= TODO
 
-For Alpha 5 Release!
+------------
+For Alpha 5:
+------------
 
 - full Gamepadsupport
 - make the bgcolor in the mainmenu a little bit darker (like in old blobby)
 - BUG: it is not possible to move the panel total in the right/left corner
 - InputconfigGUI must be able to use 100%
-- Das Eingabesystem muss in der Lage sein linke und rechte Eingaben 100%ig korrekt zu verarbeiten
-- brauchen eine setMarker methode für den Fall das beide Eingaben via Maus erfolgen
+- The menu at the beginning must be a little bit more to the left
+- All Inputs MUST work
+- need a setMarker method for the posibility that both inputs are mouse (to create two marker)
+- Fix SDL bug with mouse marker (no redraw after moving)
+- Fix SDL bug that the cursor if still visible after game selection with mouse (is this fixed?)
 
+------------
+For Alpha 6:
+------------
 
-
-
-After Alpha 5 Release:
-
-Important:
-- Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
-
-Near aims:
-
-- Polish Linux integration and release installable source tarballs and eventually debs
-
-Secondary:
-- Make Physfs actions more transparent, for example show added search paths
-- Seperate left/right blobby graphics for skin-creation
-- Add animated background (prerendered Animations, at least for SDL and GL2D)
-- Add option for old and new volleyball ruleset
-- Add time-capped game option
 - Add speed option
+- Add "show fps" option
+- Add option for old and new volleyball ruleset
 
-- Fix SDL bug that the cursor if still visible after game selection with mouse
-- Fix SDL bug with mouse marker
+----------------------------
+May be for Alpha 6 or later:
+----------------------------
+
+--->Primary:
+- Seperate left/right blobby graphics for skin-creation
+
+--->Secondary:
+- Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
+- Polish Linux integration and release installable source tarballs and eventually debs
+- Networksupport
+- Make Physfs actions more transparent, for example show added search paths
+- Add animated background (prerendered Animations, at least for SDL and GL2D)
+- Add time-capped game option
+
+
+
+
+
