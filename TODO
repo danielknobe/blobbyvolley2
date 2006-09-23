@@ -4,15 +4,7 @@
 For Alpha 5:
 ------------
 
-- full Gamepadsupport
-- make the bgcolor in the mainmenu a little bit darker (like in old blobby)
-- BUG: it is not possible to move the panel total in the right/left corner
 - InputconfigGUI must be able to use 100%
-- The menu at the beginning must be a little bit more to the left
-- All Inputs MUST work
-- need a setMarker method for the posibility that both inputs are mouse (to create two marker)
-- Fix SDL bug with mouse marker (no redraw after moving)
-- Fix SDL bug that the cursor if still visible after game selection with mouse (is this fixed?)
 
 ------------
 For Alpha 6:
@@ -36,8 +28,3 @@ May be for Alpha 6 or later:
 - Make Physfs actions more transparent, for example show added search paths
 - Add animated background (prerendered Animations, at least for SDL and GL2D)
 - Add time-capped game option
-
-
-
-
-
