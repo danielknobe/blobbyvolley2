@@ -7,7 +7,7 @@
 #include "ReplayInputSource.h"
 #include "ScriptedInputSource.h"
 #include "IMGUI.h"
-
+#include "SpeedController.h"
 
 #include <physfs.h>
 #include <ctime>
@@ -310,9 +310,9 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
 	//Nur zum test:
-	static std::string bla = "TEST";
+	/*static std::string bla = "TEST";
 	static unsigned cpos = 3;
-	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);
+	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);*/
 
 	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
 		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
@@ -337,35 +337,46 @@ void OptionState::step()
 			mPlayerOptions[RIGHT_PLAYER] = i;
 	}
 
-	if (mReplayActivated)
-	{
-		imgui.doImage(GEN_ID, Vector2(108.0, 482.0), "gfx/pfeil_rechts.bmp");
-	}
+	imgui.doText(GEN_ID, Vector2(34.0, 300.0), "Volume:");
 	float volume = mOptionConfig.getFloat("global_volume");
-	if (imgui.doScrollbar(GEN_ID, Vector2(100.0, 440.0), volume))
+	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 340.0), volume))
 	{
 		mOptionConfig.setFloat("global_volume", volume);
 		SoundManager::getSingleton().setVolume(volume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
-	if (imgui.doButton(GEN_ID, Vector2(108.0, 370.0), "input options"))
+	imgui.doText(GEN_ID, Vector2(34.0, 380.0), "Gamespeed:");
+	float gamefps = mOptionConfig.getInteger("gamefps")/100.0;
+	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 420.0), gamefps))
+	{
+		int gamefpsint = (int)(gamefps*100.0);
+		mOptionConfig.setInteger("gamefps", gamefpsint);
+		SpeedController::getMainInstance()->setGameSpeed(gamefpsint);
+	}
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 460.0), "record replays"))
+	{
+		mReplayActivated = !mReplayActivated;
+	}
+	if (mReplayActivated)
+	{
+		imgui.doImage(GEN_ID, Vector2(16.0, 472.0), "gfx/pfeil_rechts.bmp");
+	}
+
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), "input options"))
 	{
 		mCurrentState = new InputOptionsState();
 		mSaveConfig = true;
 		delete this;
 		return;
 	}
-	if (imgui.doButton(GEN_ID, Vector2(108.0, 400.0), "graphic options"))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), "graphic options"))
 	{
 		mCurrentState = new GraphicOptionsState();
 		mSaveConfig = true;
 		delete this;
 		return;
 	}
-	if (imgui.doButton(GEN_ID, Vector2(124.0, 470.0), "record replays"))
-	{
-		mReplayActivated = !mReplayActivated;
-	}
+
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
@@ -837,6 +848,26 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
 			mLeftBlobbyKeyboardJump = "";
 	}
+	//if joystick device is selected:
+	if (mLeftBlobbyDevice == "joystick")
+	{
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Button");
+		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), mLeftBlobbyJoystickLeft))
+			mLeftBlobbyJoystickLeft = "";
+		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Button");
+		if (imgui.doButton(GEN_ID, Vector2(80, 220.0), mLeftBlobbyJoystickRight))
+			mLeftBlobbyJoystickRight = "";
+		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Button");
+		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), mLeftBlobbyJoystickJump))
+			mLeftBlobbyJoystickJump = "";
+	}
+	if (mLeftBlobbyJoystickLeft == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
+		//mLeftBlobbyJoystickLeft = blalba();
+	}
 
 	//right player side:
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
@@ -920,6 +951,19 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Key");
 		if (imgui.doButton(GEN_ID, Vector2(480, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump))
 			mRightBlobbyKeyboardJump = "";
+	}
+	//if joystick device is selected:
+	if (mRightBlobbyDevice == "joystick")
+	{
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Right Button");
+		if (imgui.doButton(GEN_ID, Vector2(480, 150.0), mRightBlobbyJoystickLeft))
+			mRightBlobbyJoystickLeft = "";
+		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Button");
+		if (imgui.doButton(GEN_ID, Vector2(480, 220.0), mRightBlobbyJoystickRight))
+			mRightBlobbyJoystickRight = "";
+		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Button");
+		if (imgui.doButton(GEN_ID, Vector2(480, 290.0), mRightBlobbyJoystickJump))
+			mRightBlobbyJoystickJump = "";
 	}
 	
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))

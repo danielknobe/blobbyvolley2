@@ -2,6 +2,8 @@
 
 #include <SDL/SDL.h>
 
+SpeedController* SpeedController::mMainInstance = NULL;
+
 SpeedController::SpeedController(float gameFPS, float realFPS)
 {
 	mGameFPS = gameFPS;
