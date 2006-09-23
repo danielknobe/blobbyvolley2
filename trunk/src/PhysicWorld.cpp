@@ -496,7 +496,6 @@ float PhysicWorld::estimateBallImpact()
 	float delta2 = (sqrt(vby * vby + 8 * a * height) - vby) / (2 * a);
 
 	float delta = delta1 > delta2 ? delta1 : delta2;
-	RenderManager::getSingleton().setMouseMarker(mBallPosition.x + mBallVelocity.x * delta);
 	return mBallPosition.x + mBallVelocity.x * delta;
 }
 

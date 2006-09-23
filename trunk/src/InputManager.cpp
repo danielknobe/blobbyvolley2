@@ -172,8 +172,13 @@ void InputManager::updateInput()
 		{
 			if (abs(event.jaxis.value) > 10000)
 			{
+				int axis = 0;
+				if (event.jaxis.value > 0)
+					axis = event.jaxis.axis + 1;
+				if (event.jaxis.value < 0)
+					axis = -(event.jaxis.axis + 1);
 				JoystickAction joyAction(event.jaxis.which,
-					JoystickAction::AXIS, event.jaxis.axis);
+					JoystickAction::AXIS, axis);
 				mLastJoyAction = joyAction.toString();
 			}
 			break;
