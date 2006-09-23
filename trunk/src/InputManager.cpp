@@ -9,6 +9,7 @@ InputManager* InputManager::mSingleton = 0;
 InputManager::InputManager()
 {
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	SDL_JoystickEventState(SDL_ENABLE);
 	assert (mSingleton == 0);
 	mSingleton = this;
 	mRunning = true;
@@ -108,6 +109,7 @@ void InputManager::updateInput()
 	mClick = false;
 	mLastMouseButton = -1;
 	mLastInputKey = SDLK_UNKNOWN;
+	mLastJoyAction = "";
 	// Init GUI Events for buffered Input
 
 	SDL_PumpEvents();
@@ -144,6 +146,8 @@ void InputManager::updateInput()
 				case SDLK_BACKSPACE:
 					mExit = true;
 					break;
+				default:
+					break;
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
@@ -154,7 +158,27 @@ void InputManager::updateInput()
 					mClick = true;
 					break;
 			}
-			break;		
+			break;
+		case SDL_JOYBUTTONDOWN:
+		{
+			JoystickAction joyAction(event.jbutton.which,
+				JoystickAction::BUTTON, event.jbutton.button);
+			mLastJoyAction = joyAction.toString();
+			break;
+		}
+		case SDL_JOYAXISMOTION:
+		{
+			if (abs(event.jaxis.value) > 10000)
+			{
+				JoystickAction joyAction(event.jaxis.which,
+					JoystickAction::AXIS, event.jaxis.value);
+				mLastJoyAction = joyAction.toString();
+			}
+			break;
+		}
+
+/* This handles the special buttons on the GP2X, this will
+ * have to be renewed with the next GP2X release.
 #if defined(__arm__) && defined(linux)
 		case SDL_JOYBUTTONDOWN:
 			switch (event.jbutton.button)
@@ -168,7 +192,9 @@ void InputManager::updateInput()
 			}
 			SoundManager::getSingleton().setVolume(volume);
 			break;
+#else
 #endif
+*/
 	}
 
 	// Device gives status to the playerinput
@@ -519,3 +545,9 @@ std::string InputManager::getLastActionKey()
 	else 
 		return "";
 }
+
+std::string InputManager::getLastJoyAction()
+{
+	return mLastJoyAction;
+}
+

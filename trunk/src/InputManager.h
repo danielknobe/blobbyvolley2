@@ -35,6 +35,7 @@ private:
 	
 	SDLKey mLastInputKey;
 	int mLastMouseButton; 
+	std::string mLastJoyAction;
 
 	PlayerInput mInput[MAX_PLAYERS];	
 	InputDevice *mInputDevice[MAX_PLAYERS];	
@@ -65,6 +66,7 @@ public:
 	std::string getLastTextKey();
 	std::string getLastActionKey();
 	int getLastMouseButton() { return mLastMouseButton; }
+	std::string getLastJoyAction();
 
 	// For GUI navigation (Mouse)
 	Vector2 position();

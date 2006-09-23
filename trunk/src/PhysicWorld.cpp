@@ -36,11 +36,14 @@ const float BLOBBY_JUMP_ACCELERATION = 14.5;
 
 // This is exactly the half of the gravitation, i checked it in
 // the original code
-const float BLOBBY_JUMP_BUFFER = 0.47;
+const float BLOBBY_JUMP_BUFFER = 0.44;
 const float GRAVITATION = 0.88;
-const float BALL_GRAVITATION = 0.29;
+const float BALL_GRAVITATION = 0.28;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
+
+const float BALL_COLLISION_CORRECTION = 3.0;
+const float BALL_COLLISION_VELOCITY = 13.125;
 
 // Temp
 float temp = 0;
@@ -304,8 +307,8 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[LEFT_PLAYER].x,mBlobPosition[LEFT_PLAYER].y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition += mBallVelocity.scale(2);
-				mBallVelocity = mBallVelocity.scale(14);
+				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
+				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByLeftBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[RIGHT_PLAYER]).length();
 			}
@@ -314,8 +317,8 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[RIGHT_PLAYER].x,mBlobPosition[RIGHT_PLAYER].y+BLOBBY_LOWER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition += mBallVelocity.scale(2);
-				mBallVelocity = mBallVelocity.scale(14);
+				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
+				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[RIGHT_PLAYER]).length();
 			}	
@@ -323,8 +326,8 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[LEFT_PLAYER].x,mBlobPosition[LEFT_PLAYER].y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition += mBallVelocity.scale(2);
-				mBallVelocity = mBallVelocity.scale(14);
+				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
+				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByLeftBlob = true;
 				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[LEFT_PLAYER]).length();
 			}
@@ -333,8 +336,8 @@ void PhysicWorld::step()
 			{
 				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[RIGHT_PLAYER].x,mBlobPosition[RIGHT_PLAYER].y-BLOBBY_UPPER_SPHERE));
 				mBallVelocity = mBallVelocity.normalise();
-				mBallPosition += mBallVelocity.scale(2);
-				mBallVelocity = mBallVelocity.scale(14);
+				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
+				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByRightBlob=true;
 				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[LEFT_PLAYER]).length();
 			}
