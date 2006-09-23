@@ -806,21 +806,24 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
-		mLeftBlobbyKeyboardLeft = lastActionKey;
+		if (!keyTaken(lastActionKey))
+			mLeftBlobbyKeyboardLeft = lastActionKey;
 	}
 	if (mLeftBlobbyKeyboardRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
-		mLeftBlobbyKeyboardRight = lastActionKey;
+		if (!keyTaken(lastActionKey))
+			mLeftBlobbyKeyboardRight = lastActionKey;
 	}
 	if (mLeftBlobbyKeyboardJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
-		mLeftBlobbyKeyboardJump = lastActionKey;
+		if (!keyTaken(lastActionKey))
+			mLeftBlobbyKeyboardJump = lastActionKey;
 	}
 	if (mLeftBlobbyDevice == "keyboard")
 	{
@@ -871,6 +874,53 @@ void InputOptionsState::step()
 			imgui.doInactiveMode(false);
 		}
 	}
+	//if keyboard device is selected:
+	if (mRightBlobbyKeyboardLeft != "" && mRightBlobbyKeyboardRight != "" && mRightBlobbyKeyboardJump != "")
+	{
+		imgui.doCursor(true);
+		imgui.doInactiveMode(false);
+	}
+	else
+	{
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
+	}
+	if (mRightBlobbyKeyboardLeft == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		if (!keyTaken(lastActionKey))
+			mRightBlobbyKeyboardLeft = lastActionKey;
+	}
+	if (mRightBlobbyKeyboardRight == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		if (!keyTaken(lastActionKey))
+			mRightBlobbyKeyboardRight = lastActionKey;
+	}
+	if (mRightBlobbyKeyboardJump == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		if (!keyTaken(lastActionKey))
+			mRightBlobbyKeyboardJump = lastActionKey;
+	}
+	if (mRightBlobbyDevice == "keyboard")
+	{
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Right Key");
+		if (imgui.doButton(GEN_ID, Vector2(480, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft))
+			mRightBlobbyKeyboardLeft = "";
+		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Key");
+		if (imgui.doButton(GEN_ID, Vector2(480, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight))
+			mRightBlobbyKeyboardRight = "";
+		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Key");
+		if (imgui.doButton(GEN_ID, Vector2(480, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump))
+			mRightBlobbyKeyboardJump = "";
+	}
 	
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
@@ -883,4 +933,10 @@ void InputOptionsState::step()
 		delete this;
 		mCurrentState = new OptionState();
 	}
+}
+
+bool InputOptionsState::keyTaken(std::string key)
+{
+	return (mLeftBlobbyKeyboardLeft == key || mLeftBlobbyKeyboardRight == key || mLeftBlobbyKeyboardJump == key
+		|| mRightBlobbyKeyboardLeft == key || mRightBlobbyKeyboardRight == key || mRightBlobbyKeyboardJump == key);
 }

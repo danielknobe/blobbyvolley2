@@ -65,6 +65,7 @@ void IMGUI::begin()
 	while (!mQueue->empty())
 		mQueue->pop();
 	
+	mLastKeyAction = NONE;
 	if (InputManager::getSingleton()->up())
 		mLastKeyAction = UP;
 	if (InputManager::getSingleton()->down())

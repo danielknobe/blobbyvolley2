@@ -127,6 +127,7 @@ public:
 	virtual ~InputOptionsState();
 	virtual void step();
 private:
+	bool keyTaken(std::string key);
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
 	//left data:
