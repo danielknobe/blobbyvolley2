@@ -346,10 +346,12 @@ void OptionState::step()
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
 	imgui.doText(GEN_ID, Vector2(34.0, 380.0), "Gamespeed:");
-	float gamefps = mOptionConfig.getInteger("gamefps")/100.0;
+	float gamefps = (mOptionConfig.getInteger("gamefps")-30)/300.0;
+	if (gamefps < 0)
+		gamefps = 0;
 	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 420.0), gamefps))
 	{
-		int gamefpsint = (int)(gamefps*100.0);
+		int gamefpsint = (int)(gamefps*300.0+30);
 		mOptionConfig.setInteger("gamefps", gamefpsint);
 		SpeedController::getMainInstance()->setGameSpeed(gamefpsint);
 	}
@@ -930,21 +932,24 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
-		mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
 	}
 	if (mLeftBlobbyJoystickRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
-		mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
 	}
 	if (mLeftBlobbyJoystickJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
-		mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 	}
 	if (mRightBlobbyMouseJumpbutton == -1)
 	{
@@ -982,21 +987,24 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
-		mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
 	}
 	if (mRightBlobbyJoystickRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
-		mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
 	}
 	if (mRightBlobbyJoystickJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
-		mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
+		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
+			mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 	}
 	
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
@@ -1016,4 +1024,11 @@ bool InputOptionsState::keyTaken(std::string key)
 {
 	return (mLeftBlobbyKeyboardLeft == key || mLeftBlobbyKeyboardRight == key || mLeftBlobbyKeyboardJump == key
 		|| mRightBlobbyKeyboardLeft == key || mRightBlobbyKeyboardRight == key || mRightBlobbyKeyboardJump == key);
+}
+
+bool InputOptionsState::buttonTaken(std::string button)
+{
+	return (mLeftBlobbyJoystickLeft == button || mLeftBlobbyJoystickRight == button 
+			|| mLeftBlobbyJoystickJump == button || mRightBlobbyJoystickLeft == button 
+			|| mRightBlobbyJoystickRight == button || mRightBlobbyJoystickJump == button);
 }

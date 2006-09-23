@@ -128,6 +128,7 @@ public:
 	virtual void step();
 private:
 	bool keyTaken(std::string key);
+	bool buttonTaken(std::string button);
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
 	//left data:
