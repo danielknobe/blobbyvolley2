@@ -38,21 +38,26 @@ public:
 
 struct JoystickAction
 {
-	JoystickAction(std::string string);
-	~JoystickAction();
-	JoystickAction(const JoystickAction& action);
-
-	std::string toString();
-	
-	enum
+	enum Type
 	{
 		AXIS,
 		BUTTON,
 // 	We don't implement these exotic input methods here
 //		HAT,
 //		TRACKBALL
-	} type;
+	};
 
+	JoystickAction(std::string string);
+	JoystickAction(int _joyid, Type _type, int _number)
+		: type(_type), joy(0), joyid(_joyid),
+			number(number), close(false) {}
+	~JoystickAction();
+	JoystickAction(const JoystickAction& action);
+
+	std::string toString();
+	
+	Type type;
+	
 	SDL_Joystick* joy;
 	int joyid;
 	
