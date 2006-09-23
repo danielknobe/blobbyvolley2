@@ -122,6 +122,7 @@ int main(int argc, char* argv[])
 
 	SpeedController scontroller(gameConfig.getFloat("gamefps"),
 					gameConfig.getFloat("realfps"));
+	SpeedController::setMainInstance(&scontroller);
 
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();

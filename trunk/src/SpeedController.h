@@ -24,8 +24,12 @@ public:
 
 // This updates everything and waits the necessary time	
 	void update();
+
+	static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
+	static SpeedController* getMainInstance() { return mMainInstance; }
 private:
 	float mGameFPS;
 	float mRealFPS;
 	bool mFramedrop;
+	static SpeedController* mMainInstance;
 };
