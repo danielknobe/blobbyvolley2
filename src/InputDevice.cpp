@@ -67,12 +67,18 @@ bool JoystickInputDevice::getAction(const JoystickAction& action)
 	switch (action.type)
 	{
 		case JoystickAction::AXIS:
-			if (SDL_JoystickGetAxis(action.joy,
-				-action.number - 1) < 10)
-				return true;
-			if (SDL_JoystickGetAxis(action.joy,
-				action.number - 1) > 10)
-				return true;
+			if (action.number < 0)
+			{
+				if (SDL_JoystickGetAxis(action.joy,
+					-action.number - 1) < -200)
+					return true;
+			}
+			else if (action.number > 0)
+			{
+				if (SDL_JoystickGetAxis(action.joy,
+					action.number - 1) > 200)
+					return true;
+			}
 			break;
 		case JoystickAction::BUTTON:
 			if (SDL_JoystickGetButton(action.joy,
