@@ -782,7 +782,7 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Jump Button");
 		std::ostringstream text;
 		text << "Button " << mLeftBlobbyMouseJumpbutton;
-		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), text.str()))
+		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), text.str()))
 			mLeftBlobbyMouseJumpbutton = -2;
 	}
 	if ((mLeftBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
@@ -839,26 +839,26 @@ void InputOptionsState::step()
 	if (mLeftBlobbyDevice == "keyboard")
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Key");
-		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft))
+		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft))
 			mLeftBlobbyKeyboardLeft = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Key");
-		if (imgui.doButton(GEN_ID, Vector2(80, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight))
+		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight))
 			mLeftBlobbyKeyboardRight = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Key");
-		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
+		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
 			mLeftBlobbyKeyboardJump = "";
 	}
 	//if joystick device is selected:
 	if (mLeftBlobbyDevice == "joystick")
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Button");
-		if (imgui.doButton(GEN_ID, Vector2(80, 150.0), mLeftBlobbyJoystickLeft))
+		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystickLeft))
 			mLeftBlobbyJoystickLeft = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Button");
-		if (imgui.doButton(GEN_ID, Vector2(80, 220.0), mLeftBlobbyJoystickRight))
+		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystickRight))
 			mLeftBlobbyJoystickRight = "";
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Button");
-		if (imgui.doButton(GEN_ID, Vector2(80, 290.0), mLeftBlobbyJoystickJump))
+		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystickJump))
 			mLeftBlobbyJoystickJump = "";
 	}
 	if (mLeftBlobbyJoystickLeft == "")
@@ -866,7 +866,21 @@ void InputOptionsState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
-		//mLeftBlobbyJoystickLeft = blalba();
+		mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+	}
+	if (mLeftBlobbyJoystickRight == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+	}
+	if (mLeftBlobbyJoystickJump == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 	}
 
 	//right player side:
@@ -886,7 +900,7 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Jump Button");
 		std::ostringstream text;
 		text << "Button " << mRightBlobbyMouseJumpbutton;
-		if (imgui.doButton(GEN_ID, Vector2(480, 150.0), text.str()))
+		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), text.str()))
 			mRightBlobbyMouseJumpbutton = -2;
 	}
 	if ((mRightBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
@@ -943,27 +957,48 @@ void InputOptionsState::step()
 	if (mRightBlobbyDevice == "keyboard")
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Right Key");
-		if (imgui.doButton(GEN_ID, Vector2(480, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft))
+		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft))
 			mRightBlobbyKeyboardLeft = "";
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Key");
-		if (imgui.doButton(GEN_ID, Vector2(480, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight))
+		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight))
 			mRightBlobbyKeyboardRight = "";
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Key");
-		if (imgui.doButton(GEN_ID, Vector2(480, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump))
+		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump))
 			mRightBlobbyKeyboardJump = "";
 	}
 	//if joystick device is selected:
 	if (mRightBlobbyDevice == "joystick")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Right Button");
-		if (imgui.doButton(GEN_ID, Vector2(480, 150.0), mRightBlobbyJoystickLeft))
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Button");
+		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystickLeft))
 			mRightBlobbyJoystickLeft = "";
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Button");
-		if (imgui.doButton(GEN_ID, Vector2(480, 220.0), mRightBlobbyJoystickRight))
+		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystickRight))
 			mRightBlobbyJoystickRight = "";
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Button");
-		if (imgui.doButton(GEN_ID, Vector2(480, 290.0), mRightBlobbyJoystickJump))
+		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystickJump))
 			mRightBlobbyJoystickJump = "";
+	}
+	if (mRightBlobbyJoystickLeft == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+	}
+	if (mRightBlobbyJoystickRight == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+	}
+	if (mRightBlobbyJoystickJump == "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 	}
 	
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
