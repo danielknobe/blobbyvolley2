@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 	{
 		inputmgr->updateInput();
 		running = inputmgr->running();
-		
+
 		// This is true by default for compatibility, GUI states may
 		// disable it if necessary
 		rmanager->drawGame(true);

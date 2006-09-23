@@ -7,33 +7,49 @@
 
 class JoystickPool
 {
-	std::map<SDL_Joystick*, int> refCounter;
-	static JoystickPool* mSingleton;
 public:
-	SDL_Joystick* openJoystick(int joyid)
-	{
-		SDL_Joystick* joy = SDL_JoystickOpen(joyid);
-		refCounter[joy]++;
-		return joy;
-	}
-	void closeJoystick(SDL_Joystick* joy)
-	{
-		if (refCounter[joy] < 1)
-			throw std::string("failed to close joystick!");
-		if (refCounter[joy] == 1)
-		{
-			refCounter[joy] = 0;
-			SDL_JoystickClose(joy);
-		}
-		else
-			refCounter[joy]--;
-	}
 	static JoystickPool& getSingleton()
 	{
-		if (mSingleton == NULL)
-			mSingleton = new JoystickPool();	
+		if (mSingleton == 0)
+			mSingleton = new JoystickPool();
 		return *mSingleton;
 	}
+	
+	SDL_Joystick* getJoystick(int id)
+	{
+		SDL_Joystick* joy =  mJoyMap[id];
+		if (!joy)
+		
+			std::cerr << "Warning: could not find joystick number "
+				<< id << "!" << std::endl;
+		return joy;
+	}
+	
+	int probeJoysticks()
+	{
+		int id = 0;
+		SDL_Joystick* lastjoy;
+		while ((lastjoy = SDL_JoystickOpen(id)))
+		{
+			mJoyMap[id] = lastjoy;
+			id++;
+		}
+		return id;
+	}
+	
+	void closeJoysticks()
+	{
+		for (JoyMap::iterator iter = mJoyMap.begin();
+			iter != mJoyMap.end(); ++iter)
+		{
+			SDL_JoystickClose((*iter).second);
+		}
+	}
+	
+private:
+	typedef std::map<int, SDL_Joystick*> JoyMap;
+	JoyMap mJoyMap;
+	static JoystickPool* mSingleton;
 };
 
 struct JoystickAction
@@ -50,7 +66,7 @@ struct JoystickAction
 	JoystickAction(std::string string);
 	JoystickAction(int _joyid, Type _type, int _number)
 		: type(_type), joy(0), joyid(_joyid),
-			number(number), close(false) {}
+			number(_number) {}
 	~JoystickAction();
 	JoystickAction(const JoystickAction& action);
 
@@ -64,7 +80,6 @@ struct JoystickAction
 	// Note: Axis are stored as the SDL axis +1, so we can used
 	// the signedness as direction indication
 	int number;
-	bool close;
 };
 
 class InputDevice

@@ -10,6 +10,7 @@ InputManager::InputManager()
 {
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	SDL_JoystickEventState(SDL_ENABLE);
+	JoystickPool::getSingleton().probeJoysticks();
 	assert (mSingleton == 0);
 	mSingleton = this;
 	mRunning = true;
@@ -21,6 +22,7 @@ InputManager::InputManager()
 
 InputManager::~InputManager()
 {
+	JoystickPool::getSingleton().closeJoysticks();
 }
 
 void InputManager::beginGame(PlayerSide side)
@@ -171,7 +173,7 @@ void InputManager::updateInput()
 			if (abs(event.jaxis.value) > 10000)
 			{
 				JoystickAction joyAction(event.jaxis.which,
-					JoystickAction::AXIS, event.jaxis.value);
+					JoystickAction::AXIS, event.jaxis.axis);
 				mLastJoyAction = joyAction.toString();
 			}
 			break;

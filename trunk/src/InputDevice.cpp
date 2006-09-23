@@ -1,6 +1,6 @@
 #include "InputDevice.h"
 
-JoystickPool* JoystickPool::mSingleton = NULL; //static
+JoystickPool* JoystickPool::mSingleton = 0; //static
 
 JoystickAction::JoystickAction(std::string string)
 {
@@ -8,7 +8,6 @@ JoystickAction::JoystickAction(std::string string)
 	number = 0;
 	joy = 0;
 	joyid = 0;
-	close = false;
 	try
 	{
 		const char* str = string.c_str();
@@ -24,9 +23,7 @@ JoystickAction::JoystickAction(std::string string)
 				throw string;
 		}
 
-		joy = JoystickPool::getSingleton().openJoystick(joyid);
-		if (joy != 0)
-			close = true;
+		joy = JoystickPool::getSingleton().getJoystick(joyid);
 	}
 	catch (std::string e)
 	{
@@ -37,15 +34,13 @@ JoystickAction::JoystickAction(std::string string)
 JoystickAction::JoystickAction(const JoystickAction& action)
 {
 	type = action.type;
-	joy = JoystickPool::getSingleton().openJoystick(action.joyid);
+	joy = JoystickPool::getSingleton().getJoystick(action.joyid);
 	joyid = action.joyid;
 	number = action.number;
-	close = false;
 }
 
 JoystickAction::~JoystickAction()
 {
-	JoystickPool::getSingleton().closeJoystick(joy);
 }
 
 std::string JoystickAction::toString()
