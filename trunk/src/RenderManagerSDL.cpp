@@ -326,7 +326,7 @@ void RenderManagerSDL::setMouseMarker(float position)
 {
 	SDL_Rect restore = {
 		lround(mMouseMarkerPosition - 2.5),
-		5,
+		590,
 		5,
 		5
 	};
