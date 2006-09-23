@@ -795,7 +795,10 @@ void InputOptionsState::step()
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Jump Button");
 		std::ostringstream text;
-		text << "Button " << mLeftBlobbyMouseJumpbutton;
+		if (mLeftBlobbyMouseJumpbutton >= 0)
+			text << "Button " << mLeftBlobbyMouseJumpbutton;
+		else
+			text << "Button ";
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), text.str()))
 			mLeftBlobbyMouseJumpbutton = -2;
 	}
@@ -853,7 +856,10 @@ void InputOptionsState::step()
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Jump Button");
 		std::ostringstream text;
-		text << "Button " << mRightBlobbyMouseJumpbutton;
+		if (mRightBlobbyMouseJumpbutton >= 0)
+			text << "Button " << mRightBlobbyMouseJumpbutton;
+		else
+			text << "Button ";
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), text.str()))
 			mRightBlobbyMouseJumpbutton = -2;
 	}
