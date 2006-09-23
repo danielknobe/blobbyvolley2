@@ -172,7 +172,7 @@ void MainMenuState::step()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
 
-	if (imgui.doButton(GEN_ID, Vector2(524.0, 400.0), "start"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), "start"))
 	{
 		delete mCurrentState;
 		try
@@ -189,19 +189,19 @@ void MainMenuState::step()
 		}
 	}
 	
-	if (imgui.doButton(GEN_ID, Vector2(524.0, 430.0), "options"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), "options"))
 	{
 		delete mCurrentState;
 		mCurrentState = new OptionState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(524.0, 460.0), "watch replay"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 460.0), "watch replay"))
 	{
 		delete mCurrentState;
 		mCurrentState = new ReplayMenuState();
 	}
 	
-	if (imgui.doButton(GEN_ID, Vector2(524.0, 490.0), "exit")) 
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), "exit")) 
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
