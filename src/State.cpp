@@ -311,7 +311,7 @@ void OptionState::step()
 
 	//Nur zum test:
 	static std::string bla = "TEST";
-	static int cpos = 3;
+	static unsigned cpos = 3;
 	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);
 
 	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
