@@ -765,6 +765,18 @@ void InputOptionsState::step()
 
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
 
+	//check if a capture window is open, to set all widgets inactive:
+	if (mLeftBlobbyKeyboardLeft != "" && mLeftBlobbyKeyboardRight != "" && mLeftBlobbyKeyboardJump != "" && mLeftBlobbyJoystickLeft != "" && mLeftBlobbyJoystickRight != "" && mLeftBlobbyJoystickJump != "" && mLeftBlobbyMouseJumpbutton != -1 && mRightBlobbyKeyboardLeft != "" && mRightBlobbyKeyboardRight != "" && mRightBlobbyKeyboardJump != "" && mRightBlobbyJoystickLeft != "" && mRightBlobbyJoystickRight != "" && mRightBlobbyJoystickJump != "" && mRightBlobbyMouseJumpbutton != -1)
+	{
+		imgui.doCursor(true);
+		imgui.doInactiveMode(false);
+	}
+	else
+	{
+		imgui.doInactiveMode(true);
+		imgui.doCursor(false);
+	}
+
 	//left player side:
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
@@ -789,29 +801,12 @@ void InputOptionsState::step()
 		mLeftBlobbyMouseJumpbutton = -1;
 	if (mLeftBlobbyMouseJumpbutton == -1)
 	{
-		imgui.doInactiveMode(true);
-		imgui.doCursor(false);
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
 		mLeftBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
-		if (mLeftBlobbyMouseJumpbutton)
-		{
-			imgui.doCursor(true);
-			imgui.doInactiveMode(false);
-		}
 	}
 	//if keyboard device is selected:
-	if (mLeftBlobbyKeyboardLeft != "" && mLeftBlobbyKeyboardRight != "" && mLeftBlobbyKeyboardJump != "")
-	{
-		imgui.doCursor(true);
-		imgui.doInactiveMode(false);
-	}
-	else
-	{
-		imgui.doInactiveMode(true);
-		imgui.doCursor(false);
-	}
 	if (mLeftBlobbyKeyboardLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
@@ -907,29 +902,12 @@ void InputOptionsState::step()
 		mRightBlobbyMouseJumpbutton = -1;
 	if (mRightBlobbyMouseJumpbutton == -1)
 	{
-		imgui.doInactiveMode(true);
-		imgui.doCursor(false);
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
 		mRightBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
-		if (mRightBlobbyMouseJumpbutton)
-		{
-			imgui.doCursor(true);
-			imgui.doInactiveMode(false);
-		}
 	}
 	//if keyboard device is selected:
-	if (mRightBlobbyKeyboardLeft != "" && mRightBlobbyKeyboardRight != "" && mRightBlobbyKeyboardJump != "")
-	{
-		imgui.doCursor(true);
-		imgui.doInactiveMode(false);
-	}
-	else
-	{
-		imgui.doInactiveMode(true);
-		imgui.doCursor(false);
-	}
 	if (mRightBlobbyKeyboardLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
