@@ -17,6 +17,8 @@ SpeedController::~SpeedController()
 
 void SpeedController::setGameSpeed(float fps)
 {
+	if (fps < 5)
+		fps = 5;
 	mGameFPS = fps;
 }
 
