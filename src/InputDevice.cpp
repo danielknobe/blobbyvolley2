@@ -65,13 +65,13 @@ bool JoystickInputDevice::getAction(const JoystickAction& action)
 			if (action.number < 0)
 			{
 				if (SDL_JoystickGetAxis(action.joy,
-					-action.number - 1) < -200)
+					-action.number - 1) < -15000)
 					return true;
 			}
 			else if (action.number > 0)
 			{
 				if (SDL_JoystickGetAxis(action.joy,
-					action.number - 1) > 200)
+					action.number - 1) > 15000)
 					return true;
 			}
 			break;
