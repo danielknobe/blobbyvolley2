@@ -34,7 +34,7 @@ public:
 
 	bool doButton(int id, const Vector2& position, const std::string& text);
 	bool doScrollbar(int id, const Vector2& position, float& value);
-	bool doEditbox(int id, const Vector2& position, std::string& text, int& cpos);
+	bool doEditbox(int id, const Vector2& position, std::string& text, unsigned& cpos);
 	bool doBlob(int id, const Vector2& position, const Color& col);
 
 	void doInactiveMode(bool inactive) { mInactive = inactive; }

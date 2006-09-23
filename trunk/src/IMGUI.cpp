@@ -287,7 +287,7 @@ void IMGUI::resetSelection()
 	mButtonReset = true;
 }
 
-bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& cpos)
+bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsigned& cpos)
 {
 	if (mActiveButton == 0 && !mButtonReset)
 		mActiveButton = id;
@@ -326,15 +326,26 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 				default:
 					break;
 			}
+			std::string input = InputManager::getSingleton()->getLastTextKey();
+			if (input == "backspace" && text.length() > 0 && cpos > 0)
+			{
+				text.erase(cpos - 1, 1);
+				cpos--;
+			}
+			else if (input == "del" && text.length() > cpos)
+			{
+				text.erase(cpos, 1);
+			}
+			// This is a temporary solution until the new
+			// UTF-8 class can tell the real length.
+			else if (input.length() == 1)
+			{
+				text.insert(cpos, input);
+				cpos++;
+				changed = true;
+			}
 		}
-
-		std::string input = InputManager::getSingleton()->getLastTextKey();
-		if (!input.empty())
-		{
-			text.insert(cpos, input);
-			changed = true;
-		}
-
+		
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > position.x &&
 			mousepos.y > position.y &&
@@ -350,7 +361,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, int& c
 		}
 	}
 
-	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1;
+	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1.0;
 	obj.text = text;
 
 	mLastWidget = id;
