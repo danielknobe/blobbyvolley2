@@ -788,7 +788,10 @@ void InputOptionsState::step()
 		else if (mLeftBlobbyDevice == "keyboard")
 			mLeftBlobbyDevice = "joystick";
 		else if (mLeftBlobbyDevice == "joystick")
-			mLeftBlobbyDevice = "mouse";
+			if (mRightBlobbyDevice != "mouse")
+				mLeftBlobbyDevice = "mouse";
+			else
+				mLeftBlobbyDevice = "keyboard";
 	}
 	//if mouse device is selected:
 	if (mLeftBlobbyDevice == "mouse")
@@ -864,7 +867,10 @@ void InputOptionsState::step()
 		else if (mRightBlobbyDevice == "keyboard")
 			mRightBlobbyDevice = "joystick";
 		else if (mRightBlobbyDevice == "joystick")
-			mRightBlobbyDevice = "mouse";
+			if (mLeftBlobbyDevice != "mouse")
+				mRightBlobbyDevice = "mouse";
+			else
+				mRightBlobbyDevice = "keyboard";
 	}
 	//if mouse device is selected:
 	if (mRightBlobbyDevice == "mouse")
