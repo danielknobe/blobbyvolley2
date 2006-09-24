@@ -519,14 +519,11 @@ void ReplayMenuState::step()
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
-		else for (unsigned int i = 0; i < mReplayFiles.size(); i++)
+		else 
 		{
-			if (imgui.doButton(GEN_ID << 6 + i, Vector2(34.0, 50.0 + 30.0 * i),
-						mReplayFiles[i]))
-			{
-				mSelectedReplay = i;
-				break;
-			}
+			for (unsigned int i = 0; i < mReplayFiles.size(); i++)
+				if (imgui.doButton(GEN_ID << 6 + i, Vector2(34.0, 50.0 + 30.0 * i), mReplayFiles[i]))
+					mSelectedReplay = i;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete") &&
 					mSelectedReplay != -1)
