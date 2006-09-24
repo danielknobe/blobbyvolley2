@@ -131,6 +131,8 @@ private:
 	bool buttonTaken(std::string button);
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
+	std::string oldString;
+	int oldInteger;
 	//left data:
 	std::string mLeftBlobbyDevice;
 	int mLeftBlobbyMouseJumpbutton;
