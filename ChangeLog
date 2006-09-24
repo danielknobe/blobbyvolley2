@@ -1,0 +1,11 @@
+Since Alpha 4:
+- Many options configurable through new GUI
+- Configurable game speed, with frame dropping for slow PCs
+- Sound volume option
+- Keyboard, mouse, Joystick and Gamepad can be used for input now
+- Further optimized physics by Fliegus123 (old replays won't work)
+- Many bugfixes for the scripting API, bots which rely on 
+	estimate/estimx/estimy now work much better
+- Special cooperation with the OpenAnno team: Sven Rech will work for Blobby
+	until final release
+
