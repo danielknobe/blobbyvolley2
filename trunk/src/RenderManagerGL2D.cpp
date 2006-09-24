@@ -140,7 +140,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		mBlobShadow.push_back(blobShadow);
 	}
 
-	for (int i = 0; i <= 51; ++i)
+	for (int i = 0; i <= 52; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);

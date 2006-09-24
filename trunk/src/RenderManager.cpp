@@ -103,6 +103,8 @@ int RenderManager::getNextFontIndex(std::string& string)
 		index = 50;
 	else if (testChar == ' ')
 		index = 51;
+	else if (testChar == '-')
+		index = 52;
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape
 	{
 		testChar = string.at(0);
