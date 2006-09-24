@@ -800,7 +800,10 @@ void InputOptionsState::step()
 		else
 			text << "Button ";
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), text.str()))
+		{
+			oldInteger = mLeftBlobbyMouseJumpbutton;
 			mLeftBlobbyMouseJumpbutton = -2;
+		}
 	}
 	if ((mLeftBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
 		mLeftBlobbyMouseJumpbutton = -1;
@@ -811,18 +814,21 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft))
 		{
 			lastActionKey = "";
+			oldString = mLeftBlobbyKeyboardLeft;
 			mLeftBlobbyKeyboardLeft = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Key");
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight))
 		{
 			lastActionKey = "";
+			oldString = mLeftBlobbyKeyboardRight; 
 			mLeftBlobbyKeyboardRight = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Key");
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump))
 		{
 			lastActionKey = "";
+			oldString = mLeftBlobbyKeyboardJump; 
 			mLeftBlobbyKeyboardJump = "";
 		}
 	}
@@ -831,13 +837,22 @@ void InputOptionsState::step()
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystickLeft))
+		{
+			oldString = mLeftBlobbyJoystickLeft; 
 			mLeftBlobbyJoystickLeft = "";
+		}
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystickRight))
+		{
+			oldString = mLeftBlobbyJoystickRight; 
 			mLeftBlobbyJoystickRight = "";
+		}
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystickJump))
+		{
+			oldString = mLeftBlobbyJoystickJump; 
 			mLeftBlobbyJoystickJump = "";
+		}
 	}
 
 	//right player side:
@@ -861,7 +876,10 @@ void InputOptionsState::step()
 		else
 			text << "Button ";
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), text.str()))
+		{
+			oldInteger = mRightBlobbyMouseJumpbutton; 
 			mRightBlobbyMouseJumpbutton = -2;
+		}
 	}
 	if ((mRightBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
 		mRightBlobbyMouseJumpbutton = -1;
@@ -872,18 +890,21 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft))
 		{
 			lastActionKey = "";
+			oldString = mRightBlobbyKeyboardLeft; 
 			mRightBlobbyKeyboardLeft = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Key");
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight))
 		{
 			lastActionKey = "";
+			oldString = mRightBlobbyKeyboardRight; 
 			mRightBlobbyKeyboardRight = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Key");
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump))
 		{
 			lastActionKey = "";
+			oldString = mRightBlobbyKeyboardJump; 
 			mRightBlobbyKeyboardJump = "";
 		}
 	}
@@ -892,13 +913,22 @@ void InputOptionsState::step()
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystickLeft))
+		{
+			oldString = mRightBlobbyJoystickLeft; 
 			mRightBlobbyJoystickLeft = "";
+		}
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystickRight))
+		{
+			oldString = mRightBlobbyJoystickRight; 
 			mRightBlobbyJoystickRight = "";
+		}
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystickJump))
+		{
+			oldString = mRightBlobbyJoystickJump; 
 			mRightBlobbyJoystickJump = "";
+		}
 	}
 	
 	//Capture dialogs:
@@ -908,6 +938,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
 		mLeftBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyMouseJumpbutton = oldInteger;
 	}
 	if (mLeftBlobbyKeyboardLeft == "")
 	{
@@ -916,6 +948,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
 		if (!keyTaken(lastActionKey))
 			mLeftBlobbyKeyboardLeft = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyKeyboardLeft = oldString; 
 	}
 	if (mLeftBlobbyKeyboardRight == "")
 	{
@@ -924,6 +958,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!keyTaken(lastActionKey))
 			mLeftBlobbyKeyboardRight = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyKeyboardRight = oldString;
 	}
 	if (mLeftBlobbyKeyboardJump == "")
 	{
@@ -932,6 +968,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
 		if (!keyTaken(lastActionKey))
 			mLeftBlobbyKeyboardJump = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyKeyboardJump = oldString;
 	}
 	if (mLeftBlobbyJoystickLeft == "")
 	{
@@ -940,6 +978,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyJoystickLeft = oldString;
 	}
 	if (mLeftBlobbyJoystickRight == "")
 	{
@@ -948,6 +988,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyJoystickRight = oldString;
 	}
 	if (mLeftBlobbyJoystickJump == "")
 	{
@@ -956,6 +998,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mLeftBlobbyJoystickJump = oldString;
 	}
 	if (mRightBlobbyMouseJumpbutton == -1)
 	{
@@ -963,6 +1007,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
 		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
 		mRightBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyMouseJumpbutton = oldInteger;
 	}
 	if (mRightBlobbyKeyboardLeft == "")
 	{
@@ -971,6 +1017,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!keyTaken(lastActionKey))
 			mRightBlobbyKeyboardLeft = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyKeyboardLeft = oldString;
 	}
 	if (mRightBlobbyKeyboardRight == "")
 	{
@@ -979,6 +1027,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!keyTaken(lastActionKey))
 			mRightBlobbyKeyboardRight = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyKeyboardRight = oldString;
 	}
 	if (mRightBlobbyKeyboardJump == "")
 	{
@@ -987,6 +1037,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
 		if (!keyTaken(lastActionKey))
 			mRightBlobbyKeyboardJump = lastActionKey;
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyKeyboardJump = oldString;
 	}
 	if (mRightBlobbyJoystickLeft == "")
 	{
@@ -995,6 +1047,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyJoystickLeft = oldString;
 	}
 	if (mRightBlobbyJoystickRight == "")
 	{
@@ -1003,6 +1057,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyJoystickRight = oldString;
 	}
 	if (mRightBlobbyJoystickJump == "")
 	{
@@ -1011,6 +1067,8 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
 		if (!buttonTaken(InputManager::getSingleton()->getLastJoyAction()))
 			mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
+		if (InputManager::getSingleton()->exit())
+			mRightBlobbyJoystickJump = oldString;
 	}
 	
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
