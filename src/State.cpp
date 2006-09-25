@@ -889,7 +889,7 @@ void InputOptionsState::step()
 	//if keyboard device is selected:
 	if (mRightBlobbyDevice == "keyboard")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Right Key");
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Key");
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft))
 		{
 			lastActionKey = "";
