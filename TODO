@@ -3,15 +3,11 @@
 ------------
 For Alpha 6:
 ------------
-
+=======
 - Menu for pause dialog
 - More advanced replay recording options
 - More menus, especially implement the bot list as a scrollable list
-- blobby's window should not hold the cursor in it's middle if another window gets activated
-- Add speed option
-- Add "show fps" option
-- Add option for old and new volleyball ruleset
-- Replay options like forwarding, jumping from serve to serve
+- Add buttons for setting speed to default values (slow, default, fast, very fast, insane)
 
 ----------------------------
 May be for Alpha 6 or later:
