@@ -77,6 +77,7 @@ private:
 	std::vector<std::string> mScriptNames;
 	int mPlayerOptions[MAX_PLAYERS];
 	bool mReplayActivated;
+	bool mShowFPS;
 	bool mSaveConfig;	
 };
 

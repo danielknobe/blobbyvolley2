@@ -1,6 +1,8 @@
 #include "SpeedController.h"
 
 #include <SDL/SDL.h>
+#include "IMGUI.h"
+#include <sstream>
 
 SpeedController* SpeedController::mMainInstance = NULL;
 
@@ -9,6 +11,7 @@ SpeedController::SpeedController(float gameFPS, float realFPS)
 	mGameFPS = gameFPS;
 	mRealFPS = realFPS;
 	mFramedrop = false;
+	mDrawFPS = true;
 }
 
 SpeedController::~SpeedController()
@@ -32,6 +35,16 @@ bool SpeedController::doFramedrop()
 	return mFramedrop;
 }
 
+void SpeedController::drawFPS()
+{
+	if (mDrawFPS)
+	{
+		std::stringstream tmp;
+		tmp << "FPS: " << mFPS;
+		IMGUI::getSingleton().doText(GEN_ID, Vector2(5,570), tmp.str());
+	}
+}
+
 void SpeedController::update()
 {
 	mFramedrop = false;
@@ -52,6 +65,15 @@ void SpeedController::update()
 		if ((lastDrawnFrame+(1000/5)) > SDL_GetTicks()) //should guaranty that at least 5 frames will be drawn per second
 			mFramedrop = true;
 
+	//calculate the FPS of drawn frames:
+	if (mDrawFPS)
+	{
+		mFPS = 1000;
+		if (SDL_GetTicks()-lastDrawnFrame != 0)
+			mFPS = 1000 / (SDL_GetTicks()-lastDrawnFrame);
+	}
+
+	//update for next call:
 	lastTicks = SDL_GetTicks();
 	if (!mFramedrop)
 		lastDrawnFrame = lastTicks;
