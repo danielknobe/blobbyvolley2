@@ -309,6 +309,19 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
+	//Nur zum testen der SELECTBOX:
+	std::vector<std::string> test;
+	test.push_back("TEST1");
+	test.push_back("TEST2");
+	test.push_back("TEST3");
+	test.push_back("TEST4");
+	test.push_back("TEST5");
+	test.push_back("TEST6");
+	test.push_back("TEST7");
+	test.push_back("TEST8");
+	static int selected = 1;
+	imgui.doSelectbox(GEN_ID, Vector2(300, 300), Vector2(500, 400), test, selected);
+
 	//Nur zum test:
 	/*static std::string bla = "TEST";
 	static unsigned cpos = 3;
