@@ -19,6 +19,8 @@ enum ObjectType
 	ACTIVESCROLLBAR,
 	EDITBOX,
 	ACTIVEEDITBOX,
+	SELECTBOX,
+	ACTIVESELECTBOX,
 	BLOB
 };
 
@@ -30,6 +32,8 @@ struct QueueObject
 	Vector2 pos2;
 	Color col;
 	std::string text;
+	std::vector<std::string> entries;
+	int selected;
 };
 
 typedef std::queue<QueueObject> RenderQueue;
@@ -117,6 +121,16 @@ void IMGUI::end()
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
 				if (obj.pos2.x >= 0)
 					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
+				break;
+			case SELECTBOX:
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
+				for (int c = 0; c < obj.entries.size(); c++)
+					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
+				break;
+			case ACTIVESELECTBOX:
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
+				for (int c = 0; c < obj.entries.size(); c++)
+					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
 				break;
 			case BLOB:
 				rmanager.drawBlob(obj.pos1, obj.col);
@@ -367,6 +381,92 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsign
 
 	obj.pos2.x = SDL_GetTicks() % 1000 >= 500 ? cpos : -1.0;
 	obj.text = text;
+
+	mLastWidget = id;
+	mQueue->push(obj);
+
+	return changed;
+}
+
+bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected)
+{
+	if (mActiveButton == 0 && !mButtonReset)
+		mActiveButton = id;
+
+	bool changed = false;
+	QueueObject obj;
+	obj.id = id;
+	obj.pos1 = pos1;
+	obj.pos2 = pos2;
+	obj.type = SELECTBOX;
+
+	const int itemsPerPage = (pos2.y - pos1.y - 10)/24;
+	int first = (selected / itemsPerPage)*itemsPerPage;	//the first visible element in the list
+
+	if (!mInactive)
+	{
+		if (id == mActiveButton)
+		{
+			obj.type = ACTIVESELECTBOX;
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				case LEFT:
+					if (selected > 0)
+					{
+						selected--;
+						changed = true;
+					}
+					mLastKeyAction = NONE;
+					break;
+				case RIGHT:
+					if (selected < entries.size()-1)
+					{
+						selected++;
+						changed = true;
+					}
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		if (mousepos.x > pos1.x &&
+			mousepos.y > pos1.y &&
+			mousepos.x < pos2.x &&
+			mousepos.y < pos2.y)
+		{
+			obj.type = ACTIVESELECTBOX;
+			if (InputManager::getSingleton()->click())
+			{
+				selected = ((mousepos.y-pos1.y-5) / 24)+first;
+				if (selected >= entries.size())
+					selected = entries.size()-1;
+				mActiveButton = id;
+			}
+		}
+	}
+
+	first = (selected / itemsPerPage)*itemsPerPage; //recalc first
+	if (entries.size() != 0)
+	{
+		int last = first + itemsPerPage;
+		if (last > entries.size())
+			last = entries.size();
+		obj.entries = std::vector<std::string>(entries.begin()+first, entries.begin()+last);
+	}
+	else
+		obj.entries = std::vector<std::string>();
+	obj.selected = selected-first;
 
 	mLastWidget = id;
 	mQueue->push(obj);
