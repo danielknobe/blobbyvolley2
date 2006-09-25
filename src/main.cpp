@@ -123,6 +123,7 @@ int main(int argc, char* argv[])
 	SpeedController scontroller(gameConfig.getFloat("gamefps"),
 					gameConfig.getFloat("realfps"));
 	SpeedController::setMainInstance(&scontroller);
+	scontroller.setDrawFPS(gameConfig.getBool("showfps"));
 
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
@@ -144,6 +145,7 @@ int main(int argc, char* argv[])
 		rmanager->drawGame(true);
 		IMGUI::getSingleton().begin();
 		State::getCurrentState()->step();
+		scontroller.drawFPS();
 		rmanager = &RenderManager::getSingleton(); //RenderManager may change
 
 		if (!scontroller.doFramedrop())

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <string>
 
 #include "Vector.h"
+#include "Global.h"
 
 // Warning: This may explode if we use the GUI from several files
 

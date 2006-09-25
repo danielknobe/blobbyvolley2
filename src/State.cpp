@@ -264,6 +264,7 @@ OptionState::OptionState()
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
 	mReplayActivated = mOptionConfig.getBool("record_replay");
+	mShowFPS = mOptionConfig.getBool("showfps");
 }
 
 OptionState::~OptionState()
@@ -271,6 +272,7 @@ OptionState::~OptionState()
 	if (mSaveConfig)
 	{
 		mOptionConfig.setBool("record_replay", mReplayActivated);
+		mOptionConfig.setBool("showfps", mShowFPS);
 		if (mPlayerOptions[LEFT_PLAYER] == 0)
 		{
 			mOptionConfig.setBool(
@@ -298,6 +300,7 @@ OptionState::~OptionState()
 		}
 		mOptionConfig.saveFile("config.xml");
 	}
+	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 }
 
 void OptionState::step()
@@ -375,6 +378,15 @@ void OptionState::step()
 	if (mReplayActivated)
 	{
 		imgui.doImage(GEN_ID, Vector2(16.0, 472.0), "gfx/pfeil_rechts.bmp");
+	}
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 490.0), "show fps"))
+	{
+		mShowFPS = !mShowFPS;
+		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
+	}
+	if (mShowFPS)
+	{
+		imgui.doImage(GEN_ID, Vector2(16.0, 502.0), "gfx/pfeil_rechts.bmp");
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), "input options"))

@@ -22,6 +22,10 @@ public:
 // This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop();
 
+//draws the fps:
+	void drawFPS();
+	void setDrawFPS(bool draw) { mDrawFPS = draw; }
+
 // This updates everything and waits the necessary time	
 	void update();
 
@@ -30,6 +34,8 @@ public:
 private:
 	float mGameFPS;
 	float mRealFPS;
+	int mFPS;
 	bool mFramedrop;
+	bool mDrawFPS;
 	static SpeedController* mMainInstance;
 };
