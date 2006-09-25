@@ -1,8 +1,6 @@
 #include "SpeedController.h"
 
 #include <SDL/SDL.h>
-#include "IMGUI.h"
-#include <sstream>
 
 SpeedController* SpeedController::mMainInstance = NULL;
 
@@ -33,16 +31,6 @@ void SpeedController::setRealSpeed(float fps)
 bool SpeedController::doFramedrop()
 {
 	return mFramedrop;
-}
-
-void SpeedController::drawFPS()
-{
-	if (mDrawFPS)
-	{
-		std::stringstream tmp;
-		tmp << "FPS: " << mFPS;
-		IMGUI::getSingleton().doText(GEN_ID, Vector2(5,570), tmp.str());
-	}
 }
 
 void SpeedController::update()

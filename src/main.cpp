@@ -15,6 +15,7 @@
 #include "SpeedController.h"
 
 #include <cstring>
+#include <sstream>
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR
@@ -145,8 +146,14 @@ int main(int argc, char* argv[])
 		rmanager->drawGame(true);
 		IMGUI::getSingleton().begin();
 		State::getCurrentState()->step();
-		scontroller.drawFPS();
 		rmanager = &RenderManager::getSingleton(); //RenderManager may change
+		//draw FPS:
+		if (scontroller.getDrawFPS())
+		{
+			std::stringstream tmp;
+			tmp << "FPS: " << scontroller.getFPS();
+			IMGUI::getSingleton().doText(GEN_ID, Vector2(5,570), tmp.str());
+		}
 
 		if (!scontroller.doFramedrop())
 		{

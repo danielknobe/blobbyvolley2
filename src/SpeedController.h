@@ -22,9 +22,10 @@ public:
 // This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop();
 
-//draws the fps:
-	void drawFPS();
-	void setDrawFPS(bool draw) { mDrawFPS = draw; }
+//gives the caller the fps of the drawed frames:
+	int getFPS() { return mFPS; }
+	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
+	bool getDrawFPS() { return mDrawFPS; }
 
 // This updates everything and waits the necessary time	
 	void update();
