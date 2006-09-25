@@ -440,21 +440,43 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 		}
 		
 		Vector2 mousepos = InputManager::getSingleton()->position();
-		if (mousepos.x > pos1.x &&
-			mousepos.y > pos1.y &&
-			mousepos.x < pos2.x &&
-			mousepos.y < pos2.y)
+		if (mousepos.x > pos1.x && mousepos.y > pos1.y && mousepos.x < pos2.x && mousepos.y < pos2.y)
 		{
 			obj.type = ACTIVESELECTBOX;
 			if (InputManager::getSingleton()->click())
+				mActiveButton = id;
+		}
+		//entries mouseclick:
+		if (mousepos.x > pos1.x &&
+			mousepos.y > pos1.y &&
+			mousepos.x < pos2.x-35 &&
+			mousepos.y < pos1.y+5+24*itemsPerPage)
+		{
+			if (InputManager::getSingleton()->click())
 			{
-				selected = ((mousepos.y-pos1.y-5) / 24)+first;
-				if (selected >= entries.size())
-					selected = entries.size()-1;
+				int tmp = ((mousepos.y-pos1.y-5) / 24)+first;
+				if (tmp < entries.size())
+					selected = tmp;
 				mActiveButton = id;
 			}
 		}
+		//arrows mouseclick:
+		if (mousepos.x > pos2.x-30 && mousepos.x < pos2.x-30+24 && InputManager::getSingleton()->click())
+		{
+			if (mousepos.y > pos1.y+3 && mousepos.y < pos1.y+3+24 && selected > 0)
+			{
+				selected--;
+				changed = true;
+			}
+			if (mousepos.y > pos2.y-27 && mousepos.y < pos2.y-27+24 && selected < entries.size()-1)
+			{
+				selected++;
+				changed = true;
+			}
+		}
 	}
+	doImage(GEN_ID, Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
+	doImage(GEN_ID, Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
 
 	first = (selected / itemsPerPage)*itemsPerPage; //recalc first
 	if (entries.size() != 0)
