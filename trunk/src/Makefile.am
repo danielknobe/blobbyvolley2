@@ -17,9 +17,6 @@ blobby_SOURCES = \
 	InputManager.h InputManager.cpp \
 	Global.h \
 	NetworkPacket.h \
-	NetworkManager.h NetworkManager.cpp \
-	NetworkServer.h NetworkServer.cpp \
-	NetworkClient.h NetworkClient.cpp \
 	PhysicWorld.h PhysicWorld.cpp \
 	RenderManager.h RenderManager.cpp \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
