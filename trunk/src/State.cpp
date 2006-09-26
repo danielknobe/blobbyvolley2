@@ -96,21 +96,26 @@ LocalGameState::LocalGameState(GameMode mode)
 			rinput);
 
 	mMatch = new DuelMatch(mLeftInput, mRightInput, true, true);
+	IMGUI::getSingleton().resetSelection();
 }
 
 void LocalGameState::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	
-
 	if (mPaused)
 	{
 		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(234, 280), "Wirklich Beenden?");
-		if (InputManager::getSingleton()->select() ||
-				InputManager::getSingleton()->click())
+		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
+		if (imgui.doButton(GEN_ID, Vector2(260, 330), "Ja"))
+		{
+			delete this;
+			mCurrentState = new MainMenuState;
+		}
+		if (imgui.doButton(GEN_ID, Vector2(480, 330), "Nein"))
 			mPaused = false;
+		imgui.doCursor();
 	}
 	else
 	{
