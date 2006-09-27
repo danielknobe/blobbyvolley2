@@ -49,6 +49,7 @@ AC_OUTPUT(
 	src/Makefile \
 	src/lua/Makefile \
 	src/tinyxml/Makefile \
+	src/raknet/Makefile \
 	data/Makefile
 	)
         

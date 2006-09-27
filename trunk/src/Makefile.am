@@ -1,23 +1,31 @@
-SUBDIRS = lua tinyxml
+SUBDIRS = lua tinyxml raknet
 
-AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\" -DHAVE_LIBGL=$(HAVE_LIBGL) -Wall
-AM_LDFLAGS = -Llua -Ltinyxml
+WANTED_WARNING = -Wall
 
-bin_PROGRAMS = blobby
+AM_CXXFLAGS = -DTIXML_USE_STL=1 -DGAMEDATADIR=\"$(GAMEDATADIR)\" -DHAVE_LIBGL=$(HAVE_LIBGL)
+AM_LDFLAGS = -Llua -Ltinyxml -Lraknet
+common_LDADD = -ltinyxml -lraknet
 
-blobby_LDADD = -llua -ltinyxml $(GL_LIBS)
+bin_PROGRAMS = blobby blobby-server
+blobby_LDADD = $(common_LDADD) $(GL_LIBS) -llua
+blobby_server_LDADD = $(common_LDADD)
 
-blobby_SOURCES = \
-	DuelMatch.h DuelMatch.cpp \
-	main.cpp \
-	InputDevice.h InputDevice.cpp \
+common_SOURCES = \
 	InputSource.h InputSource.cpp \
-	LocalInputSource.h \
-	IMGUI.h IMGUI.cpp \
-	InputManager.h InputManager.cpp \
 	Global.h \
 	NetworkPacket.h \
 	PhysicWorld.h PhysicWorld.cpp \
+	SpeedController.h SpeedController.cpp \
+	Vector.h \
+	UserConfig.cpp UserConfig.h
+
+blobby_SOURCES = $(common_SOURCES) \
+	DuelMatch.h DuelMatch.cpp \
+	main.cpp \
+	InputDevice.h InputDevice.cpp \
+	LocalInputSource.h \
+	IMGUI.h IMGUI.cpp \
+	InputManager.h InputManager.cpp \
 	RenderManager.h RenderManager.cpp \
 	RenderManagerSDL.h RenderManagerSDL.cpp \
 	RenderManagerGP2X.h RenderManagerGP2X.cpp \
@@ -25,9 +33,8 @@ blobby_SOURCES = \
 	ReplayInputSource.h ReplayInputSource.cpp \
 	ReplayRecorder.h ReplayRecorder.cpp \
 	ScriptedInputSource.h ScriptedInputSource.cpp \
-	SpeedController.h SpeedController.cpp \
 	State.h State.cpp\
-	SoundManager.h SoundManager.cpp \
-	Vector.h \
-	UserConfig.cpp UserConfig.h
+	SoundManager.h SoundManager.cpp
 
+blobby_server_SOURCES = $(common_SOURCES) \
+	DedicatedServer.h DedicatedServer.cpp
