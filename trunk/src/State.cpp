@@ -108,13 +108,13 @@ void LocalGameState::step()
 		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
 		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
+		if (imgui.doButton(GEN_ID, Vector2(480, 330), "Nein"))
+			mPaused = false;
 		if (imgui.doButton(GEN_ID, Vector2(260, 330), "Ja"))
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
 		}
-		if (imgui.doButton(GEN_ID, Vector2(480, 330), "Nein"))
-			mPaused = false;
 		imgui.doCursor();
 	}
 	else
