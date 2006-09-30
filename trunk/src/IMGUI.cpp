@@ -448,7 +448,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 		}
 		//entries mouseclick:
 		if (mousepos.x > pos1.x &&
-			mousepos.y > pos1.y &&
+			mousepos.y > pos1.y+5 &&
 			mousepos.x < pos2.x-35 &&
 			mousepos.y < pos1.y+5+24*itemsPerPage)
 		{
