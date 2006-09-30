@@ -317,24 +317,6 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
-	//Nur zum testen der SELECTBOX:
-	std::vector<std::string> test;
-	test.push_back("TEST1");
-	test.push_back("TEST2");
-	test.push_back("TEST3");
-	test.push_back("TEST4");
-	test.push_back("TEST5");
-	test.push_back("TEST6");
-	test.push_back("TEST7");
-	test.push_back("TEST8");
-	static int selected = 1;
-	imgui.doSelectbox(GEN_ID, Vector2(300, 300), Vector2(500, 400), test, selected);
-
-	//Nur zum test:
-	/*static std::string bla = "TEST";
-	static unsigned cpos = 3;
-	imgui.doEditbox(GEN_ID, Vector2(450.0 , 300.0), bla, cpos);*/
-
 	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
 		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
 	imgui.doImage(GEN_ID, Vector2(12.0 + 404.0,
@@ -429,7 +411,7 @@ ReplayMenuState::ReplayMenuState()
 	mReplaying = false;
 	mReplayMatch = 0;
 	mReplayRecorder = 0;
-	mSelectedReplay = -1;
+	mSelectedReplay = 0;
 	char** filenames = PHYSFS_enumerateFiles("replays");
 	for (int i = 0; filenames[i] != 0; ++i)
 	{
@@ -520,11 +502,6 @@ void ReplayMenuState::step()
 		imgui.doCursor();
 		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-		if (mSelectedReplay != -1)
-		{
-			imgui.doImage(GEN_ID, Vector2(16.0, 62.0 + 30.0 * mSelectedReplay),
-					"gfx/pfeil_rechts.bmp");
-		}
 
 		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
 					mSelectedReplay != -1)
@@ -550,18 +527,15 @@ void ReplayMenuState::step()
 			mCurrentState = new MainMenuState();
 		}
 		else 
+			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
+		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete"))
 		{
-			for (unsigned int i = 0; i < mReplayFiles.size(); i++)
-				if (imgui.doButton(GEN_ID << 6 + i, Vector2(34.0, 50.0 + 30.0 * i), mReplayFiles[i]))
-					mSelectedReplay = i;
-		}
-		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete") &&
-					mSelectedReplay != -1)
-		{
-			PHYSFS_delete(std::string("replays/" +
-				mReplayFiles[mSelectedReplay]).c_str());
-			delete this;
-			mCurrentState = new ReplayMenuState();
+			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay]).c_str()))
+			{
+				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
+				if (mSelectedReplay >= mReplayFiles.size())
+					mSelectedReplay = mReplayFiles.size()-1;
+			}
 		}
 	}
 }
