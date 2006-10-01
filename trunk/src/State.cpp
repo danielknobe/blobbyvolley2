@@ -132,8 +132,7 @@ void LocalGameState::step()
 		{
 			if (mFilename != "")
 			{
-				mFilename = std::string("replays/") + mFilename + std::string(".xml");
-				mRecorder->save(mFilename);
+				mRecorder->save(std::string("replays/") + mFilename + std::string(".xml"));
 			}
 			mSaveReplay = false;
 			mPaused = true;
