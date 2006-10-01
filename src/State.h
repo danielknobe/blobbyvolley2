@@ -33,16 +33,6 @@ public:
 	virtual void step();
 };
 
-class WinState : public State
-{
-private:
-	PlayerSide mPlayer;
-public:
-	WinState(PlayerSide winningPlayer);	
-	virtual ~WinState() {}
-	virtual void step();	
-};
-
 class LocalGameState : public State
 {
 private:
@@ -55,6 +45,7 @@ private:
 	bool mRightOscillate;
 	bool mPaused;
 	bool mSaveReplay;
+	bool mWinner;
 	std::string mFilename;
 	
 	DuelMatch* mMatch;
@@ -86,10 +77,10 @@ class ReplayMenuState : public State
 {
 public:
 	ReplayMenuState();
-	virtual ~ReplayMenuState();
 	virtual void step();
 	
 private:
+	void loadCurrentReplay();
 	DuelMatch* mReplayMatch;
 	ReplayRecorder* mReplayRecorder;
 
