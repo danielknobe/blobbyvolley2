@@ -42,6 +42,7 @@ LocalGameState::LocalGameState()
 	mRecorder = 0;
 	mPaused = false;
 	mSaveReplay = false;
+	mWinner = false;
 	std::stringstream temp;
 	temp << time(0);
 	mFilename = temp.str();
@@ -101,29 +102,9 @@ void LocalGameState::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	
-	if (mPaused)
+	IMGUI& imgui = IMGUI::getSingleton();
+	if (mSaveReplay)
 	{
-		IMGUI& imgui = IMGUI::getSingleton();
-		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
-		if (imgui.doButton(GEN_ID, Vector2(480, 300), "Nein"))
-			mPaused = false;
-		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Ja"))
-		{
-			delete this;
-			mCurrentState = new MainMenuState;
-		}
-		if (imgui.doButton(GEN_ID, Vector2(293, 340), "Save Replay"))
-		{
-			mPaused = false;
-			mSaveReplay = true;
-			imgui.resetSelection();
-		}
-		imgui.doCursor();
-	}
-	else if (mSaveReplay)
-	{
-		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
 		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
 		static unsigned cpos;
@@ -135,13 +116,54 @@ void LocalGameState::step()
 				mRecorder->save(std::string("replays/") + mFilename + std::string(".xml"));
 			}
 			mSaveReplay = false;
-			mPaused = true;
 			imgui.resetSelection();
 		}
 		if (imgui.doButton(GEN_ID, Vector2(440, 330), "Cancel"))
 		{
 			mSaveReplay = false;
-			mPaused = true;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
+	}
+	else if (mPaused)
+	{
+		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
+		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
+		if (imgui.doButton(GEN_ID, Vector2(480, 300), "Nein"))
+			mPaused = false;
+		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Ja"))
+		{
+			delete this;
+			mCurrentState = new MainMenuState;
+		}
+		if (imgui.doButton(GEN_ID, Vector2(293, 340), "Save Replay"))
+		{
+			mSaveReplay = true;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
+	}
+	else if (mWinner)
+	{
+		std::stringstream tmp;
+		tmp << "Spieler " << mMatch->winningPlayer()+1;
+		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
+		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
+		imgui.doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
+		if (imgui.doButton(GEN_ID, Vector2(290, 350), "OK"))
+		{
+			delete mCurrentState;
+			mCurrentState = new MainMenuState();
+		}
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), "NOCHMAL"))
+		{
+			delete mCurrentState;
+			mCurrentState = new LocalGameState();
+		}
+		if (imgui.doButton(GEN_ID, Vector2(260, 390), "SPEICHERE REPLAY"))
+		{
+			mSaveReplay = true;
 			imgui.resetSelection();
 		}
 		imgui.doCursor();
@@ -166,21 +188,19 @@ void LocalGameState::step()
 	PlayerSide side = mMatch->winningPlayer();
 	if (side != NO_PLAYER)
 	{
-		delete this;
-		mCurrentState = new WinState(side);
+		mWinner = true;
 	}
 	else if (InputManager::getSingleton()->exit())
 	{
-		if (mPaused)
+		if (mSaveReplay)
+		{
+			mSaveReplay = false;
+			IMGUI::getSingleton().resetSelection();
+		}
+		else if (mPaused)
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
-		}
-		else if (mSaveReplay)
-		{
-			mSaveReplay = false;
-			mPaused = true;
-			IMGUI::getSingleton().resetSelection();
 		}
 		else
 			mPaused = true;
@@ -247,29 +267,6 @@ void MainMenuState::step()
 		SoundManager::getSingleton().deinit();
 		SDL_Quit();
 		exit(0);
-	}
-}
-
-WinState::WinState(PlayerSide player)
-{
-	mPlayer = player;
-}
-
-void WinState::step()
-{
-	char buf[64];
-	snprintf(buf, 64, "Spieler %d", mPlayer + 1);
-	
-	IMGUI::getSingleton().doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
-	IMGUI::getSingleton().doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(274, 250), buf);
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
-	
-	InputManager* inputmgr = InputManager::getSingleton();
-	if (inputmgr->click() || inputmgr->select())
-	{
-		delete mCurrentState;
-		mCurrentState = new MainMenuState();
 	}
 }
 
@@ -426,6 +423,8 @@ ReplayMenuState::ReplayMenuState()
 			mReplayFiles.push_back(std::string(tmp.begin(), tmp.end()-4));
 		}
 	}
+	if (mReplayFiles.size() == 0)
+		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
 	
 	UserConfig gameConfig;
@@ -442,20 +441,26 @@ ReplayMenuState::ReplayMenuState()
 		gameConfig.getInteger("b2")));
 }
 
-ReplayMenuState::~ReplayMenuState()
+void ReplayMenuState::loadCurrentReplay()
 {
-	if (mReplayMatch)
-	{
-		delete mReplayMatch;
-	}
-	if (mReplayRecorder)
-	{
-		delete mReplayRecorder;
-	}
+	mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
+	mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml"));
+	InputSource* linput = mReplayRecorder->
+			createReplayInputSource(LEFT_PLAYER,
+			new DummyInputSource);
+	 InputSource* rinput = mReplayRecorder->
+			createReplayInputSource(RIGHT_PLAYER,
+			new DummyInputSource);
+	mReplaying = true;
+	mReplayMatch = new DuelMatch(linput, rinput,
+					true, true);
+	SoundManager::getSingleton().playSound(
+			"sounds/pfiff.wav", 0.2);
 }
 
 void ReplayMenuState::step()
 {
+	IMGUI& imgui = IMGUI::getSingleton();
 	if (mReplaying)
 	{
 		RenderManager* rmanager = &RenderManager::getSingleton();
@@ -480,23 +485,38 @@ void ReplayMenuState::step()
 		PlayerSide side = mReplayMatch->winningPlayer();
 		if (side != NO_PLAYER)
 		{
-			delete this;
-			mCurrentState = new WinState(side);
+			std::stringstream tmp;
+			tmp << "Spieler " << side+1;
+			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
+			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
+			imgui.doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
+			if (imgui.doButton(GEN_ID, Vector2(290, 350), "OK"))
+			{
+				mReplaying = false;
+				delete mReplayMatch;
+				delete mReplayRecorder; 
+				imgui.resetSelection();
+			}
+			if (imgui.doButton(GEN_ID, Vector2(400, 350), "NOCHMAL"))
+			{
+				delete mReplayMatch;
+				delete mReplayRecorder; 
+				loadCurrentReplay();
+				imgui.resetSelection();
+			}
+			imgui.doCursor();
 		}
-		else if (InputManager::getSingleton()->exit())
+		else if ((InputManager::getSingleton()->exit()) || (mReplayRecorder->endOfFile()))
 		{
-			delete this;
-			mCurrentState = new MainMenuState();
-		}
-		else if (mReplayRecorder->endOfFile())
-		{
+			delete mReplayMatch;
+			delete mReplayRecorder; 
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
 	}
 	else
 	{
-		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doCursor();
 		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -504,19 +524,8 @@ void ReplayMenuState::step()
 		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
 					mSelectedReplay != -1)
 		{
-			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
-			mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml"));
-			InputSource* linput = mReplayRecorder->
-					createReplayInputSource(LEFT_PLAYER,
-					new DummyInputSource);
-			 InputSource* rinput = mReplayRecorder->
-			 		createReplayInputSource(RIGHT_PLAYER,
-			 		new DummyInputSource);
-			mReplaying = true;
-			mReplayMatch = new DuelMatch(linput, rinput,
-							true, true);
-			SoundManager::getSingleton().playSound(
-					"sounds/pfiff.wav", 0.2);
+			loadCurrentReplay();
+			imgui.resetSelection();
 		}
 		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), "cancel"))
 		{
@@ -527,7 +536,7 @@ void ReplayMenuState::step()
 			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
 		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete"))
 		{
-			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay]).c_str()))
+			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml").c_str()))
 			{
 				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 				if (mSelectedReplay >= mReplayFiles.size())
