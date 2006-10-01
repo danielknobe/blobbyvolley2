@@ -32,17 +32,19 @@ LocalGameState::~LocalGameState()
 	delete mLeftInput;
 	delete mRightInput;
 	delete mMatch;
-	if (mRecorder)
-		delete mRecorder;
-
+	delete mRecorder;
 	InputManager::getSingleton()->endGame();
 }
 
-LocalGameState::LocalGameState(GameMode mode)
+LocalGameState::LocalGameState()
 	: State()
 {
 	mRecorder = 0;
 	mPaused = false;
+	mSaveReplay = false;
+	std::stringstream temp;
+	temp << time(0);
+	mFilename = temp.str();
 
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
@@ -84,12 +86,8 @@ LocalGameState::LocalGameState(GameMode mode)
 			gameConfig.getString("right_script_name"),
 						RIGHT_PLAYER);
 	}
-	if (gameConfig.getBool("record_replay"))
-	{
-		mode = MODE_RECORDING_DUEL;
-	}
-	mRecorder = new ReplayRecorder(mode, ReplayMenuState::getRecordName());
-	
+
+	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
 			linput);
 	mRightInput = mRecorder->createReplayInputSource(RIGHT_PLAYER,
@@ -108,12 +106,44 @@ void LocalGameState::step()
 		IMGUI& imgui = IMGUI::getSingleton();
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
 		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
-		if (imgui.doButton(GEN_ID, Vector2(480, 330), "Nein"))
+		if (imgui.doButton(GEN_ID, Vector2(480, 300), "Nein"))
 			mPaused = false;
-		if (imgui.doButton(GEN_ID, Vector2(260, 330), "Ja"))
+		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Ja"))
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
+		}
+		if (imgui.doButton(GEN_ID, Vector2(293, 340), "Save Replay"))
+		{
+			mPaused = false;
+			mSaveReplay = true;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
+	}
+	else if (mSaveReplay)
+	{
+		IMGUI& imgui = IMGUI::getSingleton();
+		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
+		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
+		static unsigned cpos;
+		imgui.doEditbox(GEN_ID, Vector2(200, 270), mFilename, cpos);
+		if (imgui.doButton(GEN_ID, Vector2(220, 330), "OK"))
+		{
+			if (mFilename != "")
+			{
+				mFilename = std::string("replays/") + mFilename + std::string(".xml");
+				mRecorder->save(mFilename);
+			}
+			mSaveReplay = false;
+			mPaused = true;
+			imgui.resetSelection();
+		}
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), "Cancel"))
+		{
+			mSaveReplay = false;
+			mPaused = true;
+			imgui.resetSelection();
 		}
 		imgui.doCursor();
 	}
@@ -142,10 +172,16 @@ void LocalGameState::step()
 	}
 	else if (InputManager::getSingleton()->exit())
 	{
-		if (mPaused == true)
+		if (mPaused)
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
+		}
+		else if (mSaveReplay)
+		{
+			mSaveReplay = false;
+			mPaused = true;
+			IMGUI::getSingleton().resetSelection();
 		}
 		else
 			mPaused = true;
@@ -182,7 +218,7 @@ void MainMenuState::step()
 		delete mCurrentState;
 		try
 		{
-			mCurrentState = new LocalGameState(MODE_NORMAL_DUEL);
+			mCurrentState = new LocalGameState();
 		}
 		catch (ScriptException except)
 		{
@@ -268,7 +304,6 @@ OptionState::OptionState()
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
-	mReplayActivated = mOptionConfig.getBool("record_replay");
 	mShowFPS = mOptionConfig.getBool("showfps");
 }
 
@@ -276,7 +311,6 @@ OptionState::~OptionState()
 {
 	if (mSaveConfig)
 	{
-		mOptionConfig.setBool("record_replay", mReplayActivated);
 		mOptionConfig.setBool("showfps", mShowFPS);
 		if (mPlayerOptions[LEFT_PLAYER] == 0)
 		{
@@ -358,14 +392,6 @@ void OptionState::step()
 		mOptionConfig.setInteger("gamefps", gamefpsint);
 		SpeedController::getMainInstance()->setGameSpeed(gamefpsint);
 	}
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 460.0), "record replays"))
-	{
-		mReplayActivated = !mReplayActivated;
-	}
-	if (mReplayActivated)
-	{
-		imgui.doImage(GEN_ID, Vector2(16.0, 472.0), "gfx/pfeil_rechts.bmp");
-	}
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 490.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
@@ -418,7 +444,7 @@ ReplayMenuState::ReplayMenuState()
 		std::string tmp(filenames[i]);
 		if (tmp.find(".xml") != std::string::npos)
 		{
-			mReplayFiles.push_back(tmp);
+			mReplayFiles.push_back(std::string(tmp.begin(), tmp.end()-4));
 		}
 	}
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
@@ -447,13 +473,6 @@ ReplayMenuState::~ReplayMenuState()
 	{
 		delete mReplayRecorder;
 	}
-}
-
-std::string ReplayMenuState::getRecordName()
-{
-	char buf[256];
-	snprintf(buf, 256, "replays/replay_%d.xml", static_cast<int>(time(0)));
-	return std::string(buf);
 }
 
 void ReplayMenuState::step()
@@ -506,9 +525,8 @@ void ReplayMenuState::step()
 		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
 					mSelectedReplay != -1)
 		{
-			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL,
-				std::string("replays/" +
-					mReplayFiles[mSelectedReplay]));
+			mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
+			mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml"));
 			InputSource* linput = mReplayRecorder->
 					createReplayInputSource(LEFT_PLAYER,
 					new DummyInputSource);

@@ -38,23 +38,10 @@ void TwoPlayerInput::parseXMLValues(const std::string& lvalue,
 	input[1] = PlayerInput(rvalue);
 }
 
-ReplayRecorder::ReplayRecorder(GameMode mode, const std::string& filename)
+ReplayRecorder::ReplayRecorder(GameMode mode)
 {
 	mRecordMode = mode;
-	mRecordFilename = filename;
 	mReachedEOF = true;
-	
-	if (mode == MODE_REPLAY_DUEL)
-		load();
-	mInputStoredInBuffer = NO_PLAYER;
-	mInputCounter[LEFT_PLAYER] = mRecordData.begin();
-	mInputCounter[RIGHT_PLAYER] = mRecordData.begin();
-}
-
-ReplayRecorder::~ReplayRecorder()
-{
-	if (mRecordMode == MODE_RECORDING_DUEL)
-		save();
 }
 
 InputSource* ReplayRecorder::createReplayInputSource(
@@ -132,7 +119,7 @@ bool ReplayRecorder::endOfFile()
 		return false;
 }
 
-void ReplayRecorder::save()
+void ReplayRecorder::save(const std::string& filename)
 {
 	const char xmlHeader[] =
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n"
@@ -140,11 +127,11 @@ void ReplayRecorder::save()
 	const char xmlFooter[] = "</replayrecord>\n\n";
 	const char xmlIndent[] = "\t";
 	
-	PHYSFS_file* fileHandle = PHYSFS_openWrite(mRecordFilename.c_str());
+	PHYSFS_file* fileHandle = PHYSFS_openWrite(filename.c_str());
 	if (!fileHandle)
 	{
 		std::cerr << "Warning: Unable to write to ";
-		std::cerr << PHYSFS_getWriteDir() << mRecordFilename;
+		std::cerr << PHYSFS_getWriteDir() << filename;
 		std::cerr << std::endl;
 		return;
 	}
@@ -162,9 +149,9 @@ void ReplayRecorder::save()
 }
 
 
-void ReplayRecorder::load()
+void ReplayRecorder::load(const std::string& filename)
 {
-	PHYSFS_file* fileHandle = PHYSFS_openRead(mRecordFilename.c_str());
+	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
 	if (!fileHandle)
 		return;
 	int fileLength = PHYSFS_fileLength(fileHandle);
@@ -177,7 +164,7 @@ void ReplayRecorder::load()
 	if (recordDoc.Error())
 	{
 		std::cout << "Warning: Parse error in replay " <<
-			mRecordFilename << " !" << std::endl;
+			filename << " !" << std::endl;
 	}
 	
 	TiXmlElement* recordConfigElem =
@@ -200,4 +187,8 @@ void ReplayRecorder::load()
 	}
 	if (!mRecordData.empty())
 		mReachedEOF = false;
+
+	mInputStoredInBuffer = NO_PLAYER;
+	mInputCounter[LEFT_PLAYER] = mRecordData.begin();
+	mInputCounter[RIGHT_PLAYER] = mRecordData.begin();
 }

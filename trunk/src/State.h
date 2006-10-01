@@ -54,12 +54,14 @@ private:
 	bool mLeftOscillate;
 	bool mRightOscillate;
 	bool mPaused;
+	bool mSaveReplay;
+	std::string mFilename;
 	
 	DuelMatch* mMatch;
 	ReplayRecorder* mRecorder;
-
+	
 public:
-	LocalGameState(GameMode mode);
+	LocalGameState();
 	virtual ~LocalGameState();
 	virtual void step();
 	
@@ -76,7 +78,6 @@ private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
 	int mPlayerOptions[MAX_PLAYERS];
-	bool mReplayActivated;
 	bool mShowFPS;
 	bool mSaveConfig;	
 };
@@ -87,8 +88,6 @@ public:
 	ReplayMenuState();
 	virtual ~ReplayMenuState();
 	virtual void step();
-	
-	static std::string getRecordName();
 	
 private:
 	DuelMatch* mReplayMatch;
