@@ -40,13 +40,13 @@ public:
 	// to damage nothing. If an error occurs on loading, the endOfFile()
 	// returns true and nothing is replayed. If an saving error occurs,
 	// nothing is recorded
-	ReplayRecorder(GameMode mode, const std::string& filename);
-	
-	// If the destructor is called, records are automatically saved
-	~ReplayRecorder();
+	ReplayRecorder(GameMode mode);
 	
 	// This rewinds to the start when replaying
 	void reset();
+
+	void save(const std::string& filename);
+	void load(const std::string& filename);
 	
 	// This reports whether the record is played to the end, so the 
 	// blobbys don't have to stand around bored after an incomplete
@@ -64,9 +64,6 @@ private:
 	typedef std::list<TwoPlayerInput> InputList;
 	typedef std::list<TwoPlayerInput>::iterator InputListIterator;
 	
-	void save();
-	void load();
-	
 	// These function tell ReplayInputSource how it should behave
 	
 	bool doPushInput();
@@ -76,7 +73,6 @@ private:
 	PlayerInput getInput(PlayerSide side);
 
 	GameMode mRecordMode;
-	std::string mRecordFilename;
 
 	PlayerInput mInputBuffer;
 	PlayerSide mInputStoredInBuffer;

@@ -145,7 +145,7 @@ void InputManager::updateInput()
 					mSelect = true;
 					break;
 				case SDLK_ESCAPE:
-				case SDLK_BACKSPACE:
+				//case SDLK_BACKSPACE:
 					mExit = true;
 					break;
 				default:
