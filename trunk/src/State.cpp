@@ -281,7 +281,7 @@ OptionState::OptionState()
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
 	mPlayerOptions[RIGHT_PLAYER] = 0;
-	mScriptNames.push_back("");
+	mScriptNames.push_back("Human");
 	std::string leftScript = mOptionConfig.getString("left_script_name");
 	std::string rightScript = mOptionConfig.getString("right_script_name");
 	char** filenames = PHYSFS_enumerateFiles("scripts");
@@ -351,29 +351,9 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
-	imgui.doImage(GEN_ID, Vector2(12.0 + 4.0,
-		mPlayerOptions[LEFT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
-	imgui.doImage(GEN_ID, Vector2(12.0 + 404.0,
-		mPlayerOptions[RIGHT_PLAYER] * 28.0 + 12.0 + 50.0), "gfx/pfeil_rechts.bmp");
-
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 50.0), "human"))
-		mPlayerOptions[LEFT_PLAYER] = 0;
-	for (unsigned int i = 1; i < mScriptNames.size(); i++)
-	{
-		if (imgui.doButton(GEN_ID << 4 + i,
-				Vector2(34.0, 50.0 + i * 28.0), mScriptNames[i]))
-			mPlayerOptions[LEFT_PLAYER] = i;
-	}
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(390.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
+	imgui.doSelectbox(GEN_ID, Vector2(434.0, 50.0), Vector2(790.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
 	
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 50.0), "human"))
-		mPlayerOptions[RIGHT_PLAYER] = 0;
-	for (unsigned int i = 1; i < mScriptNames.size(); i++)
-	{
-		if (imgui.doButton(GEN_ID << 5 + i,
-					Vector2(434.0, 50.0 + i * 28.0), mScriptNames[i]))
-			mPlayerOptions[RIGHT_PLAYER] = i;
-	}
-
 	imgui.doText(GEN_ID, Vector2(34.0, 300.0), "Volume:");
 	float volume = mOptionConfig.getFloat("global_volume");
 	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 340.0), volume))
