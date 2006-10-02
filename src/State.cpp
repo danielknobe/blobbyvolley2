@@ -509,10 +509,10 @@ void ReplayMenuState::step()
 		}
 		else if ((InputManager::getSingleton()->exit()) || (mReplayRecorder->endOfFile()))
 		{
+			mReplaying = false;
 			delete mReplayMatch;
 			delete mReplayRecorder; 
-			delete this;
-			mCurrentState = new MainMenuState();
+			imgui.resetSelection();
 		}
 	}
 	else
