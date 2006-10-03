@@ -6,13 +6,12 @@ SpeedController* SpeedController::mMainInstance = NULL;
 
 SpeedController::SpeedController(float gameFPS, float realFPS)
 {
-
-
 	mGameFPS = gameFPS;
 	mRealFPS = realFPS;
 	mFramedrop = false;
 	mDrawFPS = true;
 	mFPSCounter = 0;
+	mOldTicks = SDL_GetTicks();
 }
 
 SpeedController::~SpeedController()
@@ -66,7 +65,7 @@ void SpeedController::update()
 			mFPSCounter = 0;
 		}
 
-		if (mFramedrop == false)
+		if (!mFramedrop)
 			mFPSCounter++;
 	}
 
