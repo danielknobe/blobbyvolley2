@@ -208,7 +208,7 @@ int ScriptedInputSource::launched(lua_State* state)
 		lua_pushboolean(state, false);
 		return 1;
 	}
-	lua_pushboolean(state, match->getBlobJump(getSide(state)));
+	lua_pushnumber(state, match->getBlobJump(getSide(state)));
 	return 1;
 }
 
