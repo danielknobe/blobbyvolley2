@@ -70,6 +70,9 @@ public:
 	// and is jumping at the moment
 	bool getBlobJump(PlayerSide player);
 	
+	// Set a new state recieved from server over a RakNet BitStream
+	void setState(RakNet::BitStream* stream);
+	
 private:
 	static DuelMatch* mMainGame;
 	bool mGlobal;

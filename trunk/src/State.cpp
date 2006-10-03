@@ -9,6 +9,10 @@
 #include "IMGUI.h"
 #include "SpeedController.h"
 
+#include "raknet/RakClient.h"
+#include "raknet/PacketEnumerations.h"
+#include "raknet/GetTime.h"
+
 #include <physfs.h>
 #include <ctime>
 #include <sstream>
@@ -231,7 +235,11 @@ void MainMenuState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
-
+	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), "network game"))
+	{
+		delete mCurrentState;
+		mCurrentState = new NetworkGameState("127.0.0.1", 1234);
+	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), "start"))
 	{
 		delete mCurrentState;
@@ -1082,5 +1090,70 @@ void InputOptionsState::step()
 	{
 		delete this;
 		mCurrentState = new OptionState();
+	}
+}
+
+NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
+{
+	IMGUI::getSingleton().resetSelection();
+	mLocalInput = new LocalInputSource(LEFT_PLAYER);
+	mRemoteInput = new DummyInputSource();
+	mMatch = new DuelMatch(mLocalInput, mRemoteInput, true, false);
+
+	mClient = new RakClient();
+	mClient->Connect(servername.c_str(), port, 0, 0, 0);
+
+}
+
+NetworkGameState::~NetworkGameState()
+{
+	mClient->Disconnect(50);
+	delete mMatch;
+	delete mLocalInput;
+	delete mRemoteInput;
+	delete mClient;
+}
+
+void NetworkGameState::step()
+{
+	Packet* packet;
+	while (packet = mClient->Receive())
+	{
+		switch(packet->data[0])
+		{
+			case ID_CONNECTION_REQUEST_ACCEPTED:
+				printf("Connection accepted.\n");
+				break;
+			case ID_TIMESTAMP:
+			{
+				printf("Physic packet received. Time: %d\n", packet->data[1]);
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				int ival;
+				stream.Read(ival);
+				stream.Read(ival);
+
+				mMatch->setState(&stream);
+				break;
+			}
+			default:
+				break;
+		}
+		mClient->DeallocatePacket(packet);
+	}
+	PlayerInput input = mLocalInput->getInput();
+
+	RakNet::BitStream stream;
+	stream.Write(ID_TIMESTAMP);
+	stream.Write(RakNet::GetTime());
+	stream.Write(input.left);
+	stream.Write(input.right);
+	stream.Write(input.up);
+	mClient->Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0);
+
+	mMatch->step();
+	if (InputManager::getSingleton()->exit())
+	{
+		delete mCurrentState;
+		mCurrentState = new MainMenuState;
 	}
 }

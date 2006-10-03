@@ -22,9 +22,9 @@ struct PlayerInput
 		up = u;
 	}
 
-	bool left : 1;
-	bool right : 1;
-	bool up : 1;
+	bool left;
+	bool right;
+	bool up;
 };
 
 // This class abstracts several possible input sources, like local input 
@@ -42,16 +42,28 @@ public:
 	}
 };
 
+// This class serves as a dummy input source.
+// It can optionally be set from outside if low level input access
+// is required at a higher level
+
 class DummyInputSource : public InputSource
 {
 public:
 	virtual PlayerInput getInput()
 	{
-		return PlayerInput();
+		return mInput;
 	}
 	virtual ~DummyInputSource()
 	{
 	}
+	
+	void setInput(PlayerInput input)
+	{
+		mInput = input;
+	}
+	
+private:
+	PlayerInput mInput;
 };
 
 // This operator converts a PlayerInput structure in a packed string

@@ -1,4 +1,5 @@
 #include "PhysicWorld.h"
+#include "raknet/BitStream.h"
 
 const int TIMESTEP = 5; // calculations per frame
 
@@ -510,4 +511,52 @@ Vector2 PhysicWorld::estimateBallPosition(int steps)
 bool PhysicWorld::getBallActive()
 {
 	return mIsGameRunning;
+}
+
+void PhysicWorld::setState(RakNet::BitStream* stream)
+{
+	stream->Read(mBlobPosition[LEFT_PLAYER].x);
+	stream->Read(mBlobPosition[LEFT_PLAYER].y);
+	stream->Read(mBlobPosition[RIGHT_PLAYER].x);
+	stream->Read(mBlobPosition[RIGHT_PLAYER].y);
+	stream->Read(mBallPosition.x);
+	stream->Read(mBallPosition.y);
+	
+	stream->Read(mBlobVelocity[LEFT_PLAYER].x);
+	stream->Read(mBlobVelocity[LEFT_PLAYER].y);
+	stream->Read(mBlobVelocity[RIGHT_PLAYER].x);
+	stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
+	stream->Read(mBallVelocity.x);
+	stream->Read(mBallVelocity.y);
+	
+	stream->Read(mPlayerInput[LEFT_PLAYER].left);
+	stream->Read(mPlayerInput[LEFT_PLAYER].right);
+	stream->Read(mPlayerInput[LEFT_PLAYER].up);
+	stream->Read(mPlayerInput[RIGHT_PLAYER].left);
+	stream->Read(mPlayerInput[RIGHT_PLAYER].right);
+	stream->Read(mPlayerInput[RIGHT_PLAYER].up);
+}
+
+void PhysicWorld::getState(RakNet::BitStream* stream)
+{
+	stream->Write(mBlobPosition[LEFT_PLAYER].x);
+	stream->Write(mBlobPosition[LEFT_PLAYER].y);
+	stream->Write(mBlobPosition[RIGHT_PLAYER].x);
+	stream->Write(mBlobPosition[RIGHT_PLAYER].y);
+	stream->Write(mBallPosition.x);
+	stream->Write(mBallPosition.y);
+	
+	stream->Write(mBlobVelocity[LEFT_PLAYER].x);
+	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
+	stream->Write(mBlobVelocity[RIGHT_PLAYER].x);
+	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
+	stream->Write(mBallVelocity.x);
+	stream->Write(mBallVelocity.y);
+	
+	stream->Write(mPlayerInput[LEFT_PLAYER].left);
+	stream->Write(mPlayerInput[LEFT_PLAYER].right);
+	stream->Write(mPlayerInput[LEFT_PLAYER].up);
+	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
+	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
+	stream->Write(mPlayerInput[RIGHT_PLAYER].up);
 }

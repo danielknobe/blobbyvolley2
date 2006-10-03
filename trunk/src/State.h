@@ -6,6 +6,7 @@
 class DuelMatch;
 class InputSource;
 class ReplayRecorder;
+class RakClient;
 
 class State
 {
@@ -141,3 +142,19 @@ private:
 	std::string mRightBlobbyJoystickRight;
 	std::string mRightBlobbyJoystickJump;
 };
+
+class NetworkGameState : public State
+{
+public:
+	NetworkGameState(const std::string& servername, Uint16 port);
+	virtual ~NetworkGameState();
+	virtual void step();
+
+private:
+	InputSource* mLocalInput;
+	InputSource* mRemoteInput;
+		
+	DuelMatch* mMatch;
+	RakClient* mClient;
+};
+
