@@ -9,6 +9,10 @@
 
 const float BLOBBY_SPEED = 4.5; // BLOBBY_SPEED is necessary to determine the size of the input buffer
 
+namespace RakNet
+{
+	class BitStream;
+}
 
 class PhysicWorld
 {
@@ -94,5 +98,11 @@ public:
 	
 	// For reducing ball speed after rule violation
 	void dampBall();
+	
+	// Set a new state recieved from server over a RakNet BitStream
+	void setState(RakNet::BitStream* stream);
+	
+	// Fill a Bitstream with the state
+	void getState(RakNet::BitStream* stream);
 };
 

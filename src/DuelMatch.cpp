@@ -237,3 +237,9 @@ PlayerSide DuelMatch::getServingPlayer()
 	}
 	return side;
 }
+
+void DuelMatch::setState(RakNet::BitStream* stream)
+{
+	mPhysicWorld.setState(stream);
+}
+

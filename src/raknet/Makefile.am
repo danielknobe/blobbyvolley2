@@ -1,6 +1,5 @@
 noinst_LIBRARIES=libraknet.a
-libraknet_adir = .
-libraknet_a_HEADERS= \
+libraknet_a_SOURCES= \
 	ArrayList.h \
 	AsynchronousFileIO.h \
 	Autopatcher.h \
@@ -59,9 +58,8 @@ libraknet_a_HEADERS= \
 	SingleProducerConsumer.h \
 	SocketLayer.h \
 	StringCompressor.h \
-	Types.h
-
-libraknet_a_SOURCES= \
+	Types.h \
+	\
 	AsynchronousFileIO.cpp \
 	Autopatcher.cpp \
 	BitStream.cpp \
