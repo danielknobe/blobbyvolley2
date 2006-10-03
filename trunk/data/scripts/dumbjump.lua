@@ -2,21 +2,22 @@ ballposx=0
 ballposy=0
 
 function OnOpponentServe()
-  moveto(130)
+	moveto(140)
 end
 
 function OnServe(ballready)
-  if ballready then
-    moveto(ballx() - 40)
-    if (posx() < ballx() - 37 and posx() > ballx() - 43) then
-     jump()
-    end
-  else
-    moveto(200)
-  end
+	if ballready then
+		moveto(ballx() - 40)
+		if (posx() < ballx() - 37 and posx() > ballx() - 43) then
+			jump()
+		end
+	else
+		moveto(200)
+	end
 end
 
 function OnGame()
+
 	if 400 > ballx() then
 		moveto((ballx()-20))
 		if ballx() == ballposx and bally() == ballposy then
@@ -28,7 +29,13 @@ function OnGame()
 				jump()
 			end
 		end
+		
 		ballposx=ballx()
 		ballposy=bally()
 	end
+
+		if launched() then
+			jump()
+		end
+
 end

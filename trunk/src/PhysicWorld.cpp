@@ -483,7 +483,7 @@ Vector2 PhysicWorld::getBallVelocity()
 
 bool PhysicWorld::getBlobJump(PlayerSide player)
 {
-	return blobbyHitGround(player);
+	return !blobbyHitGround(player);
 }
 
 #include "RenderManager.h"
