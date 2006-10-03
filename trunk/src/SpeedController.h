@@ -36,7 +36,10 @@ private:
 	float mGameFPS;
 	float mRealFPS;
 	int mFPS;
+	int mFPSCounter;
 	bool mFramedrop;
 	bool mDrawFPS;
 	static SpeedController* mMainInstance;
+	int mOldTicks;
+
 };
