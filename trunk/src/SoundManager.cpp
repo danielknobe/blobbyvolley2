@@ -26,26 +26,40 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	delete[] fileBuffer;
 	PHYSFS_close(fileHandle);
 
-	SDL_AudioCVT conversionStructure;
-	if (!SDL_BuildAudioCVT(&conversionStructure,
-		newSoundSpec.format, newSoundSpec.channels, newSoundSpec.freq,
-		mAudioSpec.format, mAudioSpec.channels, mAudioSpec.freq))
-		throw FileLoadException(filename);
-	conversionStructure.buf = 
-		new Uint8[newSoundLength * conversionStructure.len_mult];
-	memcpy(conversionStructure.buf, newSoundBuffer, newSoundLength);
-	conversionStructure.len = newSoundLength;
+	if (newSoundSpec.freq == mAudioSpec.freq &&
+		newSoundSpec.format == mAudioSpec.format &&
+		newSoundSpec.channels == mAudioSpec.channels)
+	{
+		Sound *newSound = new Sound;
+		newSound->data = new Uint8[newSoundLength];
+		memcpy(newSoundBuffer, newSound->data, newSoundLength);
+		newSound->length = newSoundLength;
+		newSound->position = 0;
+		SDL_FreeWAV(newSoundBuffer);
+                return newSound;
+	}
+	else
+	{
+		SDL_AudioCVT conversionStructure;
+		if (!SDL_BuildAudioCVT(&conversionStructure,
+			newSoundSpec.format, newSoundSpec.channels, newSoundSpec.freq,
+			mAudioSpec.format, mAudioSpec.channels, mAudioSpec.freq))
+				throw FileLoadException(filename);
+		conversionStructure.buf = 
+			new Uint8[newSoundLength * conversionStructure.len_mult];
+		memcpy(conversionStructure.buf, newSoundBuffer, newSoundLength);
+		conversionStructure.len = newSoundLength;
 
-	if (SDL_ConvertAudio(&conversionStructure))
-		throw FileLoadException(filename);
-	SDL_FreeWAV(newSoundBuffer);
+		if (SDL_ConvertAudio(&conversionStructure))
+			throw FileLoadException(filename);
+		SDL_FreeWAV(newSoundBuffer);
 
-	Sound *newSound = new Sound;
-	newSound->data = conversionStructure.buf;
-	newSound->length = Uint32(conversionStructure.len_cvt);
-	newSound->position = 0;	
-
-	return newSound;
+		Sound *newSound = new Sound;
+		newSound->data = conversionStructure.buf;
+		newSound->length = Uint32(conversionStructure.len_cvt);
+		newSound->position = 0;	
+		return newSound;
+	}
 }
 
 
@@ -81,7 +95,7 @@ bool SoundManager::init()
 {
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
-	desiredSpec.format = AUDIO_S16SYS;
+	desiredSpec.format = AUDIO_S16LSB;
 	desiredSpec.channels = 2;
 	desiredSpec.samples = 1024;
 	desiredSpec.callback = playCallback;
