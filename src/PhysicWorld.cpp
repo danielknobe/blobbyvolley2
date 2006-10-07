@@ -311,7 +311,7 @@ void PhysicWorld::step()
 				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
 				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByLeftBlob=true;
-				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[RIGHT_PLAYER]).length();
+				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[LEFT_PLAYER]).length();
 			}
 
 			else if(playerBottomBallCollision(RIGHT_PLAYER))

@@ -163,7 +163,10 @@ void RenderManagerSDL::deinit()
 	}
 
 	for (unsigned int i = 0; i < mFont.size(); ++i)
+	{
 		SDL_FreeSurface(mFont[i]);
+		SDL_FreeSurface(mHighlightFont[i]);
+	}
 }
 
 void RenderManagerSDL::draw()
