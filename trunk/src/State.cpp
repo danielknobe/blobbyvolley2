@@ -238,7 +238,7 @@ void MainMenuState::step()
 	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), "network game"))
 	{
 		delete mCurrentState;
-		mCurrentState = new NetworkGameState("127.0.0.1", 1234);
+		mCurrentState = new NetworkGameState("88.198.43.14", 1234);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), "start"))
 	{
@@ -1116,6 +1116,7 @@ NetworkGameState::~NetworkGameState()
 
 void NetworkGameState::step()
 {
+	static int initTimeDiff = -1;
 	Packet* packet;
 	while (packet = mClient->Receive())
 	{
@@ -1126,12 +1127,14 @@ void NetworkGameState::step()
 				break;
 			case ID_TIMESTAMP:
 			{
-				printf("Physic packet received. Time: %d\n", packet->data[1]);
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				int cval;
 				int ival;
+				stream.Read(cval);
 				stream.Read(ival);
-				stream.Read(ival);
-
+				if (initTimeDiff == -1)
+					initTimeDiff = ival;
+				printf("Physic packet received. Time: %d\n", RakNet::GetTime() - ival + initTimeDiff);
 				mMatch->setState(&stream);
 				break;
 			}

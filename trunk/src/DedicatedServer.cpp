@@ -20,8 +20,10 @@ int main()
 	
 	while (1)
 	{
-		Packet* packet = server.Receive();
-		if (packet) switch(packet->data[0])
+		Packet* packet;
+		while (packet = server.Receive())
+		{
+		switch(packet->data[0])
 		{
 			case ID_NEW_INCOMING_CONNECTION:
 				clients++;
@@ -45,12 +47,12 @@ int main()
 				stream.Read(input.right);
 				stream.Read(input.up);
 				pworld.setLeftInput(input);
-printf("player input received from %d with content %c %c %c\n",
-	packet->playerId.port,
-		input.left, input.right, input.up);
+				break;
 			}
 			default:
-				printf("unknown packet recieved\n");
+				printf("unknown packet %d recieved\n",
+					int(packet->data[0]));
+		}
 		}
 		server.DeallocatePacket(packet);
 		pworld.step();
