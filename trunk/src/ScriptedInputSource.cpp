@@ -326,7 +326,7 @@ int ScriptedInputSource::bspeedy(lua_State* state)
 		return 1;
 	}
 	float vel = match->getBallVelocity().y;
-	vel = 600.0 - vel;
+	vel = -vel;
 	lua_pushnumber(state, vel);
 	return 1;
 }
