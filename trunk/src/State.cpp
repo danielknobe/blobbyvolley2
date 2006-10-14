@@ -232,7 +232,7 @@ void MainMenuState::step()
 	IMGUI& imgui = IMGUI::getSingleton();
 	
 	imgui.doCursor();
-	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
 	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), "network game"))
@@ -350,7 +350,7 @@ void OptionState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
-	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
@@ -526,7 +526,7 @@ void ReplayMenuState::step()
 	else
 	{
 		imgui.doCursor();
-		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
 		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
@@ -602,7 +602,7 @@ void GraphicOptionsState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
-	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
 	imgui.doText(GEN_ID, Vector2(34.0, 50.0), "Video Settings");
@@ -777,7 +777,7 @@ void InputOptionsState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
-	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "gfx/strand2.bmp");
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();

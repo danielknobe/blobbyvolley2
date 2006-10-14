@@ -86,8 +86,13 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	SDL_FillRect(mOverlaySurface, &screenRect, SDL_MapRGB(mScreen->format, 0, 0, 0));
 	
 	
-	SDL_Surface* tempBackground = loadSurface("gfx/strand2.bmp");
+	SDL_Surface* tempBackground = loadSurface("backgrounds/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
+	BufferedImage* bgImage = new BufferedImage;
+	bgImage->w = mBackground->w;
+	bgImage->h = mBackground->h;
+	bgImage->sdlImage = mBackground;
+	mImageMap["background"] = bgImage;
 	SDL_FreeSurface(tempBackground);
 	
 	for (int i = 1; i <= 16; ++i)
@@ -257,9 +262,16 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 {
 	try
 	{
+		SDL_FreeSurface(mBackground);
 		SDL_Surface *tempBackground = loadSurface(filename);
-		mBackground = SDL_DisplayFormat(tempBackground);
+		delete mImageMap["background"];
+		BufferedImage* newImage = new BufferedImage;
+		newImage->w = tempBackground->w;
+		newImage->h = tempBackground->h;
+		newImage->sdlImage =  SDL_DisplayFormat(tempBackground);
 		SDL_FreeSurface(tempBackground);
+		mBackground = newImage->sdlImage;
+		mImageMap["background"] = newImage;
 	}
 	catch (FileLoadException)
 	{

@@ -115,7 +115,14 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);
 
-	mBackground = loadTexture(loadSurface("gfx/strand2.bmp"), false);
+	SDL_Surface* bgSurface = loadSurface("backgrounds/strand2.bmp");
+	BufferedImage* bgBufImage = new BufferedImage;
+	bgBufImage->w = getNextPOT(bgSurface->w);
+	bgBufImage->h = getNextPOT(bgSurface->h);
+	bgBufImage->glHandle = loadTexture(bgSurface, false);
+	mBackground = bgBufImage->glHandle;
+	mImageMap["background"] = bgBufImage;
+	
 	mBallShadow = loadTexture(loadSurface("gfx/schball.bmp"), false);	
 
 	for (int i = 1; i <= 16; ++i)
@@ -331,18 +338,22 @@ void RenderManagerGL2D::draw()
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)
 {
-	GLuint newBackground;
 	try
 	{
-		newBackground = loadTexture(loadSurface(filename), false);
+		SDL_Surface* newSurface = loadSurface(filename);
+		glDeleteTextures(1, &mBackground);
+		delete mImageMap["background"];
+		BufferedImage *imgBuffer = new BufferedImage;
+		imgBuffer->w = getNextPOT(newSurface->w);
+		imgBuffer->h = getNextPOT(newSurface->h);
+		imgBuffer->glHandle = loadTexture(newSurface, false);
+		mBackground = imgBuffer->glHandle;
+		mImageMap["background"] = imgBuffer;
 	}
 	catch (FileLoadException)
 	{
 		return false;
 	}
-	glDeleteTextures(1, &mBackground);
-	mBackground = newBackground;
-		
 	return true;
 }
 
