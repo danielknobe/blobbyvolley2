@@ -13,7 +13,7 @@ blobby_server_LDADD = $(common_LDADD)
 common_SOURCES = \
 	InputSource.h InputSource.cpp \
 	Global.h \
-	NetworkPacket.h \
+	NetworkMessage.h \
 	PhysicWorld.h PhysicWorld.cpp \
 	SpeedController.h SpeedController.cpp \
 	Vector.h \
@@ -22,6 +22,7 @@ common_SOURCES = \
 blobby_SOURCES = $(common_SOURCES) \
 	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
+	NetworkState.h NetworkState.cpp \
 	InputDevice.h InputDevice.cpp \
 	LocalInputSource.h \
 	IMGUI.h IMGUI.cpp \
