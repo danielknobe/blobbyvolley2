@@ -19,5 +19,6 @@
 	<var name="realfps" value="60"/>
 	<var name="global_volume" value="1.0" />
 	<var name="scoretowin" value="15"/>
-	<var name="showfps" value="true"/>
+	<var name="showfps" value="false"/>
+	<var name="background" value="strand1.bmp"/>
 </userconfig>

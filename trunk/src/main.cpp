@@ -119,7 +119,6 @@ int main(int argc, char* argv[])
 		rmanager->init(800, 600, true);
 	else
 		rmanager->init(800, 600, false);
-	// Only for Alpha2 Release!!!
 
 	SpeedController scontroller(gameConfig.getFloat("gamefps"),
 					gameConfig.getFloat("realfps"));
@@ -131,6 +130,8 @@ int main(int argc, char* argv[])
 	smanager->setVolume(gameConfig.getFloat("global_volume"));
 	smanager->playSound("sounds/bums.wav", 0.0);
 	smanager->playSound("sounds/pfiff.wav", 0.0);
+
+	rmanager->setBackground(std::string("backgrounds/") + gameConfig.getString("background"));
 
 	InputManager* inputmgr = InputManager::createInputManager();
 		

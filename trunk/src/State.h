@@ -19,9 +19,7 @@ protected:
 public:
 	virtual ~State() {}
 	virtual void step() = 0;
-	
 	static State* getCurrentState();
-
 };
 
 class MainMenuState : public State
@@ -30,7 +28,6 @@ private:
 public:
 	MainMenuState();
 	virtual ~MainMenuState();
-	
 	virtual void step();
 };
 
@@ -51,7 +48,6 @@ private:
 	
 	DuelMatch* mMatch;
 	ReplayRecorder* mRecorder;
-	
 public:
 	LocalGameState();
 	virtual ~LocalGameState();
@@ -65,12 +61,10 @@ public:
 	OptionState();
 	virtual ~OptionState();
 	virtual void step();
-
 private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
 	int mPlayerOptions[MAX_PLAYERS];
-	bool mShowFPS;
 	bool mSaveConfig;	
 };
 
@@ -79,7 +73,6 @@ class ReplayMenuState : public State
 public:
 	ReplayMenuState();
 	virtual void step();
-	
 private:
 	void loadCurrentReplay();
 	DuelMatch* mReplayMatch;
@@ -149,12 +142,25 @@ public:
 	NetworkGameState(const std::string& servername, Uint16 port);
 	virtual ~NetworkGameState();
 	virtual void step();
-
 private:
 	InputSource* mLocalInput;
 	InputSource* mRemoteInput;
-		
 	DuelMatch* mMatch;
 	RakClient* mClient;
 };
 
+class MiscState : public State
+{
+public:
+	MiscState();
+	virtual ~MiscState();
+	virtual void step();
+private:
+	UserConfig mOptionConfig;
+	std::vector<std::string> mBackgrounds;
+	int mBackground;
+	float mVolume;
+	int mGameFPS;
+	bool mShowFPS;
+	bool mSaveConfig;	
+};
