@@ -96,6 +96,5 @@ private:
 	
 	bool mOutput;
 	int mWinningPlayer;
-	
 	int mScoreToWin;
 };

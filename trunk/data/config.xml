@@ -21,4 +21,5 @@
 	<var name="scoretowin" value="15"/>
 	<var name="showfps" value="false"/>
 	<var name="background" value="strand1.bmp"/>
+	<var name="network_side" value="0" />
 </userconfig>

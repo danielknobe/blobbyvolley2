@@ -1,6 +1,7 @@
 #pragma once
 
 #include "State.h"
+#include "PhysicWorld.h"
 
 class RakClient;
 
@@ -12,8 +13,15 @@ public:
 	virtual void step();
 private:
 	InputSource* mLocalInput;
-	InputSource* mRemoteInput;
-	DuelMatch* mMatch;
+	PhysicWorld mPhysicWorld;
+	int mLeftScore;
+	int mRightScore;
+	PlayerSide mServingPlayer;
+	
 	RakClient* mClient;
+	PlayerSide mOwnSide;
+	bool mInputEnabled;
+	PlayerSide mWinningPlayer;
+	bool mFailed;
 };
 
