@@ -131,7 +131,9 @@ int main(int argc, char* argv[])
 	smanager->playSound("sounds/bums.wav", 0.0);
 	smanager->playSound("sounds/pfiff.wav", 0.0);
 
-	rmanager->setBackground(std::string("backgrounds/") + gameConfig.getString("background"));
+	std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
+	if (PHYSFS_exists(bg.c_str()))
+		rmanager->setBackground(bg);
 
 	InputManager* inputmgr = InputManager::createInputManager();
 		

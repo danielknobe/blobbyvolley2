@@ -4,9 +4,7 @@
 For Alpha 6:
 ------------
 =======
-- Menu for pause dialog
-- More advanced replay recording options
-- More menus, especially implement the bot list as a scrollable list
+- fix the mouse bug, when opening the pause dialog
 - Add buttons for setting speed to default values (slow, default, fast, very fast, insane)
 
 ----------------------------

@@ -1186,8 +1186,9 @@ void MiscState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "Background:");
 	int tmp = mBackground;
-	imgui.doSelectbox(GEN_ID, Vector2(34.0, 30.0), Vector2(490.0, 280.0), mBackgrounds, tmp);
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(490.0, 280.0), mBackgrounds, tmp);
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
