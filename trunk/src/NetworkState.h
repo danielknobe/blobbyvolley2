@@ -2,6 +2,8 @@
 
 #include "State.h"
 
+class RakClient;
+
 class NetworkGameState : public State
 {
 public:

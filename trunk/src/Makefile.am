@@ -23,6 +23,7 @@ blobby_SOURCES = $(common_SOURCES) \
 	DuelMatch.h DuelMatch.cpp \
 	main.cpp \
 	NetworkState.h NetworkState.cpp \
+	OptionsState.h OptionsState.cpp \
 	InputDevice.h InputDevice.cpp \
 	LocalInputSource.h \
 	IMGUI.h IMGUI.cpp \
