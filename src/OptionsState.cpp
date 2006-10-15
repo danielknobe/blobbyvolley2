@@ -712,7 +712,7 @@ void MiscOptionsState::step()
 
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "Background:");
 	int tmp = mBackground;
-	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(490.0, 280.0), mBackgrounds, tmp);
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(400.0, 280.0), mBackgrounds, tmp);
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
@@ -720,30 +720,41 @@ void MiscOptionsState::step()
 			RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
 
-	imgui.doText(GEN_ID, Vector2(34.0, 300.0), "Volume:");
-	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 340.0), mVolume))
+	imgui.doText(GEN_ID, Vector2(484.0, 10.0), "Volume:");
+	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
-	imgui.doText(GEN_ID, Vector2(34.0, 380.0), "Gamespeed:");
-	float gamefps = (mGameFPS-30)/300.0;
-	if (gamefps < 0)
-		gamefps = 0;
-	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 420.0), gamefps))
-	{
-		mGameFPS = (int)(gamefps*300.0+30);
-		SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
-	}
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 470.0), "show fps"))
+	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), "Mute"))
+		mVolume = 0.0;
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 130.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
 		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
 	}
 	if (mShowFPS)
 	{
-		imgui.doImage(GEN_ID, Vector2(16.0, 482.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(466.0, 142.0), "gfx/pfeil_rechts.bmp");
 	}
+
+	imgui.doText(GEN_ID, Vector2(292.0, 300.0), "Gamespeed:");
+	float gamefps = (mGameFPS-30)/300.0;
+	if (gamefps < 0)
+		gamefps = 0;
+	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 340.0), gamefps))
+		mGameFPS = (int)(gamefps*300.0+30);
+	if (imgui.doButton(GEN_ID, Vector2(150.0, 390.0), "slow"))
+		mGameFPS = 20;
+	if (imgui.doButton(GEN_ID, Vector2(316.0, 390.0), "default"))
+		mGameFPS = 60;
+	if (imgui.doButton(GEN_ID, Vector2(554.0, 390.0), "fast"))
+		mGameFPS = 100;
+	if (imgui.doButton(GEN_ID, Vector2(158.0, 440.0), "very fast"))
+		mGameFPS = 200;
+	if (imgui.doButton(GEN_ID, Vector2(460.0, 440.0), "insane"))
+		mGameFPS = 330;
+	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
