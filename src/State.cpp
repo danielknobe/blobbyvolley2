@@ -308,14 +308,12 @@ OptionState::OptionState()
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
-	mShowFPS = mOptionConfig.getBool("showfps");
 }
 
 OptionState::~OptionState()
 {
 	if (mSaveConfig)
 	{
-		mOptionConfig.setBool("showfps", mShowFPS);
 		if (mPlayerOptions[LEFT_PLAYER] == 0)
 		{
 			mOptionConfig.setBool(
@@ -343,7 +341,6 @@ OptionState::~OptionState()
 		}
 		mOptionConfig.saveFile("config.xml");
 	}
-	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 }
 
 void OptionState::step()
@@ -358,46 +355,25 @@ void OptionState::step()
 	imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(390.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(434.0, 50.0), Vector2(790.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
 	
-	imgui.doText(GEN_ID, Vector2(34.0, 300.0), "Volume:");
-	float volume = mOptionConfig.getFloat("global_volume");
-	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 340.0), volume))
-	{
-		mOptionConfig.setFloat("global_volume", volume);
-		SoundManager::getSingleton().setVolume(volume);
-		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
-	}
-	imgui.doText(GEN_ID, Vector2(34.0, 380.0), "Gamespeed:");
-	float gamefps = (mOptionConfig.getInteger("gamefps")-30)/300.0;
-	if (gamefps < 0)
-		gamefps = 0;
-	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 420.0), gamefps))
-	{
-		int gamefpsint = (int)(gamefps*300.0+30);
-		mOptionConfig.setInteger("gamefps", gamefpsint);
-		SpeedController::getMainInstance()->setGameSpeed(gamefpsint);
-	}
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 490.0), "show fps"))
-	{
-		mShowFPS = !mShowFPS;
-		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
-	}
-	if (mShowFPS)
-	{
-		imgui.doImage(GEN_ID, Vector2(16.0, 502.0), "gfx/pfeil_rechts.bmp");
-	}
-
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), "input options"))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), "input options"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new InputOptionsState();
 		return;
 	}
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), "graphic options"))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), "graphic options"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new GraphicOptionsState();
+		return;
+	}
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), "misc options"))
+	{
+		mSaveConfig = true;
+		delete this;
+		mCurrentState = new MiscState();
 		return;
 	}
 
@@ -1158,5 +1134,102 @@ void NetworkGameState::step()
 	{
 		delete mCurrentState;
 		mCurrentState = new MainMenuState;
+	}
+}
+
+MiscState::MiscState()
+{
+	IMGUI::getSingleton().resetSelection();
+	mSaveConfig = false;
+	mOptionConfig.loadFile("config.xml");
+	std::string currentBackground = mOptionConfig.getString("background");
+	mBackground = -1;
+	char** filenames = PHYSFS_enumerateFiles("backgrounds");
+	for (int i = 0; filenames[i] != 0; ++i)
+	{
+		std::string tmp(filenames[i]);
+		if (tmp.find(".bmp") != std::string::npos)
+		{
+			mBackgrounds.push_back(tmp);
+			int pos = mBackgrounds.size() - 1;
+			if (tmp == currentBackground)
+				mBackground = pos;
+		}
+	}
+	PHYSFS_freeList(filenames);
+	mShowFPS = mOptionConfig.getBool("showfps");
+	mVolume = mOptionConfig.getFloat("global_volume");
+	mGameFPS = mOptionConfig.getInteger("gamefps");
+}
+
+MiscState::~MiscState()
+{
+	if (mSaveConfig)
+	{
+		mOptionConfig.setBool("showfps", mShowFPS);
+		mOptionConfig.setFloat("global_volume", mVolume);
+		mOptionConfig.setInteger("gamefps", mGameFPS);
+		if (mBackground > -1)
+			mOptionConfig.setString("background", mBackgrounds[mBackground]);
+		mOptionConfig.saveFile("config.xml");
+	}
+	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
+	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
+	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
+	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
+}
+
+void MiscState::step()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
+	int tmp = mBackground;
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 30.0), Vector2(490.0, 280.0), mBackgrounds, tmp);
+	if (tmp != mBackground)
+	{
+		mBackground = tmp;
+		if (mBackground > -1)
+			RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
+	}
+
+	imgui.doText(GEN_ID, Vector2(34.0, 300.0), "Volume:");
+	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 340.0), mVolume))
+	{
+		SoundManager::getSingleton().setVolume(mVolume);
+		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+	}
+	imgui.doText(GEN_ID, Vector2(34.0, 380.0), "Gamespeed:");
+	float gamefps = (mGameFPS-30)/300.0;
+	if (gamefps < 0)
+		gamefps = 0;
+	if (imgui.doScrollbar(GEN_ID, Vector2(34.0, 420.0), gamefps))
+	{
+		mGameFPS = (int)(gamefps*300.0+30);
+		SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
+	}
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 470.0), "show fps"))
+	{
+		mShowFPS = !mShowFPS;
+		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
+	}
+	if (mShowFPS)
+	{
+		imgui.doImage(GEN_ID, Vector2(16.0, 482.0), "gfx/pfeil_rechts.bmp");
+	}
+
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	{
+		mSaveConfig = true;
+		delete this;
+		mCurrentState = new OptionState();
+		return;
+	}
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	{
+		delete this;
+		mCurrentState = new OptionState();
 	}
 }
