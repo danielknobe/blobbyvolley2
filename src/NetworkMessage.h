@@ -1,10 +1,10 @@
 #pragma once
 
-#include <PacketEnumerations.h>
+#include "raknet/PacketEnumerations.h"
 
 enum MessageType
 {
-	ID_GENERIC_MESSAGE = ID_RESERVED_9 + 1,
+	ID_GENERIC_MESSAGE = ID_RESERVED9 + 1,
 	ID_INPUT_UPDATE,
 	ID_PHYSIC_UPDATE,
 	ID_WIN_NOTIFICATION,
@@ -12,6 +12,7 @@ enum MessageType
 	ID_BALL_GROUND_COLLISION,
 	ID_BALL_PLAYER_COLLISION,
 	ID_GAME_READY,
+	ID_ENTER_GAME,
 };
 
 // General Information:
@@ -61,8 +62,8 @@ enum MessageType
 // 	Structure:
 // 		ID_BALL_RESET
 // 		serving player (PlayerSide)
-// 		left points (char)
-// 		right points (char)
+// 		left score (int)
+// 		right score (int)
 //
 // ID_BALL_GROUND_COLLISION
 // 	Description:
@@ -82,6 +83,7 @@ enum MessageType
 // 		hit the ball
 // 	Structure:
 // 		ID_BALL_PLAYER_COLLISION
+// 		intensity (float)
 // 		player (PlayerSide)
 //
 // ID_GAME_READY
@@ -90,4 +92,13 @@ enum MessageType
 // 		ready. The input is enabled after this message on the client.
 // 	Structure:
 // 		ID_GAME_READY
+//
+// ID_ENTER_GAME
+// 	Description:
+// 		Message sent from client to server after connecting to it.
+// 		The side attribute tells the server on which side the client
+// 		wants to play
+// 	Structure:
+// 		ID_ENTER_GAME
+// 		side (PlayerSide)
 
