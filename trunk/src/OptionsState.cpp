@@ -683,6 +683,7 @@ MiscOptionsState::MiscOptionsState()
 	PHYSFS_freeList(filenames);
 	mShowFPS = mOptionConfig.getBool("showfps");
 	mVolume = mOptionConfig.getFloat("global_volume");
+	mMute = mOptionConfig.getBool("mute");
 	mGameFPS = mOptionConfig.getInteger("gamefps");
 }
 
@@ -692,6 +693,7 @@ MiscOptionsState::~MiscOptionsState()
 	{
 		mOptionConfig.setBool("showfps", mShowFPS);
 		mOptionConfig.setFloat("global_volume", mVolume);
+		mOptionConfig.setBool("mute", mMute);
 		mOptionConfig.setInteger("gamefps", mGameFPS);
 		if (mBackground > -1)
 			mOptionConfig.setString("background", mBackgrounds[mBackground]);
@@ -699,6 +701,7 @@ MiscOptionsState::~MiscOptionsState()
 	}
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
+	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
 	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 }
@@ -727,7 +730,12 @@ void MiscOptionsState::step()
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), "Mute"))
-		mVolume = 0.0;
+	{
+		mMute = !mMute;
+		SoundManager::getSingleton().setMute(mMute);
+		if (!mMute)
+			SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 130.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;

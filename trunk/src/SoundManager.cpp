@@ -192,3 +192,8 @@ void SoundManager::setVolume(float volume)
 	volume = volume > 0.0 ? (volume < 1.0 ? volume : 1.0) : 0.0;
 	mVolume = volume;
 }
+
+void SoundManager::setMute(bool mute)
+{
+	SDL_PauseAudio((int)mute);
+}
