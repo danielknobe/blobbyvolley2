@@ -132,7 +132,6 @@ public:
 			input.up = true;
 
 		const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
-
 		mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
 		if (mMouseXPos <= 201 && warp)
 			SDL_WarpMouse(201, 300);
@@ -140,11 +139,8 @@ public:
 		mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
 		if (mMouseXPos >= 600 && warp)
 			SDL_WarpMouse(600, 300);
-
 		float blobpos = match->getBlobPosition(mPlayer).x;
-
 		mMarkerX = mMouseXPos + playerOffset;
-
 		if (blobpos + BLOBBY_SPEED < mMarkerX)
 			input.right = true;
 		if (blobpos - BLOBBY_SPEED > mMarkerX)

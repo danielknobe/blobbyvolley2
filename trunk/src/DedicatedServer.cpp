@@ -48,6 +48,8 @@ int main(int argc, char** argv)
 					break;
 				case ID_DISCONNECTION_NOTIFICATION:
 				case ID_CONNECTION_LOST:
+					if (firstPlayerSide != NO_PLAYER && firstPlayer == packet->playerId)
+						firstPlayerSide = NO_PLAYER;
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
 					playermap.erase(packet->playerId);
@@ -89,8 +91,9 @@ int main(int argc, char** argv)
 							switchSide);
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
-
 						gamelist.push_back(newgame);
+						
+						firstPlayerSide = NO_PLAYER;
 					}
 					break;
 				}

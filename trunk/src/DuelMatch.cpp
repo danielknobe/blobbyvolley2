@@ -62,8 +62,10 @@ void DuelMatch::step()
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
 	
-	mPhysicWorld.setLeftInput(mLeftInput->getInput());
-	mPhysicWorld.setRightInput(mRightInput->getInput());
+	if (mLeftInput)
+		mPhysicWorld.setLeftInput(mLeftInput->getInput());
+	if (mRightInput)
+		mPhysicWorld.setRightInput(mRightInput->getInput());
 	mPhysicWorld.step();
 
 	if (mOutput)

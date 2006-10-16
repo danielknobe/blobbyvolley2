@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <userconfig>
-	<var name="speed" value="60"/>
+	<var name="speed" value="100"/>
 	<var name="port" value="1234" />
 </userconfig>
