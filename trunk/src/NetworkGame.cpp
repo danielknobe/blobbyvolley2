@@ -165,6 +165,21 @@ bool NetworkGame::step()
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
 	}
+	
+	if (mLeftScore >= 15 && mLeftScore >= mRightScore + 2)
+	{
+		RakNet::BitStream stream;
+		stream.Write(ID_WIN_NOTIFICATION);
+		stream.Write(LEFT_PLAYER);
+		broadcastBitstream(&stream, true);
+	}
+	if (mRightScore >= 15 && mRightScore >= mLeftScore + 2)
+	{
+		RakNet::BitStream stream;
+		stream.Write(ID_WIN_NOTIFICATION);
+		stream.Write(RIGHT_PLAYER);
+		broadcastBitstream(&stream, true);
+	}
 
 	if (mPhysicWorld.roundFinished())
 	{

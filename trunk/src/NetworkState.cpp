@@ -121,9 +121,16 @@ void NetworkGameState::step()
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
 				mNetworkState = OPPONENT_DISCONNECTED;
+				break;
+				
+			ID_DISCONNECTION_NOTIFICATION:
+				mNetworkState = DISCONNECTED;
+				break;
 
 			case ID_RECEIVED_STATIC_DATA:
+				break;
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
+				break;
 			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
 			default:
@@ -178,9 +185,9 @@ void NetworkGameState::step()
 			imgui.doCursor();
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
-			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					"your opponent disconnected");
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
+			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
+					"opponent disconnected");
+			if (imgui.doButton(GEN_ID, Vector2(300.0, 300.0),
 					"ok"))
 			{
 				delete mCurrentState;
