@@ -123,7 +123,7 @@ public:
 		int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
 
 		if (warp)
-			SDL_WarpMouse(mMouseXPos, 300);
+			SDL_WarpMouse(mMouseXPos, 310);
 		
 		if (mouseState == 0)
 			mDelay = false;
@@ -134,11 +134,11 @@ public:
 		const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
 		mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
 		if (mMouseXPos <= 201 && warp)
-			SDL_WarpMouse(201, 300);
+			SDL_WarpMouse(201, 310);
 
 		mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
 		if (mMouseXPos >= 600 && warp)
-			SDL_WarpMouse(600, 300);
+			SDL_WarpMouse(600, 310);
 		float blobpos = match->getBlobPosition(mPlayer).x;
 		mMarkerX = mMouseXPos + playerOffset;
 		if (blobpos + BLOBBY_SPEED < mMarkerX)

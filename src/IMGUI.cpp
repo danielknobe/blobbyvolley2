@@ -65,6 +65,7 @@ IMGUI& IMGUI::getSingleton()
 
 void IMGUI::begin()
 {
+	mUsingCursor = false;
 	mButtonReset = false;
 	while (!mQueue->empty())
 		mQueue->pop();
@@ -505,4 +506,9 @@ bool IMGUI::doBlob(int id, const Vector2& position, const Color& col)
 	obj.col = col;
 	mQueue->push(obj);
 	return false;
+}
+
+bool IMGUI::usingCursor()
+{
+	return mUsingCursor;
 }

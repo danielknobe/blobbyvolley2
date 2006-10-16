@@ -33,7 +33,7 @@ public:
 	void doImage(int id, const Vector2& position, const std::string& name);
 	void doText(int id, const Vector2& position, const std::string& text);
 	void doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col = Color(0, 0, 0));
-	void doCursor(bool draw = true) { mDrawCursor = draw; }
+	void doCursor(bool draw = true) { mDrawCursor = draw; 	mUsingCursor = true; }
 
 	bool doButton(int id, const Vector2& position, const std::string& text);
 	bool doScrollbar(int id, const Vector2& position, float& value);
@@ -41,6 +41,7 @@ public:
 	bool doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected);
 	bool doBlob(int id, const Vector2& position, const Color& col);
 
+	bool usingCursor();
 	void doInactiveMode(bool inactive) { mInactive = inactive; }
 private:
 	IMGUI();
@@ -54,4 +55,5 @@ private:
 	bool mDrawCursor;
 	bool mButtonReset;
 	bool mInactive;
+	bool mUsingCursor;
 };

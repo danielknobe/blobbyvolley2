@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 #include "InputManager.h"
 
+#include "IMGUI.h"
 #include "SoundManager.h"
 
 InputManager* InputManager::mSingleton = 0;
@@ -204,11 +205,11 @@ void InputManager::updateInput()
 	}
 
 	// Device gives status to the playerinput
-	if (mInputDevice[LEFT_PLAYER])
+	if (mInputDevice[LEFT_PLAYER] && !IMGUI::getSingleton().usingCursor())
 	{
 		mInputDevice[LEFT_PLAYER]->transferInput(mInput[0]);
 	}
-	if (mInputDevice[RIGHT_PLAYER])
+	if (mInputDevice[RIGHT_PLAYER] && !IMGUI::getSingleton().usingCursor())
 		mInputDevice[RIGHT_PLAYER]->transferInput(mInput[1]);
 }
 
