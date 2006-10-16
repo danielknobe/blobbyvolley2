@@ -39,4 +39,5 @@ blobby_SOURCES = $(common_SOURCES) \
 	SoundManager.h SoundManager.cpp
 
 blobby_server_SOURCES = $(common_SOURCES) \
-	DedicatedServer.h DedicatedServer.cpp
+	DedicatedServer.h DedicatedServer.cpp \
+	NetworkGame.h NetworkGame.cpp

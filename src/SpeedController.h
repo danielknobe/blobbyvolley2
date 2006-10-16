@@ -13,7 +13,7 @@
 class SpeedController
 {
 public:
-	SpeedController(float gameFPS, float realFPS);
+	SpeedController(float gameFPS, float realFPS = 60.0);
 	~SpeedController();
 	
 	void setGameSpeed(float fps);
