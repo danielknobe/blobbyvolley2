@@ -4,6 +4,7 @@
 #include "PhysicWorld.h"
 
 class RakClient;
+class DuelMatch;
 
 class NetworkGameState : public State
 {
@@ -12,6 +13,18 @@ public:
 	virtual ~NetworkGameState();
 	virtual void step();
 private:
+	enum
+	{
+		CONNECTING,
+		WAITING_FOR_OPPONENT,
+		OPPONENT_DISCONNECTED,
+		DISCONNECTED,
+		CONNECTION_FAILED,
+		PLAYING,
+		PLAYER_WON
+	} mNetworkState;
+
+
 	InputSource* mLocalInput;
 	PhysicWorld mPhysicWorld;
 	int mLeftScore;
@@ -20,8 +33,9 @@ private:
 	
 	RakClient* mClient;
 	PlayerSide mOwnSide;
-	bool mInputEnabled;
 	PlayerSide mWinningPlayer;
-	bool mFailed;
+	
+	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
+				// access the necessary game variables
 };
 

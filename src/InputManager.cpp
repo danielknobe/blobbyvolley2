@@ -39,7 +39,6 @@ void InputManager::beginGame(PlayerSide side)
 	UserConfig config;
 	config.loadFile("inputconfig.xml");
 	std::string device = config.getString(prefix + "device");
-
 	if (device == "mouse")
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
@@ -206,7 +205,9 @@ void InputManager::updateInput()
 
 	// Device gives status to the playerinput
 	if (mInputDevice[LEFT_PLAYER])
+	{
 		mInputDevice[LEFT_PLAYER]->transferInput(mInput[0]);
+	}
 	if (mInputDevice[RIGHT_PLAYER])
 		mInputDevice[RIGHT_PLAYER]->transferInput(mInput[1]);
 }
