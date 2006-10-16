@@ -154,7 +154,7 @@ void DuelMatch::step()
 		rmanager->setScore(mLeftScore, mRightScore,
 			mServingPlayer == 0, mServingPlayer == 1);
 	}
-	
+
 	if (mPhysicWorld.roundFinished())
 	{
 		mBallDown = false;
@@ -244,4 +244,3 @@ void DuelMatch::setState(RakNet::BitStream* stream)
 {
 	mPhysicWorld.setState(stream);
 }
-

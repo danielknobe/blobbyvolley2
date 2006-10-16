@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 {
 	PHYSFS_init(argv[0]);
 	PHYSFS_addToSearchPath("data", 1);
-	
+
 	GameList gamelist;
 	PlayerMap playermap;
 	RakServer server;
@@ -31,9 +31,9 @@ int main(int argc, char** argv)
 	int clients = 0;
 
 	server.Start(2, 0, 0, port);
-	
+
 	SpeedController scontroller(speed);
-	
+
 	while (1)
 	{
 		Packet* packet;

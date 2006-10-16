@@ -402,7 +402,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 	obj.type = SELECTBOX;
 
 	const int itemsPerPage = (pos2.y - pos1.y - 10)/24;
-	int first = (selected / itemsPerPage)*itemsPerPage;	//the first visible element in the list
+	int first = (int)(selected / itemsPerPage)*itemsPerPage;	//the first visible element in the list
 
 	if (!mInactive)
 	{
@@ -455,7 +455,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 		{
 			if (InputManager::getSingleton()->click())
 			{
-				int tmp = ((mousepos.y-pos1.y-5) / 24)+first;
+				int tmp = (int)((mousepos.y-pos1.y-5) / 24)+first;
 				if (tmp < entries.size())
 					selected = tmp;
 				mActiveButton = id;
