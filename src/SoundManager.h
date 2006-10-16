@@ -44,5 +44,5 @@ public:
 	void deinit();
 	bool playSound(const std::string& filename, float volume);
 	void setVolume(float volume);
-
+	void setMute(bool mute);
 };

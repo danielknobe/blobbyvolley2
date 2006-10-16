@@ -74,6 +74,7 @@ private:
 	std::vector<std::string> mBackgrounds;
 	int mBackground;
 	float mVolume;
+	bool mMute;
 	int mGameFPS;
 	bool mShowFPS;
 	bool mSaveConfig;	
