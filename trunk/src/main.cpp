@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
 	SoundManager* smanager = SoundManager::createSoundManager();
 	smanager->init();
 	smanager->setVolume(gameConfig.getFloat("global_volume"));
+	smanager->setMute(gameConfig.getBool("mute"));
 	smanager->playSound("sounds/bums.wav", 0.0);
 	smanager->playSound("sounds/pfiff.wav", 0.0);
 
