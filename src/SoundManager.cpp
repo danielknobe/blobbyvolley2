@@ -195,5 +195,20 @@ void SoundManager::setVolume(float volume)
 
 void SoundManager::setMute(bool mute)
 {
+	static bool locked = false;
+	if (mute)
+	{
+		if (!locked)  //locking audio twice leads to a bug(??)
+		{
+			locked = true;
+			SDL_LockAudio();
+		}
+	}
+	else
+	{
+		mPlayingSound.clear();
+		SDL_UnlockAudio();
+		locked = false;
+	}
 	SDL_PauseAudio((int)mute);
 }
