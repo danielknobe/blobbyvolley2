@@ -154,9 +154,19 @@ int main(int argc, char* argv[])
 		//draw FPS:
 		if (scontroller.getDrawFPS())
 		{
-			std::stringstream tmp;
-			tmp << "FPS: " << scontroller.getFPS();
-			IMGUI::getSingleton().doText(GEN_ID, Vector2(5,570), tmp.str());
+			// We need to ensure that the title bar is only set
+			// when the framerate changed, because setting the
+			// title can ne quite resource intensive on some
+			// windows manager, like for example metacity.
+			static int lastfps = 0;
+			int newfps = scontroller.getFPS();
+			if (newfps != lastfps)
+			{
+				std::stringstream tmp;
+				tmp << "Blobby Volley 2 Alpha 6    FPS: " << newfps;
+				rmanager->setTitle(tmp.str());
+			}
+			lastfps = newfps;
 		}
 
 		if (!scontroller.doFramedrop())
