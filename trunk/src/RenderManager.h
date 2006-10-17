@@ -130,8 +130,10 @@ public:
 	// when the windows was minimized
 	void redraw();
 	
-	
 	// This can disable the rendering of ingame graphics, for example for
 	// the main menu
 	void drawGame(bool draw);
+	
+	// This function may be useful for displaying framerates
+	void setTitle(const std::string& title);
 };

@@ -25,6 +25,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	mSquishRight = 0;
 	mWinningPlayer = NO_PLAYER;
 
+	mPausing = false;
+
 	RakNet::BitStream stream;
 	stream.Write(ID_GAME_READY);
 	broadcastBitstream(&stream, true);
@@ -60,6 +62,7 @@ bool NetworkGame::step()
 		switch(packet->data[0])
 		{
 			case ID_CONNECTION_LOST:
+			case ID_DISCONNECTION_NOTIFICATION:
 				printf("client lost connection\n");
 				break;
 			case ID_INPUT_UPDATE:
@@ -81,6 +84,22 @@ bool NetworkGame::step()
 					mPhysicWorld.setRightInput(newInput);
 				break;
 			}
+			case ID_PAUSE:
+			{
+				RakNet::BitStream stream;
+				stream.Write(ID_PAUSE);
+				broadcastBitstream(&stream, true);
+				mPausing = true;
+				break;
+			}
+			case ID_UNPAUSE:
+			{
+				RakNet::BitStream stream;
+				stream.Write(ID_UNPAUSE);
+				broadcastBitstream(&stream, true);
+				mPausing = false;
+				break;
+			}
 			default:
 				printf("unknown packet %d recieved\n",
 					int(packet->data[0]));
@@ -88,7 +107,8 @@ bool NetworkGame::step()
 		}
 	};
 
-	mPhysicWorld.step();
+	if (!mPausing)
+		mPhysicWorld.step();
 
 	if (0 == mSquishLeft)
 	{
@@ -192,12 +212,15 @@ bool NetworkGame::step()
 		mPhysicWorld.reset(mServingPlayer);
 	}
 
-	RakNet::BitStream stream;
-	stream.Write(ID_PHYSIC_UPDATE);
-	stream.Write(ID_TIMESTAMP);
-	stream.Write(RakNet::GetTime());
-	mPhysicWorld.getState(&stream);
-	broadcastBitstream(&stream, false);
+	if (!mPausing)
+	{
+		RakNet::BitStream stream;
+		stream.Write(ID_PHYSIC_UPDATE);
+		stream.Write(ID_TIMESTAMP);
+		stream.Write(RakNet::GetTime());
+		mPhysicWorld.getState(&stream);
+		broadcastBitstream(&stream, false);
+	}
 
 	return true;
 }

@@ -201,3 +201,8 @@ void RenderManager::drawGame(bool draw)
 {
 	mDrawGame = draw;
 }
+
+void RenderManager::setTitle(const std::string& title)
+{
+	SDL_WM_SetCaption(title.c_str(), "");
+}

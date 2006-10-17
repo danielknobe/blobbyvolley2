@@ -58,6 +58,8 @@ int main(int argc, char** argv)
 					printf("%d clients connected now\n", clients);
 					break;
 				case ID_INPUT_UPDATE:
+				case ID_PAUSE:
+				case ID_UNPAUSE:
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
 					break;
@@ -97,6 +99,8 @@ int main(int argc, char** argv)
 					}
 					break;
 				}
+				case ID_RECEIVED_STATIC_DATA:
+					break;
 				default:
 					printf("unknown packet %d recieved\n",
 						int(packet->data[0]));
