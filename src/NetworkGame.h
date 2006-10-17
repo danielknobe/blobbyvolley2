@@ -53,5 +53,7 @@ private:
 	int mRightHitcount;
 	int mSquishLeft;
 	int mSquishRight;
+	
+	bool mPausing;
 };
 

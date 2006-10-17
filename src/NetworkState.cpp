@@ -112,6 +112,14 @@ void NetworkGameState::step()
 				mPhysicWorld.setBallValidity(false);
 				break;
 			}
+			case ID_PAUSE:
+				if (mNetworkState = PLAYING)
+					mNetworkState = PAUSING;
+				break;
+			case ID_UNPAUSE:
+				if (mNetworkState == PAUSING)
+					mNetworkState = PLAYING;
+				break;
 			case ID_GAME_READY:
 				mNetworkState = PLAYING;
 				break;
@@ -123,7 +131,8 @@ void NetworkGameState::step()
 				mNetworkState = OPPONENT_DISCONNECTED;
 				break;
 				
-			ID_DISCONNECTION_NOTIFICATION:
+			case ID_DISCONNECTION_NOTIFICATION:
+			case ID_CONNECTION_LOST:
 				mNetworkState = DISCONNECTED;
 				break;
 
@@ -154,10 +163,7 @@ void NetworkGameState::step()
 	rmanager->setBall(mPhysicWorld.getBall(), 
 		mPhysicWorld.getBallRotation());
 
-	mPhysicWorld.step();
-	mFakeMatch->step();
-	
-	if (InputManager::getSingleton()->exit())
+	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
 		delete mCurrentState;
 		mCurrentState = new MainMenuState;
@@ -185,9 +191,9 @@ void NetworkGameState::step()
 			imgui.doCursor();
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
-			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
+			imgui.doText(GEN_ID, Vector2(140.0, 250.0),
 					"opponent disconnected");
-			if (imgui.doButton(GEN_ID, Vector2(300.0, 300.0),
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0),
 					"ok"))
 			{
 				delete mCurrentState;
@@ -200,7 +206,7 @@ void NetworkGameState::step()
 			imgui.doCursor();
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
-			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
+			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
 					"disconnected from server");
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
 					"ok"))
@@ -227,6 +233,14 @@ void NetworkGameState::step()
 		}
 		case PLAYING:
 		{
+			mPhysicWorld.step();
+			mFakeMatch->step();
+			if (InputManager::getSingleton()->exit())
+			{
+				RakNet::BitStream stream;
+				stream.Write(ID_PAUSE);
+				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+			}
 			RakNet::BitStream stream;
 			stream.Write(ID_INPUT_UPDATE);
 			stream.Write(ID_TIMESTAMP);
@@ -253,7 +267,23 @@ void NetworkGameState::step()
 			imgui.doCursor();
 			break;
 		}
-
+		case PAUSING:
+		{
+			imgui.doOverlay(GEN_ID, Vector2(200, 200), Vector2(650, 400));
+			imgui.doText(GEN_ID, Vector2(300, 260), "game paused");
+			if (imgui.doButton(GEN_ID, Vector2(230, 330), "continue"))
+			{
+				RakNet::BitStream stream;
+				stream.Write(ID_UNPAUSE);
+				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+			}
+			if (imgui.doButton(GEN_ID, Vector2(480, 330), "quit"))
+			{
+				delete this;
+				mCurrentState = new MainMenuState;
+			}
+			imgui.doCursor();
+		}
 	}
 
 }

@@ -233,7 +233,8 @@ void MainMenuState::step()
 	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), "network game"))
 	{
 		delete mCurrentState;
-		mCurrentState = new NetworkGameState("88.198.43.14", 1234);
+//		mCurrentState = new NetworkGameState("88.198.43.14", 1234);
+		mCurrentState = new NetworkGameState("localhost", 1234);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), "start"))
 	{

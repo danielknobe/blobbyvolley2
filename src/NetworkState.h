@@ -21,7 +21,8 @@ private:
 		DISCONNECTED,
 		CONNECTION_FAILED,
 		PLAYING,
-		PLAYER_WON
+		PLAYER_WON,
+		PAUSING
 	} mNetworkState;
 
 

@@ -13,6 +13,8 @@ enum MessageType
 	ID_BALL_PLAYER_COLLISION,
 	ID_GAME_READY,
 	ID_ENTER_GAME,
+	ID_PAUSE,
+	ID_UNPAUSE
 };
 
 // General Information:
@@ -101,4 +103,18 @@ enum MessageType
 // 	Structure:
 // 		ID_ENTER_GAME
 // 		side (PlayerSide)
-
+//
+// ID_PAUSE
+// 	Description:
+// 		Sent from client to server, this message can be seen as a request
+// 		to pause the game. From server to client it is an acknowledgement
+// 		of the pause and request demand to display an appropriate dialog.
+// 	Structure:
+// 		ID_PAUSE
+//
+// ID_UNPAUSE
+// 	Description:
+// 		As ID_PAUSE, this packets is an acknowledgement if sent from a client
+// 		and a request if sent from the server.
+// 	Structure:
+// 		ID_UNPAUSE
