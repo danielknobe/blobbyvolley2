@@ -42,7 +42,8 @@ private:
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
 	std::string oldString;
-	int oldInteger;
+	int mOldInteger;
+	int mSetKeyboard; // 1-10 for LeftKeyboard | 11-20 for RightKeyboard
 	//left data:
 	std::string mLeftBlobbyDevice;
 	int mLeftBlobbyMouseJumpbutton;
