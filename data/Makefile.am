@@ -1,7 +1,7 @@
 pkgdatadir = $(datadir)/@PACKAGE@
 
 gfx.zip: gfx/*
-	zip gfx.zip gfx/*.bmp background/*.bmp
+	zip gfx.zip gfx/*.bmp backgrounds/*.bmp
 
 gf2x.zip: gf2x/*
 	zip gf2x.zip gf2x/*.bmp
