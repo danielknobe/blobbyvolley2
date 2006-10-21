@@ -13,6 +13,7 @@ public:
 	Blood(Vector2 position, Vector2 direction);
 	void step();
 	Vector2 getPosition() { return mPos; }
+	int mLastFrame;
 };
 
 class BloodManager

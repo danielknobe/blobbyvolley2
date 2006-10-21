@@ -9,18 +9,20 @@ Blood::Blood(Vector2 position, Vector2 direction)
 {
 	mPos = position;
 	mDir = direction;
+	mLastFrame = SDL_GetTicks();
 }
 
 void Blood::step()
 {
-	const float GRAVITY = 2.98;
-	static int lastFrame = SDL_GetTicks();
-	int diff = SDL_GetTicks() - lastFrame;
+	const float GRAVITY = 3;
+	int diff = SDL_GetTicks() - mLastFrame;
 	RenderManager::getSingleton().drawImage("gfx/blood.bmp", mPos);
-	mDir.y += GRAVITY;
-	mPos.x += mDir.x;
-	mPos.y += mDir.y;
-	lastFrame = SDL_GetTicks();
+	const int SPEED = 45; 
+	//this calculation is NOT based on physical rules
+	mDir.y += GRAVITY / SPEED * diff;
+	mPos.x += mDir.x / SPEED * diff;
+	mPos.y += mDir.y / SPEED * diff;
+	mLastFrame = SDL_GetTicks();
 }
 
 BloodManager::BloodManager()
@@ -41,17 +43,17 @@ void BloodManager::step()
 		it++;	
 		it2->step();
 		Vector2 partPos = it2->getPosition();
-		if ((partPos.x < 0) || (partPos.x > 800) || (partPos.y < 0) || (partPos.y > 600))
+		if (partPos.y > 600)
 			mParticles.erase(it2);
 	}
 }
 
 void BloodManager::spillBlood(Vector2 pos)
 {
-	for (int c = 0; c <= random(5, 50); c++)
+	for (int c = 0; c <= random(10, 50); c++)
 	{
 		int x = random(-20, 20);
-		int y = random(-50, 3);
+		int y = random(-40, 3);
 		mParticles.push_front(Blood(pos, Vector2(x, y)));
 	}
 }
