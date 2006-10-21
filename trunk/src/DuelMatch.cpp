@@ -2,6 +2,7 @@
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "DuelMatch.h"
+#include "blood.h"
 
 #include <cassert>
 
@@ -86,6 +87,7 @@ void DuelMatch::step()
 			if (mOutput)
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + 0.4);
+			BloodManager::getSingleton().spillBlood(mPhysicWorld.getBlob(LEFT_PLAYER));
 			mLeftHitcount++;
 			mRightHitcount = 0;
 			mSquishLeft = 1;
@@ -105,6 +107,7 @@ void DuelMatch::step()
 			if (mOutput)
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + 0.4);
+			BloodManager::getSingleton().spillBlood(mPhysicWorld.getBlob(RIGHT_PLAYER));
 			mRightHitcount++;
 			mLeftHitcount = 0;
 			mSquishRight = 1;

@@ -35,8 +35,9 @@ blobby_SOURCES = $(common_SOURCES) \
 	ReplayInputSource.h ReplayInputSource.cpp \
 	ReplayRecorder.h ReplayRecorder.cpp \
 	ScriptedInputSource.h ScriptedInputSource.cpp \
-	State.h State.cpp\
-	SoundManager.h SoundManager.cpp
+	State.h State.cpp \
+	SoundManager.h SoundManager.cpp \
+	blood.h blood.cpp
 
 blobby_server_SOURCES = $(common_SOURCES) \
 	DedicatedServer.h DedicatedServer.cpp \

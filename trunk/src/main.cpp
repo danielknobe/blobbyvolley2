@@ -13,6 +13,7 @@
 #include "IMGUI.h"
 #include "State.h"
 #include "SpeedController.h"
+#include "blood.h"
 
 #include <cstring>
 #include <sstream>
@@ -173,6 +174,7 @@ int main(int argc, char* argv[])
 		{
 			rmanager->draw();
 			IMGUI::getSingleton().end();
+			BloodManager::getSingleton().step();
 			rmanager->refresh();
 		}
 		scontroller.update();
