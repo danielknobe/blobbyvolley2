@@ -4,6 +4,7 @@
 #include "LocalInputSource.h"
 #include "SpeedController.h"
 #include "SoundManager.h"
+#include "blood.h"
 #include "IMGUI.h"
 
 #include <physfs.h>
@@ -731,6 +732,7 @@ MiscOptionsState::MiscOptionsState()
 	}
 	PHYSFS_freeList(filenames);
 	mShowFPS = mOptionConfig.getBool("showfps");
+	mShowBlood = mOptionConfig.getBool("blood");
 	mVolume = mOptionConfig.getFloat("global_volume");
 	mMute = mOptionConfig.getBool("mute");
 	mGameFPS = mOptionConfig.getInteger("gamefps");
@@ -741,6 +743,7 @@ MiscOptionsState::~MiscOptionsState()
 	if (mSaveConfig)
 	{
 		mOptionConfig.setBool("showfps", mShowFPS);
+		mOptionConfig.setBool("blood", mShowBlood);
 		mOptionConfig.setFloat("global_volume", mVolume);
 		mOptionConfig.setBool("mute", mMute);
 		mOptionConfig.setInteger("gamefps", mGameFPS);
@@ -749,6 +752,7 @@ MiscOptionsState::~MiscOptionsState()
 		mOptionConfig.saveFile("config.xml");
 	}
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
+	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
 	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
@@ -793,6 +797,16 @@ void MiscOptionsState::step()
 	if (mShowFPS)
 	{
 		imgui.doImage(GEN_ID, Vector2(466.0, 142.0), "gfx/pfeil_rechts.bmp");
+	}
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 170.0), "show blood"))
+	{
+		mShowBlood = !mShowBlood;
+		BloodManager::getSingleton().enable(mShowBlood);
+		BloodManager::getSingleton().spillBlood(Vector2(484.0, 170.0));
+	}
+	if (mShowBlood)
+	{
+		imgui.doImage(GEN_ID, Vector2(466.0 ,182.0), "gfx/pfeil_rechts.bmp");
 	}
 
 	imgui.doText(GEN_ID, Vector2(292.0, 300.0), "Gamespeed:");

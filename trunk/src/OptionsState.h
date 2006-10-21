@@ -78,5 +78,6 @@ private:
 	bool mMute;
 	int mGameFPS;
 	bool mShowFPS;
+	bool mShowBlood;
 	bool mSaveConfig;	
 };

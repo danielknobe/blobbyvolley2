@@ -27,8 +27,7 @@ BloodManager::BloodManager()
 {
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
-	//mEnabled = gameConfig.getBool("blood");
-	mEnabled = true;
+	mEnabled = gameConfig.getBool("blood");
 }
 
 void BloodManager::step()
