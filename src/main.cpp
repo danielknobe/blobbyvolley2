@@ -2,7 +2,7 @@
 
 #ifdef WIN32
 #undef main
-#endif 
+#endif
 
 #include <physfs.h>
 
@@ -186,4 +186,3 @@ int main(int argc, char* argv[])
 	PHYSFS_deinit();
 
 }
-
