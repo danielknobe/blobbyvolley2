@@ -62,6 +62,9 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 RenderManagerSDL::RenderManagerSDL()
 	: RenderManager()
 {
+	mBallRotation = 0.0;
+	mLeftBlobAnimationState = 0.0;
+	mRightBlobAnimationState = 0.0;
 }
 
 RenderManager* RenderManager::createRenderManagerSDL()
@@ -262,8 +265,8 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 {
 	try
 	{
-		SDL_FreeSurface(mBackground);
 		SDL_Surface *tempBackground = loadSurface(filename);
+		SDL_FreeSurface(mBackground);
 		delete mImageMap["background"];
 		BufferedImage* newImage = new BufferedImage;
 		newImage->w = tempBackground->w;
