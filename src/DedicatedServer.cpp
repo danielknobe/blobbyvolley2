@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
 	ServerInfo myinfo(config);
 	
-	if (!server.Start(2, 0, 0, port))
+	if (!server.Start(200, 0, 0, port))
 	{
 		std::cerr << "blobby-server: Couldn't bind to port " << port;
 		std::cerr << " !" << std::endl;
@@ -54,7 +54,10 @@ int main(int argc, char** argv)
 					break;
 				case ID_DISCONNECTION_NOTIFICATION:
 				case ID_CONNECTION_LOST:
-					if (firstPlayerSide != NO_PLAYER && firstPlayer == packet->playerId)
+				{
+					bool cond1 = firstPlayerSide != NO_PLAYER;
+					bool cond2 = firstPlayer == packet->playerId;
+					if (cond1 && cond2)
 						firstPlayerSide = NO_PLAYER;
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
@@ -63,6 +66,7 @@ int main(int argc, char** argv)
 					printf("connection close\n");
 					printf("%d clients connected now\n", clients);
 					break;
+				}
 				case ID_INPUT_UPDATE:
 				case ID_PAUSE:
 				case ID_UNPAUSE:
@@ -110,7 +114,7 @@ int main(int argc, char** argv)
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
 					myinfo.activegames = gamelist.size();
-					if (firstPlayerSide = NO_PLAYER)
+					if (firstPlayerSide == NO_PLAYER)
 					{
 						strncpy(myinfo.waitingplayer, "none",
 							sizeof(myinfo.waitingplayer) - 1);
