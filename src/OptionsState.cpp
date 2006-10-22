@@ -830,6 +830,10 @@ void MiscOptionsState::step()
 		mGameFPS = 150;
 	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
+	std::stringstream FPSInPercent;
+	FPSInPercent << int((float)mGameFPS/60*100);
+	imgui.doText(GEN_ID, Vector2(515.0, 340.0), FPSInPercent.str()+="Percent");
+
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
