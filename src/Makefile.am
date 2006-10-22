@@ -13,7 +13,7 @@ blobby_server_LDADD = $(common_LDADD)
 common_SOURCES = \
 	InputSource.h InputSource.cpp \
 	Global.h \
-	NetworkMessage.h \
+	NetworkMessage.h NetworkMessage.cpp \
 	PhysicWorld.h PhysicWorld.cpp \
 	SpeedController.h SpeedController.cpp \
 	Vector.h \

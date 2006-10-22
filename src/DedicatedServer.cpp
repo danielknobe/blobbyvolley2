@@ -30,7 +30,13 @@ int main(int argc, char** argv)
 	float speed = config.getFloat("speed");
 	int clients = 0;
 
-	server.Start(2, 0, 0, port);
+	ServerInfo myinfo(config);
+	
+	if (!server.Start(2, 0, 0, port))
+	{
+		std::cerr << "blobby-server: Couldn't bind to port " << port;
+		std::cerr << " !" << std::endl;
+	}
 
 	SpeedController scontroller(speed);
 
@@ -97,6 +103,31 @@ int main(int argc, char** argv)
 						
 						firstPlayerSide = NO_PLAYER;
 					}
+					break;
+				}
+				case ID_PONG:
+					break;
+				case ID_BLOBBY_SERVER_PRESENT:
+				{
+					myinfo.activegames = gamelist.size();
+					if (firstPlayerSide = NO_PLAYER)
+					{
+						strncpy(myinfo.waitingplayer, "none",
+							sizeof(myinfo.waitingplayer) - 1);
+					}
+					else
+					{
+						// TODO: Insert waiting players name here
+						strncpy(myinfo.waitingplayer, "somebody",
+							sizeof(myinfo.waitingplayer) - 1);
+					}
+
+					RakNet::BitStream stream;
+					stream.Write(ID_BLOBBY_SERVER_PRESENT);
+					myinfo.writeToBitstream(stream);
+					server.Send(&stream, HIGH_PRIORITY,
+						RELIABLE_ORDERED, 0,
+						packet->playerId, false);
 					break;
 				}
 				case ID_RECEIVED_STATIC_DATA:

@@ -10,6 +10,8 @@
 #define GP2X GP2X
 #endif
 
+const int BLOBBY_PORT = 1234;
+
 // This is a temporary solution until a more advanced state management
 // is developed
 
@@ -89,3 +91,4 @@ struct ScriptException : public std::exception
 	std::string luaerror;
 	~ScriptException() throw() {}
 };
+
