@@ -810,21 +810,21 @@ void MiscOptionsState::step()
 	}
 
 	imgui.doText(GEN_ID, Vector2(292.0, 300.0), "Gamespeed:");
-	float gamefps = (mGameFPS-30)/300.0;
+	float gamefps = (mGameFPS-30)/120.0;
 	if (gamefps < 0)
 		gamefps = 0;
 	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 340.0), gamefps))
-		mGameFPS = (int)(gamefps*300.0+30);
+		mGameFPS = (int)(gamefps*120.0+30);
 	if (imgui.doButton(GEN_ID, Vector2(150.0, 390.0), "slow"))
-		mGameFPS = 20;
+		mGameFPS = 30;
 	if (imgui.doButton(GEN_ID, Vector2(316.0, 390.0), "default"))
 		mGameFPS = 60;
 	if (imgui.doButton(GEN_ID, Vector2(554.0, 390.0), "fast"))
-		mGameFPS = 100;
+		mGameFPS = 90;
 	if (imgui.doButton(GEN_ID, Vector2(158.0, 440.0), "very fast"))
-		mGameFPS = 200;
+		mGameFPS = 120;
 	if (imgui.doButton(GEN_ID, Vector2(460.0, 440.0), "insane"))
-		mGameFPS = 330;
+		mGameFPS = 150;
 	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
