@@ -103,12 +103,11 @@ void NetworkSearchState::step()
 		{
 			case ID_PONG:
 			{
-				const char* hostname = mPingClient->PlayerIDToDottedIP(packet->playerId);
-				printf("got ping response by %s, trying to connect\n", hostname);
+				std::string hostname = mPingClient->PlayerIDToDottedIP(packet->playerId);
+				printf("got ping response by \"%s\", trying to connect\n", hostname.c_str());
 				RakClient* newClient = new RakClient;
 				newClient->Connect(
-					newClient->PlayerIDToDottedIP(packet->playerId),
-					BLOBBY_PORT, 0, 0, 0);
+					hostname.c_str(), BLOBBY_PORT, 0, 0, 0);
 				mQueryClients.push_back(newClient);
 			}
 			default:
@@ -127,20 +126,22 @@ void NetworkSearchState::step()
 	std::vector<std::string> servernames;
 	for (int i = 0; i < mScannedServers.size(); i++)
 	{
-		std::stringstream sstream;
-		sstream << mScannedServers[i].name;
-		sstream << " games: " << mScannedServers[i].activegames;
 		servernames.push_back(mScannedServers[i].name);
 	}
 
-	imgui.doSelectbox(GEN_ID, Vector2(50.0, 60.0), Vector2(750.0, 500.0), 
+	imgui.doSelectbox(GEN_ID, Vector2(50.0, 60.0), Vector2(750.0, 400.0), 
 			servernames, mSelectedServer);
 
-	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok") && !mScannedServers.empty())
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
 		delete this;
 		mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
+	}
+	if (imgui.doButton(GEN_ID, Vector2(300, 460), "play online"))
+	{
+		delete this;
+		mCurrentState = new NetworkGameState("88.198.43.14", BLOBBY_PORT);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), "cancel"))
 	{
@@ -277,14 +278,15 @@ void NetworkGameState::step()
 				break;
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
-				mNetworkState = OPPONENT_DISCONNECTED;
 				break;
 				
 			case ID_DISCONNECTION_NOTIFICATION:
 			case ID_CONNECTION_LOST:
 				mNetworkState = DISCONNECTED;
 				break;
-
+			case ID_NO_FREE_INCOMING_CONNECTIONS:
+				mNetworkState = SERVER_FULL;
+				break;
 			case ID_RECEIVED_STATIC_DATA:
 				break;
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
@@ -372,6 +374,21 @@ void NetworkGameState::step()
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
 					"connection failed");
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
+					"ok"))
+			{
+				delete mCurrentState;
+				mCurrentState = new MainMenuState;
+			}
+			break;
+		}
+		case SERVER_FULL:
+		{
+			imgui.doCursor();
+			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
+					Vector2(700.0, 370.0));
+			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
+					"server is full");
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
 					"ok"))
 			{
