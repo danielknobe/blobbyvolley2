@@ -1,6 +1,9 @@
 #pragma once
 
+#include <cstring>
+
 #include "raknet/PacketEnumerations.h"
+#include "raknet/NetworkTypes.h"
 
 enum MessageType
 {
@@ -14,7 +17,8 @@ enum MessageType
 	ID_GAME_READY,
 	ID_ENTER_GAME,
 	ID_PAUSE,
-	ID_UNPAUSE
+	ID_UNPAUSE,
+	ID_BLOBBY_SERVER_PRESENT,
 };
 
 // General Information:
@@ -118,3 +122,21 @@ enum MessageType
 // 		and a request if sent from the server.
 // 	Structure:
 // 		ID_UNPAUSE
+
+class UserConfig;
+
+struct ServerInfo
+{
+	ServerInfo(RakNet::BitStream& stream, const char* ip);
+	ServerInfo(UserConfig& config);
+
+	void writeToBitstream(RakNet::BitStream& stream);
+	int activegames;
+	char hostname[64];
+	char name[64];
+	char waitingplayer[64];
+	char description[256];
+};
+
+bool operator == (const ServerInfo& lval, const ServerInfo& rval);
+

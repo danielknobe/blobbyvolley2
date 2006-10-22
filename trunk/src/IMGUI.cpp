@@ -401,7 +401,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 	obj.pos2 = pos2;
 	obj.type = SELECTBOX;
 
-	const int itemsPerPage = (pos2.y - pos1.y - 10)/24;
+	const int itemsPerPage = int(pos2.y - pos1.y - 10) / 24;
 	int first = (int)(selected / itemsPerPage)*itemsPerPage;	//the first visible element in the list
 
 	if (!mInactive)

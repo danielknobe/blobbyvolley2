@@ -24,4 +24,5 @@
 	<var name="blood" value="true"/>
 	<var name="background" value="strand1.bmp"/>
 	<var name="network_side" value="1" />
+	<var name="network_last_server" value="localhost" />
 </userconfig>

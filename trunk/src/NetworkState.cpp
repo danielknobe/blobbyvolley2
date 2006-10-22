@@ -10,7 +10,156 @@
 #include "IMGUI.h"
 #include "SoundManager.h"
 #include "LocalInputSource.h"
+#include "raknet/RakServer.h"
 
+NetworkSearchState::NetworkSearchState()
+{
+	IMGUI::getSingleton().resetSelection();
+	mSelectedServer = 0;
+	mServerBoxPosition = 0;
+	
+	mPingClient = new RakClient;
+	broadcast();
+}
+
+NetworkSearchState::~NetworkSearchState()
+{
+	UserConfig config;
+	try
+	{
+		config.loadFile("config.xml");
+		config.setString("network_last_server",
+				mScannedServers.at(mSelectedServer).hostname);
+		config.saveFile("config.xml");
+	}
+	catch (std::exception)
+	{
+	}
+	
+	for (ClientList::iterator iter = mQueryClients.begin();
+		iter != mQueryClients.end(); iter++)
+	{
+		if (*iter)
+		{
+			(*iter)->Disconnect(50);
+			delete *iter;
+		}
+	}	
+	delete mPingClient;
+}
+
+void NetworkSearchState::step()
+{
+	Packet* packet;
+	
+	for (ClientList::iterator iter = mQueryClients.begin();
+		iter != mQueryClients.end(); iter++)
+	{
+		bool skip = false;
+		if (!skip)
+		while ((packet = (*iter)->Receive()) && !skip)
+		{
+			switch(packet->data[0])
+			{
+				case ID_CONNECTION_REQUEST_ACCEPTED:
+				{
+					printf("connection accepted\n");
+					RakNet::BitStream stream;
+					stream.Write(ID_BLOBBY_SERVER_PRESENT);
+					(*iter)->Send(&stream, HIGH_PRIORITY,
+						RELIABLE_ORDERED, 0);
+					break;
+				}
+				case ID_BLOBBY_SERVER_PRESENT:
+				{
+					RakNet::BitStream stream((char*)packet->data,
+						packet->length, false);
+					printf("server is a blobby server\n");
+					int ival;
+					stream.Read(ival);
+					ServerInfo info(stream,
+						(*iter)->PlayerIDToDottedIP(
+							packet->playerId));
+					if (std::find(
+							mScannedServers.begin(),
+							mScannedServers.end(),
+							info) == mScannedServers.end())
+						mScannedServers.push_back(info);
+					(*iter)->Disconnect(50);
+					delete *iter;
+					iter = mQueryClients.erase(iter);
+					skip = true;
+					break;
+				}
+			}
+			if (skip)
+				break;
+		}		
+	}
+	
+	while (packet = mPingClient->Receive())
+	{
+		switch (packet->data[0])
+		{
+			case ID_PONG:
+			{
+				const char* hostname = mPingClient->PlayerIDToDottedIP(packet->playerId);
+				printf("got ping response by %s, trying to connect\n", hostname);
+				RakClient* newClient = new RakClient;
+				newClient->Connect(
+					newClient->PlayerIDToDottedIP(packet->playerId),
+					BLOBBY_PORT, 0, 0, 0);
+				mQueryClients.push_back(newClient);
+			}
+			default:
+				break;
+		}
+	}
+
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
+	if (imgui.doButton(GEN_ID, Vector2(100, 20), "scan for servers"))
+		broadcast();
+		
+	std::vector<std::string> servernames;
+	for (int i = 0; i < mScannedServers.size(); i++)
+	{
+		std::stringstream sstream;
+		sstream << mScannedServers[i].name;
+		sstream << " games: " << mScannedServers[i].activegames;
+		servernames.push_back(mScannedServers[i].name);
+	}
+
+	imgui.doSelectbox(GEN_ID, Vector2(50.0, 60.0), Vector2(750.0, 500.0), 
+			servernames, mSelectedServer);
+
+	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok"))
+	{
+		std::string server = mScannedServers[mSelectedServer].hostname;
+		delete this;
+		mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
+	}
+	if (imgui.doButton(GEN_ID, Vector2(480, 530), "cancel"))
+	{
+		delete this;
+		mCurrentState = new MainMenuState;
+	}
+}
+
+void NetworkSearchState::broadcast()
+{
+	mScannedServers.clear();
+	mPingClient->PingServer("255.255.255.255", BLOBBY_PORT, 0, true);
+	mPingClient->PingServer("88.198.43.14", BLOBBY_PORT, 0, true);
+	UserConfig config;
+	config.loadFile("config.xml");
+	mPingClient->PingServer(
+		config.getString("network_last_server").c_str(),
+		BLOBBY_PORT, 0, true);
+}
 
 NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 {
