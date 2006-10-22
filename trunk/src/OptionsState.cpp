@@ -490,7 +490,7 @@ void InputOptionsState::step()
 	if (mRightBlobbyDevice == "keyboard")
 	{
 
-		if (imgui.doButton(GEN_ID, Vector2(450, 350.0), "Set All"))
+		if (imgui.doButton(GEN_ID, Vector2(434.0, 350.0), "Set All"))
 			mSetKeyboard = 11;
 
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Key");
