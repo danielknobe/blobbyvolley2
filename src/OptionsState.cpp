@@ -153,6 +153,9 @@ GraphicOptionsState::~GraphicOptionsState()
 				RenderManager::createRenderManagerGL2D()->init(800, 600, mFullscreen);
 			else
 				RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
+			RenderManager::getSingleton().setBackground(
+				std::string("backgrounds/") + 
+				mOptionConfig.getString("background"));
 		}
 		mOptionConfig.setInteger("r1", mR1);
 		mOptionConfig.setInteger("g1", mG1);
