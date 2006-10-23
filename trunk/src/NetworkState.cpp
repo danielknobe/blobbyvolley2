@@ -9,7 +9,6 @@
 
 #include "IMGUI.h"
 #include "SoundManager.h"
-#include "blood.h"
 #include "LocalInputSource.h"
 #include "raknet/RakServer.h"
 
@@ -18,6 +17,7 @@ NetworkSearchState::NetworkSearchState()
 	IMGUI::getSingleton().resetSelection();
 	mSelectedServer = 0;
 	mServerBoxPosition = 0;
+	mDisplayInfo = false;
 	
 	mPingClient = new RakClient;
 	broadcast();
@@ -117,32 +117,71 @@ void NetworkSearchState::step()
 	}
 
 	IMGUI& imgui = IMGUI::getSingleton();
+
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
+	if (mDisplayInfo)
+	{
+		imgui.doInactiveMode(true);
+	}
+
 	if (imgui.doButton(GEN_ID, Vector2(100, 20), "scan for servers"))
 		broadcast();
-		
+			
 	std::vector<std::string> servernames;
 	for (int i = 0; i < mScannedServers.size(); i++)
 	{
 		servernames.push_back(mScannedServers[i].name);
 	}
 
-	imgui.doSelectbox(GEN_ID, Vector2(50.0, 60.0), Vector2(750.0, 400.0), 
+	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 460.0), 
 			servernames, mSelectedServer);
+
+	if (imgui.doButton(GEN_ID, Vector2(50, 480), "server info") &&
+			!mDisplayInfo && !mScannedServers.empty())
+	{
+		mDisplayInfo = true;
+		imgui.resetSelection();
+	}
+
+	if (imgui.doButton(GEN_ID, Vector2(430, 480), "play online"))
+	{
+		delete this;
+		mCurrentState = new NetworkGameState("88.198.43.14", BLOBBY_PORT);
+	}
+
+	if (mDisplayInfo)
+	{
+		imgui.doInactiveMode(false);
+		imgui.doOverlay(GEN_ID, Vector2(40.0, 80.0), Vector2(760.0, 440.0));
+		imgui.doText(GEN_ID, Vector2(50, 100), mScannedServers[mSelectedServer].name);
+		imgui.doText(GEN_ID, Vector2(50, 130), mScannedServers[mSelectedServer].hostname);
+
+		std::stringstream activegames;
+		activegames << "active games: " << mScannedServers[mSelectedServer].activegames;
+		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
+		std::string description = mScannedServers[mSelectedServer].description;
+		for (int i = 0; i < description.length(); i += 29)
+		{
+			imgui.doText(GEN_ID, Vector2(50, 190 + i / 29 * 30),
+					description.substr(i, 29));
+		}
+
+		if (imgui.doButton(GEN_ID, Vector2(410, 405), "ok"))
+		{
+			mDisplayInfo = false;
+			imgui.resetSelection();
+		}
+		imgui.doInactiveMode(true);
+	}
 
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok") && !mScannedServers.empty())
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
 		delete this;
 		mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
-	}
-	if (imgui.doButton(GEN_ID, Vector2(300, 460), "play online"))
-	{
-		delete this;
-		mCurrentState = new NetworkGameState("88.198.43.14", BLOBBY_PORT);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), "cancel"))
 	{
@@ -255,16 +294,11 @@ void NetworkGameState::step()
 			{
 				int ival;
 				float intensity;
-				int player;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.Read(ival);
 				stream.Read(intensity);
-				stream.Read(player);
 				SoundManager::getSingleton().playSound("sounds/bums.wav", 
 						intensity + 0.4);
-				Vector2 hitPos = mPhysicWorld.getBall() + 
-					(mPhysicWorld.getBlob(PlayerSide(player)) - mPhysicWorld.getBall()).normalise().scale(31.5);
-				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), player);
 				mPhysicWorld.setBallValidity(false);
 				break;
 			}

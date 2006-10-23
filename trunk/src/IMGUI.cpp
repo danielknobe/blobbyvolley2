@@ -65,6 +65,7 @@ IMGUI& IMGUI::getSingleton()
 
 void IMGUI::begin()
 {
+	mInactive = false;
 	mUsingCursor = false;
 	mButtonReset = false;
 	while (!mQueue->empty())

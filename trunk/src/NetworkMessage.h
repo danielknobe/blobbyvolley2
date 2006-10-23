@@ -133,9 +133,9 @@ struct ServerInfo
 	void writeToBitstream(RakNet::BitStream& stream);
 	int activegames;
 	char hostname[64];
-	char name[64];
+	char name[32];
 	char waitingplayer[64];
-	char description[256];
+	char description[192];
 };
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval);
