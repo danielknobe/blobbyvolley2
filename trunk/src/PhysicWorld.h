@@ -104,5 +104,8 @@ public:
 	
 	// Fill a Bitstream with the state
 	void getState(RakNet::BitStream* stream);
+
+	// Fill a Bitstream with a side reversed state
+	void getSwappedState(RakNet::BitStream* stream);
 };
 

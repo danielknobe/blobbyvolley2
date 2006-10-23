@@ -35,6 +35,7 @@ public:
 
 private:
 	void broadcastBitstream(RakNet::BitStream* stream, bool reliable);
+	void broadcastPhysicState();
 
 	RakServer& mServer;
 	PlayerID mLeftPlayer;

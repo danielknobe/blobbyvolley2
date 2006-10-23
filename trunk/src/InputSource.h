@@ -21,6 +21,13 @@ struct PlayerInput
 		right = r;
 		up = u;
 	}
+	
+	void swap()
+	{
+		bool tmp = left;
+		left = right;
+		right = tmp;	
+	}
 
 	bool left;
 	bool right;

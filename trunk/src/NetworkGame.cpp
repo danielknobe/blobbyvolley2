@@ -79,9 +79,17 @@ bool NetworkGame::step()
 				stream.Read(newInput.up);
 
 				if (packet->playerId == mLeftPlayer)
+				{
+					if (mSwitchedSide == LEFT_PLAYER)
+						newInput.swap();
 					mPhysicWorld.setLeftInput(newInput);
+				}
 				if (packet->playerId == mRightPlayer)
+				{
+					if (mSwitchedSide == RIGHT_PLAYER)
+						newInput.swap();
 					mPhysicWorld.setRightInput(newInput);
+				}
 				break;
 			}
 			case ID_PAUSE:
@@ -214,13 +222,33 @@ bool NetworkGame::step()
 
 	if (!mPausing)
 	{
-		RakNet::BitStream stream;
-		stream.Write(ID_PHYSIC_UPDATE);
-		stream.Write(ID_TIMESTAMP);
-		stream.Write(RakNet::GetTime());
-		mPhysicWorld.getState(&stream);
-		broadcastBitstream(&stream, false);
+		broadcastPhysicState();
 	}
 
 	return true;
+}
+
+void NetworkGame::broadcastPhysicState()
+{
+	RakNet::BitStream stream;
+	stream.Write(ID_PHYSIC_UPDATE);
+	stream.Write(ID_TIMESTAMP);
+	stream.Write(RakNet::GetTime());
+	if (mSwitchedSide == LEFT_PLAYER)
+		mPhysicWorld.getSwappedState(&stream);
+	else
+		mPhysicWorld.getState(&stream);
+	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
+		mLeftPlayer, false);
+
+	stream.Reset();
+	stream.Write(ID_PHYSIC_UPDATE);
+	stream.Write(ID_TIMESTAMP);
+	stream.Write(RakNet::GetTime());
+	if (mSwitchedSide == RIGHT_PLAYER)
+		mPhysicWorld.getSwappedState(&stream);
+	else
+		mPhysicWorld.getState(&stream);
+	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
+		mRightPlayer, false);
 }
