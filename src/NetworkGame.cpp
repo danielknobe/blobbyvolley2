@@ -63,8 +63,13 @@ bool NetworkGame::step()
 		{
 			case ID_CONNECTION_LOST:
 			case ID_DISCONNECTION_NOTIFICATION:
-				printf("client lost connection\n");
+			{
+				RakNet::BitStream stream;
+				stream.Write(ID_OPPONENT_DISCONNECTED);
+				broadcastBitstream(&stream, true);
+				mPausing = true;
 				break;
+			}
 			case ID_INPUT_UPDATE:
 			{
 				PlayerInput newInput;

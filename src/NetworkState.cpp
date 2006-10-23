@@ -270,6 +270,12 @@ void NetworkGameState::step()
 				mNetworkState = PLAYER_WON;
 				break;
 			}
+			case ID_OPPONENT_DISCONNECTED:
+			{
+				// In this state, a leaving opponent would not be very surprising
+				if (mNetworkState != PLAYER_WON)
+					mNetworkState = OPPONENT_DISCONNECTED;
+			}
 			case ID_BALL_RESET:
 			{
 				int ival;
@@ -383,7 +389,7 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(140.0, 250.0),
-					"opponent disconnected");
+					"opponent left he game");
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0),
 					"ok"))
 			{
@@ -460,8 +466,8 @@ void NetworkGameState::step()
 		case PLAYER_WON:
 		{
 			std::stringstream tmp;
-			tmp << "Spieler " << mWinningPlayer + 1;
-			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+			tmp << "player " << mWinningPlayer + 1;
+			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
 			imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");

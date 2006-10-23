@@ -145,22 +145,22 @@ void LocalGameState::step()
 	else if (mWinner)
 	{
 		std::stringstream tmp;
-		tmp << "Spieler " << mMatch->winningPlayer()+1;
-		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+		tmp << "player " << mMatch->winningPlayer() + 1;
+		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-		imgui.doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
-		if (imgui.doButton(GEN_ID, Vector2(290, 350), "OK"))
+		imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
+		if (imgui.doButton(GEN_ID, Vector2(290, 350), "ok"))
 		{
 			delete mCurrentState;
 			mCurrentState = new MainMenuState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), "NOCHMAL"))
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), "try again"))
 		{
 			delete mCurrentState;
 			mCurrentState = new LocalGameState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(260, 390), "SPEICHERE REPLAY"))
+		if (imgui.doButton(GEN_ID, Vector2(260, 390), "save replay"))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
