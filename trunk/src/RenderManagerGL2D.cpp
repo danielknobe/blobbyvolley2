@@ -160,6 +160,8 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		mFont.push_back(newFont);
 	}
 
+	mParticle = loadTexture(loadSurface("gfx/blood.bmp"), false);
+
 	glViewport(0, 0, xResolution, yResolution);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -496,6 +498,28 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[0]);
 	drawQuad(128.0, 128.0);
 	glDisable(GL_BLEND);
+
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
+}
+
+void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
+{
+	glEnable(GL_TEXTURE_2D);
+	glAlphaFunc(GL_GREATER, 0.5);
+	glEnable(GL_ALPHA_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glLoadIdentity();
+	glTranslatef(pos.x, pos.y, 0.6);
+	glBindTexture(GL_TEXTURE_2D, mParticle);
+	if (player == 0)
+		glColor3ubv(mLeftBlobColor.val);
+	if (player == 1)
+		glColor3ubv(mRightBlobColor.val);
+	if (player > 1)
+		glColor3ubv(Color(255, 0, 0).val);
+	drawQuad(9.0, 9.0);
 
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
