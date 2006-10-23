@@ -12,6 +12,10 @@
 #include "UserConfig.h"
 #include "NetworkMessage.h"
 
+#ifdef WIN32
+#undef main
+#endif
+
 int main(int argc, char** argv)
 {
 	PHYSFS_init(argv[0]);
