@@ -28,6 +28,7 @@ private:
 	ClientList mQueryClients;
 
 	int mSelectedServer;
+	bool mDisplayInfo;
 
 	std::string mEnteredServer;
 	int mServerBoxPosition;
