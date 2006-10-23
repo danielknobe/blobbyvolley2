@@ -11,6 +11,7 @@ enum MessageType
 	ID_INPUT_UPDATE,
 	ID_PHYSIC_UPDATE,
 	ID_WIN_NOTIFICATION,
+	ID_OPPONENT_DISCONNECTED,
 	ID_BALL_RESET,
 	ID_BALL_GROUND_COLLISION,
 	ID_BALL_PLAYER_COLLISION,
@@ -122,6 +123,12 @@ enum MessageType
 // 		and a request if sent from the server.
 // 	Structure:
 // 		ID_UNPAUSE
+// 
+// ID_OPPONENTED_DISCONNECTED
+// 	Description
+// 		Sent from server to client when an opponent left the game
+// 	Structure:
+// 		ID_OPPONENT_DISCONNECTED
 
 class UserConfig;
 
