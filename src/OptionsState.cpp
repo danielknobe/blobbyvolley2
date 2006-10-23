@@ -792,6 +792,10 @@ void MiscOptionsState::step()
 		if (!mMute)
 			SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
+	if (mMute)
+	{
+		imgui.doImage(GEN_ID, Vector2(513.0, 92.0), "gfx/pfeil_rechts.bmp");
+	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 130.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
