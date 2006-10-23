@@ -101,7 +101,12 @@ int main(int argc, char** argv)
 							firstPlayer : packet->playerId;
 						PlayerSide switchSide = NO_PLAYER;
 						if (newSide == firstPlayerSide)
-							switchSide = newSide;
+						{
+							if (newSide == LEFT_PLAYER)
+								switchSide = RIGHT_PLAYER;
+							if (newSide == RIGHT_PLAYER)
+								switchSide = LEFT_PLAYER;
+						}
 						NetworkGame* newgame = new NetworkGame(
 							server, leftPlayer, rightPlayer,
 							switchSide);
