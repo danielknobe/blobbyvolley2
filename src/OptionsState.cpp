@@ -832,7 +832,7 @@ void MiscOptionsState::step()
 
 	std::stringstream FPSInPercent;
 	FPSInPercent << int((float)mGameFPS/60*100);
-	imgui.doText(GEN_ID, Vector2(515.0, 340.0), FPSInPercent.str()+="Percent");
+	imgui.doText(GEN_ID, Vector2(515.0, 340.0), FPSInPercent.str()+="%");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
