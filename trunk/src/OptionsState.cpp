@@ -805,7 +805,7 @@ void MiscOptionsState::step()
 	{
 		mShowBlood = !mShowBlood;
 		BloodManager::getSingleton().enable(mShowBlood);
-		BloodManager::getSingleton().spillBlood(Vector2(484.0, 170.0));
+		BloodManager::getSingleton().spillBlood(Vector2(484.0, 170.0), 1.5);
 	}
 	if (mShowBlood)
 	{

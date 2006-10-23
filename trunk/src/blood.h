@@ -25,7 +25,7 @@ class BloodManager
 	int random(int min, int max);
 public:
 	void step();
-	void spillBlood(Vector2 pos);
+	void spillBlood(Vector2 pos, float intensity);
 	void enable(bool enable) { mEnabled = enable; }
 	static BloodManager& getSingleton()
 	{

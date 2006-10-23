@@ -85,9 +85,13 @@ void DuelMatch::step()
 		if (mPhysicWorld.ballHitLeftPlayer())
 		{
 			if (mOutput)
+			{
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + 0.4);
-			BloodManager::getSingleton().spillBlood(mPhysicWorld.getBlob(LEFT_PLAYER));
+				Vector2 hitPos = mPhysicWorld.getBall() + 
+					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity());
+			}
 			mLeftHitcount++;
 			mRightHitcount = 0;
 			mSquishLeft = 1;
@@ -105,9 +109,13 @@ void DuelMatch::step()
 		if (mPhysicWorld.ballHitRightPlayer())
 		{
 			if (mOutput)
+			{
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + 0.4);
-			BloodManager::getSingleton().spillBlood(mPhysicWorld.getBlob(RIGHT_PLAYER));
+				Vector2 hitPos = mPhysicWorld.getBall() + 
+					(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity());
+			}
 			mRightHitcount++;
 			mLeftHitcount = 0;
 			mSquishRight = 1;
