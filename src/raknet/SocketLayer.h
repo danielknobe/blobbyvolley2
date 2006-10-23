@@ -29,7 +29,7 @@
 #ifdef __USE_IO_COMPLETION_PORTS
 #include <winSock2.h> // DON'T FORGET TO INLCLUDE Ws2_32.lib to your project!
 #else
-#include <winSock.h>
+#include <winsock.h>
 #endif
 #else
 #include <sys/types.h>

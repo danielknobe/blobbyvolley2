@@ -48,12 +48,12 @@ void BloodManager::step()
 	}
 }
 
-void BloodManager::spillBlood(Vector2 pos)
+void BloodManager::spillBlood(Vector2 pos, float intensity)
 {
-	for (int c = 0; c <= random(10, 50); c++)
+	for (int c = 0; c <= int(intensity*50); c++)
 	{
-		int x = random(-20, 20);
-		int y = random(-40, 3);
+		int x = random(-30*intensity, 30*intensity);
+		int y = random(-50*intensity, 3);
 		mParticles.push_front(Blood(pos, Vector2(x, y)));
 	}
 }
