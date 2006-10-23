@@ -139,7 +139,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 			
 	}
 
-	for (int i = 0; i <= 52; ++i)
+	for (int i = 0; i <= 53; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
