@@ -9,8 +9,9 @@ class Blood
 {
 	Vector2 mPos;
 	Vector2 mDir;
+	int mPlayer;
 public:
-	Blood(Vector2 position, Vector2 direction);
+	Blood(Vector2 position, Vector2 direction, int player);
 	void step();
 	Vector2 getPosition() { return mPos; }
 	int mLastFrame;
@@ -25,7 +26,7 @@ class BloodManager
 	int random(int min, int max);
 public:
 	void step();
-	void spillBlood(Vector2 pos, float intensity);
+	void spillBlood(Vector2 pos, float intensity, int player);
 	void enable(bool enable) { mEnabled = enable; }
 	static BloodManager& getSingleton()
 	{

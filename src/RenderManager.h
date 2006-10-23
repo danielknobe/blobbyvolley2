@@ -126,6 +126,9 @@ public:
 	//Draws a blob 
 	virtual void drawBlob(const Vector2& pos, const Color& col){};
 
+	//Draw blood particle
+	virtual void drawParticle(const Vector2& pos, int player){};
+
 	// This forces a redraw of the background, for example
 	// when the windows was minimized
 	void redraw();

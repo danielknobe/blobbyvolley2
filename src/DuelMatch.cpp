@@ -90,7 +90,7 @@ void DuelMatch::step()
 					mPhysicWorld.lastHitIntensity() + 0.4);
 				Vector2 hitPos = mPhysicWorld.getBall() + 
 					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity());
+				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
 			}
 			mLeftHitcount++;
 			mRightHitcount = 0;
@@ -114,7 +114,7 @@ void DuelMatch::step()
 					mPhysicWorld.lastHitIntensity() + 0.4);
 				Vector2 hitPos = mPhysicWorld.getBall() + 
 					(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity());
+				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
 			}
 			mRightHitcount++;
 			mLeftHitcount = 0;
