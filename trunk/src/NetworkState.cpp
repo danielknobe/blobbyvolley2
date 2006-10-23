@@ -9,6 +9,7 @@
 
 #include "IMGUI.h"
 #include "SoundManager.h"
+#include "blood.h"
 #include "LocalInputSource.h"
 #include "raknet/RakServer.h"
 
@@ -254,11 +255,16 @@ void NetworkGameState::step()
 			{
 				int ival;
 				float intensity;
+				int player;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.Read(ival);
 				stream.Read(intensity);
+				stream.Read(player);
 				SoundManager::getSingleton().playSound("sounds/bums.wav", 
 						intensity + 0.4);
+				Vector2 hitPos = mPhysicWorld.getBall() + 
+					(mPhysicWorld.getBlob(PlayerSide(player)) - mPhysicWorld.getBall()).normalise().scale(31.5);
+				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), player);
 				mPhysicWorld.setBallValidity(false);
 				break;
 			}
