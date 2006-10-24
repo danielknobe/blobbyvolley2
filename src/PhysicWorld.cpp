@@ -3,7 +3,7 @@
 
 const int TIMESTEP = 5; // calculations per frame
 
-const float TIMEOUT_MAX = 4.0;
+const float TIMEOUT_MAX = 2.5;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -65,19 +65,9 @@ PhysicWorld::~PhysicWorld()
 
 bool PhysicWorld::resetAreaClear()
 {
-	Vector2 oldBallPos = mBallPosition;
-	bool ret = true;
-	for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
-	{
-		mBallPosition = Vector2(200 + i * 400, STANDARD_BALL_HEIGHT);
-		if (playerTopBallCollision(PlayerSide(i)) ||
-				playerBottomBallCollision(PlayerSide(i)))
-		{
-			ret = false;
-		}
-	}
-	mBallPosition = oldBallPos;
-	return true;
+	if (blobbyHitGround(LEFT_PLAYER) && blobbyHitGround(RIGHT_PLAYER))
+		return true;
+	return false;
 }
 
 void PhysicWorld::reset(int player)
@@ -161,9 +151,9 @@ bool PhysicWorld::roundFinished()
 			if (mBallVelocity.y < 1.5 &&
 				mBallVelocity.y > -1.5 && mBallPosition.y > 430)
 				return true;
-		if (mTimeSinceBallout > TIMEOUT_MAX)
-			return true;
 	}
+	if (mTimeSinceBallout > TIMEOUT_MAX)
+		return true;
 	return false;
 }
 
