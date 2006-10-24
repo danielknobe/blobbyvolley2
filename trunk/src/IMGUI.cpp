@@ -185,9 +185,6 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 
 bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 {
-	if (mActiveButton == 0 && !mButtonReset)
-		mActiveButton = id;
-			
 	bool clicked = false;
 	QueueObject obj;
 	obj.id = id;
@@ -197,6 +194,9 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 	
 	if (!mInactive)
 	{
+		if (mActiveButton == 0 && !mButtonReset)
+			mActiveButton = id;
+
 		if (id == mActiveButton)
 		{
 			obj.type = HIGHLIGHTTEXT;
@@ -241,9 +241,6 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 
 bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 {
-	if (mActiveButton == 0 && !mButtonReset)
-		mActiveButton = id;
-	
 	float oldvalue = value;
 	QueueObject obj;
 	obj.id = id;
@@ -252,6 +249,9 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	
 	if (!mInactive)
 	{
+		if (mActiveButton == 0 && !mButtonReset)
+			mActiveButton = id;
+
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVESCROLLBAR;
@@ -307,11 +307,8 @@ void IMGUI::resetSelection()
 	mButtonReset = true;
 }
 
-bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsigned& cpos)
+bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos)
 {
-	if (mActiveButton == 0 && !mButtonReset)
-		mActiveButton = id;
-
 	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
@@ -320,6 +317,9 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsign
 
 	if (!mInactive)
 	{
+		if (mActiveButton == 0 && !mButtonReset)
+			mActiveButton = id;
+
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVEEDITBOX;
@@ -369,7 +369,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsign
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > position.x &&
 			mousepos.y > position.y &&
-			mousepos.x < position.x + text.length() * 24.0 + 10.0 &&
+			mousepos.x < position.x + length * 24.0 + 10.0 &&
 			mousepos.y < position.y + 24.0 + 10.0)
 		{
 			obj.type = ACTIVEEDITBOX;
@@ -392,9 +392,6 @@ bool IMGUI::doEditbox(int id, const Vector2& position, std::string& text, unsign
 
 bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected)
 {
-	if (mActiveButton == 0 && !mButtonReset)
-		mActiveButton = id;
-
 	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
@@ -407,6 +404,9 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 
 	if (!mInactive)
 	{
+		if (mActiveButton == 0 && !mButtonReset)
+			mActiveButton = id;
+
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVESELECTBOX;
