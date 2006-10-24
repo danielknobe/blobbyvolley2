@@ -24,6 +24,13 @@ ServerInfo::ServerInfo(UserConfig& config)
 	strncpy(description, tmp.c_str(), sizeof(description) - 1);
 }
 
+ServerInfo::ServerInfo(const std::string& playername)
+{
+	memset(this, 0, sizeof(ServerInfo));
+	strncpy(name, std::string(playername + "'s game").c_str(), sizeof(name) - 1);
+	strncpy(description, "client hosted game", sizeof(description) - 1);
+}
+
 void ServerInfo::writeToBitstream(RakNet::BitStream& stream)
 {
 	stream.Write(activegames);

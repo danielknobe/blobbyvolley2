@@ -13,6 +13,7 @@ blobby_server_LDADD = $(common_LDADD)
 common_SOURCES = \
 	InputSource.h InputSource.cpp \
 	Global.h \
+	NetworkGame.h NetworkGame.cpp \
 	NetworkMessage.h NetworkMessage.cpp \
 	PhysicWorld.h PhysicWorld.cpp \
 	SpeedController.h SpeedController.cpp \
@@ -40,5 +41,4 @@ blobby_SOURCES = $(common_SOURCES) \
 	blood.h blood.cpp
 
 blobby_server_SOURCES = $(common_SOURCES) \
-	DedicatedServer.h DedicatedServer.cpp \
-	NetworkGame.h NetworkGame.cpp
+	DedicatedServer.h DedicatedServer.cpp
