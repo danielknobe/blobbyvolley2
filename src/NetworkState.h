@@ -29,9 +29,10 @@ private:
 
 	int mSelectedServer;
 	bool mDisplayInfo;
+	bool mEnteringServer;
 
 	std::string mEnteredServer;
-	int mServerBoxPosition;
+	unsigned mServerBoxPosition;
 };
 
 class NetworkGameState : public State

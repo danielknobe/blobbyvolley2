@@ -18,6 +18,7 @@ NetworkSearchState::NetworkSearchState()
 	mSelectedServer = 0;
 	mServerBoxPosition = 0;
 	mDisplayInfo = false;
+	mEnteringServer = false;
 	
 	mPingClient = new RakClient;
 	broadcast();
@@ -122,13 +123,22 @@ void NetworkSearchState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	if (mDisplayInfo)
+	if (mDisplayInfo || mEnteringServer)
 	{
 		imgui.doInactiveMode(true);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(100, 20), "scan for servers"))
+	if (imgui.doButton(GEN_ID, Vector2(10, 20), "scan for servers"))
 		broadcast();
+
+	if (imgui.doButton(GEN_ID, Vector2(420, 20), "direct connect") &&
+			!mEnteringServer)
+	{
+		mEnteringServer = true;
+		imgui.resetSelection();
+		mEnteredServer = "";
+		mServerBoxPosition = 0;
+	}
 			
 	std::vector<std::string> servernames;
 	for (int i = 0; i < mScannedServers.size(); i++)
@@ -136,7 +146,7 @@ void NetworkSearchState::step()
 		servernames.push_back(mScannedServers[i].name);
 	}
 
-	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 460.0), 
+	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0), 
 			servernames, mSelectedServer);
 
 	if (imgui.doButton(GEN_ID, Vector2(50, 480), "server info") &&
@@ -146,10 +156,21 @@ void NetworkSearchState::step()
 		imgui.resetSelection();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(430, 480), "play online"))
+	if (mEnteringServer)
 	{
-		delete this;
-		mCurrentState = new NetworkGameState("88.198.43.14", BLOBBY_PORT);
+		imgui.doInactiveMode(false);
+		imgui.doOverlay(GEN_ID, Vector2(100.0, 200.0), Vector2(650.0, 400.0));
+		imgui.doEditbox(GEN_ID, Vector2(130.0, 210.0), 20, mEnteredServer, mServerBoxPosition);
+		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), "ok"))
+		{
+			std::string server = mScannedServers[mSelectedServer].hostname;
+			delete this;
+			mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
+			return;
+		}
+		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), "cancel"))
+			mEnteringServer = false;
+		imgui.doInactiveMode(true);
 	}
 
 	if (mDisplayInfo)

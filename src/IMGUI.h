@@ -37,7 +37,7 @@ public:
 
 	bool doButton(int id, const Vector2& position, const std::string& text);
 	bool doScrollbar(int id, const Vector2& position, float& value);
-	bool doEditbox(int id, const Vector2& position, std::string& text, unsigned& cpos);
+	bool doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos);
 	bool doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected);
 	bool doBlob(int id, const Vector2& position, const Color& col);
 

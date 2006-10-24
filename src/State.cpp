@@ -107,7 +107,7 @@ void LocalGameState::step()
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
 		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
 		static unsigned cpos;
-		imgui.doEditbox(GEN_ID, Vector2(200, 270), mFilename, cpos);
+		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
 		if (imgui.doButton(GEN_ID, Vector2(220, 330), "OK"))
 		{
 			if (mFilename != "")
