@@ -249,6 +249,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 
 	mPhysicWorld.resetPlayer();
 	mFakeMatch = new DuelMatch(0, 0, false, true);
+	RenderManager::getSingleton().setScore(0, 0, false, false);
 }
 
 NetworkGameState::~NetworkGameState()
@@ -378,11 +379,6 @@ void NetworkGameState::step()
 	}
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
-	
-	if (mOwnSide == LEFT_PLAYER)
-		mPhysicWorld.setLeftInput(input);
-	else
-		mPhysicWorld.setRightInput(input);
 
 	rmanager->setBlob(0, mPhysicWorld.getBlob(LEFT_PLAYER),
 		mPhysicWorld.getBlobState(LEFT_PLAYER));
