@@ -1,8 +1,7 @@
-ballposx=0
-ballposy=0
-
 function OnOpponentServe()
-	moveto(140)
+	if (oppx() < 680) and (oppx() >= 540) then
+		moveto(-2*(oppx()-600)+oppx()-400)
+	end
 end
 
 function OnServe(ballready)
@@ -12,30 +11,25 @@ function OnServe(ballready)
 			jump()
 		end
 	else
-		moveto(200)
+		moveto(100)
 	end
 end
 
 function OnGame()
-
-	if 400 > ballx() then
-		moveto((ballx()-20))
-		if ballx() == ballposx and bally() == ballposy then
-			if ballx() - 20 > posx() then
-				jump()
-			end
-		else
-			if ballx() < posx()+50 then
-				jump()
-			end
-		end
-		
-		ballposx=ballx()
-		ballposy=bally()
-	end
-
-		if launched() then
+	if estimate() < 375 and estimate() > 0 then
+		moveto(estimate())
+	else
+		if 520 > ballx() and bally() > 220 then
 			jump()
 		end
 
+		if 400 > ballx() then
+			moveto((ballx()-20))
+		end
+	end
+
+	if 400 > ballx() and bspeedx() < 3 and bspeedx() > -3 then
+		moveto((ballx()-30))
+		jump()
+	end
 end

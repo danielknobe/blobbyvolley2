@@ -3,7 +3,7 @@
 
 const int TIMESTEP = 5; // calculations per frame
 
-const float TIMEOUT_MAX = 2.5;
+const float TIMEOUT_MAX = 1.5;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
