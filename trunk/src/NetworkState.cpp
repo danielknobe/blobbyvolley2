@@ -2,6 +2,7 @@
 
 #include "NetworkState.h"
 #include "NetworkMessage.h"
+#include "NetworkGame.h"
 
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
@@ -198,6 +199,14 @@ void NetworkSearchState::step()
 		imgui.doInactiveMode(true);
 	}
 
+	if (imgui.doButton(GEN_ID, Vector2(450, 480), "host game") &&
+			!mDisplayInfo)
+	{
+		delete this;
+		mCurrentState = new NetworkHostState();
+		return;
+	}
+
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok") && !mScannedServers.empty())
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
@@ -349,7 +358,8 @@ void NetworkGameState::step()
 				
 			case ID_DISCONNECTION_NOTIFICATION:
 			case ID_CONNECTION_LOST:
-				mNetworkState = DISCONNECTED;
+				if (mNetworkState != PLAYER_WON)
+					mNetworkState = DISCONNECTED;
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				mNetworkState = SERVER_FULL;
@@ -519,5 +529,100 @@ void NetworkGameState::step()
 		}
 	}
 
+}
+
+NetworkHostState::NetworkHostState()
+{
+	mServer = new RakServer;
+	mServer->Start(2, 0, 0, BLOBBY_PORT);
+	mNetworkGame = 0;
+	mGameState = new NetworkGameState("localhost", BLOBBY_PORT);
+	mLocalPlayerSide = NO_PLAYER;
+}
+
+NetworkHostState::~NetworkHostState()
+{
+	delete mGameState;
+	if (mNetworkGame)
+		delete mNetworkGame;
+	delete mServer;
+}
+
+void NetworkHostState::step()
+{
+	Packet* packet;
+	while (packet = mServer->Receive())
+	{
+		switch (packet->data[0])
+		{
+			case ID_DISCONNECTION_NOTIFICATION:
+			case ID_CONNECTION_LOST:
+			case ID_INPUT_UPDATE:
+			case ID_PAUSE:
+			case ID_UNPAUSE:
+			{
+				if (packet->playerId == mLocalPlayer ||
+					packet->playerId == mRemotePlayer)
+				{
+					if (mNetworkGame)
+						mNetworkGame->injectPacket(packet);
+				}
+				break;
+			}
+			case ID_BLOBBY_SERVER_PRESENT:
+			{
+				ServerInfo myinfo("somebody");
+				myinfo.activegames = mNetworkGame ? 1 : 0;
+				// TODO: Insert waiting players name here
+				strncpy(myinfo.waitingplayer, "somebody",
+					sizeof(myinfo.waitingplayer) - 1);
+				RakNet::BitStream stream;
+				stream.Write(ID_BLOBBY_SERVER_PRESENT);
+				myinfo.writeToBitstream(stream);
+				mServer->Send(&stream, HIGH_PRIORITY,
+						RELIABLE_ORDERED, 0,
+						packet->playerId, false);
+				break;
+			}
+			case ID_ENTER_GAME:
+			{
+				int ival;
+				RakNet::BitStream stream((char*)packet->data,
+						packet->length, false);
+				stream.Read(ival);
+				stream.Read(ival);
+				PlayerSide newSide = (PlayerSide)ival;
+				if (mLocalPlayerSide == NO_PLAYER)
+				{ // First player ist probably the local one
+					mLocalPlayerSide = newSide;
+					mLocalPlayer = packet->playerId;
+				}
+				else
+				{
+					mRemotePlayer = packet->playerId;
+					PlayerID leftPlayer = 
+						LEFT_PLAYER == mLocalPlayerSide ?
+						mLocalPlayer : packet->playerId;
+					PlayerID rightPlayer =
+						RIGHT_PLAYER == mLocalPlayerSide ?
+						mLocalPlayer : packet->playerId;
+					PlayerSide switchSide = NO_PLAYER;
+					if (newSide == mLocalPlayerSide)
+					{
+						if (newSide == LEFT_PLAYER)
+							switchSide = RIGHT_PLAYER;
+						if (newSide == RIGHT_PLAYER)
+							switchSide = LEFT_PLAYER;
+					}
+					mNetworkGame = new NetworkGame(
+						*mServer, leftPlayer, rightPlayer,
+						switchSide);
+				}
+			}
+		}
+	}
+	mGameState->step();
+	if (mNetworkGame)
+		mNetworkGame->step();
 }
 

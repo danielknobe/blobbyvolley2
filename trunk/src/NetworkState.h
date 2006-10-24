@@ -8,7 +8,9 @@
 #include <list>
 
 class RakClient;
+class RakServer;
 class DuelMatch;
+class NetworkGame;
 
 class NetworkSearchState : public State
 {
@@ -68,5 +70,26 @@ private:
 	
 	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
 				// access the necessary game variables
+};
+
+
+// This class is a wrapper for NetworkGameState to run an instance
+// of NetworkGame
+class NetworkHostState : public State
+{
+public:
+	NetworkHostState();
+	virtual ~NetworkHostState();
+
+	virtual void step();
+
+private:
+	NetworkGameState* mGameState;
+	NetworkGame* mNetworkGame;
+	RakServer* mServer;
+
+	PlayerSide mLocalPlayerSide;
+	PlayerID mLocalPlayer;
+	PlayerID mRemotePlayer;
 };
 

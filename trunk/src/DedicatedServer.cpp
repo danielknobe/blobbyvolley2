@@ -152,7 +152,11 @@ int main(int argc, char** argv)
 			}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
-			(*iter)->step();
+			if (!(*iter)->step())
+			{
+				delete *iter;
+				iter = gamelist.erase(iter);
+			}
 		}
 		server.DeallocatePacket(packet);
 		scontroller.update();

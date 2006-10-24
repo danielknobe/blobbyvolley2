@@ -54,6 +54,8 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, bool reliable)
 
 bool NetworkGame::step()
 {
+	bool active = true;
+	
 	while (!mPacketQueue.empty())
 	{
 		Packet* packet = &mPacketQueue.front();
@@ -68,6 +70,7 @@ bool NetworkGame::step()
 				stream.Write(ID_OPPONENT_DISCONNECTED);
 				broadcastBitstream(&stream, true);
 				mPausing = true;
+				active = false;
 				break;
 			}
 			case ID_INPUT_UPDATE:
@@ -230,7 +233,7 @@ bool NetworkGame::step()
 		broadcastPhysicState();
 	}
 
-	return true;
+	return active;
 }
 
 void NetworkGame::broadcastPhysicState()

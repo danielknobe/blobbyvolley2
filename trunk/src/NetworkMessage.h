@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <cstring>
 
 #include "raknet/PacketEnumerations.h"
@@ -136,6 +137,7 @@ struct ServerInfo
 {
 	ServerInfo(RakNet::BitStream& stream, const char* ip);
 	ServerInfo(UserConfig& config);
+	ServerInfo(const std::string& playername);
 
 	void writeToBitstream(RakNet::BitStream& stream);
 	int activegames;
