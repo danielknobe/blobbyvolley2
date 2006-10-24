@@ -13,11 +13,10 @@
 class SpeedController
 {
 public:
-	SpeedController(float gameFPS, float realFPS = 60.0);
+	SpeedController(float gameFPS);
 	~SpeedController();
 	
 	void setGameSpeed(float fps);
-	void setRealSpeed(float fps);
 
 // This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop();

@@ -4,10 +4,9 @@
 
 SpeedController* SpeedController::mMainInstance = NULL;
 
-SpeedController::SpeedController(float gameFPS, float realFPS)
+SpeedController::SpeedController(float gameFPS)
 {
 	mGameFPS = gameFPS;
-	mRealFPS = realFPS;
 	mFramedrop = false;
 	mDrawFPS = true;
 	mFPSCounter = 0;
@@ -23,11 +22,6 @@ void SpeedController::setGameSpeed(float fps)
 	if (fps < 5)
 		fps = 5;
 	mGameFPS = fps;
-}
-
-void SpeedController::setRealSpeed(float fps)
-{
-	mRealFPS = fps;
 }
 
 bool SpeedController::doFramedrop()
