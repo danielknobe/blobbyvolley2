@@ -121,8 +121,7 @@ int main(int argc, char* argv[])
 	else
 		rmanager->init(800, 600, false);
 
-	SpeedController scontroller(gameConfig.getFloat("gamefps"),
-					gameConfig.getFloat("realfps"));
+	SpeedController scontroller(gameConfig.getFloat("gamefps"));
 	SpeedController::setMainInstance(&scontroller);
 	scontroller.setDrawFPS(gameConfig.getBool("showfps"));
 
