@@ -29,7 +29,7 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	RakNet::BitStream stream;
 	stream.Write(ID_GAME_READY);
-	broadcastBitstream(&stream, true);
+	broadcastBitstream(&stream, &stream);
 }
 
 NetworkGame::~NetworkGame()
@@ -41,14 +41,16 @@ void NetworkGame::injectPacket(Packet* packet)
 	mPacketQueue.push(*packet);
 }
 
-void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, bool reliable)
+void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream)
 {
- 	PacketReliability reliability =
-		reliable ? RELIABLE_ORDERED : UNRELIABLE_SEQUENCED;
+	RakNet::BitStream* leftStream =
+		mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
+	RakNet::BitStream* rightStream =
+		mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
 
-	mServer.Send(stream, HIGH_PRIORITY, reliability, 0,
+	mServer.Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
-	mServer.Send(stream, HIGH_PRIORITY, reliability, 0,
+	mServer.Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mRightPlayer, false);
 }
 
@@ -68,7 +70,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write(ID_OPPONENT_DISCONNECTED);
-				broadcastBitstream(&stream, true);
+				broadcastBitstream(&stream, &stream);
 				mPausing = true;
 				active = false;
 				break;
@@ -104,7 +106,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write(ID_PAUSE);
-				broadcastBitstream(&stream, true);
+				broadcastBitstream(&stream, &stream);
 				mPausing = true;
 				break;
 			}
@@ -112,7 +114,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write(ID_UNPAUSE);
-				broadcastBitstream(&stream, true);
+				broadcastBitstream(&stream, &stream);
 				mPausing = false;
 				break;
 			}
@@ -133,8 +135,10 @@ bool NetworkGame::step()
 			RakNet::BitStream stream;
 			stream.Write(ID_BALL_PLAYER_COLLISION);
 			stream.Write(mPhysicWorld.lastHitIntensity());
+			RakNet::BitStream switchStream(stream);
 			stream.Write(LEFT_PLAYER);
-			broadcastBitstream(&stream, true);
+			switchStream.Write(RIGHT_PLAYER);
+			broadcastBitstream(&stream, &switchStream);
 			mLeftHitcount++;
 			mRightHitcount = 0;
 			mSquishLeft = 1;
@@ -154,8 +158,10 @@ bool NetworkGame::step()
 			RakNet::BitStream stream;
 			stream.Write(ID_BALL_PLAYER_COLLISION);
 			stream.Write(mPhysicWorld.lastHitIntensity());
+			RakNet::BitStream switchStream(stream);
 			stream.Write(RIGHT_PLAYER);
-			broadcastBitstream(&stream, true);
+			switchStream.Write(LEFT_PLAYER);
+			broadcastBitstream(&stream, &switchStream);
 			mRightHitcount++;
 			mLeftHitcount = 0;
 			mSquishRight = 1;
@@ -173,7 +179,10 @@ bool NetworkGame::step()
 		RakNet::BitStream stream;
 		stream.Write(ID_BALL_GROUND_COLLISION);
 		stream.Write(LEFT_PLAYER);
-		broadcastBitstream(&stream, true);
+		RakNet::BitStream switchStream;
+		switchStream.Write(ID_BALL_GROUND_COLLISION);
+		switchStream.Write(RIGHT_PLAYER);
+		broadcastBitstream(&stream, &switchStream);
 
 		if (mLeftHitcount > 3)
 			mPhysicWorld.dampBall();
@@ -190,7 +199,12 @@ bool NetworkGame::step()
 		RakNet::BitStream stream;
 		stream.Write(ID_BALL_GROUND_COLLISION);
 		stream.Write(RIGHT_PLAYER);
-		broadcastBitstream(&stream, true);
+
+		RakNet::BitStream switchStream;
+		switchStream.Write(ID_BALL_GROUND_COLLISION);
+		switchStream.Write(LEFT_PLAYER);
+
+		broadcastBitstream(&stream, &switchStream);
 
 		if(mRightHitcount > 3)
 			mPhysicWorld.dampBall();
@@ -207,14 +221,24 @@ bool NetworkGame::step()
 		RakNet::BitStream stream;
 		stream.Write(ID_WIN_NOTIFICATION);
 		stream.Write(LEFT_PLAYER);
-		broadcastBitstream(&stream, true);
+
+		RakNet::BitStream switchStream;
+		switchStream.Write(ID_WIN_NOTIFICATION);
+		switchStream.Write(RIGHT_PLAYER);
+
+		broadcastBitstream(&stream, &switchStream);
 	}
 	if (mRightScore >= 15 && mRightScore >= mLeftScore + 2)
 	{
 		RakNet::BitStream stream;
 		stream.Write(ID_WIN_NOTIFICATION);
 		stream.Write(RIGHT_PLAYER);
-		broadcastBitstream(&stream, true);
+
+		RakNet::BitStream switchStream;
+		switchStream.Write(ID_WIN_NOTIFICATION);
+		switchStream.Write(LEFT_PLAYER);
+
+		broadcastBitstream(&stream, &switchStream);
 	}
 
 	if (mPhysicWorld.roundFinished())
@@ -224,7 +248,16 @@ bool NetworkGame::step()
 		stream.Write(mServingPlayer);
 		stream.Write(mLeftScore);
 		stream.Write(mRightScore);
-		broadcastBitstream(&stream, true);
+
+		RakNet::BitStream switchStream;
+		switchStream.Write(ID_BALL_RESET);
+		switchStream.Write(
+			mServingPlayer == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
+		switchStream.Write(mRightScore);
+		switchStream.Write(mLeftScore);
+
+		broadcastBitstream(&stream, &switchStream);
+
 		mPhysicWorld.reset(mServingPlayer);
 	}
 
