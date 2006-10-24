@@ -87,7 +87,7 @@ void DuelMatch::step()
 			if (mOutput)
 			{
 				smanager->playSound("sounds/bums.wav",
-					mPhysicWorld.lastHitIntensity() + 0.4);
+					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
 				Vector2 hitPos = mPhysicWorld.getBall() + 
 					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
 				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
@@ -111,7 +111,7 @@ void DuelMatch::step()
 			if (mOutput)
 			{
 				smanager->playSound("sounds/bums.wav",
-					mPhysicWorld.lastHitIntensity() + 0.4);
+					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
 				Vector2 hitPos = mPhysicWorld.getBall() + 
 					(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
 				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
@@ -133,7 +133,7 @@ void DuelMatch::step()
 		if (mLeftHitcount > 3)
 			mPhysicWorld.dampBall();
 		if (mOutput)
-			smanager->playSound("sounds/pfiff.wav", 0.2);
+			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 		if (mServingPlayer == 1)
 			mRightScore++;
 		mServingPlayer = RIGHT_PLAYER;
@@ -148,7 +148,7 @@ void DuelMatch::step()
 		if(mRightHitcount > 3)
 			mPhysicWorld.dampBall();
 		if (mOutput)
-			smanager->playSound("sounds/pfiff.wav", 0.2);
+			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 		if (mServingPlayer == 0)
 			mLeftScore++;
 		mServingPlayer = LEFT_PLAYER;

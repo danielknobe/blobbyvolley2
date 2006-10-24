@@ -12,6 +12,9 @@
 
 const int BLOBBY_PORT = 1234;
 
+const float ROUND_START_SOUND_VOLUME = 0.2;
+const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
+
 // This is a temporary solution until a more advanced state management
 // is developed
 

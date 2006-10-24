@@ -61,7 +61,7 @@ LocalGameState::LocalGameState()
 	RenderManager::getSingleton().setBlobColor(1, mRightColor);
 	RenderManager::getSingleton().redraw();
 
-	SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
+	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 	
 	InputSource* linput;
 	InputSource* rinput;
@@ -321,7 +321,7 @@ void ReplayMenuState::loadCurrentReplay()
 	mReplayMatch = new DuelMatch(linput, rinput,
 					true, true);
 	SoundManager::getSingleton().playSound(
-			"sounds/pfiff.wav", 0.2);
+			"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 }
 
 void ReplayMenuState::step()

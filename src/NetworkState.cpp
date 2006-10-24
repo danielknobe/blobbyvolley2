@@ -323,7 +323,7 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_GROUND_COLLISION:
 			{
-				SoundManager::getSingleton().playSound("sounds/pfiff.wav", 0.2);
+				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 				mPhysicWorld.setBallValidity(false);
 				break;
 			}
@@ -335,7 +335,7 @@ void NetworkGameState::step()
 				stream.Read(ival);
 				stream.Read(intensity);
 				SoundManager::getSingleton().playSound("sounds/bums.wav", 
-						intensity + 0.4);
+						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 				mPhysicWorld.setBallValidity(false);
 				break;
 			}
