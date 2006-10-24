@@ -34,7 +34,7 @@ public:
 	bool step();
 
 private:
-	void broadcastBitstream(RakNet::BitStream* stream, bool reliable);
+	void broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream);
 	void broadcastPhysicState();
 
 	RakServer& mServer;
