@@ -62,6 +62,8 @@ public:
 	float getBlobState(PlayerSide player);
 	float getBallRotation();
 
+	float getBallSpeed();
+
 	// These functions tell about ball collisions for game logic and sound 
 	bool ballHitLeftPlayer();
 	bool ballHitRightPlayer();

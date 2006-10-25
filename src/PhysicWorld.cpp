@@ -3,7 +3,7 @@
 
 const int TIMESTEP = 5; // calculations per frame
 
-const float TIMEOUT_MAX = 1.5;
+const float TIMEOUT_MAX = 2.5;
 
 // Blobby Settings
 const float BLOBBY_HEIGHT = 89;
@@ -78,7 +78,7 @@ void PhysicWorld::reset(int player)
 		mBallPosition = Vector2(600, STANDARD_BALL_HEIGHT);
 	else 
 		mBallPosition = Vector2(400, 450);
-	
+
 	mBallVelocity.clear();
 
 	mBallRotation = 0.0;
@@ -121,7 +121,7 @@ bool PhysicWorld::ballHitLeftGround()
 bool PhysicWorld::blobbyHitGround(int player)
 {
 	if (player == 0)
-	{ 
+	{
 		if (getBlob(LEFT_PLAYER).y >= GROUND_PLANE_HEIGHT)
 			return true;
 		else
@@ -178,7 +178,7 @@ inline bool PhysicWorld::playerBottomBallCollision(PlayerSide player)
 	if (Vector2(mBallPosition,
 		Vector2(mBlobPosition[player].x,
 			mBlobPosition[player].y + BLOBBY_LOWER_SPHERE)
-     			).length() <= BALL_RADIUS + BLOBBY_LOWER_RADIUS)
+			).length() <= BALL_RADIUS + BLOBBY_LOWER_RADIUS)
 		return true;
 	return false;
 }
@@ -186,7 +186,7 @@ inline bool PhysicWorld::playerBottomBallCollision(PlayerSide player)
 bool PhysicWorld::ballHitLeftPlayer()
 {
 	return mBallHitByLeftBlob;
-} 
+}
 
 bool PhysicWorld::ballHitRightPlayer()
 {
@@ -203,12 +203,15 @@ float PhysicWorld::getBallRotation()
 	return mBallRotation;
 }
 
+float PhysicWorld::getBallSpeed()
+{
+	return mBallVelocity.length();
+}
+
 Vector2 PhysicWorld::getBlob(PlayerSide player)
 {
 	return mBlobPosition[player];
 }
-
-
 
 float PhysicWorld::getBlobState(PlayerSide player)
 {
@@ -356,14 +359,14 @@ void PhysicWorld::step()
 			mBallVelocity = mBallVelocity.reflectX();
 
 		// Net Collision
-		
+
 		// Left Net Border
 		if(Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)
 			).length() <= NET_RADIUS + BALL_RADIUS // This is the sync for the "netball" and the border of the net
 			&& mBallPosition.x+BALL_RADIUS<=NET_POSITION_X+NET_RADIUS+15.1
-	    	&& mBallVelocity.x > 0.0
-	    	&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
+			&& mBallVelocity.x > 0.0
+			&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
 		// Right Net Border  
@@ -374,7 +377,7 @@ void PhysicWorld::step()
 		    && mBallVelocity.x < 0.0
 		    && mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
-				
+
 		// Net Sphere
 		else if (Vector2(
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
@@ -385,18 +388,18 @@ void PhysicWorld::step()
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
 			.normalise()).scale(0.75);
 		}
-		
+
 		mBlobPosition[LEFT_PLAYER] += mBlobVelocity[LEFT_PLAYER]/TIMESTEP;
 		mBlobPosition[RIGHT_PLAYER] += mBlobVelocity[RIGHT_PLAYER]/TIMESTEP;
 
 		// Collision between blobby and the net
 		if (mBlobPosition[LEFT_PLAYER].x+BLOBBY_LOWER_RADIUS>NET_POSITION_X-NET_RADIUS) // Collision with the net
 			mBlobPosition[LEFT_PLAYER].x=NET_POSITION_X-NET_RADIUS-BLOBBY_LOWER_RADIUS;
-			
+
 		// Collision between blobby and the net
 		if (mBlobPosition[RIGHT_PLAYER].x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS) // Collision with the net
 			mBlobPosition[RIGHT_PLAYER].x=NET_POSITION_X+NET_RADIUS+BLOBBY_LOWER_RADIUS;
-		
+
 		// Collision between blobby and the border
 		if (mBlobPosition[LEFT_PLAYER].x < LEFT_PLANE)
 			mBlobPosition[LEFT_PLAYER].x=LEFT_PLANE;
@@ -416,7 +419,7 @@ void PhysicWorld::step()
 			mBallVelocity.y += BALL_GRAVITATION/TIMESTEP;
 		else if (ballHitLeftPlayer() || ballHitRightPlayer())
 			mIsGameRunning = true;
-		
+
 		mBallPosition += mBallVelocity/TIMESTEP;
 
 
@@ -439,24 +442,25 @@ void PhysicWorld::step()
 		}
 	
 	} // Ende der Schleife
-	
+
 	// Velocity Integration
-	if(mBallVelocity.x > 0.0)
-		mBallRotation += mBallAngularVelocity;
-		else
-		mBallRotation -= mBallAngularVelocity;
-		
-	// Overflow-Protection
-	if(mBallRotation<=0)
-		mBallRotation=6.25;
+	if (mBallVelocity.x > 0.0)
+		mBallRotation += mBallAngularVelocity * (getBallSpeed()/6);
+	else if (mBallVelocity.x < 0.0)
+		mBallRotation -= mBallAngularVelocity * (getBallSpeed()/6);
 	else
-	if(mBallRotation>=6.25)
+		mBallRotation -= mBallAngularVelocity;
+
+	// Overflow-Protection
+	if (mBallRotation<=0)
+		mBallRotation=6.25;
+	else if (mBallRotation>=6.25)
 		mBallRotation=0;
 
 	// Blobbyanimationstep
 	blobbyAnimationStep(LEFT_PLAYER);
 	blobbyAnimationStep(RIGHT_PLAYER);
-	
+
 	mTimeSinceBallout = mIsBallValid ? 0.0 : 
 		mTimeSinceBallout + 1.0 / 60;
 }
@@ -511,14 +515,14 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	stream->Read(mBlobPosition[RIGHT_PLAYER].y);
 	stream->Read(mBallPosition.x);
 	stream->Read(mBallPosition.y);
-	
+
 	stream->Read(mBlobVelocity[LEFT_PLAYER].x);
 	stream->Read(mBlobVelocity[LEFT_PLAYER].y);
 	stream->Read(mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Read(mBallVelocity.x);
 	stream->Read(mBallVelocity.y);
-	
+
 	stream->Read(mPlayerInput[LEFT_PLAYER].left);
 	stream->Read(mPlayerInput[LEFT_PLAYER].right);
 	stream->Read(mPlayerInput[LEFT_PLAYER].up);
@@ -536,14 +540,14 @@ void PhysicWorld::getState(RakNet::BitStream* stream)
 	stream->Write(mBlobPosition[RIGHT_PLAYER].y);
 	stream->Write(mBallPosition.x);
 	stream->Write(mBallPosition.y);
-	
+
 	stream->Write(mBlobVelocity[LEFT_PLAYER].x);
 	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
 	stream->Write(mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Write(mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
-	
+
 	stream->Write(mPlayerInput[LEFT_PLAYER].left);
 	stream->Write(mPlayerInput[LEFT_PLAYER].right);
 	stream->Write(mPlayerInput[LEFT_PLAYER].up);
@@ -561,19 +565,18 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
 	stream->Write(mBlobPosition[LEFT_PLAYER].y);
 	stream->Write(800 - mBallPosition.x);
 	stream->Write(mBallPosition.y);
-	
+
 	stream->Write(-mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Write(-mBlobVelocity[LEFT_PLAYER].x);
 	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
 	stream->Write(-mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
-	
+
 	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
 	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
 	stream->Write(mPlayerInput[RIGHT_PLAYER].up);
 	stream->Write(mPlayerInput[LEFT_PLAYER].left);
 	stream->Write(mPlayerInput[LEFT_PLAYER].right);
 	stream->Write(mPlayerInput[LEFT_PLAYER].up);
-
 }
