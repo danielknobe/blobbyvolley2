@@ -1,6 +1,6 @@
 AC_INIT(src/main.cpp)
 AC_CANONICAL_TARGET()
-AM_INIT_AUTOMAKE(blobby, alpha-5)
+AM_INIT_AUTOMAKE(blobby, alpha-6)
 
 AC_PROG_CC
 AC_PROG_CXX
