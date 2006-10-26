@@ -1,3 +1,9 @@
+New in Alpha 6 (rev. 335) since Alpha 5:
+- More options
+- Network support
+- Fixed Speedcontroller
+- Fixed ball reset
+
 Since Alpha 4:
 - Many options configurable through new GUI
 - Configurable game speed, with frame dropping for slow PCs

@@ -1,25 +1,2 @@
 This list isn't maintained any more.
 Look at http://blobby.redio.de/wiki/index.php?title=TODO for an up-to-date list.
-
-======= TODO
-
-------------
-For Alpha 6:
-------------
-=======
-- fix the mouse bug, when opening the pause dialog
-- Add buttons for setting speed to default values (slow, default, fast, very fast, insane)
-
-----------------------------
-May be for Alpha 6 or later:
-----------------------------
-
---->Primary:
-- Seperate left/right blobby graphics for skin-creation
-
---->Secondary:
-- Implement a global text manager which can do translation and handle utf8 strings (for example tell the real length of a string)
-- Networksupport
-- Make Physfs actions more transparent, for example show added search paths
-- Add animated background (prerendered Animations, at least for SDL and GL2D)
-- Add time-capped game option
