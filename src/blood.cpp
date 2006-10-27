@@ -54,8 +54,8 @@ void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
 {
 	for (int c = 0; c <= int(intensity*50); c++)
 	{
-		int x = random(-30*intensity, 30*intensity);
-		int y = random(-50*intensity, 3);
+		int x = random(int(-30*intensity), int(30*intensity));
+		int y = random(int(-50*intensity), 3);
 		mParticles.push_front(Blood(pos, Vector2(x, y), player));
 	}
 }
