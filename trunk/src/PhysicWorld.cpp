@@ -453,9 +453,9 @@ void PhysicWorld::step()
 
 	// Overflow-Protection
 	if (mBallRotation<=0)
-		mBallRotation=6.25;
+		mBallRotation = 6.25 + mBallRotation;
 	else if (mBallRotation>=6.25)
-		mBallRotation=0;
+		mBallRotation = mBallRotation - 6.25;
 
 	// Blobbyanimationstep
 	blobbyAnimationStep(LEFT_PLAYER);
@@ -479,8 +479,6 @@ bool PhysicWorld::getBlobJump(PlayerSide player)
 {
 	return !blobbyHitGround(player);
 }
-
-#include "RenderManager.h"
 
 float PhysicWorld::estimateBallImpact()
 {
