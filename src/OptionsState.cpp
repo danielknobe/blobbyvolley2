@@ -739,6 +739,7 @@ MiscOptionsState::MiscOptionsState()
 	mVolume = mOptionConfig.getFloat("global_volume");
 	mMute = mOptionConfig.getBool("mute");
 	mGameFPS = mOptionConfig.getInteger("gamefps");
+	mNetworkSide = mOptionConfig.getInteger("network_side");
 }
 
 MiscOptionsState::~MiscOptionsState()
@@ -750,6 +751,7 @@ MiscOptionsState::~MiscOptionsState()
 		mOptionConfig.setFloat("global_volume", mVolume);
 		mOptionConfig.setBool("mute", mMute);
 		mOptionConfig.setInteger("gamefps", mGameFPS);
+		mOptionConfig.setInteger("network_side", mNetworkSide);
 		if (mBackground > -1)
 			mOptionConfig.setString("background", mBackgrounds[mBackground]);
 		mOptionConfig.saveFile("config.xml");
@@ -796,25 +798,35 @@ void MiscOptionsState::step()
 	{
 		imgui.doImage(GEN_ID, Vector2(513.0, 92.0), "gfx/pfeil_rechts.bmp");
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 130.0), "show fps"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
 		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
 	}
 	if (mShowFPS)
 	{
-		imgui.doImage(GEN_ID, Vector2(466.0, 142.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(466.0, 132.0), "gfx/pfeil_rechts.bmp");
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 170.0), "show blood"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), "show blood"))
 	{
 		mShowBlood = !mShowBlood;
 		BloodManager::getSingleton().enable(mShowBlood);
-		BloodManager::getSingleton().spillBlood(Vector2(484.0, 170.0), 1.5, 2);
+		BloodManager::getSingleton().spillBlood(Vector2(484.0, 160.0), 1.5, 2);
 	}
 	if (mShowBlood)
 	{
-		imgui.doImage(GEN_ID, Vector2(466.0 ,182.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(466.0 ,172.0), "gfx/pfeil_rechts.bmp");
 	}
+
+	imgui.doText(GEN_ID, Vector2(434.0, 200.0), "Network Side:");
+	if (imgui.doButton(GEN_ID, Vector2(450.0, 240.0), "Left"))
+		mNetworkSide = 0;
+	if (imgui.doButton(GEN_ID, Vector2(630.0, 240.0), "Right"))
+		mNetworkSide = 1;
+	if (mNetworkSide == 0)
+		imgui.doImage(GEN_ID, Vector2(432.0, 252.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
 	float gamefps = (mGameFPS-30)/90.0;

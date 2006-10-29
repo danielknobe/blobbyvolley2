@@ -80,4 +80,5 @@ private:
 	bool mShowFPS;
 	bool mShowBlood;
 	bool mSaveConfig;	
+	int mNetworkSide;
 };
