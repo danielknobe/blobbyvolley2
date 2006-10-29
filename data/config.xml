@@ -12,16 +12,17 @@
 	<var name="b2" value="0"/>
 	<var name="right_blobby_oscillate" value="false"/>
 	<var name="left_script_name" value="dumbjump.lua"/>
-	<var name="right_script_name" value="dumbjump.lua"/>
-	<var name="left_player_human" value="false"/>
-	<var name="right_player_human" value="false"/>
-	<var name="gamefps" value="60"/>
-	<var name="global_volume" value="1.0" />
-	<var name="mute" value="false" />
+	<var name="right_script_name" value="simbel.lua"/>
+	<var name="left_player_human" value="true"/>
+	<var name="right_player_human" value="true"/>
+	<var name="gamefps" value="75"/>
+	<var name="global_volume" value="0.960000"/>
+	<var name="mute" value="false"/>
 	<var name="scoretowin" value="15"/>
 	<var name="showfps" value="false"/>
-	<var name="blood" value="true"/>
+	<var name="blood" value="false"/>
 	<var name="background" value="strand1.bmp"/>
-	<var name="network_side" value="1" />
-	<var name="network_last_server" value="localhost" />
+	<var name="network_side" value="0"/>
+	<var name="network_last_server" value="88.198.43.14"/>
 </userconfig>
+
