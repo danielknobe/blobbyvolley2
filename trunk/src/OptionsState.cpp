@@ -816,27 +816,27 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(466.0 ,182.0), "gfx/pfeil_rechts.bmp");
 	}
 
-	imgui.doText(GEN_ID, Vector2(292.0, 300.0), "Gamespeed:");
-	float gamefps = (mGameFPS-30)/120.0;
+	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
+	float gamefps = (mGameFPS-30)/90.0;
 	if (gamefps < 0)
 		gamefps = 0;
-	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 340.0), gamefps))
-		mGameFPS = (int)(gamefps*120.0+30);
-	if (imgui.doButton(GEN_ID, Vector2(150.0, 390.0), "slow"))
+	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps))
+		mGameFPS = (int)(gamefps*90.0+30);
+	if (imgui.doButton(GEN_ID, Vector2(205.0, 380.0), "very slow"))
 		mGameFPS = 30;
-	if (imgui.doButton(GEN_ID, Vector2(316.0, 390.0), "default"))
+	if (imgui.doButton(GEN_ID, Vector2(481.0, 380.0), "slow"))
 		mGameFPS = 60;
-	if (imgui.doButton(GEN_ID, Vector2(554.0, 390.0), "fast"))
+	if (imgui.doButton(GEN_ID, Vector2(319.0, 415.0), "default"))
+		mGameFPS = 75;
+	if (imgui.doButton(GEN_ID, Vector2(205.0, 450.0), "fast"))
 		mGameFPS = 90;
-	if (imgui.doButton(GEN_ID, Vector2(158.0, 440.0), "very fast"))
+	if (imgui.doButton(GEN_ID, Vector2(360.0, 450.0), "very fast"))
 		mGameFPS = 120;
-	if (imgui.doButton(GEN_ID, Vector2(460.0, 440.0), "insane"))
-		mGameFPS = 150;
 	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
 	std::stringstream FPSInPercent;
-	FPSInPercent << int((float)mGameFPS/60*100);
-	imgui.doText(GEN_ID, Vector2(515.0, 340.0), FPSInPercent.str()+="%");
+	FPSInPercent << int((float)mGameFPS/75*100);
+	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
