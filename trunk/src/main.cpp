@@ -46,6 +46,14 @@ void probeDir(const std::string& dirname)
 	}
 }
 
+void deinit()
+{
+	RenderManager::getSingleton().deinit();
+	SoundManager::getSingleton().deinit();	
+	SDL_Quit();
+	PHYSFS_deinit();
+}
+
 void setupPHYSFS()
 {
 	std::string separator = PHYSFS_getDirSeparator();
@@ -95,93 +103,104 @@ int main(int argc, char* argv[])
 	setupPHYSFS();
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+	atexit(SDL_Quit);
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
 	// choose renderer
-	RenderManager *rmanager;
+	RenderManager *rmanager = 0;
+	SoundManager *smanager = 0;
 
-	UserConfig gameConfig;
-	gameConfig.loadFile("config.xml");
-	if(gameConfig.getString("device") == "SDL")
-		rmanager = RenderManager::createRenderManagerSDL();
-	else if (gameConfig.getString("device") == "GP2X")
-		rmanager = RenderManager::createRenderManagerGP2X();
-	else if (gameConfig.getString("device") == "OpenGL")
-		rmanager = RenderManager::createRenderManagerGL2D();
-	else
+	try
 	{
+		UserConfig gameConfig;
+		gameConfig.loadFile("config.xml");
+		if(gameConfig.getString("device") == "SDL")
+			rmanager = RenderManager::createRenderManagerSDL();
+		else if (gameConfig.getString("device") == "GP2X")
+			rmanager = RenderManager::createRenderManagerGP2X();
+		else if (gameConfig.getString("device") == "OpenGL")
+		rmanager = RenderManager::createRenderManagerGL2D();
+		else
+		{
 		std::cerr << "Warning: Unknown renderer selected!";
-		std::cerr << "Falling back to OpenGL" << std::endl;
-		rmanager = RenderManager::createRenderManagerGL2D();
-	}
+			std::cerr << "Falling back to OpenGL" << std::endl;
+			rmanager = RenderManager::createRenderManagerGL2D();
+		}
 
-	// fullscreen?
-	if(gameConfig.getString("fullscreen") == "true")
-		rmanager->init(800, 600, true);
-	else
-		rmanager->init(800, 600, false);
-
-	SpeedController scontroller(gameConfig.getFloat("gamefps"));
-	SpeedController::setMainInstance(&scontroller);
-	scontroller.setDrawFPS(gameConfig.getBool("showfps"));
-
-	SoundManager* smanager = SoundManager::createSoundManager();
-	smanager->init();
-	smanager->setVolume(gameConfig.getFloat("global_volume"));
-	smanager->setMute(gameConfig.getBool("mute"));
-	smanager->playSound("sounds/bums.wav", 0.0);
-	smanager->playSound("sounds/pfiff.wav", 0.0);
-
-	std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
-	if (PHYSFS_exists(bg.c_str()))
-		rmanager->setBackground(bg);
-
-	InputManager* inputmgr = InputManager::createInputManager();
+		// fullscreen?
+		if(gameConfig.getString("fullscreen") == "true")
+			rmanager->init(800, 600, true);
+		else
+			rmanager->init(800, 600, false);
+	
+		SpeedController scontroller(gameConfig.getFloat("gamefps"));
+		SpeedController::setMainInstance(&scontroller);
+		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
 		
-	int running = 1;
-	
-	while (running)
-	{
-		inputmgr->updateInput();
-		running = inputmgr->running();
+		smanager = SoundManager::createSoundManager();
+		smanager->init();
+		smanager->setVolume(gameConfig.getFloat("global_volume"));
+		smanager->setMute(gameConfig.getBool("mute"));
+		smanager->playSound("sounds/bums.wav", 0.0);
+		smanager->playSound("sounds/pfiff.wav", 0.0);
 
-		// This is true by default for compatibility, GUI states may
-		// disable it if necessary
-		rmanager->drawGame(true);
-		IMGUI::getSingleton().begin();
-		State::getCurrentState()->step();
-		rmanager = &RenderManager::getSingleton(); //RenderManager may change
-		//draw FPS:
-		if (scontroller.getDrawFPS())
+		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
+		if (PHYSFS_exists(bg.c_str()))
+			rmanager->setBackground(bg);
+
+		InputManager* inputmgr = InputManager::createInputManager();
+		int running = 1;	
+		while (running)
 		{
-			// We need to ensure that the title bar is only set
-			// when the framerate changed, because setting the
-			// title can ne quite resource intensive on some
-			// windows manager, like for example metacity.
-			static int lastfps = 0;
-			int newfps = scontroller.getFPS();
-			if (newfps != lastfps)
+			inputmgr->updateInput();
+			running = inputmgr->running();
+	
+			// This is true by default for compatibility, GUI states may
+			// disable it if necessary
+			rmanager->drawGame(true);
+			IMGUI::getSingleton().begin();
+				State::getCurrentState()->step();
+			rmanager = &RenderManager::getSingleton(); //RenderManager may change
+			//draw FPS:
+			if (scontroller.getDrawFPS())
 			{
-				std::stringstream tmp;
-				tmp << "Blobby Volley 2 Alpha 6    FPS: " << newfps;
-				rmanager->setTitle(tmp.str());
+				// We need to ensure that the title bar is only set
+				// when the framerate changed, because setting the
+				// title can ne quite resource intensive on some
+				// windows manager, like for example metacity.
+				static int lastfps = 0;
+				int newfps = scontroller.getFPS();
+				if (newfps != lastfps)
+				{
+					std::stringstream tmp;
+					tmp << "Blobby Volley 2 Alpha 6    FPS: " << newfps;
+					rmanager->setTitle(tmp.str());
+				}
+				lastfps = newfps;
 			}
-			lastfps = newfps;
-		}
 
-		if (!scontroller.doFramedrop())
-		{
-			rmanager->draw();
-			IMGUI::getSingleton().end();
-			BloodManager::getSingleton().step();
-			rmanager->refresh();
+			if (!scontroller.doFramedrop())
+			{
+				rmanager->draw();
+				IMGUI::getSingleton().end();
+				BloodManager::getSingleton().step();
+				rmanager->refresh();
+			}
+			scontroller.update();
 		}
-		scontroller.update();
 	}
-	rmanager->deinit();
-	smanager->deinit();
-	
-	SDL_Quit();
-	PHYSFS_deinit();
+	catch (std::exception e)
+	{
+		std::cerr << e.what() << std::endl;
+		if (rmanager)
+			rmanager->deinit();
+		if (smanager)
+			smanager->deinit();
+		SDL_Quit();
+		PHYSFS_deinit();
+		exit (EXIT_FAILURE);
+	}
 
+	deinit();
+	exit(EXIT_SUCCESS);
 }
