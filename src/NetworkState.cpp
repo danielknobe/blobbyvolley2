@@ -123,6 +123,7 @@ void NetworkSearchState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	imgui.doInactiveMode(false);
 
 	if (mDisplayInfo || mEnteringServer)
 	{
@@ -170,7 +171,10 @@ void NetworkSearchState::step()
 			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), "cancel"))
+		{
 			mEnteringServer = false;
+			imgui.resetSelection();
+		}
 		imgui.doInactiveMode(true);
 	}
 
