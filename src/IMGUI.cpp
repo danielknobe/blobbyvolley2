@@ -65,7 +65,6 @@ IMGUI& IMGUI::getSingleton()
 
 void IMGUI::begin()
 {
-	mInactive = false;
 	mUsingCursor = false;
 	mButtonReset = false;
 	while (!mQueue->empty())
@@ -303,6 +302,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 
 void IMGUI::resetSelection()
 {
+	mInactive = false;
 	mActiveButton = 0;
 	mButtonReset = true;
 }
