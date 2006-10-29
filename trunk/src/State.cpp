@@ -402,6 +402,7 @@ void ReplayMenuState::step()
 			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
 		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete"))
 		{
+			if (!mReplayFiles.empty())
 			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml").c_str()))
 			{
 				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
