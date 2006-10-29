@@ -63,7 +63,7 @@ void SpeedController::update()
 	{
 		if ((lastDrawnFrame+(1000/5)) > SDL_GetTicks()) //should guaranty that at least 5 frames will be drawn per second
 		{
-			mFramedrop = true;
+			//mFramedrop = true;		//deactivated for alpha 6 release
 			//std::cout << "Framedrop" << std::endl;
 		}
 	}
