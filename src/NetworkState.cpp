@@ -622,7 +622,12 @@ void NetworkHostState::step()
 		}
 	}
 	mGameState->step();
-	if (mNetworkGame)
-		mNetworkGame->step();
+	if (dynamic_cast<NetworkHostState*>(mCurrentState) != 0)
+	{
+		if (mNetworkGame)
+		{
+			mNetworkGame->step();
+		}
+	}
 }
 
