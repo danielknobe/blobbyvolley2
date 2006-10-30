@@ -32,7 +32,7 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	{
 		Sound *newSound = new Sound;
 		newSound->data = new Uint8[newSoundLength];
-		memcpy(newSoundBuffer, newSound->data, newSoundLength);
+		memcpy(newSound->data, newSoundBuffer, newSoundLength);
 		newSound->length = newSoundLength;
 		newSound->position = 0;
 		SDL_FreeWAV(newSoundBuffer);
