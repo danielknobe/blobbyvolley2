@@ -359,7 +359,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			}
 			// This is a temporary solution until the new
 			// UTF-8 class can tell the real length!!!
-			else if (text.length() < 20)
+			else if (text.length() < length)
 			{
 				if (input == "keypad0")
 				{
