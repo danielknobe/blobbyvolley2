@@ -162,6 +162,7 @@ void NetworkSearchState::step()
 	{
 		imgui.doInactiveMode(false);
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 200.0), Vector2(650.0, 400.0));
+		// Game crashes if the mEnteredServer is not a possible input
 		imgui.doEditbox(GEN_ID, Vector2(130.0, 210.0), 20, mEnteredServer, mServerBoxPosition);
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), "ok"))
 		{

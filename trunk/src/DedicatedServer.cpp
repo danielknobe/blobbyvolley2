@@ -29,7 +29,6 @@ int main(int argc, char** argv)
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
 
-	config.loadFile("server.xml");
 	int port = config.getInteger("port");
 	float speed = config.getFloat("speed");
 	int clients = 0;
