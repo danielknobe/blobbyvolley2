@@ -309,6 +309,7 @@ void IMGUI::resetSelection()
 
 bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos)
 {
+	// lenght does not actually work!
 	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
@@ -357,7 +358,67 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				text.erase(cpos, 1);
 			}
 			// This is a temporary solution until the new
-			// UTF-8 class can tell the real length.
+			// UTF-8 class can tell the real length!!!
+			else if (input == "keypad0")
+			{
+				text.insert(cpos, "0");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad1")
+			{
+				text.insert(cpos, "1");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad2")
+			{
+				text.insert(cpos, "2");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad3")
+			{
+				text.insert(cpos, "3");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad4")
+			{
+				text.insert(cpos, "4");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad5")
+			{
+				text.insert(cpos, "5");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad6")
+			{
+				text.insert(cpos, "6");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad7")
+			{
+				text.insert(cpos, "7");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad8")
+			{
+				text.insert(cpos, "8");
+				cpos++;
+				changed = true;
+			}
+			else if (input == "keypad9")
+			{
+				text.insert(cpos, "9");
+				cpos++;
+				changed = true;
+			}
 			else if (input.length() == 1)
 			{
 				text.insert(cpos, input);
@@ -365,7 +426,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				changed = true;
 			}
 		}
-		
+
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > position.x &&
 			mousepos.y > position.y &&
@@ -375,7 +436,8 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			obj.type = ACTIVEEDITBOX;
 			if (InputManager::getSingleton()->click())
 			{
-				cpos = (int)(mousepos.x-position.x-5.0)/24;
+				if (mousepos.x < position.x + text.length() * 24.0)
+					cpos = (int)(mousepos.x-position.x-5.0+12)/24;
 				mActiveButton = id;
 			}
 		}

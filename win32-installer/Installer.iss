@@ -32,13 +32,18 @@ SolidCompression=yes
 
 [dirs]
 Name:"{app}/data/replays"
+Name:"{app}/data/scripts"
+Name:"{app}/data/gfx"
+Name:"{app}/data/sounds"
+Name:"{app}/data/backgrounds"
 
 [Files]
 Source: "../blobby.exe"; DestDir: "{app}"
+Source: "../blobby-server.exe"; DestDir: "{app}"
 Source: "../README.txt"; DestDir: "{app}"; Flags: isreadme
 Source: "../COPYING.txt";DestDir: "{app}";
+Source: "../AUTHORS.txt";DestDir: "{app}";
 Source: "../SDL.dll"; DestDir: "{app}"
 Source: "../data/*"; DestDir: "{app}/data"
-Source: "../data/scripts/*"; DestDir: "{app}/data/scripts"
 
 Source: "../doc/*"; DestDir: "{app}/doc"
