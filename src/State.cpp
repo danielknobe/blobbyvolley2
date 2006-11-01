@@ -167,28 +167,6 @@ void LocalGameState::step()
 		}
 		imgui.doCursor();
 	}
-	else
-	{
-		mMatch->step();
-	}
-
-	float time = float(SDL_GetTicks()) / 1000.0;
-	if (mLeftOscillate)
-		rmanager->setBlobColor(0, Color(
-			int((sin(time*2) + 1.0) * 128),
-			int((sin(time*4) + 1.0) * 128),
-			int((sin(time*3) + 1.0) * 128)));
-	if (mRightOscillate)
-		rmanager->setBlobColor(1, Color(
-			int((cos(time*2) + 1.0) * 128),
-			int((cos(time*4) + 1.0) * 128),
-			int((cos(time*3) + 1.0) * 128)));
-		
-	PlayerSide side = mMatch->winningPlayer();
-	if (side != NO_PLAYER)
-	{
-		mWinner = true;
-	}
 	else if (InputManager::getSingleton()->exit())
 	{
 		if (mSaveReplay)
@@ -208,6 +186,21 @@ void LocalGameState::step()
 	{
 		delete this;
 		mCurrentState = new MainMenuState;
+	}
+	else
+	{
+		mMatch->step();
+	float time = float(SDL_GetTicks()) / 1000.0;
+	if (mLeftOscillate)
+		rmanager->setBlobColor(0, Color(
+			int((sin(time*2) + 1.0) * 128),
+			int((sin(time*4) + 1.0) * 128),
+			int((sin(time*3) + 1.0) * 128)));
+	if (mRightOscillate)
+		rmanager->setBlobColor(1, Color(
+			int((cos(time*2) + 1.0) * 128),
+			int((cos(time*4) + 1.0) * 128),
+			int((cos(time*3) + 1.0) * 128)));
 	}
 }
 

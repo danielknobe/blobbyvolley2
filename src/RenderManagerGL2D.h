@@ -3,8 +3,15 @@
 #if HAVE_LIBGL
 
 #include <SDL/SDL.h>
+
+#if __MACOSX__
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif
+
 #include <vector>
 #include <list>
 
