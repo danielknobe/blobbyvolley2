@@ -40,6 +40,10 @@ OptionState::OptionState()
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
+	mPlayerName[LEFT_PLAYER] = "Left Player";
+	mPlayerName[RIGHT_PLAYER] = "Right Player";
+	mPlayerNamePosition[RIGHT_PLAYER] = 0;
+	mPlayerNamePosition[LEFT_PLAYER] = 0;
 }
 
 OptionState::~OptionState()
@@ -81,11 +85,12 @@ void OptionState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
-	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
 
-	imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(390.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
-	imgui.doSelectbox(GEN_ID, Vector2(434.0, 50.0), Vector2(790.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
+	imgui.doEditbox(GEN_ID, Vector2(5.0, 10.0), 15, mPlayerName[LEFT_PLAYER], mPlayerNamePosition[LEFT_PLAYER]);
+	imgui.doEditbox(GEN_ID, Vector2(425.0, 10.0), 15, mPlayerName[RIGHT_PLAYER], mPlayerNamePosition[RIGHT_PLAYER]);
+
+	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
+	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
 	
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), "input options"))
 	{
