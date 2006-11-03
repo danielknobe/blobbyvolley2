@@ -14,7 +14,9 @@ private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
 	int mPlayerOptions[MAX_PLAYERS];
-	bool mSaveConfig;	
+	bool mSaveConfig;
+	std::string mPlayerName[MAX_PLAYERS];
+	unsigned mPlayerNamePosition[MAX_PLAYERS];
 };
 
 class GraphicOptionsState : public State
