@@ -40,8 +40,8 @@ OptionState::OptionState()
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
 	PHYSFS_freeList(filenames);
-	mPlayerName[LEFT_PLAYER] = "Left Player";
-	mPlayerName[RIGHT_PLAYER] = "Right Player";
+	mPlayerName[LEFT_PLAYER] = mOptionConfig.getString("left_player_name");
+	mPlayerName[RIGHT_PLAYER] = mOptionConfig.getString("right_player_name");
 	mPlayerNamePosition[RIGHT_PLAYER] = 0;
 	mPlayerNamePosition[LEFT_PLAYER] = 0;
 }
@@ -75,6 +75,8 @@ OptionState::~OptionState()
 			mOptionConfig.setString("right_script_name",
 				mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
 		}
+		mOptionConfig.setString("left_player_name", mPlayerName[LEFT_PLAYER]);
+		mOptionConfig.setString("right_player_name", mPlayerName[RIGHT_PLAYER]);
 		mOptionConfig.saveFile("config.xml");
 	}
 }

@@ -381,6 +381,12 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			// UTF-8 class can tell the real length!!!
 			else if (text.length() < length)
 			{
+				if (input == "space")
+				{
+					text.insert(cpos, " ");
+					cpos++;
+					changed = true;
+				}
 				if (input == "keypad0")
 				{
 					text.insert(cpos, "0");
