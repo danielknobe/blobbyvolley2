@@ -38,7 +38,7 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface,
 	convertedTexture = 
 		SDL_CreateRGBSurface(SDL_SWSURFACE,
 			paddedX, paddedY, 32,
-#if SDL_BYTE_ORDER == SDL_BIG_ENDIAN
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 			0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
 			0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
