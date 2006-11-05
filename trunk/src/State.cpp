@@ -201,6 +201,8 @@ void LocalGameState::step()
 			int((cos(time*2) + 1.0) * 128),
 			int((cos(time*4) + 1.0) * 128),
 			int((cos(time*3) + 1.0) * 128)));
+		if (mMatch->winningPlayer() != NO_PLAYER)
+			mWinner = true;
 	}
 }
 
