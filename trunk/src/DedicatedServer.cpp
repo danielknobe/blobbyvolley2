@@ -29,6 +29,8 @@ int main(int argc, char** argv)
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
 
+	config.loadFile("server.xml");
+
 	int port = config.getInteger("port");
 	float speed = config.getFloat("speed");
 	int clients = 0;
@@ -64,7 +66,6 @@ int main(int argc, char** argv)
 						firstPlayerSide = NO_PLAYER;
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
-					playermap.erase(packet->playerId);
 					clients--;
 					printf("connection close\n");
 					printf("%d clients connected now\n", clients);
@@ -153,6 +154,13 @@ int main(int argc, char** argv)
 		{
 			if (!(*iter)->step())
 			{
+				PlayerMap::iterator piter = playermap.begin();
+				while (piter != playermap.end())
+				{
+						if (piter->second == *iter)
+							playermap.erase(piter);
+						++piter;
+				}
 				delete *iter;
 				iter = gamelist.erase(iter);
 			}
