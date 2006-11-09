@@ -38,7 +38,7 @@ NetworkGame::~NetworkGame()
 
 void NetworkGame::injectPacket(Packet* packet)
 {
-	mPacketQueue.push(*packet);
+	mPacketQueue.push_back(*packet);
 }
 
 void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream)
@@ -61,7 +61,7 @@ bool NetworkGame::step()
 	while (!mPacketQueue.empty())
 	{
 		Packet* packet = &mPacketQueue.front();
-		mPacketQueue.pop();
+		mPacketQueue.pop_front();
 
 		switch(packet->data[0])
 		{

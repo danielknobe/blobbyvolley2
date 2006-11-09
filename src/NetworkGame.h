@@ -1,6 +1,6 @@
 #pragma once
 
-#include <queue>
+#include <list>
 
 #include "Global.h"
 #include "PhysicWorld.h"
@@ -8,7 +8,7 @@
 
 class RakServer;
 
-typedef std::queue<Packet> PacketQueue;
+typedef std::list<Packet> PacketQueue;
 
 class NetworkGame
 {
