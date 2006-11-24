@@ -36,6 +36,9 @@ class RenderManagerSDL : public RenderManager
 	bool mLeftPlayerWarning;
 	bool mRightPlayerWarning;
 
+	std::string mLeftPlayerName;
+	std::string mRightPlayerName;
+
 	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
 	
 public:
@@ -55,7 +58,9 @@ public:
 		
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
-		       
+
+	virtual void setPlayernames(std::string leftName, std::string rightName);
+
 	virtual void setMouseMarker(float position);
 			       
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight);

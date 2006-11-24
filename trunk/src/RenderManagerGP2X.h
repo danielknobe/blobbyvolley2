@@ -54,7 +54,7 @@ public:
 		
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
-		       
+
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
 	virtual void drawImage(const std::string& filename, Vector2 position) {};
 

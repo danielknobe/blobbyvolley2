@@ -259,6 +259,11 @@ void RenderManagerSDL::draw()
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);	
 	drawText(textBuffer, Vector2(800 - 96, 24), false);
+
+	// Drawing the names
+	drawText(mLeftPlayerName, Vector2(12, 550), false);
+
+	drawText(mRightPlayerName, Vector2(412+7, 550), false);
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)
@@ -395,6 +400,12 @@ void RenderManagerSDL::setScore(int leftScore, int rightScore,
 	mRightPlayerScore = rightScore;
 	mLeftPlayerWarning = leftWarning;
 	mRightPlayerWarning = rightWarning;
+}
+
+void RenderManagerSDL::setPlayernames(std::string leftName, std::string rightName)
+{
+	mLeftPlayerName = leftName;
+	mRightPlayerName = rightName;
 }
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool highlight)

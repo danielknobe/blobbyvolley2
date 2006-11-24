@@ -110,7 +110,10 @@ public:
 	// Set the displayed score values and the serve notifications
 	virtual void setScore(int leftScore, int rightScore,
 		bool leftWarning, bool rightWarning) {};
-		
+
+	// Set the names
+	virtual void setPlayernames(std::string leftName, std::string rightName) {};
+
 	// This simply draws the given text with its top left corner at the
 	// given position and doesn't care about line feeds.
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight) {};
