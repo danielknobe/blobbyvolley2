@@ -338,8 +338,12 @@ void RenderManagerGL2D::draw()
 	drawText(textBuffer, Vector2(24, 24), false);
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);	
-	drawText(textBuffer, Vector2(800 - 96, 24), false);
+	drawText(textBuffer, Vector2(728, 24), false);
 
+	// Drawing the names
+	drawText(mLeftPlayerName, Vector2(12, 550), false);
+
+	drawText(mRightPlayerName, Vector2(412+7, 550), false);
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)
@@ -408,6 +412,12 @@ void RenderManagerGL2D::setScore(int leftScore, int rightScore,
 	mRightPlayerScore = rightScore;
 	mLeftPlayerWarning = leftWarning;
 	mRightPlayerWarning = rightWarning;
+}
+
+void RenderManagerGL2D::setPlayernames(std::string leftName, std::string rightName)
+{
+	mLeftPlayerName = leftName;
+	mRightPlayerName = rightName;
 }
 
 void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool highlight)

@@ -36,13 +36,15 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
-	
-	
+
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 	mScoreToWin = gameConfig.getInteger("scoretowin");
 	if(mScoreToWin < 0)
 		mScoreToWin = 15;
+
+	RenderManager::getSingleton().setPlayernames(gameConfig.getString("left_player_name")
+						    	,gameConfig.getString("right_player_name"));
 };
 
 DuelMatch::~DuelMatch()
