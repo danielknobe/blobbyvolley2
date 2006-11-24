@@ -75,3 +75,12 @@ private:
 	bool mLeftOscillate;
 	bool mRightOscillate;
 };
+
+class CreditsState : public State
+{
+public:
+	CreditsState();
+	virtual void step();
+private:
+	float mYPosition;
+};

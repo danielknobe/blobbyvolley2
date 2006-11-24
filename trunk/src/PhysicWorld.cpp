@@ -383,7 +383,7 @@ void PhysicWorld::step()
 			mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE)
 			).length() <= NET_RADIUS + BALL_RADIUS && mBallPosition.y < NET_POSITION_Y-NET_SPHERE)
 		{
-			mBallPosition -= mBallVelocity/TIMESTEP * 1.1; // Protecton of Kommaerrors
+			mBallPosition -= mBallVelocity/TIMESTEP * 1.1; // Protection of floating point errors
 			mBallVelocity = mBallVelocity.reflect(
             Vector2(mBallPosition,Vector2(NET_POSITION_X,NET_POSITION_Y-NET_SPHERE))
 			.normalise()).scale(0.75);

@@ -258,13 +258,60 @@ void MainMenuState::step()
 		delete mCurrentState;
 		mCurrentState = new ReplayMenuState();
 	}
-	
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), "exit")) 
+
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), "credits"))
+	{
+		delete mCurrentState;
+		mCurrentState = new CreditsState();
+	}
+
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), "exit")) 
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
 		SDL_Quit();
 		exit(0);
+	}
+}
+
+CreditsState::CreditsState()
+{
+	IMGUI::getSingleton().resetSelection();
+	mYPosition = 600;
+}
+
+void CreditsState::step()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), "programmers:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Jonathan Sieber");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(jonathan_sieber(at)yahoo.de)");	
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Daniel Knobe");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+125), "(daniel-knobe(at)web.de)");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+160), "Sven Rech");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+190), "(svenrech(at)gmx.de)");
+
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+230), "graphics:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+260), "Silvio Mummert");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+290), "(mummertathome(at)t-online.de)");	
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+325), "Richard Bertrand");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+355), "(ricbertrand(at)hotmail.com)");
+
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+400), "special thanks at:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+430), "Daniel Skoraszewsky");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+460), "(skoraszewsky(at)t-online.de)");
+
+	if (mYPosition > 20)
+		mYPosition -= 2.5;
+	
+	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), "back to mainmenu"))
+	{
+		delete this;
+		mCurrentState = new MainMenuState();
+		return;
 	}
 }
 
