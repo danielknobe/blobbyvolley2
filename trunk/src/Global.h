@@ -12,6 +12,9 @@
 
 const int BLOBBY_PORT = 1234;
 
+const int BLOBBY_VERSION_MAJOR = 7;
+const int BLOBBY_VERSION_MINOR = 0;
+
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
 

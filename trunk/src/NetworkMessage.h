@@ -21,6 +21,9 @@ enum MessageType
 	ID_PAUSE,
 	ID_UNPAUSE,
 	ID_BLOBBY_SERVER_PRESENT,
+	ID_OLD_CLIENT,
+	ID_UNKNOWN_CLIENT,
+
 };
 
 // General Information:
@@ -98,17 +101,25 @@ enum MessageType
 // 	Description:
 // 		Message sent from server to client when all clients are
 // 		ready. The input is enabled after this message on the client.
+// 		The attribute opponent name carrys the name of the connected
+// 		opponent.
 // 	Structure:
 // 		ID_GAME_READY
+// 		opponentname(char[16])
 //
 // ID_ENTER_GAME
 // 	Description:
 // 		Message sent from client to server after connecting to it.
 // 		The side attribute tells the server on which side the client
-// 		wants to play
+// 		wants to play. Major and minor numbers tell about the clients
+// 		version. The name attribute reports to players name,
+// 		truncated to 16 characters.
 // 	Structure:
 // 		ID_ENTER_GAME
 // 		side (PlayerSide)
+// 		major (int)
+// 		minor (int)
+// 		name (char[16])
 //
 // ID_PAUSE
 // 	Description:
@@ -126,10 +137,36 @@ enum MessageType
 // 		ID_UNPAUSE
 // 
 // ID_OPPONENTED_DISCONNECTED
-// 	Description
+// 	Description:
 // 		Sent from server to client when an opponent left the game
 // 	Structure:
 // 		ID_OPPONENT_DISCONNECTED
+//
+// ID_BLOBBY_SERVER_PRESENT
+// 	Description:
+// 		Sent from client to probe a server and from server to client
+// 		as answer to the same packet.
+// 		Sent with version number since alpha 7 in the first case.
+// 	Structure:
+// 		ID_BLOBBY_SERVER_PRESENT
+// 		major (int)
+// 		minor (int)
+//
+// ID_OLD_CLIENT
+// 	Description:
+// 		Sent from server to client if the version number
+// 		is to old or simply missing
+// 	Structure:
+// 		ID_OLD_CLIENT
+//
+// ID_UNKNOWN_CLIENT
+// 	Description:
+// 		Sent from server to client if the version number
+// 		is unknown, typically because the client is more
+// 		recent than the server
+// 	Structure:
+// 		ID_UNKNOWN_CLIENT
+// 		
 
 class UserConfig;
 
@@ -138,6 +175,7 @@ struct ServerInfo
 	ServerInfo(RakNet::BitStream& stream, const char* ip);
 	ServerInfo(UserConfig& config);
 	ServerInfo(const std::string& playername);
+	ServerInfo() {}
 
 	void writeToBitstream(RakNet::BitStream& stream);
 	int activegames;

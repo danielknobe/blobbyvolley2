@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
+	std::string firstPlayerName;
 
 	config.loadFile("server.xml");
 
@@ -57,8 +58,9 @@ int main(int argc, char** argv)
 					printf("new connection incoming\n");
 					printf("%d clients connected now\n", clients);
 					break;
-				case ID_DISCONNECTION_NOTIFICATION:
 				case ID_CONNECTION_LOST:
+					break;
+				case ID_DISCONNECTION_NOTIFICATION:
 				{
 					bool cond1 = firstPlayerSide != NO_PLAYER;
 					bool cond2 = firstPlayer == packet->playerId;
@@ -122,25 +124,81 @@ int main(int argc, char** argv)
 					break;
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
-					myinfo.activegames = gamelist.size();
-					if (firstPlayerSide == NO_PLAYER)
+					RakNet::BitStream stream((char*)packet->data, 
+							packet->length, false);
+
+					char cval;
+					int major;
+					int minor;
+
+					stream.Read(cval);
+					stream.Read(major);
+					stream.Read(minor);
+					if (packet->bitSize != 96)
+					// We need special treatment when the client does
+					// not know anything about versioning at all.
 					{
-						strncpy(myinfo.waitingplayer, "none",
-							sizeof(myinfo.waitingplayer) - 1);
+						ServerInfo oldInfo;
+						oldInfo.activegames = 0;
+						strncpy(oldInfo.name,
+							"Please update your Client!", 32);
+						strncpy(oldInfo.waitingplayer, "", 64);
+						strncpy(oldInfo.description,
+							"Your client is to old to connect "
+							"to this server. Get a new version"
+							" at                  "
+							"blobby.sourceforge.net"
+							, 192);
+
+						stream.Reset();
+						stream.Write(ID_BLOBBY_SERVER_PRESENT);
+						oldInfo.writeToBitstream(stream);
+						server.Send(&stream, HIGH_PRIORITY,
+							RELIABLE_ORDERED, 0,
+							packet->playerId, false);
+												
+					}
+					else if (major < BLOBBY_VERSION_MAJOR
+						|| (major == BLOBBY_VERSION_MINOR && minor < BLOBBY_VERSION_MINOR))
+					// Check if the packet contains matching version numbers
+					{
+						stream.Reset();
+						stream.Write(ID_OLD_CLIENT);
+						server.Send(&stream, HIGH_PRIORITY, 
+							RELIABLE_ORDERED, 0, packet->playerId,
+							false);
+					}
+					else if (major != BLOBBY_VERSION_MAJOR ||
+							minor != BLOBBY_VERSION_MINOR)
+					{
+						stream.Reset();
+						stream.Write(ID_UNKNOWN_CLIENT);
+						server.Send(&stream, HIGH_PRIORITY, 
+							RELIABLE_ORDERED, 0, packet->playerId,
+							false);
 					}
 					else
 					{
-						// TODO: Insert waiting players name here
-						strncpy(myinfo.waitingplayer, "somebody",
-							sizeof(myinfo.waitingplayer) - 1);
-					}
+						myinfo.activegames = gamelist.size();
+						if (firstPlayerSide == NO_PLAYER)
+						{
+							strncpy(myinfo.waitingplayer, "none",
+								sizeof(myinfo.waitingplayer) - 1);
+						}
+						else
+						{
+							// TODO: Insert waiting players name here
+							strncpy(myinfo.waitingplayer, firstPlayerName.c_str(),
+								sizeof(myinfo.waitingplayer) - 1);
+						}
 
-					RakNet::BitStream stream;
-					stream.Write(ID_BLOBBY_SERVER_PRESENT);
-					myinfo.writeToBitstream(stream);
-					server.Send(&stream, HIGH_PRIORITY,
-						RELIABLE_ORDERED, 0,
-						packet->playerId, false);
+						stream.Reset();
+						stream.Write(ID_BLOBBY_SERVER_PRESENT);
+						myinfo.writeToBitstream(stream);
+						server.Send(&stream, HIGH_PRIORITY,
+							RELIABLE_ORDERED, 0,
+							packet->playerId, false);
+					}
 					break;
 				}
 				case ID_RECEIVED_STATIC_DATA:
