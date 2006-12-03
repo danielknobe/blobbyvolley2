@@ -66,9 +66,14 @@ void NetworkSearchState::step()
 			{
 				case ID_CONNECTION_REQUEST_ACCEPTED:
 				{
-					printf("connection accepted\n");
+					printf("connection accepted from %s\n",
+						mPingClient->PlayerIDToDottedIP(
+							packet->playerId));
+
 					RakNet::BitStream stream;
 					stream.Write(ID_BLOBBY_SERVER_PRESENT);
+					stream.Write(BLOBBY_VERSION_MAJOR);
+					stream.Write(BLOBBY_VERSION_MINOR);
 					(*iter)->Send(&stream, HIGH_PRIORITY,
 						RELIABLE_ORDERED, 0);
 					break;
@@ -94,6 +99,8 @@ void NetworkSearchState::step()
 					skip = true;
 					break;
 				}
+				default:
+					break;
 			}
 			if (skip)
 				break;
