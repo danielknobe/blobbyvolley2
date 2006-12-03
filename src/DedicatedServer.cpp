@@ -59,7 +59,6 @@ int main(int argc, char** argv)
 					printf("%d clients connected now\n", clients);
 					break;
 				case ID_CONNECTION_LOST:
-					break;
 				case ID_DISCONNECTION_NOTIFICATION:
 				{
 					bool cond1 = firstPlayerSide != NO_PLAYER;
@@ -127,11 +126,11 @@ int main(int argc, char** argv)
 					RakNet::BitStream stream((char*)packet->data, 
 							packet->length, false);
 
-					char cval;
+					int ival;
 					int major;
 					int minor;
 
-					stream.Read(cval);
+					stream.Read(ival);
 					stream.Read(major);
 					stream.Read(minor);
 					if (packet->bitSize != 96)
@@ -171,6 +170,7 @@ int main(int argc, char** argv)
 					else if (major != BLOBBY_VERSION_MAJOR ||
 							minor != BLOBBY_VERSION_MINOR)
 					{
+						printf("major: %d minor: %d\n", major, minor);
 						stream.Reset();
 						stream.Write(ID_UNKNOWN_CLIENT);
 						server.Send(&stream, HIGH_PRIORITY, 
