@@ -111,7 +111,8 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	Uint32 screenFlags = SDL_OPENGL;
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
-	SDL_WM_SetCaption("Blobby Volley 2 Alpha 6", "");
+	SDL_WM_SetCaption(AppTitle, "");
+	SDL_WM_SetIcon(SDL_LoadBMP("data/Icon.bmp"), NULL);
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
 	SDL_ShowCursor(0);
 	glDisable(GL_MULTISAMPLE);
