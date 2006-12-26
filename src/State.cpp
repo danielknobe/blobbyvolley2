@@ -127,10 +127,10 @@ void LocalGameState::step()
 	else if (mPaused)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(234, 260), "Wirklich Beenden?");
-		if (imgui.doButton(GEN_ID, Vector2(480, 300), "Nein"))
+		imgui.doText(GEN_ID, Vector2(281, 260), "Really Quit?");
+		if (imgui.doButton(GEN_ID, Vector2(530, 300), "No"))
 			mPaused = false;
-		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Ja"))
+		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Yes"))
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
@@ -160,7 +160,7 @@ void LocalGameState::step()
 			delete mCurrentState;
 			mCurrentState = new LocalGameState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(260, 390), "save replay"))
+		if (imgui.doButton(GEN_ID, Vector2(320, 390), "save replay"))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
