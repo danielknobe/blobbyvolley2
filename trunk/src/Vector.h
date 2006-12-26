@@ -1,3 +1,22 @@
+/*=============================================================================
+Blobby Volley 2
+Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=============================================================================*/
+
 #pragma once
 
 #include <cassert>
@@ -174,15 +193,15 @@ inline float Vector2::length() const
 #ifdef USE_SSE
 	float ret;
 	asm (
-		"movss 	%0,	%%xmm0	\n"
-		"movss 	%1,	%%xmm1	\n"
+		"movss 	%1,	%%xmm0	\n"
+		"movss 	%2,	%%xmm1	\n"
 		"mulss 	%%xmm0,	%%xmm0	\n"
 		"mulss 	%%xmm1,	%%xmm1	\n"
-		"addps 	%%xmm1,	%%xmm0	\n"
-		"sqrtps %%xmm0,	%%xmm0	\n"
-		"movss 	%%xmm0,	%2	\n"
-		:
-		: "m"(x), "m"(y), "m"(ret)
+		"addss 	%%xmm1,	%%xmm0	\n"
+		"sqrtss %%xmm0,	%%xmm0	\n"
+		"movss 	%%xmm0,	%0	\n"
+		: "=m"(ret)
+		: "m"(x), "m"(y)
 		: "%xmm0", "%xmm1"
 	);
 	return ret;
