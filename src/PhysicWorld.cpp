@@ -41,7 +41,8 @@ const float NET_SPHERE = 154;
 // Ball Settings
 const float BALL_RADIUS = 31.5;
 
-const float GROUND_PLANE_HEIGHT = 500 - BLOBBY_HEIGHT / 2.0;
+const float GROUND_PLANE_HEIGHT_MAX = 500;
+const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
 
 // Boarder Settings
 const float LEFT_PLANE = 0; 
@@ -501,14 +502,10 @@ bool PhysicWorld::getBlobJump(PlayerSide player)
 
 float PhysicWorld::estimateBallImpact()
 {
-	const float a = BALL_GRAVITATION;
-	const float height = GROUND_PLANE_HEIGHT - mBallPosition.y - BALL_RADIUS;
-	const float vby = mBallVelocity.y;
-	float delta1 = -(sqrt(vby * vby + 8 * a * height) + vby) / (2 * a);
-	float delta2 = (sqrt(vby * vby + 8 * a * height) - vby) / (2 * a);
-
-	float delta = delta1 > delta2 ? delta1 : delta2;
-	return mBallPosition.x + mBallVelocity.x * delta;
+	float steps;
+	steps = (mBallVelocity.y - sqrt((mBallVelocity.y * mBallVelocity.y)-
+	(-2 * BALL_GRAVITATION * (-mBallPosition.y + GROUND_PLANE_HEIGHT_MAX + BALL_RADIUS)))) / (-BALL_GRAVITATION);
+	return (mBallVelocity.x * steps) + mBallPosition.x;
 }
 
 Vector2 PhysicWorld::estimateBallPosition(int steps)

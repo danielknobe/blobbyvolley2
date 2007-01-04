@@ -16,20 +16,35 @@ function OnServe(ballready)
 end
 
 function OnGame()
-	if estimate() < 375 and estimate() > 0 then
-		moveto(estimate())
-	else
-		if 520 > ballx() and bally() > 220 then
+
+	if touches() == 0 and estimate() < 375 and estimate() > 0 then
+
+		if bspeedx() < 0 then
+			moveto(estimate()+5)
+		end
+
+		if bspeedx() > 0 then
+			moveto(estimate()-5)
+		end
+	return
+	end
+
+
+		if estimate() < 375 and estimate() > 0 then
+			moveto(estimate())
+		else
+			if 520 > ballx() and bally() > 220 then
+				jump()
+			end
+
+			if 400 > ballx() then
+				moveto((ballx()-20))
+			end
+		end
+
+		if 400 > ballx() and bspeedx() < 3 and bspeedx() > -3 then
+			moveto((ballx()-30))
 			jump()
 		end
 
-		if 400 > ballx() then
-			moveto((ballx()-20))
-		end
-	end
-
-	if 400 > ballx() and bspeedx() < 3 and bspeedx() > -3 then
-		moveto((ballx()-30))
-		jump()
-	end
 end
