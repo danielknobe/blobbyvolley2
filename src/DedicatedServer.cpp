@@ -156,6 +156,10 @@ int main(int argc, char** argv)
 					// We need special treatment when the client does
 					// not know anything about versioning at all.
 					{
+						major = BLOBBY_VERSION_MAJOR;
+						minor = BLOBBY_VERSION_MINOR;
+
+						/*
 						ServerInfo oldInfo;
 						oldInfo.activegames = 0;
 						strncpy(oldInfo.name,
@@ -174,9 +178,10 @@ int main(int argc, char** argv)
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0,
 							packet->playerId, false);
-												
+						*/						
 					}
-					else if (major < BLOBBY_VERSION_MAJOR
+
+					if (major < BLOBBY_VERSION_MAJOR
 						|| (major == BLOBBY_VERSION_MINOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{
