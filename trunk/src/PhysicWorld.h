@@ -128,5 +128,8 @@ public:
 
 	// Fill a Bitstream with a side reversed state
 	void getSwappedState(RakNet::BitStream* stream);
+	
+	//Input stuff for recording and playing replays
+	PlayerInput* getPlayersInput();
 };
 

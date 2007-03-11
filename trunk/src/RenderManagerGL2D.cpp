@@ -363,7 +363,7 @@ void RenderManagerGL2D::draw()
 	// Drawing the names
 	drawText(mLeftPlayerName, Vector2(12, 550), false);
 
-	drawText(mRightPlayerName, Vector2(412+7, 550), false);
+	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)

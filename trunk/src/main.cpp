@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 				if (newfps != lastfps)
 				{
 					std::stringstream tmp;
-					tmp << "Blobby Volley 2 Alpha 6    FPS: " << newfps;
+					tmp << AppTitle << "    FPS: " << newfps;
 					rmanager->setTitle(tmp.str());
 				}
 				lastfps = newfps;

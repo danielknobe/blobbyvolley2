@@ -40,7 +40,7 @@ State* State::getCurrentState()
 {
 	if (!mCurrentState)
 		mCurrentState = new MainMenuState;
-	return mCurrentState;		
+	return mCurrentState;
 }
 
 State* State::mCurrentState = 0;
@@ -81,45 +81,40 @@ LocalGameState::LocalGameState()
 	RenderManager::getSingleton().redraw();
 
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-	
-	InputSource* linput;
-	InputSource* rinput;
 
 	if (gameConfig.getBool("left_player_human"))
 	{
-		linput = new LocalInputSource(LEFT_PLAYER);
+		mLeftInput = new LocalInputSource(LEFT_PLAYER);
 	}
 	else
 	{
-		linput = new ScriptedInputSource("scripts/" +
+		mLeftInput = new ScriptedInputSource("scripts/" +
 			gameConfig.getString("left_script_name"), LEFT_PLAYER);
 	}
-	
+
 	if (gameConfig.getBool("right_player_human"))
 	{
-		rinput = new LocalInputSource(RIGHT_PLAYER);
+		mRightInput = new LocalInputSource(RIGHT_PLAYER);
 	}
 	else
 	{
-		rinput = new ScriptedInputSource("scripts/" +
+		mRightInput = new ScriptedInputSource("scripts/" +
 			gameConfig.getString("right_script_name"),
 						RIGHT_PLAYER);
 	}
 
 	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
-	mLeftInput = mRecorder->createReplayInputSource(LEFT_PLAYER,
-			linput);
-	mRightInput = mRecorder->createReplayInputSource(RIGHT_PLAYER,
-			rinput);
-
+	mRecorder->setPlayerNames(gameConfig.getString("left_player_name") ,gameConfig.getString("right_player_name"));
+	mRecorder->setServingPlayer(LEFT_PLAYER);
 	mMatch = new DuelMatch(mLeftInput, mRightInput, true, true);
+	RenderManager::getSingleton().setPlayernames(gameConfig.getString("left_player_name") ,gameConfig.getString("right_player_name"));
 	IMGUI::getSingleton().resetSelection();
 }
 
 void LocalGameState::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
-	
+
 	IMGUI& imgui = IMGUI::getSingleton();
 	if (mSaveReplay)
 	{
@@ -131,7 +126,7 @@ void LocalGameState::step()
 		{
 			if (mFilename != "")
 			{
-				mRecorder->save(std::string("replays/") + mFilename + std::string(".xml"));
+				mRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
 			}
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -163,8 +158,13 @@ void LocalGameState::step()
 	}
 	else if (mWinner)
 	{
+		UserConfig gameConfig;
+		gameConfig.loadFile("config.xml");
 		std::stringstream tmp;
-		tmp << "player " << mMatch->winningPlayer() + 1;
+		if(mMatch->winningPlayer() == LEFT_PLAYER)
+			tmp << gameConfig.getString("left_player_name");
+		else
+			tmp << gameConfig.getString("right_player_name");
 		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
@@ -174,12 +174,12 @@ void LocalGameState::step()
 			delete mCurrentState;
 			mCurrentState = new MainMenuState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), "try again"))
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), "Try Again"))
 		{
 			delete mCurrentState;
 			mCurrentState = new LocalGameState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(320, 390), "save replay"))
+		if (imgui.doButton(GEN_ID, Vector2(320, 390), "Save Replay"))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
@@ -208,20 +208,21 @@ void LocalGameState::step()
 	}
 	else
 	{
+		mRecorder->record(mMatch->getPlayersInput());
 		mMatch->step();
-	float time = float(SDL_GetTicks()) / 1000.0;
-	if (mLeftOscillate)
-		rmanager->setBlobColor(0, Color(
-			int((sin(time*2) + 1.0) * 128),
-			int((sin(time*4) + 1.0) * 128),
-			int((sin(time*3) + 1.0) * 128)));
-	if (mRightOscillate)
-		rmanager->setBlobColor(1, Color(
-			int((cos(time*2) + 1.0) * 128),
-			int((cos(time*4) + 1.0) * 128),
-			int((cos(time*3) + 1.0) * 128)));
-		if (mMatch->winningPlayer() != NO_PLAYER)
-			mWinner = true;
+		float time = float(SDL_GetTicks()) / 1000.0;
+		if (mLeftOscillate)
+			rmanager->setBlobColor(0, Color(
+				int((sin(time*2) + 1.0) * 128),
+				int((sin(time*4) + 1.0) * 128),
+				int((sin(time*3) + 1.0) * 128)));
+		if (mRightOscillate)
+			rmanager->setBlobColor(1, Color(
+				int((cos(time*2) + 1.0) * 128),
+				int((cos(time*4) + 1.0) * 128),
+				int((cos(time*3) + 1.0) * 128)));
+			if (mMatch->winningPlayer() != NO_PLAYER)
+				mWinner = true;
 	}
 }
 
@@ -239,7 +240,7 @@ void MainMenuState::step()
 {
 	RenderManager::getSingleton().drawGame(false);
 	IMGUI& imgui = IMGUI::getSingleton();
-	
+
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -265,7 +266,7 @@ void MainMenuState::step()
 			mCurrentState = new MainMenuState();
 		}
 	}
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), "options"))
 	{
 		delete mCurrentState;
@@ -284,7 +285,7 @@ void MainMenuState::step()
 		mCurrentState = new CreditsState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), "exit")) 
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), "exit"))
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
@@ -307,7 +308,7 @@ void CreditsState::step()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), "programmers:");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Jonathan Sieber");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(jonathan_sieber(at)yahoo.de)");	
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(jonathan_sieber(at)yahoo.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Daniel Knobe");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+125), "(daniel-knobe(at)web.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+160), "Sven Rech");
@@ -315,7 +316,7 @@ void CreditsState::step()
 
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+230), "graphics:");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+260), "Silvio Mummert");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+290), "(mummertathome(at)t-online.de)");	
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+290), "(mummertathome(at)t-online.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+325), "Richard Bertrand");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+355), "(ricbertrand(at)hotmail.com)");
 
@@ -325,7 +326,7 @@ void CreditsState::step()
 
 	if (mYPosition > 20)
 		mYPosition -= 2.5;
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), "back to mainmenu"))
 	{
 		delete this;
@@ -345,7 +346,7 @@ ReplayMenuState::ReplayMenuState()
 	for (int i = 0; filenames[i] != 0; ++i)
 	{
 		std::string tmp(filenames[i]);
-		if (tmp.find(".xml") != std::string::npos)
+		if (tmp.find(".bvr") != std::string::npos)
 		{
 			mReplayFiles.push_back(std::string(tmp.begin(), tmp.end()-4));
 		}
@@ -353,12 +354,12 @@ ReplayMenuState::ReplayMenuState()
 	if (mReplayFiles.size() == 0)
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
-	
+
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 	mLeftOscillate = gameConfig.getBool("left_blobby_oscillate");
 	mRightOscillate = gameConfig.getBool("right_blobby_oscillate");
-	RenderManager::getSingleton().setBlobColor(LEFT_PLAYER, 
+	RenderManager::getSingleton().setBlobColor(LEFT_PLAYER,
 		Color(gameConfig.getInteger("r1"),
 		gameConfig.getInteger("g1"),
 		gameConfig.getInteger("b1")));
@@ -371,16 +372,12 @@ ReplayMenuState::ReplayMenuState()
 void ReplayMenuState::loadCurrentReplay()
 {
 	mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
-	mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml"));
-	InputSource* linput = mReplayRecorder->
-			createReplayInputSource(LEFT_PLAYER,
-			new DummyInputSource);
-	 InputSource* rinput = mReplayRecorder->
-			createReplayInputSource(RIGHT_PLAYER,
-			new DummyInputSource);
+	mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
 	mReplaying = true;
-	mReplayMatch = new DuelMatch(linput, rinput,
-					true, true);
+	mReplayMatch = new DuelMatch(0, 0, true, true);
+	mReplayMatch->setServingPlayer(mReplayRecorder->getServingPlayer());
+	RenderManager::getSingleton().setPlayernames(
+		mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
 	SoundManager::getSingleton().playSound(
 			"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 }
@@ -391,8 +388,12 @@ void ReplayMenuState::step()
 	if (mReplaying)
 	{
 		RenderManager* rmanager = &RenderManager::getSingleton();
-		
-		mReplayMatch->step();
+
+		if(mReplayRecorder->getPacketType()==ID_INPUT)
+		{
+			mReplayMatch->setPlayersInput(mReplayRecorder->getInput());
+			mReplayMatch->step();
+		}
 		float time = float(SDL_GetTicks()) / 1000.0;
 		if (mLeftOscillate)
 		{
@@ -408,27 +409,30 @@ void ReplayMenuState::step()
 				int((cos(time*4) + 1.0) * 128),
 				int((cos(time*3) + 1.0) * 128)));
 		}
-		
+
 		PlayerSide side = mReplayMatch->winningPlayer();
 		if (side != NO_PLAYER)
 		{
 			std::stringstream tmp;
-			tmp << "Spieler " << side+1;
+			if(side == LEFT_PLAYER)
+				tmp << mReplayMatch->getPlayerName();
+			else
+				tmp << mReplayMatch->getOpponentName();
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-			imgui.doText(GEN_ID, Vector2(274, 300), "hat gewonnen!");
-			if (imgui.doButton(GEN_ID, Vector2(290, 350), "OK"))
+			imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
+			if (imgui.doButton(GEN_ID, Vector2(290, 350), "ok"))
 			{
 				mReplaying = false;
 				delete mReplayMatch;
-				delete mReplayRecorder; 
+				delete mReplayRecorder;
 				imgui.resetSelection();
 			}
-			if (imgui.doButton(GEN_ID, Vector2(400, 350), "NOCHMAL"))
+			if (imgui.doButton(GEN_ID, Vector2(400, 350), "show again"))
 			{
 				delete mReplayMatch;
-				delete mReplayRecorder; 
+				delete mReplayRecorder;
 				loadCurrentReplay();
 				imgui.resetSelection();
 			}
@@ -438,7 +442,7 @@ void ReplayMenuState::step()
 		{
 			mReplaying = false;
 			delete mReplayMatch;
-			delete mReplayRecorder; 
+			delete mReplayRecorder;
 			imgui.resetSelection();
 		}
 	}
@@ -448,7 +452,7 @@ void ReplayMenuState::step()
 		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") && 
+		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") &&
 					mSelectedReplay != -1)
 		{
 			loadCurrentReplay();
@@ -459,12 +463,12 @@ void ReplayMenuState::step()
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
-		else 
+		else
 			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
 		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete"))
 		{
 			if (!mReplayFiles.empty())
-			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".xml").c_str()))
+			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr").c_str()))
 			{
 				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 				if (mSelectedReplay >= mReplayFiles.size())

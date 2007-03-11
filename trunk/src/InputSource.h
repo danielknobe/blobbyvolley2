@@ -41,6 +41,13 @@ struct PlayerInput
 		up = u;
 	}
 	
+	void set(bool l, bool r, bool u)
+	{
+		left = l;
+		right = r;
+		up = u;
+	}
+	
 	void swap()
 	{
 		bool tmp = left;

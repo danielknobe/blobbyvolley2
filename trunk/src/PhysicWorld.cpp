@@ -36,7 +36,7 @@ const float BLOBBY_LOWER_RADIUS = 33;
 const float NET_POSITION_X = 400;
 const float NET_POSITION_Y = 438;
 const float NET_RADIUS = 7;
-const float NET_SPHERE = 154; 
+const float NET_SPHERE = 154;
 
 // Ball Settings
 const float BALL_RADIUS = 31.5;
@@ -45,7 +45,7 @@ const float GROUND_PLANE_HEIGHT_MAX = 500;
 const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
 
 // Boarder Settings
-const float LEFT_PLANE = 0; 
+const float LEFT_PLANE = 0;
 const float RIGHT_PLANE = 800.0;
 // These numbers should include the blobbys width, but in the original game
 // the blobbys can go a bit into the walls too.
@@ -96,7 +96,7 @@ void PhysicWorld::reset(int player)
 		mBallPosition = Vector2(200, STANDARD_BALL_HEIGHT);
 	else if (player == 1)
 		mBallPosition = Vector2(600, STANDARD_BALL_HEIGHT);
-	else 
+	else
 		mBallPosition = Vector2(400, 450);
 
 	mBallVelocity.clear();
@@ -108,7 +108,7 @@ void PhysicWorld::reset(int player)
 
 	mIsGameRunning = false;
 	mIsBallValid = true;
-	
+
 	mLastHitIntensity = 0.0;
 }
 
@@ -123,7 +123,7 @@ void PhysicWorld::resetPlayer()
 bool PhysicWorld::ballHitRightGround()
 {
 	if (mIsBallValid)
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
 			mBallPosition.x > NET_POSITION_X)
 			return true;
 	return false;
@@ -132,7 +132,7 @@ bool PhysicWorld::ballHitRightGround()
 bool PhysicWorld::ballHitLeftGround()
 {
 	if (mIsBallValid)
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT && 
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
 			mBallPosition.x < NET_POSITION_X)
 			return true;
 	return false;
@@ -263,7 +263,7 @@ void PhysicWorld::blobbyAnimationStep(PlayerSide player)
 	}
 
 	mBlobState[player] += mCurrentBlobbyAnimationSpeed[player];
-	
+
 	if (mBlobState[player] >= 5)
 	{
 		mBlobState[player] = 4.99;
@@ -291,9 +291,9 @@ void PhysicWorld::step()
 		}
 		if (mPlayerInput[i].up)
 			mBlobVelocity[i].y -= BLOBBY_JUMP_BUFFER;
-	
+
 		mBlobVelocity[i].x = 0.0;
-		
+
 		if (mPlayerInput[i].left)
 		{
 			if(blobbyHitGround(PlayerSide(i)))
@@ -325,7 +325,6 @@ void PhysicWorld::step()
 				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
 				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByLeftBlob=true;
-
 			}
 
 			else if(playerBottomBallCollision(RIGHT_PLAYER))
@@ -336,7 +335,7 @@ void PhysicWorld::step()
 				mBallPosition += mBallVelocity.scale(BALL_COLLISION_CORRECTION);
 				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByRightBlob=true;
-			}	
+			}
 			else if(playerTopBallCollision(LEFT_PLAYER))
 			{
 				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[RIGHT_PLAYER]).length();
@@ -356,7 +355,7 @@ void PhysicWorld::step()
 				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 				mBallHitByRightBlob=true;
 			}
-		
+
 
 		}
 		// Ball to ground Collision
@@ -390,7 +389,7 @@ void PhysicWorld::step()
 			&& mBallPosition.y >= NET_POSITION_Y-NET_SPHERE)
 				mBallVelocity = mBallVelocity.reflectX();
 
-		// Right Net Border  
+		// Right Net Border
 		else if(
 		//Vector2(mBallPosition,Vector2(NET_POSITION_X,mBallPosition.y)).length()
 		mBallPosition.x - NET_POSITION_X <= NET_RADIUS + BALL_RADIUS // sync for the "netball" and the border of the net
@@ -428,10 +427,10 @@ void PhysicWorld::step()
 		// Collision between blobby and the border
 		if (mBlobPosition[RIGHT_PLAYER].x > RIGHT_PLANE)
 			mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
-			
+
 
 		// Acceleration Integration
-	
+
 		mBlobVelocity[LEFT_PLAYER].y += GRAVITATION/TIMESTEP;
 		mBlobVelocity[RIGHT_PLAYER].y += GRAVITATION/TIMESTEP;
 
@@ -444,7 +443,7 @@ void PhysicWorld::step()
 		mBallPosition += mBallVelocity/TIMESTEP;
 
 
-	
+
 		if (mBlobPosition[LEFT_PLAYER].y > GROUND_PLANE_HEIGHT)
 		{
 			if(mBlobVelocity[LEFT_PLAYER].y>0.7)
@@ -461,7 +460,7 @@ void PhysicWorld::step()
 			mBlobPosition[RIGHT_PLAYER].y = GROUND_PLANE_HEIGHT;
 			mBlobVelocity[RIGHT_PLAYER].y = 0.0;
 		}
-	
+
 	} // Ende der Schleife
 
 	// Velocity Integration
@@ -482,7 +481,7 @@ void PhysicWorld::step()
 	blobbyAnimationStep(LEFT_PLAYER);
 	blobbyAnimationStep(RIGHT_PLAYER);
 
-	mTimeSinceBallout = mIsBallValid ? 0.0 : 
+	mTimeSinceBallout = mIsBallValid ? 0.0 :
 		mTimeSinceBallout + 1.0 / 60;
 }
 
@@ -588,10 +587,18 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
 	stream->Write(-mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
 
-	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
 	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
+	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
 	stream->Write(mPlayerInput[RIGHT_PLAYER].up);
-	stream->Write(mPlayerInput[LEFT_PLAYER].left);
 	stream->Write(mPlayerInput[LEFT_PLAYER].right);
+	stream->Write(mPlayerInput[LEFT_PLAYER].left);
 	stream->Write(mPlayerInput[LEFT_PLAYER].up);
+}
+
+PlayerInput* PhysicWorld::getPlayersInput()
+{
+	PlayerInput *input = new PlayerInput[2];
+	input[LEFT_PLAYER] = mPlayerInput[LEFT_PLAYER];
+	input[RIGHT_PLAYER] = mPlayerInput[RIGHT_PLAYER];
+	return input;
 }

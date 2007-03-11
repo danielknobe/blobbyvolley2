@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+#include <iostream>
 #include "SpeedController.h"
 
 #include <SDL/SDL.h>
@@ -30,6 +31,7 @@ SpeedController::SpeedController(float gameFPS)
 	mDrawFPS = true;
 	mFPSCounter = 0;
 	mOldTicks = SDL_GetTicks();
+	mFPS = 0;
 }
 
 SpeedController::~SpeedController()
@@ -77,8 +79,8 @@ void SpeedController::update()
 		int wait = ((counter+1)*rateTicks) - delta;
 		if (wait > 0)
 			SDL_Delay(wait);
-	}	
-	else 
+	}
+	else
 	{
 		if ((lastDrawnFrame+(1000/5)) > SDL_GetTicks()) //should guaranty that at least 5 frames will be drawn per second
 		{

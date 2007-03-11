@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
+
+#if defined(WIN32)
+#include <windows.h>
+#endif
+
 #if __MACOSX__
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>

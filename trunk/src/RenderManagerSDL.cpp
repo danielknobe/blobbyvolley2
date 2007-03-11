@@ -44,9 +44,9 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		int rg = (int(pixel->g) * int(color.g)) >> 8;
 		int rb = (int(pixel->b) * int(color.b)) >> 8;
 		int fak = int(pixel->r) * 5 - 4 * 256 - 138;
-		
+
 		bool colorkey = !(pixel->r | pixel->g | pixel->b);
-		
+
 		if (fak > 0)
 		{
 			rr += fak;
@@ -56,7 +56,7 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		rr = rr < 255 ? rr : 255;
 		rg = rg < 255 ? rg : 255;
 		rb = rb < 255 ? rb : 255;
-		
+
 		// This is clamped to 1 because dark colors would be
 		// colorkeyed otherwise
 		if (colorkey)
@@ -107,8 +107,8 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		mScreen->format->Bmask, mScreen->format->Amask);
 	SDL_Rect screenRect = {0, 0, xResolution, yResolution};
 	SDL_FillRect(mOverlaySurface, &screenRect, SDL_MapRGB(mScreen->format, 0, 0, 0));
-	
-	
+
+
 	SDL_Surface* tempBackground = loadSurface("backgrounds/strand2.bmp");
 	mBackground = SDL_DisplayFormat(tempBackground);
 	BufferedImage* bgImage = new BufferedImage;
@@ -117,21 +117,21 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	bgImage->sdlImage = mBackground;
 	mImageMap["background"] = bgImage;
 	SDL_FreeSurface(tempBackground);
-	
+
 	for (int i = 1; i <= 16; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/ball%02d.bmp", i);
 		SDL_Surface* ballImage = loadSurface(filename);
-		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY, 
+		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY,
 			SDL_MapRGB(ballImage->format, 0, 0, 0));
 		SDL_Surface *convertedBallImage = SDL_DisplayFormat(ballImage);
 		SDL_FreeSurface(ballImage);
 		mBall.push_back(convertedBallImage);
 	}
-	
+
 	SDL_Surface *tempBallShadow = loadSurface("gfx/schball.bmp");
-	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY, 
+	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempBallShadow->format, 0, 0, 0));
 	SDL_SetAlpha(tempBallShadow, SDL_SRCALPHA, 127);
 	mBallShadow = SDL_DisplayFormat(tempBallShadow);
@@ -145,10 +145,10 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		mStandardBlob.push_back(blobImage);
 		mLeftBlob.push_back(colorSurface(blobImage, Color(255, 0, 0)));
 		mRightBlob.push_back(colorSurface(blobImage, Color(0, 255, 0)));
-		
+
 		sprintf(filename, "gfx/sch1%d.bmp", i);
 		SDL_Surface* blobShadow = loadSurface(filename);
-		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY, 
+		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY,
 			SDL_MapRGB(blobShadow->format, 0, 0, 0));
 		SDL_SetAlpha(blobShadow, SDL_SRCALPHA, 127);
 		mStandardBlobShadow.push_back(blobShadow);
@@ -156,7 +156,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 			colorSurface(blobShadow, Color(255, 0, 0)));
 		mRightBlobShadow.push_back(
 			colorSurface(blobShadow, Color(0, 255, 0)));
-			
+
 	}
 
 	for (int i = 0; i <= 53; ++i)
@@ -164,7 +164,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		char filename[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
 		SDL_Surface *tempFont = loadSurface(filename);
-		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY, 
+		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
 		SDL_Surface *newFont = SDL_DisplayFormat(tempFont);
 		SDL_FreeSurface(tempFont);
@@ -207,10 +207,10 @@ void RenderManagerSDL::draw()
 		SDL_BlitSurface(mBackground, 0, mScreen, 0);
 		mNeedRedraw = false;
 	}
-	
+
 	int animationState;
 	SDL_Rect position;
-	
+
 	// Ball marker
 	Uint8 markerColor = SDL_GetTicks() % 1000 >= 500 ? 255 : 0;
 	position.y = 5;
@@ -219,20 +219,20 @@ void RenderManagerSDL::draw()
 	position.h = 5;
 	SDL_FillRect(mScreen, &position, SDL_MapRGB(mScreen->format,
 			markerColor, markerColor, markerColor));
-	
+
 	// Mouse marker
-	
+
 	position.y = 590;
 	position.x = lround(mMouseMarkerPosition - 2.5);
 	position.w = 5;
 	position.h = 5;
 	SDL_FillRect(mScreen, &position, SDL_MapRGB(mScreen->format,
 		     markerColor, markerColor, markerColor));
-	
+
 	// Ball Shadow
 	position = ballShadowRect(ballShadowPosition(mBallPosition));
 	SDL_BlitSurface(mBallShadow, 0, mScreen, &position);
-		
+
 	// Left blob shadow
 	position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
 	animationState = int(mLeftBlobAnimationState)  % 5;
@@ -253,21 +253,21 @@ void RenderManagerSDL::draw()
 	rodPosition.w = 14;
 	rodPosition.h = 300;
 	SDL_BlitSurface(mBackground, &rodPosition, mScreen, &position);
-	
+
 	// Drawing the Ball
 	position = ballRect(mBallPosition);
 	animationState = int(mBallRotation / M_PI / 2 * 16) % 16;
 	SDL_BlitSurface(mBall[animationState], 0, mScreen, &position);
 
 	// Drawing left blob
-	
+
 	position = blobRect(mLeftBlobPosition);
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
-	
+
 	// Drawing right blob
 
-	position = blobRect(mRightBlobPosition);	
+	position = blobRect(mRightBlobPosition);
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);
 
@@ -277,13 +277,13 @@ void RenderManagerSDL::draw()
 			mLeftPlayerScore);
 	drawText(textBuffer, Vector2(24, 24), false);
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
-			mRightPlayerScore);	
+			mRightPlayerScore);
 	drawText(textBuffer, Vector2(800 - 96, 24), false);
 
 	// Drawing the names
 	drawText(mLeftPlayerName, Vector2(12, 550), false);
 
-	drawText(mRightPlayerName, Vector2(412+7, 550), false);
+	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)
@@ -335,12 +335,12 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 
 	for (int i = 0; i < 5; ++i)
 	{
-		SDL_Surface *tempBlob = 
+		SDL_Surface *tempBlob =
 			colorSurface(mStandardBlob[i], color);
 		handledBlob->push_back(
 			SDL_DisplayFormat(tempBlob));
 		SDL_FreeSurface(tempBlob);
-		
+
 		SDL_Surface *tempShadow = colorSurface(
 				mStandardBlobShadow[i], color);
 		handledBlobShadow->push_back(
@@ -376,8 +376,8 @@ void RenderManagerSDL::setMouseMarker(float position)
 	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
 	mMouseMarkerPosition = position;
 }
-        
-void RenderManagerSDL::setBlob(int player, 
+
+void RenderManagerSDL::setBlob(int player,
 		const Vector2& position, float animationState)
 {
 	SDL_Rect blobRestore;
@@ -414,8 +414,8 @@ void RenderManagerSDL::setScore(int leftScore, int rightScore,
 	};
 	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
 	restore.x = 800 - 96;
-	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);	
-	
+	SDL_BlitSurface(mBackground, &restore, mScreen, &restore);
+
 	mLeftPlayerScore = leftScore;
 	mRightPlayerScore = rightScore;
 	mLeftPlayerWarning = leftWarning;
@@ -455,18 +455,18 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 	{
 		imageBuffer = new BufferedImage;
 		imageBuffer->sdlImage = loadSurface(filename);
-		SDL_SetColorKey(imageBuffer->sdlImage, SDL_SRCCOLORKEY, 
+		SDL_SetColorKey(imageBuffer->sdlImage, SDL_SRCCOLORKEY,
 			SDL_MapRGB(mScreen->format, 0, 0, 0));
 		mImageMap[filename] = imageBuffer;
 	}
-	
+
 	SDL_Rect blitRect = {
 		lround(position.x - float(imageBuffer->sdlImage->w) / 2.0),
 		lround(position.y - float(imageBuffer->sdlImage->h) / 2.0),
 		lround(position.x + float(imageBuffer->sdlImage->w) / 2.0),
 		lround(position.y + float(imageBuffer->sdlImage->h) / 2.0),
 	};
-	
+
 	SDL_BlitSurface(imageBuffer->sdlImage, 0, mScreen, &blitRect);
 }
 
@@ -479,7 +479,7 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Co
 	ovRect.w = lround(pos2.x - pos1.x);
 	ovRect.h = lround(pos2.y - pos1.y);
 	SDL_SetAlpha(mOverlaySurface, SDL_SRCALPHA, lround(opacity * 255));
-	
+
 	SDL_FillRect(mOverlaySurface, NULL, SDL_MapRGB(mScreen->format, col.r, col.g, col.b));
 
 	SDL_SetClipRect(mScreen, &ovRect);

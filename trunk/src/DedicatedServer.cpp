@@ -17,11 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+#include <stdlib.h>
 #include <physfs.h>
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
+#include "raknet/StringCompressor.h"
 
 #include "SpeedController.h"
 #include "DedicatedServer.h"
@@ -39,6 +41,11 @@ int main(int argc, char** argv)
 {
 	PHYSFS_init(argv[0]);
 	PHYSFS_addToSearchPath("data", 1);
+	std::string userdir = PHYSFS_getUserDir();
+	std::string userAppend = ".blobby";
+	std::string homedir = userdir + userAppend;
+	PHYSFS_addToSearchPath(userdir.c_str(), 0);
+	PHYSFS_setWriteDir(userdir.c_str());
 
 	GameList gamelist;
 	PlayerMap playermap;
@@ -56,7 +63,7 @@ int main(int argc, char** argv)
 	int clients = 0;
 
 	ServerInfo myinfo(config);
-	
+
 	if (!server.Start(200, 0, 0, port))
 	{
 		std::cerr << "blobby-server: Couldn't bind to port " << port;
@@ -100,26 +107,37 @@ int main(int argc, char** argv)
 				case ID_ENTER_GAME:
 				{
 					int ival;
-					RakNet::BitStream stream((char*)packet->data, 
+					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
 					stream.Read(ival);
 					stream.Read(ival);
+					char* charName = new char[16];
+					StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+					std::string playerName(charName);
 					PlayerSide newSide = (PlayerSide)ival;
-
 					if (firstPlayerSide == NO_PLAYER)
 					{
 						firstPlayer = packet->playerId;
 						firstPlayerSide = newSide;
+						firstPlayerName = playerName;
 					}
 					else // We have two players now
 					{
-						PlayerID leftPlayer = 
+						PlayerID leftPlayer =
 							LEFT_PLAYER == firstPlayerSide ?
 							firstPlayer : packet->playerId;
 						PlayerID rightPlayer =
 							RIGHT_PLAYER == firstPlayerSide ?
 							firstPlayer : packet->playerId;
 						PlayerSide switchSide = NO_PLAYER;
+
+						std::string leftPlayerName =
+							LEFT_PLAYER == firstPlayerSide ?
+							firstPlayerName : playerName;
+						std::string rightPlayerName =
+							RIGHT_PLAYER == firstPlayerSide ?
+							firstPlayerName : playerName;
+
 						if (newSide == firstPlayerSide)
 						{
 							if (newSide == LEFT_PLAYER)
@@ -129,11 +147,12 @@ int main(int argc, char** argv)
 						}
 						NetworkGame* newgame = new NetworkGame(
 							server, leftPlayer, rightPlayer,
+							leftPlayerName, rightPlayerName,
 							switchSide);
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
 						gamelist.push_back(newgame);
-						
+
 						firstPlayerSide = NO_PLAYER;
 					}
 					break;
@@ -142,7 +161,7 @@ int main(int argc, char** argv)
 					break;
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
-					RakNet::BitStream stream((char*)packet->data, 
+					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
 
 					int ival;
@@ -178,7 +197,8 @@ int main(int argc, char** argv)
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0,
 							packet->playerId, false);
-						*/						
+						*/
+
 					}
 
 					if (major < BLOBBY_VERSION_MAJOR
@@ -187,7 +207,7 @@ int main(int argc, char** argv)
 					{
 						stream.Reset();
 						stream.Write(ID_OLD_CLIENT);
-						server.Send(&stream, HIGH_PRIORITY, 
+						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
 					}
@@ -197,7 +217,7 @@ int main(int argc, char** argv)
 						printf("major: %d minor: %d\n", major, minor);
 						stream.Reset();
 						stream.Write(ID_UNKNOWN_CLIENT);
-						server.Send(&stream, HIGH_PRIORITY, 
+						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
 					}
@@ -211,7 +231,6 @@ int main(int argc, char** argv)
 						}
 						else
 						{
-							// TODO: Insert waiting players name here
 							strncpy(myinfo.waitingplayer, firstPlayerName.c_str(),
 								sizeof(myinfo.waitingplayer) - 1);
 						}

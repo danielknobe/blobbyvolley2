@@ -25,127 +25,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL/SDL.h>
 
 
-std::string& operator<< (std::string& out, const std::string& string)
+unsigned long incremental_crc32(unsigned long crc, std::vector<char> vec)
 {
-	out.append(string);
-	return out;
+	crc ^= 0xFFFFFFFF;
+	for (int i=0; i < vec.size(); i++)
+		crc = crctable[(crc ^ vec[i]) & 0xFFL] ^ (crc >> 8);
+	return crc ^ 0xFFFFFFFF;
 }
 
-
-TwoPlayerInput::TwoPlayerInput(PlayerInput linput, PlayerInput rinput)
+unsigned long incremental_crc32(unsigned long crc, const char* buf, int size = 1)
 {
-	input[0] = linput;
-	input[1] = rinput;
-}
-std::string TwoPlayerInput::getXMLString()
-{
-	std::string buffer = "";
-	buffer << "<chunk ";
-	buffer << "lplayer=\"";
-	buffer << input[0];
-	buffer << "\" ";
-	buffer << "rplayer=\"";
-	buffer << input[1];
-	buffer << "\" />\n";
-	return buffer;
-}
-
-void TwoPlayerInput::parseXMLValues(const std::string& lvalue,
-				const std::string& rvalue)
-{
-	input[0] = PlayerInput(lvalue);
-	input[1] = PlayerInput(rvalue);
+	crc ^= 0xFFFFFFFF;
+	for (int i=0; i < size; i++, buf++)
+		crc = crctable[(crc ^ *buf) & 0xFFL] ^ (crc >> 8);
+	return crc ^ 0xFFFFFFFF;
 }
 
 ReplayRecorder::ReplayRecorder(GameMode mode)
 {
 	mRecordMode = mode;
-	mReachedEOF = true;
-}
-
-InputSource* ReplayRecorder::createReplayInputSource(
-			PlayerSide side, InputSource* source)
-{
-	ReplayInputSource *newSource = new ReplayInputSource;
-	newSource->mRecorder = this;
-	newSource->mSide = side;
-	newSource->mRealSource = source;
-	return newSource;
-}
-
-void ReplayRecorder::pushInput(PlayerInput input, PlayerSide side)
-{
-	if (mInputStoredInBuffer == NO_PLAYER)
-	{
-		mInputStoredInBuffer = side;
-		mInputBuffer = input;
-	}
-	else
-	{
-		if (mInputStoredInBuffer == side)
-		{
-			std::cerr << "Warning: Recorder only filled from "
-				<< "one source! Skipping input." << std::endl;
-			return;
-		}
-		if (mInputStoredInBuffer == LEFT_PLAYER)
-		{
-			TwoPlayerInput chunk(mInputBuffer, input);
-			mRecordData.push_back(chunk);
-		}
-		if (mInputStoredInBuffer == RIGHT_PLAYER)
-		{
-			TwoPlayerInput chunk(input, mInputBuffer);
-			mRecordData.push_back(chunk);
-		}
-		mInputStoredInBuffer = NO_PLAYER;
-	}
-}
-
-
-bool ReplayRecorder::doPushInput()
-{
-	if (mRecordMode == MODE_RECORDING_DUEL)
-		return true;
-	else
-		return false;
-}
-
-bool ReplayRecorder::doGetInput()
-{
-	if (mRecordMode == MODE_REPLAY_DUEL)
-		return true;
-	else
-		return false;
-}
-
-PlayerInput ReplayRecorder::getInput(PlayerSide side)
-{
-	if (mReachedEOF)
-		return PlayerInput(false, false, false);
-	PlayerInput input = mInputCounter[side]->input[side];
-	++mInputCounter[side];
-	if (mInputCounter[side] == mRecordData.end())
-		mReachedEOF = true;
-	return input;
 }
 
 bool ReplayRecorder::endOfFile()
 {
 	if (mRecordMode == MODE_REPLAY_DUEL)
-		return mReachedEOF;
+		return (mBufferPtr >= mReplayData + mBufferSize);
 	else
 		return false;
 }
 
 void ReplayRecorder::save(const std::string& filename)
 {
-	const char xmlHeader[] =
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n"
-		"<replayrecord>\n";
-	const char xmlFooter[] = "</replayrecord>\n\n";
-	const char xmlIndent[] = "\t";
-	
 	PHYSFS_file* fileHandle = PHYSFS_openWrite(filename.c_str());
 	if (!fileHandle)
 	{
@@ -154,19 +64,48 @@ void ReplayRecorder::save(const std::string& filename)
 		std::cerr << std::endl;
 		return;
 	}
-	
-	PHYSFS_write(fileHandle, xmlHeader, 1, sizeof(xmlHeader) - 1);
-	for (InputListIterator iter = mRecordData.begin();
-			iter != mRecordData.end(); ++iter)
-	{
-		std::string tag = iter->getXMLString();
-		PHYSFS_write (fileHandle, xmlIndent, 1, sizeof(xmlIndent) - 1);
-		PHYSFS_write (fileHandle, tag.c_str(), 1, tag.length());
-	}
-	PHYSFS_write(fileHandle, xmlFooter, 1, sizeof(xmlFooter) - 1);
+
+	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
+
+	unsigned long checksum = 0;
+	checksum = incremental_crc32(checksum, (char*)&mServingPlayer, sizeof(mServingPlayer));
+	checksum = incremental_crc32(checksum, mPlayerNames[LEFT_PLAYER].c_str(), mPlayerNames[LEFT_PLAYER].size()+1);
+	checksum = incremental_crc32(checksum, mPlayerNames[RIGHT_PLAYER].c_str(), mPlayerNames[RIGHT_PLAYER].size()+1);
+	checksum = incremental_crc32(checksum, mSaveData);
+
+	PHYSFS_write(fileHandle, &checksum, 1, sizeof(checksum));
+
+	PHYSFS_write(fileHandle, &mServingPlayer, 1, sizeof(mServingPlayer));
+	PHYSFS_write(fileHandle, mPlayerNames[LEFT_PLAYER].c_str(), 1, mPlayerNames[LEFT_PLAYER].size()+1);
+	PHYSFS_write(fileHandle, mPlayerNames[RIGHT_PLAYER].c_str(), 1, mPlayerNames[RIGHT_PLAYER].size()+1);
+	for (int i=0; i<mSaveData.size(); i++)
+		PHYSFS_write(fileHandle, &mSaveData[i], 1, sizeof(char));
+
 	PHYSFS_close(fileHandle);
 }
 
+std::string ReplayRecorder::readString()
+{
+	std::string str;
+	while (*mBufferPtr != '\0')
+	{
+		str.append(1, *mBufferPtr++);
+	}
+	mBufferPtr++;
+	return str;
+}
+
+int ReplayRecorder::readInt()
+{
+	int* temp = ((int*)mBufferPtr);
+	mBufferPtr += sizeof(int);
+	return *temp;
+}
+
+char ReplayRecorder::readChar()
+{
+	return *mBufferPtr++;
+}
 
 void ReplayRecorder::load(const std::string& filename)
 {
@@ -174,40 +113,95 @@ void ReplayRecorder::load(const std::string& filename)
 	if (!fileHandle)
 		return;
 	int fileLength = PHYSFS_fileLength(fileHandle);
-	char* fileBuffer = new char[fileLength];
-	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
-	TiXmlDocument recordDoc;
-	recordDoc.Parse(fileBuffer);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
-	if (recordDoc.Error())
+	if (fileLength < 8)
 	{
-		std::cout << "Warning: Parse error in replay " <<
-			filename << " !" << std::endl;
-	}
-	
-	TiXmlElement* recordConfigElem =
-		recordDoc.FirstChildElement("replayrecord");
-	if (!recordConfigElem)
+		std::cout << "Error: Invalid replay file: " <<
+			filename << std::endl;
 		return;
-		
-	for (TiXmlElement* chunkElem =
-		recordConfigElem->FirstChildElement("chunk");
-		chunkElem != NULL;
-		chunkElem = chunkElem->NextSiblingElement("chunk"))
-	{
-		TwoPlayerInput chunk;
-		std::string lattr = chunkElem->Attribute("lplayer");
-		std::string rattr = chunkElem->Attribute("rplayer");
-		if (lattr == "" && rattr == "")
-			continue;
-		chunk.parseXMLValues(lattr, rattr);
-		mRecordData.push_back(chunk);
 	}
-	if (!mRecordData.empty())
-		mReachedEOF = false;
+	char header[4];
+	PHYSFS_read(fileHandle, header, 4, 1);
+	if (memcmp(&header, &validHeader, 4) != 0)
+	{
+		std::cout << "Error: Invalid replay file: " <<
+			filename << std::endl;
+		return;
+	}
+	unsigned long checksum;
+	unsigned long realChecksum = 0;
+	PHYSFS_read(fileHandle, &checksum, 1, 4);
+	mBufferSize = fileLength-8;
+	mReplayData = new char[mBufferSize];
+	if (mReplayData == NULL)
+	{
+		std::cout << "Error: Cannot load file to memory: " <<
+			filename << std::endl;
+		return;
+	}
+	PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
+	PHYSFS_close(fileHandle);
+	realChecksum = incremental_crc32(realChecksum, mReplayData, mBufferSize);
+	if (realChecksum != checksum)
+	{
+		std::cout << "Error: Corrupted replay file: " <<
+			filename << "\nreal crc: " << realChecksum <<
+			" crc in file: " << checksum << std::endl;
+		return;
+	}
 
-	mInputStoredInBuffer = NO_PLAYER;
-	mInputCounter[LEFT_PLAYER] = mRecordData.begin();
-	mInputCounter[RIGHT_PLAYER] = mRecordData.begin();
+	mBufferPtr = mReplayData;	//prepare access pointer to mReplayData buffer
+
+	mServingPlayer = (PlayerSide)readInt();
+	mPlayerNames[LEFT_PLAYER] = readString();
+	mPlayerNames[RIGHT_PLAYER] = readString();
+}
+
+void ReplayRecorder::record(const PlayerInput* input)
+{
+	unsigned char packet = 0;
+	packet = ID_INPUT; packet <<= 1;
+	packet += (input[LEFT_PLAYER].left & 1); packet <<= 1;
+	packet += (input[LEFT_PLAYER].right & 1); packet <<= 1;
+	packet += (input[LEFT_PLAYER].up & 1); packet <<= 1;
+	packet += (input[RIGHT_PLAYER].left & 1); packet <<= 1;
+	packet += (input[RIGHT_PLAYER].right & 1); packet <<= 1;
+	packet += (input[RIGHT_PLAYER].up & 1);
+	mSaveData.push_back(packet);
+}
+
+void ReplayRecorder::setPlayerNames(const std::string left, const std::string right)
+{
+	mPlayerNames[LEFT_PLAYER] = left;
+	mPlayerNames[RIGHT_PLAYER] = right;
+}
+
+std::string ReplayRecorder::getPlayerName(const PlayerSide side)
+{
+	return mPlayerNames[side];
+}
+
+PacketType ReplayRecorder::getPacketType()
+{
+	if (!endOfFile())
+		return (PacketType)((unsigned char)*mBufferPtr >> 6);
+	return ID_ERROR;
+}
+
+PlayerInput* ReplayRecorder::getInput()
+{
+	PlayerInput* input = new PlayerInput[MAX_PLAYERS];
+	input[LEFT_PLAYER].set((bool)(*mBufferPtr & 32), (bool)(*mBufferPtr & 16), (bool)(*mBufferPtr & 8));
+	input[RIGHT_PLAYER].set((bool)(*mBufferPtr & 4), (bool)(*mBufferPtr & 2), (bool)(*mBufferPtr & 1));
+	mBufferPtr++;
+	return input;
+}
+
+PlayerSide ReplayRecorder::getServingPlayer()
+{
+	return mServingPlayer;
+}
+
+void ReplayRecorder::setServingPlayer(PlayerSide side)
+{
+	mServingPlayer = side;
 }
