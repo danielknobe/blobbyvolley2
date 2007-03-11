@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 
+#include "ReplayRecorder.h"
+
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
@@ -31,6 +33,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "LocalInputSource.h"
 #include "raknet/RakServer.h"
+#include "raknet/StringCompressor.h"
+
 
 NetworkSearchState::NetworkSearchState()
 {
@@ -39,7 +43,7 @@ NetworkSearchState::NetworkSearchState()
 	mServerBoxPosition = 0;
 	mDisplayInfo = false;
 	mEnteringServer = false;
-	
+
 	mPingClient = new RakClient;
 	broadcast();
 }
@@ -56,8 +60,9 @@ NetworkSearchState::~NetworkSearchState()
 	}
 	catch (std::exception)
 	{
+		printf("ERROR!");
 	}
-	
+
 	for (ClientList::iterator iter = mQueryClients.begin();
 		iter != mQueryClients.end(); iter++)
 	{
@@ -66,14 +71,14 @@ NetworkSearchState::~NetworkSearchState()
 			(*iter)->Disconnect(50);
 			delete *iter;
 		}
-	}	
+	}
 	delete mPingClient;
 }
 
 void NetworkSearchState::step()
 {
 	Packet* packet;
-	
+
 	for (ClientList::iterator iter = mQueryClients.begin();
 		iter != mQueryClients.end(); iter++)
 	{
@@ -123,9 +128,9 @@ void NetworkSearchState::step()
 			}
 			if (skip)
 				break;
-		}		
+		}
 	}
-	
+
 	while (packet = mPingClient->Receive())
 	{
 		switch (packet->data[0])
@@ -167,14 +172,14 @@ void NetworkSearchState::step()
 		mEnteredServer = "";
 		mServerBoxPosition = 0;
 	}
-			
+
 	std::vector<std::string> servernames;
 	for (int i = 0; i < mScannedServers.size(); i++)
 	{
 		servernames.push_back(mScannedServers[i].name);
 	}
 
-	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0), 
+	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
 			servernames, mSelectedServer);
 
 	if (imgui.doButton(GEN_ID, Vector2(50, 480), "server info") &&
@@ -215,10 +220,13 @@ void NetworkSearchState::step()
 		std::stringstream activegames;
 		activegames << "active games: " << mScannedServers[mSelectedServer].activegames;
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
+		std::stringstream waitingplayer;
+		waitingplayer << "waiting player: " << mScannedServers[mSelectedServer].waitingplayer;
+		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
 		std::string description = mScannedServers[mSelectedServer].description;
 		for (int i = 0; i < description.length(); i += 29)
 		{
-			imgui.doText(GEN_ID, Vector2(50, 190 + i / 29 * 30),
+			imgui.doText(GEN_ID, Vector2(50, 220 + i / 29 * 30),
 					description.substr(i, 29));
 		}
 
@@ -271,6 +279,10 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	config.loadFile("config.xml");
 	mOwnSide = (PlayerSide)config.getInteger("network_side");
 	mLocalInput = new LocalInputSource(mOwnSide);
+	mSaveReplay = false;
+	std::stringstream temp;
+	temp << time(0);
+	mFilename = temp.str();
 
 	mClient = new RakClient();
 	if (mClient->Connect(servername.c_str(), port, 0, 0, 0))
@@ -279,7 +291,9 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 		mNetworkState = CONNECTION_FAILED;
 
 	mPhysicWorld.resetPlayer();
+	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 	mFakeMatch = new DuelMatch(0, 0, false, true);
+	mFakeMatch->setPlayerName(config.getString(mOwnSide ? "right_player_name" : "left_player_name"));
 	RenderManager::getSingleton().setScore(0, 0, false, false);
 }
 
@@ -288,6 +302,7 @@ NetworkGameState::~NetworkGameState()
 	mClient->Disconnect(50);
 	delete mLocalInput;
 	delete mClient;
+	delete mReplayRecorder;
 	delete mFakeMatch;
 }
 
@@ -295,7 +310,7 @@ void NetworkGameState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	RenderManager* rmanager = &RenderManager::getSingleton();
-	
+
 	Packet* packet;
 	while (packet = mClient->Receive())
 	{
@@ -306,7 +321,9 @@ void NetworkGameState::step()
 				RakNet::BitStream stream;
 				stream.Write(ID_ENTER_GAME);
 				stream.Write(mOwnSide);
+				StringCompressor::Instance()->EncodeString((char*)mFakeMatch->getPlayerName().c_str(), 16, &stream);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
 				break;
 			}
@@ -321,6 +338,7 @@ void NetworkGameState::step()
 				//printf("Physic packet received. Time: %d\n", ival);
 				mPhysicWorld.setState(&stream);
 				mFakeMatch->setState(&streamCopy);
+				mReplayRecorder->record(mPhysicWorld.getPlayersInput());
 				break;
 			}
 			case ID_WIN_NOTIFICATION:
@@ -337,6 +355,7 @@ void NetworkGameState::step()
 				// In this state, a leaving opponent would not be very surprising
 				if (mNetworkState != PLAYER_WON)
 					mNetworkState = OPPONENT_DISCONNECTED;
+				break;
 			}
 			case ID_BALL_RESET:
 			{
@@ -347,9 +366,10 @@ void NetworkGameState::step()
 				stream.Read(mLeftScore);
 				stream.Read(mRightScore);
 				mPhysicWorld.reset(mServingPlayer);
+				if (mLeftScore == 0 && mRightScore == 0)
+					mReplayRecorder->setServingPlayer(mServingPlayer);
 				rmanager->setScore(mLeftScore, mRightScore,
 					mServingPlayer == 0, mServingPlayer == 1);
-
 				break;
 			}
 			case ID_BALL_GROUND_COLLISION:
@@ -365,7 +385,7 @@ void NetworkGameState::step()
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.Read(ival);
 				stream.Read(intensity);
-				SoundManager::getSingleton().playSound("sounds/bums.wav", 
+				SoundManager::getSingleton().playSound("sounds/bums.wav",
 						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 				mPhysicWorld.setBallValidity(false);
 				break;
@@ -379,15 +399,32 @@ void NetworkGameState::step()
 					mNetworkState = PLAYING;
 				break;
 			case ID_GAME_READY:
+			{
+				int ival;
+				char* charName = new char[16];
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.Read(ival);
+				StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+				mFakeMatch->setOpponentName(std::string(charName));
+				if (mOwnSide)
+				{
+					RenderManager::getSingleton().setPlayernames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
+					mReplayRecorder->setPlayerNames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
+				}
+				else
+				{
+					RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
+					mReplayRecorder->setPlayerNames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
+				}
 				mNetworkState = PLAYING;
 				break;
+			}
 			case ID_CONNECTION_ATTEMPT_FAILED:
 				mNetworkState = CONNECTION_FAILED;
 				break;
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
 				break;
-				
 			case ID_DISCONNECTION_NOTIFICATION:
 			case ID_CONNECTION_LOST:
 				if (mNetworkState != PLAYER_WON)
@@ -408,6 +445,7 @@ void NetworkGameState::step()
 		}
 		mClient->DeallocatePacket(packet);
 	}
+
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
 
@@ -415,13 +453,40 @@ void NetworkGameState::step()
 		mPhysicWorld.getBlobState(LEFT_PLAYER));
 	rmanager->setBlob(1, mPhysicWorld.getBlob(RIGHT_PLAYER),
 		mPhysicWorld.getBlobState(RIGHT_PLAYER));
-	rmanager->setBall(mPhysicWorld.getBall(), 
+	rmanager->setBall(mPhysicWorld.getBall(),
 		mPhysicWorld.getBallRotation());
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
 		delete mCurrentState;
 		mCurrentState = new MainMenuState;
+	}
+	else if (InputManager::getSingleton()->exit() && mSaveReplay)
+	{
+		mSaveReplay = false;
+		IMGUI::getSingleton().resetSelection();
+	}
+	else if (mSaveReplay)
+	{
+		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
+		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
+		static unsigned cpos;
+		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
+		if (imgui.doButton(GEN_ID, Vector2(220, 330), "OK"))
+		{
+			if (mFilename != "")
+			{
+				mReplayRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
+			}
+			mSaveReplay = false;
+			imgui.resetSelection();
+		}
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), "Cancel"))
+		{
+			mSaveReplay = false;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
 	}
 	else switch (mNetworkState)
 	{
@@ -447,12 +512,17 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(140.0, 250.0),
-					"opponent left he game");
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0),
+					"opponent left the game");
+			if (imgui.doButton(GEN_ID, Vector2(230.0, 300.0),
 					"ok"))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
+			}
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), "Save Replay"))
+			{
+				mSaveReplay = true;
+				imgui.resetSelection();
 			}
 			break;
 		}
@@ -463,11 +533,16 @@ void NetworkGameState::step()
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
 					"disconnected from server");
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
+			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
 					"ok"))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
+			}
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), "Save Replay"))
+			{
+				mSaveReplay = true;
+				imgui.resetSelection();
 			}
 			break;
 		}
@@ -524,15 +599,23 @@ void NetworkGameState::step()
 		case PLAYER_WON:
 		{
 			std::stringstream tmp;
-			tmp << "player " << mWinningPlayer + 1;
+			if(mWinningPlayer==LEFT_PLAYER)
+				tmp << (mOwnSide ? mFakeMatch->getOpponentName() : mFakeMatch->getPlayerName());
+			else
+				tmp << (mOwnSide ? mFakeMatch->getPlayerName() : mFakeMatch->getOpponentName());
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
+			imgui.doText(GEN_ID, Vector2(274, 240), tmp.str());
 			imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
-			if (imgui.doButton(GEN_ID, Vector2(290, 350), "OK"))
+			if (imgui.doButton(GEN_ID, Vector2(290, 360), "ok"))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState();
+			}
+			if (imgui.doButton(GEN_ID, Vector2(380, 360), "Save Replay"))
+			{
+				mSaveReplay = true;
+				imgui.resetSelection();
 			}
 			imgui.doCursor();
 			break;
@@ -551,6 +634,11 @@ void NetworkGameState::step()
 			{
 				delete this;
 				mCurrentState = new MainMenuState;
+			}
+			if (imgui.doButton(GEN_ID, Vector2(313, 370), "Save Replay"))
+			{
+				mSaveReplay = true;
+				imgui.resetSelection();
 			}
 			imgui.doCursor();
 		}
@@ -598,11 +686,18 @@ void NetworkHostState::step()
 			}
 			case ID_BLOBBY_SERVER_PRESENT:
 			{
-				ServerInfo myinfo("somebody");
+				ServerInfo myinfo(mLocalPlayerSide == NO_PLAYER ? "somebody" : mLocalPlayerName.c_str());
 				myinfo.activegames = mNetworkGame ? 1 : 0;
-				// TODO: Insert waiting players name here
-				strncpy(myinfo.waitingplayer, "somebody",
-					sizeof(myinfo.waitingplayer) - 1);
+				if (mLocalPlayerSide == NO_PLAYER || mNetworkGame)
+				{
+					strncpy(myinfo.waitingplayer, "none",
+						sizeof(myinfo.waitingplayer) - 1);
+				}
+				else
+				{
+					strncpy(myinfo.waitingplayer, mLocalPlayerName.c_str(),
+						sizeof(myinfo.waitingplayer) - 1);
+				}
 				RakNet::BitStream stream;
 				stream.Write(ID_BLOBBY_SERVER_PRESENT);
 				myinfo.writeToBitstream(stream);
@@ -618,22 +713,43 @@ void NetworkHostState::step()
 						packet->length, false);
 				stream.Read(ival);
 				stream.Read(ival);
+				char* charName = new char[16];
+				StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+				std::string playerName(charName);
 				PlayerSide newSide = (PlayerSide)ival;
 				if (mLocalPlayerSide == NO_PLAYER)
 				{ // First player ist probably the local one
 					mLocalPlayerSide = newSide;
 					mLocalPlayer = packet->playerId;
+					mLocalPlayerName = playerName;
 				}
 				else
 				{
 					mRemotePlayer = packet->playerId;
-					PlayerID leftPlayer = 
-						LEFT_PLAYER == mLocalPlayerSide ?
-						mLocalPlayer : packet->playerId;
-					PlayerID rightPlayer =
-						RIGHT_PLAYER == mLocalPlayerSide ?
-						mLocalPlayer : packet->playerId;
+					mRemotePlayerName = playerName;
+
+					PlayerID leftPlayer;
+					PlayerID rightPlayer;
+					std::string leftPlayerName;
+					std::string rightPlayerName;
+
+					if (LEFT_PLAYER == mLocalPlayerSide)
+					{
+						leftPlayer = mLocalPlayer;
+						rightPlayer = packet->playerId;
+						leftPlayerName = mLocalPlayerName;
+						rightPlayerName = playerName;
+					}
+					else
+					{
+						leftPlayer = packet->playerId;
+						rightPlayer = mLocalPlayer;
+						leftPlayerName = playerName;
+						rightPlayerName = mLocalPlayerName;
+					}
+
 					PlayerSide switchSide = NO_PLAYER;
+
 					if (newSide == mLocalPlayerSide)
 					{
 						if (newSide == LEFT_PLAYER)
@@ -643,6 +759,7 @@ void NetworkHostState::step()
 					}
 					mNetworkGame = new NetworkGame(
 						*mServer, leftPlayer, rightPlayer,
+						leftPlayerName, rightPlayerName,
 						switchSide);
 				}
 			}

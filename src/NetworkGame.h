@@ -40,6 +40,7 @@ public:
 	// decides which player is switched.
 	NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
+			std::string leftPlayerName, std::string rightPlayerName,
 			PlayerSide switchedSide = NO_PLAYER);
 
 	~NetworkGame();
@@ -60,6 +61,8 @@ private:
 	PlayerID mLeftPlayer;
 	PlayerID mRightPlayer;
 	PlayerSide mSwitchedSide;
+	std::string mLeftPlayerName;
+	std::string mRightPlayerName;
 
 	PacketQueue mPacketQueue;
 

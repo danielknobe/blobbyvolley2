@@ -28,7 +28,7 @@ class RenderManagerGP2X : public RenderManager
 {
 	SDL_Surface* mBackground;
 	SDL_Surface* mBallShadow;
-	
+
 	std::vector<SDL_Surface*> mBall;
 	std::vector<SDL_Surface*> mStandardBlob;
 	std::vector<SDL_Surface*> mStandardBlobShadow;
@@ -39,7 +39,7 @@ class RenderManagerGP2X : public RenderManager
 
 	std::vector<SDL_Surface*> mFont;
 	std::vector<SDL_Surface*> mHighlightFont;
-	
+
 	SDL_Surface *mScreen;
 
 	Vector2 mBallPosition;
@@ -54,8 +54,11 @@ class RenderManagerGP2X : public RenderManager
 	bool mLeftPlayerWarning;
 	bool mRightPlayerWarning;
 
+	std::string mLeftPlayerName;
+	std::string mRightPlayerName;
+
 	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
-	
+
 public:
 	RenderManagerGP2X();
 
@@ -66,11 +69,11 @@ public:
 
 	virtual bool setBackground(const std::string& filename);
 	virtual void setBlobColor(int player, Color color);
-	
+
 	virtual void setBall(const Vector2& position, float rotation);
 	virtual void setBlob(int player, const Vector2& position,
 			float animationState);
-		
+
 	virtual void setScore(int leftScore, int rightScore,
 		       bool leftWarning, bool rightWarning);
 

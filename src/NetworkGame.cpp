@@ -22,9 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
+#include "raknet/StringCompressor.h"
 
 NetworkGame::NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
+			std::string leftPlayerName, std::string rightPlayerName,
 			PlayerSide switchedSide)
 	: mServer(server)
 {
@@ -33,6 +35,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	mLeftPlayer = leftPlayer;
 	mRightPlayer = rightPlayer;
 	mSwitchedSide = switchedSide;
+	mLeftPlayerName = leftPlayerName;
+	mRightPlayerName = rightPlayerName;
 
 	mLeftScore = 0;
 	mRightScore = 0;
@@ -46,9 +50,18 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	mPausing = false;
 
-	RakNet::BitStream stream;
-	stream.Write(ID_GAME_READY);
-	broadcastBitstream(&stream, &stream);
+	RakNet::BitStream leftStream;
+	leftStream.Write(ID_GAME_READY);
+	StringCompressor::Instance()->EncodeString((char*)mRightPlayerName.c_str(), 16, &leftStream);
+	
+	RakNet::BitStream rightStream;
+	rightStream.Write(ID_GAME_READY);
+	StringCompressor::Instance()->EncodeString((char*)mLeftPlayerName.c_str(), 16, &rightStream);
+	
+	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                        mLeftPlayer, false);
+	mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                        mRightPlayer, false);
 }
 
 NetworkGame::~NetworkGame()

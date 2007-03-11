@@ -49,7 +49,7 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	mSquishLeft = 0;
 	mSquishRight = 0;
-	
+
 	mBallDown = false;
 	mWinningPlayer = 0;
 
@@ -80,7 +80,7 @@ void DuelMatch::step()
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
-	
+
 	if (mLeftInput)
 		mPhysicWorld.setLeftInput(mLeftInput->getInput());
 	if (mRightInput)
@@ -93,7 +93,7 @@ void DuelMatch::step()
 			mPhysicWorld.getBlobState(LEFT_PLAYER));
 		rmanager->setBlob(1, mPhysicWorld.getBlob(RIGHT_PLAYER),
 			mPhysicWorld.getBlobState(RIGHT_PLAYER));
-		rmanager->setBall(mPhysicWorld.getBall(), 
+		rmanager->setBall(mPhysicWorld.getBall(),
 				mPhysicWorld.getBallRotation());
 	}
 
@@ -106,7 +106,7 @@ void DuelMatch::step()
 			{
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-				Vector2 hitPos = mPhysicWorld.getBall() + 
+				Vector2 hitPos = mPhysicWorld.getBall() +
 					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
 				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
 			}
@@ -121,7 +121,7 @@ void DuelMatch::step()
 		if(mSquishLeft > 9)
 			mSquishLeft=0;
 	}
-	
+
 	if(0 == mSquishRight)
 	{
 		if (mPhysicWorld.ballHitRightPlayer())
@@ -130,7 +130,7 @@ void DuelMatch::step()
 			{
 				smanager->playSound("sounds/bums.wav",
 					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-				Vector2 hitPos = mPhysicWorld.getBall() + 
+				Vector2 hitPos = mPhysicWorld.getBall() +
 					(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
 				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
 			}
@@ -143,9 +143,9 @@ void DuelMatch::step()
 	{
 		mSquishRight += 1;
 		if(mSquishRight > 9)
-			mSquishRight=0;	
+			mSquishRight=0;
 	}
-	
+
 	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
 	{
 		if (mLeftHitcount > 3)
@@ -160,7 +160,7 @@ void DuelMatch::step()
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
 	}
-	
+
 	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
 	{
 		if(mRightHitcount > 3)
@@ -220,7 +220,7 @@ bool DuelMatch::getBallActive()
 {
 	return mPhysicWorld.getBallActive();
 }
-        
+
 
 bool DuelMatch::getBlobJump(PlayerSide player)
 {
@@ -272,4 +272,40 @@ PlayerSide DuelMatch::getServingPlayer()
 void DuelMatch::setState(RakNet::BitStream* stream)
 {
 	mPhysicWorld.setState(stream);
+}
+
+PlayerInput* DuelMatch::getPlayersInput()
+{
+	return mPhysicWorld.getPlayersInput();
+}
+
+void DuelMatch::setPlayersInput(PlayerInput* input)
+{
+		mPhysicWorld.setLeftInput(input[LEFT_PLAYER]);
+		mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);
+}
+
+void DuelMatch::setPlayerName(std::string name)
+{
+	mPlayerName = name;
+}
+
+void DuelMatch::setOpponentName(std::string name)
+{
+	mOpponentName = name;
+}
+
+std::string DuelMatch::getPlayerName()
+{
+	return mPlayerName;
+}
+
+std::string DuelMatch::getOpponentName()
+{
+	return mOpponentName;
+}
+
+void DuelMatch::setServingPlayer(PlayerSide side)
+{
+	mPhysicWorld.reset(side);
 }

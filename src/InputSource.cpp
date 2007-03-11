@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "InputSource.h"
 
-std::string& operator<< (std::string& out, const PlayerInput& input)
+/*std::string& operator<< (std::string& out, const PlayerInput& input)
 {
 	char buf[4];
 	buf[0] = input.left ? 't' : 'f';
@@ -36,3 +36,4 @@ PlayerInput::PlayerInput(const std::string& string)
 	right = string.at(1) == 't';
 	up = string.at(2) == 't';
 }
+*/
