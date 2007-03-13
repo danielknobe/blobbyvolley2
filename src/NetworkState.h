@@ -40,7 +40,7 @@ public:
 	virtual void step();
 private:
 	void broadcast();
-	
+
 	typedef std::list<RakClient*> ClientList;
 
 	RakClient* mPingClient;
@@ -82,14 +82,14 @@ private:
 	int mLeftScore;
 	int mRightScore;
 	PlayerSide mServingPlayer;
-	
+
 	bool mSaveReplay;
 	std::string mFilename;
-	
+
 	RakClient* mClient;
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
-	
+
 	ReplayRecorder* mReplayRecorder;
 	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
 				// access the necessary game variables

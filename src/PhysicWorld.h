@@ -49,7 +49,7 @@ private:
 
 	Vector2 mBlobVelocity[MAX_PLAYERS];
 	Vector2 mBallVelocity;
-	
+
 	float mBallRotation;
 	float mBallAngularVelocity;
 	float mBlobState[MAX_PLAYERS];
@@ -65,7 +65,7 @@ private:
 public:
 	PhysicWorld();
 	~PhysicWorld();
-	
+
 	Vector2 getBallVelocity();
 	bool getBlobJump(PlayerSide player);
 	bool getBallActive();
@@ -83,14 +83,14 @@ public:
 
 	float getBallSpeed();
 
-	// These functions tell about ball collisions for game logic and sound 
+	// These functions tell about ball collisions for game logic and sound
 	bool ballHitLeftPlayer();
 	bool ballHitRightPlayer();
 	bool ballHitLeftGround();
 	bool ballHitRightGround();
-	
+
 	bool blobbyHitGround(int player);
-	
+
 	// Blobby animation methods
 	void blobbyAnimationStep(PlayerSide player);
 	void blobbyStartAnimation(PlayerSide player);
@@ -100,13 +100,13 @@ public:
 	float lastHitIntensity();
 
 	// Here the game logic can decide whether the ball is valid.
-	// If not, no ball to player collision checking is done, 
+	// If not, no ball to player collision checking is done,
 	// the input is ignored an the ball experiences a strong damping
 	void setBallValidity(bool validity);
 
 	// This returns true if the ball is not valid and the ball is steady
 	bool roundFinished();
-	
+
 	// This resets everything to the starting situation and
 	// wants to know, which player begins.
 	void reset(int player);
@@ -116,19 +116,19 @@ public:
 
 	// Important: This assumes a fixed framerate of 60 FPS!
 	void step();
-	
+
 	// For reducing ball speed after rule violation
 	void dampBall();
-	
+
 	// Set a new state recieved from server over a RakNet BitStream
 	void setState(RakNet::BitStream* stream);
-	
+
 	// Fill a Bitstream with the state
 	void getState(RakNet::BitStream* stream);
 
 	// Fill a Bitstream with a side reversed state
 	void getSwappedState(RakNet::BitStream* stream);
-	
+
 	//Input stuff for recording and playing replays
 	PlayerInput* getPlayersInput();
 };

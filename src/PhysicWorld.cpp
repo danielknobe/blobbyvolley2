@@ -543,7 +543,6 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	stream->Read(mPlayerInput[RIGHT_PLAYER].left);
 	stream->Read(mPlayerInput[RIGHT_PLAYER].right);
 	stream->Read(mPlayerInput[RIGHT_PLAYER].up);
-
 }
 
 void PhysicWorld::getState(RakNet::BitStream* stream)

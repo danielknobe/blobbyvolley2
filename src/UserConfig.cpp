@@ -30,7 +30,7 @@ bool UserConfig::loadFile(const std::string& filename)
 	{
 		throw FileLoadException(filename);
 	}
-	
+
 	int fileLength = PHYSFS_fileLength(fileHandle);
 	char* fileBuffer = new char[fileLength];
 	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
@@ -38,18 +38,18 @@ bool UserConfig::loadFile(const std::string& filename)
 	configDoc.Parse(fileBuffer);
 	delete[] fileBuffer;
 	PHYSFS_close(fileHandle);
-	
+
 	if (configDoc.Error())
 	{
 		std::cerr << "Warning: Parse error in " << filename;
 		std::cerr << "!" << std::endl;
 	}
-	
-	TiXmlElement* userConfigElem = 
+
+	TiXmlElement* userConfigElem =
 		configDoc.FirstChildElement("userconfig");
 	if (userConfigElem == NULL)
 		return false;
-	for (TiXmlElement* varElem = 
+	for (TiXmlElement* varElem =
 		userConfigElem->FirstChildElement("var");
 		varElem != NULL;
 		varElem = varElem->NextSiblingElement("var"))
@@ -73,7 +73,7 @@ bool UserConfig::saveFile(const std::string& filename)
 	if (!fileHandle)
 		return false;
 
-	const char xmlHeader[] = 
+	const char xmlHeader[] =
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
 	const char xmlFooter[] = "</userconfig>\n\n";
 
@@ -136,7 +136,7 @@ void UserConfig::setInteger(const std::string& name, int var)
 	setValue(name, writeBuffer);
 }
 
-UserConfigVar* UserConfig::createVar(const std::string& name, 
+UserConfigVar* UserConfig::createVar(const std::string& name,
 		const std::string& defaultValue)
 {
 	if (findVarByName(name)) return NULL;
@@ -153,7 +153,10 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	if (!var)
 	{
 		std::cerr << "Warning: impossible to set value of " <<
-			"unknown configuration variable " << name << std::endl;
+			"unknown configuration variable " << name <<
+			"\n Creating new varaible" << std::endl;
+		var = createVar(name, value);
+		mChangeFlag = true;
 		return;
 	}
 
