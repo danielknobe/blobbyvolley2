@@ -259,6 +259,7 @@ bool NetworkGame::step()
 		switchStream.Write(RIGHT_PLAYER);
 
 		broadcastBitstream(&stream, &switchStream);
+		return active;
 	}
 	if (mRightScore >= 15 && mRightScore >= mLeftScore + 2)
 	{
@@ -271,6 +272,7 @@ bool NetworkGame::step()
 		switchStream.Write(LEFT_PLAYER);
 
 		broadcastBitstream(&stream, &switchStream);
+		return active;
 	}
 
 	if (mPhysicWorld.roundFinished())

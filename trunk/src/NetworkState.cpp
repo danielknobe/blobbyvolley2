@@ -54,13 +54,14 @@ NetworkSearchState::~NetworkSearchState()
 	try
 	{
 		config.loadFile("config.xml");
-		config.setString("network_last_server",
-				mScannedServers.at(mSelectedServer).hostname);
+		if (mScannedServers.size() > 0)
+			config.setString("network_last_server",
+					mScannedServers.at(mSelectedServer).hostname);
 		config.saveFile("config.xml");
 	}
-	catch (std::exception)
+	catch (std::exception& e)
 	{
-		printf("ERROR!");
+		std::cerr << "ERROR! in ~NetworkSearchState() " << e.what() << std::endl;
 	}
 
 	for (ClientList::iterator iter = mQueryClients.begin();
@@ -660,6 +661,7 @@ NetworkHostState::~NetworkHostState()
 	delete mGameState;
 	if (mNetworkGame)
 		delete mNetworkGame;
+	mServer->Disconnect(1);
 	delete mServer;
 }
 
