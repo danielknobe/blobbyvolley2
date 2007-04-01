@@ -52,7 +52,7 @@ OptionState::OptionState()
 			if (tmp == rightScript)
 				mPlayerOptions[RIGHT_PLAYER] = pos;
 		}
-			
+
 	}
 	if (mOptionConfig.getBool("left_player_human"))
 		mPlayerOptions[LEFT_PLAYER] = 0;
@@ -81,7 +81,7 @@ OptionState::~OptionState()
 			mOptionConfig.setString("left_script_name",
 				mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
 		}
-		
+
 		if (mPlayerOptions[RIGHT_PLAYER] == 0)
 		{
 			mOptionConfig.setBool(
@@ -112,7 +112,7 @@ void OptionState::step()
 
 	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), "input options"))
 	{
 		mSaveConfig = true;
@@ -180,7 +180,7 @@ GraphicOptionsState::~GraphicOptionsState()
 			else
 				RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
 			RenderManager::getSingleton().setBackground(
-				std::string("backgrounds/") + 
+				std::string("backgrounds/") +
 				mOptionConfig.getString("background"));
 		}
 		mOptionConfig.setInteger("r1", mR1);
@@ -204,7 +204,7 @@ void GraphicOptionsState::step()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
 	imgui.doText(GEN_ID, Vector2(34.0, 50.0), "Video Settings");
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 80.0), "Fullscreen Mode"))
 		mFullscreen = true;
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 110.0), "Window Mode"))
@@ -437,7 +437,7 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight) || mSetKeyboard == 3)
 		{
 			lastActionKey = "";
-			oldString = mLeftBlobbyKeyboardRight; 
+			oldString = mLeftBlobbyKeyboardRight;
 			mLeftBlobbyKeyboardRight = "";
 		}
 
@@ -451,7 +451,7 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump) || mSetKeyboard == 5)
 		{
 			lastActionKey = "";
-			oldString = mLeftBlobbyKeyboardJump; 
+			oldString = mLeftBlobbyKeyboardJump;
 			mLeftBlobbyKeyboardJump = "";
 		}
 
@@ -467,19 +467,19 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystickLeft))
 		{
-			oldString = mLeftBlobbyJoystickLeft; 
+			oldString = mLeftBlobbyJoystickLeft;
 			mLeftBlobbyJoystickLeft = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystickRight))
 		{
-			oldString = mLeftBlobbyJoystickRight; 
+			oldString = mLeftBlobbyJoystickRight;
 			mLeftBlobbyJoystickRight = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Button");
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystickJump))
 		{
-			oldString = mLeftBlobbyJoystickJump; 
+			oldString = mLeftBlobbyJoystickJump;
 			mLeftBlobbyJoystickJump = "";
 		}
 	}
@@ -509,7 +509,7 @@ void InputOptionsState::step()
 			text << "Button ";
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), text.str()))
 		{
-			mOldInteger = mRightBlobbyMouseJumpbutton; 
+			mOldInteger = mRightBlobbyMouseJumpbutton;
 			mRightBlobbyMouseJumpbutton = -2;
 		}
 	}
@@ -526,7 +526,7 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft) || mSetKeyboard == 11)
 		{
 			lastActionKey = "";
-			oldString = mRightBlobbyKeyboardLeft; 
+			oldString = mRightBlobbyKeyboardLeft;
 			mRightBlobbyKeyboardLeft = "";
 		}
 
@@ -540,7 +540,7 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight) || mSetKeyboard == 13)
 		{
 			lastActionKey = "";
-			oldString = mRightBlobbyKeyboardRight; 
+			oldString = mRightBlobbyKeyboardRight;
 			mRightBlobbyKeyboardRight = "";
 		}
 
@@ -554,7 +554,7 @@ void InputOptionsState::step()
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump) || mSetKeyboard == 15)
 		{
 			lastActionKey = "";
-			oldString = mRightBlobbyKeyboardJump; 
+			oldString = mRightBlobbyKeyboardJump;
 			mRightBlobbyKeyboardJump = "";
 		}
 
@@ -570,19 +570,19 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystickLeft))
 		{
-			oldString = mRightBlobbyJoystickLeft; 
+			oldString = mRightBlobbyJoystickLeft;
 			mRightBlobbyJoystickLeft = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystickRight))
 		{
-			oldString = mRightBlobbyJoystickRight; 
+			oldString = mRightBlobbyJoystickRight;
 			mRightBlobbyJoystickRight = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Button");
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystickJump))
 		{
-			oldString = mRightBlobbyJoystickJump; 
+			oldString = mRightBlobbyJoystickJump;
 			mRightBlobbyJoystickJump = "";
 		}
 	}
@@ -598,7 +598,7 @@ void InputOptionsState::step()
 		imgui.doInactiveMode(true);
 		imgui.doCursor(false);
 	}
-	
+
 	//Capture dialogs:
 	if (mLeftBlobbyMouseJumpbutton == -1)
 	{
@@ -616,7 +616,7 @@ void InputOptionsState::step()
 		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
 		mLeftBlobbyKeyboardLeft = lastActionKey;
 		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyKeyboardLeft = oldString; 
+			mLeftBlobbyKeyboardLeft = oldString;
 	}
 	if (mLeftBlobbyKeyboardRight == "")
 	{
@@ -726,7 +726,7 @@ void InputOptionsState::step()
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyJoystickJump = oldString;
 	}
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{
 		mSaveConfig = true;
@@ -764,7 +764,7 @@ MiscOptionsState::MiscOptionsState()
 	mShowBlood = mOptionConfig.getBool("blood");
 	mVolume = mOptionConfig.getFloat("global_volume");
 	mMute = mOptionConfig.getBool("mute");
-	mGameFPS = mOptionConfig.getInteger("gamefps");
+	mGamespeed = mOptionConfig.getFloat("gamespeed");
 	mNetworkSide = mOptionConfig.getInteger("network_side");
 }
 
@@ -776,17 +776,17 @@ MiscOptionsState::~MiscOptionsState()
 		mOptionConfig.setBool("blood", mShowBlood);
 		mOptionConfig.setFloat("global_volume", mVolume);
 		mOptionConfig.setBool("mute", mMute);
-		mOptionConfig.setInteger("gamefps", mGameFPS);
+		mOptionConfig.setFloat("gamespeed", mGamespeed);
 		mOptionConfig.setInteger("network_side", mNetworkSide);
 		if (mBackground > -1)
 			mOptionConfig.setString("background", mBackgrounds[mBackground]);
 		mOptionConfig.saveFile("config.xml");
 	}
-	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
+	SpeedController::getRenderFPSInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
-	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
+	SpeedController::setGameFPS(mOptionConfig.getInteger("gamespeed"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 }
 
@@ -827,7 +827,7 @@ void MiscOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
-		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
+		SpeedController::getRenderFPSInstance()->setDrawFPS(mShowFPS);
 	}
 	if (mShowFPS)
 	{
@@ -855,26 +855,25 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
-	float gamefps = (mGameFPS-30)/90.0;
-	if (gamefps < 0)
-		gamefps = 0;
-	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps))
-		mGameFPS = (int)(gamefps*90.0+30);
+	float gamespeed = (mGamespeed*75-30)/90.0;
+	if (gamespeed < 0)
+		gamespeed = 0;
+	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamespeed))
+		mGamespeed = float((gamespeed*90.0+30)/75);
 	if (imgui.doButton(GEN_ID, Vector2(205.0, 380.0), "very slow"))
-		mGameFPS = 30;
+		mGamespeed = 0.4;
 	if (imgui.doButton(GEN_ID, Vector2(481.0, 380.0), "slow"))
-		mGameFPS = 60;
+		mGamespeed = 0.8;
 	if (imgui.doButton(GEN_ID, Vector2(319.0, 415.0), "default"))
-		mGameFPS = 75;
+		mGamespeed = 1.0;
 	if (imgui.doButton(GEN_ID, Vector2(205.0, 450.0), "fast"))
-		mGameFPS = 90;
+		mGamespeed = 1.2;
 	if (imgui.doButton(GEN_ID, Vector2(360.0, 450.0), "very fast"))
-		mGameFPS = 120;
-	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
+		mGamespeed = 1.6;
 
-	std::stringstream FPSInPercent;
-	FPSInPercent << int((float)mGameFPS/75*100);
-	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
+	std::stringstream GamespeedInPercent;
+	GamespeedInPercent << int((float)mGamespeed*100);
+	imgui.doText(GEN_ID, Vector2(515.0, 330.0), GamespeedInPercent.str()+="%");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{

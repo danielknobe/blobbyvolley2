@@ -25,13 +25,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/GetTime.h"
 #include "raknet/StringCompressor.h"
 
-#include "SpeedController.h"
 #include "DedicatedServer.h"
 #include "InputSource.h"
 #include "PhysicWorld.h"
 #include "NetworkGame.h"
 #include "UserConfig.h"
 #include "NetworkMessage.h"
+#include "SpeedController.h"
 
 #ifdef WIN32
 #undef main
@@ -55,12 +55,15 @@ int main(int argc, char** argv)
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
 	std::string firstPlayerName;
+	float gameSpeed = 1.0;
 
 	config.loadFile("server.xml");
 
 	int port = config.getInteger("port");
-	float speed = config.getFloat("speed");
 	int clients = 0;
+
+	float gameFPS = config.getFloat("gamefps");
+	SpeedController::setGameFPS(gameFPS);
 
 	ServerInfo myinfo(config);
 
@@ -69,8 +72,6 @@ int main(int argc, char** argv)
 		std::cerr << "blobby-server: Couldn't bind to port " << port;
 		std::cerr << " !" << std::endl;
 	}
-
-	SpeedController scontroller(speed);
 
 	while (1)
 	{
@@ -115,11 +116,16 @@ int main(int argc, char** argv)
 					StringCompressor::Instance()->DecodeString(charName, 16, &stream);
 					std::string playerName(charName);
 					PlayerSide newSide = (PlayerSide)ival;
+
 					if (firstPlayerSide == NO_PLAYER)
 					{
 						firstPlayer = packet->playerId;
 						firstPlayerSide = newSide;
 						firstPlayerName = playerName;
+
+						stream.Read(gameSpeed);
+						if (gameSpeed < 0.1)
+							gameSpeed = 1.0;
 					}
 					else // We have two players now
 					{
@@ -148,7 +154,7 @@ int main(int argc, char** argv)
 						NetworkGame* newgame = new NetworkGame(
 							server, leftPlayer, rightPlayer,
 							leftPlayerName, rightPlayerName,
-							switchSide);
+							gameSpeed, switchSide);
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
 						gamelist.push_back(newgame);
@@ -249,8 +255,8 @@ int main(int argc, char** argv)
 				default:
 					printf("unknown packet %d recieved\n",
 						int(packet->data[0]));
-				}
 			}
+		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
 			if (!(*iter)->step())
@@ -267,6 +273,5 @@ int main(int argc, char** argv)
 			}
 		}
 		server.DeallocatePacket(packet);
-		scontroller.update();
 	}
 }

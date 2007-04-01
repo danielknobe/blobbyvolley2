@@ -57,7 +57,7 @@ public:
 	static DuelMatch* getMainGame();
 
 	// This steps through one frame
-	void step();
+	void step(float timeDelta, float speed);
 
 	// This reports the index of the winning player and -1 if the
 	// game is still running
@@ -118,8 +118,8 @@ private:
 	int mLeftHitcount;
 	int mRightHitcount;
 
-	int mSquishLeft;
-	int mSquishRight;
+	float mSquishLeft;
+	float mSquishRight;
 
 	bool mBallDown;
 

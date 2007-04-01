@@ -54,12 +54,12 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	mWinningPlayer = 0;
 
 	mPhysicWorld.resetPlayer();
-	mPhysicWorld.step();
+	mPhysicWorld.step(0, 0);
 
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 	mScoreToWin = gameConfig.getInteger("scoretowin");
-	if(mScoreToWin < 0)
+	if (mScoreToWin < 0)
 		mScoreToWin = 15;
 };
 
@@ -76,7 +76,7 @@ DuelMatch* DuelMatch::getMainGame()
 	return mMainGame;
 }
 
-void DuelMatch::step()
+void DuelMatch::step(float timeDelta, float speed)
 {
 	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
@@ -85,7 +85,9 @@ void DuelMatch::step()
 		mPhysicWorld.setLeftInput(mLeftInput->getInput());
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
-	mPhysicWorld.step();
+	mPhysicWorld.step(timeDelta, speed);
+
+	float time = timeDelta * speed;
 
 	if (mOutput)
 	{
@@ -112,13 +114,13 @@ void DuelMatch::step()
 			}
 			mLeftHitcount++;
 			mRightHitcount = 0;
-			mSquishLeft = 1;
+			mSquishLeft = time;
 		}
 	}
 	else
 	{
-		mSquishLeft += 1;
-		if(mSquishLeft > 9)
+		mSquishLeft += time;
+		if(mSquishLeft > 9*time)
 			mSquishLeft=0;
 	}
 
@@ -136,13 +138,13 @@ void DuelMatch::step()
 			}
 			mRightHitcount++;
 			mLeftHitcount = 0;
-			mSquishRight = 1;
+			mSquishRight = time;
 		}
 	}
 	else
 	{
-		mSquishRight += 1;
-		if(mSquishRight > 9)
+		mSquishRight += time;
+		if(mSquishRight > 9*time)
 			mSquishRight=0;
 	}
 
@@ -159,6 +161,8 @@ void DuelMatch::step()
 		mBallDown = true;
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
+		mSquishRight = 0;
+		mSquishLeft = 0;
 	}
 
 	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
@@ -174,6 +178,8 @@ void DuelMatch::step()
 		mBallDown = true;
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
+		mSquishRight = 0;
+		mSquishLeft = 0;
 	}
 
 	if (mOutput)
