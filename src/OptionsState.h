@@ -97,9 +97,9 @@ private:
 	int mBackground;
 	float mVolume;
 	bool mMute;
-	int mGameFPS;
+	float mGamespeed;
 	bool mShowFPS;
 	bool mShowBlood;
-	bool mSaveConfig;	
+	bool mSaveConfig;
 	int mNetworkSide;
 };

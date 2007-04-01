@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "UserConfig.h"
+#include "SpeedController.h"
 
 class DuelMatch;
 class InputSource;
@@ -29,11 +30,11 @@ class ReplayRecorder;
 class State
 {
 private:
-	
+
 protected:
 	State();
 	static State* mCurrentState;
-	
+
 public:
 	virtual ~State() {}
 	virtual void step() = 0;
@@ -54,7 +55,10 @@ class LocalGameState : public State
 private:
 	InputSource* mLeftInput;
 	InputSource* mRightInput;
-	
+
+	std::string mLeftName;
+	std::string mRightName;
+
 	Color mLeftColor;
 	Color mRightColor;
 	bool mLeftOscillate;
@@ -63,14 +67,17 @@ private:
 	bool mSaveReplay;
 	bool mWinner;
 	std::string mFilename;
-	
+
 	DuelMatch* mMatch;
 	ReplayRecorder* mRecorder;
+	SpeedController* mGameFPSController;
+
+	float mGameSpeed;
 public:
 	LocalGameState();
 	virtual ~LocalGameState();
 	virtual void step();
-	
+
 };
 
 class ReplayMenuState : public State
@@ -86,13 +93,16 @@ private:
 	std::vector<std::string> mReplayFiles;
 	int mSelectedReplay;
 	bool mReplaying;
-	
+
 	int mPlayButton;
 	int mCancelButton;
 	int mDeleteButton;
 
 	bool mLeftOscillate;
 	bool mRightOscillate;
+
+	float mGameSpeed;
+	SpeedController* mGameFPSController;
 };
 
 class CreditsState : public State

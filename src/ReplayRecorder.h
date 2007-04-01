@@ -75,9 +75,16 @@ public:
 	std::string readString();
 	int readInt();
 	char readChar();
+	float readFloat();
 
-	PlayerSide getServingPlayer();
-	void setServingPlayer(PlayerSide side);
+	PlayerSide getServingPlayer() { return mServingPlayer; }
+	void setServingPlayer(PlayerSide side) { mServingPlayer = side; }
+
+	float getGameSpeed() { return mGameSpeed; }
+	void setGameSpeed(float speed) { mGameSpeed = speed; }
+
+	void setGameFPS(float fps) { mGameFPS = fps; }
+	float getGameFPS() { return mGameFPS; }
 
 private:
 
@@ -92,6 +99,8 @@ private:
 	std::string mPlayerNames[MAX_PLAYERS];
 	PlayerSide mServingPlayer;
 	PlayerSide mOwnSide;
+	float mGameSpeed;
+	float mGameFPS;
 };
 
 

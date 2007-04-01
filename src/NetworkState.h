@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 #include "PhysicWorld.h"
 #include "NetworkMessage.h"
+#include "SpeedController.h"
 
 #include <vector>
 #include <list>
@@ -76,6 +77,10 @@ private:
 		PAUSING
 	} mNetworkState;
 
+	Color mLeftColor;
+	Color mRightColor;
+	bool mLeftOscillate;
+	bool mRightOscillate;
 
 	InputSource* mLocalInput;
 	PhysicWorld mPhysicWorld;
@@ -89,6 +94,9 @@ private:
 	RakClient* mClient;
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
+
+	float mGameSpeed;
+	SpeedController* mGameFPSController;
 
 	ReplayRecorder* mReplayRecorder;
 	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
@@ -116,5 +124,7 @@ private:
 	PlayerID mRemotePlayer;
 	std::string mLocalPlayerName;
 	std::string mRemotePlayerName;
+
+	float mGameSpeed;
 };
 

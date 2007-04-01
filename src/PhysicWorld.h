@@ -62,6 +62,9 @@ private:
 
 	float mLastHitIntensity;
 	float mTimeSinceBallout;
+
+	float mLastSpeed;
+	float mAvgTimeDelta;
 public:
 	PhysicWorld();
 	~PhysicWorld();
@@ -114,8 +117,7 @@ public:
 	// This resets the player to their starting Positions
 	void resetPlayer();
 
-	// Important: This assumes a fixed framerate of 60 FPS!
-	void step();
+	void step(float timeDelta, float speed);
 
 	// For reducing ball speed after rule violation
 	void dampBall();

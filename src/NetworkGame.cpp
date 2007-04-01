@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 NetworkGame::NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
 			std::string leftPlayerName, std::string rightPlayerName,
-			PlayerSide switchedSide)
+			float gameSpeed, PlayerSide switchedSide)
 	: mServer(server)
 {
 	mPhysicWorld.resetPlayer();
@@ -48,16 +48,22 @@ NetworkGame::NetworkGame(RakServer& server,
 	mSquishRight = 0;
 	mWinningPlayer = NO_PLAYER;
 
+	mGameSpeed = gameSpeed;
+	mGameFPSController = new SpeedController();
+	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
+
 	mPausing = false;
 
 	RakNet::BitStream leftStream;
 	leftStream.Write(ID_GAME_READY);
 	StringCompressor::Instance()->EncodeString((char*)mRightPlayerName.c_str(), 16, &leftStream);
-	
+	leftStream.Write(mGameSpeed);
+
 	RakNet::BitStream rightStream;
 	rightStream.Write(ID_GAME_READY);
 	StringCompressor::Instance()->EncodeString((char*)mLeftPlayerName.c_str(), 16, &rightStream);
-	
+	rightStream.Write(mGameSpeed);
+
 	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
 	mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
@@ -66,6 +72,7 @@ NetworkGame::NetworkGame(RakServer& server,
 
 NetworkGame::~NetworkGame()
 {
+	delete mGameFPSController;
 }
 
 void NetworkGame::injectPacket(Packet* packet)
@@ -88,8 +95,9 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStrea
 
 bool NetworkGame::step()
 {
+	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
 	bool active = true;
-	
+
 	while (!mPacketQueue.empty())
 	{
 		Packet* packet = &mPacketQueue.front();
@@ -114,7 +122,7 @@ bool NetworkGame::step()
 				RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
 				stream.Read(ival);
-				stream.Read(ival);
+				stream.Read(ival);	//ID_TIMESTAMP
 				stream.Read(ival);
 				stream.Read(newInput.left);
 				stream.Read(newInput.right);
@@ -148,6 +156,7 @@ bool NetworkGame::step()
 				stream.Write(ID_UNPAUSE);
 				broadcastBitstream(&stream, &stream);
 				mPausing = false;
+				mGameFPSController->endPause();
 				break;
 			}
 			default:
@@ -157,8 +166,15 @@ bool NetworkGame::step()
 		}
 	};
 
+	if (!mGameFPSController->beginFrame())
+		return active;
+
+	float timeDelta = mGameFPSController->getTimeDelta();
+
 	if (!mPausing)
-		mPhysicWorld.step();
+		mPhysicWorld.step(timeDelta, mGameSpeed);
+
+	float time = SpeedController::getGameFPS()/1000 * mGameSpeed;
 
 	if (0 == mSquishLeft)
 	{
@@ -167,19 +183,16 @@ bool NetworkGame::step()
 			RakNet::BitStream stream;
 			stream.Write(ID_BALL_PLAYER_COLLISION);
 			stream.Write(mPhysicWorld.lastHitIntensity());
-			RakNet::BitStream switchStream(stream);
-			stream.Write(LEFT_PLAYER);
-			switchStream.Write(RIGHT_PLAYER);
-			broadcastBitstream(&stream, &switchStream);
+			broadcastBitstream(&stream, &stream);
 			mLeftHitcount++;
 			mRightHitcount = 0;
-			mSquishLeft = 1;
+			mSquishLeft = time;
 		}
 	}
 	else
 	{
-		mSquishLeft += 1;
-		if(mSquishLeft > 9)
+		mSquishLeft += time;
+		if(mSquishLeft > 9*time)
 			mSquishLeft=0;
 	}
 
@@ -190,64 +203,59 @@ bool NetworkGame::step()
 			RakNet::BitStream stream;
 			stream.Write(ID_BALL_PLAYER_COLLISION);
 			stream.Write(mPhysicWorld.lastHitIntensity());
-			RakNet::BitStream switchStream(stream);
-			stream.Write(RIGHT_PLAYER);
-			switchStream.Write(LEFT_PLAYER);
-			broadcastBitstream(&stream, &switchStream);
+			broadcastBitstream(&stream, &stream);
 			mRightHitcount++;
 			mLeftHitcount = 0;
-			mSquishRight = 1;
+			mSquishRight = time;
 		}
 	}
 	else
 	{
-		mSquishRight += 1;
-		if(mSquishRight > 9)
-			mSquishRight=0;	
+		mSquishRight += time;
+		if(mSquishRight > 9*time)
+			mSquishRight=0;
 	}
 
 	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
 	{
 		RakNet::BitStream stream;
 		stream.Write(ID_BALL_GROUND_COLLISION);
-		stream.Write(LEFT_PLAYER);
-		RakNet::BitStream switchStream;
-		switchStream.Write(ID_BALL_GROUND_COLLISION);
-		switchStream.Write(RIGHT_PLAYER);
-		broadcastBitstream(&stream, &switchStream);
+
+		broadcastBitstream(&stream, &stream);
 
 		if (mLeftHitcount > 3)
 			mPhysicWorld.dampBall();
 		if (mServingPlayer == 1)
 			mRightScore++;
+
 		mServingPlayer = RIGHT_PLAYER;
 		mPhysicWorld.setBallValidity(0);
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
+		mSquishRight = 0;
+		mSquishLeft = 0;
 	}
 
 	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
 	{
 		RakNet::BitStream stream;
 		stream.Write(ID_BALL_GROUND_COLLISION);
-		stream.Write(RIGHT_PLAYER);
 
-		RakNet::BitStream switchStream;
-		switchStream.Write(ID_BALL_GROUND_COLLISION);
-		switchStream.Write(LEFT_PLAYER);
-
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(&stream, &stream);
 
 		if(mRightHitcount > 3)
 			mPhysicWorld.dampBall();
 		if (mServingPlayer == 0)
 			mLeftScore++;
+
 		mServingPlayer = LEFT_PLAYER;
 		mPhysicWorld.setBallValidity(0);
 		mRightHitcount = 0;
 		mLeftHitcount = 0;
+		mSquishRight = 0;
+		mSquishLeft = 0;
 	}
-	
+
 	if (mLeftScore >= 15 && mLeftScore >= mRightScore + 2)
 	{
 		RakNet::BitStream stream;
@@ -299,6 +307,8 @@ bool NetworkGame::step()
 	{
 		broadcastPhysicState();
 	}
+
+	mGameFPSController->endFrame();
 
 	return active;
 }

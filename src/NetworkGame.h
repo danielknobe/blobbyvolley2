@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "PhysicWorld.h"
 #include "raknet/NetworkTypes.h"
+#include "UserConfig.h"
+#include "SpeedController.h"
 
 class RakServer;
 
@@ -41,10 +43,10 @@ public:
 	NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
 			std::string leftPlayerName, std::string rightPlayerName,
-			PlayerSide switchedSide = NO_PLAYER);
+			float gameSpeed, PlayerSide switchedSide = NO_PLAYER);
 
 	~NetworkGame();
-	
+
 	void injectPacket(Packet* packet);
 
 	// This function processes the queued network packets,
@@ -71,12 +73,15 @@ private:
 	int mRightScore;
 	PlayerSide mServingPlayer;
 	PlayerSide mWinningPlayer;
-	
+
 	int mLeftHitcount;
 	int mRightHitcount;
-	int mSquishLeft;
-	int mSquishRight;
-	
+	float mSquishLeft;
+	float mSquishRight;
+
 	bool mPausing;
+
+	float mGameSpeed;
+	SpeedController* mGameFPSController;
 };
 
