@@ -766,6 +766,7 @@ MiscOptionsState::MiscOptionsState()
 	mMute = mOptionConfig.getBool("mute");
 	mGamespeed = mOptionConfig.getFloat("gamespeed");
 	mNetworkSide = mOptionConfig.getInteger("network_side");
+	mChangeVolume = false;
 }
 
 MiscOptionsState::~MiscOptionsState()
@@ -808,11 +809,23 @@ void MiscOptionsState::step()
 	}
 
 	imgui.doText(GEN_ID, Vector2(484.0, 10.0), "Volume:");
+
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
-		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+		mChangeVolume = true;
 	}
+	else if (mChangeVolume == true)
+	{
+		if (InputManager::getSingleton()->pressed() == false)
+		{
+			SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+			mChangeVolume = false;
+		}
+	}
+
+
+
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), "Mute"))
 	{
 		mMute = !mMute;
