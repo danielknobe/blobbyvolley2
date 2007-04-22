@@ -28,6 +28,7 @@ class RenderManagerSDL : public RenderManager
 {
 	SDL_Surface* mBackground;
 	SDL_Surface* mBallShadow;
+	SDL_Surface* mScroll;
 	
 	std::vector<SDL_Surface*> mBall;
 	std::vector<SDL_Surface*> mStandardBlob;

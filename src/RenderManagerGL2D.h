@@ -54,6 +54,7 @@ private:
 	std::vector<GLuint> mFont;
 	std::vector<GLuint> mHighlightFont;
 	GLuint mParticle;
+	GLuint mScroll;
 	
 	std::list<Vector2> mLastBallStates;
 
