@@ -171,6 +171,8 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		mFont.push_back(newFont);
 		mHighlightFont.push_back(highlightSurface(newFont, 60));
 	}
+
+	mScroll = loadSurface("gfx/scrollbar.bmp");
 }
 
 void RenderManagerSDL::deinit()

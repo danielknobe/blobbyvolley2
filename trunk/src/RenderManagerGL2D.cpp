@@ -148,6 +148,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	mImageMap["background"] = bgBufImage;
 	
 	mBallShadow = loadTexture(loadSurface("gfx/schball.bmp"), false);	
+	mScroll = loadTexture(loadSurface("gfx/scrollbar.bmp"), false);
 
 	for (int i = 1; i <= 16; ++i)
 	{

@@ -177,9 +177,14 @@ void InputManager::updateInput()
 			{
 				case 1:
 					mClick = true;
+					mPressed = true;
 					break;
 			}
 			break;
+		case SDL_MOUSEBUTTONUP:
+			mPressed = false;
+		break;
+
 		case SDL_JOYBUTTONDOWN:
 		{
 			JoystickAction joyAction(event.jbutton.which,
@@ -272,6 +277,11 @@ Vector2 InputManager::position()
 bool InputManager::click()
 {
 	return mClick;
+}
+
+bool InputManager::pressed()
+{
+	return mPressed;
 }
 
 bool InputManager::running()

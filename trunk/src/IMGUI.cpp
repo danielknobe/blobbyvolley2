@@ -125,12 +125,13 @@ void IMGUI::end()
 				rmanager.drawText(obj.text, obj.pos1, true);
 				break;
 			case SCROLLBAR:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
-				rmanager.drawOverlay(0.7, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0), Color(255, 255, 255));
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
 			case ACTIVESCROLLBAR:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 25.0));
-				rmanager.drawOverlay(1.0, obj.pos1 + Vector2(obj.pos2.x * 200.0, 0.0), obj.pos1 + Vector2(obj.pos2.x * 200 + 10, 25.0), Color(255, 255, 255));
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
+	
 				break;
 			case EDITBOX:
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.lenght*24.0, 10.0+24.0));
@@ -306,7 +307,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			mousepos.x < position.x + 205 &&
 			mousepos.y < position.y + 24.0)
 		{
-			if (InputManager::getSingleton()->click())
+			if (InputManager::getSingleton()->pressed())
 			{
 				value = (mousepos.x - position.x) / 200.0;
 				mActiveButton = id;
