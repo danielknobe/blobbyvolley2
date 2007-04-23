@@ -48,7 +48,7 @@ private:
 	bool mSelect;
 	bool mExit;
 	bool mClick;
-	bool mPressed;
+	bool mUnclick;
 	
 	int mMouseX;
 	int mMouseY;
@@ -91,7 +91,7 @@ public:
 	// For GUI navigation (Mouse)
 	Vector2 position();
 	bool click();
-	bool pressed();
+	bool unclick();
 	
 	// config conversion methods
 	std::string keyToString(SDLKey key);
