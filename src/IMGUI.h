@@ -69,6 +69,7 @@ private:
 	static IMGUI* mSingleton;
 
 	int mActiveButton;
+	int mHeldWidget;
 	KeyAction mLastKeyAction;
 	int mLastWidget;
 	bool mDrawCursor;

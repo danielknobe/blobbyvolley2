@@ -766,7 +766,6 @@ MiscOptionsState::MiscOptionsState()
 	mMute = mOptionConfig.getBool("mute");
 	mGamespeed = mOptionConfig.getFloat("gamespeed");
 	mNetworkSide = mOptionConfig.getInteger("network_side");
-	mChangeVolume = false;
 }
 
 MiscOptionsState::~MiscOptionsState()
@@ -809,23 +808,11 @@ void MiscOptionsState::step()
 	}
 
 	imgui.doText(GEN_ID, Vector2(484.0, 10.0), "Volume:");
-
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
-		mChangeVolume = true;
+		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
-	else if (mChangeVolume == true)
-	{
-		if (InputManager::getSingleton()->pressed() == false)
-		{
-			SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
-			mChangeVolume = false;
-		}
-	}
-
-
-
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), "Mute"))
 	{
 		mMute = !mMute;
@@ -868,10 +855,10 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
-	float gamespeed = (mGamespeed*75-30)/90.0;
-	if (gamespeed < 0)
-		gamespeed = 0;
-	if (imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamespeed))
+	float gamespeed = (mGamespeed * 75.0 - 30.0)/90.0;
+	if (gamespeed < 0.0)
+		gamespeed = 0.0;
+	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamespeed);
 		mGamespeed = float((gamespeed*90.0+30)/75);
 	if (imgui.doButton(GEN_ID, Vector2(205.0, 380.0), "very slow"))
 		mGamespeed = 0.4;
@@ -885,7 +872,7 @@ void MiscOptionsState::step()
 		mGamespeed = 1.6;
 
 	std::stringstream GamespeedInPercent;
-	GamespeedInPercent << int((float)mGamespeed*100);
+	GamespeedInPercent << int(mGamespeed * 100.0);
 	imgui.doText(GEN_ID, Vector2(515.0, 330.0), GamespeedInPercent.str()+="%");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))

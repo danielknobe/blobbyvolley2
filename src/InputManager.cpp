@@ -128,6 +128,7 @@ void InputManager::updateInput()
 	mSelect = false;
 	mExit = false;
 	mClick = false;
+	mUnclick = false;
 	mLastMouseButton = -1;
 	mLastInputKey = SDLK_UNKNOWN;
 	mLastJoyAction = "";
@@ -177,12 +178,11 @@ void InputManager::updateInput()
 			{
 				case 1:
 					mClick = true;
-					mPressed = true;
 					break;
 			}
 			break;
 		case SDL_MOUSEBUTTONUP:
-			mPressed = false;
+			mUnclick = true;
 		break;
 
 		case SDL_JOYBUTTONDOWN:
@@ -279,9 +279,9 @@ bool InputManager::click()
 	return mClick;
 }
 
-bool InputManager::pressed()
+bool InputManager::unclick()
 {
-	return mPressed;
+	return mUnclick;
 }
 
 bool InputManager::running()

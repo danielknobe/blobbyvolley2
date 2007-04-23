@@ -96,7 +96,6 @@ private:
 	std::vector<std::string> mBackgrounds;
 	int mBackground;
 	float mVolume;
-	bool mChangeVolume;
 	bool mMute;
 	float mGamespeed;
 	bool mShowFPS;

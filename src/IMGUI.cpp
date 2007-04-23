@@ -66,6 +66,7 @@ IMGUI::IMGUI()
 {
 	mQueue = new RenderQueue;
 	mActiveButton = 0;
+	mHeldWidget = 0;
 	mLastKeyAction = NONE;
 	mLastWidget = 0;
 	mButtonReset = false;
@@ -270,6 +271,15 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	obj.pos1 = position;
 	obj.type = SCROLLBAR;
 	
+	bool deselected = false;
+	
+	if (InputManager::getSingleton()->unclick())
+	{
+		if (id == mHeldWidget)
+			deselected = true;
+		mHeldWidget = 0;
+	}
+	
 	if (!mInactive)
 	{
 		if (mActiveButton == 0 && !mButtonReset)
@@ -307,7 +317,11 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			mousepos.x < position.x + 205 &&
 			mousepos.y < position.y + 24.0)
 		{
-			if (InputManager::getSingleton()->pressed())
+			if (InputManager::getSingleton()->click())
+			{
+				mHeldWidget = id;
+			}
+			if (mHeldWidget == id)
 			{
 				value = (mousepos.x - position.x) / 200.0;
 				mActiveButton = id;
@@ -321,7 +335,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	mLastWidget = id;
 	mQueue->push(obj);
 
-	return oldvalue != value;
+	return deselected;
 }
 
 void IMGUI::resetSelection()
