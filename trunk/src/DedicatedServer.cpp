@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 							packet->length, false);
 					stream.Read(ival);
 					stream.Read(ival);
-					char* charName = new char[16];
+					char charName[16];
 					StringCompressor::Instance()->DecodeString(charName, 16, &stream);
 					std::string playerName(charName);
 					PlayerSide newSide = (PlayerSide)ival;
