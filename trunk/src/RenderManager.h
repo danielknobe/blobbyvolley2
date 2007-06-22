@@ -60,10 +60,14 @@ private:
 
 protected:
 	RenderManager();
-	// Returns -1 on EOF
-	// Returns index for ? on unknown char
+
+	/** Get the blobby font index of a character
+	 *  @param string A String containing a (multibyte) character
+	 *  @return Character index, returns -1 on EOF
+	*/
 	int getNextFontIndex(std::string& string);
-	SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
+
+	void highlightSurface(SDL_Surface* surface, int luminance);
 	SDL_Surface* loadSurface(std::string filename);
 	
 	Vector2 blobShadowPosition(const Vector2& position);
@@ -124,41 +128,52 @@ public:
 	virtual void setBlob(int player, const Vector2& position, 
 			float animationState) {};
 
-	virtual void setMouseMarker(float position);
+	virtual void setMouseMarker(float position) = 0;
 	
-	// Set the displayed score values and the serve notifications
+	/** Set the displayed score values and the serve notifications
+	 *  @param leftScore Current points on left side
+	 *  @param rightScore Current points on right side
+	 *  @param leftWarning A flag notifying that the player serves
+	 *  @param rightWarning A flag notifying that the player serves
+	*/
 	virtual void setScore(int leftScore, int rightScore,
-		bool leftWarning, bool rightWarning) {};
+		bool leftWarning, bool rightWarning) = 0;
 
 	// Set the names
 	virtual void setPlayernames(std::string leftName, std::string rightName) {};
 
-	// This simply draws the given text with its top left corner at the
-	// given position and doesn't care about line feeds.
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight) {};
+	/** Draws a text label without careing about line feeds.
+	 *  @param text Text to draw
+	 *  @param position Top left start position of the text
+	 *  @param highlight Whether to highlight characters, for hover effects
+	*/
+
+	virtual void drawText(const std::string& text, Vector2 position,
+					bool highlight) = 0;
 	
-	// This loads and draws an image by name
-	// The according Surface is automatically colorkeyed
-	// The image is centered around position
+	/** Loads and draws an image by name
+	 *  The according Surface is automatically colorkeyed
+	 *  @param position The image is centered around this vector
+	*/
 	virtual void drawImage(const std::string& filename, Vector2 position) {};
 	
-	// This draws a greyed-out area
+	/// Draws a greyed-out area
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
 	
-	//Draws a blob 
-	virtual void drawBlob(const Vector2& pos, const Color& col){};
+	/// Draws a blob 
+	virtual void drawBlob(const Vector2& pos, const Color col){};
 
-	//Draw blood particle
+	/// Draw blood particle
 	virtual void drawParticle(const Vector2& pos, int player){};
 
-	// This forces a redraw of the background, for example
-	// when the windows was minimized
+	/// Forces a redraw of the background, for example
+	/// when the windows was minimized
 	void redraw();
 	
-	// This can disable the rendering of ingame graphics, for example for
-	// the main menu
+	/// This can disable the rendering of ingame graphics, for
+	/// example in the main menu
 	void drawGame(bool draw);
 	
-	// This function may be useful for displaying framerates
+	/// May be useful for displaying framerates
 	void setTitle(const std::string& title);
 };
