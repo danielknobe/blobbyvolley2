@@ -99,18 +99,22 @@ enum MessageType
 // 	Description:
 // 		Message sent from server to all clients when the ball
 // 		hits the ground. It is the only valid reason for a whistle
-// 		sound during the game.
+// 		sound during the game. The side attribute tells on which side
+//		the ball hit the ground.
 // 	Structure:
 // 		ID_BALL_GROUND_COLLISION
+//		side (PlayerSide)
 //
 // ID_BALL_PLAYER_COLLISION
 // 	Description:
 // 		Message sent from server to all clients when the ball
 // 		hits a player.  It is the only valid reason for a player
-// 		collision sound.
+// 		collision sound. The player attribute tells which player
+//		hit the ball.
 // 	Structure:
 // 		ID_BALL_PLAYER_COLLISION
 // 		intensity (float)
+//		player (PlayerSide)
 //
 // ID_GAME_READY
 // 	Description:
@@ -118,26 +122,20 @@ enum MessageType
 // 		ready. The input is enabled after this message on the client.
 // 		The attribute opponent name carrys the name of the connected
 // 		opponent.
-//		GameSpeed attribute tells what is the speed of the game, which
-//		is set by the first player.
 // 	Structure:
 // 		ID_GAME_READY
 // 		opponentname(char[16])
-//		gameSpeed (float)
 //
 // ID_ENTER_GAME
 // 	Description:
 // 		Message sent from client to server after connecting to it.
 // 		The side attribute tells the server on which side the client
 // 		wants to play. The name attribute reports to players name,
-// 		truncated to 16 characters. GameSpeed attribute sets the speed
-//		of the game. If you are the second player, this value isn't
-//		used on server in any way.
+// 		truncated to 16 characters.
 // 	Structure:
 // 		ID_ENTER_GAME
 // 		side (PlayerSide)
 // 		name (char[16])
-//		gameSpeed (float)
 //
 // ID_PAUSE
 // 	Description:

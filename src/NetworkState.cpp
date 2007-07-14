@@ -304,19 +304,9 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	else
 		mNetworkState = CONNECTION_FAILED;
 
-	mGameSpeed = config.getFloat("gamespeed");	//loading game speed from local config
-	if (mGameSpeed < 0.1)						//before receiving it from server
-		mGameSpeed = 1.0;
-
-	float gameFPS = config.getFloat("gamefps");
-	SpeedController::setGameFPS(gameFPS);
-	mGameFPSController = new SpeedController(gameFPS <= 0 ? 60 : gameFPS);
-	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
-
 	mPhysicWorld.resetPlayer();
 
 	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
-	mReplayRecorder->setGameFPS(gameFPS);
 
 	mFakeMatch = new DuelMatch(0, 0, false, true);
 	mFakeMatch->setPlayerName(config.getString(mOwnSide ? "right_player_name" : "left_player_name"));
@@ -334,7 +324,6 @@ NetworkGameState::~NetworkGameState()
 
 void NetworkGameState::step()
 {
-	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
 	IMGUI& imgui = IMGUI::getSingleton();
 	RenderManager* rmanager = &RenderManager::getSingleton();
 
@@ -349,7 +338,6 @@ void NetworkGameState::step()
 				stream.Write(ID_ENTER_GAME);
 				stream.Write(mOwnSide);
 				StringCompressor::Instance()->EncodeString((char*)mFakeMatch->getPlayerName().c_str(), 16, &stream);
-				stream.Write(mGameSpeed);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
@@ -426,7 +414,6 @@ void NetworkGameState::step()
 				if (mNetworkState == PAUSING)
 				{
 					mNetworkState = PLAYING;
-					mGameFPSController->endPause();
 				}
 				break;
 			case ID_GAME_READY:
@@ -447,8 +434,6 @@ void NetworkGameState::step()
 					RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
 					mReplayRecorder->setPlayerNames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
 				}
-				stream.Read(mGameSpeed);
-				mReplayRecorder->setGameSpeed(mGameSpeed);
 				mNetworkState = PLAYING;
 				break;
 			}
@@ -623,27 +608,22 @@ void NetworkGameState::step()
 		}
 		case PLAYING:
 		{
+			mPhysicWorld.step(); 	 
+			mFakeMatch->step();
 			if (InputManager::getSingleton()->exit())
 			{
 				RakNet::BitStream stream;
 				stream.Write(ID_PAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
-			if (SpeedController::getCurrentGameFPSInstance()->beginFrame())
-			{
-				float timeDelta = SpeedController::getCurrentGameFPSInstance()->getTimeDelta();
-				mPhysicWorld.step(timeDelta, mGameSpeed);
-				mFakeMatch->step(timeDelta, mGameSpeed);
-				RakNet::BitStream stream;
-				stream.Write(ID_INPUT_UPDATE);
-				stream.Write(ID_TIMESTAMP);
-				stream.Write(RakNet::GetTime());
-				stream.Write(input.left);
-				stream.Write(input.right);
-				stream.Write(input.up);
-				mClient->Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0);
-				SpeedController::getCurrentGameFPSInstance()->endFrame();
-			}
+			RakNet::BitStream stream;
+			stream.Write(ID_INPUT_UPDATE);
+			stream.Write(ID_TIMESTAMP);
+			stream.Write(RakNet::GetTime());
+			stream.Write(input.left);
+			stream.Write(input.right);
+			stream.Write(input.up);
+			mClient->Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0);
 			break;
 		}
 		case PLAYER_WON:
@@ -773,10 +753,6 @@ void NetworkHostState::step()
 					mLocalPlayerSide = newSide;
 					mLocalPlayer = packet->playerId;
 					mLocalPlayerName = playerName;
-
-					stream.Read(mGameSpeed);
-					if (mGameSpeed < 0.1)
-						mGameSpeed = 1.0;
 				}
 				else
 				{
@@ -815,7 +791,7 @@ void NetworkHostState::step()
 					mNetworkGame = new NetworkGame(
 						*mServer, leftPlayer, rightPlayer,
 						leftPlayerName, rightPlayerName,
-						mGameSpeed, switchSide);
+						switchSide);
 				}
 			}
 		}

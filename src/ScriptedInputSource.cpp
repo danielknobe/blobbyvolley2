@@ -124,7 +124,7 @@ PlayerInput ScriptedInputSource::getInput()
 	{
 		return PlayerInput();
 	}
-
+	
 	PlayerSide player = getSide(mState);
 	int error;
 	if (!match->getBallActive() && player == match->getServingPlayer())
@@ -189,7 +189,7 @@ PlayerInput ScriptedInputSource::getInput()
 		std::cerr << lua_typename(mState, -1) << std::endl;
 		lua_pop(mState, stacksize);
 	}
-
+	
 	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
 		return PlayerInput();
 	else
@@ -288,7 +288,7 @@ int ScriptedInputSource::moveto(lua_State* state)
 			left(state);
 		if (position < target - 2)
 			right(state);
-	}
+	}	
 	return 0;
 }
 
@@ -392,7 +392,7 @@ int ScriptedInputSource::oppx(lua_State* state)
 		lua_pushnumber(state, 0.0);
 		return 1;
 	}
-	PlayerSide invPlayer =
+	PlayerSide invPlayer = 
 		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
 	float pos = match->getBlobPosition(invPlayer).x;
 	if (invPlayer == LEFT_PLAYER)
@@ -465,3 +465,5 @@ int ScriptedInputSource::estimy(lua_State* state)
 	lua_pushnumber(state, estim);
 	return 1;
 }
+
+

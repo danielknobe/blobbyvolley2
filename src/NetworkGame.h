@@ -43,7 +43,7 @@ public:
 	NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
 			std::string leftPlayerName, std::string rightPlayerName,
-			float gameSpeed, PlayerSide switchedSide = NO_PLAYER);
+			PlayerSide switchedSide = NO_PLAYER);
 
 	~NetworkGame();
 
@@ -76,8 +76,8 @@ private:
 
 	int mLeftHitcount;
 	int mRightHitcount;
-	float mSquishLeft;
-	float mSquishRight;
+	int mSquishLeft;
+	int mSquishRight;
 
 	bool mPausing;
 

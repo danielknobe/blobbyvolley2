@@ -764,7 +764,7 @@ MiscOptionsState::MiscOptionsState()
 	mShowBlood = mOptionConfig.getBool("blood");
 	mVolume = mOptionConfig.getFloat("global_volume");
 	mMute = mOptionConfig.getBool("mute");
-	mGamespeed = mOptionConfig.getFloat("gamespeed");
+	mGameFPS = mOptionConfig.getInteger("gamefps");
 	mNetworkSide = mOptionConfig.getInteger("network_side");
 }
 
@@ -776,17 +776,17 @@ MiscOptionsState::~MiscOptionsState()
 		mOptionConfig.setBool("blood", mShowBlood);
 		mOptionConfig.setFloat("global_volume", mVolume);
 		mOptionConfig.setBool("mute", mMute);
-		mOptionConfig.setFloat("gamespeed", mGamespeed);
+		mOptionConfig.setInteger("gamefps", mGameFPS);
 		mOptionConfig.setInteger("network_side", mNetworkSide);
 		if (mBackground > -1)
 			mOptionConfig.setString("background", mBackgrounds[mBackground]);
 		mOptionConfig.saveFile("config.xml");
 	}
-	SpeedController::getRenderFPSInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
+	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
-	SpeedController::setGameFPS(mOptionConfig.getInteger("gamespeed"));
+	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 }
 
@@ -827,7 +827,7 @@ void MiscOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), "show fps"))
 	{
 		mShowFPS = !mShowFPS;
-		SpeedController::getRenderFPSInstance()->setDrawFPS(mShowFPS);
+		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
 	}
 	if (mShowFPS)
 	{
@@ -855,25 +855,26 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
-	float gamespeed = (mGamespeed * 75.0 - 30.0)/90.0;
-	if (gamespeed < 0.0)
-		gamespeed = 0.0;
-	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamespeed);
-		mGamespeed = float((gamespeed*90.0+30)/75);
+	float gamefps = (mGameFPS-30)/90.0;
+	if (gamefps < 0.0)
+		gamefps = 0.0;
+	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps);
+		mGameFPS = (int)(gamefps*90.0+30);
 	if (imgui.doButton(GEN_ID, Vector2(205.0, 380.0), "very slow"))
-		mGamespeed = 0.4;
+		mGameFPS = 30;
 	if (imgui.doButton(GEN_ID, Vector2(481.0, 380.0), "slow"))
-		mGamespeed = 0.8;
+		mGameFPS = 60;
 	if (imgui.doButton(GEN_ID, Vector2(319.0, 415.0), "default"))
-		mGamespeed = 1.0;
+		mGameFPS = 75;
 	if (imgui.doButton(GEN_ID, Vector2(205.0, 450.0), "fast"))
-		mGamespeed = 1.2;
+		mGameFPS = 90;
 	if (imgui.doButton(GEN_ID, Vector2(360.0, 450.0), "very fast"))
-		mGamespeed = 1.6;
+		mGameFPS = 120;
+	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
-	std::stringstream GamespeedInPercent;
-	GamespeedInPercent << int(mGamespeed * 100.0);
-	imgui.doText(GEN_ID, Vector2(515.0, 330.0), GamespeedInPercent.str()+="%");
+	std::stringstream FPSInPercent;
+	FPSInPercent << int((float)mGameFPS/75*100);
+	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
 	{

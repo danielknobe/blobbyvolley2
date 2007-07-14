@@ -22,66 +22,56 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
-SpeedController* SpeedController::mRenderFPSInstance = NULL;
-SpeedController* SpeedController::mCurrentGameFPSInstance = NULL;
-float SpeedController::mGameFPS = 60;
+SpeedController* SpeedController::mMainInstance = NULL;
 
-SpeedController::SpeedController(float FPS)
+SpeedController::SpeedController(float gameFPS)
 {
-	mNeededFPS = FPS;	//used for compatibility with renderer's SpeedController
-	//mFramedrop = false;
-	mDrawFPS = false;
+	mGameFPS = gameFPS;
+	mFramedrop = false;
+	mDrawFPS = true;
 	mFPSCounter = 0;
-	int time = SDL_GetTicks();
-	mBeginSecond = mOldTicks = mLastTicks = mStartTicks = time;
+	mOldTicks = SDL_GetTicks();
 	mFPS = 0;
-	mCounter = 0;
 }
 
 SpeedController::~SpeedController()
 {
 }
 
-void SpeedController::setSpeed(float fps)
+void SpeedController::setGameSpeed(float fps)
 {
-	if (fps < 1)
-		fps = 1;
-	mNeededFPS = fps;
+	if (fps < 5)
+		fps = 5;
+	mGameFPS = fps;
 }
 
-float SpeedController::getTimeDelta()
+bool SpeedController::doFramedrop()
 {
-	return (75.0/1000.0)*(SDL_GetTicks()-mLastTicks);
+	return mFramedrop;
 }
 
-bool SpeedController::beginFrame()
+void SpeedController::update()
 {
-	int time = SDL_GetTicks();
-	int rateTicks = 1000 / mNeededFPS;
-	int ticksDiff = (time-mLastTicks);
-	mStartTicks = time;
+	mFramedrop = false;
+	int rateTicks = 1000 / mGameFPS;
+	static int lastTicks = SDL_GetTicks();
+	static int lastDrawnFrame = lastTicks;
+	int ticksDiff = (SDL_GetTicks()-lastTicks);
+	static int beginSecond = lastTicks;
+	static int counter = 0;
 
-	if (time >= mBeginSecond + 1000)
+	if (counter == mGameFPS)
 	{
-		mBeginSecond = time;
-		mCounter = 0;
+		const int delta = SDL_GetTicks() - beginSecond;
+		int wait = 1000 - delta;
+		if (wait > 0)
+			SDL_Delay(wait);
 	}
-
-	if (ticksDiff >= rateTicks && mCounter <= mNeededFPS && (time-mBeginSecond)/rateTicks>mCounter)
+	if (beginSecond + 1000 <= SDL_GetTicks())
 	{
-		if (mDrawFPS)
-			if (time >= mOldTicks + 1000)
-			{
-				mOldTicks = time;
-				mFPS = mFPSCounter;
-				mFPSCounter = 0;
-			}
-		return true;
+		beginSecond = SDL_GetTicks();
+		counter = 0;
 	}
-	else
-		return false;
-
-	/*
 
 	const int delta = SDL_GetTicks() - beginSecond;
 	if (delta / rateTicks <= counter)
@@ -98,24 +88,26 @@ bool SpeedController::beginFrame()
 			//std::cout << "Framedrop" << std::endl;
 		}
 	}
-	counter++;*/
+	counter++;
 
 	//calculate the FPS of drawn frames:
+	if (mDrawFPS)
+	{
+		if (lastTicks >= mOldTicks + 1000)
+		{
+			mOldTicks = lastTicks;
+			mFPS = mFPSCounter;
+			mFPSCounter = 0;
+		}
+
+		if (!mFramedrop)
+			mFPSCounter++;
+	}
 
 	//update for next call:
-	//if (!mFramedrop)
-		//lastDrawnFrame = lastTicks;
+	lastTicks = SDL_GetTicks();
+	if (!mFramedrop)
+		lastDrawnFrame = lastTicks;
 }
 
-void SpeedController::endFrame()
-{
-	mCounter++;
-	mLastTicks = mStartTicks;
-	if (mDrawFPS)
-		mFPSCounter++;
-}
 
-void SpeedController::endPause()
-{
-	mLastTicks = SDL_GetTicks();
-}

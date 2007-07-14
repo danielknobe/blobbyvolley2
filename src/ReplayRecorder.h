@@ -75,16 +75,9 @@ public:
 	std::string readString();
 	int readInt();
 	char readChar();
-	float readFloat();
 
-	PlayerSide getServingPlayer() { return mServingPlayer; }
-	void setServingPlayer(PlayerSide side) { mServingPlayer = side; }
-
-	float getGameSpeed() { return mGameSpeed; }
-	void setGameSpeed(float speed) { mGameSpeed = speed; }
-
-	void setGameFPS(float fps) { mGameFPS = fps; }
-	float getGameFPS() { return mGameFPS; }
+	PlayerSide getServingPlayer();
+	void setServingPlayer(PlayerSide side);
 
 private:
 
@@ -99,8 +92,6 @@ private:
 	std::string mPlayerNames[MAX_PLAYERS];
 	PlayerSide mServingPlayer;
 	PlayerSide mOwnSide;
-	float mGameSpeed;
-	float mGameFPS;
 };
 
 
@@ -170,3 +161,5 @@ const unsigned long crctable[256] = {
  0xB3667A2EL, 0xC4614AB8L, 0x5D681B02L, 0x2A6F2B94L,
  0xB40BBE37L, 0xC30C8EA1L, 0x5A05DF1BL, 0x2D02EF8DL
 };
+
+
