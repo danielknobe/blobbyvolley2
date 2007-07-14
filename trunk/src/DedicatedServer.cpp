@@ -55,15 +55,12 @@ int main(int argc, char** argv)
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
 	std::string firstPlayerName;
-	float gameSpeed = 1.0;
 
 	config.loadFile("server.xml");
 
 	int port = config.getInteger("port");
+	float speed = config.getFloat("speed");
 	int clients = 0;
-
-	float gameFPS = config.getFloat("gamefps");
-	SpeedController::setGameFPS(gameFPS);
 
 	ServerInfo myinfo(config);
 
@@ -72,6 +69,8 @@ int main(int argc, char** argv)
 		std::cerr << "blobby-server: Couldn't bind to port " << port;
 		std::cerr << " !" << std::endl;
 	}
+
+	SpeedController scontroller(speed);
 
 	while (1)
 	{
@@ -122,10 +121,6 @@ int main(int argc, char** argv)
 						firstPlayer = packet->playerId;
 						firstPlayerSide = newSide;
 						firstPlayerName = playerName;
-
-						stream.Read(gameSpeed);
-						if (gameSpeed < 0.1)
-							gameSpeed = 1.0;
 					}
 					else // We have two players now
 					{
@@ -154,7 +149,7 @@ int main(int argc, char** argv)
 						NetworkGame* newgame = new NetworkGame(
 							server, leftPlayer, rightPlayer,
 							leftPlayerName, rightPlayerName,
-							gameSpeed, switchSide);
+							switchSide);
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
 						gamelist.push_back(newgame);
@@ -273,5 +268,6 @@ int main(int argc, char** argv)
 			}
 		}
 		server.DeallocatePacket(packet);
+		scontroller.update();
 	}
 }

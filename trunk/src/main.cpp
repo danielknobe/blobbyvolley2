@@ -58,7 +58,7 @@ void probeDir(const std::string& dirname)
 		}
 		else
 		{
-			std::cout << "Warning: Creation of" <<
+			std::cout << "Warning: Creation of" << 
 				PHYSFS_getWriteDir() << dirname <<
 				" failed!" << std::endl;
 		}
@@ -68,7 +68,7 @@ void probeDir(const std::string& dirname)
 void deinit()
 {
 	RenderManager::getSingleton().deinit();
-	SoundManager::getSingleton().deinit();
+	SoundManager::getSingleton().deinit();	
 	SDL_Quit();
 	PHYSFS_deinit();
 }
@@ -76,7 +76,7 @@ void deinit()
 void setupPHYSFS()
 {
 	std::string separator = PHYSFS_getDirSeparator();
-	// Game should be playable out of the source package on all
+	// Game should be playable out of the source package on all 
 	// platforms
 	PHYSFS_addToSearchPath("data", 1);
 	PHYSFS_addToSearchPath("data/gfx.zip", 1);
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 {
 	PHYSFS_init(argv[0]);
 	setupPHYSFS();
-
+	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
 	atexit(SDL_Quit);
 	srand(SDL_GetTicks());
@@ -151,12 +151,11 @@ int main(int argc, char* argv[])
 			rmanager->init(800, 600, true);
 		else
 			rmanager->init(800, 600, false);
-
-		float renderFPS = gameConfig.getFloat("renderfps");
-		SpeedController renderSpeed(renderFPS<=0 ? 60 : renderFPS);
-		SpeedController::setRenderFPSInstance(&renderSpeed);
-		renderSpeed.setDrawFPS(gameConfig.getBool("showfps"));
-
+	
+		SpeedController scontroller(gameConfig.getFloat("gamefps"));
+		SpeedController::setMainInstance(&scontroller);
+		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
+		
 		smanager = SoundManager::createSoundManager();
 		smanager->init();
 		smanager->setVolume(gameConfig.getFloat("global_volume"));
@@ -169,12 +168,12 @@ int main(int argc, char* argv[])
 			rmanager->setBackground(bg);
 
 		InputManager* inputmgr = InputManager::createInputManager();
-		int running = 1;
+		int running = 1;	
 		while (running)
 		{
 			inputmgr->updateInput();
 			running = inputmgr->running();
-
+	
 			// This is true by default for compatibility, GUI states may
 			// disable it if necessary
 			rmanager->drawGame(true);
@@ -182,14 +181,14 @@ int main(int argc, char* argv[])
 				State::getCurrentState()->step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
-			if (renderSpeed.getDrawFPS())
+			if (scontroller.getDrawFPS())
 			{
 				// We need to ensure that the title bar is only set
 				// when the framerate changed, because setting the
 				// title can ne quite resource intensive on some
 				// windows manager, like for example metacity.
 				static int lastfps = 0;
-				int newfps = renderSpeed.getFPS();
+				int newfps = scontroller.getFPS();
 				if (newfps != lastfps)
 				{
 					std::stringstream tmp;
@@ -199,15 +198,14 @@ int main(int argc, char* argv[])
 				lastfps = newfps;
 			}
 
-			if (renderSpeed.beginFrame())
+			if (!scontroller.doFramedrop())
 			{
 				rmanager->draw();
 				IMGUI::getSingleton().end();
 				BloodManager::getSingleton().step();
 				rmanager->refresh();
-				renderSpeed.endFrame();
 			}
-			//scontroller.update();
+			scontroller.update();
 		}
 	}
 	catch (std::exception e)
@@ -225,3 +223,5 @@ int main(int argc, char* argv[])
 	deinit();
 	exit(EXIT_SUCCESS);
 }
+
+

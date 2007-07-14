@@ -32,47 +32,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class SpeedController
 {
 public:
-	SpeedController(float FPS=60);
+	SpeedController(float gameFPS);
 	~SpeedController();
-
-	void setSpeed(float fps);
-
-	float getTimeDelta();
-	void endPause();
+	
+	void setGameSpeed(float fps);
 
 // This reports whether a framedrop is necessary to hold the real FPS
-	//bool doFramedrop();
+	bool doFramedrop();
 
 //gives the caller the fps of the drawed frames:
 	int getFPS() { return mFPS; }
 	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
 	bool getDrawFPS() { return mDrawFPS; }
 
-// This updates everything
-	bool beginFrame();
-	void endFrame();
+// This updates everything and waits the necessary time	
+	void update();
 
-	static void setGameFPS(float fps) { mGameFPS = fps; }
-	static float getGameFPS() { return mGameFPS; }
-
-	static void setRenderFPSInstance(SpeedController* inst) { mRenderFPSInstance = inst; }
-	static SpeedController* getRenderFPSInstance() { return mRenderFPSInstance; }
-
-	static void setCurrentGameFPSInstance(SpeedController* inst) { mCurrentGameFPSInstance = inst; mCurrentGameFPSInstance->setSpeed(mGameFPS); }
-	static SpeedController* getCurrentGameFPSInstance() { return mCurrentGameFPSInstance; }
+	static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
+	static SpeedController* getMainInstance() { return mMainInstance; }
 private:
-	float mNeededFPS;
+	float mGameFPS;
 	float mRealFPS;
 	int mFPS;
 	int mFPSCounter;
-	//bool mFramedrop;
+	bool mFramedrop;
 	bool mDrawFPS;
-	static SpeedController* mRenderFPSInstance;
-	static SpeedController* mCurrentGameFPSInstance;
+	static SpeedController* mMainInstance;
 	int mOldTicks;
-	int mLastTicks;
-	int mStartTicks;
-	int mBeginSecond;
-	static float mGameFPS;
-	int mCounter;
+
 };
+
+

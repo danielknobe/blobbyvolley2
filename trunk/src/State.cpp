@@ -51,7 +51,6 @@ LocalGameState::~LocalGameState()
 	delete mRightInput;
 	delete mMatch;
 	delete mRecorder;
-	delete mGameFPSController;
 	InputManager::getSingleton()->endGame();
 }
 
@@ -107,25 +106,14 @@ LocalGameState::LocalGameState()
 	mLeftName = gameConfig.getBool("left_player_human") ? gameConfig.getString("left_player_name") : gameConfig.getString("left_script_name");
 	mRightName = gameConfig.getBool("right_player_human") ? gameConfig.getString("right_player_name") : gameConfig.getString("right_script_name");
 
-	mGameSpeed = gameConfig.getFloat("gamespeed");
-	if (mGameSpeed < 0.1)
-		mGameSpeed = 1.0;
-
-	float gameFPS = gameConfig.getFloat("gamefps");
-	SpeedController::setGameFPS(gameFPS <= 0 ? 60 : gameFPS);
-	mGameFPSController = new SpeedController();
-	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
-
 	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 	mRecorder->setPlayerNames(mLeftName, mRightName);
 	mRecorder->setServingPlayer(LEFT_PLAYER);
-	mRecorder->setGameSpeed(mGameSpeed);
-	mRecorder->setGameFPS(gameFPS);
 
 	mMatch = new DuelMatch(mLeftInput, mRightInput, true, true);
+
 	RenderManager::getSingleton().setPlayernames(mLeftName, mRightName);
 	IMGUI::getSingleton().resetSelection();
-
 }
 
 void LocalGameState::step()
@@ -160,10 +148,7 @@ void LocalGameState::step()
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
 		imgui.doText(GEN_ID, Vector2(281, 260), "Really Quit?");
 		if (imgui.doButton(GEN_ID, Vector2(530, 300), "No"))
-		{
-			SpeedController::getCurrentGameFPSInstance()->endPause();
 			mPaused = false;
-		}
 		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Yes"))
 		{
 			delete this;
@@ -228,25 +213,23 @@ void LocalGameState::step()
 	}
 	else
 	{
-		if (SpeedController::getCurrentGameFPSInstance()->beginFrame())
-		{
-			mRecorder->record(mMatch->getPlayersInput());
-			mMatch->step(SpeedController::getCurrentGameFPSInstance()->getTimeDelta(), mGameSpeed);
-			if (mMatch->winningPlayer() != NO_PLAYER)
-				mWinner = true;
-			float time = float(SDL_GetTicks()) / 1000.0;
-			if (mLeftOscillate)
-				rmanager->setBlobColor(0, Color(
-					int((sin(time*2) + 1.0) * 128),
-					int((sin(time*4) + 1.0) * 128),
-					int((sin(time*3) + 1.0) * 128)));
-			if (mRightOscillate)
-				rmanager->setBlobColor(1, Color(
-					int((cos(time*2) + 1.0) * 128),
-					int((cos(time*4) + 1.0) * 128),
-					int((cos(time*3) + 1.0) * 128)));
-			SpeedController::getCurrentGameFPSInstance()->endFrame();
-		}
+		mRecorder->record(mMatch->getPlayersInput());
+		mMatch->step();
+
+		if (mMatch->winningPlayer() != NO_PLAYER)
+			mWinner = true;
+
+		float time = float(SDL_GetTicks()) / 1000.0;
+		if (mLeftOscillate)
+			rmanager->setBlobColor(0, Color(
+				int((sin(time*2) + 1.0) * 128),
+				int((sin(time*4) + 1.0) * 128),
+				int((sin(time*3) + 1.0) * 128)));
+		if (mRightOscillate)
+			rmanager->setBlobColor(1, Color(
+				int((cos(time*2) + 1.0) * 128),
+				int((cos(time*4) + 1.0) * 128),
+				int((cos(time*3) + 1.0) * 128)));
 	}
 }
 
@@ -391,8 +374,6 @@ ReplayMenuState::ReplayMenuState()
 		Color(gameConfig.getInteger("r2"),
 		gameConfig.getInteger("g2"),
 		gameConfig.getInteger("b2")));
-
-	SpeedController::setGameFPS(gameConfig.getInteger("gamefps"));
 }
 
 void ReplayMenuState::loadCurrentReplay()
@@ -406,13 +387,6 @@ void ReplayMenuState::loadCurrentReplay()
 		mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
 	SoundManager::getSingleton().playSound(
 			"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-
-	mGameSpeed = mReplayRecorder->getGameSpeed();
-
-	float gameFPS = mReplayRecorder->getGameFPS();
-	SpeedController::setGameFPS(gameFPS);
-	mGameFPSController = new SpeedController();
-	SpeedController::setCurrentGameFPSInstance(mGameFPSController);
 }
 
 void ReplayMenuState::step()
@@ -422,29 +396,25 @@ void ReplayMenuState::step()
 	{
 		RenderManager* rmanager = &RenderManager::getSingleton();
 
-		if (SpeedController::getCurrentGameFPSInstance()->beginFrame())
+		if(mReplayRecorder->getPacketType()==ID_INPUT)
 		{
-			if (mReplayRecorder->getPacketType()==ID_INPUT)
-			{
-				mReplayMatch->setPlayersInput(mReplayRecorder->getInput());
-				mReplayMatch->step(SpeedController::getCurrentGameFPSInstance()->getTimeDelta(), mGameSpeed);
-			}
-			float time = float(SDL_GetTicks()) / 1000.0;
-			if (mLeftOscillate)
-			{
-				rmanager->setBlobColor(0, Color(
-					int((sin(time*2) + 1.0) * 128),
-					int((sin(time*4) + 1.0) * 128),
-					int((sin(time*3) + 1.0) * 128)));
-			}
-			if (mRightOscillate)
-			{
-				rmanager->setBlobColor(1, Color(
-					int((cos(time*2) + 1.0) * 128),
-					int((cos(time*4) + 1.0) * 128),
-					int((cos(time*3) + 1.0) * 128)));
-			}
-			SpeedController::getCurrentGameFPSInstance()->endFrame();
+			mReplayMatch->setPlayersInput(mReplayRecorder->getInput());
+			mReplayMatch->step();
+		}
+		float time = float(SDL_GetTicks()) / 1000.0;
+		if (mLeftOscillate)
+		{
+			rmanager->setBlobColor(0, Color(
+				int((sin(time*2) + 1.0) * 128),
+				int((sin(time*4) + 1.0) * 128),
+				int((sin(time*3) + 1.0) * 128)));
+		}
+		if (mRightOscillate)
+		{
+			rmanager->setBlobColor(1, Color(
+				int((cos(time*2) + 1.0) * 128),
+				int((cos(time*4) + 1.0) * 128),
+				int((cos(time*3) + 1.0) * 128)));
 		}
 
 		PlayerSide side = mReplayMatch->winningPlayer();
@@ -464,14 +434,12 @@ void ReplayMenuState::step()
 				mReplaying = false;
 				delete mReplayMatch;
 				delete mReplayRecorder;
-				delete mGameFPSController;
 				imgui.resetSelection();
 			}
 			if (imgui.doButton(GEN_ID, Vector2(400, 350), "show again"))
 			{
 				delete mReplayMatch;
 				delete mReplayRecorder;
-				delete mGameFPSController;
 				loadCurrentReplay();
 				imgui.resetSelection();
 			}
@@ -482,7 +450,6 @@ void ReplayMenuState::step()
 			mReplaying = false;
 			delete mReplayMatch;
 			delete mReplayRecorder;
-			delete mGameFPSController;
 			imgui.resetSelection();
 		}
 	}
@@ -517,3 +484,5 @@ void ReplayMenuState::step()
 		}
 	}
 }
+
+

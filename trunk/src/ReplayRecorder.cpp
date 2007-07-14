@@ -44,8 +44,6 @@ unsigned long incremental_crc32(unsigned long crc, const char* buf, int size = 1
 ReplayRecorder::ReplayRecorder(GameMode mode)
 {
 	mRecordMode = mode;
-	mGameFPS = 60.0;
-	mGameSpeed = 1.0;
 }
 
 bool ReplayRecorder::endOfFile()
@@ -73,7 +71,6 @@ void ReplayRecorder::save(const std::string& filename)
 	checksum = incremental_crc32(checksum, (char*)&mServingPlayer, sizeof(mServingPlayer));
 	checksum = incremental_crc32(checksum, mPlayerNames[LEFT_PLAYER].c_str(), mPlayerNames[LEFT_PLAYER].size()+1);
 	checksum = incremental_crc32(checksum, mPlayerNames[RIGHT_PLAYER].c_str(), mPlayerNames[RIGHT_PLAYER].size()+1);
-	checksum = incremental_crc32(checksum, (char*)&mGameSpeed, sizeof(mGameSpeed));
 	checksum = incremental_crc32(checksum, mSaveData);
 
 	PHYSFS_write(fileHandle, &checksum, 1, sizeof(checksum));
@@ -81,7 +78,6 @@ void ReplayRecorder::save(const std::string& filename)
 	PHYSFS_write(fileHandle, &mServingPlayer, 1, sizeof(mServingPlayer));
 	PHYSFS_write(fileHandle, mPlayerNames[LEFT_PLAYER].c_str(), 1, mPlayerNames[LEFT_PLAYER].size()+1);
 	PHYSFS_write(fileHandle, mPlayerNames[RIGHT_PLAYER].c_str(), 1, mPlayerNames[RIGHT_PLAYER].size()+1);
-	PHYSFS_write(fileHandle, &mGameSpeed, 1, sizeof(mGameSpeed));
 	for (int i=0; i<mSaveData.size(); i++)
 		PHYSFS_write(fileHandle, &mSaveData[i], 1, sizeof(char));
 
@@ -109,13 +105,6 @@ int ReplayRecorder::readInt()
 char ReplayRecorder::readChar()
 {
 	return *mBufferPtr++;
-}
-
-float ReplayRecorder::readFloat()
-{
-	float* temp = ((float*)mBufferPtr);
-	mBufferPtr += sizeof(float);
-	return *temp;
 }
 
 void ReplayRecorder::load(const std::string& filename)
@@ -165,7 +154,6 @@ void ReplayRecorder::load(const std::string& filename)
 	mServingPlayer = (PlayerSide)readInt();
 	mPlayerNames[LEFT_PLAYER] = readString();
 	mPlayerNames[RIGHT_PLAYER] = readString();
-	mGameSpeed = readFloat();
 }
 
 void ReplayRecorder::record(const PlayerInput* input)
@@ -207,3 +195,15 @@ PlayerInput* ReplayRecorder::getInput()
 	mBufferPtr++;
 	return input;
 }
+
+PlayerSide ReplayRecorder::getServingPlayer()
+{
+	return mServingPlayer;
+}
+
+void ReplayRecorder::setServingPlayer(PlayerSide side)
+{
+	mServingPlayer = side;
+}
+
+
