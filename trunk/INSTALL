@@ -1,14 +1,7 @@
-You must have the autotools (autoconf, automake and aclocal) installed.
+You must have CMake installed.
 Then execute:
 
-sh bootstrap
-
-If this is successfull (This command tells you about missing libraries, 
-please look for OpenGL development files, otherwise blobby will compile
-without OpenGL support):
-./configure
-
-Then type:
+cmake .
 make
 
 Then you can just execute blobby. Just type this in the package directory:
