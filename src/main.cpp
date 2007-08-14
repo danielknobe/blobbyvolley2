@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "State.h"
 #include "SpeedController.h"
-#include "blood.h"
+#include "Blood.h"
 
 #include <cstring>
 #include <sstream>
