@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <stdlib.h>
 #include <physfs.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <syslog.h>
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
@@ -39,6 +43,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 int main(int argc, char** argv)
 {
+	pid_t f_return = fork();
+	if (f_return == -1)
+	{
+		perror("fork");
+		return 1;
+	}
+	if (f_return != 0)
+	{
+		std::cout << "Running in background as PID " << f_return << std::endl;
+		return 0;
+	}
+	openlog("blobby-server", LOG_CONS | LOG_PID, LOG_DAEMON);
 	PHYSFS_init(argv[0]);
 	PHYSFS_addToSearchPath("data", 1);
 	std::string userdir = PHYSFS_getUserDir();
@@ -66,11 +82,13 @@ int main(int argc, char** argv)
 
 	if (!server.Start(200, 0, 0, port))
 	{
-		std::cerr << "blobby-server: Couldn't bind to port " << port;
-		std::cerr << " !" << std::endl;
+		syslog(LOG_ERR, "Couldn´t bind to port %i, exiting", port);
+		return 2;
 	}
 
 	SpeedController scontroller(speed);
+
+	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MINOR, BLOBBY_VERSION_MAJOR);
 
 	while (1)
 	{
@@ -81,8 +99,7 @@ int main(int argc, char** argv)
 			{
 				case ID_NEW_INCOMING_CONNECTION:
 					clients++;
-					printf("new connection incoming\n");
-					printf("%d clients connected now\n", clients);
+					syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", clients);
 					break;
 				case ID_CONNECTION_LOST:
 				case ID_DISCONNECTION_NOTIFICATION:
@@ -94,8 +111,7 @@ int main(int argc, char** argv)
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
 					clients--;
-					printf("connection close\n");
-					printf("%d clients connected now\n", clients);
+					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
 					break;
 				}
 				case ID_INPUT_UPDATE:
@@ -248,8 +264,7 @@ int main(int argc, char** argv)
 				case ID_RECEIVED_STATIC_DATA:
 					break;
 				default:
-					printf("unknown packet %d recieved\n",
-						int(packet->data[0]));
+					syslog(LOG_DEBUG, "Unknown packet %d recieved\n", int(packet->data[0]));
 			}
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
@@ -270,4 +285,6 @@ int main(int argc, char** argv)
 		server.DeallocatePacket(packet);
 		scontroller.update();
 	}
+	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
+	closelog();
 }
