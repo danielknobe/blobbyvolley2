@@ -41,20 +41,60 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #undef main
 #endif
 
+void printHelp()
+{
+	std::cout << "Usage: blobby-server [OPTION...]" << std::endl;
+	std::cout << "  -n, --no-daemon           Don´t run as background process" << std::endl;
+	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
+	std::cout << "  -h, --help                This message" << std::endl;
+}
+
 int main(int argc, char** argv)
 {
-	pid_t f_return = fork();
-	if (f_return == -1)
+	bool run_in_foreground = false;
+	bool print_syslog_to_stderr = false;
+	if (argc > 1)
 	{
-		perror("fork");
-		return 1;
+		for (int i = 1; i < argc; ++i)
+		{
+			if (strcmp(argv[i], "--no-daemon") == 0 || strcmp(argv[i], "-n") == 0)
+			{
+				run_in_foreground = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--print-msgs") == 0 || strcmp(argv[i], "-p") == 0)
+			{
+				print_syslog_to_stderr = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
+			{
+				printHelp();
+				return 3;
+			}
+			std::cout << "Unknown option \"" << argv[i] << "\"" << std::endl;
+			printHelp();
+			return 1;
+		}
 	}
-	if (f_return != 0)
+	if (!run_in_foreground)
 	{
-		std::cout << "Running in background as PID " << f_return << std::endl;
-		return 0;
+		pid_t f_return = fork();
+		if (f_return == -1)
+		{
+			perror("fork");
+			return 1;
+		}
+		if (f_return != 0)
+		{
+			std::cout << "Running in background as PID " << f_return << std::endl;
+			return 0;
+		}
 	}
-	openlog("blobby-server", LOG_CONS | LOG_PID, LOG_DAEMON);
+	int syslog_options = LOG_CONS | LOG_PID;
+	if (print_syslog_to_stderr)
+		syslog_options |= LOG_PERROR;
+	openlog("blobby-server", syslog_options, LOG_DAEMON);
 	PHYSFS_init(argv[0]);
 	PHYSFS_addToSearchPath("data", 1);
 	std::string userdir = PHYSFS_getUserDir();
