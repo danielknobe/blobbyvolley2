@@ -42,10 +42,15 @@ set (blobby-server_SRC ${common_SRC}
 
 find_package(PhysFS REQUIRED)
 find_package(SDL REQUIRED)
+find_package(OpenGL)
+
+if (OPENGL_FOUND)
+	add_definitions(-DHAVE_LIBGL)
+endif (OPENGL_FOUND)
 
 add_executable(blobby ${blobby_SRC})
 add_executable(blobby-server ${blobby-server_SRC})
 
-target_link_libraries(blobby lua raknet tinyxml ${PHYSFS_LIBRARY} ${SDL_LIBRARY})
+target_link_libraries(blobby lua raknet tinyxml ${PHYSFS_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
 
 target_link_libraries(blobby-server raknet tinyxml ${PHYSFS_LIBRARY} ${SDL_LIBRARY})
