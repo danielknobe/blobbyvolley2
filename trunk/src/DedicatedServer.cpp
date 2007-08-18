@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <errno.h>
 #include <unistd.h>
 #include <syslog.h>
+#include <sys/wait.h>
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
@@ -91,6 +92,26 @@ int main(int argc, char** argv)
 			return 0;
 		}
 	}
+
+	// Memory leak workaround with restart:
+	
+	pid_t leaking_server;
+	while ((leaking_server = fork()) > 0)
+	{
+		int status;
+
+		// Wait for server to quit and refork
+		waitpid(leaking_server, &status, 0);
+	}
+
+	if (leaking_server == -1)
+	{
+		perror("fork");
+		return 1;
+	}
+
+	int startTime = SDL_GetTicks();
+
 	int syslog_options = LOG_CONS | LOG_PID;
 	if (print_syslog_to_stderr)
 		syslog_options |= LOG_PERROR;
@@ -324,6 +345,17 @@ int main(int argc, char** argv)
 		}
 		server.DeallocatePacket(packet);
 		scontroller.update();
+
+		// Workaround for memory leak
+		// Restart the server after 1 hour if no player is
+		// connected
+		if ((SDL_GetTicks() - startTime) > 60 * 60 * 1000)
+		{
+			if (gamelist.empty() && firstPlayerSide == NO_PLAYER)
+			{
+				exit(0);
+			}
+		}
 	}
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
 	closelog();
