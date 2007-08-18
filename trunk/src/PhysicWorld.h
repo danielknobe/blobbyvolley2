@@ -130,7 +130,7 @@ public:
 	void getSwappedState(RakNet::BitStream* stream);
 
 	//Input stuff for recording and playing replays
-	PlayerInput* getPlayersInput();
+	const PlayerInput* getPlayersInput();
 };
 
 

@@ -278,7 +278,7 @@ void DuelMatch::setState(RakNet::BitStream* stream)
 	mPhysicWorld.setState(stream);
 }
 
-PlayerInput* DuelMatch::getPlayersInput()
+const PlayerInput* DuelMatch::getPlayersInput()
 {
 	return mPhysicWorld.getPlayersInput();
 }
