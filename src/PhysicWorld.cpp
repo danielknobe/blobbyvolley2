@@ -597,12 +597,7 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
 	stream->Write(mPlayerInput[LEFT_PLAYER].up);
 }
 
-PlayerInput* PhysicWorld::getPlayersInput()
+const PlayerInput* PhysicWorld::getPlayersInput()
 {
-	PlayerInput *input = new PlayerInput[2];
-	input[LEFT_PLAYER] = mPlayerInput[LEFT_PLAYER];
-	input[RIGHT_PLAYER] = mPlayerInput[RIGHT_PLAYER];
-	return input;
+	return mPlayerInput;
 }
-
-

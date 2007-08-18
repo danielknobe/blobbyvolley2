@@ -93,7 +93,7 @@ public:
 	void setState(RakNet::BitStream* stream);
 
 	//Input stuff for recording and playing replays
-	PlayerInput* getPlayersInput();
+	const PlayerInput* getPlayersInput();
 	void setPlayersInput(PlayerInput* input);
 
 	void setPlayerName(std::string name);

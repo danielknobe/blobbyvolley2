@@ -264,7 +264,7 @@ void NetworkSearchState::broadcast()
 {
 	mScannedServers.clear();
 	mPingClient->PingServer("255.255.255.255", BLOBBY_PORT, 0, true);
-	mPingClient->PingServer("88.198.43.14", BLOBBY_PORT, 0, true);
+	mPingClient->PingServer("blobby.openanno.org", BLOBBY_PORT, 0, true);
 	UserConfig config;
 	config.loadFile("config.xml");
 	mPingClient->PingServer(
