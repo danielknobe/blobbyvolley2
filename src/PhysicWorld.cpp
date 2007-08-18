@@ -279,7 +279,10 @@ void PhysicWorld::blobbyStartAnimation(PlayerSide player)
 
 void PhysicWorld::step()
 {
-    // Input Handling
+	// Determistic IEEE 754 floating point computations
+	set_fpu_single_precision();
+
+	// Input Handling
 	for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
 	{
 		if (blobbyHitGround(PlayerSide(i)))
