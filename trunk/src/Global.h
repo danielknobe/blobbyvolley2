@@ -118,3 +118,21 @@ struct ScriptException : public std::exception
 	~ScriptException() throw() {}
 };
 
+inline void set_fpu_single_precision()
+{
+#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
+	#if defined(__GNUC__)
+		volatile short cw;
+		asm volatile ("fstcw %0" : "=m"(cw));
+		cw = cw & 0xfcff;
+		asm volatile ("fldcw %0" :: "m"(cw));
+	#elif defined(_MSC_VER)
+		short cw;
+		asm fstcw cw;
+		cw = cw & 0xfcff;
+		asm fldcw cw;
+	#endif
+#else
+	#warning FPU precision may not conform to IEEE 754
+#endif
+}
