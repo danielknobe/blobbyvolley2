@@ -102,6 +102,12 @@ int main(int argc, char** argv)
 
 		// Wait for server to quit and refork
 		waitpid(leaking_server, &status, 0);
+
+		// Error will propably occur again
+		if (WEXITSTATUS(status) != 0)
+		{
+			exit(WEXITSTATUS(status));
+		}
 	}
 
 	if (leaking_server == -1)
