@@ -53,7 +53,7 @@ bool SpeedController::doFramedrop()
 void SpeedController::update()
 {
 	mFramedrop = false;
-	int rateTicks = 1000 / mGameFPS;
+	int rateTicks = int(1000 / mGameFPS);
 	static int lastTicks = SDL_GetTicks();
 	static int lastDrawnFrame = lastTicks;
 	int ticksDiff = (SDL_GetTicks()-lastTicks);

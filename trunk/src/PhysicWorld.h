@@ -36,13 +36,11 @@ namespace RakNet
 class PhysicWorld
 {
 private:
-	inline bool playerTopBallCollision(PlayerSide player);
-	inline bool playerBottomBallCollision(PlayerSide player);
+	inline bool playerTopBallCollision(int player);
+	inline bool playerBottomBallCollision(int player);
 	bool resetAreaClear();
 
-	// is ball hit by player?
-	bool mBallHitByLeftBlob;
-	bool mBallHitByRightBlob;
+	bool mBallHitByBlob[MAX_PLAYERS];
 
 	Vector2 mBlobPosition[MAX_PLAYERS];
 	Vector2 mBallPosition;
@@ -93,7 +91,7 @@ public:
 
 	// Blobby animation methods
 	void blobbyAnimationStep(PlayerSide player);
-	void blobbyStartAnimation(PlayerSide player);
+	void blobbyStartAnimation(int player);
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
