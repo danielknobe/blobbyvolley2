@@ -422,6 +422,20 @@ void PhysicWorld::step()
 	{
 		mBallPosition += -mBallVelocity.normalise().scale((NET_RADIUS + BALL_RADIUS) - ballNetDistance);
 
+
+
+		// test if ball is out if the net (workarround) (makes netbug imposible!)
+		ballNetDistance = Vector2( mBallPosition, Vector2( NET_POSITION_X, temp ) ).length();
+		if ( ballNetDistance < NET_RADIUS + BALL_RADIUS )
+		{
+			mBallPosition += -mBallVelocity.normalise().scale((NET_RADIUS + BALL_RADIUS) - ballNetDistance);
+			
+			if (Vector2( mBallPosition, Vector2( NET_POSITION_X, temp ) ).length() < ballNetDistance)
+				mBallPosition += mBallVelocity.normalise().scale(((NET_RADIUS + BALL_RADIUS) - ballNetDistance) * 3);
+		}
+		
+
+
 		temp = NET_SPHERE_POSITION;
 		if ( mBallPosition.y > NET_SPHERE_POSITION )
 			temp = mBallPosition.y;

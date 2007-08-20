@@ -1,5 +1,6 @@
 -- Com 1.0 extrem Beta 2 Schmetter-Mod
 -- by Oreon, Axji & Enormator
+-- Name: com_10eB2_Schmettermod
 
 -- Flags und runners
 wait = 0
@@ -26,7 +27,7 @@ CONST_BLOBBY_MAXJUMP = 393.625
 CONST_NETZ_RADIUS = 7
 CONST_NETZ_HOEHE = 323
 
--- Berührungsebene des Balls falls er ans Netz kommt
+-- Berï¿½hrungsebene des Balls falls er ans Netz kommt
 CONST_NETZ_LINKS = CONST_MITTE - CONST_NETZ_RADIUS - CONST_BALL_RADIUS 
 CONST_NETZ_RECHTS = CONST_MITTE + CONST_NETZ_RADIUS + CONST_BALL_RADIUS 
 
@@ -96,7 +97,7 @@ function sprungattacke(p_angriffsstaerke)
 	p_angriffsstaerke=math.max(p_angriffsstaerke, MIN_ANGRIFFSSTAERKE + ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_NETZ_LINKS)) --Weiter hinten nicht ganz so hoch spielen (kommt nicht auf die andere Seite)
 	p_angriffsstaerke=math.min(p_angriffsstaerke, MAX_ANGRIFFSSTAERKE - ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_NETZ_LINKS)) --Weiter hinten nicht ganz so tief spielen (kommt ans Netz)
 
-	moveto(targetJump-p_angriffsstaerke) -- Bei der Sprungatacke wird die Stärke des gewünschten schlages angegeben
+	moveto(targetJump-p_angriffsstaerke) -- Bei der Sprungatacke wird die Stï¿½rke des gewï¿½nschten schlages angegeben
 
 	if (bally() < 580) and (bspeedy() < 0) then
 		jump()
@@ -111,7 +112,7 @@ function generatenaechsterBallSchmettern()
 	angriffsstaerke = math.random(MIN_ANGRIFFSSTAERKE,MAX_ANGRIFFSSTAERKE)
 end
 
-function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nï¿½tigen Angaben
 	bgrav = 0.28	
 
     time1 =(-vby-math.sqrt((vby^2)-(-2*bgrav*(by-destY))))/(-bgrav)
