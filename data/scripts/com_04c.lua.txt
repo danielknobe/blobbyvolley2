@@ -1,5 +1,3 @@
--- combot v0.4d
-
 -- Flags und runners
 wait = 0
 naechsterBallSchmettern = true -- evtl Variablennamen wechseln
@@ -48,24 +46,21 @@ end
 
 function OnGame()
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
-	target = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG)	
-	
-	if target > 440 then
-		moveto(120)
-	else	
-		if naechsterBallSchmettern then
-			sprungattacke(angriffsstaerke)
-			return
-		end
+	target = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG)
 
-		-- nun kümmern wir uns um die Bälle die ans netz prallen
-		if ((target > CONST_NETZ_LINKS) and (ballx() < CONST_NETZ_LINKS)) then
-			netzappraller(target)
-			return
-		end
-
-		moveto(target)
+	if naechsterBallSchmettern then
+		sprungattacke(angriffsstaerke)
+		return
 	end
+
+	-- nun kümmern wir uns um die Bälle die ans netz prallen
+	if ((target > CONST_NETZ_LINKS) and (ballx() < CONST_NETZ_LINKS)) then
+		netzappraller(target)
+		return
+	end
+
+	moveto(target)
+
 end
 
 
@@ -114,7 +109,7 @@ end
 
 function generatenaechsterBallSchmettern()
 	angriffsstaerkeNeuBerechnen = false;
-	angriffsstaerke = math.random(20,55) -- variiert mit der Angriffsstärke also auch mit den Anschlägen
+	angriffsstaerke = math.random(15,64) -- variiert mit der Angriffsstärke also auch mit den Anschlägen
 end
 
 function estimImpact(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit ein paar umbeding nötigen Angaben
@@ -130,6 +125,10 @@ function estimImpact(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit e
 	if(resultX > CONST_RECHTER_RAND) then -- Korrigieren der Appraller an der Rechten Ebene
 		resultX = CONST_FELD_LAENGE - (resultX - CONST_FELD_LAENGE)
 	end
+	-- test
+--	if(resultX > CONST_MITTE - CONST_BALL_RADIUS)then
+--		resultX = -resultX
+--	end
 
     return resultX
 end
@@ -139,3 +138,6 @@ function cleanMoveTo(position) -- eine nette Spielerei ;)
 		moveto(position)
 	end	
 end
+<div style='padding: 4px; background-color: #2B3647; color: white'>PHP-Fehler</div><div style='padding: 4px; background-color: #F5F6F9; border: 1px solid #2B3647'>
+Fatal error: Call to a member function run_hooks() on a non-object in /home/www-data/htdocs/blobby/forum/inc/functions.php on line 146
+</div><div style='padding: 4px; background-color: #2B3647; text-align: right'><a style='color: white; font-size: 0.8em' href='http://www.redio.de/'>Redio Webhosting</a></div>
