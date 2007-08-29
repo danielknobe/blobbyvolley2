@@ -89,6 +89,7 @@ private:
 	std::vector<std::string> mReplayFiles;
 	int mSelectedReplay;
 	bool mReplaying;
+	bool mChecksumError;
 	
 	int mPlayButton;
 	int mCancelButton;

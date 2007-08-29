@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "physfs.h"
 #include "tinyxml/tinyxml.h"
 
+#include <sstream>
 #include <SDL/SDL.h>
 
 
@@ -39,6 +40,25 @@ unsigned long incremental_crc32(unsigned long crc, const char* buf, int size = 1
 	for (int i=0; i < size; i++, buf++)
 		crc = crctable[(crc ^ *buf) & 0xFFL] ^ (crc >> 8);
 	return crc ^ 0xFFFFFFFF;
+}
+
+ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
+{
+	std::stringstream errorstr;
+
+	errorstr << "Error: Corrupted replay file: " << filename <<
+		std::endl << "real crc: " << real <<
+		" crc in file: " << expected;
+	error = errorstr.str();
+}
+
+ChecksumException::~ChecksumException() throw()
+{
+}
+
+const char* ChecksumException::what() const throw()
+{
+	return error.c_str();
 }
 
 ReplayRecorder::ReplayRecorder(GameMode mode)
@@ -67,7 +87,7 @@ void ReplayRecorder::save(const std::string& filename)
 
 	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
 
-	unsigned long checksum = 0;
+	uint32_t checksum = 0;
 	checksum = incremental_crc32(checksum, (char*)&mServingPlayer, sizeof(mServingPlayer));
 	checksum = incremental_crc32(checksum, mPlayerNames[LEFT_PLAYER].c_str(), mPlayerNames[LEFT_PLAYER].size()+1);
 	checksum = incremental_crc32(checksum, mPlayerNames[RIGHT_PLAYER].c_str(), mPlayerNames[RIGHT_PLAYER].size()+1);
@@ -111,7 +131,7 @@ void ReplayRecorder::load(const std::string& filename)
 {
 	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
 	if (!fileHandle)
-		return;
+		throw FileLoadException(filename);
 	int fileLength = PHYSFS_fileLength(fileHandle);
 	if (fileLength < 8)
 	{
@@ -127,8 +147,8 @@ void ReplayRecorder::load(const std::string& filename)
 			filename << std::endl;
 		return;
 	}
-	unsigned long checksum;
-	unsigned long realChecksum = 0;
+	uint32_t checksum;
+	uint32_t realChecksum = 0;
 	PHYSFS_read(fileHandle, &checksum, 1, 4);
 	mBufferSize = fileLength-8;
 	mReplayData = new char[mBufferSize];
@@ -138,15 +158,12 @@ void ReplayRecorder::load(const std::string& filename)
 			filename << std::endl;
 		return;
 	}
-	PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
+	mBufferSize = PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
 	PHYSFS_close(fileHandle);
 	realChecksum = incremental_crc32(realChecksum, mReplayData, mBufferSize);
 	if (realChecksum != checksum)
 	{
-		std::cout << "Error: Corrupted replay file: " <<
-			filename << "\nreal crc: " << realChecksum <<
-			" crc in file: " << checksum << std::endl;
-		return;
+		throw ChecksumException(filename, checksum, realChecksum);
 	}
 
 	mBufferPtr = mReplayData;	//prepare access pointer to mReplayData buffer
@@ -182,6 +199,7 @@ std::string ReplayRecorder::getPlayerName(const PlayerSide side)
 
 PacketType ReplayRecorder::getPacketType()
 {
+	assert (mBufferPtr != 0);
 	if (!endOfFile())
 		return (PacketType)((unsigned char)*mBufferPtr >> 6);
 	return ID_ERROR;

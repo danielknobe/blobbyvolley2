@@ -346,6 +346,8 @@ ReplayMenuState::ReplayMenuState()
 {
 	IMGUI::getSingleton().resetSelection();
 	mReplaying = false;
+	mChecksumError = false;
+
 	mReplayMatch = 0;
 	mReplayRecorder = 0;
 	mSelectedReplay = 0;
@@ -379,14 +381,24 @@ ReplayMenuState::ReplayMenuState()
 void ReplayMenuState::loadCurrentReplay()
 {
 	mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
-	mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
-	mReplaying = true;
-	mReplayMatch = new DuelMatch(0, 0, true, true);
-	mReplayMatch->setServingPlayer(mReplayRecorder->getServingPlayer());
-	RenderManager::getSingleton().setPlayernames(
-		mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
-	SoundManager::getSingleton().playSound(
-			"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+
+	try
+	{
+		mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
+		mReplaying = true;
+		mReplayMatch = new DuelMatch(0, 0, true, true);
+		mReplayMatch->setServingPlayer(mReplayRecorder->getServingPlayer());
+		RenderManager::getSingleton().setPlayernames(
+			mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
+		SoundManager::getSingleton().playSound(
+				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+	}
+	catch (ChecksumException& e)
+	{
+		delete mReplayRecorder;
+		mReplayRecorder = 0;
+		mChecksumError = true;
+	}
 }
 
 void ReplayMenuState::step()
@@ -480,6 +492,23 @@ void ReplayMenuState::step()
 				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 				if (mSelectedReplay >= mReplayFiles.size())
 					mSelectedReplay = mReplayFiles.size()-1;
+			}
+		}
+
+		if (mChecksumError)
+		{
+			imgui.doInactiveMode(false);
+			imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
+			imgui.doText(GEN_ID, Vector2(250, 200), "Checksum error");
+			imgui.doText(GEN_ID, Vector2(250, 250), "File is corrupt");
+
+			if (imgui.doButton(GEN_ID, Vector2(400, 330), "OK"))
+			{
+				mChecksumError = false;
+			}
+			else
+			{
+				imgui.doInactiveMode(true);
 			}
 		}
 	}

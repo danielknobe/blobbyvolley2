@@ -40,6 +40,15 @@ enum PacketType
 	ID_ERROR = 2,	//handles EOF
 };
 
+struct ChecksumException : public std::exception
+{
+	ChecksumException(std::string filename, uint32_t expected, uint32_t real);
+	~ChecksumException() throw();
+
+	virtual const char* what() const throw();
+
+	std::string error;
+};
 
 class ReplayRecorder
 {
