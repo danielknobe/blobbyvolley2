@@ -43,6 +43,9 @@ private:
 	// Do all blobby-related physic stuff which is independent from states
 	void handleBlob(PlayerSide player);
 
+	// Detect and handle ball to blobby collisions
+	void checkBlobbyBallCollision(PlayerSide player);
+
 	bool mBallHitByBlob[MAX_PLAYERS];
 
 	Vector2 mBlobPosition[MAX_PLAYERS];
