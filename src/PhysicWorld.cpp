@@ -66,11 +66,6 @@ const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
 const float BALL_COLLISION_VELOCITY = 13.125;
 
-// Temp
-float temp = 0;
-
-
-
 PhysicWorld::PhysicWorld()
 {
 	reset(LEFT_PLAYER);
@@ -318,6 +313,46 @@ void PhysicWorld::handleBlob(PlayerSide player)
 		mBlobPosition[player].y = GROUND_PLANE_HEIGHT;
 		mBlobVelocity[player].y = 0.0;
 	}
+
+	blobbyAnimationStep(player);
+}
+
+void PhysicWorld::checkBlobbyBallCollision(PlayerSide player)
+{
+	// Check for bottom circles
+	if(playerBottomBallCollision(player))
+	{
+		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length();
+
+		const Vector2& blobpos = mBlobPosition[player];
+		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y + BLOBBY_LOWER_SPHERE);
+		
+		mBallPosition +=
+			Vector2(mBallPosition, circlepos).normalise()
+			.scale((Vector2(mBallPosition, circlepos).length())
+			- (BLOBBY_LOWER_RADIUS + BALL_RADIUS));
+		mBallVelocity = -Vector2(mBallPosition, circlepos);
+		mBallVelocity = mBallVelocity.normalise();
+		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
+		mBallHitByBlob[player] = true;
+	}
+	else if(playerTopBallCollision(player))
+	{
+		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length();
+
+		const Vector2& blobpos = mBlobPosition[player];
+		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y - BLOBBY_UPPER_SPHERE);
+
+		mBallPosition +=
+			Vector2(mBallPosition, circlepos).normalise()
+			.scale((Vector2(mBallPosition, circlepos).length())
+			- (BLOBBY_UPPER_RADIUS + BALL_RADIUS));
+		mBallVelocity = -Vector2(mBallPosition, circlepos);
+		mBallVelocity = mBallVelocity.normalise();
+		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
+		mBallHitByBlob[player] = true;
+	}
+
 }
 
 void PhysicWorld::step()
@@ -339,59 +374,15 @@ void PhysicWorld::step()
 	// Collision detection
 	if(mIsBallValid)
 	{
-		// Collisioncheck of blobbottomcircles
-		for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
-		{
-			if(playerBottomBallCollision(i))
-			{
-				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[i]).length();
-				
-				mBallPosition +=
-					Vector2( mBallPosition, Vector2( mBlobPosition[i].x, mBlobPosition[i].y + BLOBBY_LOWER_SPHERE ) ).normalise()
-					.scale( ( Vector2( mBallPosition, Vector2( mBlobPosition[i].x, mBlobPosition[i].y + BLOBBY_LOWER_SPHERE) )
-					.length() ) - ( BLOBBY_LOWER_RADIUS + BALL_RADIUS ) );
-
-				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[i].x,mBlobPosition[i].y + BLOBBY_LOWER_SPHERE));
-
-				mBallVelocity = mBallVelocity.normalise();
-				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
-
-				mBallHitByBlob[i] = true;
-			}
-		}
-
-		// Collisioncheck of blobtopcircles
-		for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
-		{
-			if(playerTopBallCollision(i))
-			{
-				mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[i]).length();
-				
-				mBallPosition +=
-					Vector2( mBallPosition, Vector2( mBlobPosition[i].x, mBlobPosition[i].y - BLOBBY_UPPER_SPHERE ) ).normalise()
-					.scale( ( Vector2( mBallPosition, Vector2( mBlobPosition[i].x, mBlobPosition[i].y - BLOBBY_UPPER_SPHERE) )
-					.length() ) - ( BLOBBY_UPPER_RADIUS + BALL_RADIUS ) );
-
-				mBallVelocity = -Vector2(mBallPosition,Vector2(mBlobPosition[i].x,mBlobPosition[i].y - BLOBBY_UPPER_SPHERE));
-
-				mBallVelocity = mBallVelocity.normalise();
-				mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
-
-				mBallHitByBlob[i] = true;
-			}
-		}
-
+		checkBlobbyBallCollision(LEFT_PLAYER);
+		checkBlobbyBallCollision(RIGHT_PLAYER);
 	}
 	// Ball to ground Collision
-	else
+	else if (mBallPosition.y + BALL_RADIUS > 500.0)
 	{
-		if (mBallPosition.y + BALL_RADIUS > 500.0)
-		{
-				mBallVelocity = mBallVelocity.reflectY().scaleY(0.5);
-				mBallVelocity = mBallVelocity.scaleX(0.55);
-
-			mBallPosition.y = 500 - BALL_RADIUS;
-		}
+		mBallVelocity = mBallVelocity.reflectY().scaleY(0.5);
+		mBallVelocity = mBallVelocity.scaleX(0.55);
+		mBallPosition.y = 500 - BALL_RADIUS;
 	}
 
 
@@ -399,67 +390,52 @@ void PhysicWorld::step()
 		mIsGameRunning = true;
 	
 	// Border Collision
-	if(mBallPosition.x - BALL_RADIUS <= LEFT_PLANE && mBallVelocity.x < 0.0)
-		mBallVelocity = mBallVelocity.reflectX();
-	if(mBallPosition.x + BALL_RADIUS >= RIGHT_PLANE && mBallVelocity.x > 0.0)
-		mBallVelocity = mBallVelocity.reflectX();
-
-	// Net Collisions
-
-	bool semicircle = true;
-
-	temp = NET_SPHERE_POSITION;
-	if ( mBallPosition.y > NET_SPHERE_POSITION )
+	if (mBallPosition.x - BALL_RADIUS <= LEFT_PLANE && mBallVelocity.x < 0.0)
 	{
-		temp = mBallPosition.y;
-		semicircle = false;
+		mBallVelocity = mBallVelocity.reflectX();
 	}
-
-	float ballNetDistance = Vector2( mBallPosition, Vector2( NET_POSITION_X, temp ) ).length();
-
-	if ( ballNetDistance < NET_RADIUS + BALL_RADIUS )
+	else if (mBallPosition.x + BALL_RADIUS >= RIGHT_PLANE && mBallVelocity.x > 0.0)
 	{
-		if ( semicircle )
-		{
-			mBallPosition += -mBallVelocity.normalise().scale((NET_RADIUS + BALL_RADIUS) - ballNetDistance);
+		mBallVelocity = mBallVelocity.reflectX();
+	}
+	else if (mBallPosition.y > NET_SPHERE_POSITION &&
+			fabs(mBallPosition.x - NET_POSITION_X) < BALL_RADIUS + NET_RADIUS)
+	{
+		mBallVelocity = mBallVelocity.reflectX();
+		mBallPosition += mBallVelocity;
+	}
+	else
+	{
+		// Net Collisions
 
-			if ( ballNetDistance > Vector2( mBallPosition, Vector2( NET_POSITION_X, temp ) ).length() )
-				mBallPosition += mBallVelocity.normalise().scale(((NET_RADIUS + BALL_RADIUS) - ballNetDistance) * 2);
+		float ballNetDistance = Vector2(mBallPosition, Vector2(NET_POSITION_X, NET_SPHERE_POSITION)).length();
+
+		if (ballNetDistance < NET_RADIUS + BALL_RADIUS)
+		{ 
+			mBallVelocity = mBallVelocity.reflect(Vector2(mBallPosition,
+						Vector2(NET_POSITION_X, NET_SPHERE_POSITION))
+					.normalise()).scale(0.75);
+
+			while (ballNetDistance < NET_RADIUS + BALL_RADIUS)
+			{
+				mBallPosition += mBallVelocity;
+				ballNetDistance = Vector2(mBallPosition, Vector2(NET_POSITION_X, NET_SPHERE_POSITION)).length();
+			}
 		}
-		else
-		{
-
-			float prefix = 1;
-
-			if ( mBallVelocity.x > 0 )
-				prefix = -1;
-
-			mBallPosition += Vector2(((NET_RADIUS + BALL_RADIUS) - ballNetDistance) * prefix, ((((NET_RADIUS + BALL_RADIUS) - ballNetDistance) /
-			mBallVelocity.normalise().x) * mBallVelocity.normalise().y));
-
-
-
-			temp = NET_SPHERE_POSITION;
-			if ( mBallPosition.y > NET_SPHERE_POSITION )
-				temp = mBallPosition.y;
-		}
-
-			mBallVelocity = mBallVelocity.reflect( Vector2( mBallPosition, Vector2 (NET_POSITION_X, temp) ).normalise()).scale(0.75);
+		// mBallVelocity = mBallVelocity.reflect( Vector2( mBallPosition, Vector2 (NET_POSITION_X, temp) ).normalise()).scale(0.75);
 	}
 
 	// Collision between blobby and the net
 	if (mBlobPosition[LEFT_PLAYER].x+BLOBBY_LOWER_RADIUS>NET_POSITION_X-NET_RADIUS) // Collision with the net
 		mBlobPosition[LEFT_PLAYER].x=NET_POSITION_X-NET_RADIUS-BLOBBY_LOWER_RADIUS;
 
-	// Collision between blobby and the net
-	if (mBlobPosition[RIGHT_PLAYER].x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS) // Collision with the net
+	if (mBlobPosition[RIGHT_PLAYER].x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS)
 		mBlobPosition[RIGHT_PLAYER].x=NET_POSITION_X+NET_RADIUS+BLOBBY_LOWER_RADIUS;
 
 	// Collision between blobby and the border
 	if (mBlobPosition[LEFT_PLAYER].x < LEFT_PLANE)
 		mBlobPosition[LEFT_PLAYER].x=LEFT_PLANE;
 
-	// Collision between blobby and the border
 	if (mBlobPosition[RIGHT_PLAYER].x > RIGHT_PLANE)
 		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
 
@@ -476,10 +452,6 @@ void PhysicWorld::step()
 		mBallRotation = 6.25 + mBallRotation;
 	else if (mBallRotation >= 6.25)
 		mBallRotation = mBallRotation - 6.25;
-
-	// Blobbyanimationstep
-	blobbyAnimationStep(LEFT_PLAYER);
-	blobbyAnimationStep(RIGHT_PLAYER);
 
 	mTimeSinceBallout = mIsBallValid ? 0.0 :
 		mTimeSinceBallout + 1.0 / 60;
