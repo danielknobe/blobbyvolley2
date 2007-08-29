@@ -95,13 +95,20 @@ struct BufferedImage
 struct FileLoadException : public std::exception
 {
 	std::string filename;
-	FileLoadException(std::string name) : filename(name) {}
+	FileLoadException(std::string name) : filename(name)
+	{
+		error = "Couldn't load " + filename;;
+	}
+	
 	~FileLoadException() throw() {}
 
 	virtual const char* what() const throw()
 	{
-		return std::string("Couldn't load " + filename).c_str();
+		return error.c_str();
 	}
+	
+private:
+	std::string error;
 };
 
 
