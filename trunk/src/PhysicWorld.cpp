@@ -73,7 +73,7 @@ float temp = 0;
 
 PhysicWorld::PhysicWorld()
 {
-	reset(0);
+	reset(LEFT_PLAYER);
 	mCurrentBlobbyAnimationSpeed[LEFT_PLAYER] = 0.0;
 	mCurrentBlobbyAnimationSpeed[RIGHT_PLAYER] = 0.0;
 	mTimeSinceBallout = 0.0;
@@ -90,11 +90,11 @@ bool PhysicWorld::resetAreaClear()
 	return false;
 }
 
-void PhysicWorld::reset(int player)
+void PhysicWorld::reset(PlayerSide player)
 {
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 		mBallPosition = Vector2(200, STANDARD_BALL_HEIGHT);
-	else if (player == 1)
+	else if (player == RIGHT_PLAYER)
 		mBallPosition = Vector2(600, STANDARD_BALL_HEIGHT);
 	else
 		mBallPosition = Vector2(400, 450);
@@ -138,7 +138,7 @@ bool PhysicWorld::ballHitLeftGround()
 	return false;
 }
 
-bool PhysicWorld::blobbyHitGround(int player)
+bool PhysicWorld::blobbyHitGround(PlayerSide player)
 {
 	if (player == 0)
 	{
@@ -270,11 +270,54 @@ void PhysicWorld::blobbyAnimationStep(PlayerSide player)
 	}
 }
 
-void PhysicWorld::blobbyStartAnimation(int player)
+void PhysicWorld::blobbyStartAnimation(PlayerSide player)
 {
 	if (mCurrentBlobbyAnimationSpeed[player] == 0)
 		mCurrentBlobbyAnimationSpeed[player] =
 			BLOBBY_ANIMATION_SPEED;
+}
+
+void PhysicWorld::handleBlob(PlayerSide player)
+{
+	// Reset ball to blobby collision
+	mBallHitByBlob[player] = false;
+
+	if (mPlayerInput[player].up)
+	{
+		if (blobbyHitGround(player))
+		{
+			mBlobVelocity[player].y = -BLOBBY_JUMP_ACCELERATION;
+			blobbyStartAnimation(PlayerSide(player));
+		}
+		mBlobVelocity[player].y -= BLOBBY_JUMP_BUFFER;
+	}
+
+	if ((mPlayerInput[player].left || mPlayerInput[player].right)
+			&& blobbyHitGround(player))
+	{
+		blobbyStartAnimation(player);
+	}
+
+	mBlobVelocity[player].x =
+		(mPlayerInput[player].right ? BLOBBY_SPEED : 0) -
+		(mPlayerInput[player].left ? BLOBBY_SPEED : 0);
+
+	// Acceleration Integration
+	mBlobVelocity[player].y += GRAVITATION;
+
+	// Compute new position
+	mBlobPosition[player] += mBlobVelocity[player];
+
+	if (mBlobPosition[player].y > GROUND_PLANE_HEIGHT)
+	{
+		if(mBlobVelocity[player].y > 3.5)
+		{
+			blobbyStartAnimation(player);
+		}
+
+		mBlobPosition[player].y = GROUND_PLANE_HEIGHT;
+		mBlobVelocity[player].y = 0.0;
+	}
 }
 
 void PhysicWorld::step()
@@ -282,59 +325,9 @@ void PhysicWorld::step()
 	// Determistic IEEE 754 floating point computations
 	set_fpu_single_precision();
 
-	// Reset the ball-blobby collision
-	mBallHitByBlob[LEFT_PLAYER] = false;
-	mBallHitByBlob[RIGHT_PLAYER] = false;
-
-	// Input Handling
-	for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
-	{
-		if (blobbyHitGround(PlayerSide(i)))
-			if (mPlayerInput[i].up)
-			{
-				mBlobVelocity[i].y = -BLOBBY_JUMP_ACCELERATION;
-				blobbyStartAnimation(PlayerSide(i));
-			}
-
-		if (mPlayerInput[i].up)
-			mBlobVelocity[i].y -= BLOBBY_JUMP_BUFFER;
-
-		mBlobVelocity[i].x = 0.0;
-
-		if (mPlayerInput[i].left)
-		{
-			if(blobbyHitGround(PlayerSide(i)))
-					blobbyStartAnimation(PlayerSide(i));
-				mBlobVelocity[i].x = -BLOBBY_SPEED;
-		}
-			
-		if (mPlayerInput[i].right)
-		{
-			if(blobbyHitGround(PlayerSide(i)))
-					blobbyStartAnimation(PlayerSide(i));
-				mBlobVelocity[i].x = +BLOBBY_SPEED;
-		}
-	}
-
-	// Acceleration Integration
-	mBlobVelocity[LEFT_PLAYER].y += GRAVITATION;
-	mBlobVelocity[RIGHT_PLAYER].y += GRAVITATION;
-
-	// Set new blob position
-	mBlobPosition[LEFT_PLAYER] += mBlobVelocity[LEFT_PLAYER];
-	mBlobPosition[RIGHT_PLAYER] += mBlobVelocity[RIGHT_PLAYER];
-
-	for (int i = LEFT_PLAYER; i <= RIGHT_PLAYER; ++i)
-	{
-		if (mBlobPosition[i].y > GROUND_PLANE_HEIGHT)
-		{
-			if(mBlobVelocity[i].y > 3.5)
-				blobbyStartAnimation(i);
-
-			mBlobPosition[i].y = GROUND_PLANE_HEIGHT;
-			mBlobVelocity[i].y = 0.0;
-		}
-	}
+	// Compute independent actions
+	handleBlob(LEFT_PLAYER);
+	handleBlob(RIGHT_PLAYER);
 
 	// Ball Gravitation
 	if (mIsGameRunning)

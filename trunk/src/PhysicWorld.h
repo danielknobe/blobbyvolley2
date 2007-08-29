@@ -40,6 +40,9 @@ private:
 	inline bool playerBottomBallCollision(int player);
 	bool resetAreaClear();
 
+	// Do all blobby-related physic stuff which is independent from states
+	void handleBlob(PlayerSide player);
+
 	bool mBallHitByBlob[MAX_PLAYERS];
 
 	Vector2 mBlobPosition[MAX_PLAYERS];
@@ -87,11 +90,11 @@ public:
 	bool ballHitLeftGround();
 	bool ballHitRightGround();
 
-	bool blobbyHitGround(int player);
+	bool blobbyHitGround(PlayerSide player);
 
 	// Blobby animation methods
 	void blobbyAnimationStep(PlayerSide player);
-	void blobbyStartAnimation(int player);
+	void blobbyStartAnimation(PlayerSide player);
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
@@ -107,7 +110,7 @@ public:
 
 	// This resets everything to the starting situation and
 	// wants to know, which player begins.
-	void reset(int player);
+	void reset(PlayerSide player);
 
 	// This resets the player to their starting Positions
 	void resetPlayer();
