@@ -327,13 +327,10 @@ void PhysicWorld::checkBlobbyBallCollision(PlayerSide player)
 		const Vector2& blobpos = mBlobPosition[player];
 		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y + BLOBBY_LOWER_SPHERE);
 		
-		mBallPosition +=
-			Vector2(mBallPosition, circlepos).normalise()
-			.scale((Vector2(mBallPosition, circlepos).length())
-			- (BLOBBY_LOWER_RADIUS + BALL_RADIUS));
 		mBallVelocity = -Vector2(mBallPosition, circlepos);
 		mBallVelocity = mBallVelocity.normalise();
 		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
+		mBallPosition += mBallVelocity;
 		mBallHitByBlob[player] = true;
 	}
 	else if(playerTopBallCollision(player))
@@ -343,13 +340,10 @@ void PhysicWorld::checkBlobbyBallCollision(PlayerSide player)
 		const Vector2& blobpos = mBlobPosition[player];
 		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y - BLOBBY_UPPER_SPHERE);
 
-		mBallPosition +=
-			Vector2(mBallPosition, circlepos).normalise()
-			.scale((Vector2(mBallPosition, circlepos).length())
-			- (BLOBBY_UPPER_RADIUS + BALL_RADIUS));
 		mBallVelocity = -Vector2(mBallPosition, circlepos);
 		mBallVelocity = mBallVelocity.normalise();
 		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
+		mBallPosition += mBallVelocity;
 		mBallHitByBlob[player] = true;
 	}
 
@@ -384,7 +378,6 @@ void PhysicWorld::step()
 		mBallVelocity = mBallVelocity.scaleX(0.55);
 		mBallPosition.y = 500 - BALL_RADIUS;
 	}
-
 
 	if (ballHitLeftPlayer() || ballHitRightPlayer())
 		mIsGameRunning = true;
