@@ -40,9 +40,15 @@ set (blobby-server_SRC ${common_SRC}
 	DedicatedServer.cpp DedicatedServer.h
 	)
 
+find_package(Boost REQUIRED)
 find_package(PhysFS REQUIRED)
 find_package(SDL REQUIRED)
 find_package(OpenGL)
+
+include_directories(
+	${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR}
+	${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR}
+)
 
 if (OPENGL_FOUND)
 	add_definitions(-DHAVE_LIBGL)

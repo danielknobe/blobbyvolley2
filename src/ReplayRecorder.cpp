@@ -23,24 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tinyxml/tinyxml.h"
 
 #include <sstream>
+#include <boost/crc.hpp>
 #include <SDL/SDL.h>
-
-
-unsigned long incremental_crc32(unsigned long crc, std::vector<char> vec)
-{
-	crc ^= 0xFFFFFFFF;
-	for (int i=0; i < vec.size(); i++)
-		crc = crctable[(crc ^ vec[i]) & 0xFFL] ^ (crc >> 8);
-	return crc ^ 0xFFFFFFFF;
-}
-
-unsigned long incremental_crc32(unsigned long crc, const char* buf, int size = 1)
-{
-	crc ^= 0xFFFFFFFF;
-	for (int i=0; i < size; i++, buf++)
-		crc = crctable[(crc ^ *buf) & 0xFFL] ^ (crc >> 8);
-	return crc ^ 0xFFFFFFFF;
-}
 
 ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
 {
@@ -87,12 +71,13 @@ void ReplayRecorder::save(const std::string& filename)
 
 	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
 
-	uint32_t checksum = 0;
-	checksum = incremental_crc32(checksum, (char*)&mServingPlayer, sizeof(mServingPlayer));
-	checksum = incremental_crc32(checksum, mPlayerNames[LEFT_PLAYER].c_str(), mPlayerNames[LEFT_PLAYER].size()+1);
-	checksum = incremental_crc32(checksum, mPlayerNames[RIGHT_PLAYER].c_str(), mPlayerNames[RIGHT_PLAYER].size()+1);
-	checksum = incremental_crc32(checksum, mSaveData);
+	boost::crc_32_type crc;
+	crc(mServingPlayer);
+	crc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), crc);
+	crc = std::for_each(mPlayerNames[RIGHT_PLAYER].begin(), mPlayerNames[RIGHT_PLAYER].end(), crc);
+	crc = std::for_each(mSaveData.begin(), mSaveData.end(), crc);
 
+	uint32_t checksum = crc.checksum();
 	PHYSFS_write(fileHandle, &checksum, 1, sizeof(checksum));
 
 	PHYSFS_write(fileHandle, &mServingPlayer, 1, sizeof(mServingPlayer));
@@ -148,7 +133,6 @@ void ReplayRecorder::load(const std::string& filename)
 		return;
 	}
 	uint32_t checksum;
-	uint32_t realChecksum = 0;
 	PHYSFS_read(fileHandle, &checksum, 1, 4);
 	mBufferSize = fileLength-8;
 	mReplayData = new char[mBufferSize];
@@ -160,10 +144,12 @@ void ReplayRecorder::load(const std::string& filename)
 	}
 	mBufferSize = PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
 	PHYSFS_close(fileHandle);
-	realChecksum = incremental_crc32(realChecksum, mReplayData, mBufferSize);
-	if (realChecksum != checksum)
+	
+	boost::crc_32_type realcrc;
+	realcrc.process_bytes(mReplayData, mBufferSize);
+	if (realcrc.checksum() != checksum)
 	{
-		throw ChecksumException(filename, checksum, realChecksum);
+		throw ChecksumException(filename, checksum, realcrc.checksum());
 	}
 
 	mBufferPtr = mReplayData;	//prepare access pointer to mReplayData buffer
