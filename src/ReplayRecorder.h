@@ -60,6 +60,7 @@ public:
 	// returns true and nothing is replayed. If an saving error occurs,
 	// nothing is recorded
 	ReplayRecorder(GameMode mode);
+	~ReplayRecorder();
 
 	// This rewinds to the start when replaying
 	void reset();
@@ -78,25 +79,25 @@ public:
 
 	std::string getPlayerName(const PlayerSide side);
 
-	PacketType getPacketType();
 	PlayerInput* getInput();
-
-	std::string readString();
-	int readInt();
-	char readChar();
 
 	PlayerSide getServingPlayer();
 	void setServingPlayer(PlayerSide side);
 
+	PacketType getPacketType();
+
 private:
+	std::string readString();
+	int readInt();
+	char readChar();
 
 	PlayerInput getInput(PlayerSide side);
 
 	GameMode mRecordMode;
 	char* mReplayData;
-	char* mBufferPtr;
+	uint32_t mReplayOffset;
 	int mBufferSize;
-	std::vector<char> mSaveData;
+	std::vector<uint8_t> mSaveData;
 
 	std::string mPlayerNames[MAX_PLAYERS];
 	PlayerSide mServingPlayer;

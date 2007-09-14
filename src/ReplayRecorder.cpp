@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "physfs.h"
 #include "tinyxml/tinyxml.h"
 
+#include <new>
 #include <sstream>
 #include <boost/crc.hpp>
 #include <SDL/SDL.h>
@@ -48,12 +49,21 @@ const char* ChecksumException::what() const throw()
 ReplayRecorder::ReplayRecorder(GameMode mode)
 {
 	mRecordMode = mode;
+	mReplayData = 0;
+}
+
+ReplayRecorder::~ReplayRecorder()
+{
+	if (mReplayData)
+	{
+		delete[] mReplayData;
+	}
 }
 
 bool ReplayRecorder::endOfFile()
 {
 	if (mRecordMode == MODE_REPLAY_DUEL)
-		return (mBufferPtr >= mReplayData + mBufferSize);
+		return (mReplayOffset >= mBufferSize);
 	else
 		return false;
 }
@@ -70,7 +80,7 @@ void ReplayRecorder::save(const std::string& filename)
 	}
 
 	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
-
+	
 	boost::crc_32_type crc;
 	crc(mServingPlayer);
 	crc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), crc);
@@ -92,24 +102,24 @@ void ReplayRecorder::save(const std::string& filename)
 std::string ReplayRecorder::readString()
 {
 	std::string str;
-	while (*mBufferPtr != '\0')
+	char c;
+	while ((c = mReplayData[mReplayOffset++]) != '\0')
 	{
-		str.append(1, *mBufferPtr++);
+		str.append(1, c);
 	}
-	mBufferPtr++;
 	return str;
 }
 
 int ReplayRecorder::readInt()
 {
-	int* temp = ((int*)mBufferPtr);
-	mBufferPtr += sizeof(int);
-	return *temp;
+	int ret = mReplayData[mReplayOffset];
+	mReplayOffset += sizeof(int);
+	return ret;
 }
 
 char ReplayRecorder::readChar()
 {
-	return *mBufferPtr++;
+	return mReplayData[mReplayOffset++];
 }
 
 void ReplayRecorder::load(const std::string& filename)
@@ -135,28 +145,31 @@ void ReplayRecorder::load(const std::string& filename)
 	uint32_t checksum;
 	PHYSFS_read(fileHandle, &checksum, 1, 4);
 	mBufferSize = fileLength-8;
-	mReplayData = new char[mBufferSize];
-	if (mReplayData == NULL)
-	{
-		std::cout << "Error: Cannot load file to memory: " <<
-			filename << std::endl;
-		return;
+
+	if (mReplayData != 0) {
+		delete[] mReplayData;
 	}
+	mReplayData = new char[mBufferSize];
+
 	mBufferSize = PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
 	PHYSFS_close(fileHandle);
-	
-	boost::crc_32_type realcrc;
-	realcrc.process_bytes(mReplayData, mBufferSize);
-	if (realcrc.checksum() != checksum)
-	{
-		throw ChecksumException(filename, checksum, realcrc.checksum());
-	}
 
-	mBufferPtr = mReplayData;	//prepare access pointer to mReplayData buffer
+	mReplayOffset = 0;
 
 	mServingPlayer = (PlayerSide)readInt();
 	mPlayerNames[LEFT_PLAYER] = readString();
 	mPlayerNames[RIGHT_PLAYER] = readString();
+
+	boost::crc_32_type realcrc;
+	realcrc(mServingPlayer);
+	realcrc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), realcrc);
+	realcrc = std::for_each(mPlayerNames[RIGHT_PLAYER].begin(), mPlayerNames[RIGHT_PLAYER].end(), realcrc);
+	realcrc.process_bytes(mReplayData + mReplayOffset, mBufferSize - mReplayOffset);
+
+	if (realcrc.checksum() != checksum)
+	{
+		throw ChecksumException(filename, checksum, realcrc.checksum());
+	}
 }
 
 void ReplayRecorder::record(const PlayerInput* input)
@@ -185,18 +198,21 @@ std::string ReplayRecorder::getPlayerName(const PlayerSide side)
 
 PacketType ReplayRecorder::getPacketType()
 {
-	assert (mBufferPtr != 0);
-	if (!endOfFile())
-		return (PacketType)((unsigned char)*mBufferPtr >> 6);
-	return ID_ERROR;
+	assert(mReplayData != 0);
+	if (!endOfFile()) {
+		uint8_t packet = mReplayData[mReplayOffset];
+		return static_cast<PacketType>(packet >> 6);
+	} else {
+		return ID_ERROR;
+	}
 }
 
 PlayerInput* ReplayRecorder::getInput()
 {
 	PlayerInput* input = new PlayerInput[MAX_PLAYERS];
-	input[LEFT_PLAYER].set((bool)(*mBufferPtr & 32), (bool)(*mBufferPtr & 16), (bool)(*mBufferPtr & 8));
-	input[RIGHT_PLAYER].set((bool)(*mBufferPtr & 4), (bool)(*mBufferPtr & 2), (bool)(*mBufferPtr & 1));
-	mBufferPtr++;
+	const uint8_t packet = mReplayData[mReplayOffset++];
+	input[LEFT_PLAYER].set((bool)(packet & 32), (bool)(packet & 16), (bool)(packet & 8));
+	input[RIGHT_PLAYER].set((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1));
 	return input;
 }
 
