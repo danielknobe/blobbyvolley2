@@ -32,8 +32,9 @@ bool UserConfig::loadFile(const std::string& filename)
 	}
 
 	int fileLength = PHYSFS_fileLength(fileHandle);
-	char* fileBuffer = new char[fileLength];
+	char* fileBuffer = new char[fileLength + 1];
 	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
+	fileBuffer[fileLength] = 0;
 	TiXmlDocument configDoc;
 	configDoc.Parse(fileBuffer);
 	delete[] fileBuffer;
