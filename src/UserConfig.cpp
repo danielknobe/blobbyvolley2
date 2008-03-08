@@ -155,7 +155,7 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	{
 		std::cerr << "Warning: impossible to set value of " <<
 			"unknown configuration variable " << name <<
-			"\n Creating new varaible" << std::endl;
+			"\n Creating new variable" << std::endl;
 		var = createVar(name, value);
 		mChangeFlag = true;
 		return;

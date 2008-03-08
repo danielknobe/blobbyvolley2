@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "InputDevice.h"
 
+#include <sstream>
+
 JoystickPool* JoystickPool::mSingleton = 0; //static
 
 JoystickAction::JoystickAction(std::string string)
@@ -64,15 +66,15 @@ JoystickAction::~JoystickAction()
 
 std::string JoystickAction::toString()
 {
-	char buf[64];
-	char* typestr = "unknown";
+	const char* typestr = "unknown";
 	if (type == AXIS)
 		typestr = "axis";
 	if (type == BUTTON)
 		typestr = "button";
-
-	snprintf(buf, 64, "joy_%d_%s_%d", joyid, typestr, number);
-	return buf;
+		
+	std::stringstream buf;
+	buf << "joy_" << joyid << "_" << typestr << "_" << number;
+	return buf.str();
 }
 
 bool JoystickInputDevice::getAction(const JoystickAction& action)

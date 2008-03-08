@@ -49,33 +49,6 @@ public:
 	virtual void step();
 };
 
-class LocalGameState : public State
-{
-private:
-	InputSource* mLeftInput;
-	InputSource* mRightInput;
-	
-	std::string mLeftName;
-	std::string mRightName;
-
-	Color mLeftColor;
-	Color mRightColor;
-	bool mLeftOscillate;
-	bool mRightOscillate;
-	bool mPaused;
-	bool mSaveReplay;
-	bool mWinner;
-	std::string mFilename;
-	
-	DuelMatch* mMatch;
-	ReplayRecorder* mRecorder;
-public:
-	LocalGameState();
-	virtual ~LocalGameState();
-	virtual void step();
-	
-};
-
 class ReplayMenuState : public State
 {
 public:
