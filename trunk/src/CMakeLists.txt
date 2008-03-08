@@ -3,6 +3,7 @@ add_subdirectory(tinyxml)
 add_subdirectory(raknet)
 
 add_definitions(-DTIXML_USE_STL)
+include_directories(.)
 
 set(common_SRC	
 	Global.h
@@ -22,8 +23,7 @@ set (blobby_SRC ${common_SRC}
 	InputManager.cpp InputManager.h
 	InputSource.cpp InputSource.h
 	LocalInputSource.h
-	NetworkState.cpp NetworkState.h
-	OptionsState.cpp OptionsState.h
+	Player.cpp Player.h
 	RenderManager.cpp RenderManager.h
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
 	RenderManagerGP2X.cpp RenderManagerGP2X.h
@@ -32,8 +32,12 @@ set (blobby_SRC ${common_SRC}
 	ReplayRecorder.cpp ReplayRecorder.h
 	ScriptedInputSource.cpp ScriptedInputSource.h
 	SoundManager.cpp SoundManager.h
-	State.cpp State.h
 	Vector.h
+	
+	state/State.cpp state/State.h
+	state/LocalGameState.cpp state/LocalGameState.h
+	state/NetworkState.cpp state/NetworkState.h
+	state/OptionsState.cpp state/OptionsState.h
 	)
 	
 set (blobby-server_SRC ${common_SRC}

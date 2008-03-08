@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
-#include "State.h"
+#include "state/State.h"
 #include "SpeedController.h"
 #include "Blood.h"
 
@@ -122,6 +122,7 @@ int main(int argc, char* argv[])
 	setupPHYSFS();
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+	SDL_EnableUNICODE(1);
 	atexit(SDL_Quit);
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
