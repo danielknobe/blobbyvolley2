@@ -61,7 +61,7 @@ endif (OPENGL_FOUND)
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
 	set(RAKNET_LIBRARIES raknet ws2_32)
 else (CMAKE_SYSTEM_NAME STREQUAL Windows)
-	set(RAKNET_LIBRARIES raknet furz)
+	set(RAKNET_LIBRARIES raknet)
 endif (CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 add_executable(blobby ${blobby_SRC})
