@@ -156,12 +156,12 @@ GraphicOptionsState::GraphicOptionsState()
 	mOptionConfig.loadFile("config.xml");
 	mFullscreen = mOptionConfig.getBool("fullscreen");
 	mRenderer = mOptionConfig.getString("device");
-	mR1 = mOptionConfig.getInteger("r1");
-	mG1 = mOptionConfig.getInteger("g1");
-	mB1 = mOptionConfig.getInteger("b1");
-	mR2 = mOptionConfig.getInteger("r2");
-	mG2 = mOptionConfig.getInteger("g2");
-	mB2 = mOptionConfig.getInteger("b2");
+	mR1 = mOptionConfig.getInteger("left_blobby_color_red");
+	mG1 = mOptionConfig.getInteger("left_blobby_color_green");
+	mB1 = mOptionConfig.getInteger("left_blobby_color_blue");
+	mR2 = mOptionConfig.getInteger("right_blobby_color_red");
+	mG2 = mOptionConfig.getInteger("right_blobby_color_green");
+	mB2 = mOptionConfig.getInteger("right_blobby_color_blue");
 	mLeftMorphing = mOptionConfig.getBool("left_blobby_oscillate");
 	mRightMorphing = mOptionConfig.getBool("right_blobby_oscillate");
 }
@@ -183,12 +183,12 @@ GraphicOptionsState::~GraphicOptionsState()
 				std::string("backgrounds/") +
 				mOptionConfig.getString("background"));
 		}
-		mOptionConfig.setInteger("r1", mR1);
-		mOptionConfig.setInteger("g1", mG1);
-		mOptionConfig.setInteger("b1", mB1);
-		mOptionConfig.setInteger("r2", mR2);
-		mOptionConfig.setInteger("g2", mG2);
-		mOptionConfig.setInteger("b2", mB2);
+		mOptionConfig.setInteger("left_blobby_color_red", mR1);
+		mOptionConfig.setInteger("left_blobby_color_green", mG1);
+		mOptionConfig.setInteger("left_blobby_color_blue", mB1);
+		mOptionConfig.setInteger("right_blobby_color_red", mR2);
+		mOptionConfig.setInteger("right_blobby_color_green", mG2);
+		mOptionConfig.setInteger("right_blobby_color_blue", mB2);
 		mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
 		mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
 
