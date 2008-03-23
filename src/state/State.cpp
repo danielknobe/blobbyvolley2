@@ -155,7 +155,9 @@ void CreditsState::step()
 	}
 }
 
-ReplayMenuState::ReplayMenuState()
+ReplayMenuState::ReplayMenuState() :
+	mLeftPlayer(LEFT_PLAYER),
+	mRightPlayer(RIGHT_PLAYER)
 {
 	IMGUI::getSingleton().resetSelection();
 	mReplaying = false;
@@ -177,18 +179,8 @@ ReplayMenuState::ReplayMenuState()
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
 
-	UserConfig gameConfig;
-	gameConfig.loadFile("config.xml");
-	mLeftOscillate = gameConfig.getBool("left_blobby_oscillate");
-	mRightOscillate = gameConfig.getBool("right_blobby_oscillate");
-	RenderManager::getSingleton().setBlobColor(LEFT_PLAYER,
-		Color(gameConfig.getInteger("r1"),
-		gameConfig.getInteger("g1"),
-		gameConfig.getInteger("b1")));
-	RenderManager::getSingleton().setBlobColor(RIGHT_PLAYER,
-		Color(gameConfig.getInteger("r2"),
-		gameConfig.getInteger("g2"),
-		gameConfig.getInteger("b2")));
+	mLeftPlayer.loadFromConfig("left");
+	mRightPlayer.loadFromConfig("right");
 }
 
 void ReplayMenuState::loadCurrentReplay()
@@ -226,21 +218,9 @@ void ReplayMenuState::step()
 			mReplayMatch->setPlayersInput(mReplayRecorder->getInput());
 			mReplayMatch->step();
 		}
-		float time = float(SDL_GetTicks()) / 1000.0;
-		if (mLeftOscillate)
-		{
-			rmanager->setBlobColor(0, Color(
-				int((sin(time*2) + 1.0) * 128),
-				int((sin(time*4) + 1.0) * 128),
-				int((sin(time*3) + 1.0) * 128)));
-		}
-		if (mRightOscillate)
-		{
-			rmanager->setBlobColor(1, Color(
-				int((cos(time*2) + 1.0) * 128),
-				int((cos(time*4) + 1.0) * 128),
-				int((cos(time*3) + 1.0) * 128)));
-		}
+		
+		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
+		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 
 		PlayerSide side = mReplayMatch->winningPlayer();
 		if (side != NO_PLAYER)

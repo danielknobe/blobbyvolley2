@@ -58,6 +58,9 @@ class RenderManagerSDL : public RenderManager
 
 	std::string mLeftPlayerName;
 	std::string mRightPlayerName;
+	
+	// Store color for caching
+	Color mBlobColor[MAX_PLAYERS];
 
 	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
 	

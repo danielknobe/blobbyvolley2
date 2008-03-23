@@ -39,10 +39,10 @@ LocalGameState::LocalGameState()
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)
 {
-	mRecorder = 0;
 	mPaused = false;
 	mSaveReplay = false;
 	mWinner = false;
+	
 	std::stringstream temp;
 	temp << time(0);
 	mFilename = temp.str();
@@ -50,10 +50,6 @@ LocalGameState::LocalGameState()
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
 	
-	RenderManager::getSingleton().setBlobColor(0, mLeftPlayer.getColor());
-	RenderManager::getSingleton().setBlobColor(1, mRightPlayer.getColor());
-	RenderManager::getSingleton().redraw();
-
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
 	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
@@ -168,18 +164,9 @@ void LocalGameState::step()
 
 		if (mMatch->winningPlayer() != NO_PLAYER)
 			mWinner = true;
-
-		float time = float(SDL_GetTicks()) / 1000.0;
-		if (mLeftOscillate)
-			rmanager->setBlobColor(0, Color(
-				int((sin(time*2) + 1.0) * 128),
-				int((sin(time*4) + 1.0) * 128),
-				int((sin(time*3) + 1.0) * 128)));
-		if (mRightOscillate)
-			rmanager->setBlobColor(1, Color(
-				int((cos(time*2) + 1.0) * 128),
-				int((cos(time*4) + 1.0) * 128),
-				int((cos(time*3) + 1.0) * 128)));
+			
+		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
+		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 	}
 }
 

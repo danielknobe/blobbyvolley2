@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <vector>
+
 #include "Global.h"
-#include "UserConfig.h"
+#include "Player.h"
 
 class DuelMatch;
 class InputSource;
@@ -68,8 +70,8 @@ private:
 	int mCancelButton;
 	int mDeleteButton;
 
-	bool mLeftOscillate;
-	bool mRightOscillate;
+	Player mLeftPlayer;
+	Player mRightPlayer;
 };
 
 class CreditsState : public State

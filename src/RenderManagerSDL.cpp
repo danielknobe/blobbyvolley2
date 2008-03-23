@@ -312,6 +312,13 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 
 void RenderManagerSDL::setBlobColor(int player, Color color)
 {
+	if (color != mBlobColor[player]) {
+		mBlobColor[player] = color;
+	} else {
+		return;
+	}
+
+
 	std::vector<SDL_Surface*> *handledBlob = 0;
 	std::vector<SDL_Surface*> *handledBlobShadow = 0;
 
