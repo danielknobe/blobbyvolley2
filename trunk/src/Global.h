@@ -38,16 +38,6 @@ const char AppTitle[] = "Blobby Volley 2 version 0.7";
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
 
-// This is a temporary solution until a more advanced state management
-// is developed
-
-enum GameMode
-{
-	MODE_NORMAL_DUEL,
-	MODE_REPLAY_DUEL,
-	MODE_RECORDING_DUEL
-};
-
 enum PlayerSide
 {
 	NO_PLAYER = -1,
@@ -79,6 +69,16 @@ struct Color
 		};
 		Uint8 val[3];
 	};
+	
+	bool operator == (Color rval) const
+	{
+		return !memcmp(val, rval.val, 3);
+	}
+	
+	bool operator != (Color rval) const
+	{
+		return !(*this == rval);
+	}
 };
 
 struct BufferedImage
