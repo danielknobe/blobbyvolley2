@@ -29,6 +29,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 const char validHeader[4] = { 'B', 'V', '2', 'R' };	//header of replay file
 
+enum RecorderMode
+{
+	MODE_RECORDING_DUEL,
+	MODE_REPLAY_DUEL
+};
+
 //enumerated types of replay "packets"
 //(should never be higher than 2 bits!)
 enum PacketType
@@ -53,13 +59,7 @@ struct ChecksumException : public std::exception
 class ReplayRecorder
 {
 public:
-	// The mode parameter decides whether to replay or to record to
-	// the given filename. If other values of the GameMode enumeration
-	// or completely invalid values are given, the filename is replayed
-	// to damage nothing. If an error occurs on loading, the endOfFile()
-	// returns true and nothing is replayed. If an saving error occurs,
-	// nothing is recorded
-	ReplayRecorder(GameMode mode);
+	ReplayRecorder(RecorderMode mode);
 	~ReplayRecorder();
 
 	// This rewinds to the start when replaying
@@ -93,7 +93,7 @@ private:
 
 	PlayerInput getInput(PlayerSide side);
 
-	GameMode mRecordMode;
+	RecorderMode mRecordMode;
 	char* mReplayData;
 	uint32_t mReplayOffset;
 	int mBufferSize;

@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalInputSource.h"
 #include "DuelMatch.h"
 #include "ReplayRecorder.h"
-#include "ReplayInputSource.h"
 #include "ScriptedInputSource.h"
 #include "SoundManager.h"
 #include "IMGUI.h"

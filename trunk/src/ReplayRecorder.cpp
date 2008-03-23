@@ -44,7 +44,7 @@ const char* ChecksumException::what() const throw()
 	return error.c_str();
 }
 
-ReplayRecorder::ReplayRecorder(GameMode mode)
+ReplayRecorder::ReplayRecorder(RecorderMode mode)
 {
 	mRecordMode = mode;
 	mReplayData = 0;

@@ -28,7 +28,6 @@ set (blobby_SRC ${common_SRC}
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
 	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
-	ReplayInputSource.cpp ReplayInputSource.h
 	ReplayRecorder.cpp ReplayRecorder.h
 	ScriptedInputSource.cpp ScriptedInputSource.h
 	SoundManager.cpp SoundManager.h
