@@ -397,6 +397,8 @@ int main(int argc, char** argv)
 				}
 			}
 		}
+		
+		usleep(1);
 	}
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
 	closelog();
