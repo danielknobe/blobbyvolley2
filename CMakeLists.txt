@@ -1,3 +1,5 @@
+include(CPack)
+
 project(Blobby)
 
 add_subdirectory(data)
