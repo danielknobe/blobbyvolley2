@@ -19,10 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
-#ifdef WIN32
-#undef main
-#endif
-
 #include <physfs.h>
 
 #include "RenderManager.h"
