@@ -1,8 +1,9 @@
 macro(add_zip_archive _dir _filetype)
+	file(GLOB archive_src ${_dir}/*.${_filetype})
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip
-		COMMAND zip ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip ${_dir}/*.${_filetype}
-		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_dir}/*.${_filetype}
+		COMMAND zip ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip ${archive_src}
+		DEPENDS ${archive_src}
 		VERBATIM
 		)
 	add_custom_target(${_dir}_zip ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip)
