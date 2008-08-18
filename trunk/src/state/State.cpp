@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "OptionsState.h"
 
 #include <physfs.h>
+#include <algorithm>
 #include <sstream>
 
 State* State::mCurrentState = 0;
