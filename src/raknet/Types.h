@@ -87,7 +87,7 @@
 	defined(tahoe) || defined(ibm032) || defined(ibm370) || defined(MIPSEB) || \
 	defined(__convex__) || defined(DGUX) || defined(hppa) || defined(apollo) || \
 	defined(_CRAY) || defined(__hp9000) || defined(__hp9000s300) || defined(_AIX) || \
-	defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2)
+	defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2) || defined(__ARMEB__)
 
 # define HOST_ENDIAN_IS_BIG
 
@@ -95,7 +95,7 @@
 	defined(__amd64) || defined(__amd64__)	|| \
 	defined(__alpha__) || defined(__alpha) || defined(__ia64) || defined(__ia64__) || \
 	defined(_M_ALPHA) || defined(ns32000) || defined(__ns32000__) || defined(sequent) || \
-	defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__)
+	defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__) || defined(__ARMEL__)
 
 # define HOST_ENDIAN_IS_LITTLE
 
@@ -123,7 +123,7 @@ namespace cat
 	defined(tahoe) || defined(ibm032) || defined(ibm370) || defined(MIPSEB) || \
 	defined(__convex__) || defined(DGUX) || defined(hppa) || defined(apollo) || \
 	defined(_CRAY) || defined(__hp9000) || defined(__hp9000s300) || defined(_AIX) || \
-	defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2)
+	defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2) || defined(__ARMEB__)
 
 # define BIG_ENDIAN
 
@@ -131,7 +131,7 @@ namespace cat
 	defined(__amd64) || defined(__amd64__)	|| \
 	defined(__alpha__) || defined(__alpha) || defined(__ia64) || defined(__ia64__) || \
 	defined(_M_ALPHA) || defined(ns32000) || defined(__ns32000__) || defined(sequent) || \
-	defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__)
+	defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__) || defined(__ARMEL__)
 
 # define LITTLE_ENDIAN
 
