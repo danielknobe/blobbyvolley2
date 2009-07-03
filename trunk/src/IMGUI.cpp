@@ -126,11 +126,11 @@ void IMGUI::end()
 				rmanager.drawText(obj.text, obj.pos1, true);
 				break;
 			case SCROLLBAR:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
 			case ACTIVESCROLLBAR:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 	
 				break;
