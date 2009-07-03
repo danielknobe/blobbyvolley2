@@ -481,7 +481,6 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 
 void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)
 {
-	redraw();
 	SDL_Rect ovRect;
 	ovRect.x = lround(pos1.x);
 	ovRect.y = lround(pos1.y);
