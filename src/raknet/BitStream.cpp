@@ -660,13 +660,14 @@ bool BitStream::Read( bool& output )
 	//assert(readOffset+1 <=numberOfBitsUsed); // If this assert is hit the stream wasn't long enough to read from
 	if ( readOffset + 1 > numberOfBitsUsed )
 		return false;
-		
+	
 	//if (ReadBit()) // Check that bit
-	if ( data[ readOffset >> 3 ] & ( 0x80 >> ( readOffset++ % 8 ) ) )   // Is it faster to just write it out here?
+	if ( data[ readOffset >> 3 ] & ( 0x80 >> ( readOffset % 8 ) ) )   // Is it faster to just write it out here?
 		output = true;
 	else
 		output = false;
-		
+
+	readOffset++;
 	return true;
 }
 
@@ -1284,7 +1285,8 @@ void BitStream::Write1( void )
 bool BitStream::ReadBit( void )
 {
 #pragma warning( disable : 4800 )
-	return ( bool ) ( data[ readOffset >> 3 ] & ( 0x80 >> ( readOffset++ % 8 ) ) );
+	readOffset++;
+	return ( bool ) ( data[ readOffset-1 >> 3 ] & ( 0x80 >> ( readOffset-1 % 8 ) ) );
 #pragma warning( default : 4800 )
 }
 
