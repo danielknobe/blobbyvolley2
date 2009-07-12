@@ -50,7 +50,7 @@
 #include <string.h>
 #include <math.h>
 
-#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ )
+#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ ) || defined ( __MACOSX__ )
 	#include <malloc.h>
 #endif
 
