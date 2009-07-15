@@ -2838,7 +2838,7 @@ void RakPeer::SecuredConnectionResponse( PlayerID playerId )
 	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20),
 		(unsigned char *)&e, sizeof( big::u32 ) );
 	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20 + sizeof( big::u32 ) ),
-		(unsigned char *)n, sizeof( RSA_BIT_SIZE ) );
+		(unsigned char *)n, sizeofdelete bcs->data;( RSA_BIT_SIZE ) );
 #else
 	memcpy( connectionRequestResponse + 1 + 20, ( char* ) & e, sizeof( big::u32 ) );
 	memcpy( connectionRequestResponse + 1 + 20 + sizeof( big::u32 ), n, sizeof( RSA_BIT_SIZE ) );
@@ -3697,7 +3697,7 @@ bool RakPeer::RunUpdateCycle( void )
 
 			callerDataAllocationUsed=HandleBufferedRPC(bcs, time);
 			if ( callerDataAllocationUsed==false )
-				delete bcs->data;
+				delete [] bcs->data;
 		}
 		else if (bcs->command==BufferedCommandStruct::BCS_SEND)
 		{
@@ -3720,7 +3720,7 @@ bool RakPeer::RunUpdateCycle( void )
 
 			callerDataAllocationUsed=SendImmediate((char*)bcs->data, bcs->numberOfBitsToSend, bcs->priority, bcs->reliability, bcs->orderingChannel, bcs->playerId, bcs->broadcast, true, time);
 			if ( callerDataAllocationUsed==false )
-				delete bcs->data;
+				delete [] bcs->data;
 		}
 		else
 		{
