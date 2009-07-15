@@ -2838,7 +2838,7 @@ void RakPeer::SecuredConnectionResponse( PlayerID playerId )
 	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20),
 		(unsigned char *)&e, sizeof( big::u32 ) );
 	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20 + sizeof( big::u32 ) ),
-		(unsigned char *)n, sizeofdelete bcs->data;( RSA_BIT_SIZE ) );
+		(unsigned char *)n, sizeof( RSA_BIT_SIZE ) );
 #else
 	memcpy( connectionRequestResponse + 1 + 20, ( char* ) & e, sizeof( big::u32 ) );
 	memcpy( connectionRequestResponse + 1 + 20 + sizeof( big::u32 ), n, sizeof( RSA_BIT_SIZE ) );
