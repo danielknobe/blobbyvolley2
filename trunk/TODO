@@ -1,2 +1,13 @@
-This list isn't maintained any more.
-Look at http://blobby.redio.de/wiki/index.php?title=TODO for an up-to-date list.
+TODO:
+
+features:
+- faster sdl-renderer (full dirty-rects support)
+- chatfuncion with lobbysystem
+- SDL 1.3 support
+	* multimouse support
+
+bugs:
+- glitsches in IMGUI if you redraw a whole site in the menu
+- wrong servername in hosted game by blobbyclient
+- graphicglitch if you start a networkgame
+- wrong blobbycolors in networkgame
