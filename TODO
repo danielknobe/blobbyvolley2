@@ -1,13 +1,18 @@
 TODO:
 
+coderework:
+- new clean rendererarchitecture
+
 features:
-- faster sdl-renderer (full dirty-rects support)
-- chatfuncion with lobbysystem
-- SDL 1.3 support
-	* multimouse support
+- option for 3 types of shadow (off, pixelshadow, alphablendingshadow)
+- chatfuncion
+- lobbysystem
 
 bugs:
 - glitsches in IMGUI if you redraw a whole site in the menu
 - wrong servername in hosted game by blobbyclient
 - graphicglitch if you start a networkgame
 - wrong blobbycolors in networkgame
+
+data:
+- new smaller font
