@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#include <iostream>
 #include <physfs.h>
 #include "RenderManagerSDL.h"
 
@@ -318,7 +317,6 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 		return;
 	}
 
-
 	std::vector<SDL_Surface*> *handledBlob = 0;
 	std::vector<SDL_Surface*> *handledBlobShadow = 0;
 
@@ -500,13 +498,28 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 	SDL_Rect position;
 	position.x = lround(pos.x);
 	position.y = lround(pos.y);
-	static Color lastColor = Color(0, 0, 0);
-	if (lastColor.val != col.val)
+	// Workarround, so that surface will only be loaded when color is changed 
+	// Works only when 2 blobs are on the screen (like in IMGUI)
+	static Color lastColor[2] = {Color( -1, -1, -1), Color( -1, -1, -1)};
+	
+	static int toDraw = 0;
+
+	if (lastColor[toDraw].val != col.val)
 	{
-		setBlobColor(0, col);
-		lastColor = col;
+		setBlobColor(toDraw, col);
+		lastColor[toDraw] = col;
 	}
-	SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
+
+	if(toDraw == 1)
+	{
+		SDL_BlitSurface(mRightBlob[0], 0, mScreen, &position);
+		toDraw = 0;
+	}
+	else
+	{
+		SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
+		toDraw = 1;
+	}
 }
 
 void RenderManagerSDL::refresh()
