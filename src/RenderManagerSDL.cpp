@@ -179,6 +179,7 @@ void RenderManagerSDL::deinit()
 	SDL_FreeSurface(mOverlaySurface);
 	SDL_FreeSurface(mBackground);
 	SDL_FreeSurface(mBallShadow);
+	SDL_FreeSurface(mScroll);
 	for (unsigned int i = 0; i < mBall.size(); ++i)
 		SDL_FreeSurface(mBall[i]);
 	for (unsigned int i = 0; i < mStandardBlob.size(); ++i)

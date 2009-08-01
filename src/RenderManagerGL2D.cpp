@@ -208,6 +208,7 @@ void RenderManagerGL2D::deinit()
 	glDeleteTextures(mBlobSpecular.size(), &mBlobSpecular[0]);
 	glDeleteTextures(mBlobShadow.size(), &mBlobShadow[0]);
 	glDeleteTextures(mFont.size(), &mFont[0]);
+	glDeleteTextures(1, &mScroll);
 	
 	for (std::map<std::string, BufferedImage*>::iterator iter = mImageMap.begin();
 		iter != mImageMap.end(); ++iter)
