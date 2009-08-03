@@ -150,7 +150,10 @@ void LocalGameState::step()
 			mCurrentState = new MainMenuState;
 		}
 		else
+		{
+			RenderManager::getSingleton().redraw();
 			mPaused = true;
+		}
 	}
 	else if (mRecorder->endOfFile())
 	{

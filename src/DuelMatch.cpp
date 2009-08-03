@@ -143,7 +143,7 @@ void DuelMatch::step()
 	{
 		mSquishRight += 1;
 		if(mSquishRight > 9)
-			mSquishRight=0;
+			mSquishRight = 0;
 	}
 
 	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
@@ -285,8 +285,8 @@ const PlayerInput* DuelMatch::getPlayersInput()
 
 void DuelMatch::setPlayersInput(PlayerInput* input)
 {
-		mPhysicWorld.setLeftInput(input[LEFT_PLAYER]);
-		mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);
+	mPhysicWorld.setLeftInput(input[LEFT_PLAYER]);
+	mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);
 }
 
 void DuelMatch::setPlayerName(std::string name)
