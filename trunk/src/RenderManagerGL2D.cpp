@@ -216,6 +216,8 @@ void RenderManagerGL2D::deinit()
 		glDeleteTextures(1, &(*iter).second->glHandle);
 		delete iter->second;
 	}
+	
+	glDeleteTextures(1, &mParticle);
 }
 
 void RenderManagerGL2D::draw()
