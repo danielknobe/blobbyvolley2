@@ -118,21 +118,18 @@ void OptionState::step()
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new InputOptionsState();
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), "graphic options"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new GraphicOptionsState();
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), "misc options"))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MiscOptionsState();
-		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
@@ -140,7 +137,6 @@ void OptionState::step()
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MainMenuState();
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
 	{
@@ -881,7 +877,6 @@ void MiscOptionsState::step()
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new OptionState();
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
 	{
