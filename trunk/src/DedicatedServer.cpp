@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 	while (1)
 	{
 		Packet* packet;
-		while (packet = server.Receive())
+		while ((packet = server.Receive()))
 		{
 			switch(packet->data[0])
 			{
