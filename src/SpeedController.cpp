@@ -56,8 +56,7 @@ void SpeedController::update()
 	int rateTicks = std::max(int(1000 / mGameFPS), 1);
 	static int lastTicks = SDL_GetTicks();
 	static int lastDrawnFrame = lastTicks;
-	int ticksDiff = (SDL_GetTicks()-lastTicks);
-	static int beginSecond = lastTicks;
+	static unsigned int beginSecond = lastTicks;
 	static int counter = 0;
 
 	if (counter == mGameFPS)
@@ -79,14 +78,6 @@ void SpeedController::update()
 		int wait = ((counter+1)*rateTicks) - delta;
 		if (wait > 0)
 			SDL_Delay(wait);
-	}
-	else
-	{
-		if ((lastDrawnFrame+(1000/5)) > SDL_GetTicks()) //should guaranty that at least 5 frames will be drawn per second
-		{
-			//mFramedrop = true;		//deactivated for alpha 6 release
-			//std::cout << "Framedrop" << std::endl;
-		}
 	}
 	counter++;
 

@@ -382,14 +382,24 @@ void InputOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
 	{
 		if (mLeftBlobbyDevice == "mouse")
+		{
 			mLeftBlobbyDevice = "keyboard";
+		}
 		else if (mLeftBlobbyDevice == "keyboard")
+		{
 			mLeftBlobbyDevice = "joystick";
+		}
 		else if (mLeftBlobbyDevice == "joystick")
+		{
 			if (mRightBlobbyDevice != "mouse")
+			{
 				mLeftBlobbyDevice = "mouse";
+			}
 			else
+			{
 				mLeftBlobbyDevice = "keyboard";
+			}
+		}
 	}
 	//if mouse device is selected:
 	if (mLeftBlobbyDevice == "mouse")
@@ -485,14 +495,24 @@ void InputOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), mRightBlobbyDevice))
 	{
 		if (mRightBlobbyDevice == "mouse")
+		{
 			mRightBlobbyDevice = "keyboard";
+		}
 		else if (mRightBlobbyDevice == "keyboard")
+		{
 			mRightBlobbyDevice = "joystick";
+		}
 		else if (mRightBlobbyDevice == "joystick")
+		{
 			if (mLeftBlobbyDevice != "mouse")
+			{
 				mRightBlobbyDevice = "mouse";
+			}
 			else
+			{
 				mRightBlobbyDevice = "keyboard";
+			}
+		}
 	}
 	//if mouse device is selected:
 	if (mRightBlobbyDevice == "mouse")
@@ -851,7 +871,7 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
-	float gamefps = (mGameFPS-30)/90.0;
+	float gamefps = (mGameFPS - 30) / 90.0;
 	if (gamefps < 0.0)
 		gamefps = 0.0;
 	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps);

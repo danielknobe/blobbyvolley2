@@ -150,12 +150,12 @@ void IMGUI::end()
 				break;
 			case SELECTBOX:
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
-				for (int c = 0; c < obj.entries.size(); c++)
+				for (unsigned int c = 0; c < obj.entries.size(); c++)
 					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
 				break;
 			case ACTIVESELECTBOX:
 				rmanager.drawOverlay(0.2, obj.pos1, obj.pos2);
-				for (int c = 0; c < obj.entries.size(); c++)
+				for (unsigned int c = 0; c < obj.entries.size(); c++)
 					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
 				break;
 			case BLOB:
@@ -265,7 +265,6 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 
 bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 {
-	float oldvalue = value;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = position;
