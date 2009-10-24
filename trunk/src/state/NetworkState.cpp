@@ -420,7 +420,7 @@ void NetworkGameState::step()
 			case ID_GAME_READY:
 			{
 				int ival;
-				char* charName = new char[16];
+				char charName[16];
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.Read(ival);
 				StringCompressor::Instance()->DecodeString(charName, 16, &stream);
@@ -435,6 +435,10 @@ void NetworkGameState::step()
 					RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
 					mReplayRecorder->setPlayerNames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
 				}
+				// Workarround for SDL-Renderer
+				// Hides the GUI when networkgame starts
+				rmanager->redraw();	
+
 				mNetworkState = PLAYING;
 				break;
 			}
