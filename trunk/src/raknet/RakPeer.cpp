@@ -1386,6 +1386,9 @@ void RakPeer::Ping( const char* host, unsigned short remotePort, bool onlyReplyO
 		host = ( char* ) SocketLayer::Instance()->DomainNameToIP( host );
 	}
 
+	if ( host == NULL )
+		return;
+
 	PlayerID playerId;
 	IPToPlayerID( host, remotePort, &playerId );
 
