@@ -45,7 +45,7 @@ const float BALL_RADIUS = 31.5;
 const float GROUND_PLANE_HEIGHT_MAX = 500;
 const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
 
-// Boarder Settings
+// Border Settings
 const float LEFT_PLANE = 0;
 const float RIGHT_PLANE = 800.0;
 // These numbers should include the blobbys width, but in the original game
@@ -110,9 +110,9 @@ void PhysicWorld::reset(PlayerSide player)
 void PhysicWorld::resetPlayer()
 {
 	mBlobPosition[LEFT_PLAYER] = Vector2( 200,
-		GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
+		GROUND_PLANE_HEIGHT);
 	mBlobPosition[RIGHT_PLAYER] = Vector2(600,
-		GROUND_PLANE_HEIGHT + BLOBBY_HEIGHT / 2.0);
+		GROUND_PLANE_HEIGHT);
 }
 
 bool PhysicWorld::ballHitRightGround()
@@ -135,14 +135,14 @@ bool PhysicWorld::ballHitLeftGround()
 
 bool PhysicWorld::blobbyHitGround(PlayerSide player)
 {
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		if (getBlob(LEFT_PLAYER).y >= GROUND_PLANE_HEIGHT)
 			return true;
 		else
 			return false;
 	}
-	else if (player == 1)
+	else if (player == RIGHT_PLAYER)
 	{
 		if (getBlob(RIGHT_PLAYER).y >= GROUND_PLANE_HEIGHT)
 			return true;
