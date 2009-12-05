@@ -175,6 +175,4 @@ function movetoX (x)
   end
  end
  return done
-end<div style='padding: 4px; background-color: #2B3647; color: white'>PHP-Fehler</div><div style='padding: 4px; background-color: #F5F6F9; border: 1px solid #2B3647'>
-Fatal error: Call to a member function run_hooks() on a non-object in /home/www-data/htdocs/blobby/forum/inc/functions.php on line 146
-</div><div style='padding: 4px; background-color: #2B3647; text-align: right'><a style='color: white; font-size: 0.8em' href='http://www.redio.de/'>Redio Webhosting</a></div>
+end
