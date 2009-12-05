@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
-#include "raknet/StringCompressor.h"
+// We need no stringcompressor only for the names
 
 #include "DedicatedServer.h"
 #include "InputSource.h"
@@ -221,15 +221,24 @@ int main(int argc, char** argv)
 					break;
 				case ID_ENTER_GAME:
 				{
-					int ival;
 					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
-					stream.Read(ival);
-					stream.Read(ival);
+					
+					// Ignore ID_ENTER_GAME because we don't need it
+					stream.IgnoreBits(8 * sizeof(ID_ENTER_GAME));
+
+					int playerSide;
+					stream.Read(playerSide);
+
+					// Read the Playername
 					char charName[16];
-					StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+					stream.Read(charName, sizeof(charName));
+
+					// ensures that charName is null terminated
+					charName[sizeof(charName)-1] = '\0';
+
 					std::string playerName(charName);
-					PlayerSide newSide = (PlayerSide)ival;
+					PlayerSide newSide = (PlayerSide)playerSide;
 
 					if (firstPlayerSide == NO_PLAYER)
 					{
