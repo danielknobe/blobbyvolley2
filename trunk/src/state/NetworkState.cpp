@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "LocalInputSource.h"
 #include "raknet/RakServer.h"
-#include "raknet/StringCompressor.h"
+// We don't need the stringcompressor
 
 
 NetworkSearchState::NetworkSearchState()
@@ -338,7 +338,12 @@ void NetworkGameState::step()
 				RakNet::BitStream stream;
 				stream.Write(ID_ENTER_GAME);
 				stream.Write(mOwnSide);
-				StringCompressor::Instance()->EncodeString((char*)mFakeMatch->getPlayerName().c_str(), 16, &stream);
+
+				// Send playername
+				char myname[16];
+				strncpy(myname, mFakeMatch->getPlayerName().c_str(), sizeof(myname));
+				stream.Write(myname, sizeof(myname));
+
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
@@ -419,11 +424,18 @@ void NetworkGameState::step()
 				break;
 			case ID_GAME_READY:
 			{
-				int ival;
 				char charName[16];
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.Read(ival);
-				StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+
+				// ignore ID_GAME_READY
+				stream.IgnoreBits(8 * sizeof(ID_GAME_READY));
+
+				// read playername
+				stream.Read(charName, sizeof(charName));
+
+				// ensures that charName is null terminated
+				charName[sizeof(charName)-1] = '\0';
+
 				mFakeMatch->setOpponentName(std::string(charName));
 				if (mOwnSide)
 				{
@@ -746,10 +758,19 @@ void NetworkHostState::step()
 				int ival;
 				RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
+
+				// ignore ID_ENTER_GAME
+				stream.IgnoreBits(8 * sizeof(ID_ENTER_GAME));
+
+				// read playername
 				stream.Read(ival);
-				stream.Read(ival);
-				char* charName = new char[16];
-				StringCompressor::Instance()->DecodeString(charName, 16, &stream);
+
+				char charName[16];
+				stream.Read(charName, sizeof(charName));
+
+				// ensures that charName is null terminated
+				charName[sizeof(charName)-1] = '\0';
+
 				std::string playerName(charName);
 				PlayerSide newSide = (PlayerSide)ival;
 

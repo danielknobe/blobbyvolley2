@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
-#include "raknet/StringCompressor.h"
+// We don't need the stringcompressor
 
 NetworkGame::NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
@@ -50,13 +50,20 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	mPausing = false;
 
+	// buffer for playernames
+	char name[16];
+
+	// writing data into leftStream
 	RakNet::BitStream leftStream;
 	leftStream.Write(ID_GAME_READY);
-	StringCompressor::Instance()->EncodeString((char*)mRightPlayerName.c_str(), 16, &leftStream);
+	strncpy(name, mRightPlayerName.c_str(), sizeof(name));
+	leftStream.Write(name, sizeof(name));
 	
+	// writing data into rightStream
 	RakNet::BitStream rightStream;
 	rightStream.Write(ID_GAME_READY);
-	StringCompressor::Instance()->EncodeString((char*)mLeftPlayerName.c_str(), 16, &rightStream);
+	strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
+	rightStream.Write(name, sizeof(name));
 	
 	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
