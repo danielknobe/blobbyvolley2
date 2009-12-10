@@ -40,7 +40,7 @@ void Player::loadFromConfig(const std::string& prefix)
 {
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
-	
+
 	if (gameConfig.getBool(prefix + "_player_human")) {
 		mInputSource = new LocalInputSource(mPlayerSide);
 	} else {
@@ -51,25 +51,24 @@ void Player::loadFromConfig(const std::string& prefix)
 	mName = gameConfig.getBool(prefix + "_player_human") ?
 		gameConfig.getString(prefix + "_player_name") :
 		gameConfig.getString(prefix + "_script_name");
-		
+
 	mInitialised = true;
-	
 	
 	mStaticColor = Color(
 		gameConfig.getInteger(prefix + "_blobby_color_r"),
 		gameConfig.getInteger(prefix + "_blobby_color_g"),
 		gameConfig.getInteger(prefix + "_blobby_color_b"));
-		
+
 
 	mOscillating = gameConfig.getBool(prefix + "_blobby_oscillate");
-	
+
 	mInitialised = true;
 }
 
 Color Player::getColor() const
 {
 	assert(mInitialised);
-	
+
 	if (!mOscillating) {
 		return mStaticColor;
 	} else {
@@ -84,7 +83,7 @@ Color Player::getColor() const
 std::string Player::getName() const
 {
 	assert(mInitialised);
-	
+
 	return mName;
 }
 
@@ -92,7 +91,7 @@ InputSource* Player::getInputSource() const
 {
 	assert(mInitialised);
 	assert(mInputSource != 0);
-	
+
 	return mInputSource;
 }
 

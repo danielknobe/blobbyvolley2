@@ -30,9 +30,9 @@ class Player
 public:
 	Player(PlayerSide side);
 	~Player();
-	
+
 	void loadFromConfig(const std::string& prefix);
-	
+
 	InputSource* getInputSource() const;
 	std::string getName() const;
 	Color getColor() const;
@@ -46,5 +46,4 @@ private:
 	Color mStaticColor;
 	bool mOscillating;
 };
-
 

@@ -137,10 +137,10 @@ int main(int argc, char* argv[])
 		else if (gameConfig.getString("device") == "GP2X")
 			rmanager = RenderManager::createRenderManagerGP2X();
 		else if (gameConfig.getString("device") == "OpenGL")
-		rmanager = RenderManager::createRenderManagerGL2D();
+			rmanager = RenderManager::createRenderManagerGL2D();
 		else
 		{
-		std::cerr << "Warning: Unknown renderer selected!";
+			std::cerr << "Warning: Unknown renderer selected!";
 			std::cerr << "Falling back to OpenGL" << std::endl;
 			rmanager = RenderManager::createRenderManagerGL2D();
 		}
@@ -150,11 +150,11 @@ int main(int argc, char* argv[])
 			rmanager->init(800, 600, true);
 		else
 			rmanager->init(800, 600, false);
-	
+
 		SpeedController scontroller(gameConfig.getFloat("gamefps"));
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
-		
+
 		smanager = SoundManager::createSoundManager();
 		smanager->init();
 		smanager->setVolume(gameConfig.getFloat("global_volume"));
@@ -167,12 +167,12 @@ int main(int argc, char* argv[])
 			rmanager->setBackground(bg);
 
 		InputManager* inputmgr = InputManager::createInputManager();
-		int running = 1;	
+		int running = 1;
 		while (running)
 		{
 			inputmgr->updateInput();
 			running = inputmgr->running();
-	
+
 			// This is true by default for compatibility, GUI states may
 			// disable it if necessary
 			rmanager->drawGame(true);
