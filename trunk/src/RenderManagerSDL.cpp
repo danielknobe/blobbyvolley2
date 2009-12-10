@@ -511,6 +511,10 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 		lastColor[toDraw] = col;
 	}
 
+	//  Second dirty workaround in the function to have the right position of blobs in the GUI
+	position.x = position.x - (int)(75/2);
+	position.y = position.y - (int)(89/2);
+
 	if(toDraw == 1)
 	{
 		SDL_BlitSurface(mRightBlob[0], 0, mScreen, &position);
