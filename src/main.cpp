@@ -78,6 +78,8 @@ void setupPHYSFS()
 	PHYSFS_addToSearchPath("data/gfx.zip", 1);
 	PHYSFS_addToSearchPath("data/sounds.zip", 1);
 	PHYSFS_addToSearchPath("data/scripts.zip", 1);
+	PHYSFS_addToSearchPath("data/backgrounds.zip", 1);
+
 #if defined(WIN32)
 	// Just write in installation directory
 	PHYSFS_setWriteDir("data");
@@ -94,6 +96,7 @@ void setupPHYSFS()
 	probeDir(userAppend + separator + "gfx");
 	probeDir(userAppend + separator + "sounds");
 	probeDir(userAppend + separator + "scripts");
+	probeDir(userAppend + separator + "backgrounds");
 	PHYSFS_removeFromSearchPath(userdir.c_str());
 	PHYSFS_setWriteDir(homedir.c_str());
 	PHYSFS_addToSearchPath(homedir.c_str(), 0);
@@ -102,12 +105,10 @@ void setupPHYSFS()
 	// platforms
 	std::string basedir = GAMEDATADIR;
 	PHYSFS_addToSearchPath(basedir.c_str(), 1);
-	PHYSFS_addToSearchPath((basedir + separator + "gfx.zip").c_str(),
-									1);
-	PHYSFS_addToSearchPath((basedir + separator + "sounds.zip").c_str(),
-									1);
-	PHYSFS_addToSearchPath((basedir + separator + "scripts.zip").c_str(),
-									1);
+	PHYSFS_addToSearchPath((basedir + separator + "gfx.zip").c_str(), 1);
+	PHYSFS_addToSearchPath((basedir + separator + "sounds.zip").c_str(), 1);
+	PHYSFS_addToSearchPath((basedir + separator + "scripts.zip").c_str(), 1);
+	PHYSFS_addToSearchPath((basedir + separator + "backgrounds.zip").c_str(), 1);
 #endif
 #endif
 }
