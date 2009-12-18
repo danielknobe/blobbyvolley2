@@ -393,9 +393,9 @@ bool RenderManagerGL2D::setBackground(const std::string& filename)
 
 void RenderManagerGL2D::setBlobColor(int player, Color color)
 {
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 		mLeftBlobColor = color;
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 		mRightBlobColor = color;
 }
 
@@ -416,13 +416,13 @@ void RenderManagerGL2D::setBall(const Vector2& position, float rotation)
 void RenderManagerGL2D::setBlob(int player, 
 		const Vector2& position, float animationState)
 {
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		mLeftBlobPosition = position;
 		mLeftBlobAnimationState = animationState;
 	}
 
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 	{
 		mRightBlobPosition = position;
 		mRightBlobAnimationState = animationState;
@@ -551,9 +551,9 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	glLoadIdentity();
 	glTranslatef(pos.x, pos.y, 0.6);
 	glBindTexture(GL_TEXTURE_2D, mParticle);
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 		glColor3ubv(mLeftBlobColor.val);
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 		glColor3ubv(mRightBlobColor.val);
 	if (player > 1)
 		glColor3ubv(Color(255, 0, 0).val);

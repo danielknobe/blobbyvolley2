@@ -321,12 +321,12 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 	std::vector<SDL_Surface*> *handledBlob = 0;
 	std::vector<SDL_Surface*> *handledBlobShadow = 0;
 
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		handledBlob = &mLeftBlob;
 		handledBlobShadow = &mLeftBlobShadow;
 	}
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 	{
 		handledBlob = &mRightBlob;
 		handledBlobShadow = &mRightBlobShadow;
@@ -390,7 +390,7 @@ void RenderManagerSDL::setBlob(int player,
 {
 	SDL_Rect blobRestore;
 	SDL_Rect shadowRestore;
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		blobRestore = blobRect(mLeftBlobPosition);
 		shadowRestore = blobShadowRect(
@@ -399,7 +399,7 @@ void RenderManagerSDL::setBlob(int player,
 		mLeftBlobAnimationState = animationState;
 	}
 
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 	{
 		blobRestore = blobRect(mRightBlobPosition);
 		shadowRestore = blobShadowRect(

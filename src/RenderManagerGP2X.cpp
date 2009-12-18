@@ -262,12 +262,12 @@ void RenderManagerGP2X::setBlobColor(int player, Color color)
 	std::vector<SDL_Surface*> *handledBlob = 0;
 	std::vector<SDL_Surface*> *handledBlobShadow = 0;
 
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		handledBlob = &mLeftBlob;
 		handledBlobShadow = &mLeftBlobShadow;
 	}
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 	{
 		handledBlob = &mRightBlob;
 		handledBlobShadow = &mRightBlobShadow;
@@ -307,13 +307,13 @@ void RenderManagerGP2X::setBall(const Vector2& position, float rotation)
 void RenderManagerGP2X::setBlob(int player,
 		const Vector2& position, float animationState)
 {
-	if (player == 0)
+	if (player == LEFT_PLAYER)
 	{
 		mLeftBlobPosition = position * 0.4;
 		mLeftBlobAnimationState = animationState;
 	}
 
-	if (player == 1)
+	if (player == RIGHT_PLAYER)
 	{
 		mRightBlobPosition = position * 0.4;
 		mRightBlobAnimationState = animationState;
