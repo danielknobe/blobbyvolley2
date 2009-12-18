@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "ReplayRecorder.h"
 #include "SoundManager.h"
+#include "TextManager.h"
 
 LocalGameState::~LocalGameState()
 {
@@ -70,10 +71,10 @@ void LocalGameState::step()
 	if (mSaveReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
+		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::getSingleton()->getString(TextManager::RP_SAVE_NAME));
 		static unsigned cpos;
 		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
-		if (imgui.doButton(GEN_ID, Vector2(220, 330), "OK"))
+		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			if (mFilename != "")
 			{
@@ -82,7 +83,7 @@ void LocalGameState::step()
 			mSaveReplay = false;
 			imgui.resetSelection();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(440, 330), "Cancel"))
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -92,15 +93,15 @@ void LocalGameState::step()
 	else if (mPaused)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(281, 260), "Really Quit?");
-		if (imgui.doButton(GEN_ID, Vector2(530, 300), "No"))
+		imgui.doText(GEN_ID, Vector2(281, 260), TextManager::getSingleton()->getString(TextManager::LBL_CONF_QUIT));
+		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
 			mPaused = false;
-		if (imgui.doButton(GEN_ID, Vector2(260, 300), "Yes"))
+		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		{
 			delete this;
 			mCurrentState = new MainMenuState;
 		}
-		if (imgui.doButton(GEN_ID, Vector2(293, 340), "Save Replay"))
+		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
@@ -119,18 +120,18 @@ void LocalGameState::step()
 		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-		imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
-		if (imgui.doButton(GEN_ID, Vector2(290, 350), "ok"))
+		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
+		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			delete mCurrentState;
 			mCurrentState = new MainMenuState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), "Try Again"))
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::GAME_TRY_AGAIN)))
 		{
 			delete mCurrentState;
 			mCurrentState = new LocalGameState();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(320, 390), "Save Replay"))
+		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();

@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "Blood.h"
 #include "IMGUI.h"
+#include "TextManager.h"
 
 #include <physfs.h>
 #include <sstream>
@@ -113,32 +114,32 @@ void OptionState::step()
 	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
 
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), "input options"))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), TextManager::getSingleton()->getString(TextManager::OP_INPUT_OP)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new InputOptionsState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), "graphic options"))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), TextManager::getSingleton()->getString(TextManager::OP_GFX_OP)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new GraphicOptionsState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), "misc options"))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), TextManager::getSingleton()->getString(TextManager::OP_MISC)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MiscOptionsState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new MainMenuState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
 		delete this;
 		mCurrentState = new MainMenuState();
@@ -199,18 +200,18 @@ void GraphicOptionsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	imgui.doText(GEN_ID, Vector2(34.0, 50.0), "Video Settings");
+	imgui.doText(GEN_ID, Vector2(34.0, 50.0), TextManager::getSingleton()->getString(TextManager::OP_VIDEO));
 
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 80.0), "Fullscreen Mode"))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 80.0), TextManager::getSingleton()->getString(TextManager::OP_FULLSCREEN)))
 		mFullscreen = true;
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 110.0), "Window Mode"))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 110.0), TextManager::getSingleton()->getString(TextManager::OP_WINDOW)))
 		mFullscreen = false;
 	if (mFullscreen)
 		imgui.doImage(GEN_ID, Vector2(18.0, 92.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(18.0, 122.0), "gfx/pfeil_rechts.bmp");
 
-	imgui.doText(GEN_ID, Vector2(444.0, 50.0), "Render Device");
+	imgui.doText(GEN_ID, Vector2(444.0, 50.0), TextManager::getSingleton()->getString(TextManager::OP_RENDER_DEVICE));
 	if (imgui.doButton(GEN_ID, Vector2(444.0, 80.0), "OpenGL"))
 		mRenderer = "OpenGL";
 	if (imgui.doButton(GEN_ID, Vector2(444.0, 110.0), "SDL"))
@@ -221,31 +222,31 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(428.0, 122.0), "gfx/pfeil_rechts.bmp");
 
 	//Blob colors:
-	imgui.doText(GEN_ID, Vector2(280.0, 170.0), "blob colors");
+	imgui.doText(GEN_ID, Vector2(280.0, 170.0), TextManager::getSingleton()->getString(TextManager::OP_BLOB_COLORS));
 	//left blob:
-	imgui.doText(GEN_ID, Vector2(34.0, 220.0), "left player");
+	imgui.doText(GEN_ID, Vector2(34.0, 220.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_PLAYER));
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 250), "red");
+		imgui.doText(GEN_ID, Vector2(34.0, 250), TextManager::getSingleton()->getString(TextManager::OP_RED));
 		float r1 = (float)mR1/255;
 		imgui.doScrollbar(GEN_ID, Vector2(160.0, 250.0), r1);
 		mR1 = (int)(r1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 280), "green");
+		imgui.doText(GEN_ID, Vector2(34.0, 280), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
 		float g1 = (float)mG1/255;
 		imgui.doScrollbar(GEN_ID, Vector2(160.0, 280.0), g1);
 		mG1 = (int)(g1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 310), "blue");
+		imgui.doText(GEN_ID, Vector2(34.0, 310), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
 		float b1 = (float)mB1/255;
 		imgui.doScrollbar(GEN_ID, Vector2(160.0, 310), b1);
 		mB1 = (int)(b1*255);
 	}
-	imgui.doText(GEN_ID, Vector2(34.0, 350), "morphing blob?");
-	if (imgui.doButton(GEN_ID, Vector2(72.0, 380), "yes"))
+	imgui.doText(GEN_ID, Vector2(34.0, 350), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
+	if (imgui.doButton(GEN_ID, Vector2(72.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		mLeftMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(220.0, 380), "no"))
+	if (imgui.doButton(GEN_ID, Vector2(220.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
 		mLeftMorphing = false;
 	if (mLeftMorphing)
 		imgui.doImage(GEN_ID, Vector2(54.0, 392.0), "gfx/pfeil_rechts.bmp");
@@ -263,29 +264,29 @@ void GraphicOptionsState::step()
 	}
 
 	//right blob:
-	imgui.doText(GEN_ID, Vector2(434.0, 220.0), "right player");
+	imgui.doText(GEN_ID, Vector2(434.0, 220.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_PLAYER));
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 250), "red");
+		imgui.doText(GEN_ID, Vector2(434.0, 250), TextManager::getSingleton()->getString(TextManager::OP_RED));
 		float r2 = (float)mR2/255;
 		imgui.doScrollbar(GEN_ID, Vector2(560.0, 250.0), r2);
 		mR2 = (int)(r2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 280), "green");
+		imgui.doText(GEN_ID, Vector2(434.0, 280), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
 		float g2 = (float)mG2/255;
 		imgui.doScrollbar(GEN_ID, Vector2(560.0, 280.0), g2);
 		mG2 = (int)(g2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 310), "blue");
+		imgui.doText(GEN_ID, Vector2(434.0, 310), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
 		float b2 = (float)mB2/255;
 		imgui.doScrollbar(GEN_ID, Vector2(560.0, 310), b2);
 		mB2 = (int)(b2*255);
 	}
-	imgui.doText(GEN_ID, Vector2(434.0, 350), "morphing blob?");
-	if (imgui.doButton(GEN_ID, Vector2(472.0, 380), "yes"))
+	imgui.doText(GEN_ID, Vector2(434.0, 350), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
+	if (imgui.doButton(GEN_ID, Vector2(472.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		mRightMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(620.0, 380), "no"))
+	if (imgui.doButton(GEN_ID, Vector2(620.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
 		mRightMorphing = false;
 	if (mRightMorphing)
 		imgui.doImage(GEN_ID, Vector2(454.0, 392.0), "gfx/pfeil_rechts.bmp");
@@ -302,13 +303,13 @@ void GraphicOptionsState::step()
 		imgui.doBlob(GEN_ID, Vector2(660, 490), ourCol);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new OptionState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
 		delete this;
 		mCurrentState = new OptionState();
@@ -378,7 +379,7 @@ void InputOptionsState::step()
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
 
 	//left player side:
-	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "left player");
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_PLAYER));
 	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
 	{
 		if (mLeftBlobbyDevice == "mouse")
@@ -404,7 +405,7 @@ void InputOptionsState::step()
 	//if mouse device is selected:
 	if (mLeftBlobbyDevice == "mouse")
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Jump Button");
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_BUTTON));
 		std::ostringstream text;
 		if (mLeftBlobbyMouseJumpbutton >= 0)
 			text << "Button " << mLeftBlobbyMouseJumpbutton;
@@ -422,10 +423,10 @@ void InputOptionsState::step()
 	if (mLeftBlobbyDevice == "keyboard")
 	{
 
-		if (imgui.doButton(GEN_ID, Vector2(34, 350.0), "Set All"))
+		if (imgui.doButton(GEN_ID, Vector2(34, 350.0), TextManager::getSingleton()->getString(TextManager::OP_SET_ALL)))
 			mSetKeyboard = 1;
 
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Key");
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_KEY));
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft) || mSetKeyboard == 1)
 		{
 			lastActionKey = "";
@@ -439,7 +440,7 @@ void InputOptionsState::step()
 		if (mSetKeyboard == 2 && mLeftBlobbyKeyboardLeft != "")
 			mSetKeyboard = 3;
 
-		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Key");
+		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_KEY));
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight) || mSetKeyboard == 3)
 		{
 			lastActionKey = "";
@@ -453,7 +454,7 @@ void InputOptionsState::step()
 		if (mSetKeyboard == 4 && mLeftBlobbyKeyboardRight != "")
 			mSetKeyboard = 5;
 
-		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Key");
+		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_KEY) );
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump) || mSetKeyboard == 5)
 		{
 			lastActionKey = "";
@@ -470,19 +471,19 @@ void InputOptionsState::step()
 	//if joystick device is selected:
 	if (mLeftBlobbyDevice == "joystick")
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), "Left Button");
+		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystickLeft))
 		{
 			oldString = mLeftBlobbyJoystickLeft;
 			mLeftBlobbyJoystickLeft = "";
 		}
-		imgui.doText(GEN_ID, Vector2(34.0, 190.0), "Right Button");
+		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystickRight))
 		{
 			oldString = mLeftBlobbyJoystickRight;
 			mLeftBlobbyJoystickRight = "";
 		}
-		imgui.doText(GEN_ID, Vector2(34.0, 260.0), "Jump Button");
+		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystickJump))
 		{
 			oldString = mLeftBlobbyJoystickJump;
@@ -491,7 +492,7 @@ void InputOptionsState::step()
 	}
 
 	//right player side:
-	imgui.doText(GEN_ID, Vector2(434.0, 10.0), "right player");
+	imgui.doText(GEN_ID, Vector2(434.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_PLAYER));
 	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), mRightBlobbyDevice))
 	{
 		if (mRightBlobbyDevice == "mouse")
@@ -517,7 +518,7 @@ void InputOptionsState::step()
 	//if mouse device is selected:
 	if (mRightBlobbyDevice == "mouse")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Jump Button");
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_BUTTON));
 		std::ostringstream text;
 		if (mRightBlobbyMouseJumpbutton >= 0)
 			text << "Button " << mRightBlobbyMouseJumpbutton;
@@ -535,10 +536,10 @@ void InputOptionsState::step()
 	if (mRightBlobbyDevice == "keyboard")
 	{
 
-		if (imgui.doButton(GEN_ID, Vector2(434.0, 350.0), "Set All"))
+		if (imgui.doButton(GEN_ID, Vector2(434.0, 350.0), TextManager::getSingleton()->getString(TextManager::OP_SET_ALL)))
 			mSetKeyboard = 11;
 
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Key");
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_KEY));
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft) || mSetKeyboard == 11)
 		{
 			lastActionKey = "";
@@ -552,7 +553,7 @@ void InputOptionsState::step()
 		if (mSetKeyboard == 12 && mRightBlobbyKeyboardLeft != "")
 			mSetKeyboard = 13;
 
-		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Key");
+		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_KEY));
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight) || mSetKeyboard == 13)
 		{
 			lastActionKey = "";
@@ -566,7 +567,7 @@ void InputOptionsState::step()
 		if (mSetKeyboard == 14 && mRightBlobbyKeyboardRight != "")
 			mSetKeyboard = 15;
 
-		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Key");
+		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_KEY));
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump) || mSetKeyboard == 15)
 		{
 			lastActionKey = "";
@@ -583,19 +584,19 @@ void InputOptionsState::step()
 	//if joystick device is selected:
 	if (mRightBlobbyDevice == "joystick")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), "Left Button");
+		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystickLeft))
 		{
 			oldString = mRightBlobbyJoystickLeft;
 			mRightBlobbyJoystickLeft = "";
 		}
-		imgui.doText(GEN_ID, Vector2(434.0, 190.0), "Right Button");
+		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystickRight))
 		{
 			oldString = mRightBlobbyJoystickRight;
 			mRightBlobbyJoystickRight = "";
 		}
-		imgui.doText(GEN_ID, Vector2(434.0, 260.0), "Jump Button");
+		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::getSingleton()->getString(TextManager::OP_JUMP_BUTTON));
 		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystickJump))
 		{
 			oldString = mRightBlobbyJoystickJump;
@@ -619,8 +620,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyMouseJumpbutton == -1)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
-		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_MOUSE_BUTTON));
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mLeftBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyMouseJumpbutton = mOldInteger;
@@ -628,8 +629,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyKeyboardLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_KEY_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_LEFT));
 		mLeftBlobbyKeyboardLeft = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyKeyboardLeft = oldString;
@@ -637,8 +638,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyKeyboardRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_KEY_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_RIGHT));
 		mLeftBlobbyKeyboardRight = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyKeyboardRight = oldString;
@@ -646,8 +647,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyKeyboardJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_LEFT));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mLeftBlobbyKeyboardJump = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyKeyboardJump = oldString;
@@ -655,8 +656,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyJoystickLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_LEFT));
 		mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyJoystickLeft = oldString;
@@ -664,8 +665,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyJoystickRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_RIGHT));
 		mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyJoystickRight = oldString;
@@ -673,8 +674,8 @@ void InputOptionsState::step()
 	if (mLeftBlobbyJoystickJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mLeftBlobbyJoystickJump = oldString;
@@ -682,8 +683,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyMouseJumpbutton == -1)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(180.0, 250.0), "Press Mouse Button");
-		imgui.doText(GEN_ID, Vector2(290.0, 300.0), "For Jump");
+		imgui.doText(GEN_ID, Vector2(180.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_MOUSE_BUTTON));
+		imgui.doText(GEN_ID, Vector2(290.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mRightBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyMouseJumpbutton = mOldInteger;
@@ -691,8 +692,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyKeyboardLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_KEY_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_LEFT));
 		mRightBlobbyKeyboardLeft = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyKeyboardLeft = oldString;
@@ -700,8 +701,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyKeyboardRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_KEY_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_RIGHT));
 		mRightBlobbyKeyboardRight = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyKeyboardRight = oldString;
@@ -709,8 +710,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyKeyboardJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Key For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_KEY_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mRightBlobbyKeyboardJump = lastActionKey;
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyKeyboardJump = oldString;
@@ -718,8 +719,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyJoystickLeft == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Left");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_LEFT));
 		mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyJoystickLeft = oldString;
@@ -727,8 +728,8 @@ void InputOptionsState::step()
 	if (mRightBlobbyJoystickRight == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Moving Right");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_MOVING_RIGHT));
 		mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyJoystickRight = oldString;
@@ -736,20 +737,20 @@ void InputOptionsState::step()
 	if (mRightBlobbyJoystickJump == "")
 	{
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), "Press Button For");
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), "Jumping");
+		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::getSingleton()->getString(TextManager::OP_PRESS_BUTTON_FOR));
+		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::OP_JUMPING));
 		mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
 		if (InputManager::getSingleton()->exit())
 			mRightBlobbyJoystickJump = oldString;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new OptionState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
 		delete this;
 		mCurrentState = new OptionState();
@@ -813,7 +814,7 @@ void MiscOptionsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	imgui.doText(GEN_ID, Vector2(34.0, 10.0), "Background:");
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_BACKGROUND));
 	int tmp = mBackground;
 	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(400.0, 280.0), mBackgrounds, tmp);
 	if (tmp != mBackground)
@@ -823,13 +824,13 @@ void MiscOptionsState::step()
 			RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
 
-	imgui.doText(GEN_ID, Vector2(484.0, 10.0), "Volume:");
+	imgui.doText(GEN_ID, Vector2(484.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_VOLUME));
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
 		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
 	}
-	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), "Mute"))
+	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), TextManager::getSingleton()->getString(TextManager::OP_MUTE)))
 	{
 		mMute = !mMute;
 		SoundManager::getSingleton().setMute(mMute);
@@ -840,7 +841,7 @@ void MiscOptionsState::step()
 	{
 		imgui.doImage(GEN_ID, Vector2(513.0, 92.0), "gfx/pfeil_rechts.bmp");
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), "show fps"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), TextManager::getSingleton()->getString(TextManager::OP_FPS)))
 	{
 		mShowFPS = !mShowFPS;
 		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
@@ -849,7 +850,7 @@ void MiscOptionsState::step()
 	{
 		imgui.doImage(GEN_ID, Vector2(466.0, 132.0), "gfx/pfeil_rechts.bmp");
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), "show blood"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), TextManager::getSingleton()->getString(TextManager::OP_BLOOD)))
 	{
 		mShowBlood = !mShowBlood;
 		BloodManager::getSingleton().enable(mShowBlood);
@@ -860,31 +861,31 @@ void MiscOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(466.0 ,172.0), "gfx/pfeil_rechts.bmp");
 	}
 
-	imgui.doText(GEN_ID, Vector2(434.0, 200.0), "Network Side:");
-	if (imgui.doButton(GEN_ID, Vector2(450.0, 240.0), "Left"))
+	imgui.doText(GEN_ID, Vector2(434.0, 200.0), TextManager::getSingleton()->getString(TextManager::OP_NETWORK_SIDE));
+	if (imgui.doButton(GEN_ID, Vector2(450.0, 240.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT)))
 		mNetworkSide = 0;
-	if (imgui.doButton(GEN_ID, Vector2(630.0, 240.0), "Right"))
+	if (imgui.doButton(GEN_ID, Vector2(630.0, 240.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT)))
 		mNetworkSide = 1;
 	if (mNetworkSide == 0)
 		imgui.doImage(GEN_ID, Vector2(432.0, 252.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
-	imgui.doText(GEN_ID, Vector2(292.0, 290.0), "Gamespeed:");
+	imgui.doText(GEN_ID, Vector2(292.0, 290.0), TextManager::getSingleton()->getString(TextManager::OP_SPEED));
 	float gamefps = (mGameFPS - 30) / 90.0;
 	if (gamefps < 0.0)
 		gamefps = 0.0;
 	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps);
 		mGameFPS = (int)(gamefps*90.0+30);
-	if (imgui.doButton(GEN_ID, Vector2(205.0, 380.0), "very slow"))
+	if (imgui.doButton(GEN_ID, Vector2(155.0, 380.0), TextManager::getSingleton()->getString(TextManager::OP_VSLOW)))
 		mGameFPS = 30;
-	if (imgui.doButton(GEN_ID, Vector2(481.0, 380.0), "slow"))
+	if (imgui.doButton(GEN_ID, Vector2(450.0, 380.0), TextManager::getSingleton()->getString(TextManager::OP_SLOW)))
 		mGameFPS = 60;
-	if (imgui.doButton(GEN_ID, Vector2(319.0, 415.0), "default"))
+	if (imgui.doButton(GEN_ID, Vector2(319.0, 415.0), TextManager::getSingleton()->getString(TextManager::OP_DEFAULT)))
 		mGameFPS = 75;
-	if (imgui.doButton(GEN_ID, Vector2(205.0, 450.0), "fast"))
+	if (imgui.doButton(GEN_ID, Vector2(155.0, 450.0), TextManager::getSingleton()->getString(TextManager::OP_FAST)))
 		mGameFPS = 90;
-	if (imgui.doButton(GEN_ID, Vector2(360.0, 450.0), "very fast"))
+	if (imgui.doButton(GEN_ID, Vector2(410.0, 450.0), TextManager::getSingleton()->getString(TextManager::OP_VFAST)))
 		mGameFPS = 120;
 	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
@@ -892,13 +893,13 @@ void MiscOptionsState::step()
 	FPSInPercent << int((float)mGameFPS/75*100);
 	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
 
-	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), "ok"))
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
 		delete this;
 		mCurrentState = new OptionState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
 		delete this;
 		mCurrentState = new OptionState();

@@ -16,6 +16,7 @@ set(common_SRC
 	
 set (blobby_SRC ${common_SRC}
 	Blood.cpp Blood.h
+	TextManager.cpp TextManager.h
 	DuelMatch.cpp DuelMatch.h
 	main.cpp
 	IMGUI.cpp IMGUI.h
@@ -32,7 +33,6 @@ set (blobby_SRC ${common_SRC}
 	ScriptedInputSource.cpp ScriptedInputSource.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
-	
 	state/State.cpp state/State.h
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h

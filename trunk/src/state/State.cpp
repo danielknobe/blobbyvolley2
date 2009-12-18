@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "NetworkState.h"
 #include "OptionsState.h"
+#include "TextManager.h"
 
 #include <physfs.h>
 #include <algorithm>
@@ -65,12 +66,12 @@ void MainMenuState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
-	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), "network game"))
+	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_NETWORK)))
 	{
 		delete mCurrentState;
 		mCurrentState = new NetworkSearchState();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), "start"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START)))
 	{
 		delete mCurrentState;
 		try
@@ -87,25 +88,25 @@ void MainMenuState::step()
 		}
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), "options"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_OPTIONS)))
 	{
 		delete mCurrentState;
 		mCurrentState = new OptionState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 460.0), "watch replay"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 460.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
 	{
 		delete mCurrentState;
 		mCurrentState = new ReplayMenuState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), "credits"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))
 	{
 		delete mCurrentState;
 		mCurrentState = new CreditsState();
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), "exit"))
+	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_EXIT)))
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
@@ -126,7 +127,7 @@ void CreditsState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), "programmers:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), TextManager::getSingleton()->getString(TextManager::CRD_PROGRAMMERS));
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Jonathan Sieber");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(jonathan_sieber(at)yahoo.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Daniel Knobe");
@@ -134,20 +135,20 @@ void CreditsState::step()
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+160), "Sven Rech");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+190), "(svenrech(at)gmx.de)");
 
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+230), "graphics:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+230), TextManager::getSingleton()->getString(TextManager::CRD_GRAPHICS));
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+260), "Silvio Mummert");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+290), "(mummertathome(at)t-online.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+325), "Richard Bertrand");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+355), "(ricbertrand(at)hotmail.com)");
 
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+400), "special thanks at:");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+400), TextManager::getSingleton()->getString(TextManager::CRD_THX));
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+430), "Daniel Skoraszewsky");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+460), "(skoraszewsky(at)t-online.de)");
 
 	if (mYPosition > 20)
 		mYPosition -= 2.5;
 
-	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), "back to mainmenu"))
+	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::getSingleton()->getString(TextManager::LBL_MAINMENU)))
 	{
 		delete this;
 		mCurrentState = new MainMenuState();
@@ -233,15 +234,15 @@ void ReplayMenuState::step()
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-			imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
-			if (imgui.doButton(GEN_ID, Vector2(290, 350), "ok"))
+			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
+			if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				mReplaying = false;
 				delete mReplayMatch;
 				delete mReplayRecorder;
 				imgui.resetSelection();
 			}
-			if (imgui.doButton(GEN_ID, Vector2(400, 350), "show again"))
+			if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::RP_SHOW_AGAIN)))
 			{
 				delete mReplayMatch;
 				delete mReplayRecorder;
@@ -264,20 +265,20 @@ void ReplayMenuState::step()
 		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), "play") &&
+		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), TextManager::getSingleton()->getString(TextManager::RP_PLAY)) &&
 					mSelectedReplay != -1)
 		{
 			loadCurrentReplay();
 			imgui.resetSelection();
 		}
-		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), "cancel"))
+		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
 			delete this;
 			mCurrentState = new MainMenuState();
 		}
 		else
 			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
-		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), "delete"))
+		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::getSingleton()->getString(TextManager::RP_DELETE)))
 		{
 			if (!mReplayFiles.empty())
 			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr").c_str()))
@@ -292,10 +293,10 @@ void ReplayMenuState::step()
 		{
 			imgui.doInactiveMode(false);
 			imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
-			imgui.doText(GEN_ID, Vector2(250, 200), "Checksum error");
-			imgui.doText(GEN_ID, Vector2(250, 250), "File is corrupt");
+			imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_CHECKSUM));
+			imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_CORRUPT));
 
-			if (imgui.doButton(GEN_ID, Vector2(400, 330), "OK"))
+			if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				mChecksumError = false;
 			}
