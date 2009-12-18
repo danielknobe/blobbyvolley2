@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkState.h"
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
+#include "TextManager.h"
 
 #include "ReplayRecorder.h"
 
@@ -163,10 +164,10 @@ void NetworkSearchState::step()
 		imgui.doInactiveMode(true);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(10, 20), "scan for servers"))
+	if (imgui.doButton(GEN_ID, Vector2(10, 20), TextManager::getSingleton()->getString(TextManager::NET_SERVER_SCAN)))
 		broadcast();
 
-	if (imgui.doButton(GEN_ID, Vector2(420, 20), "direct connect") &&
+	if (imgui.doButton(GEN_ID, Vector2(420, 20), TextManager::getSingleton()->getString(TextManager::NET_DIRECT_CONNECT)) &&
 			!mEnteringServer)
 	{
 		mEnteringServer = true;
@@ -184,7 +185,7 @@ void NetworkSearchState::step()
 	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
 			servernames, mSelectedServer);
 
-	if (imgui.doButton(GEN_ID, Vector2(50, 480), "server info") &&
+	if (imgui.doButton(GEN_ID, Vector2(50, 480), TextManager::getSingleton()->getString(TextManager::NET_SERVER_INFO)) &&
 			!mDisplayInfo && !mScannedServers.empty())
 	{
 		mDisplayInfo = true;
@@ -197,14 +198,14 @@ void NetworkSearchState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 200.0), Vector2(650.0, 400.0));
 		// Game crashes if the mEnteredServer is not a possible input
 		imgui.doEditbox(GEN_ID, Vector2(130.0, 210.0), 20, mEnteredServer, mServerBoxPosition);
-		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), "ok"))
+		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			//std::string server = mScannedServers[mSelectedServer].hostname;
 			delete this;
 			mCurrentState = new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT);
 			return;
 		}
-		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), "cancel"))
+		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
 			mEnteringServer = false;
 			imgui.resetSelection();
@@ -220,10 +221,12 @@ void NetworkSearchState::step()
 		imgui.doText(GEN_ID, Vector2(50, 130), mScannedServers[mSelectedServer].hostname);
 
 		std::stringstream activegames;
-		activegames << "active games: " << mScannedServers[mSelectedServer].activegames;
+		activegames << TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES) 
+					<< mScannedServers[mSelectedServer].activegames;
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
 		std::stringstream waitingplayer;
-		waitingplayer << "waiting player: " << mScannedServers[mSelectedServer].waitingplayer;
+		waitingplayer << TextManager::getSingleton()->getString(TextManager::NET_WAITING_PLAYER)
+					  << mScannedServers[mSelectedServer].waitingplayer;
 		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
 		std::string description = mScannedServers[mSelectedServer].description;
 		for (int i = 0; i < description.length(); i += 29)
@@ -232,7 +235,7 @@ void NetworkSearchState::step()
 					description.substr(i, 29));
 		}
 
-		if (imgui.doButton(GEN_ID, Vector2(410, 405), "ok"))
+		if (imgui.doButton(GEN_ID, Vector2(410, 405), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			mDisplayInfo = false;
 			imgui.resetSelection();
@@ -240,7 +243,7 @@ void NetworkSearchState::step()
 		imgui.doInactiveMode(true);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(450, 480), "host game") &&
+	if (imgui.doButton(GEN_ID, Vector2(450, 480), TextManager::getSingleton()->getString(TextManager::NET_HOST_GAME)) &&
 			!mDisplayInfo)
 	{
 		delete this;
@@ -248,13 +251,14 @@ void NetworkSearchState::step()
 		return;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(230, 530), "ok") && !mScannedServers.empty())
+	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::getSingleton()->getString(TextManager::LBL_OK)) 
+							&& !mScannedServers.empty())
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
 		delete this;
 		mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
 	}
-	if (imgui.doButton(GEN_ID, Vector2(480, 530), "cancel"))
+	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
 		delete this;
 		mCurrentState = new MainMenuState;
@@ -516,10 +520,10 @@ void NetworkGameState::step()
 	else if (mSaveReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-		imgui.doText(GEN_ID, Vector2(190, 220), "Name of the Replay:");
+		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::getSingleton()->getString(TextManager::RP_SAVE_NAME));
 		static unsigned cpos;
 		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
-		if (imgui.doButton(GEN_ID, Vector2(220, 330), "OK"))
+		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			if (mFilename != "")
 			{
@@ -528,7 +532,7 @@ void NetworkGameState::step()
 			mSaveReplay = false;
 			imgui.resetSelection();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(440, 330), "Cancel"))
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -542,7 +546,7 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 310.0));
 			imgui.doText(GEN_ID, Vector2(150.0, 250.0),
-					"connecting to server...");
+					TextManager::getSingleton()->getString(TextManager::NET_CONNECTING));
 			break;
 		}
 		case WAITING_FOR_OPPONENT:
@@ -550,7 +554,7 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 310.0));
 			imgui.doText(GEN_ID, Vector2(150.0, 250.0),
-					"waiting for opponent...");
+					TextManager::getSingleton()->getString(TextManager::GAME_WAITING));
 			break;
 		}
 		case OPPONENT_DISCONNECTED:
@@ -559,14 +563,14 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(140.0, 250.0),
-					"opponent left the game");
+					TextManager::getSingleton()->getString(TextManager::GAME_OPP_LEFT));
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 300.0),
-					"ok"))
+					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
 			}
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), "Save Replay"))
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -579,14 +583,14 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
-					"disconnected from server");
+					TextManager::getSingleton()->getString(TextManager::NET_DISCONNECT));
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
-					"ok"))
+					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
 			}
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), "Save Replay"))
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -599,9 +603,9 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					"connection failed");
+					TextManager::getSingleton()->getString(TextManager::NET_CON_FAILED));
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					"ok"))
+					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
@@ -614,9 +618,9 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					"server is full");
+					TextManager::getSingleton()->getString(TextManager::NET_SERVER_FULL));
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					"ok"))
+					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState;
@@ -653,13 +657,13 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 240), tmp.str());
-			imgui.doText(GEN_ID, Vector2(274, 300), "has won the game!");
-			if (imgui.doButton(GEN_ID, Vector2(290, 360), "ok"))
+			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
+			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				delete mCurrentState;
 				mCurrentState = new MainMenuState();
 			}
-			if (imgui.doButton(GEN_ID, Vector2(380, 360), "Save Replay"))
+			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -670,19 +674,19 @@ void NetworkGameState::step()
 		case PAUSING:
 		{
 			imgui.doOverlay(GEN_ID, Vector2(200, 200), Vector2(650, 400));
-			imgui.doText(GEN_ID, Vector2(300, 260), "game paused");
-			if (imgui.doButton(GEN_ID, Vector2(230, 330), "continue"))
+			imgui.doText(GEN_ID, Vector2(300, 260), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
+			if (imgui.doButton(GEN_ID, Vector2(230, 330), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
 			{
 				RakNet::BitStream stream;
 				stream.Write(ID_UNPAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 330), "quit"))
+			if (imgui.doButton(GEN_ID, Vector2(500, 330), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
 			{
 				delete this;
 				mCurrentState = new MainMenuState;
 			}
-			if (imgui.doButton(GEN_ID, Vector2(310, 370), "Save Replay"))
+			if (imgui.doButton(GEN_ID, Vector2(310, 370), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();

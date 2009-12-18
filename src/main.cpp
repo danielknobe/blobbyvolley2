@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "InputManager.h"
+#include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
 #include "state/State.h"
@@ -132,6 +133,15 @@ int main(int argc, char* argv[])
 	{
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
+		
+		if(gameConfig.getString("language") == "german"){
+			TextManager::createTextManager(TextManager::GERMAN);
+		}else if(gameConfig.getString("language") == "english"){
+			TextManager::createTextManager(TextManager::ENGLISH);
+		}else{
+			std::cerr << "Warning: Unknown language \""<<gameConfig.getString("language")<<"\"!";
+			TextManager::createTextManager(TextManager::ENGLISH);
+		}
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
 		else if (gameConfig.getString("device") == "GP2X")
