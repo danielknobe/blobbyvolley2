@@ -290,12 +290,13 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	temp << time(0);
 	mFilename = temp.str();
 
-	mLeftColor = Color(config.getInteger("r1"),
-		config.getInteger("g1"),
-		config.getInteger("b1"));
-	mRightColor = Color(config.getInteger("r2"),
-		config.getInteger("g2"),
-		config.getInteger("b2"));
+	// FIXME: We load the colors from config atm
+	mLeftColor = Color(config.getInteger("left_blobby_color_r"),
+		config.getInteger("left_blobby_color_g"),
+		config.getInteger("left_blobby_color_b"));
+	mRightColor = Color(config.getInteger("right_blobby_color_r"),
+		config.getInteger("right_blobby_color_g"),
+		config.getInteger("right_blobby_color_b"));
 	mLeftOscillate = config.getBool("left_blobby_oscillate");
 	mRightOscillate = config.getBool("right_blobby_oscillate");
 
@@ -349,6 +350,9 @@ void NetworkGameState::step()
 				stream.Write(myname, sizeof(myname));
 
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+
+				// Send playercolor
+
 				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
 				break;
