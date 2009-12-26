@@ -18,10 +18,10 @@ add_zip_archive(scripts lua)
 add_zip_archive(backgrounds bmp)
 
 set(install_files
-	gfx.zip
-	sounds.zip
-	scripts.zip
-	backgrounds.zip
+	${CMAKE_CURRENT_BINARY_DIR}/gfx.zip
+	${CMAKE_CURRENT_BINARY_DIR}/sounds.zip
+	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
+	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	config.xml
 	inputconfig.xml
 	server.xml)

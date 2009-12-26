@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
+#include "config.h"
+
 #include <physfs.h>
 
 #include "RenderManager.h"
@@ -85,6 +87,13 @@ void setupPHYSFS()
 	// Just write in installation directory
 	PHYSFS_setWriteDir("data");
 #else
+	// handle the case when it is installed
+	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby", 1);
+	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip", 1);
+	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip", 1);
+	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip", 1);
+	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip", 1);
+
 	// Create a search path in the home directory and ensure that
 	// all paths exist and are actually directories
 	std::string userdir = PHYSFS_getUserDir();
