@@ -9,10 +9,8 @@ features:
 - lobbysystem
 
 bugs:
-- glitsches in IMGUI if you redraw a whole site in the menu
-- wrong servername in hosted game by blobbyclient
-- graphicglitch if you start a networkgame
 - wrong blobbycolors in networkgame
+- mouse-input does not work very good in online-game
 
 data:
 - new smaller font
