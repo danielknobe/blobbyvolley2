@@ -22,10 +22,10 @@ Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2.0 Version 0.7
-AppVerName=Blobby Volley 2.0 Version 0.7
-DefaultDirName={pf}\Blobby Volley 2.0 Version 0.7
-DefaultGroupName=Blobby Volley 2.0 Version 0.7
+AppName=Blobby Volley 2.0 Version 0.8
+AppVerName=Blobby Volley 2.0 Version 0.8
+DefaultDirName={pf}\Blobby Volley 2.0 Version 0.8
+DefaultGroupName=Blobby Volley 2.0 Version 0.8
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
