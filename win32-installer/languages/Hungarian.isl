@@ -1,18 +1,26 @@
-; *** Inno Setup version 5.1.0+ Hungarian messages with "a(z)" definite articles ***
-; Copyright (C) 1999-2005 Kornél Pál
+; *** Inno Setup version 5.1.11+ Hungarian messages with "a(z)" definite articles ***
+; Copyright (C) 1999-2008 Kornél Pál
 ; All rights reserved.
-; E-mail: kornelpal@hotmail.com
-; Hungarian Inno Setup home page: http://www.kornelpal.hu/innosetup
+; E-mail: kornelpal@gmail.com
+; Hungarian Inno Setup translation home page: http://www.kornelpal.hu/ishu
+;
 ; You can download the versions with "a" and "az" definite articles and read
 ; about the usage of different Hungarian definite articles on this page.
 ;
-; *** Inno Setup 5.1.0+ verzió magyar üzenetek "a(z)" határozott névelõkkel ***
-; Copyright (C) 1999-2005 Pál Kornél
+; For conditions of use and distribution see Readme.htm file contained in the
+; Hungarian Inno Setup messages package available on the above home page.
+;
+; *** Inno Setup 5.1.11+ verzió magyar üzenetek "a(z)" határozott névelõkkel ***
+; Copyright (C) 1999-2008 Pál Kornél
 ; Minden jog fenntartva.
-; E-mail: kornelpal@hotmail.com
+; E-mail: kornelpal@gmail.com
 ; Magyar Inno Setup oldal: http://www.palkornel.hu/innosetup
+;
 ; Az oldalról letölthetõ az "a" és az "az" névelõket tartalmazó változat, és
 ; olvashatsz a különbözõ magyar határozott névelõk használatáról is.
+;
+; A használat és a továbbadás feltételei a fenti oldalról letölthetõ Magyar
+; Inno Setup üzenetek csomagban található Fontos.htm fájlban olvashatóak.
 ;
 ; To download user-contributed translations of this file, go to:
 ;   http://www.jrsoftware.org/is3rdparty.php
@@ -21,10 +29,10 @@
 ; messages that didn't have them already, because on those messages Inno
 ; Setup adds the periods automatically (appending a period would result in
 ; two periods being displayed).
-;
-; $jrsoftware: issrc/Files/Languages/Hungarian.isl,v 1.1 2005/03/30 18:01:40 mlaan Exp $
 
 [LangOptions]
+; The following three entries are very important. Be sure to read and 
+; understand the '[LangOptions] section' topic in the help file.
 LanguageName=Magyar
 LanguageID=$040E
 LanguageCodePage=1250
@@ -60,14 +68,14 @@ LdrCannotExecTemp=Az átmeneti könyvtárban nem lehet fájlt végrehajtani. A telepí
 ; *** Startup error messages
 LastErrorMessage=%1.%n%nHiba %2: %3
 SetupFileMissing=A(z) %1 fájl hiányzik a telepítõ könyvtárából. Hárítsa el a hibát, vagy szerezzen be egy új másolatot a programról.
-SetupFileCorrupt=A telepítõfájlok megsérültek. Szerezzen be egy új másolatot a programról.
-SetupFileCorruptOrWrongVer=A telepítõfájlok megsérültek, vagy nem kompatibilisek a Telepítõ jelen verziójával. Hárítsa el a hibát, vagy szerezzen be egy új másolatot a programról.
+SetupFileCorrupt=A telepítõ fájlok megsérültek. Szerezzen be egy új másolatot a programról.
+SetupFileCorruptOrWrongVer=A telepítõ fájlok megsérültek, vagy nem kompatibilisek a Telepítõ jelen verziójával. Hárítsa el a hibát, vagy szerezzen be egy új másolatot a programról.
 NotOnThisPlatform=Ez a program nem futtatható %1 alatt.
 OnlyOnThisPlatform=Ezt a programot %1 alatt kell futtatni.
 OnlyOnTheseArchitectures=Ezt a programot csak a Windows következõ processzorarchitektúrákhoz tervezett változataira lehet telepíteni:%n%n%1
-MissingWOW64APIs=A Windows Ön által futtatott verziója nem tartalmazza a Telepítõnek a 64-bites telepítés elvégzéséhez szükséges funkcionalitást. A hiba elhárításához kérem, telepítse a Service Pack %1-t.
-WinVersionTooLowError=Ennek a programnak a %1 legalább %2 verziójára van szüksége.
-WinVersionTooHighError=A programot nem lehet %1 %2 vagy késõbbi verziójára telepíteni.
+MissingWOW64APIs=A Windows Ön által futtatott verziója nem tartalmazza a Telepítõ által a 64-bites telepítés elvégzéséhez igényelt funkcionalitást. A hiba elhárításához a Service Pack %1 telepítése szükséges.
+WinVersionTooLowError=A program a %1 %2 vagy késõbbi verzióját igényli.
+WinVersionTooHighError=A programot nem lehet a %1 %2 vagy késõbbi verziójára telepíteni.
 AdminPrivilegesRequired=A program telepítéséhez rendszergazdaként kell bejelentkezni.
 PowerUserPrivilegesRequired=A program telepítéséhez rendszergazdaként vagy a kiemelt felhasználók csoport tagjaként kell bejelentkezni.
 SetupAppRunningError=A Telepítõ megállapította, hogy a(z) %1 jelenleg fut.%n%nKérem, zárja be az összes példányát, majd a folytatáshoz kattintson az OK gombra, vagy a Mégse gombra a kilépéshez.
@@ -84,7 +92,7 @@ AboutSetupMenuItem=&Névjegy...
 AboutSetupTitle=Telepítõ névjegye
 AboutSetupMessage=%1 %2 verzió%n%3%n%nAz %1 honlapja:%n%4
 AboutSetupNote=
-TranslatorNote=Magyar változat:%nCopyright (C) 1999-2005 Pál Kornél%nMinden jog fenntartva.%n%nMagyar Inno Setup oldal:%nhttp://www.palkornel.hu/innosetup
+TranslatorNote=Magyar változat:%nCopyright (C) 1999-2008 Pál Kornél%nMinden jog fenntartva.%n%nMagyar Inno Setup oldal:%nhttp://www.palkornel.hu/innosetup
 
 ; *** Buttons
 ButtonBack=< &Vissza
@@ -109,7 +117,7 @@ SelectLanguageLabel=Válassza ki a telepítés során használandó nyelvet:
 ClickNext=A folytatáshoz kattintson a Tovább gombra, vagy a Mégse gombra a Telepítõbõl történõ kilépéshez.
 BeveledLabel=
 BrowseDialogTitle=Tallózás a mappák között
-BrowseDialogLabel=Válasszon egy mappát az alábbi listából, majd kattintson az OK-ra.
+BrowseDialogLabel=Válasszon egy mappát az alábbi listából, majd kattintson az OK gombra.
 NewFolderName=Új mappa
 
 ; *** "Welcome" wizard page
@@ -119,7 +127,7 @@ WelcomeLabel2=A(z) [name/ver] a számítógépére fog kerülni.%n%nA telepítés folyta
 ; *** "Password" wizard page
 WizardPassword=Jelszó
 PasswordLabel1=Ez a telepítés jelszóval van védve.
-PasswordLabel3=Adja meg a jelszót, majd kattintson a Tovább gombra a folytatáshoz. A jelszavakban a kis- és a nagybetûk különbözõnek számítanak.
+PasswordLabel3=Adja meg a jelszót, majd a folytatáshoz kattintson a Tovább gombra. A jelszavakban a kis- és a nagybetûk különbözõnek számítanak.
 PasswordEditLabel=&Jelszó:
 IncorrectPassword=A megadott jelszó helytelen. Próbálja újra.
 
@@ -147,23 +155,23 @@ UserInfoSerial=&Sorozatszám:
 UserInfoNameRequired=Meg kell adnia egy nevet.
 
 ; *** "Select Destination Location" wizard page
-WizardSelectDir=Válasszon célhelyet
+WizardSelectDir=Válasszon telepítési helyet
 SelectDirDesc=Hova kerüljön telepítésre a(z) [name]?
 SelectDirLabel3=A Telepítõ a(z) [name] alkalmazást a következõ mappába fogja telepíteni.
 SelectDirBrowseLabel=A folytatáshoz kattintson a Tovább gombra. Másik mappa kiválasztásához kattintson a Tallózás gombra.
-DiskSpaceMBLabel=Legalább [mb] MB szabad területre van szüksége.
-ToUNCPathname=A Telepítõ nem tud hálózati útvonalra telepíteni. Ha hálózatra kíván telepíteni, hozzá kell rendelnie egy meghajtóhoz az útvonalat.
-InvalidPath=Teljes útvonalat írjon be a meghajtó betûjelével; például:%n%nC:\Alkalmazás%n%nvagy egy UNC útvonalat a következõ alakban:%n%n\\kiszolgáló\megosztás
-InvalidDrive=A kiválasztott meghajtó vagy UNC megosztás nem létezik vagy nem érhetõ el. Válasszon másikat.
+DiskSpaceMBLabel=Legalább [mb] MB szabad lemezterületre van szükség.
+ToUNCPathname=A Telepítõ nem tud hálózati útvonalra telepíteni. Ha hálózatra kíván telepíteni, csatlakoztatnia kell egy hálózati meghajtót.
+InvalidPath=Teljes útvonalat írjon be a meghajtó betûjelével; például:%n%nC:\Alkalmazás%n%nvagy egy hálózati útvonalat a következõ alakban:%n%n\\kiszolgáló\megosztás
+InvalidDrive=A kiválasztott meghajtó vagy hálózati megosztás nem létezik vagy nem érhetõ el. Válasszon másikat.
 DiskSpaceWarningTitle=Nincs elég szabad lemezterület a meghajtón
 DiskSpaceWarning=A Telepítõnek legalább %1 KB szabad lemezterületre van szüksége, de a kiválasztott meghajtón csak %2 KB áll rendelkezésre.%n%nMindenképpen folytatni kívánja?
 DirNameTooLong=A mappanév vagy az útvonal túl hosszú.
 InvalidDirName=A mappanév érvénytelen.
 BadDirName32=A mappanevekben nem szerepelhetnek a következõ karakterek:%n%n%1
 DirExistsTitle=A mappa már létezik
-DirExists=A mappa:%n%n%1%n%nmár létezik.%n%nEbbe a mappába kívánja telepíteni a programot?
+DirExists=A következõ mappa már létezik:%n%n%1 %n%nEbbe a mappába kívánja telepíteni a programot?
 DirDoesntExistTitle=A mappa nem létezik
-DirDoesntExist=A mappa:%n%n%1%n%nnem létezik. Létre kívánja hozni a mappát?
+DirDoesntExist= A következõ mappa nem létezik:%n%n%1%n%nLétre kívánja hozni a mappát?
 
 ; *** "Select Components" wizard page
 WizardSelectComponents=Összetevõk kiválasztása
@@ -174,10 +182,10 @@ FullInstallation=Teljes telepítés
 CompactInstallation=Szokásos telepítés
 CustomInstallation=Egyéni telepítés
 NoUninstallWarningTitle=Létezõ összetevõ
-NoUninstallWarning=A Telepítõ megállapította, hogy a következõ összetevõk már telepítve vannak a számítógépére:%n%n%1%n%nEzen összetevõk kijelölésének törlése nem távolítja el õket a számítógépérõl.%n%nMindenképpen folytatja?
+NoUninstallWarning=A Telepítõ megállapította, hogy a következõ összetevõk már telepítve vannak a számítógépére:%n%n%1%n%nEzen összetevõk kijelölésének törlése nem távolítja el azokat a számítógépérõl.%n%nMindenképpen folytatja?
 ComponentSize1=%1 KB
 ComponentSize2=%1 MB
-ComponentsDiskSpaceMBLabel=A jelenlegi kijelölésnek legalább [mb] MB szabad területre van szüksége.
+ComponentsDiskSpaceMBLabel=A jelenlegi kijelölés legalább [mb] MB lemezterületet igényel.
 
 ; *** "Select Additional Tasks" wizard page
 WizardSelectTasks=Jelöljön ki kiegészítõ feladatokat
@@ -187,7 +195,7 @@ SelectTasksLabel2=Jelölje ki, mely kiegészítõ feladatokat hajtsa végre a Telepít
 ; *** "Select Start Menu Folder" wizard page
 WizardSelectProgramGroup=Válasszon mappát a Start menüben
 SelectStartMenuFolderDesc=Hova helyezze a Telepítõ a program parancsikonjait?
-SelectStartMenuFolderLabel3=A Telepítõ program a parancsikonjait a Start menü következõ mappájában fogja létrehozni.
+SelectStartMenuFolderLabel3=A Telepítõ a program parancsikonjait a Start menü következõ mappájában fogja létrehozni.
 SelectStartMenuFolderBrowseLabel=A folytatáshoz kattintson a Tovább gombra. Másik mappa kiválasztásához kattintson a Tallózás gombra.
 MustEnterGroupName=Meg kell adnia egy mappanevet.
 GroupNameTooLong=A mappanév vagy az útvonal túl hosszú.
@@ -201,7 +209,7 @@ ReadyLabel1=A Telepítõ felkészült a(z) [name] számítógépére történõ telepítésére
 ReadyLabel2a=Kattintson a Telepítés gombra a folytatáshoz, vagy a Vissza gombra a beállítások áttekintéséhez, megváltoztatásához.
 ReadyLabel2b=Kattintson a Telepítés gombra a folytatáshoz.
 ReadyMemoUserInfo=Felhasználó adatai:
-ReadyMemoDir=Telepítési mappa:
+ReadyMemoDir=Telepítés helye:
 ReadyMemoType=Telepítés típusa:
 ReadyMemoComponents=Választott összetevõk:
 ReadyMemoGroup=Start menü mappája:
@@ -210,7 +218,7 @@ ReadyMemoTasks=Kiegészítõ feladatok:
 ; *** "Preparing to Install" wizard page
 WizardPreparing=Felkészülés a telepítésre
 PreparingDesc=A Telepítõ felkészül a(z) [name] számítógépére történõ telepítésére.
-PreviousInstallNotCompleted=Egy korábbi program telepítése/eltávolítása nem fejezõdött be. Újra kell indítania a számítógépét annak a telepítésnek a befejezéséhez.%n%nA számítógépe újraindítása után ismét futtassa a Telepítõt a(z) [name] telepítésének befejezéséhez.
+PreviousInstallNotCompleted=Egy korábbi program telepítése/eltávolítása nem fejezõdött be. Újra kell indítania a számítógépét a másik telepítés befejezéséhez.%n%nA számítógépe újraindítása után ismét futtassa a Telepítõt a(z) [name] telepítésének befejezéséhez.
 CannotContinue=A telepítés nem folytatható. A kilépéshez kattintson a Mégse gombra.
 
 ; *** "Installing" wizard page
@@ -234,9 +242,9 @@ RunEntryShellExec=%1 megtekintése
 
 ; *** "Setup Needs the Next Disk" stuff
 ChangeDiskTitle=A Telepítõnek szüksége van a következõ lemezre
-SelectDiskLabel2=Helyezze be a(z) %1. lemezt és kattintson az OK gombra.%n%nHa a fájlok ezen a lemezen máshol találhatók, adja meg a mappát, ahol vannak. Írja be a helyes útvonalat vagy kattintson a Tallózás gombra.
+SelectDiskLabel2=Helyezze be a(z) %1. lemezt és kattintson az OK gombra.%n%nHa a fájlok a lemez egy a megjelenítettõl különbözõ mappájában találhatók, írja be a helyes útvonalat vagy kattintson a Tallózás gombra.
 PathLabel=Ú&tvonal:
-FileNotInDir2=A(z) "%1" fájl nem található itt: "%2". Helyezze be a megfelelõ lemezt vagy válasszon egy másik mappát.
+FileNotInDir2=A(z) "%1" fájl nem található a következõ helyen: "%2". Helyezze be a megfelelõ lemezt vagy válasszon egy másik mappát.
 SelectDirectoryLabel=Adja meg a következõ lemez helyét.
 
 ; *** Installation phase messages
@@ -256,9 +264,9 @@ StatusRollback=Változtatások visszavonása...
 
 ; *** Misc. errors
 ErrorInternal2=Belsõ hiba: %1
-ErrorFunctionFailedNoCode=%1 megszakadt
-ErrorFunctionFailed=%1 megszakadt; kód: %2
-ErrorFunctionFailedWithMessage=%1 megszakadt; kód: %2.%n%3
+ErrorFunctionFailedNoCode=Sikertelen %1
+ErrorFunctionFailed=Sikertelen %1; kód: %2
+ErrorFunctionFailedWithMessage=Sikertelen %1; kód: %2.%n%3
 ErrorExecutingProgram=Nem hajtható végre a fájl:%n%1
 
 ; *** Registry errors
@@ -279,14 +287,14 @@ ErrorReadingExistingDest=Hiba lépett fel a fájl olvasása közben:
 FileExists=A fájl már létezik.%n%nFelül kívánja írni?
 ExistingFileNewer=A létezõ fájl újabb a telepítésre kerülõnél. Ajánlott a létezõ fájl megtartása.%n%nMeg kívánja tartani a létezõ fájlt?
 ErrorChangingAttr=Hiba lépett fel a fájl attribútumának módosítása közben:
-ErrorCreatingTemp=Hiba lépett fel a fájl célkönyvtárban történõ létrehozása közben:
+ErrorCreatingTemp=Hiba lépett fel a fájl telepítési könyvtárban történõ létrehozása közben:
 ErrorReadingSource=Hiba lépett fel a forrásfájl olvasása közben:
 ErrorCopying=Hiba lépett fel a fájl másolása közben:
 ErrorReplacingExistingFile=Hiba lépett fel a létezõ fájl cseréje közben:
 ErrorRestartReplace=A fájl cseréje az újraindítás után sikertelen volt:
-ErrorRenamingTemp=Hiba lépett fel fájl célkönyvtárban történõ átnevezése közben:
+ErrorRenamingTemp=Hiba lépett fel fájl telepítési könyvtárban történõ átnevezése közben:
 ErrorRegisterServer=Nem lehet regisztrálni a DLL-t/OCX-et: %1
-ErrorRegisterServerMissingExport=A DllRegisterServer export nem található
+ErrorRegSvr32Failed=sikertelen RegSvr32. A visszaadott kód: %1
 ErrorRegisterTypeLib=Nem lehet regisztrálni a típustárat: %1
 
 ; *** Post-installation errors
@@ -309,7 +317,7 @@ UninstallDataCorrupted=A(z) "%1" fájl sérült. Nem távolítható el.
 
 ; *** Uninstallation phase messages
 ConfirmDeleteSharedFileTitle=Törli a megosztott fájlt?
-ConfirmDeleteSharedFile2=A rendszer azt jelzi, hogy a következõ megosztott fájlra nincs már szüksége egyetlen programnak sem. Eltávolítja a megosztott fájlt?%n%nHa más programok még mindig használják a megosztott fájlt, akkor az eltávolítása után lehet, hogy nem fognak megfelelõen mûködni. Ha bizonytalan, válassza a Nemet. A fájl megtartása nem okoz problémát a rendszerben.
+ConfirmDeleteSharedFile2=A rendszer azt jelzi, hogy a következõ megosztott fájlra már nincs szüksége egyetlen programnak sem. Eltávolítja a megosztott fájlt?%n%nHa más programok még mindig használják a megosztott fájlt, akkor az eltávolítása után lehet, hogy nem fognak megfelelõen mûködni. Ha bizonytalan, válassza a Nemet. A fájl megtartása nem okoz problémát a rendszerben.
 SharedFileNameLabel=Fájlnév:
 SharedFileLocationLabel=Helye:
 WizardUninstalling=Eltávolítás állapota

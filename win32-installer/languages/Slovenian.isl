@@ -1,4 +1,4 @@
-; *** Inno Setup version 5.1.0+ Slovenian messages ***
+; *** Inno Setup version 5.1.11+ Slovenian messages ***
 ;
 ; To download user-contributed translations of this file, go to:
 ;   http://www.jrsoftware.org/is3rdparty.php
@@ -8,9 +8,9 @@
 ; Setup adds the periods automatically (appending a period would result in
 ; two periods being displayed).
 ;
-; Maintained by Miha Remec (innosetup@miharemec.com)
+; Maintained by Miha Remec (mremec@gmail.com)
 ;
-; $jrsoftware: issrc/Files/Languages/Slovenian.isl,v 1.13 2005/03/01 08:14:09 mlaan Exp $
+; $jrsoftware: issrc/Files/Languages/Slovenian.isl,v 1.14 2007/02/27 18:22:41 jr Exp $
 
 [LangOptions]
 LanguageName=Slovenski
@@ -265,7 +265,7 @@ ErrorReplacingExistingFile=Pri poskusu zamenjave obstojeèe datoteke je prišlo do
 ErrorRestartReplace=RestartReplace failed:
 ErrorRenamingTemp=Pri poskusu preimenovanja datoteke v ciljni mapi je prišlo do napake:
 ErrorRegisterServer=Registracija DLL/OCX ni možna: %1
-ErrorRegisterServerMissingExport=DllRegisterServer funkcija ne obstaja
+ErrorRegSvr32Failed=RegSvr32 ni uspel s kodo napake %1
 ErrorRegisterTypeLib=Prijava vrste knjižnice ni mogoèa: %1
 
 ; *** Post-installation errors

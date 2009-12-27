@@ -1,8 +1,8 @@
-; *** Inno Setup version 5.1.0+ Portuguese (Portugal) messages ***
+; *** Inno Setup version 5.1.11+ Portuguese (Portugal) messages ***
 ;
-; Maintained by NARS (nars@gmx.net)
+; Maintained by NARS (nars AT gmx.net)
 ;
-; $jrsoftware: issrc/Files/Languages/Portuguese.isl,v 1.2 2005/10/14 22:16:10 nars Exp $
+; $jrsoftware: issrc/Files/Languages/Portuguese.isl,v 1.5 2008/02/21 22:56:57 nars Exp $
 
 [LangOptions]
 LanguageName=Portugu<00EA>s (Portugal)
@@ -113,7 +113,7 @@ WizardUserInfo=Informações do utilizador
 UserInfoDesc=Introduza as suas informações.
 UserInfoName=Nome do &utilizador:
 UserInfoOrg=&Organização:
-UserInfoSerial=Número de &série:
+UserInfoSerial=&Número de série:
 UserInfoNameRequired=Deve introduzir um nome.
 
 ; *** "Select Destination Location" wizard page
@@ -253,11 +253,11 @@ ErrorCreatingTemp=Ocorreu um erro ao tentar criar um ficheiro na directoria de d
 ErrorReadingSource=Ocorreu um erro ao tentar ler o ficheiro de origem:
 ErrorCopying=Ocorreu um erro ao tentar copiar um ficheiro:
 ErrorReplacingExistingFile=Ocorreu um erro ao tentar substituir o ficheiro existente:
-ErrorRestartReplace=RestartReplace failed:
+ErrorRestartReplace=RestartReplace falhou:
 ErrorRenamingTemp=Ocorreu um erro ao tentar mudar o nome de um ficheiro na directoria de destino:
 ErrorRegisterServer=Não é possível registar o DLL/OCX: %1
-ErrorRegisterServerMissingExport=DllRegisterServer export not found
-ErrorRegisterTypeLib=Unable to register the type library: %1
+ErrorRegSvr32Failed=O RegSvr32 falhou com o código de saída %1
+ErrorRegisterTypeLib=Não foi possível registar a livraria de tipos: %1
 
 ; *** Post-installation errors
 ErrorOpeningReadme=Ocorreu um erro ao tentar abrir o ficheiro LEIAME.
@@ -292,10 +292,10 @@ StatusUninstalling=A desinstalar o %1...
 
 NameAndVersion=%1 versão %2
 AdditionalIcons=Ícones adicionais:
-CreateDesktopIcon=Criar ícone no &Ambiente de Trabalho
-CreateQuickLaunchIcon=Criar ícone na barra de Iniciação &Rápida
+CreateDesktopIcon=Criar ícone no Ambiente de &Trabalho
+CreateQuickLaunchIcon=&Criar ícone na barra de Iniciação Rápida
 ProgramOnTheWeb=%1 na Web
 UninstallProgram=Desinstalar o %1
 LaunchProgram=Executar o %1
-AssocFileExtension=&Associar o %1 aos ficheiros com a extensão %2
+AssocFileExtension=Associa&r o %1 aos ficheiros com a extensão %2
 AssocingFileExtension=A associar o %1 aos ficheiros com a extensão %2...

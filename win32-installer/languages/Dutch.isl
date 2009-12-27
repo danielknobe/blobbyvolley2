@@ -1,10 +1,10 @@
-; *** Inno Setup version 5.1.0+ Dutch messages ***
+; *** Inno Setup version 5.1.11+ Dutch messages ***
 ;
-; This file is based on a user-contributed translations by various authors
+; This file is based on user-contributed translations by various authors
 ;
 ; Maintained by Martijn Laan (mlaan@wintax.nl)
 ;
-; $jrsoftware: issrc/Files/Languages/Dutch.isl,v 1.18 2005/02/25 23:07:04 mlaan Exp $
+; $jrsoftware: issrc/Files/Languages/Dutch.isl,v 1.23 2009/09/25 07:23:54 mlaan Exp $
                                      
 [LangOptions]                
 LanguageName=Nederlands      
@@ -123,7 +123,7 @@ WizardSelectDir=Kies de doelmap
 SelectDirDesc=Waar moet [name] geïnstalleerd worden?
 SelectDirLabel3=Setup zal [name] in de volgende map installeren.
 SelectDirBrowseLabel=Klik op Volgende om door te gaan. Klik op Bladeren om een andere map te kiezen.
-DiskSpaceMBLabel=Er is tenminste [mb] MB vrije schijfruimte vereist.
+DiskSpaceMBLabel=Er is ten minste [mb] MB vrije schijfruimte vereist.
 ToUNCPathname=Setup kan niet installeren naar een UNC-padnaam. Als u wilt installeren naar een netwerk, moet u een netwerkverbinding maken.
 InvalidPath=U moet een volledig pad met stationsletter invoeren; bijvoorbeeld:%nC:\APP%n%nof een UNC pad zoals:%n%n\\server\share
 InvalidDrive=Het geselecteerde station bestaat niet. Kies een ander station.
@@ -181,7 +181,7 @@ ReadyMemoTasks=Extra taken:
 ; *** "Preparing to Install" wizard page
 WizardPreparing=Bezig met het voorbereiden van de installatie
 PreparingDesc=Bezig met het voorbereiden van [name] installatie.
-PreviousInstallNotCompleted=De installatie/verwijdering van een vorig programma is niet voltooid. U moet uw computer opnieuw opstarten om die installatie te voltooien.%n%nStart [name] Setup nogmaals als uw computer opnieuw is opgetart .
+PreviousInstallNotCompleted=De installatie/verwijdering van een vorig programma is niet voltooid. U moet uw computer opnieuw opstarten om die installatie te voltooien.%n%nStart [name] Setup nogmaals als uw computer opnieuw is opgestart.
 CannotContinue=Setup kan niet doorgaan. Klik op annuleren om af te sluiten.
 
 ; *** "Installing" wizard page
@@ -255,7 +255,7 @@ ErrorReplacingExistingFile=Er is een fout opgetreden bij het vervangen van het b
 ErrorRestartReplace=Vervangen na opnieuw starten is mislukt:
 ErrorRenamingTemp=Er is een fout opgetreden bij het hernoemen van een bestand in de doelmap:
 ErrorRegisterServer=Kan de DLL/OCX niet registreren: %1
-ErrorRegisterServerMissingExport=DllRegisterServer export niet gevonden
+ErrorRegSvr32Failed=RegSvr32 mislukt met afsluitcode %1
 ErrorRegisterTypeLib=Kan de type library niet registreren: %1
 
 ; *** Post-installation errors

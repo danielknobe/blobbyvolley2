@@ -9,7 +9,7 @@
 ; Setup adds the periods automatically (appending a period would result in
 ; two periods being displayed).
 ;
-; ID: Danish.isl,v 5.1.0 2005/04/05 17:05:00 Thomas Vedel, veco@veco.dk
+; ID: Danish.isl,v 5.1.11 2008/02/26 12:37:00 Thomas Vedel, veco@veco.dk
 
 [LangOptions]
 LanguageName=Dansk
@@ -181,7 +181,7 @@ MustEnterGroupName=Du skal angive et mappenavn.
 GroupNameTooLong=Mappens eller stiens navn er for langt.
 InvalidGroupName=Mappenavnet er ikke gyldigt.
 BadGroupName=Tegnene %1 må ikke anvendes i navnet på en programgruppe. Angiv andet navn.
-NoProgramGroupCheck2=Opret ingen programgruppe i Start-menuen
+NoProgramGroupCheck2=Opret &ingen programgruppe i Start-menuen
 
 ; *** "Ready to Install" wizard page
 WizardReady=Klar til at installere
@@ -274,7 +274,7 @@ ErrorReplacingExistingFile=En fejl opstod ved forsøg på at overskrive den eksist
 ErrorRestartReplace=Genstart/Erstat fejlede:
 ErrorRenamingTemp=En fejl opstod ved forsøg på at omdøbe en fil i modtagemappen:
 ErrorRegisterServer=Kan ikke registrere DLL/OCX: %1
-ErrorRegisterServerMissingExport=Funktionen DllRegisterServer, der er nødvendig, for at filen kan registreres, findes ikke i filen
+ErrorRegSvr32Failed=RegSvr32 fejlede med exit kode %1
 ErrorRegisterTypeLib=Kan ikke registrere typebiblioteket: %1
 
 ; *** Post-installation errors
@@ -306,10 +306,10 @@ StatusUninstalling=Afinstallerer %1...
 [CustomMessages]
 NameAndVersion=%1 version %2
 AdditionalIcons=Ekstra ikoner:
-CreateDesktopIcon=Lav ikon på &skrivebordet
+CreateDesktopIcon=Lav ikon på skrive&bordet
 CreateQuickLaunchIcon=Lav &hurtigstart-ikon
 ProgramOnTheWeb=%1 på internettet
 UninstallProgram=Afinstaller (fjern) %1
-LaunchProgram=Kør %1
-AssocFileExtension=&Sammenkæd %1 med filtypen %2
+LaunchProgram=&Kør %1
+AssocFileExtension=Sammen&kæd %1 med filtypen %2
 AssocingFileExtension=Sammenkæder %1 med filtypen %2...
