@@ -1,3 +1,23 @@
+/*=============================================================================
+Blobby Volley 2
+Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=============================================================================*/
+
+
 #pragma once
 
 #include <vector>
@@ -5,14 +25,11 @@
 
 // class for managing the text
 // multilanguage support
+// the string can be loaded from a xml file
+// <string english="english" translation="translation />
+
 class TextManager{
 	public:
-		// enumeration for languages
-		enum LANGUAGE{
-			ENGLISH,
-			GERMAN
-		};
-		
 		// enumeration for strings
 		enum STRING{
 			// common labels
@@ -25,12 +42,12 @@ class TextManager{
 			LBL_CONTINUE,
 			
 			// labels for main menu
+			MNU_LABEL_NETWORK,
 			MNU_LABEL_START,
 			MNU_LABEL_OPTIONS,
 			MNU_LABEL_REPLAY,
 			MNU_LABEL_CREDITS,
 			MNU_LABEL_EXIT,
-			MNU_LABEL_NETWORK,
 			
 			// credits
 			CRD_PROGRAMMERS,
@@ -119,7 +136,7 @@ class TextManager{
 		static const TextManager* getSingleton();
 		
 		// creates a textmanager for a particular language
-		static TextManager* createTextManager(LANGUAGE);
+		static TextManager* createTextManager(std::string langname);
 	
 	private:
 		// private construktor, use createTextManager
@@ -130,4 +147,10 @@ class TextManager{
 		
 		// vector with all strings
 		std::vector<std::string> mStrings;
+		
+		// loads the language data from an xml file
+		bool loadFromXML(std::string file);
+		
+		// sets the strings to the default values
+		void setDefault();
 };

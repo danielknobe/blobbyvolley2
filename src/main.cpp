@@ -143,14 +143,8 @@ int main(int argc, char* argv[])
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 		
-		if(gameConfig.getString("language") == "german"){
-			TextManager::createTextManager(TextManager::GERMAN);
-		}else if(gameConfig.getString("language") == "english"){
-			TextManager::createTextManager(TextManager::ENGLISH);
-		}else{
-			std::cerr << "Warning: Unknown language \""<<gameConfig.getString("language")<<"\"!";
-			TextManager::createTextManager(TextManager::ENGLISH);
-		}
+		TextManager::createTextManager(gameConfig.getString("language"));
+		
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
 		else if (gameConfig.getString("device") == "GP2X")
