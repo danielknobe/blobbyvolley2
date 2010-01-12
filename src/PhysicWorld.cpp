@@ -495,9 +495,7 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	stream->Read(mBallPosition.x);
 	stream->Read(mBallPosition.y);
 
-	stream->Read(mBlobVelocity[LEFT_PLAYER].x);
 	stream->Read(mBlobVelocity[LEFT_PLAYER].y);
-	stream->Read(mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Read(mBallVelocity.x);
 	stream->Read(mBallVelocity.y);
@@ -519,9 +517,7 @@ void PhysicWorld::getState(RakNet::BitStream* stream)
 	stream->Write(mBallPosition.x);
 	stream->Write(mBallPosition.y);
 
-	stream->Write(mBlobVelocity[LEFT_PLAYER].x);
 	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
-	stream->Write(mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Write(mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
@@ -544,9 +540,7 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
 	stream->Write(800 - mBallPosition.x);
 	stream->Write(mBallPosition.y);
 
-	stream->Write(-mBlobVelocity[RIGHT_PLAYER].x);
 	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
-	stream->Write(-mBlobVelocity[LEFT_PLAYER].x);
 	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
 	stream->Write(-mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
