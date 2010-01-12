@@ -7,10 +7,20 @@ features:
 - option for 3 types of shadow (off, pixelshadow, alphablendingshadow)
 - chatfuncion
 - lobbysystem
+- multilanguage support
 
 bugs:
 - wrong blobbycolors in networkgame
 - mouse-input does not work very good in online-game
+- client should use the gamespeed of the server
+- replays in online-games don't work
+- net bugs:
+ - squeezing ball through net
+ - squeezing ball through blocking blobby
+ - wrong velocity of flat balls
+- only two hits acceptet under special circumstances
+- mouse freezed in upper right corner after leaving the game (fullscreen mode)
+- cpu consumption in waiting for opponent state
 
 data:
 - new smaller font
