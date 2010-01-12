@@ -53,10 +53,7 @@ ReplayRecorder::ReplayRecorder(RecorderMode mode)
 
 ReplayRecorder::~ReplayRecorder()
 {
-	if (mReplayData)
-	{
-		delete[] mReplayData;
-	}
+	delete[] mReplayData;
 }
 
 bool ReplayRecorder::endOfFile()
@@ -145,9 +142,8 @@ void ReplayRecorder::load(const std::string& filename)
 	PHYSFS_read(fileHandle, &checksum, 1, 4);
 	mBufferSize = fileLength-8;
 
-	if (mReplayData != 0) {
-		delete[] mReplayData;
-	}
+	delete[] mReplayData;
+
 	mReplayData = new char[mBufferSize];
 
 	mBufferSize = PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
@@ -184,7 +180,7 @@ void ReplayRecorder::record(const PlayerInput* input)
 	mSaveData.push_back(packet);
 }
 
-void ReplayRecorder::setPlayerNames(const std::string left, const std::string right)
+void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& right)
 {
 	mPlayerNames[LEFT_PLAYER] = left;
 	mPlayerNames[RIGHT_PLAYER] = right;
