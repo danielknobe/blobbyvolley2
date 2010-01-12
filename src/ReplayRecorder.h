@@ -75,7 +75,7 @@ public:
 	bool endOfFile();
 
 	void record(const PlayerInput* input);
-	void setPlayerNames(const std::string left, const std::string right);
+	void setPlayerNames(const std::string& left, const std::string& right);
 
 	std::string getPlayerName(const PlayerSide side);
 
