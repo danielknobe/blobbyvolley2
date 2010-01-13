@@ -98,7 +98,8 @@ void LocalGameState::step()
 			mPaused = false;
 		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		{
-			switchState(new MainMenuState);
+			deleteCurrentState();
+			setCurrentState(new MainMenuState);
 		}
 		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 		{
@@ -122,11 +123,13 @@ void LocalGameState::step()
 		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
-			switchState(new MainMenuState());
+			deleteCurrentState();
+			setCurrentState(new MainMenuState());
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::GAME_TRY_AGAIN)))
 		{
-			switchState(new LocalGameState());
+			deleteCurrentState();
+			setCurrentState(new LocalGameState());
 		}
 		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 		{
@@ -144,7 +147,8 @@ void LocalGameState::step()
 		}
 		else if (mPaused)
 		{
-			switchState(new MainMenuState);
+			deleteCurrentState();
+			setCurrentState(new MainMenuState);
 		}
 		else
 		{
@@ -154,7 +158,8 @@ void LocalGameState::step()
 	}
 	else if (mRecorder->endOfFile())
 	{
-		switchState(new MainMenuState);
+		deleteCurrentState();
+		setCurrentState(new MainMenuState);
 	}
 	else
 	{
