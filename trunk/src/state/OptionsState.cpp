@@ -117,32 +117,27 @@ void OptionState::step()
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), TextManager::getSingleton()->getString(TextManager::OP_INPUT_OP)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new InputOptionsState();
+		switchState(new InputOptionsState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), TextManager::getSingleton()->getString(TextManager::OP_GFX_OP)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new GraphicOptionsState();
+		switchState(new GraphicOptionsState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), TextManager::getSingleton()->getString(TextManager::OP_MISC)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new MiscOptionsState();
+		switchState(new MiscOptionsState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new MainMenuState();
+		switchState(new MainMenuState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
-		delete this;
-		mCurrentState = new MainMenuState();
+		switchState(new MainMenuState());
 	}
 }
 
@@ -306,13 +301,11 @@ void GraphicOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 }
 
@@ -747,13 +740,11 @@ void InputOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 }
 
@@ -896,12 +887,10 @@ void MiscOptionsState::step()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		mSaveConfig = true;
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
-		delete this;
-		mCurrentState = new OptionState();
+		switchState(new OptionState());
 	}
 }

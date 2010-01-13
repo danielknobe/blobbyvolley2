@@ -201,8 +201,7 @@ void NetworkSearchState::step()
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			//std::string server = mScannedServers[mSelectedServer].hostname;
-			delete this;
-			mCurrentState = new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT);
+			switchState(new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT));
 			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
@@ -246,8 +245,7 @@ void NetworkSearchState::step()
 	if (imgui.doButton(GEN_ID, Vector2(450, 480), TextManager::getSingleton()->getString(TextManager::NET_HOST_GAME)) &&
 			!mDisplayInfo)
 	{
-		delete this;
-		mCurrentState = new NetworkHostState();
+		switchState(new NetworkHostState());
 		return;
 	}
 
@@ -255,13 +253,11 @@ void NetworkSearchState::step()
 							&& !mScannedServers.empty())
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
-		delete this;
-		mCurrentState = new NetworkGameState(server.c_str(), BLOBBY_PORT);
+		switchState(new NetworkGameState(server.c_str(), BLOBBY_PORT));
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{
-		delete this;
-		mCurrentState = new MainMenuState;
+		switchState(new MainMenuState);
 	}
 }
 
@@ -513,8 +509,7 @@ void NetworkGameState::step()
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
-		delete mCurrentState;
-		mCurrentState = new MainMenuState;
+		switchState(new MainMenuState);
 	}
 	else if (InputManager::getSingleton()->exit() && mSaveReplay)
 	{
@@ -571,8 +566,7 @@ void NetworkGameState::step()
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 300.0),
 					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
-				delete mCurrentState;
-				mCurrentState = new MainMenuState;
+				switchState(new MainMenuState);
 			}
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
@@ -591,8 +585,7 @@ void NetworkGameState::step()
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
 					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
-				delete mCurrentState;
-				mCurrentState = new MainMenuState;
+				switchState(new MainMenuState);
 			}
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
@@ -611,8 +604,7 @@ void NetworkGameState::step()
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
 					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
-				delete mCurrentState;
-				mCurrentState = new MainMenuState;
+				switchState(new MainMenuState);
 			}
 			break;
 		}
@@ -626,8 +618,7 @@ void NetworkGameState::step()
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
 					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
-				delete mCurrentState;
-				mCurrentState = new MainMenuState;
+				switchState(new MainMenuState);
 			}
 			break;
 		}
@@ -664,8 +655,7 @@ void NetworkGameState::step()
 			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
-				delete mCurrentState;
-				mCurrentState = new MainMenuState();
+				switchState(new MainMenuState());
 			}
 			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
@@ -687,8 +677,7 @@ void NetworkGameState::step()
 			}
 			if (imgui.doButton(GEN_ID, Vector2(500, 330), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
 			{
-				delete this;
-				mCurrentState = new MainMenuState;
+				switchState(new MainMenuState);
 			}
 			if (imgui.doButton(GEN_ID, Vector2(310, 370), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
@@ -831,7 +820,7 @@ void NetworkHostState::step()
 		}
 	}
 	mGameState->step();
-	if (dynamic_cast<NetworkHostState*>(mCurrentState) != 0)
+	if (dynamic_cast<NetworkHostState*>(getCurrentState()) != 0)
 	{
 		if (mNetworkGame)
 		{
