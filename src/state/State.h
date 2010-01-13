@@ -34,7 +34,8 @@ private:
 	static State* mCurrentState;
 protected:
 	State();
-	void switchState(State* newState);
+	void deleteCurrentState();
+	void setCurrentState(State* newState);
 	
 public:
 	virtual ~State() {}

@@ -48,9 +48,13 @@ State* State::getCurrentState()
 	return mCurrentState;
 }
 
-void State::switchState(State* newState)
-{
+void State::deleteCurrentState(){
 	delete mCurrentState;
+	mCurrentState = 0;
+}
+void State::setCurrentState(State* newState){
+	std::cout<<mCurrentState<<"\n";
+	assert(!mCurrentState);
 	mCurrentState = newState;
 }
 
@@ -74,13 +78,15 @@ void MainMenuState::step()
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
 	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_NETWORK)))
 	{
-		switchState(new NetworkSearchState());
+		deleteCurrentState();
+		setCurrentState(new NetworkSearchState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START)))
 	{
 		try
 		{
-			switchState(new LocalGameState());
+			deleteCurrentState();
+			setCurrentState(new LocalGameState());
 		}
 		catch (ScriptException except)
 		{
@@ -93,24 +99,27 @@ void MainMenuState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_OPTIONS)))
 	{
-		switchState(new OptionState());
+		deleteCurrentState();
+		setCurrentState(new OptionState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 460.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
 	{
-		switchState(new ReplayMenuState());
+		deleteCurrentState();
+		setCurrentState(new ReplayMenuState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))
 	{
-		switchState(new CreditsState());
+		deleteCurrentState();
+		setCurrentState(new CreditsState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_EXIT)))
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
-		switchState(0);
+		deleteCurrentState();
 		SDL_Quit();
 		exit(0);
 	}
@@ -151,7 +160,8 @@ void CreditsState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::getSingleton()->getString(TextManager::LBL_MAINMENU)))
 	{
-		switchState(new MainMenuState());
+		deleteCurrentState();
+		setCurrentState(new MainMenuState());
 		return;
 	}
 }
@@ -273,7 +283,8 @@ void ReplayMenuState::step()
 		}
 		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
-			switchState(new MainMenuState());
+			deleteCurrentState();
+			setCurrentState(new MainMenuState());
 		}
 		else
 			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
