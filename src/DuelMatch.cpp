@@ -119,7 +119,7 @@ void DuelMatch::step()
 	{
 		mSquishLeft += 1;
 		if(mSquishLeft > 9)
-			mSquishLeft=0;
+			mSquishLeft = 0;
 	}
 
 	if(0 == mSquishRight)

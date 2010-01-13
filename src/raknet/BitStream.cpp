@@ -1710,6 +1710,12 @@ void BitStream::IgnoreBits( const int numberOfBits )
 	readOffset += numberOfBits;
 }
 
+void BitStream::IgnoreBytes( const int numberOfBytes )
+{
+	IgnoreBits( 8 * numberOfBytes );
+}
+
+
 // Move the write pointer to a position on the array.  Dangerous if you don't know what you are doing!
 void BitStream::SetWriteOffset( const int offset )
 {

@@ -224,8 +224,7 @@ int main(int argc, char** argv)
 					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
 					
-					// Ignore ID_ENTER_GAME because we don't need it
-					stream.IgnoreBits(8 * sizeof(ID_ENTER_GAME));
+					stream.IgnoreBytes(1);	//ID_ENTER_GAME
 
 					int playerSide;
 					stream.Read(playerSide);
@@ -293,7 +292,7 @@ int main(int argc, char** argv)
 					int major;
 					int minor;
 
-					stream.Read(ival);
+					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 					stream.Read(major);
 					stream.Read(minor);
 					if (packet->bitSize != 96)
@@ -317,7 +316,7 @@ int main(int argc, char** argv)
 							, 192);
 
 						stream.Reset();
-						stream.Write(ID_BLOBBY_SERVER_PRESENT);
+						stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 						oldInfo.writeToBitstream(stream);
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0,
@@ -331,7 +330,7 @@ int main(int argc, char** argv)
 					// Check if the packet contains matching version numbers
 					{
 						stream.Reset();
-						stream.Write(ID_OLD_CLIENT);
+						stream.Write((unsigned char)ID_OLD_CLIENT);
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
@@ -341,7 +340,7 @@ int main(int argc, char** argv)
 					{
 						printf("major: %d minor: %d\n", major, minor);
 						stream.Reset();
-						stream.Write(ID_UNKNOWN_CLIENT);
+						stream.Write((unsigned char)ID_UNKNOWN_CLIENT);
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
@@ -361,7 +360,7 @@ int main(int argc, char** argv)
 						}
 
 						stream.Reset();
-						stream.Write(ID_BLOBBY_SERVER_PRESENT);
+						stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 						myinfo.writeToBitstream(stream);
 						server.Send(&stream, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0,

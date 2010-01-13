@@ -496,6 +496,12 @@ namespace RakNet
 		void IgnoreBits( const int numberOfBits );
 		
 		/**
+		 * Ignore data we don't intend to read
+		 * @param numberOfBytes The number of bytes to ignore
+		 */
+		void IgnoreBytes( const int numberOfBytes );
+		
+		/**
 		 * Move the write pointer to a position on the array.  
 		 * @param offset the offset from the start of the array. 
 		 * @attention 

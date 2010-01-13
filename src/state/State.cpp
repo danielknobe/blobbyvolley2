@@ -53,7 +53,6 @@ void State::deleteCurrentState(){
 	mCurrentState = 0;
 }
 void State::setCurrentState(State* newState){
-	std::cout<<mCurrentState<<"\n";
 	assert(!mCurrentState);
 	mCurrentState = newState;
 }
