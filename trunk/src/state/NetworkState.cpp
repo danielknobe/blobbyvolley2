@@ -98,7 +98,7 @@ void NetworkSearchState::step()
 							packet->playerId));
 
 					RakNet::BitStream stream;
-					stream.Write(ID_BLOBBY_SERVER_PRESENT);
+					stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 					stream.Write(BLOBBY_VERSION_MAJOR);
 					stream.Write(BLOBBY_VERSION_MINOR);
 					(*iter)->Send(&stream, HIGH_PRIORITY,
@@ -110,8 +110,7 @@ void NetworkSearchState::step()
 					RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
 					printf("server is a blobby server\n");
-					int ival;
-					stream.Read(ival);
+					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 					ServerInfo info(stream,
 						(*iter)->PlayerIDToDottedIP(
 							packet->playerId));
@@ -341,7 +340,7 @@ void NetworkGameState::step()
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				RakNet::BitStream stream;
-				stream.Write(ID_ENTER_GAME);
+				stream.Write((unsigned char)ID_ENTER_GAME);
 				stream.Write(mOwnSide);
 
 				// Send playername
@@ -361,8 +360,8 @@ void NetworkGameState::step()
 			{
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				int ival;
-				stream.Read(ival);
-				stream.Read(ival);	//ID_TIMESTAMP
+				stream.IgnoreBytes(1);	//ID_PHYSIC_UPDATE
+				stream.IgnoreBytes(1);	//ID_TIMESTAMP
 				stream.Read(ival);	//TODO: un-lag based on timestamp delta
 				RakNet::BitStream streamCopy = RakNet::BitStream(stream);
 				//printf("Physic packet received. Time: %d\n", ival);
@@ -373,9 +372,8 @@ void NetworkGameState::step()
 			}
 			case ID_WIN_NOTIFICATION:
 			{
-				int ival;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.Read(ival);
+				stream.IgnoreBytes(1);	//ID_WIN_NOTIFICATION
 				stream.Read((int&)mWinningPlayer);
 				mNetworkState = PLAYER_WON;
 				break;
@@ -389,9 +387,8 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_RESET:
 			{
-				int ival;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.Read(ival);
+				stream.IgnoreBytes(1);	//ID_BALL_RESET
 				stream.Read((int&)mServingPlayer);
 				stream.Read(mLeftScore);
 				stream.Read(mRightScore);
@@ -410,10 +407,9 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_PLAYER_COLLISION:
 			{
-				int ival;
 				float intensity;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.Read(ival);
+				stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
 				stream.Read(intensity);
 				SoundManager::getSingleton().playSound("sounds/bums.wav",
 						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
@@ -435,8 +431,7 @@ void NetworkGameState::step()
 				char charName[16];
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 
-				// ignore ID_GAME_READY
-				stream.IgnoreBits(8 * sizeof(ID_GAME_READY));
+				stream.IgnoreBytes(1);	// ignore ID_GAME_READY
 
 				// read playername
 				stream.Read(charName, sizeof(charName));
@@ -638,12 +633,12 @@ void NetworkGameState::step()
 			if (InputManager::getSingleton()->exit())
 			{
 				RakNet::BitStream stream;
-				stream.Write(ID_PAUSE);
+				stream.Write((unsigned char)ID_PAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
 			RakNet::BitStream stream;
-			stream.Write(ID_INPUT_UPDATE);
-			stream.Write(ID_TIMESTAMP);
+			stream.Write((unsigned char)ID_INPUT_UPDATE);
+			stream.Write((unsigned char)ID_TIMESTAMP);
 			stream.Write(RakNet::GetTime());
 			stream.Write(input.left);
 			stream.Write(input.right);
@@ -682,7 +677,7 @@ void NetworkGameState::step()
 			if (imgui.doButton(GEN_ID, Vector2(230, 330), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
 			{
 				RakNet::BitStream stream;
-				stream.Write(ID_UNPAUSE);
+				stream.Write((unsigned char)ID_UNPAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
 			if (imgui.doButton(GEN_ID, Vector2(500, 330), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
@@ -754,7 +749,7 @@ void NetworkHostState::step()
 						sizeof(myinfo.waitingplayer) - 1);
 				}
 				RakNet::BitStream stream;
-				stream.Write(ID_BLOBBY_SERVER_PRESENT);
+				stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 				myinfo.writeToBitstream(stream);
 				mServer->Send(&stream, HIGH_PRIORITY,
 						RELIABLE_ORDERED, 0,
@@ -767,10 +762,9 @@ void NetworkHostState::step()
 				RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
 
-				// ignore ID_ENTER_GAME
-				stream.IgnoreBits(8 * sizeof(ID_ENTER_GAME));
+				stream.IgnoreBytes(1);	//ID_ENTER_GAME
 
-				// read playername
+				// read playername and side
 				stream.Read(ival);
 
 				char charName[16];
