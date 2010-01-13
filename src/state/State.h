@@ -31,10 +31,10 @@ class ReplayRecorder;
 class State
 {
 private:
-	
+	static State* mCurrentState;
 protected:
 	State();
-	static State* mCurrentState;
+	void switchState(State* newState);
 	
 public:
 	virtual ~State() {}
