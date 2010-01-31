@@ -30,8 +30,7 @@ TextManager* TextManager::mSingleton = 0;
 
 
 TextManager* TextManager::createTextManager(std::string langname){
-	if(mSingleton)
-		delete mSingleton;
+	delete mSingleton;
 	
 	mSingleton = new TextManager();
 	
