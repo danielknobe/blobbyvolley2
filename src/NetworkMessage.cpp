@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip)
 {
 	strncpy(hostname, ip, sizeof(hostname));
-	hostname[sizeof(hostname)] = 0;
+	hostname[sizeof(hostname) - 1] = 0;
 
 	stream.Read(activegames);
 	stream.Read(name, sizeof(name));
