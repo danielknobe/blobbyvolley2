@@ -52,9 +52,10 @@ NetworkSearchState::NetworkSearchState()
 
 NetworkSearchState::~NetworkSearchState()
 {
-	UserConfig config;
+	
 	try
 	{
+		UserConfig config;
 		config.loadFile("config.xml");
 		if (mScannedServers.size() > 0)
 			config.setString("network_last_server",
@@ -707,8 +708,7 @@ NetworkHostState::NetworkHostState()
 NetworkHostState::~NetworkHostState()
 {
 	delete mGameState;
-	if (mNetworkGame)
-		delete mNetworkGame;
+	delete mNetworkGame;
 	mServer->Disconnect(1);
 	delete mServer;
 }
