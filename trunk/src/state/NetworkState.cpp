@@ -417,7 +417,7 @@ void NetworkGameState::step()
 				break;
 			}
 			case ID_PAUSE:
-				if (mNetworkState = PLAYING)
+				if (mNetworkState == PLAYING)
 					mNetworkState = PAUSING;
 				break;
 			case ID_UNPAUSE:
