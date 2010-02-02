@@ -60,7 +60,10 @@ struct Color
 {
 	Color(int red, int green, int blue)
 		: r(red), g(green), b(blue) {}
+	Color(unsigned int col)
+		:r(col&0xff), g((col>>8)&0xff), b((col>>16)&0xff) {}
 	Color() {}
+
 	union
 	{
 		struct
@@ -81,6 +84,16 @@ struct Color
 	{
 		return !(*this == rval);
 	}
+
+	unsigned int toInt() const
+	{
+		int i = 0;
+		i |= r;
+		i |= g << 8;
+		i |= b << 16;
+		return i;
+	}
+
 };
 
 struct BufferedImage

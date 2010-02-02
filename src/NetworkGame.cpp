@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 NetworkGame::NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
 			std::string leftPlayerName, std::string rightPlayerName,
+			Color leftColor, Color rightColor, 
 			PlayerSide switchedSide)
 	: mServer(server)
 {
@@ -58,12 +59,14 @@ NetworkGame::NetworkGame(RakServer& server,
 	leftStream.Write((unsigned char)ID_GAME_READY);
 	strncpy(name, mRightPlayerName.c_str(), sizeof(name));
 	leftStream.Write(name, sizeof(name));
+	leftStream.Write(rightColor.toInt());
 	
 	// writing data into rightStream
 	RakNet::BitStream rightStream;
 	rightStream.Write((unsigned char)ID_GAME_READY);
 	strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
 	rightStream.Write(name, sizeof(name));
+	rightStream.Write(leftColor.toInt());
 	
 	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);

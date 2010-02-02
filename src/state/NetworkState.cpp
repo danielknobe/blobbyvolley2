@@ -328,6 +328,23 @@ NetworkGameState::~NetworkGameState()
 	delete mFakeMatch;
 }
 
+void NetworkGameState::setLeftColor(Color ncol){
+	mLeftColor = ncol;
+	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
+	RenderManager::getSingleton().redraw();
+}
+void NetworkGameState::setRightColor(Color ncol){
+	mRightColor = ncol;
+	RenderManager::getSingleton().setBlobColor(1, mRightColor);
+	RenderManager::getSingleton().redraw();
+}
+Color NetworkGameState::getLeftColor() const{
+	return mLeftColor;
+}
+Color NetworkGameState::getRightColor() const{
+	return mRightColor;
+}
+
 void NetworkGameState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
@@ -349,9 +366,17 @@ void NetworkGameState::step()
 				strncpy(myname, mFakeMatch->getPlayerName().c_str(), sizeof(myname));
 				stream.Write(myname, sizeof(myname));
 
-				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+				// send color settings
+				switch(mOwnSide){
+					case LEFT_PLAYER:
+						stream.Write(mLeftColor.toInt());
+						break;
+					case RIGHT_PLAYER:
+						stream.Write(mRightColor.toInt());
+						break;
+				}
 
-				// Send playercolor
+				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
 				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
@@ -440,16 +465,23 @@ void NetworkGameState::step()
 				// ensures that charName is null terminated
 				charName[sizeof(charName)-1] = '\0';
 
+				// read colors
+				int temp;
+				stream.Read(temp);
+				Color ncolor = temp;
+
 				mFakeMatch->setOpponentName(std::string(charName));
 				if (mOwnSide)
 				{
 					RenderManager::getSingleton().setPlayernames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
+					setLeftColor(ncolor);
 					mReplayRecorder->setPlayerNames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
 				}
 				else
 				{
 					RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
 					mReplayRecorder->setPlayerNames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
+					setRightColor(ncolor);
 				}
 				// Workarround for SDL-Renderer
 				// Hides the GUI when networkgame starts
@@ -770,6 +802,10 @@ void NetworkHostState::step()
 				char charName[16];
 				stream.Read(charName, sizeof(charName));
 
+				// read colour data
+				int color;
+				stream.Read(color);
+
 				// ensures that charName is null terminated
 				charName[sizeof(charName)-1] = '\0';
 
@@ -781,6 +817,16 @@ void NetworkHostState::step()
 					mLocalPlayerSide = newSide;
 					mLocalPlayer = packet->playerId;
 					mLocalPlayerName = playerName;
+
+					// set the color
+					switch(newSide){
+						case LEFT_PLAYER:
+							mGameState->setLeftColor(color);
+							break;
+						case RIGHT_PLAYER:
+							mGameState->setRightColor(color);
+							break;
+					}
 				}
 				else
 				{
@@ -798,6 +844,8 @@ void NetworkHostState::step()
 						rightPlayer = packet->playerId;
 						leftPlayerName = mLocalPlayerName;
 						rightPlayerName = playerName;
+						// set other color
+						mGameState->setRightColor(color);
 					}
 					else
 					{
@@ -805,6 +853,8 @@ void NetworkHostState::step()
 						rightPlayer = mLocalPlayer;
 						leftPlayerName = playerName;
 						rightPlayerName = mLocalPlayerName;
+						// set other color
+						mGameState->setLeftColor(color);
 					}
 
 					PlayerSide switchSide = NO_PLAYER;
@@ -819,6 +869,7 @@ void NetworkHostState::step()
 					mNetworkGame = new NetworkGame(
 						*mServer, leftPlayer, rightPlayer,
 						leftPlayerName, rightPlayerName,
+						mGameState->getLeftColor(), mGameState->getRightColor(),
 						switchSide);
 				}
 			}

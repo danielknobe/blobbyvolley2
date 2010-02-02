@@ -22,8 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+
+#ifndef WIN32
 #include <syslog.h>
 #include <sys/wait.h>
+#endif
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
@@ -40,6 +43,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #ifdef WIN32
 #undef main
+
+// function for logging for replacing syslog
+enum {
+	LOG_ERR,
+	LOG_NOTICE,
+	LOG_DEBUG
+};
+void syslog(int pri, const char* format, ...){
+	switch(pri){
+		case LOG_ERR:
+			std::cerr<<time(0)<<": "<<format<<"\n";
+			break;
+		case LOG_NOTICE:
+			std::cout<<time(0)<<": "<<format<<"\n";
+			break;
+		case LOG_DEBUG:
+			std::cout<<time(0)<<": "<<format<<"\n";
+			break;
+		
+	}
+}
 #endif
 
 static bool g_run_in_foreground = false;
@@ -90,6 +114,7 @@ void process_arguments(int argc, char** argv)
 
 void fork_to_background()
 {
+	#ifndef WIN32
 	pid_t f_return = fork();
 	if (f_return == -1)
 	{
@@ -101,11 +126,14 @@ void fork_to_background()
 		std::cout << "Running in background as PID " << f_return << std::endl;
 		exit(0);
 	}
-
+	#else
+	std::cerr<<"fork is not available under windows\n";
+	#endif
 }
 
 void wait_and_restart_child()
 {
+	#ifndef WIN32
 	pid_t leaking_server;
 	while ((leaking_server = fork()) > 0)
 	{
@@ -125,6 +153,9 @@ void wait_and_restart_child()
 		perror("fork");
 		exit(1);
 	}
+	#else
+	std::cerr<<"fork is not available under windows\n";
+	#endif
 
 }
 
@@ -157,9 +188,12 @@ int main(int argc, char** argv)
 
 	int startTime = SDL_GetTicks();
 
+	#ifndef WIN32
 	int syslog_options = LOG_CONS | LOG_PID | (g_print_syslog_to_stderr ? LOG_PERROR : 0);
 
 	openlog("blobby-server", syslog_options, LOG_DAEMON);
+	#endif
+	
 	setup_physfs(argv[0]);
 
 	GameList gamelist;
@@ -170,6 +204,7 @@ int main(int argc, char** argv)
 	PlayerID firstPlayer;
 	PlayerSide firstPlayerSide = NO_PLAYER;
 	std::string firstPlayerName;
+	Color firstPlayerColor;
 
 	config.loadFile("server.xml");
 
@@ -235,6 +270,11 @@ int main(int argc, char** argv)
 
 					// ensures that charName is null terminated
 					charName[sizeof(charName)-1] = '\0';
+					
+					// read colour data
+					int color;
+					stream.Read(color);
+
 
 					std::string playerName(charName);
 					PlayerSide newSide = (PlayerSide)playerSide;
@@ -244,6 +284,7 @@ int main(int argc, char** argv)
 						firstPlayer = packet->playerId;
 						firstPlayerSide = newSide;
 						firstPlayerName = playerName;
+						firstPlayerColor = color;
 					}
 					else // We have two players now
 					{
@@ -261,6 +302,13 @@ int main(int argc, char** argv)
 						std::string rightPlayerName =
 							RIGHT_PLAYER == firstPlayerSide ?
 							firstPlayerName : playerName;
+							
+						Color leftColor =
+							LEFT_PLAYER == firstPlayerSide ?
+							firstPlayerColor : color;
+						Color rightColor =
+							RIGHT_PLAYER == firstPlayerSide ?
+							firstPlayerColor : color;
 
 						if (newSide == firstPlayerSide)
 						{
@@ -272,6 +320,7 @@ int main(int argc, char** argv)
 						NetworkGame* newgame = new NetworkGame(
 							server, leftPlayer, rightPlayer,
 							leftPlayerName, rightPlayerName,
+							leftColor, rightColor,
 							switchSide);
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
@@ -409,5 +458,7 @@ int main(int argc, char** argv)
 		usleep(1);
 	}
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
+	#ifndef WIN32
 	closelog();
+	#endif
 }

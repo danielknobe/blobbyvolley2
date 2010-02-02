@@ -62,6 +62,11 @@ public:
 	NetworkGameState(const std::string& servername, Uint16 port);
 	virtual ~NetworkGameState();
 	virtual void step();
+
+	void setLeftColor(Color ncol);
+	void setRightColor(Color ncol);
+	Color getLeftColor() const;
+	Color getRightColor() const;
 private:
 	enum
 	{
