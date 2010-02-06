@@ -41,12 +41,6 @@
 * library; if not, write to the Free Software Foundation, Inc., 59 Temple
 * Place, Suite 330, Boston, MA 02111-1307, USA.
 *
-* The code as Shawn received it included the following notice:
-*
-*   Copyright (C) 1997 Makoto Matsumoto and Takuji Nishimura. When
-*   you use this, send an e-mail to <matumoto@math.keio.ac.jp> with
-*   an appropriate reference to your work.
-*
 * It would be nice to CC: <Cokus@math.washington.edu> when you write.
 */
 
