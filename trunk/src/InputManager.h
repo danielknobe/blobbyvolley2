@@ -48,6 +48,8 @@ private:
 	bool mSelect;
 	bool mExit;
 	bool mClick;
+	bool mMouseWheelUp;
+	bool mMouseWheelDown;
 	bool mUnclick;
 	
 	int mMouseX;
@@ -91,6 +93,8 @@ public:
 	// For GUI navigation (Mouse)
 	Vector2 position();
 	bool click();
+	bool mouseWheelUp();
+	bool mouseWheelDown();
 	bool unclick();
 	
 	// config conversion methods

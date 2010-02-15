@@ -316,6 +316,8 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			mousepos.x < position.x + 205 &&
 			mousepos.y < position.y + 24.0)
 		{
+			obj.type = ACTIVESCROLLBAR;
+
 			if (InputManager::getSingleton()->click())
 			{
 				mHeldWidget = id;
@@ -325,6 +327,11 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 				value = (mousepos.x - position.x) / 200.0;
 				mActiveButton = id;
 			}
+
+			if(InputManager::getSingleton()->mouseWheelUp())
+				value += 0.1;
+			if(InputManager::getSingleton()->mouseWheelDown())
+				value -= 0.1;
 		}
 	}
 
@@ -569,6 +576,16 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 				if (tmp < entries.size())
 					selected = tmp;
 				mActiveButton = id;
+			}
+			if ((InputManager::getSingleton()->mouseWheelUp()) && (selected > 0))
+			{
+				selected--;
+				changed = true;
+			}
+			if ((InputManager::getSingleton()->mouseWheelDown()) && (selected < entries.size()-1))
+			{
+				selected++;
+				changed = true;
 			}
 		}
 		//arrows mouseclick:
