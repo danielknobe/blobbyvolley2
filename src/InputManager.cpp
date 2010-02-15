@@ -128,6 +128,8 @@ void InputManager::updateInput()
 	mSelect = false;
 	mExit = false;
 	mClick = false;
+	mMouseWheelUp = false;
+	mMouseWheelDown = false;
 	mUnclick = false;
 	mLastMouseButton = -1;
 	mLastInputKey = SDLK_UNKNOWN;
@@ -176,8 +178,14 @@ void InputManager::updateInput()
 			mLastMouseButton = event.button.button;
 			switch (event.button.button)
 			{
-				case 1:
+				case SDL_BUTTON_LEFT:
 					mClick = true;
+					break;
+				case SDL_BUTTON_WHEELUP:
+					mMouseWheelUp = true;
+					break;
+				case SDL_BUTTON_WHEELDOWN:
+					mMouseWheelDown = true;
 					break;
 			}
 			break;
@@ -277,6 +285,16 @@ Vector2 InputManager::position()
 bool InputManager::click()
 {
 	return mClick;
+}
+
+bool InputManager::mouseWheelUp()
+{
+	return mMouseWheelUp;
+}
+
+bool InputManager::mouseWheelDown()
+{
+	return mMouseWheelDown;
 }
 
 bool InputManager::unclick()
