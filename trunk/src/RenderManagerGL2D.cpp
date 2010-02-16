@@ -323,37 +323,40 @@ void RenderManagerGL2D::draw()
 	glTranslatef(mMouseMarkerPosition, 592.5, -0.4);
 	drawQuad(5.0, 5.0);
 
-	// Generic shadow settings
-	glEnable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
-	
-	// Blob shadows
-	Vector2 pos;
-	
-	glLoadIdentity();
-	pos = blobShadowPosition(mLeftBlobPosition);
-	glTranslatef(pos.x, pos.y, 0.2);
-	glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
-	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
-	drawQuad(128.0, 32.0);
-	
-	glLoadIdentity();
-	pos = blobShadowPosition(mRightBlobPosition);
-	glTranslatef(pos.x, pos.y, 0.2);
-	glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
-	glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
-	drawQuad(128.0, 32.0);
+	if(mShowShadow)
+	{
+		// Generic shadow settings
+		glEnable(GL_TEXTURE_2D);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
 
-	// Ball shadow	
-	glLoadIdentity();
-	pos = ballShadowPosition(mBallPosition);
-	glTranslatef(pos.x, pos.y, 0.2);
-	glColor4f(1.0, 1.0, 1.0, 0.5);
-	glBindTexture(GL_TEXTURE_2D, mBallShadow);
-	drawQuad(128.0, 32.0);
+		// Blob shadows
+		Vector2 pos;
+	
+		glLoadIdentity();
+		pos = blobShadowPosition(mLeftBlobPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
+		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
+		drawQuad(128.0, 32.0);
+	
+		glLoadIdentity();
+		pos = blobShadowPosition(mRightBlobPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
+		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
+		drawQuad(128.0, 32.0);
 
-	glDisable(GL_BLEND);
+		// Ball shadow	
+		glLoadIdentity();
+		pos = ballShadowPosition(mBallPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4f(1.0, 1.0, 1.0, 0.5);
+		glBindTexture(GL_TEXTURE_2D, mBallShadow);
+		drawQuad(128.0, 32.0);
+
+		glDisable(GL_BLEND);
+	}
 	
 	// Scores
 	char textBuffer[64];
@@ -397,6 +400,11 @@ void RenderManagerGL2D::setBlobColor(int player, Color color)
 		mLeftBlobColor = color;
 	if (player == RIGHT_PLAYER)
 		mRightBlobColor = color;
+}
+
+void RenderManagerGL2D::showShadow(bool shadow)
+{
+	mShowShadow = shadow;
 }
 
 void RenderManagerGL2D::setBall(const Vector2& position, float rotation)

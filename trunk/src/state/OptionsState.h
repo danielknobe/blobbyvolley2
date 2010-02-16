@@ -51,6 +51,7 @@ private:
 	std::string mRenderer;
 	int mR1, mG1, mB1, mR2, mG2, mB2;
 	bool mLeftMorphing, mRightMorphing;
+	bool mShowShadow;
 };
 
 class InputOptionsState : public State

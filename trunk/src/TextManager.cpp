@@ -172,6 +172,7 @@ void TextManager::setDefault(){
 	mStrings[OP_FULLSCREEN] = "fullscreen mode";
 	mStrings[OP_WINDOW] = "window mode";
 	mStrings[OP_RENDER_DEVICE] = "render device";
+	mStrings[OP_SHOW_SHADOW] = "show shadow";
 	mStrings[OP_BLOB_COLORS] = "blob colors";
 	mStrings[OP_LEFT_PLAYER] = "left player";
 	mStrings[OP_RIGHT_PLAYER] = "right player";
