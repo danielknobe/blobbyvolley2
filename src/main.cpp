@@ -164,6 +164,11 @@ int main(int argc, char* argv[])
 		else
 			rmanager->init(800, 600, false);
 
+		if(gameConfig.getString("show_shadow") == "true")
+			rmanager->showShadow(true);
+		else
+			rmanager->showShadow(false);
+
 		SpeedController scontroller(gameConfig.getFloat("gamefps"));
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));

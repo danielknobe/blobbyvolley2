@@ -162,6 +162,7 @@ GraphicOptionsState::GraphicOptionsState()
 	mB2 = mOptionConfig.getInteger("right_blobby_color_b");
 	mLeftMorphing = mOptionConfig.getBool("left_blobby_oscillate");
 	mRightMorphing = mOptionConfig.getBool("right_blobby_oscillate");
+	mShowShadow = mOptionConfig.getBool("show_shadow");
 }
 
 GraphicOptionsState::~GraphicOptionsState()
@@ -180,7 +181,17 @@ GraphicOptionsState::~GraphicOptionsState()
 			RenderManager::getSingleton().setBackground(
 				std::string("backgrounds/") +
 				mOptionConfig.getString("background"));
+			RenderManager::getSingleton().showShadow(mShowShadow);
 		}
+		else
+		{
+			if(mOptionConfig.getBool("show_shadow") != mShowShadow)
+			{
+				RenderManager::getSingleton().showShadow(mShowShadow);
+				mOptionConfig.setBool("show_shadow", mShowShadow);
+			}
+		}
+
 		mOptionConfig.setInteger("left_blobby_color_r", mR1);
 		mOptionConfig.setInteger("left_blobby_color_g", mG1);
 		mOptionConfig.setInteger("left_blobby_color_b", mB1);
@@ -201,58 +212,68 @@ void GraphicOptionsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	imgui.doText(GEN_ID, Vector2(34.0, 50.0), TextManager::getSingleton()->getString(TextManager::OP_VIDEO));
+	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_VIDEO));
 
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 80.0), TextManager::getSingleton()->getString(TextManager::OP_FULLSCREEN)))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 40.0), TextManager::getSingleton()->getString(TextManager::OP_FULLSCREEN)))
 		mFullscreen = true;
-	if (imgui.doButton(GEN_ID, Vector2(34.0, 110.0), TextManager::getSingleton()->getString(TextManager::OP_WINDOW)))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 70.0), TextManager::getSingleton()->getString(TextManager::OP_WINDOW)))
 		mFullscreen = false;
 	if (mFullscreen)
-		imgui.doImage(GEN_ID, Vector2(18.0, 92.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(18.0, 52.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(18.0, 122.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(18.0, 82.0), "gfx/pfeil_rechts.bmp");
 
-	imgui.doText(GEN_ID, Vector2(444.0, 50.0), TextManager::getSingleton()->getString(TextManager::OP_RENDER_DEVICE));
-	if (imgui.doButton(GEN_ID, Vector2(444.0, 80.0), "OpenGL"))
+	imgui.doText(GEN_ID, Vector2(444.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_RENDER_DEVICE));
+	if (imgui.doButton(GEN_ID, Vector2(444.0, 40.0), "OpenGL"))
 		mRenderer = "OpenGL";
-	if (imgui.doButton(GEN_ID, Vector2(444.0, 110.0), "SDL"))
+	if (imgui.doButton(GEN_ID, Vector2(444.0, 70.0), "SDL"))
 		mRenderer = "SDL";
 	if (mRenderer == "OpenGL")
-		imgui.doImage(GEN_ID, Vector2(428.0, 92.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(428.0, 52.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(428.0, 122.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(428.0, 82.0), "gfx/pfeil_rechts.bmp");
+
+	imgui.doText(GEN_ID, Vector2(34.0, 110.0), TextManager::getSingleton()->getString(TextManager::OP_SHOW_SHADOW));
+	if (imgui.doButton(GEN_ID, Vector2(72.0, 140), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
+		mShowShadow = true;
+	if (imgui.doButton(GEN_ID, Vector2(220.0, 140), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
+		mShowShadow = false;
+	if (mShowShadow)
+		imgui.doImage(GEN_ID, Vector2(54.0, 152.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(204.0, 152.0), "gfx/pfeil_rechts.bmp");
 
 	//Blob colors:
-	imgui.doText(GEN_ID, Vector2(280.0, 170.0), TextManager::getSingleton()->getString(TextManager::OP_BLOB_COLORS));
+	imgui.doText(GEN_ID, Vector2(280.0, 190.0), TextManager::getSingleton()->getString(TextManager::OP_BLOB_COLORS));
 	//left blob:
-	imgui.doText(GEN_ID, Vector2(34.0, 220.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_PLAYER));
+	imgui.doText(GEN_ID, Vector2(34.0, 230.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_PLAYER));
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 250), TextManager::getSingleton()->getString(TextManager::OP_RED));
+		imgui.doText(GEN_ID, Vector2(34.0, 260), TextManager::getSingleton()->getString(TextManager::OP_RED));
 		float r1 = (float)mR1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 250.0), r1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 260.0), r1);
 		mR1 = (int)(r1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 280), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
+		imgui.doText(GEN_ID, Vector2(34.0, 290), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
 		float g1 = (float)mG1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 280.0), g1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 290.0), g1);
 		mG1 = (int)(g1*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 310), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
+		imgui.doText(GEN_ID, Vector2(34.0, 320), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
 		float b1 = (float)mB1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 310), b1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, 320), b1);
 		mB1 = (int)(b1*255);
 	}
-	imgui.doText(GEN_ID, Vector2(34.0, 350), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
-	if (imgui.doButton(GEN_ID, Vector2(72.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
+	imgui.doText(GEN_ID, Vector2(34.0, 360), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
+	if (imgui.doButton(GEN_ID, Vector2(72.0, 390), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		mLeftMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(220.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
+	if (imgui.doButton(GEN_ID, Vector2(220.0, 390), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
 		mLeftMorphing = false;
 	if (mLeftMorphing)
-		imgui.doImage(GEN_ID, Vector2(54.0, 392.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(54.0, 402.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(204.0, 392.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(204.0, 402.0), "gfx/pfeil_rechts.bmp");
 	//draw left blob:
 	{
 		float time = float(SDL_GetTicks()) / 1000.0;
@@ -261,38 +282,38 @@ void GraphicOptionsState::step()
 			ourCol = Color(int((sin(time*2) + 1.0) * 128),
 							int((sin(time*4) + 1.0) * 128),
 							int((sin(time*3) + 1.0) * 128));
-		imgui.doBlob(GEN_ID, Vector2(120, 490), ourCol);
+		imgui.doBlob(GEN_ID, Vector2(110, 500), ourCol);
 	}
 
 	//right blob:
-	imgui.doText(GEN_ID, Vector2(434.0, 220.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_PLAYER));
+	imgui.doText(GEN_ID, Vector2(434.0, 230.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_PLAYER));
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 250), TextManager::getSingleton()->getString(TextManager::OP_RED));
+		imgui.doText(GEN_ID, Vector2(434.0, 260), TextManager::getSingleton()->getString(TextManager::OP_RED));
 		float r2 = (float)mR2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 250.0), r2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 260.0), r2);
 		mR2 = (int)(r2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 280), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
+		imgui.doText(GEN_ID, Vector2(434.0, 290), TextManager::getSingleton()->getString(TextManager::OP_GREEN));
 		float g2 = (float)mG2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 280.0), g2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 290.0), g2);
 		mG2 = (int)(g2*255);
 	}
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 310), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
+		imgui.doText(GEN_ID, Vector2(434.0, 320), TextManager::getSingleton()->getString(TextManager::OP_BLUE));
 		float b2 = (float)mB2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 310), b2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, 320), b2);
 		mB2 = (int)(b2*255);
 	}
-	imgui.doText(GEN_ID, Vector2(434.0, 350), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
-	if (imgui.doButton(GEN_ID, Vector2(472.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
+	imgui.doText(GEN_ID, Vector2(434.0, 360), TextManager::getSingleton()->getString(TextManager::OP_MORPHING));
+	if (imgui.doButton(GEN_ID, Vector2(472.0, 390), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		mRightMorphing = true;
-	if (imgui.doButton(GEN_ID, Vector2(620.0, 380), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
+	if (imgui.doButton(GEN_ID, Vector2(620.0, 390), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
 		mRightMorphing = false;
 	if (mRightMorphing)
-		imgui.doImage(GEN_ID, Vector2(454.0, 392.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(454.0, 402.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(604.0, 392.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(604.0, 402.0), "gfx/pfeil_rechts.bmp");
 	//draw right blob:
 	{
 		float time = float(SDL_GetTicks()) / 1000.0;
@@ -301,7 +322,7 @@ void GraphicOptionsState::step()
 			ourCol = Color(int((cos(time*2) + 1.0) * 128),
 							int((cos(time*4) + 1.0) * 128),
 							int((cos(time*3) + 1.0) * 128));
-		imgui.doBlob(GEN_ID, Vector2(660, 490), ourCol);
+		imgui.doBlob(GEN_ID, Vector2(670, 500), ourCol);
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))

@@ -65,6 +65,8 @@ private:
 	Vector2 mRightBlobPosition;
 	float mRightBlobAnimationState;
 
+	bool mShowShadow;
+
 	int mLeftPlayerScore;
 	int mRightPlayerScore;
 	bool mLeftPlayerWarning;
@@ -89,6 +91,7 @@ public:
 
 	virtual bool setBackground(const std::string& filename);
 	virtual void setBlobColor(int player, Color color);
+	virtual void showShadow(bool shadow);
 	
 	virtual void setBall(const Vector2& position, float rotation);
 	virtual void setBlob(int player, const Vector2& position,

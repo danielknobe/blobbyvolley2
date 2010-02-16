@@ -231,20 +231,22 @@ void RenderManagerSDL::draw()
 	SDL_FillRect(mScreen, &position, SDL_MapRGB(mScreen->format,
 		     markerColor, markerColor, markerColor));
 
-	// Ball Shadow
-	position = ballShadowRect(ballShadowPosition(mBallPosition));
-	SDL_BlitSurface(mBallShadow, 0, mScreen, &position);
+	if(mShowShadow)
+	{
+		// Ball Shadow
+		position = ballShadowRect(ballShadowPosition(mBallPosition));
+		SDL_BlitSurface(mBallShadow, 0, mScreen, &position);
 
-	// Left blob shadow
-	position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
-	animationState = int(mLeftBlobAnimationState)  % 5;
-	SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
+		// Left blob shadow
+		position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
+		animationState = int(mLeftBlobAnimationState)  % 5;
+		SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
 
-	// Right blob shadow
-	position = blobShadowRect(blobShadowPosition(mRightBlobPosition));
-	animationState = int(mRightBlobAnimationState)  % 5;
-	SDL_BlitSurface(mRightBlobShadow[animationState], 0,
-			mScreen, &position);
+		// Right blob shadow
+		position = blobShadowRect(blobShadowPosition(mRightBlobPosition));
+		animationState = int(mRightBlobAnimationState)  % 5;
+		SDL_BlitSurface(mRightBlobShadow[animationState], 0, mScreen, &position);
+	}
 
 	// Restore the rod
 	position.x = 400 - 7;
@@ -262,13 +264,11 @@ void RenderManagerSDL::draw()
 	SDL_BlitSurface(mBall[animationState], 0, mScreen, &position);
 
 	// Drawing left blob
-
 	position = blobRect(mLeftBlobPosition);
 	animationState = int(mLeftBlobAnimationState)  % 5;
 	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
 
 	// Drawing right blob
-
 	position = blobRect(mRightBlobPosition);
 	animationState = int(mRightBlobAnimationState)  % 5;
 	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);
@@ -355,6 +355,11 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 			SDL_DisplayFormat(tempShadow));
 		SDL_FreeSurface(tempShadow);
 	}
+}
+
+void RenderManagerSDL::showShadow(bool shadow)
+{
+	mShowShadow = shadow;
 }
 
 void RenderManagerSDL::setBall(const Vector2& position, float rotation)

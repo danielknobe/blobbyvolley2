@@ -115,6 +115,8 @@ public:
 
 	// Colors the standard blob image, which are red and green by default
 	virtual void setBlobColor(int player, Color color) {};
+
+	virtual void showShadow(bool shadow) {};
 	
 	// Takes the new balls position and its rotation in radians
 	virtual void setBall(const Vector2& position, float rotation) {};

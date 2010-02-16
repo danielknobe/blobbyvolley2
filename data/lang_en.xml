@@ -53,6 +53,7 @@
 	<string english = "fullscreen mode" translation = "fullscreen mode" />
 	<string english = "window mode" translation = "window mode" />
 	<string english = "render device" translation = "render device" />
+	<string english = "show shadow" translation = "show shadow" />
 	<string english = "blob colors" translation = "blob colors" />
 	<string english = "left player" translation = "left player" />
 	<string english = "right player" translation = "right player" />
