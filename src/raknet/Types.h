@@ -1,49 +1,74 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
-* @file 
-* @brief Compatibility Layer and fundamental tools and types 
-* 
-* @verbatim
-* Fundamental tools & types
-*
-* Catid(cat02e@fsu.edu)
-*
-* 8/9/2004 Added SINGLE/ARRAY_RELEASE
-* 8/5/2004 Added COMPILER_ preprocessors
-*    class NoCopies
-* 8/1/2004 Removed mask stuff
-* 7/29/2004 Added swapLE, swapBE, getLE, getBE
-* 7/28/2004 Automatic and AutoArray now compile in dev-c++
-*    Added pre-processor conditions to support 
-*    other compilers
-*    Removed GETWORD and GETDWORD
-* 7/15/2004 Now using COM_RELEASE throughout CatGL3
-* 6/22/2004 Removed triple and pair
-* 6/12/2004 AutoDeallocate -> Automatic, AutoArray
-* 6/9/2004 OBJCLR
-* 5/2/2004 class AutoDeallocate
-* 5/1/2004 IS_POWER_OF_2, next_highest_power_of_2
-* 4/30/2004 Merged character manip macros
-* 2/23/2004 CEIL*
-*    Removed MEMCOPY32 and MEMCLEAR32,
-*    memcpy and memset are now faster
-*    MAKE_MASK
-* 2/10/2004 LITTLE_ENDIAN
-*    COUNT1BITS32
-*    AT_LEAST_2_BITS
-*    LEAST_SIGNIFICANT_BIT
-* X-mas/2003 [u/s]int?? -> [u/s]??
-* 7/3/2003 Added template triple, point->pair
-* 6/15/2003 Added template rect, point
-* 3/30/2003 Added RO?8, RO?16 and ?int64
-*    Added MEMCOPY32 and MEMCLEAR32
-* 3/12/2003 Added GETWORD and GETDWORD
-* 1/16/2003 Formalized this library.
-*
-* Tabs: 4 spaces
-* Dist: public
-* @endverbatim
-*/
+ * @file 
+ * @brief Compatibility Layer and fundamental tools and types 
+ * 
+ * @verbatim
+ * Fundamental tools & types
+ *
+ * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the <organization> nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Catid(cat02e@fsu.edu)
+ *
+ * 8/9/2004 Added SINGLE/ARRAY_RELEASE
+ * 8/5/2004 Added COMPILER_ preprocessors
+ *    class NoCopies
+ * 8/1/2004 Removed mask stuff
+ * 7/29/2004 Added swapLE, swapBE, getLE, getBE
+ * 7/28/2004 Automatic and AutoArray now compile in dev-c++
+ *    Added pre-processor conditions to support 
+ *    other compilers
+ *    Removed GETWORD and GETDWORD
+ * 7/15/2004 Now using COM_RELEASE throughout CatGL3
+ * 6/22/2004 Removed triple and pair
+ * 6/12/2004 AutoDeallocate -> Automatic, AutoArray
+ * 6/9/2004 OBJCLR
+ * 5/2/2004 class AutoDeallocate
+ * 5/1/2004 IS_POWER_OF_2, next_highest_power_of_2
+ * 4/30/2004 Merged character manip macros
+ * 2/23/2004 CEIL*
+ *    Removed MEMCOPY32 and MEMCLEAR32,
+ *    memcpy and memset are now faster
+ *    MAKE_MASK
+ * 2/10/2004 LITTLE_ENDIAN
+ *    COUNT1BITS32
+ *    AT_LEAST_2_BITS
+ *    LEAST_SIGNIFICANT_BIT
+ * X-mas/2003 [u/s]int?? -> [u/s]??
+ * 7/3/2003 Added template triple, point->pair
+ * 6/15/2003 Added template rect, point
+ * 3/30/2003 Added RO?8, RO?16 and ?int64
+ *    Added MEMCOPY32 and MEMCLEAR32
+ * 3/12/2003 Added GETWORD and GETDWORD
+ * 1/16/2003 Formalized this library.
+ *
+ * Tabs: 4 spaces
+ * Dist: public
+ * @endverbatim
+ */
 
 #ifndef TYPES_H
 #define TYPES_H
