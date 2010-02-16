@@ -1,23 +1,23 @@
-/* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
-/**
-* @file
-* @brief SHA-1 computation class 
-*
-* 100% free public domain implementation of the SHA-1
-* algorithm by Dominik Reichl <Dominik.Reichl@tiscali.de>
-*
-*
-* === Test Vectors (from FIPS PUB 180-1) ===
-*
-* "abc"
-*  A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
-*
-* "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
-*  84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
-*
-* A million repetitions of "a"
-*  34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
-*/
+ /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
+ /**
+ * @file
+ * @brief SHA-1 computation class 
+ *
+ * 100% free public domain implementation of the SHA-1
+ * algorithm by Dominik Reichl <Dominik.Reichl@tiscali.de>
+ *
+ *
+ * === Test Vectors (from FIPS PUB 180-1) ===
+ *
+ * "abc"
+ *  A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
+ *
+ * "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+ *  84983E44 1C3BD26E BAAE4AA1 F95129E5 E54670F1
+ *
+ * A million repetitions of "a"
+ *  34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
+ */
 
 #ifndef ___SHA1_H___
 #define ___SHA1_H___

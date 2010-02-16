@@ -1,35 +1,60 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
-/*
-  QueueLinkedList ADT - By Kevin Jenkins (http://www.rakkar.org)
-  Initilize with the following structure
-  QueueLinkedList<TYPE, OPTIONAL INITIAL ALLOCATION SIZE>
+/**
+ * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the <organization> nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * QueueLinkedList ADT - By Kevin Jenkins (http://www.rakkar.org)
+ * Initilize with the following structure
+ * QueueLinkedList<TYPE, OPTIONAL INITIAL ALLOCATION SIZE>
+ *
+ * Has the following member functions
+ * push - adds an element to the top of the queue
+ * pop - returns the bottom element from the queue and removes it.  Result undefined if queue empty
+ * peek - returns the bottom element from the queue.  Result undefined if queue empty
+ * end_peek - Lets you see the item you most recently added to the queue
+ * size - returns the size of the queue
+ * compress - reallocates memory to fit the number of elements. Best used when the number of elements decreases
+ * clear - empties the queue and returns storage
+ * The assignment and copy constructors are defined
+ *
+ * EXAMPLE
+ * QueueLinkedList<int, 20> A;
+ * A.push(5);
+ * A.push(10);
+ *
+ * A.peek(); // Returns 5
+ * A.pop(); // Returns 5
+ * A.peek(); // Returns 10
+ * A.pop();  // Returns 10
+ * // At this point the queue is empty
  
-  Has the following member functions
-  push - adds an element to the top of the queue
-  pop - returns the bottom element from the queue and removes it.  Result undefined if queue empty
-  peek - returns the bottom element from the queue.  Result undefined if queue empty
-  end_peek - Lets you see the item you most recently added to the queue
-  size - returns the size of the queue
-  compress - reallocates memory to fit the number of elements. Best used when the number of elements decreases
-  clear - empties the queue and returns storage
-  The assignment and copy constructors are defined
- 
-  EXAMPLE
-  QueueLinkedList<int, 20> A;
-  A.push(5);
-  A.push(10);
- 
-  A.peek(); // Returns 5
-  A.pop(); // Returns 5
-  A.peek(); // Returns 10
-  A.pop();  // Returns 10
-// At this point the queue is empty
- 
-NOTES
-The default initial allocation size is 1
-This queue uses a linked list to contain elements
- 
-*/
+ * NOTES
+ * The default initial allocation size is 1
+ * This queue uses a linked list to contain elements
+ *
+ */
 
 #ifndef __QUEUE_LINKED_LIST_H
 #define __QUEUE_LINKED_LIST_H
