@@ -1,0 +1,57 @@
+We are allowed to change every file to BSD-License:
+From - Tue Feb 16 17:22:10 2010
+X-Account-Key: account2
+X-UIDL: 743025276
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Received: from [68.230.241.43] (helo=fed1rmmtao103.cox.net)
+	by mx33.web.de with esmtp (WEB.DE 4.110 #314)
+	id 1NhQB5-0007j2-00
+	for daniel-knobe@web.de; Tue, 16 Feb 2010 17:21:36 +0100
+Received: from fed1rmimpo03.cox.net ([70.169.32.75])
+          by fed1rmmtao103.cox.net
+          (InterMail vM.8.00.01.00 201-2244-105-20090324) with ESMTP
+          id <20100216161827.WTHU19579.fed1rmmtao103.cox.net@fed1rmimpo03.cox.net>
+          for <daniel-knobe@web.de>; Tue, 16 Feb 2010 11:18:27 -0500
+Received: from [192.168.1.4] ([98.189.238.122])
+	by fed1rmimpo03.cox.net with bizsmtp
+	id igJT1d0082f8TL204gJTL2; Tue, 16 Feb 2010 11:18:27 -0500
+X-VR-Score: -210.00
+X-Authority-Analysis: v=1.1 cv=3OYv9oSQMPl2mzQJct9Z0gr0/14v7p3aTRAVsPGESI0=
+ c=1 sm=1 a=Iz04VOSJxDsDrARI3wmEZA==:17 a=MxczCRmKqDDVT_otjAYA:9
+ a=PMfHed8KGfxFHxPCxhMjB1GEX18A:4 a=Iz04VOSJxDsDrARI3wmEZA==:117
+X-CM-Score: 0.00
+Message-ID: <4B7AC558.60108@jenkinssoftware.com>
+Date: Tue, 16 Feb 2010 08:18:32 -0800
+From: Kevin Jenkins <rakkar@jenkinssoftware.com>
+User-Agent: Thunderbird 2.0.0.23 (Windows/20090812)
+MIME-Version: 1.0
+To: Daniel Knobe <daniel-knobe@web.de>
+Subject: Re: a second small question
+References: <4B7ABDAE.7010005@web.de>
+In-Reply-To: <4B7ABDAE.7010005@web.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-Path: rakkar@jenkinssoftware.com
+
+Just change everything to the BSD
+
+Daniel Knobe wrote:
+> Hello again,
+> we have one more problem.
+> The old raknet has the licensetext I send u before, but some 
+> headerfiles have no licensetext:
+> ArrayList.h BigTypes.h BinarySearchTree.h CheckSum.cpp CheckSum.h 
+> DataReplicator.cpp FullyConnectedMesh.cpp LinkedList.h 
+> MessageHandlerInterface.cpp OrderedList.h Queue.h QueueLinkedList.h 
+> RakNetQueue.h RPCMap.cpp RSACrypt.h Types.h
+>
+> Can we add the licensetext of the other files to it or can you tell me 
+> the license of this files?
+>
+> Greets
+> Daniel Knobe
+> Blobby Volley 2
+>
+
