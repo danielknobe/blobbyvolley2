@@ -124,7 +124,7 @@ public:
 	// For reducing ball speed after rule violation
 	void dampBall();
 
-	// Set a new state recieved from server over a RakNet BitStream
+	// Set a new state received from server over a RakNet BitStream
 	void setState(RakNet::BitStream* stream);
 
 	// Fill a Bitstream with the state

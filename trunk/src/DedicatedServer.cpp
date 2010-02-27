@@ -420,7 +420,7 @@ int main(int argc, char** argv)
 				case ID_RECEIVED_STATIC_DATA:
 					break;
 				default:
-					syslog(LOG_DEBUG, "Unknown packet %d recieved\n", int(packet->data[0]));
+					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
 			}
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
