@@ -163,7 +163,7 @@ bool NetworkGame::step()
 				break;
 			}
 			default:
-				printf("unknown packet %d recieved\n",
+				printf("unknown packet %d received\n",
 					int(packet->data[0]));
 			break;
 		}
