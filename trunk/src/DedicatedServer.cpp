@@ -224,9 +224,10 @@ int main(int argc, char** argv)
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MINOR, BLOBBY_VERSION_MAJOR);
 
+	Packet* packet;
+
 	while (1)
 	{
-		Packet* packet;
 		while ((packet = server.Receive()))
 		{
 			switch(packet->data[0])
@@ -234,6 +235,9 @@ int main(int argc, char** argv)
 				case ID_NEW_INCOMING_CONNECTION:
 					clients++;
 					syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", clients);
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 					break;
 				case ID_CONNECTION_LOST:
 				case ID_DISCONNECTION_NOTIFICATION:
@@ -246,6 +250,7 @@ int main(int argc, char** argv)
 						playermap[packet->playerId]->injectPacket(packet);
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
+					// We must check, if the packet is cleared later
 					break;
 				}
 				case ID_INPUT_UPDATE:
@@ -253,6 +258,7 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
+					// We must check, if the packet is cleared later
 					break;
 				case ID_ENTER_GAME:
 				{
@@ -328,9 +334,15 @@ int main(int argc, char** argv)
 
 						firstPlayerSide = NO_PLAYER;
 					}
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 					break;
 				}
 				case ID_PONG:
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 					break;
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
@@ -415,14 +427,23 @@ int main(int argc, char** argv)
 							RELIABLE_ORDERED, 0,
 							packet->playerId, false);
 					}
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 					break;
 				}
 				case ID_RECEIVED_STATIC_DATA:
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 					break;
 				default:
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
+
+					// Clear memory of the arrived packet
+					server.DeallocatePacket(packet);
 			}
-			server.DeallocatePacket(packet);
+
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
