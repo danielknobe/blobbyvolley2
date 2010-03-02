@@ -335,7 +335,7 @@ int main(int argc, char** argv)
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
 					RakNet::BitStream stream((char*)packet->data,
-							packet->length, false);
+							packet->length, true);
 
 					int ival;
 					int major;
@@ -344,7 +344,7 @@ int main(int argc, char** argv)
 					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 					stream.Read(major);
 					stream.Read(minor);
-					if (packet->bitSize != 96)
+					if (packet->bitSize != 72)
 					// We need special treatment when the client does
 					// not know anything about versioning at all.
 					{
@@ -422,6 +422,7 @@ int main(int argc, char** argv)
 				default:
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
 			}
+			server.DeallocatePacket(packet);
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
@@ -438,7 +439,6 @@ int main(int argc, char** argv)
 				iter = gamelist.erase(iter);
 			}
 		}
-		server.DeallocatePacket(packet);
 		scontroller.update();
 
 		if (g_workaround_memleaks)
