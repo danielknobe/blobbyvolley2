@@ -258,7 +258,7 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
-					// We must check, if the packet is cleared later
+					server.DeallocatePacket(packet);
 					break;
 				case ID_ENTER_GAME:
 				{
