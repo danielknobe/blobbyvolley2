@@ -874,6 +874,7 @@ void NetworkHostState::step()
 				}
 			}
 		}
+		mServer->DeallocatePacket(packet);
 	}
 	mGameState->step();
 	if (dynamic_cast<NetworkHostState*>(getCurrentState()) != 0)

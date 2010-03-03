@@ -77,10 +77,13 @@ NetworkGame::NetworkGame(RakServer& server,
 NetworkGame::~NetworkGame()
 {
 }
-
 void NetworkGame::injectPacket(Packet* packet)
 {
-	mPacketQueue.push_back(*packet);
+	// create a copy of the packet
+	Packet npacket = *packet;
+	npacket.data = new unsigned char[packet->length];
+	memcpy(npacket.data, packet->data, packet->length);
+	mPacketQueue.push_back(npacket);
 }
 
 void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream)
@@ -103,7 +106,6 @@ bool NetworkGame::step()
 	while (!mPacketQueue.empty())
 	{
 		Packet* packet = &mPacketQueue.front();
-		mPacketQueue.pop_front();
 
 		switch(packet->data[0])
 		{
@@ -167,6 +169,9 @@ bool NetworkGame::step()
 					int(packet->data[0]));
 			break;
 		}
+		
+		delete[] packet->data;
+		mPacketQueue.pop_front();
 	};
 
 	if (!mPausing)
