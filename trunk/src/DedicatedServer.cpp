@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 
 	ServerInfo myinfo(config);
 
-	if (!server.Start(200, 0, 0, port))
+	if (!server.Start(150, 0, 0, port))
 	{
 		syslog(LOG_ERR, "Couldn´t bind to port %i, exiting", port);
 		return 2;
@@ -235,9 +235,6 @@ int main(int argc, char** argv)
 				case ID_NEW_INCOMING_CONNECTION:
 					clients++;
 					syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", clients);
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 					break;
 				case ID_CONNECTION_LOST:
 				case ID_DISCONNECTION_NOTIFICATION:
@@ -250,7 +247,6 @@ int main(int argc, char** argv)
 						playermap[packet->playerId]->injectPacket(packet);
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
-					// We must check, if the packet is cleared later
 					break;
 				}
 				case ID_INPUT_UPDATE:
@@ -258,7 +254,6 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
-					server.DeallocatePacket(packet);
 					break;
 				case ID_ENTER_GAME:
 				{
@@ -334,20 +329,14 @@ int main(int argc, char** argv)
 
 						firstPlayerSide = NO_PLAYER;
 					}
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 					break;
 				}
 				case ID_PONG:
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 					break;
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
 					RakNet::BitStream stream((char*)packet->data,
-							packet->length, true);
+							packet->length, false);
 
 					int ival;
 					int major;
@@ -386,13 +375,14 @@ int main(int argc, char** argv)
 
 					}
 
+					RakNet::BitStream stream2;
+
 					if (major < BLOBBY_VERSION_MAJOR
 						|| (major == BLOBBY_VERSION_MINOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{
-						stream.Reset();
-						stream.Write((unsigned char)ID_OLD_CLIENT);
-						server.Send(&stream, HIGH_PRIORITY,
+						stream2.Write((unsigned char)ID_OLD_CLIENT);
+						server.Send(&stream2, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
 					}
@@ -400,9 +390,8 @@ int main(int argc, char** argv)
 							minor != BLOBBY_VERSION_MINOR)
 					{
 						printf("major: %d minor: %d\n", major, minor);
-						stream.Reset();
-						stream.Write((unsigned char)ID_UNKNOWN_CLIENT);
-						server.Send(&stream, HIGH_PRIORITY,
+						stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
+						server.Send(&stream2, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
 					}
@@ -420,30 +409,21 @@ int main(int argc, char** argv)
 								sizeof(myinfo.waitingplayer) - 1);
 						}
 
-						stream.Reset();
-						stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
-						myinfo.writeToBitstream(stream);
-						server.Send(&stream, HIGH_PRIORITY,
+						stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
+						myinfo.writeToBitstream(stream2);
+						server.Send(&stream2, HIGH_PRIORITY,
 							RELIABLE_ORDERED, 0,
 							packet->playerId, false);
 					}
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 					break;
 				}
 				case ID_RECEIVED_STATIC_DATA:
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 					break;
 				default:
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
-
-					// Clear memory of the arrived packet
-					server.DeallocatePacket(packet);
 			}
-
+			// Clear memory of the arrived packet
+			server.DeallocatePacket(packet);
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
