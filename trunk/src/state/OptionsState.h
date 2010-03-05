@@ -103,4 +103,5 @@ private:
 	bool mShowBlood;
 	bool mSaveConfig;
 	int mNetworkSide;
+	std::string mLanguage;
 };
