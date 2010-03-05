@@ -37,7 +37,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 // We don't need the stringcompressor
 
-
 NetworkSearchState::NetworkSearchState()
 {
 	IMGUI::getSingleton().resetSelection();
@@ -317,6 +316,10 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	mFakeMatch = new DuelMatch(0, 0, false, true);
 	mFakeMatch->setPlayerName(config.getString(mOwnSide ? "right_player_name" : "left_player_name"));
 	RenderManager::getSingleton().setScore(0, 0, false, false);
+
+	mSelectedChatmessage = 0;
+	mChatCursorPosition = 0;
+	mChattext = "";
 }
 
 NetworkGameState::~NetworkGameState()
@@ -510,6 +513,20 @@ void NetworkGameState::step()
 				break;
 			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
+			case ID_CHAT_MESSAGE:
+			{
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	// ID_CHAT_MESSAGE
+				// Insert Message in the log and focus the last element
+				char message[31];
+				stream.Read(message, sizeof(message));
+				message[30] = '\0';
+
+				// Insert Message in the log and focus the last element
+				mChatlog.push_back((std::string) message);
+				mSelectedChatmessage = mChatlog.size() - 1;
+				break;
+			}
 			default:
 				printf("Received unknown Packet %d\n", packet->data[0]);
 				break;
@@ -705,23 +722,44 @@ void NetworkGameState::step()
 		}
 		case PAUSING:
 		{
-			imgui.doOverlay(GEN_ID, Vector2(200, 200), Vector2(650, 400));
-			imgui.doText(GEN_ID, Vector2(300, 260), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
-			if (imgui.doButton(GEN_ID, Vector2(230, 330), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
+			imgui.doOverlay(GEN_ID, Vector2(200, 30), Vector2(650, 180));
+			imgui.doText(GEN_ID, Vector2(300, 40), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
+			if (imgui.doButton(GEN_ID, Vector2(230, 100), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 330), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
+			if (imgui.doButton(GEN_ID, Vector2(500, 100), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(310, 370), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(310, 130), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
+			}
+			// Chat
+			imgui.doSelectbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage);
+			if (imgui.doEditbox(GEN_ID, Vector2(10, 460), 30, mChattext, mChatCursorPosition))
+			{
+
+				// GUI-Hack, so that we can send messages
+				if ((InputManager::getSingleton()->getLastActionKey() == "return") && (mChattext != ""))
+				{
+					RakNet::BitStream stream;
+					char message[31];
+					
+					strncpy(message, mChattext.c_str(), sizeof(message));
+					stream.Write((unsigned char)ID_CHAT_MESSAGE);
+					stream.Write(message, sizeof(message));
+					mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
+					mChatlog.push_back(mChattext);
+					mSelectedChatmessage = mChatlog.size() - 1;
+					mChattext = "";
+					mChatCursorPosition = 0;
+				}
 			}
 			imgui.doCursor();
 		}
@@ -755,6 +793,7 @@ void NetworkHostState::step()
 			case ID_DISCONNECTION_NOTIFICATION:
 			case ID_CONNECTION_LOST:
 			case ID_INPUT_UPDATE:
+			case ID_CHAT_MESSAGE:
 			case ID_PAUSE:
 			case ID_UNPAUSE:
 			{

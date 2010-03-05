@@ -102,6 +102,12 @@ private:
 	ReplayRecorder* mReplayRecorder;
 	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
 				// access the necessary game variables
+
+	// Chat Vars
+	std::vector<std::string> mChatlog;
+	int mSelectedChatmessage;
+	unsigned mChatCursorPosition;
+	std::string mChattext;
 };
 
 

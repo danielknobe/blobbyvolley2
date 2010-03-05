@@ -46,7 +46,7 @@ public:
 	 */
 	HuffmanEncodingTreeFactory();
 	/**
-	 * Reset the frequency table.  You don't need to call this unless you want to reuse the class for a new tree
+	 * Reset the frequency table. You don't need to call this unless you want to reuse the class for a new tree
 	 */
 	void Reset( void );
 	/**
