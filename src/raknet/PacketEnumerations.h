@@ -130,6 +130,7 @@ enum {
 	// In the unlikely event that you need more than 256 types, including the built-in types, then you'll need
 	// to request a special edition with larger identifiers, or change it yourself
 	//
+       ID_CHAT_MESSAGE,
         
         
        ID_MASTER_REGISTER_USER,

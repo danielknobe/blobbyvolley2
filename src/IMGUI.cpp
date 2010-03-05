@@ -417,6 +417,11 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			{
 				text.erase(cpos, 1);
 			}
+			else if (input == "return")
+			{
+				// Workarround for chatwindow! Delete this after GUI-Rework
+				changed = true;
+			}
 			// This is a temporary solution until the new
 			// UTF-8 class can tell the real length!!!
 			else if (text.length() < length)

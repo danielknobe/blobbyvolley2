@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
+
 // We don't need the stringcompressor
 
 NetworkGame::NetworkGame(RakServer& server,
@@ -164,6 +165,23 @@ bool NetworkGame::step()
 				mPausing = false;
 				break;
 			}
+			case ID_CHAT_MESSAGE:
+			{	RakNet::BitStream stream((char*)packet->data,
+						packet->length, false);
+				
+				stream.IgnoreBytes(1); // ID_CHAT_MESSAGE
+				char message[31];
+				stream.Read(message, sizeof(message));
+
+				RakNet::BitStream stream2;
+				stream2.Write((unsigned char)ID_CHAT_MESSAGE);
+				stream2.Write(message, sizeof(message));
+				if (mLeftPlayer == packet->playerId)
+					mServer.Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+				else
+					mServer.Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+			break;
+			}
 			default:
 				printf("unknown packet %d received\n",
 					int(packet->data[0]));
@@ -172,7 +190,7 @@ bool NetworkGame::step()
 		
 		delete[] packet->data;
 		mPacketQueue.pop_front();
-	};
+	}
 
 	if (!mPausing)
 		mPhysicWorld.step();

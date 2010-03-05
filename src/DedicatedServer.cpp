@@ -252,6 +252,7 @@ int main(int argc, char** argv)
 				case ID_INPUT_UPDATE:
 				case ID_PAUSE:
 				case ID_UNPAUSE:
+				case ID_CHAT_MESSAGE:
 					if (playermap[packet->playerId])
 						playermap[packet->playerId]->injectPacket(packet);
 					break;
