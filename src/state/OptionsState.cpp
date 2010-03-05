@@ -805,6 +805,7 @@ MiscOptionsState::MiscOptionsState()
 	mMute = mOptionConfig.getBool("mute");
 	mGameFPS = mOptionConfig.getInteger("gamefps");
 	mNetworkSide = mOptionConfig.getInteger("network_side");
+	mLanguage = mOptionConfig.getString("language");
 }
 
 MiscOptionsState::~MiscOptionsState()
@@ -817,6 +818,7 @@ MiscOptionsState::~MiscOptionsState()
 		mOptionConfig.setBool("mute", mMute);
 		mOptionConfig.setInteger("gamefps", mGameFPS);
 		mOptionConfig.setInteger("network_side", mNetworkSide);
+		mOptionConfig.setString("language", mLanguage);
 		if (mBackground > -1)
 			mOptionConfig.setString("background", mBackgrounds[mBackground]);
 		mOptionConfig.saveFile("config.xml");
@@ -827,6 +829,7 @@ MiscOptionsState::~MiscOptionsState()
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
 	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
+	TextManager::switchLanguage(mOptionConfig.getString("language"));
 }
 
 void MiscOptionsState::step()
@@ -914,6 +917,15 @@ void MiscOptionsState::step()
 	std::stringstream FPSInPercent;
 	FPSInPercent << int((float)mGameFPS/75*100);
 	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
+
+	//! \todo this must be reworket
+	std::string olang = TextManager::getSingleton()->getLang() == "de" ? "english" : "deutsch";
+	if (imgui.doButton(GEN_ID, Vector2(300.0, 490.0), olang)){
+		//! \todo autogenerierte liste mit allen lang_ dateien, namen auslesen
+		mLanguage = TextManager::getSingleton()->getLang() == "de" ? "en" : "de";
+		TextManager::switchLanguage(mLanguage);
+		
+	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{

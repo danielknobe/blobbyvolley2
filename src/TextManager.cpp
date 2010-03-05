@@ -32,7 +32,7 @@ TextManager* TextManager::mSingleton = 0;
 TextManager* TextManager::createTextManager(std::string langname){
 	delete mSingleton;
 	
-	mSingleton = new TextManager();
+	mSingleton = new TextManager(langname);
 	
 	std::string langfile = "lang_"+langname+".xml";
 	
@@ -53,13 +53,25 @@ const TextManager* TextManager::getSingleton(){
 	return mSingleton;
 }
 
-TextManager::TextManager(){
+TextManager::TextManager(std::string l):lang(l){
 	mStrings.resize(COUNT);
 	setDefault();
 }
 
+void TextManager::switchLanguage(std::string langname){
+	// if old and new language are the same, nothing must be done 
+	if(langname == mSingleton->lang)
+		return;
+		
+	// otherwise, the old TextManager is destroyed and a new one is created
+	createTextManager(langname);
+}
+
 const std::string& TextManager::getString(STRING str) const{
 	return mStrings[str];
+}
+std::string TextManager::getLang() const{
+	return lang;
 }
 
 bool TextManager::loadFromXML(std::string file){

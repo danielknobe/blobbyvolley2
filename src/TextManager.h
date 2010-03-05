@@ -133,21 +133,28 @@ class TextManager{
 		// returns the string identified by str
 		const std::string& getString(STRING str) const;
 		
+		std::string getLang() const;
+		
 		// retruns the mSingleton
 		static const TextManager* getSingleton();
 		
 		// creates a textmanager for a particular language
 		static TextManager* createTextManager(std::string langname);
 	
+		// switches the language
+		static void switchLanguage(std::string langname);
 	private:
 		// private construktor, use createTextManager
-		TextManager();
+		TextManager(std::string l);
 		
 		// Singleton
 		static TextManager* mSingleton;
 		
 		// vector with all strings
 		std::vector<std::string> mStrings;
+		
+		// string with language name
+		std::string lang;
 		
 		// loads the language data from an xml file
 		bool loadFromXML(std::string file);
