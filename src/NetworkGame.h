@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "PhysicWorld.h"
+#include "GameLogic.h"
 #include "raknet/NetworkTypes.h"
 #include "UserConfig.h"
 #include "SpeedController.h"
@@ -70,15 +71,9 @@ private:
 	PacketQueue mPacketQueue;
 
 	PhysicWorld mPhysicWorld;
-	int mLeftScore;
-	int mRightScore;
-	PlayerSide mServingPlayer;
+	GameLogic mLogic;
 	PlayerSide mWinningPlayer;
 
-	int mLeftHitcount;
-	int mRightHitcount;
-	int mSquishLeft;
-	int mSquishRight;
 
 	bool mPausing;
 

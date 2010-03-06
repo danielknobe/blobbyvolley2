@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool output, bool global)
+				bool output, bool global):mLogic(createGameLogic())
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -40,15 +40,6 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	mLeftInput = linput;
 	mRightInput = rinput;
 	mOutput = output;
-
-	mLeftScore = 0;
-	mRightScore = 0;
-	mServingPlayer = NO_PLAYER;
-	mLeftHitcount = 0;
-	mRightHitcount = 0;
-
-	mSquishLeft = 0;
-	mSquishRight = 0;
 
 	mBallDown = false;
 	mWinningPlayer = 0;
@@ -86,6 +77,7 @@ void DuelMatch::step()
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
 	mPhysicWorld.step();
+	mLogic->OnStep();
 
 	if (mOutput)
 	{
@@ -98,109 +90,78 @@ void DuelMatch::step()
 	}
 
 	// Protection of multiple hit counts when the ball is squeezed
-	if (0 == mSquishLeft)
+	if (mPhysicWorld.ballHitLeftPlayer())
 	{
-		if (mPhysicWorld.ballHitLeftPlayer())
+		if (mLogic->OnBallHitsPlayer(LEFT_PLAYER) && mOutput)
 		{
-			if (mOutput)
-			{
-				smanager->playSound("sounds/bums.wav",
-					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-				Vector2 hitPos = mPhysicWorld.getBall() +
-					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
-			}
-			mLeftHitcount++;
-			mRightHitcount = 0;
-			mSquishLeft = 1;
+			smanager->playSound("sounds/bums.wav",
+				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mPhysicWorld.getBall() +
+				(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
 		}
 	}
-	else
-	{
-		mSquishLeft += 1;
-		if(mSquishLeft > 9)
-			mSquishLeft = 0;
-	}
 
-	if(0 == mSquishRight)
+	if (mPhysicWorld.ballHitRightPlayer())
 	{
-		if (mPhysicWorld.ballHitRightPlayer())
+		if (mLogic->OnBallHitsPlayer(RIGHT_PLAYER) && mOutput)
 		{
-			if (mOutput)
-			{
-				smanager->playSound("sounds/bums.wav",
-					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-				Vector2 hitPos = mPhysicWorld.getBall() +
-					(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-				BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
-			}
-			mRightHitcount++;
-			mLeftHitcount = 0;
-			mSquishRight = 1;
+			smanager->playSound("sounds/bums.wav",
+				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mPhysicWorld.getBall() +
+				(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
 		}
 	}
-	else
-	{
-		mSquishRight += 1;
-		if(mSquishRight > 9)
-			mSquishRight = 0;
-	}
+	
+	if(mPhysicWorld.ballHitLeftGround())
+		mLogic->OnBallHitsGround(LEFT_PLAYER);
+	
+	if(mPhysicWorld.ballHitRightGround())
+		mLogic->OnBallHitsGround(RIGHT_PLAYER);
 
-	if (mPhysicWorld.ballHitLeftGround() || mLeftHitcount > 3)
-	{
-		if (mLeftHitcount > 3)
-			mPhysicWorld.dampBall();
-		if (mOutput)
-			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-		if (mServingPlayer == 1)
-			mRightScore++;
-		mServingPlayer = RIGHT_PLAYER;
-		mPhysicWorld.setBallValidity(0);
-		mBallDown = true;
-		mRightHitcount = 0;
-		mLeftHitcount = 0;
-		mSquishRight = 0;
-		mSquishLeft = 0;
-	}
-
-	if (mPhysicWorld.ballHitRightGround() || mRightHitcount > 3)
-	{
-		if(mRightHitcount > 3)
-			mPhysicWorld.dampBall();
-		if (mOutput)
-			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-		if (mServingPlayer == 0)
-			mLeftScore++;
-		mServingPlayer = LEFT_PLAYER;
-		mPhysicWorld.setBallValidity(0);
-		mBallDown = true;
-		mRightHitcount = 0;
-		mLeftHitcount = 0;
-		mSquishRight = 0;
-		mSquishLeft = 0;
+	switch(mLogic->getLastErrorSide()){
+		case LEFT_PLAYER:
+			if (!mPhysicWorld.ballHitLeftGround())
+				mPhysicWorld.dampBall();
+			if (mOutput)
+				smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+			mPhysicWorld.setBallValidity(0);
+			mBallDown = true;
+			break;
+			
+		case RIGHT_PLAYER:
+			if(!mPhysicWorld.ballHitRightGround())
+				mPhysicWorld.dampBall();
+			if (mOutput)
+				smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+			mPhysicWorld.setBallValidity(0);
+			mBallDown = true;
+			break;
+		
 	}
 
 	if (mOutput)
 	{
 		// This is done seperate from other output because the
 		// winning screen would display old scores otherwise
-		rmanager->setScore(mLeftScore, mRightScore,
-			mServingPlayer == 0, mServingPlayer == 1);
+		rmanager->setScore(mLogic->getScore(LEFT_PLAYER), mLogic->getScore(RIGHT_PLAYER),
+			mLogic->getServingPlayer() == 0, mLogic->getServingPlayer() == 1);
 	}
 
 	if (mPhysicWorld.roundFinished())
 	{
 		mBallDown = false;
-		mPhysicWorld.reset(mServingPlayer);
+		mPhysicWorld.reset(mLogic->getServingPlayer());
 	}
 }
 
 
 PlayerSide DuelMatch::winningPlayer()
 {
-	if (mLeftScore >= mScoreToWin && mLeftScore >= mRightScore + 2)
+	if (mLogic->getScore(LEFT_PLAYER) >= mScoreToWin && mLogic->getScore(LEFT_PLAYER) >= mLogic->getScore(RIGHT_PLAYER) + 2)
 		return LEFT_PLAYER;
-	if (mRightScore >= mScoreToWin && mRightScore >= mLeftScore + 2)
+	if (mLogic->getScore(RIGHT_PLAYER) >= mScoreToWin && mLogic->getScore(RIGHT_PLAYER) >= mLogic->getScore(LEFT_PLAYER) + 2)
 		return RIGHT_PLAYER;
 	return NO_PLAYER;
 }
@@ -208,9 +169,9 @@ PlayerSide DuelMatch::winningPlayer()
 int DuelMatch::getHitcount(PlayerSide player)
 {
 	if (player == LEFT_PLAYER)
-		return mLeftHitcount;
+		return mLogic->getHits(LEFT_PLAYER);
 	else if (player == RIGHT_PLAYER)
-		return mRightHitcount;
+		return mLogic->getHits(RIGHT_PLAYER);
 	else
 		return 0;
 }
@@ -263,7 +224,7 @@ Vector2 DuelMatch::getBallTimeEstimation(int steps)
 
 PlayerSide DuelMatch::getServingPlayer()
 {
-	PlayerSide side = mServingPlayer;
+	PlayerSide side = mLogic->getServingPlayer();
 	if (side == NO_PLAYER)
 	{
 		// This not exactly the situation, but it is necessary to tell

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "PhysicWorld.h"
+#include "GameLogic.h"
 #include "Vector.h"
 
 // This class represents a single game between two players
@@ -111,15 +112,7 @@ private:
 	InputSource* mLeftInput;
 	InputSource* mRightInput;
 
-	int mLeftScore;
-	int mRightScore;
-	PlayerSide mServingPlayer;
-
-	int mLeftHitcount;
-	int mRightHitcount;
-
-	int mSquishLeft;
-	int mSquishRight;
+	GameLogic mLogic;
 
 	bool mBallDown;
 
