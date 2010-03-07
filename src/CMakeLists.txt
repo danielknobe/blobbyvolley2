@@ -9,6 +9,7 @@ set(common_SRC
 	Global.h
 	NetworkGame.cpp NetworkGame.h
 	NetworkMessage.cpp NetworkMessage.h
+	GameLogic.cpp GameLogic.h
 	PhysicWorld.cpp PhysicWorld.h
 	SpeedController.cpp SpeedController.h
 	UserConfig.cpp UserConfig.h
@@ -30,7 +31,7 @@ set (blobby_SRC ${common_SRC}
 	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
 	ReplayRecorder.cpp ReplayRecorder.h
-	ScriptedInputSource.cpp ScriptedInputSource.h
+	ScriptedInputSource.cpp ScriptedInputSource.h	
 	SoundManager.cpp SoundManager.h
 	Vector.h
 	state/State.cpp state/State.h
