@@ -459,7 +459,6 @@ void NetworkGameState::step()
 				stream.Read(intensity);
 				SoundManager::getSingleton().playSound("sounds/bums.wav",
 						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
-				mPhysicWorld.setBallValidity(false);
 				break;
 			}
 			case ID_PAUSE:
