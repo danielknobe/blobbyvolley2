@@ -260,37 +260,43 @@ bool NetworkGame::step()
 			break;
 		
 	}
-	
-	switch(mLogic->getWinningPlayer()){
-		case LEFT_PLAYER:
-		{
-			RakNet::BitStream stream;
-			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			stream.Write(LEFT_PLAYER);
-	
-			RakNet::BitStream switchStream;
-			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			switchStream.Write(RIGHT_PLAYER);
-	
-			broadcastBitstream(&stream, &switchStream);
-			return active;
+	if(!mPausing)
+		switch(mLogic->getWinningPlayer()){
+			case LEFT_PLAYER:
+			{
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				stream.Write(LEFT_PLAYER);
+		
+				RakNet::BitStream switchStream;
+				switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				switchStream.Write(RIGHT_PLAYER);
+		
+				broadcastBitstream(&stream, &switchStream);
+				
+				// if someone has won, the game is paused 
+				mPausing = true;
+				return active;
+			}
+			break;
+			case RIGHT_PLAYER:
+			{
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				stream.Write(RIGHT_PLAYER);
+		
+				RakNet::BitStream switchStream;
+				switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				switchStream.Write(LEFT_PLAYER);
+		
+				broadcastBitstream(&stream, &switchStream);
+				
+				// if someone has won, the game is paused 
+				mPausing = true;
+				return active;
+			}
+			break;
 		}
-		break;
-		case RIGHT_PLAYER:
-		{
-			RakNet::BitStream stream;
-			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			stream.Write(RIGHT_PLAYER);
-	
-			RakNet::BitStream switchStream;
-			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			switchStream.Write(LEFT_PLAYER);
-	
-			broadcastBitstream(&stream, &switchStream);
-			return active;
-		}
-		break;
-	}
 
 	if (mPhysicWorld.roundFinished())
 	{

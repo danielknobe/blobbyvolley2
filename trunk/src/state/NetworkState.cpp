@@ -401,27 +401,25 @@ void NetworkGameState::step()
 			}
 			case ID_WIN_NOTIFICATION:
 			{
-				if(mNetworkState != PLAYER_WON){
-					RakNet::BitStream stream((char*)packet->data, packet->length, false);
-					stream.IgnoreBytes(1);	//ID_WIN_NOTIFICATION
-					stream.Read((int&)mWinningPlayer);
-					
-					// adds the last point, it must have been made by the winning player
-					switch(mWinningPlayer){
-						case LEFT_PLAYER:
-							mLeftScore++;
-							break;
-						case RIGHT_PLAYER:
-							mRightScore++;
-							break;
-						default:
-							assert(0);
-					}
-					rmanager->setScore(mLeftScore, mRightScore,
-						mServingPlayer == 0, mServingPlayer == 1);
-						
-					mNetworkState = PLAYER_WON;
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	//ID_WIN_NOTIFICATION
+				stream.Read((int&)mWinningPlayer);
+				
+				// adds the last point, it must have been made by the winning player
+				switch(mWinningPlayer){
+					case LEFT_PLAYER:
+						mLeftScore++;
+						break;
+					case RIGHT_PLAYER:
+						mRightScore++;
+						break;
+					default:
+						assert(0);
 				}
+				rmanager->setScore(mLeftScore, mRightScore,
+					mServingPlayer == 0, mServingPlayer == 1);
+					
+				mNetworkState = PLAYER_WON;
 				break;
 			}
 			case ID_OPPONENT_DISCONNECTED:
