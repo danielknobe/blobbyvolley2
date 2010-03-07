@@ -117,8 +117,6 @@ private:
 	bool mBallDown;
 
 	bool mOutput;
-	int mWinningPlayer;
-	int mScoreToWin;
 
 	std::string mPlayerName;
 	std::string mOpponentName;
