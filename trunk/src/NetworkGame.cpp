@@ -30,7 +30,7 @@ NetworkGame::NetworkGame(RakServer& server,
 			std::string leftPlayerName, std::string rightPlayerName,
 			Color leftColor, Color rightColor, 
 			PlayerSide switchedSide)
-	: mServer(server), mLogic(createGameLogic())
+	: mServer(server), mLogic(createGameLogic(OLD_RULES))
 {
 	mPhysicWorld.resetPlayer();
 
@@ -186,11 +186,11 @@ bool NetworkGame::step()
 
 	if (!mPausing)
 		mPhysicWorld.step();
-	mLogic->OnStep();
+	mLogic->step();
 
 	if (mPhysicWorld.ballHitLeftPlayer())
 	{
-		if(mLogic->OnBallHitsPlayer(LEFT_PLAYER))
+		if(mLogic->onBallHitsPlayer(LEFT_PLAYER))
 		{
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
@@ -204,7 +204,7 @@ bool NetworkGame::step()
 	
 	if (mPhysicWorld.ballHitRightPlayer())
 	{
-		if(mLogic->OnBallHitsPlayer(RIGHT_PLAYER))
+		if(mLogic->onBallHitsPlayer(RIGHT_PLAYER))
 		{
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
@@ -217,12 +217,14 @@ bool NetworkGame::step()
 	}
 	
 	if(mPhysicWorld.ballHitLeftGround())
-		mLogic->OnBallHitsGround(LEFT_PLAYER);
+		mLogic->onBallHitsGround(LEFT_PLAYER);
 	
 	if(mPhysicWorld.ballHitRightGround())
-		mLogic->OnBallHitsGround(RIGHT_PLAYER);
+		mLogic->onBallHitsGround(RIGHT_PLAYER);
 
 	switch(mLogic->getLastErrorSide()){
+		// is it correct to send ID_BALL_GROUND_COLLISION even if the
+		// error was a forth hit of a player?
 		case LEFT_PLAYER:
 			{
 				RakNet::BitStream stream;
@@ -258,32 +260,36 @@ bool NetworkGame::step()
 			break;
 		
 	}
-
-	if (mLogic->getScore(LEFT_PLAYER) >= 15 && mLogic->getScore(RIGHT_PLAYER) >= mLogic->getScore(RIGHT_PLAYER) + 2)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-		stream.Write(LEFT_PLAYER);
-
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-		switchStream.Write(RIGHT_PLAYER);
-
-		broadcastBitstream(&stream, &switchStream);
-		return active;
-	}
-	if (mLogic->getScore(RIGHT_PLAYER) >= 15 && mLogic->getScore(RIGHT_PLAYER) >= mLogic->getScore(LEFT_PLAYER) + 2)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-		stream.Write(RIGHT_PLAYER);
-
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-		switchStream.Write(LEFT_PLAYER);
-
-		broadcastBitstream(&stream, &switchStream);
-		return active;
+	
+	switch(mLogic->getWinningPlayer()){
+		case LEFT_PLAYER:
+		{
+			RakNet::BitStream stream;
+			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			stream.Write(LEFT_PLAYER);
+	
+			RakNet::BitStream switchStream;
+			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			switchStream.Write(RIGHT_PLAYER);
+	
+			broadcastBitstream(&stream, &switchStream);
+			return active;
+		}
+		break;
+		case RIGHT_PLAYER:
+		{
+			RakNet::BitStream stream;
+			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			stream.Write(RIGHT_PLAYER);
+	
+			RakNet::BitStream switchStream;
+			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			switchStream.Write(LEFT_PLAYER);
+	
+			broadcastBitstream(&stream, &switchStream);
+			return active;
+		}
+		break;
 	}
 
 	if (mPhysicWorld.roundFinished())

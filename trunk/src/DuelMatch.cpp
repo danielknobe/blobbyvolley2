@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool output, bool global):mLogic(createGameLogic())
+				bool output, bool global):mLogic(createGameLogic(OLD_RULES))
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -42,16 +42,13 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	mOutput = output;
 
 	mBallDown = false;
-	mWinningPlayer = 0;
 
 	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
 
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
-	mScoreToWin = gameConfig.getInteger("scoretowin");
-	if (mScoreToWin < 0)
-		mScoreToWin = 15;
+	mLogic->setScoreToWin(gameConfig.getInteger("scoretowin"));
 };
 
 DuelMatch::~DuelMatch()
@@ -77,7 +74,7 @@ void DuelMatch::step()
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
 	mPhysicWorld.step();
-	mLogic->OnStep();
+	mLogic->step();
 
 	if (mOutput)
 	{
@@ -92,7 +89,7 @@ void DuelMatch::step()
 	// Protection of multiple hit counts when the ball is squeezed
 	if (mPhysicWorld.ballHitLeftPlayer())
 	{
-		if (mLogic->OnBallHitsPlayer(LEFT_PLAYER) && mOutput)
+		if (mLogic->onBallHitsPlayer(LEFT_PLAYER) && mOutput)
 		{
 			smanager->playSound("sounds/bums.wav",
 				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
@@ -104,7 +101,7 @@ void DuelMatch::step()
 
 	if (mPhysicWorld.ballHitRightPlayer())
 	{
-		if (mLogic->OnBallHitsPlayer(RIGHT_PLAYER) && mOutput)
+		if (mLogic->onBallHitsPlayer(RIGHT_PLAYER) && mOutput)
 		{
 			smanager->playSound("sounds/bums.wav",
 				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
@@ -115,10 +112,10 @@ void DuelMatch::step()
 	}
 	
 	if(mPhysicWorld.ballHitLeftGround())
-		mLogic->OnBallHitsGround(LEFT_PLAYER);
+		mLogic->onBallHitsGround(LEFT_PLAYER);
 	
 	if(mPhysicWorld.ballHitRightGround())
-		mLogic->OnBallHitsGround(RIGHT_PLAYER);
+		mLogic->onBallHitsGround(RIGHT_PLAYER);
 
 	switch(mLogic->getLastErrorSide()){
 		case LEFT_PLAYER:
@@ -159,11 +156,7 @@ void DuelMatch::step()
 
 PlayerSide DuelMatch::winningPlayer()
 {
-	if (mLogic->getScore(LEFT_PLAYER) >= mScoreToWin && mLogic->getScore(LEFT_PLAYER) >= mLogic->getScore(RIGHT_PLAYER) + 2)
-		return LEFT_PLAYER;
-	if (mLogic->getScore(RIGHT_PLAYER) >= mScoreToWin && mLogic->getScore(RIGHT_PLAYER) >= mLogic->getScore(LEFT_PLAYER) + 2)
-		return RIGHT_PLAYER;
-	return NO_PLAYER;
+	return mLogic->getWinningPlayer();
 }
 
 int DuelMatch::getHitcount(PlayerSide player)

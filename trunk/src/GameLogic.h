@@ -29,16 +29,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // this class is told what happens in the game and it applies the rules to count 
 // the points. it is designed as a abstract base class to provide different 
 // implementations (ie old/new volleyball rules)
-class CGameLogic{
+class CGameLogic
+{
 	public:
 		// methods to inform the game logic what is happening in the game
-		void OnBallHitsGround(PlayerSide side);
+		void onBallHitsGround(PlayerSide side);
 				
 		// returns whether the collision was valid
-		bool OnBallHitsPlayer(PlayerSide side);
+		bool onBallHitsPlayer(PlayerSide side);
 		
-		void OnStep();
-		
+		// must be called every step
+		void step();		
 		
 		// method for querying the score/touches of a patricular team
 		int getScore(PlayerSide side) const;
@@ -47,38 +48,74 @@ class CGameLogic{
 		// method for querying the serving player
 		PlayerSide getServingPlayer() const;
 		
+		// returns the winning player or NO_PLAYER if the
+		// game still runs
+		PlayerSide getWinningPlayer() const;
+		
 		// returns who has made the last mistake
 		// after this request, the value is reset
 		PlayerSide getLastErrorSide();
 		
-		virtual ~CGameLogic(){
-		};
+		// method for setting the target score
+		void setScoreToWin(int stw);
 		
-	protected:
-		// this method must be called if a team scores
-		// is increments the points of that team
-		void Score(PlayerSide side);
+		// constuctor and destructor
 		
 		CGameLogic();
+		
+		virtual ~CGameLogic()
+		{
+		};
+		
 	
-	private:
+	protected:		
+		// this method must be called if a team scores
+		// is increments the points of that team
+		void score(PlayerSide side);
+		
+	private:	
+		// resets score and touches
+		void reset();
+		
+		// this is called when a player makes a
+		// mistake
+		void onError(PlayerSide side);
+		
+		// this is called when a player makes a mistake
+		// so the other player has won the rally. this 
+		// method is to be implemented to perform scoring
+		virtual void onOppError(PlayerSide side) = 0;
+		
+		PlayerSide checkWin() const;
+			
+		
+		// data members
+		
 		int mScores[RIGHT_PLAYER - LEFT_PLAYER + 1];
 		int mTouches[RIGHT_PLAYER - LEFT_PLAYER + 1];
 		int mSquish[RIGHT_PLAYER - LEFT_PLAYER + 1];
+		
+		int mScoreToWin;
 		
 		PlayerSide mServingPlayer;
 		
 		PlayerSide mLastError;
 		
-		// helper funktion to convert player side into array index
-		inline int side2index(PlayerSide side) const{
-			assert(side - LEFT_PLAYER >= 0);
-			assert(side - LEFT_PLAYER < sizeof(mScores));
+		PlayerSide mWinningPlayer;
+		
+	private:
+		// helper functions
+		
+		// convert player side into array index
+		static inline int side2index(PlayerSide side)
+		{
+			assert(side == LEFT_PLAYER || side == RIGHT_PLAYER);
 			return side - LEFT_PLAYER;
 		}
 		
-		// helper function to determine the opposit player side
-		inline PlayerSide other_side(PlayerSide side) const{
+		// determine the opposit player side
+		static inline PlayerSide other_side(PlayerSide side)
+		{
 			switch(side){
 				case LEFT_PLAYER:
 					return RIGHT_PLAYER;
@@ -88,23 +125,18 @@ class CGameLogic{
 					assert(0);
 			}
 		}
-		
-		// resets score and touches
-		void Reset();
-		
-		// this is called when a player makes a
-		// mistake
-		void OnError(PlayerSide side);
-		
-		// this is called when a player makes a mistake
-		// so the other player has won the rally. this 
-		// method is to be implemented to perform scoring
-		virtual void OnOppError(PlayerSide side) = 0;
 };
 
 // typedef to make GameLogic an auto_ptr
 typedef std::auto_ptr<CGameLogic> GameLogic;
 
+// enumeration for rule types
+enum RuleVersion{
+	OLD_RULES,		// point only for serving player
+	NEW_RULES		// point for each error
+};
+
 // function for creating a game logic object
-GameLogic createGameLogic();
+GameLogic createGameLogic(RuleVersion rv);
+
 
