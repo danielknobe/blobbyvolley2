@@ -98,6 +98,18 @@
 * - COMPILER_BORLANDC
 */
 
+#include <stdlib.h>
+
+#if defined(__GLIBC__) && !defined(HOST_ENDIAN_IS_BIG) && !defined(HOST_ENDIAN_IS_LITTLE)
+	#include <endian.h>
+	
+	#if (__BYTE_ORDER == __LITTLE_ENDIAN)
+		#define HOST_ENDIAN_IS_LITTLE
+	#elif (__BYTE_ORDER == __BIG_ENDIAN)
+		#define HOST_ENDIAN_IS_BIG
+	#endif
+#endif
+
 // CB: Something strange happens with the system includes on
 // Linux and BIG_ENDIAN ends up defined at some point, so
 // we need to use HOST_ENDIAN_IS_BIG instead. This code is
@@ -140,23 +152,11 @@ namespace cat
 	// LITTLE_ENDIAN or BIG_ENDIAN (endian.h)
 	// dalfy
 #if !defined(BIG_ENDIAN) && !defined(LITTLE_ENDIAN)
-#if defined(__sparc) || defined(__sparc__) || defined(__powerpc__) || \
-	defined(__ppc__) || defined(__hppa) || defined(_MIPSEB) || defined(_POWER) || \
-	defined(_M_PPC) || defined(_M_MPPC) || defined(_M_MRX000) || \
-	defined(__POWERPC) || defined(m68k) || defined(powerpc) || \
-	defined(sel) || defined(pyr) || defined(mc68000) || defined(is68k) || \
-	defined(tahoe) || defined(ibm032) || defined(ibm370) || defined(MIPSEB) || \
-	defined(__convex__) || defined(DGUX) || defined(hppa) || defined(apollo) || \
-	defined(_CRAY) || defined(__hp9000) || defined(__hp9000s300) || defined(_AIX) || \
-	defined(__AIX) || defined(__pyr__) || defined(hp9000s700) || defined(_IBMR2) || defined(__ARMEB__)
+#if defined(HOST_ENDIAN_IS_BIG)
 
 # define BIG_ENDIAN
 
-#elif defined(__i386__) || defined(i386) || defined(intel) || defined(_M_IX86) || \
-	defined(__amd64) || defined(__amd64__)	|| \
-	defined(__alpha__) || defined(__alpha) || defined(__ia64) || defined(__ia64__) || \
-	defined(_M_ALPHA) || defined(ns32000) || defined(__ns32000__) || defined(sequent) || \
-	defined(MIPSEL) || defined(_MIPSEL) || defined(sun386) || defined(__sun386__) || defined(__ARMEL__)
+#elif defined(HOST_ENDIAN_IS_LITTLE)
 
 # define LITTLE_ENDIAN
 
