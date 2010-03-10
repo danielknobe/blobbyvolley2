@@ -61,7 +61,7 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 		}
 	}
 	SDL_UnlockSurface(newSurface);
-	SDL_Surface *convSurface = SDL_DisplayFormat(newSurface);
+	SDL_Surface *convSurface = SDL_DisplayFormatAlpha(newSurface);
 	SDL_FreeSurface(newSurface);
 	return convSurface;            
 }
