@@ -72,7 +72,7 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		}
 	}
 	SDL_UnlockSurface(newSurface);
-	SDL_Surface *convSurface = SDL_DisplayFormat(newSurface);
+	SDL_Surface *convSurface = SDL_DisplayFormatAlpha(newSurface);
 	SDL_FreeSurface(newSurface);
 	return convSurface;
 }
@@ -124,7 +124,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Surface* ballImage = loadSurface(filename);
 		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY,
 			SDL_MapRGB(ballImage->format, 0, 0, 0));
-		SDL_Surface *convertedBallImage = SDL_DisplayFormat(ballImage);
+		SDL_Surface *convertedBallImage = SDL_DisplayFormatAlpha(ballImage);
 		SDL_FreeSurface(ballImage);
 		mBall.push_back(convertedBallImage);
 	}
@@ -133,7 +133,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempBallShadow->format, 0, 0, 0));
 	SDL_SetAlpha(tempBallShadow, SDL_SRCALPHA, 127);
-	mBallShadow = SDL_DisplayFormat(tempBallShadow);
+	mBallShadow = SDL_DisplayFormatAlpha(tempBallShadow);
 	SDL_FreeSurface(tempBallShadow);
 
 	for (int i = 1; i <= 5; ++i)
@@ -165,7 +165,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Surface *tempFont = loadSurface(filename);
 		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
-		SDL_Surface *newFont = SDL_DisplayFormat(tempFont);
+		SDL_Surface *newFont = SDL_DisplayFormatAlpha(tempFont);
 		SDL_FreeSurface(tempFont);
 		mFont.push_back(newFont);
 		mHighlightFont.push_back(highlightSurface(newFont, 60));
@@ -346,13 +346,13 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 		SDL_Surface *tempBlob =
 			colorSurface(mStandardBlob[i], color);
 		handledBlob->push_back(
-			SDL_DisplayFormat(tempBlob));
+			SDL_DisplayFormatAlpha(tempBlob));
 		SDL_FreeSurface(tempBlob);
 
 		SDL_Surface *tempShadow = colorSurface(
 				mStandardBlobShadow[i], color);
 		handledBlobShadow->push_back(
-			SDL_DisplayFormat(tempShadow));
+			SDL_DisplayFormatAlpha(tempShadow));
 		SDL_FreeSurface(tempShadow);
 	}
 }
