@@ -61,9 +61,11 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 		}
 	}
 	SDL_UnlockSurface(newSurface);
-	SDL_Surface *convSurface = SDL_DisplayFormatAlpha(newSurface);
+	// no DisplayFormatAlpha, because of problems with
+	// OpenGL RenderManager
+	SDL_Surface *convSurface = SDL_DisplayFormat(newSurface);
 	SDL_FreeSurface(newSurface);
-	return convSurface;            
+	return convSurface;
 }
 
 SDL_Surface* RenderManager::loadSurface(std::string filename)
