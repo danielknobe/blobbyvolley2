@@ -386,16 +386,21 @@ void PhysicWorld::step()
 	if (mBallPosition.x - BALL_RADIUS <= LEFT_PLANE && mBallVelocity.x < 0.0)
 	{
 		mBallVelocity = mBallVelocity.reflectX();
+		// set the ball's position
+		mBallPosition.x = LEFT_PLANE + BALL_RADIUS;
 	}
 	else if (mBallPosition.x + BALL_RADIUS >= RIGHT_PLANE && mBallVelocity.x > 0.0)
 	{
 		mBallVelocity = mBallVelocity.reflectX();
+		// set the ball's position
+		mBallPosition.x = RIGHT_PLANE - BALL_RADIUS;
 	}
 	else if (mBallPosition.y > NET_SPHERE_POSITION &&
 			fabs(mBallPosition.x - NET_POSITION_X) < BALL_RADIUS + NET_RADIUS)
 	{
 		mBallVelocity = mBallVelocity.reflectX();
-		mBallPosition += mBallVelocity;
+		// set the ball's position so that it touches the net
+		mBallPosition.x = NET_POSITION_X + ((mBallPosition.x - NET_POSITION_X > 0) ?( BALL_RADIUS + NET_RADIUS) : (- BALL_RADIUS - NET_RADIUS));
 	}
 	else
 	{
