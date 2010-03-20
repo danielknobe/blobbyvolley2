@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RenderManager.h"
 
 #include <physfs.h>
+#include <boost/scope_exit.hpp>
 
 RenderManager* RenderManager::mSingleton = 0;
 
@@ -74,15 +75,19 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 	if (!fileHandle)
 		throw FileLoadException(std::string(filename));
 	int fileLength = PHYSFS_fileLength(fileHandle);
-	PHYSFS_uint8* fileBuffer = 
-		new PHYSFS_uint8[fileLength];
+	PHYSFS_uint8* fileBuffer = new PHYSFS_uint8[fileLength];
+	
+	// ensures that fileHandle and fileBuffer are freed at end of scope,
+	BOOST_SCOPE_EXIT( (&fileHandle)(&fileBuffer) ){
+		PHYSFS_close(fileHandle);
+		delete[] fileBuffer;
+	} BOOST_SCOPE_EXIT_END
+	
 	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
 	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer, fileLength);
 	SDL_Surface* newSurface = SDL_LoadBMP_RW(rwops , 1);
 	if (!newSurface)
 		throw FileLoadException(filename);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
 	return newSurface;
 }
 
