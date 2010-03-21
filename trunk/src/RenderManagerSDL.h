@@ -33,10 +33,13 @@ class RenderManagerSDL : public RenderManager
 	std::vector<SDL_Surface*> mBall;
 	std::vector<SDL_Surface*> mStandardBlob;
 	std::vector<SDL_Surface*> mStandardBlobShadow;
+	SDL_Surface*			  mStandardBlobBlood;
 	std::vector<SDL_Surface*> mLeftBlob;
 	std::vector<SDL_Surface*> mLeftBlobShadow;
+	SDL_Surface*			  mLeftBlobBlood;
 	std::vector<SDL_Surface*> mRightBlob;
 	std::vector<SDL_Surface*> mRightBlobShadow;
+	SDL_Surface*			  mRightBlobBlood;
 
 	std::vector<SDL_Surface*> mFont;
 	std::vector<SDL_Surface*> mHighlightFont;
@@ -93,5 +96,6 @@ public:
 	virtual void drawImage(const std::string& filename, Vector2 position);
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
 	virtual void drawBlob(const Vector2& pos, const Color& col);
+	virtual void drawParticle(const Vector2& pos, int player);
 };
 
