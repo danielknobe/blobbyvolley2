@@ -172,6 +172,10 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	}
 
 	mScroll = loadSurface("gfx/scrollbar.bmp");
+	
+	mStandardBlobBlood = loadSurface("gfx/blood.bmp");
+	mLeftBlobBlood = loadSurface("gfx/blood.bmp");
+	mRightBlobBlood = loadSurface("gfx/blood.bmp");
 }
 
 void RenderManagerSDL::deinit()
@@ -180,6 +184,10 @@ void RenderManagerSDL::deinit()
 	SDL_FreeSurface(mBackground);
 	SDL_FreeSurface(mBallShadow);
 	SDL_FreeSurface(mScroll);
+	
+	SDL_FreeSurface(mLeftBlobBlood);
+	SDL_FreeSurface(mRightBlobBlood);
+	
 	for (unsigned int i = 0; i < mBall.size(); ++i)
 		SDL_FreeSurface(mBall[i]);
 	for (unsigned int i = 0; i < mStandardBlob.size(); ++i)
@@ -320,23 +328,26 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 
 	std::vector<SDL_Surface*> *handledBlob = 0;
 	std::vector<SDL_Surface*> *handledBlobShadow = 0;
+	SDL_Surface** handledBlobBlood = 0;
 
 	if (player == LEFT_PLAYER)
 	{
 		handledBlob = &mLeftBlob;
 		handledBlobShadow = &mLeftBlobShadow;
+		handledBlobBlood = &mLeftBlobBlood;
 	}
 	if (player == RIGHT_PLAYER)
 	{
 		handledBlob = &mRightBlob;
 		handledBlobShadow = &mRightBlobShadow;
+		handledBlobBlood = &mRightBlobBlood;
 	}
-
 	for (short int i = 0; i < 5; ++i)
 	{
 		SDL_FreeSurface((*handledBlob)[i]);
 		SDL_FreeSurface((*handledBlobShadow)[i]);
 	}
+	SDL_FreeSurface(*handledBlobBlood);
 
 	handledBlob->clear();
 	handledBlobShadow->clear();
@@ -355,6 +366,11 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 			SDL_DisplayFormatAlpha(tempShadow));
 		SDL_FreeSurface(tempShadow);
 	}
+
+	SDL_Surface *tempBlood = colorSurface(mStandardBlobBlood, color);
+	*handledBlobBlood = SDL_DisplayFormatAlpha(tempBlood);
+	SDL_FreeSurface(tempBlood);
+	
 }
 
 void RenderManagerSDL::showShadow(bool shadow)
@@ -530,6 +546,22 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 		SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
 		toDraw = 1;
 	}
+}
+
+void RenderManagerSDL::drawParticle(const Vector2& pos, int player)
+{
+	mNeedRedraw = true;
+	
+	SDL_Rect blitRect = {
+		lround(pos.x - float(9) / 2.0),
+		lround(pos.y - float(9) / 2.0),
+		lround(pos.x + float(9) / 2.0),
+		lround(pos.y + float(9) / 2.0),
+	};
+	
+	SDL_Surface* blood = player == LEFT_PLAYER ? mLeftBlobBlood : mRightBlobBlood;
+
+	SDL_BlitSurface(blood, 0, mScreen, &blitRect);
 }
 
 void RenderManagerSDL::refresh()
