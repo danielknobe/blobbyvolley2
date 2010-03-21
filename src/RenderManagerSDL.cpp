@@ -354,22 +354,12 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 
 	for (int i = 0; i < 5; ++i)
 	{
-		SDL_Surface *tempBlob =
-			colorSurface(mStandardBlob[i], color);
-		handledBlob->push_back(
-			SDL_DisplayFormatAlpha(tempBlob));
-		SDL_FreeSurface(tempBlob);
-
-		SDL_Surface *tempShadow = colorSurface(
-				mStandardBlobShadow[i], color);
-		handledBlobShadow->push_back(
-			SDL_DisplayFormatAlpha(tempShadow));
-		SDL_FreeSurface(tempShadow);
+		// no conversion becouse it is already done in colorSurface	
+		handledBlob->push_back(colorSurface(mStandardBlob[i], color));
+		handledBlobShadow->push_back(colorSurface(mStandardBlobShadow[i], color));
 	}
 
-	SDL_Surface *tempBlood = colorSurface(mStandardBlobBlood, color);
-	*handledBlobBlood = SDL_DisplayFormatAlpha(tempBlood);
-	SDL_FreeSurface(tempBlood);
+	*handledBlobBlood = colorSurface(mStandardBlobBlood, color);
 	
 }
 
