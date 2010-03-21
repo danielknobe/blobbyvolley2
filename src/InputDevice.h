@@ -160,9 +160,10 @@ public:
 			SDL_WarpMouse(600, 310);
 		float blobpos = match->getBlobPosition(mPlayer).x;
 		mMarkerX = mMouseXPos + playerOffset;
-		if (blobpos + BLOBBY_SPEED < mMarkerX)
+		if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
 			input.right = true;
-		if (blobpos - BLOBBY_SPEED > mMarkerX)
+		else
+		if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
 			input.left = true;
 
 		RenderManager::getSingleton().setMouseMarker(mMarkerX);
