@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <physfs.h>
 #include <sstream>
+#include <string>
 
 OptionState::OptionState()
 {
@@ -400,9 +401,16 @@ void InputOptionsState::step()
 
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
 
-	//left player side:
+	// left player side:
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_LEFT_PLAYER));
-	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), mLeftBlobbyDevice))
+	// dirty hack for languagesupport
+	TextManager::STRING deviceLanguage = TextManager::OP_JOYSTICK;
+	if (mLeftBlobbyDevice[0] == 'k')
+		deviceLanguage = TextManager::OP_KEYBOARD;
+	else if (mLeftBlobbyDevice[0] == 'm')
+		deviceLanguage = TextManager::OP_MOUSE;
+
+	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), TextManager::getSingleton()->getString(deviceLanguage)))
 	{
 		if (mLeftBlobbyDevice == "mouse")
 		{
@@ -515,7 +523,14 @@ void InputOptionsState::step()
 
 	//right player side:
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), TextManager::getSingleton()->getString(TextManager::OP_RIGHT_PLAYER));
-	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), mRightBlobbyDevice))
+	// dirty hack for languagesupport
+	deviceLanguage = TextManager::OP_JOYSTICK;
+	if (mRightBlobbyDevice[0] == 'k')
+		deviceLanguage = TextManager::OP_KEYBOARD;
+	else if (mRightBlobbyDevice[0] == 'm')
+		deviceLanguage = TextManager::OP_MOUSE;
+
+	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), TextManager::getSingleton()->getString(deviceLanguage)))
 	{
 		if (mRightBlobbyDevice == "mouse")
 		{

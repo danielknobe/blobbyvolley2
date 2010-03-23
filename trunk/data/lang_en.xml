@@ -3,7 +3,6 @@
 <language>
 	<string english = "ok" translation = "ok" />
 	<string english = "cancel" translation = "cancel" />
-	<string english = "back to main menu" translation = "back to main menu" />
 	<string english = "yes" translation = "yes" />
 	<string english = "no" translation = "no" />
 	<string english = "really quit?" translation = "really quit?" />
@@ -62,6 +61,9 @@
 	<string english = "green" translation = "green" />
 	<string english = "blue" translation = "blue" />
 	<string english = "morphing blob?" translation = "morphing blob?" />
+	<string english = "keyboard" translation = "keyboard" />
+	<string english = "mouse" translation = "mouse" />
+	<string english = "joystick" translation = "joystick" />
 	<string english = "jump button" translation = "jump button" />
 	<string english = "set all" translation = "set all" />
 	<string english = "left key" translation = "left key" />

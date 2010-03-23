@@ -137,10 +137,10 @@ void CreditsState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), TextManager::getSingleton()->getString(TextManager::CRD_PROGRAMMERS));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Jonathan Sieber");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(jonathan_sieber(at)yahoo.de)");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Daniel Knobe");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+125), "(daniel-knobe(at)web.de)");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Daniel Knobe");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(daniel-knobe(at)web.de)");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Jonathan Sieber");
+	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+125), "(jonathan_sieber(at)yahoo.de)");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+160), "Sven Rech");
 	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+190), "(svenrech(at)gmx.de)");
 
@@ -157,7 +157,7 @@ void CreditsState::step()
 	if (mYPosition > 20)
 		mYPosition -= 2.5;
 
-	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::getSingleton()->getString(TextManager::LBL_MAINMENU)))
+	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());

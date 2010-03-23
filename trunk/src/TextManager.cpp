@@ -136,7 +136,6 @@ void TextManager::setDefault(){
 	mStrings[LBL_CANCEL] = "cancel";
 	mStrings[LBL_YES] = "yes";
 	mStrings[LBL_NO] = "no";
-	mStrings[LBL_MAINMENU] = "back to main menu";
 	mStrings[LBL_CONF_QUIT] = "really quit?";
 	mStrings[LBL_CONTINUE] = "continue";
 	
@@ -192,6 +191,9 @@ void TextManager::setDefault(){
 	mStrings[OP_GREEN] = "green";
 	mStrings[OP_BLUE] = "blue";
 	mStrings[OP_MORPHING] = "morphing blob?";
+	mStrings[OP_KEYBOARD] = "keyboard";
+	mStrings[OP_MOUSE] = "mouse";
+	mStrings[OP_JOYSTICK] = "joystick";
 	mStrings[OP_JUMP_BUTTON] = "jump button";
 	mStrings[OP_SET_ALL] = "set all";
 	mStrings[OP_LEFT_KEY] = "left key";
@@ -219,5 +221,6 @@ void TextManager::setDefault(){
 	mStrings[OP_DEFAULT] = "default";
 	mStrings[OP_FAST] = "fast";
 	mStrings[OP_VFAST] = "very fast";
+	mStrings[OP_LANGUAGE] = "language";
 }
 
