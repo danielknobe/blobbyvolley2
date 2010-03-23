@@ -3,7 +3,6 @@
 <language>
 	<string english = "ok" translation = "ok" />
 	<string english = "cancel" translation = "abbrechen" />
-	<string english = "back to main menu" translation = "hautpmenü" />
 	<string english = "yes" translation = "ja" />
 	<string english = "no" translation = "nein" />
 	<string english = "really quit?" translation = "wirklich beenden?" />
@@ -22,9 +21,9 @@
 
 	<string english = "show again" translation = "normal ansehen" />
 	<string english = "play" translation = "abspielen" />
-	<string english = "delete" translation = "löschen" />
+	<string english = "delete" translation = "loeschen" />
 	<string english = "checksum error" translation = "checksum error" />
-	<string english = "file is corrupt" translation = "detei beschädigt" />
+	<string english = "file is corrupt" translation = "datei beschaedigt" />
 	<string english = "name of the replay:" translation = "name des replays:" />
 	<string english = "save replay" translation = "replay speichern" />
 	
@@ -59,9 +58,12 @@
 	<string english = "right player" translation = "rechter spieler" />
 	
 	<string english = "red" translation = "rot" />
-	<string english = "green" translation = "grün" />
+	<string english = "green" translation = "gruen" />
 	<string english = "blue" translation = "blau" />
 	<string english = "morphing blob?" translation = "morphing blob?" />
+	<string english = "keyboard" translation = "tastatur" />
+	<string english = "mouse" translation = "maus" />
+	<string english = "joystick" translation = "joystick" />
 	<string english = "jump button" translation = "springen" />
 	<string english = "set all" translation = "alle setzen" />
 	<string english = "left key" translation = "taste links" />
@@ -69,14 +71,14 @@
 	<string english = "jump key" translation = "taste sprung" />
 	<string english = "left button" translation = "button links" />
 	<string english = "right button" translation = "button rechts" />
-	<string english = "press mouse button for" translation = "maustaste drücken für" />
-	<string english = "press key for" translation = "taste drücken für" />
+	<string english = "press mouse button for" translation = "maustaste druecken fuer" />
+	<string english = "press key for" translation = "taste druecken fuer" />
 	<string english = "moving left" translation = "nach links" />
 	<string english = "moving right" translation = "nach rechts" />
 	<string english = "jumping" translation = "springen" />
-	<string english = "press button for" translation = "taste drücken für" />
+	<string english = "press button for" translation = "taste druecken fuer" />
 	<string english = "background:" translation = "hintergrund:" />
-	<string english = "volume:" translation = "lautstärke:" />
+	<string english = "volume:" translation = "lautstaerke:" />
 	<string english = "mute" translation = "strumm" />
 	<string english = "show fps" translation = "fps" />
 	<string english = "show blood" translation = "zeige blut" />

@@ -35,7 +35,6 @@ class TextManager{
 			// common labels
 			LBL_OK,
 			LBL_CANCEL,
-			LBL_MAINMENU, 
 			LBL_YES,
 			LBL_NO,
 			LBL_CONF_QUIT,
@@ -99,6 +98,9 @@ class TextManager{
 			OP_GREEN,
 			OP_BLUE,
 			OP_MORPHING,
+			OP_KEYBOARD,
+			OP_MOUSE,
+			OP_JOYSTICK,
 			OP_JUMP_BUTTON,
 			OP_SET_ALL,
 			OP_LEFT_KEY,
@@ -126,6 +128,7 @@ class TextManager{
 			OP_DEFAULT,
 			OP_FAST,
 			OP_VFAST,
+			OP_LANGUAGE,
 			
 			COUNT
 		};
