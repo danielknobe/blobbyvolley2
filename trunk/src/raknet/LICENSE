@@ -1,3 +1,6 @@
+RAKNET EMAIL:
+
+
 We are allowed to change every file to BSD-License:
 From - Tue Feb 16 17:22:10 2010
 X-Account-Key: account2
@@ -55,3 +58,80 @@ Daniel Knobe wrote:
 > Blobby Volley 2
 >
 
+
+RIJNDAEL EMAIL:
+From - Thu Mar 25 17:58:29 2010
+X-Account-Key: account2
+X-UIDL: 743025543
+X-Mozilla-Status: 0011
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Received: from [134.58.240.44] (helo=cavuit02.kulnet.kuleuven.be)
+	by mx36.web.de with esmtp (WEB.DE 4.110 #4)
+	id 1NuoF1-0002hE-00
+	for daniel-knobe@web.de; Thu, 25 Mar 2010 15:40:59 +0100
+Received: from smtps01.kuleuven.be (smtpshost01.kulnet.kuleuven.be [134.58.240.74])
+	by cavuit02.kulnet.kuleuven.be (Postfix) with ESMTP id C557E51C004
+	for <daniel-knobe@web.de>; Thu, 25 Mar 2010 15:40:38 +0100 (CET)
+Received: from hydrogen.esat.kuleuven.be (hydrogen.esat.kuleuven.be [134.58.56.153])
+	by smtps01.kuleuven.be (Postfix) with ESMTP id 7D9F031E702
+	for <daniel-knobe@web.de>; Thu, 25 Mar 2010 15:40:38 +0100 (CET)
+Received: from [10.33.137.107] (boguspomp.esat.kuleuven.be [10.33.137.107])
+	by hydrogen.esat.kuleuven.be (Postfix) with ESMTP id 8D91148002
+	for <daniel-knobe@web.de>; Thu, 25 Mar 2010 15:40:38 +0100 (CET)
+Message-ID: <4BAB75E6.2020408@esat.kuleuven.be>
+Date: Thu, 25 Mar 2010 15:40:38 +0100
+X-Kuleuven: This mail passed the K.U.Leuven mailcluster
+From: Vincent Rijmen <Vincent.Rijmen@esat.kuleuven.be>
+Organization: K.U. Leuven
+User-Agent: Thunderbird 2.0.0.22 (X11/20090625)
+MIME-Version: 1.0
+To: Daniel Knobe <daniel-knobe@web.de>
+Subject: Re: rijndael license problems
+References: <4BA93621.3060605@web.de> <4BA9C2D2.4060400@esat.kuleuven.be> <4BAA3650.30505@web.de>
+In-Reply-To: <4BAA3650.30505@web.de>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+X-KULeuven-Information: Katholieke Universiteit Leuven
+X-KULeuven-Scanned: Found to be clean
+X-Spam-Status: not spam, SpamAssassin (not cached, score=-50, required 5,
+	autolearn=disabled, KUL_SMTPS -50.00)
+X-KULeuven-Envelope-From: vincent.rijmen@esat.kuleuven.be
+Return-Path: vincent.rijmen@esat.kuleuven.be
+
+This code is public. There is no license.
+
+Vincent
+
+Daniel Knobe wrote:
+> I'm sorry, it was my mistake.
+> Here are the files (hope you use a free license).
+> 
+> We need this version of the files (or a newer with 100% compatible API)
+> 
+> Thanks for your support.
+> 
+> Best regards,
+> Daniel Knobe
+> 
+> On 24.03.2010 08:44, Vincent Rijmen wrote:
+>>
+>>
+>> Daniel Knobe wrote:
+>>> Hi,
+>>> we are using the 3 files below in our game blobby volley 2 
+>>> (blobby.sf.net)
+>> I did not see any files or file names.
+>>>
+>>> The problem is, that we can not find the lisensetext :(. We need it, 
+>>> because we have problems to add our game to debian and ubuntu lucid.
+>>> Which version of lisence and version are you using? GPLv2? GPLv3, BSD?
+>> None.
+>>>
+>>> Thanks for your support :).
+>>>
+>>> Greetz
+>>> Daniel
+>>>
+>>
+> 

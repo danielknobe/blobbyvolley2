@@ -2,6 +2,8 @@
  * Optimised ANSI C code
  */
 
+// This code is public, take a look in the LICENSE File
+
 /*
  *  taken from the 'aescrypt' project: www.sf.net/projects/aescrypt
  *  See LICENSE-EST for the license applicable to this file
