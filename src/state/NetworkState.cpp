@@ -101,12 +101,17 @@ void NetworkSearchState::step()
 					stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 					stream.Write(BLOBBY_VERSION_MAJOR);
 					stream.Write(BLOBBY_VERSION_MINOR);
-					(*iter)->Send(&stream, HIGH_PRIORITY,
+					(*iter)->Send(&stream, LOW_PRIORITY,
 						RELIABLE_ORDERED, 0);
+
+					// Clear memory of the arrived packet
+					(*iter)->DeallocatePacket(packet);
 					break;
 				}
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
+					//FIXME: We must copy the needed informations, so that we can call DeallocatePacket(packet)
+					//FIXME: The client finds a server at this point, which is not valid
 					RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
 					printf("server is a blobby server\n");
@@ -126,8 +131,11 @@ void NetworkSearchState::step()
 					break;
 				}
 				default:
+					// Clear memory of the arrived packet
+					(*iter)->DeallocatePacket(packet);
 					break;
 			}
+
 			if (skip)
 				break;
 		}
