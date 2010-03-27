@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "LocalInputSource.h"
 #include "raknet/RakServer.h"
+#include "RakNetPacket.h"
 // We don't need the stringcompressor
 
 NetworkSearchState::NetworkSearchState()
@@ -79,15 +80,15 @@ NetworkSearchState::~NetworkSearchState()
 }
 
 void NetworkSearchState::step()
-{
-	Packet* packet;
-
+{	
+	packet_ptr packet;
+	
 	for (ClientList::iterator iter = mQueryClients.begin();
 		iter != mQueryClients.end(); iter++)
 	{
 		bool skip = false;
 		if (!skip)
-		while ((packet = (*iter)->Receive()) && !skip)
+		while ((packet = receivePacket(*iter)) && !skip)
 		{
 			switch(packet->data[0])
 			{
@@ -103,9 +104,6 @@ void NetworkSearchState::step()
 					stream.Write(BLOBBY_VERSION_MINOR);
 					(*iter)->Send(&stream, LOW_PRIORITY,
 						RELIABLE_ORDERED, 0);
-
-					// Clear memory of the arrived packet
-					(*iter)->DeallocatePacket(packet);
 					break;
 				}
 				case ID_BLOBBY_SERVER_PRESENT:
@@ -122,8 +120,12 @@ void NetworkSearchState::step()
 					if (std::find(
 							mScannedServers.begin(),
 							mScannedServers.end(),
-							info) == mScannedServers.end())
+							info) == mScannedServers.end()){
 						mScannedServers.push_back(info);
+					}
+					// the RakClient will be deleted, so
+					// we must free the packet here
+					packet.reset();
 					(*iter)->Disconnect(50);
 					delete *iter;
 					iter = mQueryClients.erase(iter);
@@ -131,8 +133,6 @@ void NetworkSearchState::step()
 					break;
 				}
 				default:
-					// Clear memory of the arrived packet
-					(*iter)->DeallocatePacket(packet);
 					break;
 			}
 
@@ -140,8 +140,7 @@ void NetworkSearchState::step()
 				break;
 		}
 	}
-
-	while (packet = mPingClient->Receive())
+	while (packet = receivePacket(mPingClient))
 	{
 		switch (packet->data[0])
 		{
