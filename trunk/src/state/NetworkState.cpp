@@ -360,8 +360,8 @@ void NetworkGameState::step()
 	IMGUI& imgui = IMGUI::getSingleton();
 	RenderManager* rmanager = &RenderManager::getSingleton();
 
-	Packet* packet;
-	while (packet = mClient->Receive())
+	packet_ptr packet;
+	while (packet = receivePacket(mClient))
 	{
 		switch(packet->data[0])
 		{
@@ -550,9 +550,9 @@ void NetworkGameState::step()
 			}
 			default:
 				printf("Received unknown Packet %d\n", packet->data[0]);
+				std::cout<<packet->data<<"\n";
 				break;
 		}
-		mClient->DeallocatePacket(packet);
 	}
 
 	PlayerInput input = mNetworkState == PLAYING ?
@@ -806,8 +806,8 @@ NetworkHostState::~NetworkHostState()
 
 void NetworkHostState::step()
 {
-	Packet* packet;
-	while (packet = mServer->Receive())
+	packet_ptr packet;
+	while (packet = receivePacket(mServer))
 	{
 		switch (packet->data[0])
 		{
@@ -934,7 +934,6 @@ void NetworkHostState::step()
 				}
 			}
 		}
-		mServer->DeallocatePacket(packet);
 	}
 	mGameState->step();
 	if (dynamic_cast<NetworkHostState*>(getCurrentState()) != 0)

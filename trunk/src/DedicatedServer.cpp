@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "NetworkMessage.h"
 #include "SpeedController.h"
+#include "RakNetPacket.h"
 
 #ifdef WIN32
 #undef main
@@ -224,11 +225,11 @@ int main(int argc, char** argv)
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MINOR, BLOBBY_VERSION_MAJOR);
 
-	Packet* packet;
+	packet_ptr packet;
 
 	while (1)
 	{
-		while ((packet = server.Receive()))
+		while ((packet = receivePacket(&server)))
 		{
 			switch(packet->data[0])
 			{
@@ -423,8 +424,6 @@ int main(int argc, char** argv)
 				default:
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
 			}
-			// Clear memory of the arrived packet
-			server.DeallocatePacket(packet);
 		}
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{

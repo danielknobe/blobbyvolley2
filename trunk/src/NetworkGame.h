@@ -27,10 +27,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/NetworkTypes.h"
 #include "UserConfig.h"
 #include "SpeedController.h"
+#include "RakNetPacket.h"
 
 class RakServer;
 
-typedef std::list<Packet> PacketQueue;
+typedef std::list<packet_ptr> PacketQueue;
 
 class NetworkGame
 {
@@ -49,7 +50,7 @@ public:
 
 	~NetworkGame();
 
-	void injectPacket(Packet* packet);
+	void injectPacket(const packet_ptr& packet);
 
 	// This function processes the queued network packets,
 	// makes a physic step, checks the rules and broadcasts
