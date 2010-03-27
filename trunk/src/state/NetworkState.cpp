@@ -120,7 +120,11 @@ void NetworkSearchState::step()
 					if (std::find(
 							mScannedServers.begin(),
 							mScannedServers.end(),
-							info) == mScannedServers.end()){
+							info) == mScannedServers.end() 
+							// if there is no servername, the server
+							// can't be used! Maybe the versions / packet
+							// formats do not match
+							&& strlen(info.name) > 0){
 						mScannedServers.push_back(info);
 					}
 					// the RakClient will be deleted, so
