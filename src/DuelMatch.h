@@ -77,6 +77,8 @@ public:
 	Vector2 getBallPosition();
 	Vector2 getBallVelocity();
 	Vector2 getBlobPosition(PlayerSide player);
+	
+	const PhysicWorld& getWorld() const{ return mPhysicWorld; };
 
 	bool getBallDown();
 	bool getBallActive();
@@ -113,4 +115,12 @@ private:
 	bool mBallDown;
 
 	bool mOutput;
+	
+	int events;
+	enum {
+		EVENT_LEFT_BLOBBY_HIT = 1,
+		EVENT_RIGHT_BLOBBY_HIT = 2,
+		EVENT_BALL_HIT_GROUND = 4,
+		EVENT_ERROR = 8
+	};
 };
