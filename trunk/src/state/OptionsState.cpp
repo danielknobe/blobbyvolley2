@@ -842,7 +842,6 @@ MiscOptionsState::~MiscOptionsState()
 	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
-	SpeedController::getMainInstance()->setGameSpeed(mOptionConfig.getInteger("gamefps"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 	TextManager::switchLanguage(mOptionConfig.getString("language"));
 }
@@ -927,7 +926,6 @@ void MiscOptionsState::step()
 		mGameFPS = 90;
 	if (imgui.doButton(GEN_ID, Vector2(410.0, 450.0), TextManager::getSingleton()->getString(TextManager::OP_VFAST)))
 		mGameFPS = 120;
-	SpeedController::getMainInstance()->setGameSpeed(mGameFPS);
 
 	std::stringstream FPSInPercent;
 	FPSInPercent << int((float)mGameFPS/75*100);

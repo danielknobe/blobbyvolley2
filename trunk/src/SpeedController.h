@@ -36,6 +36,7 @@ public:
 	~SpeedController();
 	
 	void setGameSpeed(float fps);
+	float getGameSpeed() const{return mGameFPS;}
 
 // This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop();

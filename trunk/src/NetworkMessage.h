@@ -124,6 +124,7 @@ enum MessageType
 // 		opponent.
 // 	Structure:
 // 		ID_GAME_READY
+//		gamespeed (int)
 // 		opponentname(char[16])
 //
 // ID_ENTER_GAME
@@ -195,10 +196,13 @@ struct ServerInfo
 
 	void writeToBitstream(RakNet::BitStream& stream);
 	int activegames;
+	int gamespeed;
 	char hostname[64];
 	char name[32];
 	char waitingplayer[64];
 	char description[192];
+	
+	static const size_t BLOBBY_SERVER_PRESENT_PACKET_SIZE;
 };
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval);

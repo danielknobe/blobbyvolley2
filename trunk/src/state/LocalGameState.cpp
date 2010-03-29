@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayRecorder.h"
 #include "SoundManager.h"
 #include "TextManager.h"
+#include "SpeedController.h"
 
 LocalGameState::~LocalGameState()
 {
@@ -50,6 +51,10 @@ LocalGameState::LocalGameState()
 	
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
+	
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	SpeedController::getMainInstance()->setGameSpeed((float)gameConfig.getInteger("gamefps"));
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 

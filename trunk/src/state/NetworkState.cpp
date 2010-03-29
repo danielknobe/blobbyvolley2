@@ -117,14 +117,13 @@ void NetworkSearchState::step()
 					ServerInfo info(stream,
 						(*iter)->PlayerIDToDottedIP(
 							packet->playerId));
+
 					if (std::find(
 							mScannedServers.begin(),
 							mScannedServers.end(),
 							info) == mScannedServers.end() 
-							// if there is no servername, the server
-							// can't be used! Maybe the versions / packet
-							// formats do not match
-							&& strlen(info.name) > 0){
+							// check whether the packet sizes match
+							&& packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE ){
 						mScannedServers.push_back(info);
 					}
 					// the RakClient will be deleted, so
@@ -238,10 +237,14 @@ void NetworkSearchState::step()
 		waitingplayer << TextManager::getSingleton()->getString(TextManager::NET_WAITING_PLAYER)
 					  << mScannedServers[mSelectedServer].waitingplayer;
 		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
+		std::stringstream gamespeed;
+		gamespeed << TextManager::getSingleton()->getString(TextManager::OP_SPEED)<<" "
+					  << int(100.0 / 75.0 * mScannedServers[mSelectedServer].gamespeed)<<"%";
+		imgui.doText(GEN_ID, Vector2(50, 220), gamespeed.str());
 		std::string description = mScannedServers[mSelectedServer].description;
 		for (int i = 0; i < description.length(); i += 29)
 		{
-			imgui.doText(GEN_ID, Vector2(50, 220 + i / 29 * 30),
+			imgui.doText(GEN_ID, Vector2(50, 250 + i / 29 * 30),
 					description.substr(i, 29));
 		}
 
@@ -487,6 +490,11 @@ void NetworkGameState::step()
 
 				stream.IgnoreBytes(1);	// ignore ID_GAME_READY
 
+				// read gamespeed
+				int speed;
+				stream.Read(speed);
+				SpeedController::getMainInstance()->setGameSpeed(speed);
+				
 				// read playername
 				stream.Read(charName, sizeof(charName));
 

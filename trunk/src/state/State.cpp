@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkState.h"
 #include "OptionsState.h"
 #include "TextManager.h"
+#include "SpeedController.h"
 
 #include <physfs.h>
 #include <algorithm>
@@ -60,6 +61,9 @@ void State::setCurrentState(State* newState){
 MainMenuState::MainMenuState()
 {
 	IMGUI::getSingleton().resetSelection();
+	
+	// set main menu fps
+	SpeedController::getMainInstance()->setGameSpeed(75);
 }
 
 MainMenuState::~MainMenuState()
