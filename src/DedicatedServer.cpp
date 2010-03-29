@@ -222,6 +222,7 @@ int main(int argc, char** argv)
 	}
 
 	SpeedController scontroller(speed);
+	SpeedController::setMainInstance(&scontroller);
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MINOR, BLOBBY_VERSION_MAJOR);
 

@@ -51,6 +51,7 @@ NetworkGame::NetworkGame(RakServer& server,
 	// writing data into leftStream
 	RakNet::BitStream leftStream;
 	leftStream.Write((unsigned char)ID_GAME_READY);
+	leftStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
 	strncpy(name, mRightPlayerName.c_str(), sizeof(name));
 	leftStream.Write(name, sizeof(name));
 	leftStream.Write(rightColor.toInt());
@@ -58,6 +59,7 @@ NetworkGame::NetworkGame(RakServer& server,
 	// writing data into rightStream
 	RakNet::BitStream rightStream;
 	rightStream.Write((unsigned char)ID_GAME_READY);
+	rightStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
 	strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
 	rightStream.Write(name, sizeof(name));
 	rightStream.Write(leftColor.toInt());
