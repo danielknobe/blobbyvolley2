@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include <string>
+#include <map>
 
 // class for managing the text
 // multilanguage support
@@ -146,6 +147,9 @@ class TextManager{
 	
 		// switches the language
 		static void switchLanguage(std::string langname);
+		
+		// map to map abbreviations to full name (e.g. de to deutsch)
+		static std::map<std::string, std::string> language_names;
 	private:
 		// private construktor, use createTextManager
 		TextManager(std::string l);
