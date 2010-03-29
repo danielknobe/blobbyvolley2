@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "OptionsState.h"
 #include "TextManager.h"
 #include "SpeedController.h"
+#include "Blood.h"
 
 #include <physfs.h>
 #include <algorithm>
@@ -205,7 +206,7 @@ void ReplayMenuState::loadCurrentReplay()
 	{
 		mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
 		mReplaying = true;
-		mReplayMatch = new DuelMatch(0, 0, true, true);
+		mReplayMatch = new DuelMatch(0, 0, true);
 		mReplayMatch->setServingPlayer(mReplayRecorder->getServingPlayer());
 		RenderManager::getSingleton().setPlayernames(
 			mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
@@ -245,6 +246,31 @@ void ReplayMenuState::step()
 		
 		rmanager->setBall(mReplayMatch->getBallPosition(),
 				mReplayMatch->getWorld().getBallRotation());
+				
+		int events = mReplayMatch->getEvents();
+		SoundManager* smanager = &SoundManager::getSingleton();
+		if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+					mReplayMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mReplayMatch->getBallPosition() +
+					(mReplayMatch->getBlobPosition(LEFT_PLAYER) - mReplayMatch->getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mReplayMatch->getWorld().lastHitIntensity(), 0);
+		}
+		
+		if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+				mReplayMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mReplayMatch->getBallPosition() +
+				(mReplayMatch->getBlobPosition(RIGHT_PLAYER) - mReplayMatch->getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mReplayMatch->getWorld().lastHitIntensity(), 1);
+		}
+		
+		if (events & DuelMatch::EVENT_ERROR)
+		{
+			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		}
 
 		PlayerSide side = mReplayMatch->winningPlayer();
 		if (side != NO_PLAYER)

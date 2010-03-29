@@ -18,17 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include "UserConfig.h"
-#include "RenderManager.h"
-#include "SoundManager.h"
 #include "DuelMatch.h"
-#include "Blood.h"
 
 #include <cassert>
 
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool output, bool global):mLogic(createGameLogic(OLD_RULES)), events(0)
+				bool global):mLogic(createGameLogic(OLD_RULES)), events(0)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -39,7 +36,6 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	mLeftInput = linput;
 	mRightInput = rinput;
-	mOutput = output;
 
 	mBallDown = false;
 
@@ -66,8 +62,6 @@ DuelMatch* DuelMatch::getMainGame()
 
 void DuelMatch::step()
 {
-	SoundManager* smanager = &SoundManager::getSingleton();
-
 	events = 0;
 
 	// do steps in physic an logic
@@ -112,32 +106,6 @@ void DuelMatch::step()
 			mBallDown = true;
 			break;
 		
-	}
-
-	if (mOutput)
-	{
-		if(events & EVENT_LEFT_BLOBBY_HIT)
-		{
-			smanager->playSound("sounds/bums.wav",
-					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mPhysicWorld.getBall() +
-					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
-		}
-		
-		if (events & EVENT_RIGHT_BLOBBY_HIT)
-		{
-			smanager->playSound("sounds/bums.wav",
-				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mPhysicWorld.getBall() +
-				(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
-		}
-		
-		if (events & EVENT_ERROR)
-		{
-			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-		}
 	}
 
 	if (mPhysicWorld.roundFinished())

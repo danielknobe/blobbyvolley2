@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "TextManager.h"
 #include "SpeedController.h"
+#include "Blood.h"
 
 LocalGameState::~LocalGameState()
 {
@@ -62,7 +63,7 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
 	mRecorder->setServingPlayer(LEFT_PLAYER);
 
-	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, true);
+	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true);
 
 	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();
@@ -186,6 +187,31 @@ void LocalGameState::step()
 		
 		rmanager->setBall(mMatch->getBallPosition(),
 				mMatch->getWorld().getBallRotation());
+				
+		int events = mMatch->getEvents();
+		SoundManager* smanager = &SoundManager::getSingleton();
+		if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+					mMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mMatch->getBallPosition() +
+					(mMatch->getBlobPosition(LEFT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().lastHitIntensity(), 0);
+		}
+		
+		if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+				mMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mMatch->getBallPosition() +
+				(mMatch->getBlobPosition(RIGHT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().lastHitIntensity(), 1);
+		}
+		
+		if (events & DuelMatch::EVENT_ERROR)
+		{
+			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		}
 	}
 }
 
