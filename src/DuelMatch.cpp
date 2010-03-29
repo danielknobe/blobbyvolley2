@@ -169,6 +169,11 @@ int DuelMatch::getHitcount(PlayerSide player)
 		return 0;
 }
 
+int DuelMatch::getScore(PlayerSide player)
+{
+	return mLogic->getScore(player);
+}
+
 bool DuelMatch::getBallDown()
 {
 	return mBallDown;
@@ -216,15 +221,8 @@ Vector2 DuelMatch::getBallTimeEstimation(int steps)
 }
 
 PlayerSide DuelMatch::getServingPlayer()
-{
-	PlayerSide side = mLogic->getServingPlayer();
-	if (side == NO_PLAYER)
-	{
-		// This not exactly the situation, but it is necessary to tell
-		// the script system this value, so it doesn't get confused.
-		side = LEFT_PLAYER;
-	}
-	return side;
+{	// NO_PLAYER hack was moved into ScriptedInpurSource.cpp
+	return mLogic->getServingPlayer();
 }
 
 void DuelMatch::setState(RakNet::BitStream* stream)
