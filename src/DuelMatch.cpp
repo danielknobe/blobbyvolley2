@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool global):mLogic(createGameLogic(OLD_RULES)), events(0)
+				bool global):mLogic(createGameLogic(OLD_RULES)), events(0), external_events(0)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -113,8 +113,20 @@ void DuelMatch::step()
 		mBallDown = false;
 		mPhysicWorld.reset(mLogic->getServingPlayer());
 	}
+	
+	external_events = 0;
 }
 
+void DuelMatch::setScore(int left, int right)
+{
+	mLogic->setScore(LEFT_PLAYER, left);
+	mLogic->setScore(RIGHT_PLAYER, right);
+}
+
+void DuelMatch::trigger(int event)
+{
+	external_events |= event;
+}
 
 PlayerSide DuelMatch::winningPlayer()
 {

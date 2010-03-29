@@ -46,6 +46,8 @@ class CGameLogic
 		int getScore(PlayerSide side) const;
 		int getHits(PlayerSide side) const;
 		
+		void setScore(PlayerSide side, int score);
+		
 		// method for querying the serving player
 		PlayerSide getServingPlayer() const;
 		

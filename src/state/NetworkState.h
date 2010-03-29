@@ -89,8 +89,6 @@ private:
 
 	InputSource* mLocalInput;
 	PhysicWorld mPhysicWorld;
-	int mLeftScore;
-	int mRightScore;
 	PlayerSide mServingPlayer;
 
 	bool mSaveReplay;
