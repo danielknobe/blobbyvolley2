@@ -241,9 +241,9 @@ void ReplayMenuState::step()
 		{
 			std::stringstream tmp;
 			if(side == LEFT_PLAYER)
-				tmp << mReplayMatch->getPlayerName();
+				tmp << mReplayRecorder->getPlayerName(LEFT_PLAYER);
 			else
-				tmp << mReplayMatch->getOpponentName();
+				tmp << mReplayRecorder->getPlayerName(RIGHT_PLAYER);
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());

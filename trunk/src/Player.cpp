@@ -80,11 +80,21 @@ Color Player::getColor() const
 	}
 }
 
+void Player::setColor(Color ncol)
+{
+	mStaticColor = ncol;
+}
+
 std::string Player::getName() const
 {
 	assert(mInitialised);
 
 	return mName;
+}
+
+void Player::setName(const std::string& name)
+{
+	mName = name;
 }
 
 InputSource* Player::getInputSource() const

@@ -96,11 +96,7 @@ public:
 	//Input stuff for recording and playing replays
 	const PlayerInput* getPlayersInput();
 	void setPlayersInput(PlayerInput* input);
-
-	void setPlayerName(std::string name);
-	void setOpponentName(std::string name);
-	std::string getPlayerName();
-	std::string getOpponentName();
+	
 	void setServingPlayer(PlayerSide side);
 
 private:
@@ -117,7 +113,4 @@ private:
 	bool mBallDown;
 
 	bool mOutput;
-
-	std::string mPlayerName;
-	std::string mOpponentName;
 };
