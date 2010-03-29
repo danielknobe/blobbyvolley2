@@ -127,7 +127,10 @@ PlayerInput ScriptedInputSource::getInput()
 	
 	PlayerSide player = getSide(mState);
 	int error;
-	if (!match->getBallActive() && player == match->getServingPlayer())
+	
+	if (!match->getBallActive() && player == 
+			// if no player is serving player, assume the left one is
+			(match->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : match->getServingPlayer() ))
 	{
 		serving = true;
 		lua_getglobal(mState, "OnServe");
@@ -141,7 +144,8 @@ PlayerInput ScriptedInputSource::getInput()
 		lua_pushboolean(mState, !match->getBallDown());
 		error = lua_pcall(mState, 1, 0, 0);
 	}
-	else if (!match->getBallActive() && player != match->getServingPlayer())
+	else if (!match->getBallActive() && player != 
+			(match->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : match->getServingPlayer() ))
 	{
 		lua_getglobal(mState, "OnOpponentServe");
 		if (!lua_isfunction(mState, -1))
