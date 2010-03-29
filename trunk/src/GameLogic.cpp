@@ -75,6 +75,11 @@ int CGameLogic::getScore(PlayerSide side) const
 	return mScores[side2index(side)];
 }
 
+void CGameLogic::setScore(PlayerSide side, int score)
+{
+	mScores[side2index(side)] = score;
+}
+
 int CGameLogic::getHits(PlayerSide side) const
 {
 	return mTouches[side2index(side)];

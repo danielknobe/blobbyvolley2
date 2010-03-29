@@ -54,6 +54,12 @@ public:
 
 	// This steps through one frame
 	void step();
+	
+	// this methods allow external input 
+	// events triggered by the network
+	void setScore(int left, int right);
+	
+	void trigger(int event);
 
 	// This reports the index of the winning player and -1 if the
 	// game is still running
@@ -100,7 +106,9 @@ public:
 		EVENT_LEFT_BLOBBY_HIT = 1,
 		EVENT_RIGHT_BLOBBY_HIT = 2,
 		EVENT_BALL_HIT_GROUND = 4,
-		EVENT_ERROR = 8
+		EVENT_ERROR = 8,
+		EVENT_ERROR_LEFT = 16,
+		EVENT_ERROR_RIGHT = 32
 	};
 	
 	int getEvents() const { return events; }
@@ -119,4 +127,5 @@ private:
 	bool mBallDown;
 	
 	int events;
+	int external_events;
 };

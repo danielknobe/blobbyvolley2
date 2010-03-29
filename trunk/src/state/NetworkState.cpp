@@ -418,16 +418,14 @@ void NetworkGameState::step()
 				// adds the last point, it must have been made by the winning player
 				switch(mWinningPlayer){
 					case LEFT_PLAYER:
-						mLeftScore++;
+						mFakeMatch->setScore(mFakeMatch->getScore(LEFT_PLAYER)+1, mFakeMatch->getScore(RIGHT_PLAYER));
 						break;
 					case RIGHT_PLAYER:
-						mRightScore++;
+						mFakeMatch->setScore(mFakeMatch->getScore(LEFT_PLAYER), mFakeMatch->getScore(RIGHT_PLAYER)+1);
 						break;
 					default:
 						assert(0);
 				}
-				rmanager->setScore(mLeftScore, mRightScore,
-					mServingPlayer == 0, mServingPlayer == 1);
 					
 				mNetworkState = PLAYER_WON;
 				break;
@@ -444,13 +442,14 @@ void NetworkGameState::step()
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_BALL_RESET
 				stream.Read((int&)mServingPlayer);
-				stream.Read(mLeftScore);
-				stream.Read(mRightScore);
+				int nLeftScore;
+				int nRightScore;
+				stream.Read(nLeftScore);
+				stream.Read(nRightScore);
+				mFakeMatch->setScore(nLeftScore, nRightScore);
 				mPhysicWorld.reset(mServingPlayer);
-				if (mLeftScore == 0 && mRightScore == 0)
+				if (nLeftScore == 0 && nRightScore == 0)
 					mReplayRecorder->setServingPlayer(mServingPlayer);
-				rmanager->setScore(mLeftScore, mRightScore,
-					mServingPlayer == 0, mServingPlayer == 1);
 				break;
 			}
 			case ID_BALL_GROUND_COLLISION:
@@ -566,6 +565,9 @@ void NetworkGameState::step()
 		mPhysicWorld.getBlobState(RIGHT_PLAYER));
 	rmanager->setBall(mPhysicWorld.getBall(),
 		mPhysicWorld.getBallRotation());
+		
+	rmanager->setScore(mFakeMatch->getScore(LEFT_PLAYER), mFakeMatch->getScore(RIGHT_PLAYER),
+			mFakeMatch->getServingPlayer() == LEFT_PLAYER, mFakeMatch->getServingPlayer() == RIGHT_PLAYER);
 	
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
