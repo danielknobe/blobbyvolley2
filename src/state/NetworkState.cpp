@@ -317,7 +317,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 
 	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 
-	mFakeMatch = new DuelMatch(0, 0, false, true);
+	mFakeMatch = new DuelMatch(0, 0, true);
 	
 	// load/init players
 	mLeftPlayer.loadFromConfig("left");

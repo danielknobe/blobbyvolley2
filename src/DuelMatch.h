@@ -39,16 +39,11 @@ public:
 	// results to the user through RenderManager and SoundManager.
 	// A deacivation of the output is useful on dedicated servers
 
-	// Allthough DuelMatch is only ment to implement the ruleset
-	// and combine input and physics, it would be unpractical to
-	// export the attributes necessary for output.
-
 	// If global is true, the instance registered as the main
 	// game and can be accessed from everywhere. There can only
 	// be one global game at a time, otherwise an assertion fails.
 
-	DuelMatch(InputSource* linput, InputSource* rinput,
-				bool output, bool global);
+	DuelMatch(InputSource* linput, InputSource* rinput, bool global);
 
 	~DuelMatch();
 
@@ -100,6 +95,15 @@ public:
 	void setPlayersInput(PlayerInput* input);
 	
 	void setServingPlayer(PlayerSide side);
+	
+	enum {
+		EVENT_LEFT_BLOBBY_HIT = 1,
+		EVENT_RIGHT_BLOBBY_HIT = 2,
+		EVENT_BALL_HIT_GROUND = 4,
+		EVENT_ERROR = 8
+	};
+	
+	int getEvents() const { return events; }
 
 private:
 	static DuelMatch* mMainGame;
@@ -113,14 +117,6 @@ private:
 	GameLogic mLogic;
 
 	bool mBallDown;
-
-	bool mOutput;
 	
 	int events;
-	enum {
-		EVENT_LEFT_BLOBBY_HIT = 1,
-		EVENT_RIGHT_BLOBBY_HIT = 2,
-		EVENT_BALL_HIT_GROUND = 4,
-		EVENT_ERROR = 8
-	};
 };
