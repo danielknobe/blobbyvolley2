@@ -36,9 +36,9 @@ namespace RakNet
 class PhysicWorld
 {
 private:
-	inline bool playerTopBallCollision(int player);
-	inline bool playerBottomBallCollision(int player);
-	bool resetAreaClear();
+	inline bool playerTopBallCollision(int player) const;
+	inline bool playerBottomBallCollision(int player) const;
+	bool resetAreaClear()const;
 
 	// Do all blobby-related physic stuff which is independent from states
 	void handleBlob(PlayerSide player);
@@ -70,30 +70,30 @@ public:
 	PhysicWorld();
 	~PhysicWorld();
 
-	Vector2 getBallVelocity();
-	bool getBlobJump(PlayerSide player);
-	bool getBallActive();
-	float estimateBallImpact();
-	Vector2 estimateBallPosition(int steps);
+	Vector2 getBallVelocity() const;
+	bool getBlobJump(PlayerSide player) const;
+	bool getBallActive() const;
+	float estimateBallImpact() const;
+	Vector2 estimateBallPosition(int steps) const;
 
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);
 
-	Vector2 getBlob(PlayerSide player);
-	Vector2 getBall();
+	Vector2 getBlob(PlayerSide player) const;
+	Vector2 getBall() const;
 
-	float getBlobState(PlayerSide player);
-	float getBallRotation();
+	float getBlobState(PlayerSide player) const;
+	float getBallRotation() const;
 
-	float getBallSpeed();
+	float getBallSpeed() const;
 
 	// These functions tell about ball collisions for game logic and sound
-	bool ballHitLeftPlayer();
-	bool ballHitRightPlayer();
-	bool ballHitLeftGround();
-	bool ballHitRightGround();
+	bool ballHitLeftPlayer() const;
+	bool ballHitRightPlayer() const;
+	bool ballHitLeftGround() const;
+	bool ballHitRightGround() const;
 
-	bool blobbyHitGround(PlayerSide player);
+	bool blobbyHitGround(PlayerSide player) const;
 
 	// Blobby animation methods
 	void blobbyAnimationStep(PlayerSide player);
@@ -101,7 +101,7 @@ public:
 
 	// This reports the intensity of the collision
 	// which was detected and also queried last.
-	float lastHitIntensity();
+	float lastHitIntensity() const;
 
 	// Here the game logic can decide whether the ball is valid.
 	// If not, no ball to player collision checking is done,
@@ -109,7 +109,7 @@ public:
 	void setBallValidity(bool validity);
 
 	// This returns true if the ball is not valid and the ball is steady
-	bool roundFinished();
+	bool roundFinished() const;
 
 	// This resets everything to the starting situation and
 	// wants to know, which player begins.
@@ -128,13 +128,13 @@ public:
 	void setState(RakNet::BitStream* stream);
 
 	// Fill a Bitstream with the state
-	void getState(RakNet::BitStream* stream);
+	void getState(RakNet::BitStream* stream) const;
 
 	// Fill a Bitstream with a side reversed state
-	void getSwappedState(RakNet::BitStream* stream);
+	void getSwappedState(RakNet::BitStream* stream) const;
 
 	//Input stuff for recording and playing replays
-	const PlayerInput* getPlayersInput();
+	const PlayerInput* getPlayersInput() const;
 };
 
 

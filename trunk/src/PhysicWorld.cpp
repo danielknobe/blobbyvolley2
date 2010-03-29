@@ -78,7 +78,7 @@ PhysicWorld::~PhysicWorld()
 {
 }
 
-bool PhysicWorld::resetAreaClear()
+bool PhysicWorld::resetAreaClear() const
 {
 	if (blobbyHitGround(LEFT_PLAYER) && blobbyHitGround(RIGHT_PLAYER))
 		return true;
@@ -115,7 +115,7 @@ void PhysicWorld::resetPlayer()
 		GROUND_PLANE_HEIGHT);
 }
 
-bool PhysicWorld::ballHitRightGround()
+bool PhysicWorld::ballHitRightGround() const
 {
 	if (mIsBallValid)
 		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
@@ -124,7 +124,7 @@ bool PhysicWorld::ballHitRightGround()
 	return false;
 }
 
-bool PhysicWorld::ballHitLeftGround()
+bool PhysicWorld::ballHitLeftGround() const
 {
 	if (mIsBallValid)
 		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
@@ -133,7 +133,7 @@ bool PhysicWorld::ballHitLeftGround()
 	return false;
 }
 
-bool PhysicWorld::blobbyHitGround(PlayerSide player)
+bool PhysicWorld::blobbyHitGround(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER)
 	{
@@ -158,7 +158,7 @@ void PhysicWorld::setBallValidity(bool validity)
 	mIsBallValid = validity;
 }
 
-bool PhysicWorld::roundFinished()
+bool PhysicWorld::roundFinished() const
 {
 	if (resetAreaClear())
 	{
@@ -172,13 +172,13 @@ bool PhysicWorld::roundFinished()
 	return false;
 }
 
-float PhysicWorld::lastHitIntensity()
+float PhysicWorld::lastHitIntensity() const
 {
 	float intensity = mLastHitIntensity / 25.0;
 	return intensity < 1.0 ? intensity : 1.0;
 }
 
-bool PhysicWorld::playerTopBallCollision(int player)
+bool PhysicWorld::playerTopBallCollision(int player) const
 {
 	if (Vector2(mBallPosition,
 		Vector2(mBlobPosition[player].x,
@@ -188,7 +188,7 @@ bool PhysicWorld::playerTopBallCollision(int player)
 	return false;
 }
 
-inline bool PhysicWorld::playerBottomBallCollision(int player)
+inline bool PhysicWorld::playerBottomBallCollision(int player) const
 {
 	if (Vector2(mBallPosition,
 		Vector2(mBlobPosition[player].x,
@@ -198,37 +198,37 @@ inline bool PhysicWorld::playerBottomBallCollision(int player)
 	return false;
 }
 
-bool PhysicWorld::ballHitLeftPlayer()
+bool PhysicWorld::ballHitLeftPlayer() const
 {
 	return mBallHitByBlob[LEFT_PLAYER];
 }
 
-bool PhysicWorld::ballHitRightPlayer()
+bool PhysicWorld::ballHitRightPlayer() const 
 {
 	return mBallHitByBlob[RIGHT_PLAYER];
 }
 
-Vector2 PhysicWorld::getBall()
+Vector2 PhysicWorld::getBall() const
 {
 	return mBallPosition;
 }
 
-float PhysicWorld::getBallRotation()
+float PhysicWorld::getBallRotation() const
 {
 	return mBallRotation;
 }
 
-float PhysicWorld::getBallSpeed()
+float PhysicWorld::getBallSpeed() const
 {
 	return mBallVelocity.length();
 }
 
-Vector2 PhysicWorld::getBlob(PlayerSide player)
+Vector2 PhysicWorld::getBlob(PlayerSide player) const
 {
 	return mBlobPosition[player];
 }
 
-float PhysicWorld::getBlobState(PlayerSide player)
+float PhysicWorld::getBlobState(PlayerSide player) const
 {
 	return mBlobState[player];
 }
@@ -460,17 +460,17 @@ void PhysicWorld::dampBall()
 	mBallVelocity = mBallVelocity.scale(0.6);
 }
 
-Vector2 PhysicWorld::getBallVelocity()
+Vector2 PhysicWorld::getBallVelocity() const
 {
 	return mBallVelocity;
 }
 
-bool PhysicWorld::getBlobJump(PlayerSide player)
+bool PhysicWorld::getBlobJump(PlayerSide player) const
 {
 	return !blobbyHitGround(player);
 }
 
-float PhysicWorld::estimateBallImpact()
+float PhysicWorld::estimateBallImpact() const
 {
 	float steps;
 	steps = (mBallVelocity.y - sqrt((mBallVelocity.y * mBallVelocity.y)-
@@ -478,7 +478,7 @@ float PhysicWorld::estimateBallImpact()
 	return (mBallVelocity.x * steps) + mBallPosition.x;
 }
 
-Vector2 PhysicWorld::estimateBallPosition(int steps)
+Vector2 PhysicWorld::estimateBallPosition(int steps) const
 {
 	Vector2 ret;
 	ret.x = mBallVelocity.x * float(steps);
@@ -486,7 +486,7 @@ Vector2 PhysicWorld::estimateBallPosition(int steps)
 	return mBallPosition + ret;
 }
 
-bool PhysicWorld::getBallActive()
+bool PhysicWorld::getBallActive() const
 {
 	return mIsGameRunning;
 }
@@ -513,7 +513,7 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	stream->Read(mPlayerInput[RIGHT_PLAYER].up);
 }
 
-void PhysicWorld::getState(RakNet::BitStream* stream)
+void PhysicWorld::getState(RakNet::BitStream* stream) const
 {
 	stream->Write(mBlobPosition[LEFT_PLAYER].x);
 	stream->Write(mBlobPosition[LEFT_PLAYER].y);
@@ -536,7 +536,7 @@ void PhysicWorld::getState(RakNet::BitStream* stream)
 
 }
 
-void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
+void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 {
 	stream->Write(800 - mBlobPosition[RIGHT_PLAYER].x);
 	stream->Write(mBlobPosition[RIGHT_PLAYER].y);
@@ -558,7 +558,7 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream)
 	stream->Write(mPlayerInput[LEFT_PLAYER].up);
 }
 
-const PlayerInput* PhysicWorld::getPlayersInput()
+const PlayerInput* PhysicWorld::getPlayersInput() const
 {
 	return mPlayerInput;
 }
