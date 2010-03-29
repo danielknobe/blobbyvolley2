@@ -932,10 +932,13 @@ void MiscOptionsState::step()
 	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
 
 	//! \todo this must be reworket
-	std::string olang = TextManager::getSingleton()->getLang() == "de" ? "english" : "deutsch";
-	if (imgui.doButton(GEN_ID, Vector2(300.0, 490.0), olang)){
+	std::map<std::string, std::string>::iterator olang = TextManager::language_names.find(TextManager::getSingleton()->getLang());
+	if(++olang == TextManager::language_names.end()){
+		olang = TextManager::language_names.begin();
+	}
+	if (imgui.doButton(GEN_ID, Vector2(300.0, 490.0), (*olang).second)){
 		//! \todo autogenerierte liste mit allen lang_ dateien, namen auslesen
-		mLanguage = TextManager::getSingleton()->getLang() == "de" ? "en" : "de";
+		mLanguage = (*olang).first;
 		TextManager::switchLanguage(mLanguage);
 		
 	}

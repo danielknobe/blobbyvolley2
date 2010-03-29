@@ -224,3 +224,15 @@ void TextManager::setDefault(){
 	mStrings[OP_LANGUAGE] = "language";
 }
 
+std::map<std::string, std::string> TextManager::language_names;
+
+struct lang_init{
+	lang_init(){
+		TextManager::language_names["de"] = "deutsch";
+		TextManager::language_names["en"] = "english";
+		TextManager::language_names["fr"] = "francais";
+	}
+};
+static lang_init init;
+
+
