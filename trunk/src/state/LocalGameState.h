@@ -28,8 +28,6 @@ private:
 	Player mLeftPlayer;
 	Player mRightPlayer;
 	
-	bool mLeftOscillate;
-	bool mRightOscillate;
 	bool mPaused;
 	bool mSaveReplay;
 	bool mWinner;
