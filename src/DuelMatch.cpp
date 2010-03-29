@@ -243,26 +243,6 @@ void DuelMatch::setPlayersInput(PlayerInput* input)
 	mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);
 }
 
-void DuelMatch::setPlayerName(std::string name)
-{
-	mPlayerName = name;
-}
-
-void DuelMatch::setOpponentName(std::string name)
-{
-	mOpponentName = name;
-}
-
-std::string DuelMatch::getPlayerName()
-{
-	return mPlayerName;
-}
-
-std::string DuelMatch::getOpponentName()
-{
-	return mOpponentName;
-}
-
 void DuelMatch::setServingPlayer(PlayerSide side)
 {
 	mPhysicWorld.reset(side);

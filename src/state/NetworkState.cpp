@@ -290,8 +290,10 @@ void NetworkSearchState::broadcast()
 		BLOBBY_PORT, 0, true);
 }
 
-NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
-{
+NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
+	mLeftPlayer(LEFT_PLAYER),
+	mRightPlayer(RIGHT_PLAYER)
+{	
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
 	UserConfig config;
@@ -303,18 +305,6 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	temp << time(0);
 	mFilename = temp.str();
 
-	// FIXME: We load the colors from config atm
-	mLeftColor = Color(config.getInteger("left_blobby_color_r"),
-		config.getInteger("left_blobby_color_g"),
-		config.getInteger("left_blobby_color_b"));
-	mRightColor = Color(config.getInteger("right_blobby_color_r"),
-		config.getInteger("right_blobby_color_g"),
-		config.getInteger("right_blobby_color_b"));
-	mLeftOscillate = config.getBool("left_blobby_oscillate");
-	mRightOscillate = config.getBool("right_blobby_oscillate");
-
-	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
-	RenderManager::getSingleton().setBlobColor(1, mRightColor);
 	RenderManager::getSingleton().redraw();
 
 	mClient = new RakClient();
@@ -328,8 +318,22 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port)
 	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 
 	mFakeMatch = new DuelMatch(0, 0, false, true);
-	mFakeMatch->setPlayerName(config.getString(mOwnSide ? "right_player_name" : "left_player_name"));
+	
+	// load/init players
+	mLeftPlayer.loadFromConfig("left");
+	mRightPlayer.loadFromConfig("right");
+	if(mOwnSide == LEFT_PLAYER){
+		mRightPlayer.setName("");
+		mLocalPlayer = &mLeftPlayer;
+		mRemotePlayer = &mRightPlayer;
+	}else{
+		mLeftPlayer.setName("");
+		mLocalPlayer = &mRightPlayer;
+		mRemotePlayer = &mLeftPlayer;
+	}
+	
 	RenderManager::getSingleton().setScore(0, 0, false, false);
+	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
 
 	mSelectedChatmessage = 0;
 	mChatCursorPosition = 0;
@@ -346,20 +350,20 @@ NetworkGameState::~NetworkGameState()
 }
 
 void NetworkGameState::setLeftColor(Color ncol){
-	mLeftColor = ncol;
-	RenderManager::getSingleton().setBlobColor(0, mLeftColor);
+	mLeftPlayer.setColor(ncol);
+	RenderManager::getSingleton().setBlobColor(0, mLeftPlayer.getColor());
 	RenderManager::getSingleton().redraw();
 }
 void NetworkGameState::setRightColor(Color ncol){
-	mRightColor = ncol;
-	RenderManager::getSingleton().setBlobColor(1, mRightColor);
+	mRightPlayer.setColor(ncol);
+	RenderManager::getSingleton().setBlobColor(1, mRightPlayer.getColor());
 	RenderManager::getSingleton().redraw();
 }
 Color NetworkGameState::getLeftColor() const{
-	return mLeftColor;
+	return mLeftPlayer.getColor();
 }
 Color NetworkGameState::getRightColor() const{
-	return mRightColor;
+	return mRightPlayer.getColor();
 }
 
 void NetworkGameState::step()
@@ -380,22 +384,14 @@ void NetworkGameState::step()
 
 				// Send playername
 				char myname[16];
-				strncpy(myname, mFakeMatch->getPlayerName().c_str(), sizeof(myname));
+				strncpy(myname, mLocalPlayer->getName().c_str(), sizeof(myname));
 				stream.Write(myname, sizeof(myname));
 
 				// send color settings
-				switch(mOwnSide){
-					case LEFT_PLAYER:
-						stream.Write(mLeftColor.toInt());
-						break;
-					case RIGHT_PLAYER:
-						stream.Write(mRightColor.toInt());
-						break;
-				}
+				stream.Write(mLocalPlayer->getColor().toInt());
 
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
-				RenderManager::getSingleton().setPlayernames(mOwnSide ?  "" : mFakeMatch->getPlayerName(), mOwnSide ? mFakeMatch->getPlayerName() : "");
 				mNetworkState = WAITING_FOR_OPPONENT;
 				break;
 			}
@@ -506,19 +502,13 @@ void NetworkGameState::step()
 				stream.Read(temp);
 				Color ncolor = temp;
 
-				mFakeMatch->setOpponentName(std::string(charName));
-				if (mOwnSide)
-				{
-					RenderManager::getSingleton().setPlayernames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
-					setLeftColor(ncolor);
-					mReplayRecorder->setPlayerNames(mFakeMatch->getOpponentName(), mFakeMatch->getPlayerName());
-				}
-				else
-				{
-					RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
-					mReplayRecorder->setPlayerNames(mFakeMatch->getPlayerName(), mFakeMatch->getOpponentName());
-					setRightColor(ncolor);
-				}
+				mRemotePlayer->setName(std::string(charName));
+				
+				// set names in render manager
+				RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
+				mReplayRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
+				mRemotePlayer->setColor(ncolor);
+				
 				// Workarround for SDL-Renderer
 				// Hides the GUI when networkgame starts
 				rmanager->redraw();	
@@ -576,18 +566,9 @@ void NetworkGameState::step()
 		mPhysicWorld.getBlobState(RIGHT_PLAYER));
 	rmanager->setBall(mPhysicWorld.getBall(),
 		mPhysicWorld.getBallRotation());
-
-	float time = float(SDL_GetTicks()) / 1000.0;
-	if (mLeftOscillate)
-		rmanager->setBlobColor(0, Color(
-			int((sin(time*2) + 1.0) * 128),
-			int((sin(time*4) + 1.0) * 128),
-			int((sin(time*3) + 1.0) * 128)));
-	if (mRightOscillate)
-		rmanager->setBlobColor(1, Color(
-			int((cos(time*2) + 1.0) * 128),
-			int((cos(time*4) + 1.0) * 128),
-			int((cos(time*3) + 1.0) * 128)));
+	
+	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
+	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
@@ -733,9 +714,9 @@ void NetworkGameState::step()
 		{
 			std::stringstream tmp;
 			if(mWinningPlayer==LEFT_PLAYER)
-				tmp << (mOwnSide ? mFakeMatch->getOpponentName() : mFakeMatch->getPlayerName());
+				tmp << mLeftPlayer.getName();
 			else
-				tmp << (mOwnSide ? mFakeMatch->getPlayerName() : mFakeMatch->getOpponentName());
+				tmp << mRightPlayer.getName();
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 240), tmp.str());

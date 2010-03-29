@@ -81,10 +81,11 @@ private:
 		PAUSING
 	} mNetworkState;
 
-	Color mLeftColor;
-	Color mRightColor;
-	bool mLeftOscillate;
-	bool mRightOscillate;
+	Player mLeftPlayer;
+	Player mRightPlayer;
+	
+	Player* mLocalPlayer;
+	Player* mRemotePlayer;
 
 	InputSource* mLocalInput;
 	PhysicWorld mPhysicWorld;

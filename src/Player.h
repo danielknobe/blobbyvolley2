@@ -36,6 +36,9 @@ public:
 	InputSource* getInputSource() const;
 	std::string getName() const;
 	Color getColor() const;
+	
+	void setColor(Color ncol);
+	void setName(const std::string& name);
 private:
 
 	bool mInitialised;
