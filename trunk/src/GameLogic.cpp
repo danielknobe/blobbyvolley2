@@ -44,11 +44,15 @@ void CGameLogic::onBallHitsGround(PlayerSide side)
 	onError(side);
 }
 
-bool CGameLogic::onBallHitsPlayer(PlayerSide side)
-{
+bool CGameLogic::isCollisionValid(PlayerSide side) const{
 	// check whether the ball is squished
-	if(mSquish[side2index(side)] > 0)
-		return false;
+	return mSquish[side2index(side)] < 0;
+}
+
+void CGameLogic::onBallHitsPlayer(PlayerSide side)
+{
+	if(!isCollisionValid(side))
+		return;
 	
 	// otherwise, set the squish value
 	mSquish[side2index(side)] = SQUISH_TOLERANCE;
@@ -58,8 +62,6 @@ bool CGameLogic::onBallHitsPlayer(PlayerSide side)
 	if(++(mTouches[side2index(side)]) > 3)
 		// if a player hits a forth time, it is an error
 		onError(side);
-	
-	return true;
 }
 
 void CGameLogic::step()

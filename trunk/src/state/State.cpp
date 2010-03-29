@@ -235,6 +235,16 @@ void ReplayMenuState::step()
 		
 		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
+		rmanager->setScore(mReplayMatch->getScore(LEFT_PLAYER), mReplayMatch->getScore(RIGHT_PLAYER),
+			mReplayMatch->getServingPlayer() == LEFT_PLAYER, mReplayMatch->getServingPlayer() == RIGHT_PLAYER);
+			
+		rmanager->setBlob(LEFT_PLAYER, mReplayMatch->getBlobPosition(LEFT_PLAYER),
+			mReplayMatch->getWorld().getBlobState(LEFT_PLAYER));
+		rmanager->setBlob(RIGHT_PLAYER, mReplayMatch->getBlobPosition(RIGHT_PLAYER),
+			mReplayMatch->getWorld().getBlobState(RIGHT_PLAYER));
+		
+		rmanager->setBall(mReplayMatch->getBallPosition(),
+				mReplayMatch->getWorld().getBallRotation());
 
 		PlayerSide side = mReplayMatch->winningPlayer();
 		if (side != NO_PLAYER)

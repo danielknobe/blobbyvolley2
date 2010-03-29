@@ -36,7 +36,8 @@ class CGameLogic
 		void onBallHitsGround(PlayerSide side);
 				
 		// returns whether the collision was valid
-		bool onBallHitsPlayer(PlayerSide side);
+		bool isCollisionValid(PlayerSide side) const;
+		void onBallHitsPlayer(PlayerSide side);
 		
 		// must be called every step
 		void step();		

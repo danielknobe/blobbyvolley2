@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool output, bool global):mLogic(createGameLogic(OLD_RULES))
+				bool output, bool global):mLogic(createGameLogic(OLD_RULES)), events(0)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -66,72 +66,48 @@ DuelMatch* DuelMatch::getMainGame()
 
 void DuelMatch::step()
 {
-	RenderManager* rmanager = &RenderManager::getSingleton();
 	SoundManager* smanager = &SoundManager::getSingleton();
 
+	events = 0;
+
+	// do steps in physic an logic
 	if (mLeftInput)
 		mPhysicWorld.setLeftInput(mLeftInput->getInput());
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
 	mPhysicWorld.step();
 	mLogic->step();
-
-	if (mOutput)
+	
+	// check for all hit events
+	if (mPhysicWorld.ballHitLeftPlayer() && mLogic->isCollisionValid(LEFT_PLAYER))
 	{
-		rmanager->setBlob(0, mPhysicWorld.getBlob(LEFT_PLAYER),
-			mPhysicWorld.getBlobState(LEFT_PLAYER));
-		rmanager->setBlob(1, mPhysicWorld.getBlob(RIGHT_PLAYER),
-			mPhysicWorld.getBlobState(RIGHT_PLAYER));
-		rmanager->setBall(mPhysicWorld.getBall(),
-				mPhysicWorld.getBallRotation());
+		events |= EVENT_LEFT_BLOBBY_HIT;
+		mLogic->onBallHitsPlayer(LEFT_PLAYER);
 	}
 
-	// Protection of multiple hit counts when the ball is squeezed
-	if (mPhysicWorld.ballHitLeftPlayer())
+	if (mPhysicWorld.ballHitRightPlayer() && mLogic->isCollisionValid(RIGHT_PLAYER))
 	{
-		if (mLogic->onBallHitsPlayer(LEFT_PLAYER) && mOutput)
-		{
-			smanager->playSound("sounds/bums.wav",
-				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mPhysicWorld.getBall() +
-				(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
-		}
-	}
-
-	if (mPhysicWorld.ballHitRightPlayer())
-	{
-		if (mLogic->onBallHitsPlayer(RIGHT_PLAYER) && mOutput)
-		{
-			smanager->playSound("sounds/bums.wav",
-				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mPhysicWorld.getBall() +
-				(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
-		}
+		events |= EVENT_RIGHT_BLOBBY_HIT;
+		mLogic->onBallHitsPlayer(RIGHT_PLAYER);
 	}
 	
-	if(mPhysicWorld.ballHitLeftGround())
+	if(mPhysicWorld.ballHitLeftGround()){
 		mLogic->onBallHitsGround(LEFT_PLAYER);
+		events |= EVENT_BALL_HIT_GROUND;
+	}
 	
-	if(mPhysicWorld.ballHitRightGround())
+	if(mPhysicWorld.ballHitRightGround()){
 		mLogic->onBallHitsGround(RIGHT_PLAYER);
+		events |= EVENT_BALL_HIT_GROUND;
+	}
 
 	switch(mLogic->getLastErrorSide()){
 		case LEFT_PLAYER:
-			if (!mPhysicWorld.ballHitLeftGround())
-				mPhysicWorld.dampBall();
-			if (mOutput)
-				smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-			mPhysicWorld.setBallValidity(0);
-			mBallDown = true;
-			break;
-			
 		case RIGHT_PLAYER:
-			if(!mPhysicWorld.ballHitRightGround())
+			events |= EVENT_ERROR;
+			if (!events & EVENT_BALL_HIT_GROUND)
 				mPhysicWorld.dampBall();
-			if (mOutput)
-				smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				
 			mPhysicWorld.setBallValidity(0);
 			mBallDown = true;
 			break;
@@ -140,10 +116,28 @@ void DuelMatch::step()
 
 	if (mOutput)
 	{
-		// This is done seperate from other output because the
-		// winning screen would display old scores otherwise
-		rmanager->setScore(mLogic->getScore(LEFT_PLAYER), mLogic->getScore(RIGHT_PLAYER),
-			mLogic->getServingPlayer() == 0, mLogic->getServingPlayer() == 1);
+		if(events & EVENT_LEFT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+					mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mPhysicWorld.getBall() +
+					(mPhysicWorld.getBlob(LEFT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 0);
+		}
+		
+		if (events & EVENT_RIGHT_BLOBBY_HIT)
+		{
+			smanager->playSound("sounds/bums.wav",
+				mPhysicWorld.lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = mPhysicWorld.getBall() +
+				(mPhysicWorld.getBlob(RIGHT_PLAYER) - mPhysicWorld.getBall()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, mPhysicWorld.lastHitIntensity(), 1);
+		}
+		
+		if (events & EVENT_ERROR)
+		{
+			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		}
 	}
 
 	if (mPhysicWorld.roundFinished())
