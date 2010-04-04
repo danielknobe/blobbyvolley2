@@ -37,6 +37,11 @@ protected:
 	void deleteCurrentState();
 	void setCurrentState(State* newState);
 	
+	// static protected helper function that 
+	// draws the game. It is in State because
+	// this functionality is shared by 
+	// LocalGameState, NetworkGameState and ReplayMenuState
+	static void presentGame(const DuelMatch& match);
 public:
 	virtual ~State() {}
 	virtual void step() = 0;

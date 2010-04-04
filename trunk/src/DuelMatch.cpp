@@ -145,7 +145,7 @@ PlayerSide DuelMatch::winningPlayer()
 	return mLogic->getWinningPlayer();
 }
 
-int DuelMatch::getHitcount(PlayerSide player)
+int DuelMatch::getHitcount(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER)
 		return mLogic->getHits(LEFT_PLAYER);
@@ -155,28 +155,28 @@ int DuelMatch::getHitcount(PlayerSide player)
 		return 0;
 }
 
-int DuelMatch::getScore(PlayerSide player)
+int DuelMatch::getScore(PlayerSide player) const
 {
 	return mLogic->getScore(player);
 }
 
-bool DuelMatch::getBallDown()
+bool DuelMatch::getBallDown() const
 {
 	return mBallDown;
 }
 
-bool DuelMatch::getBallActive()
+bool DuelMatch::getBallActive() const 
 {
 	return mPhysicWorld.getBallActive();
 }
 
 
-bool DuelMatch::getBlobJump(PlayerSide player)
+bool DuelMatch::getBlobJump(PlayerSide player) const
 {
 	return mPhysicWorld.getBlobJump(player);
 }
 
-Vector2 DuelMatch::getBlobPosition(PlayerSide player)
+Vector2 DuelMatch::getBlobPosition(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER)
 		return mPhysicWorld.getBlob(LEFT_PLAYER);
@@ -186,27 +186,27 @@ Vector2 DuelMatch::getBlobPosition(PlayerSide player)
 		return Vector2(0.0, 0.0);
 }
 
-Vector2 DuelMatch::getBallPosition()
+Vector2 DuelMatch::getBallPosition() const
 {
 	return mPhysicWorld.getBall();
 }
 
-Vector2 DuelMatch::getBallVelocity()
+Vector2 DuelMatch::getBallVelocity() const
 {
 	return mPhysicWorld.getBallVelocity();
 }
 
-float DuelMatch::getBallEstimation()
+float DuelMatch::getBallEstimation() const
 {
 	return mPhysicWorld.estimateBallImpact();
 }
 
-Vector2 DuelMatch::getBallTimeEstimation(int steps)
+Vector2 DuelMatch::getBallTimeEstimation(int steps) const
 {
 	return mPhysicWorld.estimateBallPosition(steps);
 }
 
-PlayerSide DuelMatch::getServingPlayer()
+PlayerSide DuelMatch::getServingPlayer() const
 {	// NO_PLAYER hack was moved into ScriptedInpurSource.cpp
 	return mLogic->getServingPlayer();
 }
@@ -216,7 +216,7 @@ void DuelMatch::setState(RakNet::BitStream* stream)
 	mPhysicWorld.setState(stream);
 }
 
-const PlayerInput* DuelMatch::getPlayersInput()
+const PlayerInput* DuelMatch::getPlayersInput() const
 {
 	return mPhysicWorld.getPlayersInput();
 }

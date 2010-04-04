@@ -566,45 +566,9 @@ void NetworkGameState::step()
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
 
-	rmanager->setBlob(LEFT_PLAYER, mFakeMatch->getBlobPosition(LEFT_PLAYER),
-			mFakeMatch->getWorld().getBlobState(LEFT_PLAYER));
-	rmanager->setBlob(RIGHT_PLAYER, mFakeMatch->getBlobPosition(RIGHT_PLAYER),
-			mFakeMatch->getWorld().getBlobState(RIGHT_PLAYER));
-	rmanager->setBall(mFakeMatch->getBallPosition(),
-				mFakeMatch->getWorld().getBallRotation());
-		
-	rmanager->setScore(mFakeMatch->getScore(LEFT_PLAYER), mFakeMatch->getScore(RIGHT_PLAYER),
-			mFakeMatch->getServingPlayer() == LEFT_PLAYER, mFakeMatch->getServingPlayer() == RIGHT_PLAYER);
-	
+	presentGame(*mFakeMatch);
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
-	
-	rmanager->setTime(mFakeMatch->getClock().getTimeString());
-
-	int events = mFakeMatch->getEvents();
-	SoundManager* smanager = &SoundManager::getSingleton();
-	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
-	{
-		smanager->playSound("sounds/bums.wav",
-				mFakeMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = mFakeMatch->getBallPosition() +
-				(mFakeMatch->getBlobPosition(LEFT_PLAYER) - mFakeMatch->getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, mFakeMatch->getWorld().lastHitIntensity(), 0);
-	}
-	
-	if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
-	{
-		smanager->playSound("sounds/bums.wav",
-			mFakeMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = mFakeMatch->getBallPosition() +
-			(mFakeMatch->getBlobPosition(RIGHT_PLAYER) - mFakeMatch->getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, mFakeMatch->getWorld().lastHitIntensity(), 1);
-	}
-	
-	if (events & DuelMatch::EVENT_ERROR)
-	{
-		smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-	}
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
