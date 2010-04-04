@@ -88,7 +88,6 @@ private:
 	Player* mRemotePlayer;
 
 	InputSource* mLocalInput;
-	PhysicWorld mPhysicWorld;
 	PlayerSide mServingPlayer;
 
 	bool mSaveReplay;
