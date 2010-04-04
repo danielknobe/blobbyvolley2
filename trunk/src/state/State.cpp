@@ -59,7 +59,7 @@ void State::setCurrentState(State* newState){
 	mCurrentState = newState;
 }
 
-void State::presentGame(const DuelMatch& match)
+void State::presentGame(const DuelMatch& match, bool sound)
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
@@ -77,25 +77,28 @@ void State::presentGame(const DuelMatch& match)
 	rmanager.setTime(match.getClock().getTimeString());
 			
 	int events = match.getEvents();
-	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+	if(sound)
 	{
-		smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = match.getBallPosition() +
-				(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 0);
-	}
-	
-	if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
-	{
-		smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = match.getBallPosition() +
-				(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 1);
-	}
-	
-	if (events & DuelMatch::EVENT_ERROR)
-	{
-		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+		{
+			smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = match.getBallPosition() +
+					(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 0);
+		}
+		
+		if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+		{
+			smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = match.getBallPosition() +
+					(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 1);
+		}
+		
+		if (events & DuelMatch::EVENT_ERROR)
+		{
+			smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		}
 	}
 }
 
