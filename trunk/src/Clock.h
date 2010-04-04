@@ -19,27 +19,40 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-#include "raknet/RakPeer.h"
+#include <string>
 
-class Packet;
-
-typedef boost::shared_ptr<Packet> packet_ptr;
-
-struct deleter{
-	RakPeer* peer;
-	void operator()(Packet* p){
-		peer->DeallocatePacket(p);
-	}
+class Clock{
+	public:
+		Clock();
+		
+		void start();
+		
+		void stop(){
+			mRunning = false;
+		}
+		
+		bool isRunning() const{
+			return mRunning;
+		}
+		
+		void step();
+		
+		int getTime() const{
+			return mGameTime;
+		}
+		
+		void setTime(int newTime){
+			mGameTime = newTime;
+		}
+		
+		void reset();
+		
+		std::string getTimeString() const;
+		
+	private:
+		bool mRunning;
+		
+		int mGameTime;
+		int mLastTime;
+		
 };
-
-inline packet_ptr receivePacket(RakPeer* peer){
-	deleter del;
-	del.peer = peer;
-	Packet* pptr = peer->Receive();
-	if(pptr){
-		return packet_ptr(pptr, del);
-	}else{
-		return packet_ptr();
-	}	
-}

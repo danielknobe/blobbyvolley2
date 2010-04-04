@@ -473,12 +473,16 @@ void NetworkGameState::step()
 			}
 			case ID_PAUSE:
 				if (mNetworkState == PLAYING)
+				{
 					mNetworkState = PAUSING;
+					mFakeMatch->pause();
+				}
 				break;
 			case ID_UNPAUSE:
 				if (mNetworkState == PAUSING)
 				{
 					mNetworkState = PLAYING;
+					mFakeMatch->unpause();
 				}
 				break;
 			case ID_GAME_READY:
@@ -574,6 +578,8 @@ void NetworkGameState::step()
 	
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
+	
+	rmanager->setTime(mFakeMatch->getClock().getTimeString());
 
 	int events = mFakeMatch->getEvents();
 	SoundManager* smanager = &SoundManager::getSingleton();

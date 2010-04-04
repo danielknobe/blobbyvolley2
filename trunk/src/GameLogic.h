@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #include "Global.h"
-
+#include "Clock.h"
 
 // this class is told what happens in the game and it applies the rules to count 
 // the points. it is designed as a abstract base class to provide different 
@@ -38,6 +38,10 @@ class CGameLogic
 		// returns whether the collision was valid
 		bool isCollisionValid(PlayerSide side) const;
 		void onBallHitsPlayer(PlayerSide side);
+		
+		// set/unset pause mode
+		void onPause();
+		void onUnPause();
 		
 		// must be called every step
 		void step();		
@@ -65,13 +69,15 @@ class CGameLogic
 		void setScoreToWin(int stw);
 		
 		// constuctor and destructor
-		
 		CGameLogic();
 		
 		virtual ~CGameLogic()
 		{
 		};
 		
+		Clock& getClock(){
+			return clock;
+		}
 	
 	protected:		
 		// this method must be called if a team scores
@@ -108,6 +114,8 @@ class CGameLogic
 		
 		PlayerSide mWinningPlayer;
 		
+		// clock
+		Clock clock;
 	private:
 		// helper functions
 		

@@ -265,6 +265,14 @@ void RenderManagerSDL::draw()
 	rodPosition.w = 14;
 	rodPosition.h = 300;
 	SDL_BlitSurface(mBackground, &rodPosition, mScreen, &position);
+	// restore the background for clock
+	position.x = 400 - mTime.length()*12;
+	position.y =  24;
+	rodPosition.x = 400 - mTime.length()*12;
+	rodPosition.y = 24;
+	rodPosition.w = mTime.length()*24;
+	rodPosition.h = 24;
+	SDL_BlitSurface(mBackground, &rodPosition, mScreen, &position);
 
 	// Drawing the Ball
 	position = ballRect(mBallPosition);
@@ -294,6 +302,9 @@ void RenderManagerSDL::draw()
 	drawText(mLeftPlayerName, Vector2(12, 550), false);
 
 	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
+	
+	// Drawing the Clock
+	drawText(mTime, Vector2(400 - mTime.length()*12, 24), false);
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)
@@ -446,6 +457,12 @@ void RenderManagerSDL::setPlayernames(std::string leftName, std::string rightNam
 	mLeftPlayerName = leftName;
 	mRightPlayerName = rightName;
 }
+
+void RenderManagerSDL::setTime(const std::string& t)
+{
+	mTime = t;
+}
+
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool highlight)
 {

@@ -30,6 +30,8 @@ CGameLogic::CGameLogic():	mLastError(NO_PLAYER),
 							mWinningPlayer(NO_PLAYER),
 							mScoreToWin(15)
 {
+	clock.reset();
+	clock.start();
 	reset();
 }
 
@@ -64,10 +66,23 @@ void CGameLogic::onBallHitsPlayer(PlayerSide side)
 		onError(side);
 }
 
+void CGameLogic::onPause()
+{
+	clock.stop();
+}
+void CGameLogic::onUnPause()
+{
+	clock.start();
+}
+
 void CGameLogic::step()
 {
-	--mSquish[0];
-	--mSquish[1];
+	clock.step();
+	if(clock.isRunning())
+	{
+		--mSquish[0];
+		--mSquish[1];
+	}
 }
 
 int CGameLogic::getScore(PlayerSide side) const

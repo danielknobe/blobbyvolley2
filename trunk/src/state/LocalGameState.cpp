@@ -42,7 +42,6 @@ LocalGameState::LocalGameState()
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)
 {
-	mPaused = false;
 	mSaveReplay = false;
 	mWinner = false;
 	
@@ -96,12 +95,13 @@ void LocalGameState::step()
 		}
 		imgui.doCursor();
 	}
-	else if (mPaused)
+	else if (mMatch->isPaused())
 	{
 		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
 		imgui.doText(GEN_ID, Vector2(281, 260), TextManager::getSingleton()->getString(TextManager::LBL_CONF_QUIT));
-		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::getSingleton()->getString(TextManager::LBL_NO)))
-			mPaused = false;
+		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::getSingleton()->getString(TextManager::LBL_NO))){
+			mMatch->unpause();
+		}
 		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::getSingleton()->getString(TextManager::LBL_YES)))
 		{
 			deleteCurrentState();
@@ -151,7 +151,7 @@ void LocalGameState::step()
 			mSaveReplay = false;
 			IMGUI::getSingleton().resetSelection();
 		}
-		else if (mPaused)
+		else if (mMatch->isPaused())
 		{
 			deleteCurrentState();
 			setCurrentState(new MainMenuState);
@@ -159,7 +159,7 @@ void LocalGameState::step()
 		else
 		{
 			RenderManager::getSingleton().redraw();
-			mPaused = true;
+			mMatch->pause();
 		}
 	}
 	else if (mRecorder->endOfFile())
@@ -187,6 +187,8 @@ void LocalGameState::step()
 		
 		rmanager->setBall(mMatch->getBallPosition(),
 				mMatch->getWorld().getBallRotation());
+				
+		rmanager->setTime(mMatch->getClock().getTimeString());
 				
 		int events = mMatch->getEvents();
 		SoundManager* smanager = &SoundManager::getSingleton();

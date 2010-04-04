@@ -17,29 +17,48 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#pragma once
+#include "Clock.h"
 
-#include <boost/shared_ptr.hpp>
-#include "raknet/RakPeer.h"
+#include <ctime>
+#include <sstream>
 
-class Packet;
+Clock::Clock():mRunning(false), mGameTime(0), mLastTime(0){
+}
 
-typedef boost::shared_ptr<Packet> packet_ptr;
+void Clock::reset(){
+	mRunning = false;
+	mGameTime = 0;
+	mLastTime = 0;
+}
 
-struct deleter{
-	RakPeer* peer;
-	void operator()(Packet* p){
-		peer->DeallocatePacket(p);
+void Clock::start(){
+	mLastTime = std::time(0);
+	mRunning = true;
+}
+
+std::string Clock::getTimeString() const{
+	int seconds = mGameTime % 60;
+	int minutes = ((mGameTime - seconds)/60) % 60;
+	int hours = ((mGameTime - 60 * minutes - seconds) / 3600) % 60;
+	std::stringstream stream;
+	if(hours > 0)
+		stream << hours << ":";
+	if(minutes < 10)
+		stream <<"0";
+	stream << minutes <<":";
+	if(seconds < 10)
+		stream <<"0";
+	stream << seconds;
+	
+	return stream.str();
+}
+
+void Clock::step(){
+	if(mRunning){
+		time_t newTime = std::time(0);
+		if(newTime > mLastTime){
+			mGameTime += newTime - mLastTime;
+		}
+		mLastTime = newTime;
 	}
-};
-
-inline packet_ptr receivePacket(RakPeer* peer){
-	deleter del;
-	del.peer = peer;
-	Packet* pptr = peer->Receive();
-	if(pptr){
-		return packet_ptr(pptr, del);
-	}else{
-		return packet_ptr();
-	}	
 }

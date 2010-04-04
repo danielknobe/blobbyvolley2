@@ -247,6 +247,8 @@ void ReplayMenuState::step()
 		rmanager->setBall(mReplayMatch->getBallPosition(),
 				mReplayMatch->getWorld().getBallRotation());
 				
+		rmanager->setTime(mReplayMatch->getClock().getTimeString());
+				
 		int events = mReplayMatch->getEvents();
 		SoundManager* smanager = &SoundManager::getSingleton();
 		if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
