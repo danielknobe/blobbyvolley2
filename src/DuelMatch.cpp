@@ -112,6 +112,7 @@ void DuelMatch::step()
 	{
 		mBallDown = false;
 		mPhysicWorld.reset(mLogic->getServingPlayer());
+		events |= EVENT_RESET;
 	}
 	
 	external_events = 0;
@@ -217,5 +218,6 @@ void DuelMatch::setPlayersInput(PlayerInput* input)
 
 void DuelMatch::setServingPlayer(PlayerSide side)
 {
+	mLogic->setServingPlayer(side);
 	mPhysicWorld.reset(side);
 }

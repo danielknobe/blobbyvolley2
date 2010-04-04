@@ -22,12 +22,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <list>
 
 #include "Global.h"
-#include "PhysicWorld.h"
-#include "GameLogic.h"
 #include "raknet/NetworkTypes.h"
 #include "UserConfig.h"
 #include "SpeedController.h"
+#include "InputSource.h"
 #include "RakNetPacket.h"
+#include "DuelMatch.h"
 
 class RakServer;
 
@@ -71,8 +71,9 @@ private:
 
 	PacketQueue mPacketQueue;
 
-	PhysicWorld mPhysicWorld;
-	GameLogic mLogic;
+	DuelMatch* mMatch;
+	DummyInputSource* mLeftInput;
+	DummyInputSource* mRightInput;
 	PlayerSide mWinningPlayer;
 
 

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "NetworkMessage.h"
 #include "UserConfig.h"
+#include "SpeedController.h"
 
 #include <cstring>
 
@@ -50,6 +51,7 @@ ServerInfo::ServerInfo(const std::string& playername)
 	memset(this, 0, sizeof(ServerInfo));
 	strncpy(name, std::string(playername + "'s game").c_str(), sizeof(name) - 1);
 	strncpy(description, "client hosted game", sizeof(description) - 1);
+	gamespeed = (int)SpeedController::getMainInstance()->getGameSpeed();
 }
 
 void ServerInfo::writeToBitstream(RakNet::BitStream& stream)

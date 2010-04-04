@@ -108,7 +108,8 @@ public:
 		EVENT_BALL_HIT_GROUND = 4,
 		EVENT_ERROR = 8,
 		EVENT_ERROR_LEFT = 16,
-		EVENT_ERROR_RIGHT = 32
+		EVENT_ERROR_RIGHT = 32,
+		EVENT_RESET = 64
 	};
 	
 	int getEvents() const { return events; }

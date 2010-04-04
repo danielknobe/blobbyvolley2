@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 #include "TextManager.h"
+#include "Blood.h"
 
 #include "ReplayRecorder.h"
 
@@ -313,8 +314,6 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	else
 		mNetworkState = CONNECTION_FAILED;
 
-	mPhysicWorld.resetPlayer();
-
 	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 
 	mFakeMatch = new DuelMatch(0, 0, true);
@@ -402,11 +401,9 @@ void NetworkGameState::step()
 				stream.IgnoreBytes(1);	//ID_PHYSIC_UPDATE
 				stream.IgnoreBytes(1);	//ID_TIMESTAMP
 				stream.Read(ival);	//TODO: un-lag based on timestamp delta
-				RakNet::BitStream streamCopy = RakNet::BitStream(stream);
 				//printf("Physic packet received. Time: %d\n", ival);
-				mPhysicWorld.setState(&stream);
-				mFakeMatch->setState(&streamCopy);
-				mReplayRecorder->record(mPhysicWorld.getPlayersInput());
+				mFakeMatch->setState(&stream);
+				mReplayRecorder->record(mFakeMatch->getPlayersInput());
 				break;
 			}
 			case ID_WIN_NOTIFICATION:
@@ -442,30 +439,36 @@ void NetworkGameState::step()
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_BALL_RESET
 				stream.Read((int&)mServingPlayer);
+				
+				// read and set new score
 				int nLeftScore;
 				int nRightScore;
 				stream.Read(nLeftScore);
 				stream.Read(nRightScore);
 				mFakeMatch->setScore(nLeftScore, nRightScore);
-				mPhysicWorld.reset(mServingPlayer);
+				mFakeMatch->setServingPlayer(mServingPlayer);
+				
 				if (nLeftScore == 0 && nRightScore == 0)
 					mReplayRecorder->setServingPlayer(mServingPlayer);
 				break;
 			}
 			case ID_BALL_GROUND_COLLISION:
 			{
-				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-				mPhysicWorld.setBallValidity(false);
+				//  commented out for now
+				// SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				// mFakeMatch->trigger(DuelMatch::EVENT_ERROR);
 				break;
 			}
 			case ID_BALL_PLAYER_COLLISION:
 			{
-				float intensity;
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
-				stream.Read(intensity);
-				SoundManager::getSingleton().playSound("sounds/bums.wav",
-						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
+				//  commented out for now
+				
+				// float intensity;
+				// RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				// stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
+				// stream.Read(intensity);
+				// SoundManager::getSingleton().playSound("sounds/bums.wav",
+				//		intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 				break;
 			}
 			case ID_PAUSE:
@@ -559,18 +562,43 @@ void NetworkGameState::step()
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
 
-	rmanager->setBlob(0, mPhysicWorld.getBlob(LEFT_PLAYER),
-		mPhysicWorld.getBlobState(LEFT_PLAYER));
-	rmanager->setBlob(1, mPhysicWorld.getBlob(RIGHT_PLAYER),
-		mPhysicWorld.getBlobState(RIGHT_PLAYER));
-	rmanager->setBall(mPhysicWorld.getBall(),
-		mPhysicWorld.getBallRotation());
+	rmanager->setBlob(LEFT_PLAYER, mFakeMatch->getBlobPosition(LEFT_PLAYER),
+			mFakeMatch->getWorld().getBlobState(LEFT_PLAYER));
+	rmanager->setBlob(RIGHT_PLAYER, mFakeMatch->getBlobPosition(RIGHT_PLAYER),
+			mFakeMatch->getWorld().getBlobState(RIGHT_PLAYER));
+	rmanager->setBall(mFakeMatch->getBallPosition(),
+				mFakeMatch->getWorld().getBallRotation());
 		
 	rmanager->setScore(mFakeMatch->getScore(LEFT_PLAYER), mFakeMatch->getScore(RIGHT_PLAYER),
 			mFakeMatch->getServingPlayer() == LEFT_PLAYER, mFakeMatch->getServingPlayer() == RIGHT_PLAYER);
 	
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
+
+	int events = mFakeMatch->getEvents();
+	SoundManager* smanager = &SoundManager::getSingleton();
+	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+	{
+		smanager->playSound("sounds/bums.wav",
+				mFakeMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+		Vector2 hitPos = mFakeMatch->getBallPosition() +
+				(mFakeMatch->getBlobPosition(LEFT_PLAYER) - mFakeMatch->getBallPosition()).normalise().scale(31.5);
+		BloodManager::getSingleton().spillBlood(hitPos, mFakeMatch->getWorld().lastHitIntensity(), 0);
+	}
+	
+	if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+	{
+		smanager->playSound("sounds/bums.wav",
+			mFakeMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+		Vector2 hitPos = mFakeMatch->getBallPosition() +
+			(mFakeMatch->getBlobPosition(RIGHT_PLAYER) - mFakeMatch->getBallPosition()).normalise().scale(31.5);
+		BloodManager::getSingleton().spillBlood(hitPos, mFakeMatch->getWorld().lastHitIntensity(), 1);
+	}
+	
+	if (events & DuelMatch::EVENT_ERROR)
+	{
+		smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+	}
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
@@ -694,8 +722,8 @@ void NetworkGameState::step()
 		}
 		case PLAYING:
 		{
-			mPhysicWorld.step(); 	 
 			mFakeMatch->step();
+
 			if (InputManager::getSingleton()->exit())
 			{
 				RakNet::BitStream stream;
