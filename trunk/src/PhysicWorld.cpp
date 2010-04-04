@@ -412,15 +412,26 @@ void PhysicWorld::step()
 
 		if (ballNetDistance < NET_RADIUS + BALL_RADIUS)
 		{ 
-			mBallVelocity = mBallVelocity.reflect(Vector2(mBallPosition,
-						Vector2(NET_POSITION_X, NET_SPHERE_POSITION))
-					.normalise()).scale(0.75);
-
-			while (ballNetDistance < NET_RADIUS + BALL_RADIUS)
-			{
-				mBallPosition += mBallVelocity;
-				ballNetDistance = Vector2(mBallPosition, Vector2(NET_POSITION_X, NET_SPHERE_POSITION)).length();
-			}
+			// calculate
+			Vector2 normal = Vector2(mBallPosition,	Vector2(NET_POSITION_X, NET_SPHERE_POSITION)).normalise();
+					
+			// normal component of kinetic energy
+			float perp_ekin = normal.dotProduct(mBallVelocity);
+			perp_ekin *= perp_ekin;
+			// parallel component of kinetic energy
+			float para_ekin = mBallVelocity.length() * mBallVelocity.length() - perp_ekin;
+			
+			// the normal component is damped stronger than the parallel component
+			// the values are ~ 0.85² and ca. 0.95², because speed is sqrt(ekin)
+			perp_ekin *= 0.7;
+			para_ekin *= 0.9;
+			
+			float nspeed = sqrt(perp_ekin + para_ekin);
+			
+			mBallVelocity = Vector2(mBallVelocity.reflect(normal).normalise().scale(nspeed));
+			
+			// pushes the ball out of the net
+			mBallPosition = (Vector2(NET_POSITION_X, NET_SPHERE_POSITION) - normal * (NET_RADIUS + BALL_RADIUS));
 		}
 		// mBallVelocity = mBallVelocity.reflect( Vector2( mBallPosition, Vector2 (NET_POSITION_X, temp) ).normalise()).scale(0.75);
 	}
