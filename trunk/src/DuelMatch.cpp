@@ -241,3 +241,8 @@ const Clock& DuelMatch::getClock() const
 {
 	return mLogic->getClock();
 }
+
+Clock& DuelMatch::getClock()
+{
+	return mLogic->getClock();
+}
