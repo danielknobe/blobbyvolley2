@@ -113,6 +113,7 @@ bool NetworkGame::step()
 				stream.Write((unsigned char)ID_OPPONENT_DISCONNECTED);
 				broadcastBitstream(&stream, &stream);
 				mPausing = true;
+				mMatch->pause();
 				active = false;
 				break;
 			}
@@ -151,6 +152,7 @@ bool NetworkGame::step()
 				stream.Write((unsigned char)ID_PAUSE);
 				broadcastBitstream(&stream, &stream);
 				mPausing = true;
+				mMatch->pause();
 				break;
 			}
 			case ID_UNPAUSE:
@@ -159,6 +161,7 @@ bool NetworkGame::step()
 				stream.Write((unsigned char)ID_UNPAUSE);
 				broadcastBitstream(&stream, &stream);
 				mPausing = false;
+				mMatch->unpause();
 				break;
 			}
 			case ID_CHAT_MESSAGE:
@@ -185,8 +188,7 @@ bool NetworkGame::step()
 		}
 	}
 	
-	if (!mPausing)
-		mMatch->step();
+	mMatch->step();
 
 	int events = mMatch->getEvents();
 	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
@@ -253,6 +255,7 @@ bool NetworkGame::step()
 				
 				// if someone has won, the game is paused 
 				mPausing = true;
+				mMatch->pause();
 				return active;
 			}
 			break;
@@ -270,6 +273,7 @@ bool NetworkGame::step()
 				
 				// if someone has won, the game is paused 
 				mPausing = true;
+				mMatch->pause();
 				return active;
 			}
 			break;
