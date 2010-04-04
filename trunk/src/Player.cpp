@@ -36,22 +36,30 @@ Player::~Player()
 	}
 }
 
-void Player::loadFromConfig(const std::string& prefix)
+void Player::loadFromConfig(const std::string& prefix, bool initInput)
 {
 	UserConfig gameConfig;
 	gameConfig.loadFile("config.xml");
 
-	if (gameConfig.getBool(prefix + "_player_human")) {
-		mInputSource = new LocalInputSource(mPlayerSide);
-	} else {
-		mInputSource = new ScriptedInputSource("scripts/" +
-			gameConfig.getString(prefix + "_script_name"), mPlayerSide);
+	// init local input
+	if(initInput){
+		if (gameConfig.getBool(prefix + "_player_human")) {
+			mInputSource = new LocalInputSource(mPlayerSide);
+		} else {
+			mInputSource = new ScriptedInputSource("scripts/" +
+				gameConfig.getString(prefix + "_script_name"), mPlayerSide);
+		}
+	
+		mName = gameConfig.getBool(prefix + "_player_human") ?
+			gameConfig.getString(prefix + "_player_name") :
+			gameConfig.getString(prefix + "_script_name");
+	}else{
+		// input is set externally (network)
+		// so we need not to create any input source
+		mInputSource = 0;
+		// don't use bot name if extern input is used
+		mName = gameConfig.getString(prefix + "_player_name");
 	}
-
-	mName = gameConfig.getBool(prefix + "_player_human") ?
-		gameConfig.getString(prefix + "_player_name") :
-		gameConfig.getString(prefix + "_script_name");
-
 	mInitialised = true;
 	
 	mStaticColor = Color(

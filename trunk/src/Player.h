@@ -31,7 +31,7 @@ public:
 	Player(PlayerSide side);
 	~Player();
 
-	void loadFromConfig(const std::string& prefix);
+	void loadFromConfig(const std::string& prefix, bool initInput = true);
 
 	InputSource* getInputSource() const;
 	std::string getName() const;
