@@ -552,6 +552,7 @@ void NetworkGameState::step()
 				// Insert Message in the log and focus the last element
 				mChatlog.push_back((std::string) message);
 				mSelectedChatmessage = mChatlog.size() - 1;
+				SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			default:
@@ -771,6 +772,7 @@ void NetworkGameState::step()
 					mSelectedChatmessage = mChatlog.size() - 1;
 					mChattext = "";
 					mChatCursorPosition = 0;
+					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				}
 			}
 			imgui.doCursor();
