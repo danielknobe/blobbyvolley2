@@ -317,6 +317,8 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
 
 	mFakeMatch = new DuelMatch(0, 0, true);
+	// game is not started until two players are connected 
+	mFakeMatch->pause();
 	
 	// load/init players
 	mLeftPlayer.loadFromConfig("left", false);
@@ -520,6 +522,8 @@ void NetworkGameState::step()
 				rmanager->redraw();	
 
 				mNetworkState = PLAYING;
+				// start game
+				mFakeMatch->unpause();
 				break;
 			}
 			case ID_CONNECTION_ATTEMPT_FAILED:
