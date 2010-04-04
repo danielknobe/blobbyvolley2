@@ -87,21 +87,25 @@ void DuelMatch::step()
 	
 	if(mPhysicWorld.ballHitLeftGround()){
 		mLogic->onBallHitsGround(LEFT_PLAYER);
-		events |= EVENT_BALL_HIT_GROUND;
+		events |= EVENT_BALL_HIT_LEFT_GROUND;
 	}
 	
 	if(mPhysicWorld.ballHitRightGround()){
 		mLogic->onBallHitsGround(RIGHT_PLAYER);
-		events |= EVENT_BALL_HIT_GROUND;
+		events |= EVENT_BALL_HIT_RIGHT_GROUND;
 	}
 
 	switch(mLogic->getLastErrorSide()){
 		case LEFT_PLAYER:
+			events |= EVENT_ERROR_LEFT;
 		case RIGHT_PLAYER:
-			events |= EVENT_ERROR;
-			if (!events & EVENT_BALL_HIT_GROUND)
+			// if the error was caused by the right player
+			// reset EVENT_ERROR_LEFT
+			events &= ~EVENT_ERROR_LEFT;
+			events |= EVENT_ERROR_RIGHT;
+			if (!(events & EVENT_BALL_HIT_GROUND))
 				mPhysicWorld.dampBall();
-				
+			
 			mPhysicWorld.setBallValidity(0);
 			mBallDown = true;
 			break;

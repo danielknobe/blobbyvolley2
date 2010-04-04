@@ -456,21 +456,17 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_GROUND_COLLISION:
 			{
-				//  commented out for now
-				// SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-				// mFakeMatch->trigger(DuelMatch::EVENT_ERROR);
+				 SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_BALL_PLAYER_COLLISION:
 			{
-				//  commented out for now
-				
-				// float intensity;
-				// RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				// stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
-				// stream.Read(intensity);
-				// SoundManager::getSingleton().playSound("sounds/bums.wav",
-				//		intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
+				float intensity;
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
+				stream.Read(intensity);
+				SoundManager::getSingleton().playSound("sounds/bums.wav",
+						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 				break;
 			}
 			case ID_PAUSE:
@@ -570,7 +566,7 @@ void NetworkGameState::step()
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
 
-	presentGame(*mFakeMatch);
+	presentGame(*mFakeMatch, false);
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 
