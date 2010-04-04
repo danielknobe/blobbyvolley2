@@ -414,17 +414,11 @@ void NetworkGameState::step()
 				stream.IgnoreBytes(1);	//ID_WIN_NOTIFICATION
 				stream.Read((int&)mWinningPlayer);
 				
-				// adds the last point, it must have been made by the winning player
-				switch(mWinningPlayer){
-					case LEFT_PLAYER:
-						mFakeMatch->setScore(mFakeMatch->getScore(LEFT_PLAYER)+1, mFakeMatch->getScore(RIGHT_PLAYER));
-						break;
-					case RIGHT_PLAYER:
-						mFakeMatch->setScore(mFakeMatch->getScore(LEFT_PLAYER), mFakeMatch->getScore(RIGHT_PLAYER)+1);
-						break;
-					default:
-						assert(0);
-				}
+				// last point must not be added anymore, because
+				// the score is also simulated local so it is already
+				// right. under strange circumstances this need not
+				// be true, but then the score is set to the correy value
+				// by ID_BALL_RESET
 					
 				mNetworkState = PLAYER_WON;
 				break;
@@ -456,7 +450,7 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_GROUND_COLLISION:
 			{
-				 SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_BALL_PLAYER_COLLISION:
