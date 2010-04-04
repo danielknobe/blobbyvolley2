@@ -319,8 +319,8 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mFakeMatch = new DuelMatch(0, 0, true);
 	
 	// load/init players
-	mLeftPlayer.loadFromConfig("left");
-	mRightPlayer.loadFromConfig("right");
+	mLeftPlayer.loadFromConfig("left", false);
+	mRightPlayer.loadFromConfig("right", false);
 	if(mOwnSide == LEFT_PLAYER){
 		mRightPlayer.setName("");
 		mLocalPlayer = &mLeftPlayer;
