@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool global):mLogic(createGameLogic(OLD_RULES)), events(0), external_events(0)
+				bool global):mLogic(createGameLogic(OLD_RULES)), events(0), external_events(0), mPaused(false)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -62,7 +62,7 @@ DuelMatch* DuelMatch::getMainGame()
 
 void DuelMatch::step()
 {
-	events = 0;
+	events = external_events;
 
 	// do steps in physic an logic
 	if (mLeftInput)
@@ -127,6 +127,17 @@ void DuelMatch::setScore(int left, int right)
 void DuelMatch::trigger(int event)
 {
 	external_events |= event;
+}
+
+void DuelMatch::pause()
+{
+	mLogic->onPause();
+	mPaused = true;
+}
+void DuelMatch::unpause()
+{
+	mLogic->onUnPause();
+	mPaused = false;
 }
 
 PlayerSide DuelMatch::winningPlayer()
@@ -220,4 +231,9 @@ void DuelMatch::setServingPlayer(PlayerSide side)
 {
 	mLogic->setServingPlayer(side);
 	mPhysicWorld.reset(side);
+}
+
+const Clock& DuelMatch::getClock() const
+{
+	return mLogic->getClock();
 }

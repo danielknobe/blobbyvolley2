@@ -134,6 +134,9 @@ public:
 
 	// Set the names
 	virtual void setPlayernames(std::string leftName, std::string rightName) {};
+	
+	// Set the time
+	virtual void setTime(const std::string& time) {};
 
 	// This simply draws the given text with its top left corner at the
 	// given position and doesn't care about line feeds.

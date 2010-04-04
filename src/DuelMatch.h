@@ -80,9 +80,15 @@ public:
 	Vector2 getBlobPosition(PlayerSide player);
 	
 	const PhysicWorld& getWorld() const{ return mPhysicWorld; };
+	const Clock& getClock() const;
 
 	bool getBallDown();
 	bool getBallActive();
+	
+	void pause();
+	void unpause();
+	
+	bool isPaused() const{ return mPaused; }
 
 	// Estimates Ball impact point
 	float getBallEstimation();
@@ -126,6 +132,8 @@ private:
 	GameLogic mLogic;
 
 	bool mBallDown;
+	
+	bool mPaused;
 	
 	int events;
 	int external_events;
