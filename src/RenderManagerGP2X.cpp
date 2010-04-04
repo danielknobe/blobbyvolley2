@@ -240,6 +240,9 @@ void RenderManagerGP2X::draw()
 	drawText(mLeftPlayerName, Vector2(12, 550), false);
 
 	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
+	
+	// Drawing the clock
+	drawText(mTime, Vector2(400 - mTime.length()*12, 24), false);
 }
 
 bool RenderManagerGP2X::setBackground(const std::string& filename)
@@ -327,6 +330,11 @@ void RenderManagerGP2X::setScore(int leftScore, int rightScore,
 	mRightPlayerScore = rightScore;
 	mLeftPlayerWarning = leftWarning;
 	mRightPlayerWarning = rightWarning;
+}
+
+void RenderManagerGP2X::setTime(const std::string& t)
+{
+	mTime = t;
 }
 
 void RenderManagerGP2X::drawText(const std::string& text, Vector2 position, bool highlight)

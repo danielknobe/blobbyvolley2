@@ -371,6 +371,9 @@ void RenderManagerGL2D::draw()
 	drawText(mLeftPlayerName, Vector2(12, 550), false);
 
 	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
+	
+	// Drawing the clock
+	drawText(mTime, Vector2(400 - mTime.length()*12, 24), false);
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)
@@ -450,6 +453,11 @@ void RenderManagerGL2D::setPlayernames(std::string leftName, std::string rightNa
 {
 	mLeftPlayerName = leftName;
 	mRightPlayerName = rightName;
+}
+
+void RenderManagerGL2D::setTime(const std::string& t)
+{
+	mTime = t;
 }
 
 void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool highlight)

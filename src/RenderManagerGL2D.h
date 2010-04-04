@@ -74,6 +74,7 @@ private:
 
 	std::string mLeftPlayerName;
 	std::string mRightPlayerName;
+	std::string mTime;
 
 	Color mLeftBlobColor;
 	Color mRightBlobColor;
@@ -101,6 +102,7 @@ public:
 		       bool leftWarning, bool rightWarning);
 
 	virtual void setPlayernames(std::string leftName, std::string rightName);
+	virtual void setTime(const std::string& t);
 
 	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
 	virtual void drawImage(const std::string& filename, Vector2 position);
