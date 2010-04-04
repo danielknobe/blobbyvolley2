@@ -54,7 +54,7 @@ struct QueueObject
 	std::string text;
 	std::vector<std::string> entries;
 	int selected;
-	int lenght;
+	int length;
 };
 
 typedef std::queue<QueueObject> RenderQueue;
@@ -135,17 +135,17 @@ void IMGUI::end()
 	
 				break;
 			case EDITBOX:
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.lenght*24.0, 10.0+24.0));
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), false);
 				break;
 			case ACTIVEEDITBOX:
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.lenght*24.0, 10.0+24.0));
+				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
 				if (obj.pos2.x >= 0)
 					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
 				break;
 			case HIGHLIGHTEDITBOX:
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.lenght*24.0, 10.0+24.0));
+				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
 				break;
 			case SELECTBOX:
@@ -359,7 +359,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 	obj.id = id;
 	obj.pos1 = position;
 	obj.type = EDITBOX;
-	obj.lenght = length;
+	obj.length = length;
 
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > position.x &&
