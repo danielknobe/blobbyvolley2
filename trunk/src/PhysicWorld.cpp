@@ -493,15 +493,31 @@ bool PhysicWorld::getBallActive() const
 
 void PhysicWorld::setState(RakNet::BitStream* stream)
 {
+	bool leftGround;
+	bool rightGround;
+	stream->Read(leftGround);
+	stream->Read(rightGround);
+	if(leftGround){
+		mBlobPosition[LEFT_PLAYER].y = GROUND_PLANE_HEIGHT;
+		mBlobVelocity[LEFT_PLAYER].y = 0;
+	}else{
+		stream->Read(mBlobPosition[LEFT_PLAYER].y);
+		stream->Read(mBlobVelocity[LEFT_PLAYER].y);
+	}
+	
+	if(rightGround){
+		mBlobPosition[RIGHT_PLAYER].y = GROUND_PLANE_HEIGHT;
+		mBlobVelocity[RIGHT_PLAYER].y = 0;
+	}else{
+		stream->Read(mBlobPosition[RIGHT_PLAYER].y);
+		stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
+	}
+	
 	stream->Read(mBlobPosition[LEFT_PLAYER].x);
-	stream->Read(mBlobPosition[LEFT_PLAYER].y);
 	stream->Read(mBlobPosition[RIGHT_PLAYER].x);
-	stream->Read(mBlobPosition[RIGHT_PLAYER].y);
 	stream->Read(mBallPosition.x);
 	stream->Read(mBallPosition.y);
 
-	stream->Read(mBlobVelocity[LEFT_PLAYER].y);
-	stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
 	stream->Read(mBallVelocity.x);
 	stream->Read(mBallVelocity.y);
 
@@ -515,15 +531,26 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 
 void PhysicWorld::getState(RakNet::BitStream* stream) const
 {
+	// if the blobbys are standing on the ground, we need not send
+	// y position and velocity
+	stream->Write(blobbyHitGround(LEFT_PLAYER));
+	stream->Write(blobbyHitGround(RIGHT_PLAYER));
+	
+	if(!blobbyHitGround(LEFT_PLAYER)){
+		stream->Write(mBlobPosition[LEFT_PLAYER].y);
+		stream->Write(mBlobVelocity[LEFT_PLAYER].y);
+	}
+	
+	if(!blobbyHitGround(RIGHT_PLAYER)){
+		stream->Write(mBlobPosition[RIGHT_PLAYER].y);
+		stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
+	}
+	
 	stream->Write(mBlobPosition[LEFT_PLAYER].x);
-	stream->Write(mBlobPosition[LEFT_PLAYER].y);
 	stream->Write(mBlobPosition[RIGHT_PLAYER].x);
-	stream->Write(mBlobPosition[RIGHT_PLAYER].y);
 	stream->Write(mBallPosition.x);
 	stream->Write(mBallPosition.y);
-
-	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
-	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
+	
 	stream->Write(mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
 
@@ -538,15 +565,27 @@ void PhysicWorld::getState(RakNet::BitStream* stream) const
 
 void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 {
+	// if the blobbys are standing on the ground, we need not send
+	// y position and velocity
+	stream->Write(blobbyHitGround(RIGHT_PLAYER));
+	stream->Write(blobbyHitGround(LEFT_PLAYER));
+	
+	if(!blobbyHitGround(RIGHT_PLAYER)){
+		stream->Write(mBlobPosition[RIGHT_PLAYER].y);
+		stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
+	}
+	
+	if(!blobbyHitGround(LEFT_PLAYER)){
+		stream->Write(mBlobPosition[LEFT_PLAYER].y);
+		stream->Write(mBlobVelocity[LEFT_PLAYER].y);
+	}
+	
+	
 	stream->Write(800 - mBlobPosition[RIGHT_PLAYER].x);
-	stream->Write(mBlobPosition[RIGHT_PLAYER].y);
 	stream->Write(800 - mBlobPosition[LEFT_PLAYER].x);
-	stream->Write(mBlobPosition[LEFT_PLAYER].y);
 	stream->Write(800 - mBallPosition.x);
 	stream->Write(mBallPosition.y);
 
-	stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
-	stream->Write(mBlobVelocity[LEFT_PLAYER].y);
 	stream->Write(-mBallVelocity.x);
 	stream->Write(mBallVelocity.y);
 
