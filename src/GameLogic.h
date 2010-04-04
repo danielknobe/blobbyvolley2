@@ -51,6 +51,8 @@ class CGameLogic
 		// method for querying the serving player
 		PlayerSide getServingPlayer() const;
 		
+		void setServingPlayer(PlayerSide side);
+		
 		// returns the winning player or NO_PLAYER if the
 		// game still runs
 		PlayerSide getWinningPlayer() const;

@@ -90,6 +90,11 @@ PlayerSide CGameLogic::getServingPlayer() const
 	return mServingPlayer;
 }
 
+void CGameLogic::setServingPlayer(PlayerSide side)
+{
+	mServingPlayer = side;
+}
+
 PlayerSide CGameLogic::getWinningPlayer() const
 {
 	return mWinningPlayer;
