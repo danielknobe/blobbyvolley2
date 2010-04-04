@@ -93,7 +93,7 @@ public:
 		       bool leftWarning, bool rightWarning);
 
 	virtual void setPlayernames(std::string leftName, std::string rightName);
-	virtual void RenderManagerSDL::setTime(const std::string& t);
+	virtual void setTime(const std::string& t);
 
 	virtual void setMouseMarker(float position);
 			       
