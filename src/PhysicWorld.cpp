@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 #include "raknet/BitStream.h"
 
+#include <limits>
+
 const int TIMESTEP = 5; // calculations per frame
 
 const float TIMEOUT_MAX = 2.5;
@@ -491,6 +493,22 @@ bool PhysicWorld::getBallActive() const
 	return mIsGameRunning;
 }
 
+void writeCompressedToBitStream(RakNet::BitStream* stream, float value, float min, float max)
+{
+	assert(min <= value && value <= max);
+	assert(stream);
+	unsigned short only2bytes = static_cast<unsigned short>((value - min) / (max - min) * std::numeric_limits<unsigned short>::max());
+	stream->Write(only2bytes);
+}
+
+void readCompressedFromBitStream(RakNet::BitStream* stream, float& value, float min, float max)
+{
+	unsigned short only2bytes;
+	stream->Read(only2bytes);
+	value = static_cast<float>(only2bytes) / static_cast<float>(std::numeric_limits<unsigned short>::max()) * (max - min) + min;
+}
+
+
 void PhysicWorld::setState(RakNet::BitStream* stream)
 {
 	bool leftGround;
@@ -501,25 +519,28 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 		mBlobPosition[LEFT_PLAYER].y = GROUND_PLANE_HEIGHT;
 		mBlobVelocity[LEFT_PLAYER].y = 0;
 	}else{
-		stream->Read(mBlobPosition[LEFT_PLAYER].y);
-		stream->Read(mBlobVelocity[LEFT_PLAYER].y);
+		readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		readCompressedFromBitStream(stream, mBlobVelocity[RIGHT_PLAYER].x, -30, 30);
 	}
 	
 	if(rightGround){
 		mBlobPosition[RIGHT_PLAYER].y = GROUND_PLANE_HEIGHT;
 		mBlobVelocity[RIGHT_PLAYER].y = 0;
 	}else{
-		stream->Read(mBlobPosition[RIGHT_PLAYER].y);
-		stream->Read(mBlobVelocity[RIGHT_PLAYER].y);
+		readCompressedFromBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		readCompressedFromBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
 	}
 	
-	stream->Read(mBlobPosition[LEFT_PLAYER].x);
-	stream->Read(mBlobPosition[RIGHT_PLAYER].x);
-	stream->Read(mBallPosition.x);
-	stream->Read(mBallPosition.y);
+	readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
+	readCompressedFromBitStream(stream, mBlobPosition[RIGHT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
+	
+	readCompressedFromBitStream(stream, mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
+	// maybe these values is a bit too pessimistic...
+	// but we have 65535 values, hence it should be precise enough
+	readCompressedFromBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
 
-	stream->Read(mBallVelocity.x);
-	stream->Read(mBallVelocity.y);
+	readCompressedFromBitStream(stream, mBallVelocity.x, -30, 30);
+	readCompressedFromBitStream(stream, mBallVelocity.y, -30, 30);
 
 	stream->Read(mPlayerInput[LEFT_PLAYER].left);
 	stream->Read(mPlayerInput[LEFT_PLAYER].right);
@@ -537,22 +558,23 @@ void PhysicWorld::getState(RakNet::BitStream* stream) const
 	stream->Write(blobbyHitGround(RIGHT_PLAYER));
 	
 	if(!blobbyHitGround(LEFT_PLAYER)){
-		stream->Write(mBlobPosition[LEFT_PLAYER].y);
-		stream->Write(mBlobVelocity[LEFT_PLAYER].y);
+		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
 	if(!blobbyHitGround(RIGHT_PLAYER)){
-		stream->Write(mBlobPosition[RIGHT_PLAYER].y);
-		stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
+		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
 	}
 	
-	stream->Write(mBlobPosition[LEFT_PLAYER].x);
-	stream->Write(mBlobPosition[RIGHT_PLAYER].x);
-	stream->Write(mBallPosition.x);
-	stream->Write(mBallPosition.y);
+	writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
+	writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
 	
-	stream->Write(mBallVelocity.x);
-	stream->Write(mBallVelocity.y);
+	writeCompressedToBitStream(stream, mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
+	writeCompressedToBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
+
+	writeCompressedToBitStream(stream, mBallVelocity.x, -30, 30);
+	writeCompressedToBitStream(stream, mBallVelocity.y, -30, 30);
 
 	stream->Write(mPlayerInput[LEFT_PLAYER].left);
 	stream->Write(mPlayerInput[LEFT_PLAYER].right);
@@ -570,24 +592,24 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 	stream->Write(blobbyHitGround(RIGHT_PLAYER));
 	stream->Write(blobbyHitGround(LEFT_PLAYER));
 	
-	if(!blobbyHitGround(RIGHT_PLAYER)){
-		stream->Write(mBlobPosition[RIGHT_PLAYER].y);
-		stream->Write(mBlobVelocity[RIGHT_PLAYER].y);
-	}
-	
 	if(!blobbyHitGround(LEFT_PLAYER)){
-		stream->Write(mBlobPosition[LEFT_PLAYER].y);
-		stream->Write(mBlobVelocity[LEFT_PLAYER].y);
+		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
+	if(!blobbyHitGround(RIGHT_PLAYER)){
+		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
+	}
 	
-	stream->Write(800 - mBlobPosition[RIGHT_PLAYER].x);
-	stream->Write(800 - mBlobPosition[LEFT_PLAYER].x);
-	stream->Write(800 - mBallPosition.x);
-	stream->Write(mBallPosition.y);
+	writeCompressedToBitStream(stream, 800 - mBlobPosition[RIGHT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
+	writeCompressedToBitStream(stream, 800 - mBlobPosition[LEFT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
+	
+	writeCompressedToBitStream(stream, 800 - mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
+	writeCompressedToBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
 
-	stream->Write(-mBallVelocity.x);
-	stream->Write(mBallVelocity.y);
+	writeCompressedToBitStream(stream, -mBallVelocity.x, -30, 30);
+	writeCompressedToBitStream(stream, mBallVelocity.y, -30, 30);
 
 	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
 	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
