@@ -439,10 +439,14 @@ void NetworkGameState::step()
 				// read and set new score
 				int nLeftScore;
 				int nRightScore;
+				int time;
 				stream.Read(nLeftScore);
 				stream.Read(nRightScore);
+				stream.Read(time);
 				mFakeMatch->setScore(nLeftScore, nRightScore);
 				mFakeMatch->setServingPlayer(mServingPlayer);
+				// sync the clocks... normally, they should not differ
+				mFakeMatch->getClock().setTime(time);
 				
 				if (nLeftScore == 0 && nRightScore == 0)
 					mReplayRecorder->setServingPlayer(mServingPlayer);

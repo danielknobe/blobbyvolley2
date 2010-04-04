@@ -88,12 +88,14 @@ enum MessageType
 // 	Description:
 // 		 Message sent from server to all clients when the ball
 // 		 is reset to the starting position. It includes an information
-// 		 about the current point state.
+// 		 about the current point state and is used to synchronize
+//		 the clocks.
 // 	Structure:
 // 		ID_BALL_RESET
 // 		serving player (PlayerSide)
 // 		left score (int)
 // 		right score (int)
+//		time (int)
 //
 // ID_BALL_GROUND_COLLISION
 // 	Description:

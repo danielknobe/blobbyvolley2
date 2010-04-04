@@ -286,6 +286,7 @@ bool NetworkGame::step()
 		stream.Write(mMatch->getServingPlayer());
 		stream.Write(mMatch->getScore(LEFT_PLAYER));
 		stream.Write(mMatch->getScore(RIGHT_PLAYER));
+		stream.Write(mMatch->getClock().getTime());
 
 		RakNet::BitStream switchStream;
 		switchStream.Write((unsigned char)ID_BALL_RESET);
@@ -293,6 +294,7 @@ bool NetworkGame::step()
 			mMatch->getServingPlayer() == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 		switchStream.Write(mMatch->getScore(RIGHT_PLAYER));
 		switchStream.Write(mMatch->getScore(LEFT_PLAYER));
+		switchStream.Write(mMatch->getClock().getTime());
 
 		broadcastBitstream(&stream, &switchStream);
 	}
