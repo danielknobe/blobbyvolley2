@@ -175,45 +175,9 @@ void LocalGameState::step()
 		if (mMatch->winningPlayer() != NO_PLAYER)
 			mWinner = true;
 			
+		presentGame(*mMatch);
 		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
-		rmanager->setScore(mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER),
-			mMatch->getServingPlayer() == LEFT_PLAYER, mMatch->getServingPlayer() == RIGHT_PLAYER);
-			
-		rmanager->setBlob(LEFT_PLAYER, mMatch->getBlobPosition(LEFT_PLAYER),
-			mMatch->getWorld().getBlobState(LEFT_PLAYER));
-		rmanager->setBlob(RIGHT_PLAYER, mMatch->getBlobPosition(RIGHT_PLAYER),
-			mMatch->getWorld().getBlobState(RIGHT_PLAYER));
-		
-		rmanager->setBall(mMatch->getBallPosition(),
-				mMatch->getWorld().getBallRotation());
-				
-		rmanager->setTime(mMatch->getClock().getTimeString());
-				
-		int events = mMatch->getEvents();
-		SoundManager* smanager = &SoundManager::getSingleton();
-		if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
-		{
-			smanager->playSound("sounds/bums.wav",
-					mMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mMatch->getBallPosition() +
-					(mMatch->getBlobPosition(LEFT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().lastHitIntensity(), 0);
-		}
-		
-		if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
-		{
-			smanager->playSound("sounds/bums.wav",
-				mMatch->getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = mMatch->getBallPosition() +
-				(mMatch->getBlobPosition(RIGHT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().lastHitIntensity(), 1);
-		}
-		
-		if (events & DuelMatch::EVENT_ERROR)
-		{
-			smanager->playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-		}
 	}
 }
 

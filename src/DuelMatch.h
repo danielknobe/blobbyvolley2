@@ -70,20 +70,20 @@ public:
 	// positions and for lua export, which makes them accessable
 	// for scripted input sources
 
-	int getScore(PlayerSide player);
-	PlayerSide getServingPlayer();
+	int getScore(PlayerSide player) const;
+	PlayerSide getServingPlayer() const;
 
-	int getHitcount(PlayerSide player);
+	int getHitcount(PlayerSide player) const;
 
-	Vector2 getBallPosition();
-	Vector2 getBallVelocity();
-	Vector2 getBlobPosition(PlayerSide player);
+	Vector2 getBallPosition() const;
+	Vector2 getBallVelocity() const;
+	Vector2 getBlobPosition(PlayerSide player) const;
 	
 	const PhysicWorld& getWorld() const{ return mPhysicWorld; };
 	const Clock& getClock() const;
 
-	bool getBallDown();
-	bool getBallActive();
+	bool getBallDown() const;
+	bool getBallActive() const;
 	
 	void pause();
 	void unpause();
@@ -91,19 +91,19 @@ public:
 	bool isPaused() const{ return mPaused; }
 
 	// Estimates Ball impact point
-	float getBallEstimation();
+	float getBallEstimation() const;
 
-	Vector2 getBallTimeEstimation(int steps);
+	Vector2 getBallTimeEstimation(int steps) const;
 
 	// This functions returns true if the player launched
 	// and is jumping at the moment
-	bool getBlobJump(PlayerSide player);
+	bool getBlobJump(PlayerSide player) const;
 
 	// Set a new state received from server over a RakNet BitStream
 	void setState(RakNet::BitStream* stream);
 
 	//Input stuff for recording and playing replays
-	const PlayerInput* getPlayersInput();
+	const PlayerInput* getPlayersInput() const;
 	void setPlayersInput(PlayerInput* input);
 	
 	void setServingPlayer(PlayerSide side);
