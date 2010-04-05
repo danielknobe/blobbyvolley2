@@ -7,6 +7,8 @@ include_directories(.)
 
 set(common_SRC	
 	Global.h
+	Clock.cpp Clock.h
+	DuelMatch.cpp DuelMatch.h
 	NetworkGame.cpp NetworkGame.h
 	NetworkMessage.cpp NetworkMessage.h
 	GameLogic.cpp GameLogic.h
@@ -18,7 +20,6 @@ set(common_SRC
 set (blobby_SRC ${common_SRC}
 	Blood.cpp Blood.h
 	TextManager.cpp TextManager.h
-	DuelMatch.cpp DuelMatch.h
 	main.cpp
 	IMGUI.cpp IMGUI.h
 	InputDevice.cpp InputDevice.h
