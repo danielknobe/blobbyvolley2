@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 
 class RakServer;
+class ReplayRecorder;
 
 typedef std::list<packet_ptr> PacketQueue;
 
@@ -76,6 +77,7 @@ private:
 	DummyInputSource* mRightInput;
 	PlayerSide mWinningPlayer;
 
+	ReplayRecorder* mRecorder;
 
 	bool mPausing;
 

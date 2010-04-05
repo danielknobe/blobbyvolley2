@@ -42,6 +42,7 @@ enum MessageType
 	ID_BLOBBY_SERVER_PRESENT,
 	ID_OLD_CLIENT,
 	ID_UNKNOWN_CLIENT,
+	ID_REPLAY
 
 };
 
@@ -73,6 +74,7 @@ enum MessageType
 // 		ID_PHYSIC_UPDATE
 // 		ID_TIMESTAMP
 // 		timestamp (int)
+//		packet_number (unsigned char)
 // 		Physic data (analysed by PhysicWorld)
 //
 // ID_WIN_NOTIFICATION
@@ -185,6 +187,15 @@ enum MessageType
 // 		recent than the server
 // 	Structure:
 // 		ID_UNKNOWN_CLIENT
+//
+// ID_REPLAY
+// 	Description:
+// 		Sent from client to server to request a replay
+// 		Sent from server to client to transmitt the replay
+// 	Structure:
+// 		ID_REPLAY
+//		size (int)
+//		data
 //
 
 class UserConfig;

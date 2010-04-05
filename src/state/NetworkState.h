@@ -97,7 +97,6 @@ private:
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
 
-	ReplayRecorder* mReplayRecorder;
 	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
 				// access the necessary game variables
 

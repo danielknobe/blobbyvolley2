@@ -26,11 +26,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "Blood.h"
 
-#include "ReplayRecorder.h"
-
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
+
+#include <physfs.h>
 
 #include "IMGUI.h"
 #include "SoundManager.h"
@@ -314,8 +314,6 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	else
 		mNetworkState = CONNECTION_FAILED;
 
-	mReplayRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
-
 	mFakeMatch = new DuelMatch(0, 0, true);
 	// game is not started until two players are connected 
 	mFakeMatch->pause();
@@ -346,7 +344,6 @@ NetworkGameState::~NetworkGameState()
 	mClient->Disconnect(50);
 	delete mLocalInput;
 	delete mClient;
-	delete mReplayRecorder;
 	delete mFakeMatch;
 }
 
@@ -405,7 +402,6 @@ void NetworkGameState::step()
 				stream.Read(ival);	//TODO: un-lag based on timestamp delta
 				//printf("Physic packet received. Time: %d\n", ival);
 				mFakeMatch->setState(&stream);
-				mReplayRecorder->record(mFakeMatch->getPlayersInput());
 				break;
 			}
 			case ID_WIN_NOTIFICATION:
@@ -447,9 +443,6 @@ void NetworkGameState::step()
 				mFakeMatch->setServingPlayer(mServingPlayer);
 				// sync the clocks... normally, they should not differ
 				mFakeMatch->getClock().setTime(time);
-				
-				if (nLeftScore == 0 && nRightScore == 0)
-					mReplayRecorder->setServingPlayer(mServingPlayer);
 				break;
 			}
 			case ID_BALL_GROUND_COLLISION:
@@ -508,7 +501,6 @@ void NetworkGameState::step()
 				
 				// set names in render manager
 				RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
-				mReplayRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
 				mRemotePlayer->setColor(ncolor);
 				
 				// Workarround for SDL-Renderer
@@ -555,6 +547,28 @@ void NetworkGameState::step()
 				SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				break;
 			}
+			case ID_REPLAY:
+			{
+				std::cout<<"client received ID_REPLAY\n";
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	// ID_REPLAY
+				int length;
+				stream.Read(length);
+				char* data = new char[length];
+				stream.Read(data, length);
+				PHYSFS_file* fileHandle = PHYSFS_openWrite((std::string("replays/") + mFilename + std::string(".bvr")).c_str());
+				if (!fileHandle)
+				{
+					std::cerr << "Warning: Unable to write to ";
+					std::cerr << PHYSFS_getWriteDir() << std::string("replays/") + mFilename + std::string(".bvr");
+					std::cerr << std::endl;
+					return;
+				}
+			
+				PHYSFS_write(fileHandle, data, 1, length);
+				PHYSFS_close(fileHandle);
+				break;
+			}
 			default:
 				printf("Received unknown Packet %d\n", packet->data[0]);
 				std::cout<<packet->data<<"\n";
@@ -589,7 +603,11 @@ void NetworkGameState::step()
 		{
 			if (mFilename != "")
 			{
-				mReplayRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
+				// request replay from server
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_REPLAY);
+				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
+				std::cout<<"send ID_REPLAY";
 			}
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -810,6 +828,7 @@ void NetworkHostState::step()
 			case ID_CHAT_MESSAGE:
 			case ID_PAUSE:
 			case ID_UNPAUSE:
+			case ID_REPLAY:
 			{
 				if (packet->playerId == mLocalPlayer ||
 					packet->playerId == mRemotePlayer)
