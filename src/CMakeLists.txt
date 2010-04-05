@@ -9,6 +9,7 @@ set(common_SRC
 	Global.h
 	Clock.cpp Clock.h
 	DuelMatch.cpp DuelMatch.h
+	ReplayRecorder.cpp ReplayRecorder.h
 	NetworkGame.cpp NetworkGame.h
 	NetworkMessage.cpp NetworkMessage.h
 	GameLogic.cpp GameLogic.h
@@ -31,7 +32,6 @@ set (blobby_SRC ${common_SRC}
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
 	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
-	ReplayRecorder.cpp ReplayRecorder.h
 	ScriptedInputSource.cpp ScriptedInputSource.h	
 	SoundManager.cpp SoundManager.h
 	Vector.h
