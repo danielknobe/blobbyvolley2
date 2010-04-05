@@ -17,11 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+#include <sstream>
+
 #include "NetworkGame.h"
 #include "NetworkMessage.h"
+#include "ReplayRecorder.h"
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
+
+#include <physfs.h>
 
 // We don't need the stringcompressor
 
@@ -45,6 +50,10 @@ NetworkGame::NetworkGame(RakServer& server,
 	mWinningPlayer = NO_PLAYER;
 
 	mPausing = false;
+
+	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
+	mRecorder->setPlayerNames(mLeftPlayerName.c_str(), mRightPlayerName.c_str());
+	mRecorder->setServingPlayer(LEFT_PLAYER);
 
 	// buffer for playernames
 	char name[16];
@@ -181,12 +190,46 @@ bool NetworkGame::step()
 					mServer.Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
 			break;
 			}
+			case ID_REPLAY:
+			{
+				// this should ensure that the created temponaries have unique names
+				std::stringstream temp;
+				temp << "replays/";
+				temp << RakNet::GetTime();
+				temp << packet->playerId.binaryAddress;
+				std::string file = temp.str();
+				mRecorder->save(file);
+				
+				PHYSFS_file* fileHandle = PHYSFS_openRead(file.c_str());
+				// what should we do if an error occures here?
+				//if (!fileHandle)
+				//	throw FileLoadException(filename);
+				int fileLength = PHYSFS_fileLength(fileHandle);
+				//if (fileLength < 8) {}
+				char* data = new char[fileLength];
+				PHYSFS_read(fileHandle, data, 1, fileLength);
+				
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_REPLAY);
+				stream.Write(fileLength);
+				stream.Write(data, fileLength);
+				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+				
+				delete[] data;
+				PHYSFS_close(fileHandle);
+				PHYSFS_delete(file.c_str());
+				break;
+			}
 			default:
 				printf("unknown packet %d received\n",
 					int(packet->data[0]));
 			break;
 		}
 	}
+	
+	// don't record the pauses
+	if(!mMatch->isPaused())
+		mRecorder->record(mMatch->getPlayersInput());
 	
 	mMatch->step();
 
