@@ -52,7 +52,7 @@ class Clock{
 	private:
 		bool mRunning;
 		
-		int mGameTime;
-		int mLastTime;
+		time_t mGameTime;
+		time_t mLastTime;
 		
 };
