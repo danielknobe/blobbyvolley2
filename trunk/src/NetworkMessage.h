@@ -42,8 +42,8 @@ enum MessageType
 	ID_BLOBBY_SERVER_PRESENT,
 	ID_OLD_CLIENT,
 	ID_UNKNOWN_CLIENT,
-	ID_REPLAY
-
+	ID_REPLAY,
+	ID_CHAT_MESSAGE
 };
 
 // General Information:
