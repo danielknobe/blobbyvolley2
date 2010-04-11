@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool global):mLogic(createGameLogic(OLD_RULES)), events(0), external_events(0), mPaused(false)
+				bool global, bool remote):mLogic(createGameLogic(OLD_RULES)), events(0), 
+					external_events(0), mPaused(false), mRemote(remote)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -73,27 +74,35 @@ void DuelMatch::step()
 	mLogic->step();
 	
 	// check for all hit events
-	if (mPhysicWorld.ballHitLeftPlayer() && mLogic->isCollisionValid(LEFT_PLAYER))
+	if(!mRemote)
 	{
-		events |= EVENT_LEFT_BLOBBY_HIT;
-		mLogic->onBallHitsPlayer(LEFT_PLAYER);
-	}
+		if (mPhysicWorld.ballHitLeftPlayer())
+			events |= EVENT_LEFT_BLOBBY_HIT;
 
-	if (mPhysicWorld.ballHitRightPlayer() && mLogic->isCollisionValid(RIGHT_PLAYER))
-	{
-		events |= EVENT_RIGHT_BLOBBY_HIT;
+		if (mPhysicWorld.ballHitRightPlayer())
+			events |= EVENT_RIGHT_BLOBBY_HIT;
+
+		if(mPhysicWorld.ballHitLeftGround())
+			events |= EVENT_BALL_HIT_LEFT_GROUND;
+
+		if(mPhysicWorld.ballHitRightGround())
+			events |= EVENT_BALL_HIT_RIGHT_GROUND;
+	}
+	
+	// process events
+	if (events & EVENT_LEFT_BLOBBY_HIT)
+		mLogic->onBallHitsPlayer(LEFT_PLAYER);
+	
+	if (events & EVENT_RIGHT_BLOBBY_HIT)
 		mLogic->onBallHitsPlayer(RIGHT_PLAYER);
-	}
 	
-	if(mPhysicWorld.ballHitLeftGround()){
+	if(events & EVENT_BALL_HIT_LEFT_GROUND)
 		mLogic->onBallHitsGround(LEFT_PLAYER);
-		events |= EVENT_BALL_HIT_LEFT_GROUND;
-	}
 	
-	if(mPhysicWorld.ballHitRightGround()){
+	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
 		mLogic->onBallHitsGround(RIGHT_PLAYER);
-		events |= EVENT_BALL_HIT_RIGHT_GROUND;
-	}
+	
+	
 
 	switch(mLogic->getLastErrorSide()){
 		case LEFT_PLAYER:

@@ -62,7 +62,7 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
 	mRecorder->setServingPlayer(LEFT_PLAYER);
 
-	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true);
+	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false);
 
 	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();

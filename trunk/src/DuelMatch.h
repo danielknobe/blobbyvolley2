@@ -42,8 +42,11 @@ public:
 	// If global is true, the instance registered as the main
 	// game and can be accessed from everywhere. There can only
 	// be one global game at a time, otherwise an assertion fails.
+	
+	// If remote is true, only physical responses will be calculated
+	// but hit events and score events are received from network
 
-	DuelMatch(InputSource* linput, InputSource* rinput, bool global);
+	DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote);
 
 	~DuelMatch();
 
@@ -137,7 +140,8 @@ private:
 	bool mBallDown;
 	
 	bool mPaused;
-	
+
 	int events;
 	int external_events;
+	bool mRemote;
 };

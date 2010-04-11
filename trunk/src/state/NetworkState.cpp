@@ -314,7 +314,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	else
 		mNetworkState = CONNECTION_FAILED;
 
-	mFakeMatch = new DuelMatch(0, 0, true);
+	mFakeMatch = new DuelMatch(0, 0, true, true);
 	// game is not started until two players are connected 
 	mFakeMatch->pause();
 	
@@ -447,17 +447,42 @@ void NetworkGameState::step()
 			}
 			case ID_BALL_GROUND_COLLISION:
 			{
-				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				int side;
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	//ID_BALL_GROUND_COLLISION
+				stream.Read(side);
+				// WHY ARE THE SIDES INVERTED ???
+				switch((PlayerSide)side){
+					case LEFT_PLAYER:
+						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND);
+						break;
+					case RIGHT_PLAYER:
+						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_LEFT_GROUND);
+						break;
+					default:
+						assert(0);
+				}
 				break;
 			}
 			case ID_BALL_PLAYER_COLLISION:
 			{
 				float intensity;
+				int side;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
+				// FIXME ensure that this intensity is used
 				stream.Read(intensity);
-				SoundManager::getSingleton().playSound("sounds/bums.wav",
-						intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
+				stream.Read(side);
+				switch((PlayerSide)side){
+					case LEFT_PLAYER:
+						mFakeMatch->trigger(DuelMatch::EVENT_LEFT_BLOBBY_HIT);
+						break;
+					case RIGHT_PLAYER:
+						mFakeMatch->trigger(DuelMatch::EVENT_RIGHT_BLOBBY_HIT);
+						break;
+					default:
+						assert(0);
+				}
 				break;
 			}
 			case ID_PAUSE:
@@ -579,7 +604,7 @@ void NetworkGameState::step()
 	PlayerInput input = mNetworkState == PLAYING ?
 		mLocalInput->getInput() : PlayerInput();
 
-	presentGame(*mFakeMatch, false);
+	presentGame(*mFakeMatch);
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 
