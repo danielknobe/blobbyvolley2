@@ -245,7 +245,7 @@ int main(int argc, char** argv)
 					bool cond2 = firstPlayer == packet->playerId;
 					if (cond1 && cond2)
 						firstPlayerSide = NO_PLAYER;
-					if (playermap[packet->playerId])
+					if (playermap.find(packet->playerId) != playermap.end())
 						playermap[packet->playerId]->injectPacket(packet);
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
@@ -427,16 +427,29 @@ int main(int argc, char** argv)
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
 			}
 		}
+
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
 			if (!(*iter)->step())
 			{
 				PlayerMap::iterator piter = playermap.begin();
+				
 				while (piter != playermap.end())
 				{
-						if (piter->second == *iter)
-							playermap.erase(piter);
+					if (piter->second == *iter)
+					{
+						playermap.erase(piter);
+						// FIXME
+						// I'm not sure whether there is a more elegant method
+						// that continue with the next valid iterator,
+						// but this prevents the crash caused by 
+						// unchecked incrementing uf invalid iterators
+						piter = playermap.begin();
+					}
+					else
+					{
 						++piter;
+					}
 				}
 				delete *iter;
 				iter = gamelist.erase(iter);
