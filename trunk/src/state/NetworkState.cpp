@@ -300,6 +300,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	UserConfig config;
 	config.loadFile("config.xml");
 	mOwnSide = (PlayerSide)config.getInteger("network_side");
+	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput = new LocalInputSource(mOwnSide);
 	mSaveReplay = false;
 	std::stringstream temp;
@@ -345,23 +346,6 @@ NetworkGameState::~NetworkGameState()
 	delete mLocalInput;
 	delete mClient;
 	delete mFakeMatch;
-}
-
-void NetworkGameState::setLeftColor(Color ncol){
-	mLeftPlayer.setColor(ncol);
-	RenderManager::getSingleton().setBlobColor(0, mLeftPlayer.getColor());
-	RenderManager::getSingleton().redraw();
-}
-void NetworkGameState::setRightColor(Color ncol){
-	mRightPlayer.setColor(ncol);
-	RenderManager::getSingleton().setBlobColor(1, mRightPlayer.getColor());
-	RenderManager::getSingleton().redraw();
-}
-Color NetworkGameState::getLeftColor() const{
-	return mLeftPlayer.getColor();
-}
-Color NetworkGameState::getRightColor() const{
-	return mRightPlayer.getColor();
 }
 
 void NetworkGameState::step()
@@ -526,7 +510,14 @@ void NetworkGameState::step()
 				
 				// set names in render manager
 				RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
-				mRemotePlayer->setColor(ncolor);
+				
+				// check whether to use remote player color
+				if(mUseRemoteColor){
+					mRemotePlayer->setColor(ncolor);
+					RenderManager::getSingleton().setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
+					RenderManager::getSingleton().setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
+					RenderManager::getSingleton().redraw();
+				}
 				
 				// Workarround for SDL-Renderer
 				// Hides the GUI when networkgame starts
@@ -574,7 +565,6 @@ void NetworkGameState::step()
 			}
 			case ID_REPLAY:
 			{
-				std::cout<<"client received ID_REPLAY\n";
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
 				int length;
@@ -632,7 +622,6 @@ void NetworkGameState::step()
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_REPLAY);
 				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
-				std::cout<<"send ID_REPLAY";
 			}
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -918,10 +907,10 @@ void NetworkHostState::step()
 					// set the color
 					switch(newSide){
 						case LEFT_PLAYER:
-							mGameState->setLeftColor(color);
+							mLeftColor = color;
 							break;
 						case RIGHT_PLAYER:
-							mGameState->setRightColor(color);
+							mRightColor = color;
 							break;
 					}
 				}
@@ -942,7 +931,7 @@ void NetworkHostState::step()
 						leftPlayerName = mLocalPlayerName;
 						rightPlayerName = playerName;
 						// set other color
-						mGameState->setRightColor(color);
+						mRightColor = color;
 					}
 					else
 					{
@@ -951,7 +940,7 @@ void NetworkHostState::step()
 						leftPlayerName = playerName;
 						rightPlayerName = mLocalPlayerName;
 						// set other color
-						mGameState->setLeftColor(color);
+						mLeftColor = color;
 					}
 
 					PlayerSide switchSide = NO_PLAYER;
@@ -966,7 +955,7 @@ void NetworkHostState::step()
 					mNetworkGame = new NetworkGame(
 						*mServer, leftPlayer, rightPlayer,
 						leftPlayerName, rightPlayerName,
-						mGameState->getLeftColor(), mGameState->getRightColor(),
+						mLeftColor, mRightColor,
 						switchSide);
 				}
 			}

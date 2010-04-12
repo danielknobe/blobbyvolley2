@@ -62,11 +62,7 @@ public:
 	NetworkGameState(const std::string& servername, Uint16 port);
 	virtual ~NetworkGameState();
 	virtual void step();
-
-	void setLeftColor(Color ncol);
-	void setRightColor(Color ncol);
-	Color getLeftColor() const;
-	Color getRightColor() const;
+	
 private:
 	enum
 	{
@@ -86,6 +82,8 @@ private:
 	
 	Player* mLocalPlayer;
 	Player* mRemotePlayer;
+	
+	bool mUseRemoteColor;
 
 	InputSource* mLocalInput;
 	PlayerSide mServingPlayer;
@@ -126,6 +124,8 @@ private:
 	PlayerSide mLocalPlayerSide;
 	PlayerID mLocalPlayer;
 	PlayerID mRemotePlayer;
+	Color mLeftColor;
+	Color mRightColor;
 	std::string mLocalPlayerName;
 	std::string mRemotePlayerName;
 };
