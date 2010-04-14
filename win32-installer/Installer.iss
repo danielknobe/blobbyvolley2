@@ -17,15 +17,15 @@ Name: "fr"; MessagesFile: "languages\French.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Version 0.7"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Version 0.9b"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2.0 Version 0.8
-AppVerName=Blobby Volley 2.0 Version 0.8
-DefaultDirName={pf}\Blobby Volley 2.0 Version 0.8
-DefaultGroupName=Blobby Volley 2.0 Version 0.8
+AppName=Blobby Volley 2.0 Version 0.9b
+AppVerName=Blobby Volley 2.0 Version 0.9b
+DefaultDirName={pf}\Blobby Volley 2.0 Version 0.9b
+DefaultGroupName=Blobby Volley 2.0 Version 0.9b
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
@@ -44,6 +44,7 @@ Source: "../README.txt"; DestDir: "{app}"; Flags: isreadme
 Source: "../COPYING.txt";DestDir: "{app}";
 Source: "../AUTHORS.txt";DestDir: "{app}";
 Source: "../SDL.dll"; DestDir: "{app}"
+Source: "../physfs.dll"; DestDir: "{app}"
 Source: "../data/*"; DestDir: "{app}/data"
 
 Source: "../doc/*"; DestDir: "{app}/doc"

@@ -24,7 +24,10 @@ set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	config.xml
 	inputconfig.xml
-	server.xml)
+	server.xml
+	lang_de.xml
+	lang_en.xml
+	lang_fr.xml)
 
 if (WIN32)
 	install(FILES ${install_files} DESTINATION data)
