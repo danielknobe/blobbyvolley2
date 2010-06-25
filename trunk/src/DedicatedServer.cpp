@@ -410,6 +410,7 @@ int main(int argc, char** argv)
 		{
 			if (!(*iter)->step())
 			{
+				std::cout<<"Start END GAME\n";
 				PlayerMap::iterator piter = playermap.begin();
 				
 				while (piter != playermap.end())
@@ -427,10 +428,15 @@ int main(int argc, char** argv)
 					else
 					{
 						++piter;
+						std::cout<<"inc piter\n";
 					}
 				}
 				delete *iter;
 				iter = gamelist.erase(iter);
+				// workarround to prevent increment of
+				// past-end-iterator
+				if(iter == gamelist.end())
+					break;
 			}
 		}
 		scontroller.update();
