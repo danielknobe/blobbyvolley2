@@ -342,60 +342,37 @@ int main(int argc, char** argv)
 					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
 
-					int ival;
-					int major;
-					int minor;
+                                        // If the client knows nothing about versioning, the version is 0.0
+                                        int major = 0;
+                                        int minor = 0;
+                                        bool wrongPackageSize = true;
 
-					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
-					stream.Read(major);
-					stream.Read(minor);
-					if (packet->bitSize != 72)
-					// We need special treatment when the client does
-					// not know anything about versioning at all.
-					{
-						major = BLOBBY_VERSION_MAJOR;
-						minor = BLOBBY_VERSION_MINOR;
+                                        // actuel client has bytesize 72
 
-						/*
-						ServerInfo oldInfo;
-						oldInfo.activegames = 0;
-						strncpy(oldInfo.name,
-							"Please update your Client!", 32);
-						strncpy(oldInfo.waitingplayer, "", 64);
-						strncpy(oldInfo.description,
-							"Your client is to old to connect "
-							"to this server. Get a new version"
-							" at                  "
-							"blobby.sourceforge.net"
-							, 192);
-
-						stream.Reset();
-						stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
-						oldInfo.writeToBitstream(stream);
-						server.Send(&stream, HIGH_PRIORITY,
-							RELIABLE_ORDERED, 0,
-							packet->playerId, false);
-						*/
-
-					}
+                                        if(packet->bitSize == 72)
+                                        {
+                                            stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
+                                            stream.Read(major);
+                                            stream.Read(minor);
+                                            wrongPackageSize = false;
+                                        }
 
 					RakNet::BitStream stream2;
 
-					if (major < BLOBBY_VERSION_MAJOR
+                                        if (wrongPackageSize)
+                                        {
+                                                printf("major: %d minor: %d\n", major, minor);
+                                                stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
+                                                server.Send(&stream2, LOW_PRIORITY,
+                                                        RELIABLE_ORDERED, 0, packet->playerId,
+                                                        false);
+                                        }
+                                        else if (major < BLOBBY_VERSION_MAJOR
 						|| (major == BLOBBY_VERSION_MINOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{
 						stream2.Write((unsigned char)ID_OLD_CLIENT);
-						server.Send(&stream2, HIGH_PRIORITY,
-							RELIABLE_ORDERED, 0, packet->playerId,
-							false);
-					}
-					else if (major != BLOBBY_VERSION_MAJOR ||
-							minor != BLOBBY_VERSION_MINOR)
-					{
-						printf("major: %d minor: %d\n", major, minor);
-						stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
-						server.Send(&stream2, HIGH_PRIORITY,
+                                                server.Send(&stream2, LOW_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);
 					}
