@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "Blood.h"
+#include <ctime>
 
 LocalGameState::~LocalGameState()
 {
@@ -46,7 +47,7 @@ LocalGameState::LocalGameState()
 	mWinner = false;
 	
 	std::stringstream temp;
-	temp << time(0);
+	temp << std::time(0);
 	mFilename = temp.str();
 	
 	mLeftPlayer.loadFromConfig("left");

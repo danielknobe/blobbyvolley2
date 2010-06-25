@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <algorithm>
 #include <sstream>
+#include <ctime>
 
 #include "NetworkState.h"
 #include "NetworkMessage.h"
@@ -304,7 +305,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mLocalInput = new LocalInputSource(mOwnSide);
 	mSaveReplay = false;
 	std::stringstream temp;
-	temp << time(0);
+	temp << std::time(0);
 	mFilename = temp.str();
 
 	RenderManager::getSingleton().redraw();
