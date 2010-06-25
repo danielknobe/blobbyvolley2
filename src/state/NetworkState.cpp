@@ -775,16 +775,6 @@ void NetworkGameState::step()
 				stream.Write((unsigned char)ID_UNPAUSE);
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 100), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
-			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
-			}
-			if (imgui.doButton(GEN_ID, Vector2(310, 130), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
-			{
-				mSaveReplay = true;
-				imgui.resetSelection();
-			}
 			// Chat
 			imgui.doSelectbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage);
 			if (imgui.doEditbox(GEN_ID, Vector2(10, 460), 30, mChattext, mChatCursorPosition))
@@ -806,6 +796,16 @@ void NetworkGameState::step()
 					mChatCursorPosition = 0;
 					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				}
+			}
+			if (imgui.doButton(GEN_ID, Vector2(500, 100), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
+			{
+				deleteCurrentState();
+				setCurrentState(new MainMenuState);
+			}
+			if (imgui.doButton(GEN_ID, Vector2(310, 130), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			{
+				mSaveReplay = true;
+				imgui.resetSelection();
 			}
 			imgui.doCursor();
 		}
