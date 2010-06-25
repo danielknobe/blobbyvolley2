@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
+#include <ctime>
 
 #ifndef WIN32
 #include <syslog.h>
@@ -54,13 +55,13 @@ enum {
 void syslog(int pri, const char* format, ...){
 	switch(pri){
 		case LOG_ERR:
-			std::cerr<<time(0)<<": "<<format<<"\n";
+			std::cerr<<std::time(0)<<": "<<format<<"\n";
 			break;
 		case LOG_NOTICE:
-			std::cout<<time(0)<<": "<<format<<"\n";
+			std::cout<<std::time(0)<<": "<<format<<"\n";
 			break;
 		case LOG_DEBUG:
-			std::cout<<time(0)<<": "<<format<<"\n";
+			std::cout<<std::time(0)<<": "<<format<<"\n";
 			break;
 		
 	}
@@ -447,8 +448,11 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		
+		#ifndef WIN32
 		usleep(1);
+		#else
+		Sleep(1);
+		#endif
 	}
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
 	#ifndef WIN32
