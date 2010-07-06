@@ -153,6 +153,9 @@ void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 			std::list<Sound>::iterator nextIter = ++iter;
 			playingSound.erase(eraseIter);
 			iter = nextIter;
+			// prevents increment of past-end-interator
+			if(iter == playingSound.end())
+				break;
 		}
 		else
 		{
