@@ -89,6 +89,7 @@ void NetworkSearchState::step()
 		iter != mQueryClients.end(); iter++)
 	{
 		bool skip = false;
+		bool skip_iter = false;
 		if (!skip)
 		while ((packet = receivePacket(*iter)) && !skip)
 		{
@@ -134,6 +135,8 @@ void NetworkSearchState::step()
 					(*iter)->Disconnect(50);
 					delete *iter;
 					iter = mQueryClients.erase(iter);
+					if (iter == mQueryClients.end())
+						skip_iter = true;
 					skip = true;
 					break;
 				}
@@ -144,6 +147,8 @@ void NetworkSearchState::step()
 			if (skip)
 				break;
 		}
+		if (skip_iter)
+			break;
 	}
 	while (packet = receivePacket(mPingClient))
 	{
