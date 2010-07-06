@@ -165,11 +165,17 @@ void setup_physfs(char* argv0)
 {
 	PHYSFS_init(argv0);
 	PHYSFS_addToSearchPath("data", 1);
+	
+	#if defined(WIN32)
+	// Just write in installation directory
+	PHYSFS_setWriteDir("data");
+	#else
 	std::string userdir = PHYSFS_getUserDir();
 	std::string userAppend = ".blobby";
 	std::string homedir = userdir + userAppend;
 	PHYSFS_addToSearchPath(homedir.c_str(), 0);
 	PHYSFS_setWriteDir(homedir.c_str());
+	#endif
 
 }
 
