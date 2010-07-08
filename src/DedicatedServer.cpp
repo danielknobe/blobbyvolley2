@@ -128,6 +128,11 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
+		
+		// -------------------------------------------------------------------------------
+		// process all incoming packets , probably relay them to responsible network games
+		// -------------------------------------------------------------------------------
+		
 		while ((packet = receivePacket(&server)))
 		{
 			switch(packet->data[0])
@@ -143,8 +148,24 @@ int main(int argc, char** argv)
 					bool cond2 = firstPlayer == packet->playerId;
 					if (cond1 && cond2)
 						firstPlayerSide = NO_PLAYER;
-					if ( playermap.find(packet->playerId) != playermap.end() )
+					if ( playermap.find(packet->playerId) != playermap.end() ) {
+						// inject the packet into the game
 						playermap[packet->playerId]->injectPacket(packet);
+						
+						// then delete the player ...
+						// if it was the last player, the game is delete, too.
+						// thus, give the game a last chance to process the last
+						// input
+						
+						// check, wether game was delete from this, in this case, process manually 
+						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
+						{
+							playermap[packet->playerId]->step();
+						}
+						// then delete
+						playermap.erase(packet->playerId);
+					}
+					
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
 					break;
@@ -154,17 +175,27 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 				case ID_CHAT_MESSAGE:
 				case ID_REPLAY:
-					if (playermap.find(packet->playerId) != playermap.end())
+					if (playermap.find(packet->playerId) != playermap.end()){
 						playermap[packet->playerId]->injectPacket(packet);
-					else
-						syslog(LOG_ERR, "player not found!");
 						
-						#ifndef NDEBUG
-						std::cout << " received game packet for no longer existing game!";
+						// check, wether game was delete from this, in this case, process manually 
+						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
+						{
+							playermap[packet->playerId]->step();
+						}
+						
+					} else {
+						syslog(LOG_ERR, "player not found!");
+						#ifdef DEBUG
+						std::cout	<< " received game packet for no longer existing game! " 
+									<< (int)packet->data[0] << " - "
+									<< packet->playerId.binaryAddress << " : " << packet->playerId.port
+									<< "\n";
 						// only quit in debug mode as this is not a problem endangering the stability
 						// of the running server, but a situation that should never occur.
 						return 3;
 						#endif
+					}
 						
 					break;
 				case ID_ENTER_GAME:
@@ -230,14 +261,20 @@ int main(int argc, char** argv)
 							if (newSide == RIGHT_PLAYER)
 								switchSide = LEFT_PLAYER;
 						}
-						NetworkGame* newgame = new NetworkGame(
+						boost::shared_ptr<NetworkGame> newgame (new NetworkGame(
 							server, leftPlayer, rightPlayer,
 							leftPlayerName, rightPlayerName,
 							leftColor, rightColor,
-							switchSide);
+							switchSide) );
+						
 						playermap[leftPlayer] = newgame;
 						playermap[rightPlayer] = newgame;
 						gamelist.push_back(newgame);
+						
+						#ifdef DEBUG
+						std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.binaryAddress << " : " << leftPlayer.port << "\n"
+									<< "\t\t\t" << rightPlayer.binaryAddress << " : " << rightPlayer.port << "\n";
+						#endif			
 
 						firstPlayerSide = NO_PLAYER;
 					}
@@ -313,32 +350,14 @@ int main(int argc, char** argv)
 			}
 		}
 
+		// -------------------------------------------------------------------------------
+		// now, step through all network games and process input - if a game ended, delete it
+		// -------------------------------------------------------------------------------
+		
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
 			if (!(*iter)->step())
 			{
-				std::cout<<"Start END GAME\n";
-				PlayerMap::iterator piter = playermap.begin();
-				
-				while (piter != playermap.end())
-				{
-					if (piter->second == *iter)
-					{
-						playermap.erase(piter);
-						// FIXME
-						// I'm not sure whether there is a more elegant method
-						// that continue with the next valid iterator,
-						// but this prevents the crash caused by 
-						// unchecked incrementing uf invalid iterators
-						piter = playermap.begin();
-					}
-					else
-					{
-						++piter;
-						std::cout<<"inc piter\n";
-					}
-				}
-				delete *iter;
 				iter = gamelist.erase(iter);
 				// workarround to prevent increment of
 				// past-end-iterator
