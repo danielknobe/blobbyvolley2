@@ -143,7 +143,7 @@ int main(int argc, char** argv)
 					bool cond2 = firstPlayer == packet->playerId;
 					if (cond1 && cond2)
 						firstPlayerSide = NO_PLAYER;
-					if (playermap.find(packet->playerId) != playermap.end())
+					if ( playermap.find(packet->playerId) != playermap.end() )
 						playermap[packet->playerId]->injectPacket(packet);
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
@@ -154,8 +154,18 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 				case ID_CHAT_MESSAGE:
 				case ID_REPLAY:
-					if (playermap[packet->playerId])
+					if (playermap.find(packet->playerId) != playermap.end())
 						playermap[packet->playerId]->injectPacket(packet);
+					else
+						syslog(LOG_ERR, "player not found!");
+						
+						#ifndef NDEBUG
+						std::cout << " received game packet for no longer existing game!";
+						// only quit in debug mode as this is not a problem endangering the stability
+						// of the running server, but a situation that should never occur.
+						return 3;
+						#endif
+						
 					break;
 				case ID_ENTER_GAME:
 				{
@@ -302,8 +312,6 @@ int main(int argc, char** argv)
 					syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
 			}
 		}
-
-		std::cout << clients << "\n";
 
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
