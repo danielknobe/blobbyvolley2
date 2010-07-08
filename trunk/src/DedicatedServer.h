@@ -21,10 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <map>
 #include <list>
+#include <boost/shared_ptr.hpp>
 
 #include "raknet/NetworkTypes.h"
 
 class NetworkGame;
 
-typedef std::map<PlayerID, NetworkGame*> PlayerMap;
-typedef std::list<NetworkGame*> GameList;
+typedef std::map<PlayerID, boost::shared_ptr<NetworkGame> > PlayerMap;
+typedef std::list< boost::shared_ptr<NetworkGame> > GameList;

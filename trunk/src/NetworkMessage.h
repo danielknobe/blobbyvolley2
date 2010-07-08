@@ -53,7 +53,7 @@ enum MessageType
 // 	to a client, the information has to be converted into the view
 // 	of the client.
 
-// ID_INPUT_UPDATE:
+// ID_INPUT_UPDATE = 63:
 // 	Description:
 // 		This packet is sent from client to server every frame.
 // 		It contains the current input state as three booleans.
