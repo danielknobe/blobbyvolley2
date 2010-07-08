@@ -46,138 +46,29 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifdef WIN32
 #undef main
 
-// function for logging for replacing syslog
+// function for logging to replacing syslog
 enum {
 	LOG_ERR,
 	LOG_NOTICE,
 	LOG_DEBUG
 };
-void syslog(int pri, const char* format, ...){
-	switch(pri){
-		case LOG_ERR:
-			std::cerr<<std::time(0)<<": "<<format<<"\n";
-			break;
-		case LOG_NOTICE:
-			std::cout<<std::time(0)<<": "<<format<<"\n";
-			break;
-		case LOG_DEBUG:
-			std::cout<<std::time(0)<<": "<<format<<"\n";
-			break;
-		
-	}
-}
+void syslog(int pri, const char* format, ...);
+
 #endif
 
 static bool g_run_in_foreground = false;
 static bool g_print_syslog_to_stderr = false;
 static bool g_workaround_memleaks = false;
 
-void printHelp()
-{
-	std::cout << "Usage: blobby-server [OPTION...]" << std::endl;
-	std::cout << "  -m, --memleak-hack        Workaround memory leaks by restarting regularly" << std::endl;
-	std::cout << "  -n, --no-daemon           Don´t run as background process" << std::endl;
-	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
-	std::cout << "  -h, --help                This message" << std::endl;
-}
+// ...
+void printHelp();
+void process_arguments(int argc, char** argv);
+void fork_to_background();
+void wait_and_restart_child();
+void setup_physfs(char* argv0);
 
-void process_arguments(int argc, char** argv)
-{
-	if (argc > 1)
-	{
-		for (int i = 1; i < argc; ++i)
-		{
-			if (strcmp(argv[i], "--memleak-hack") == 0 || strcmp(argv[i], "-m") == 0)
-			{
-				g_workaround_memleaks = true;
-				continue;
-			}
-			if (strcmp(argv[i], "--no-daemon") == 0 || strcmp(argv[i], "-n") == 0)
-			{
-				g_run_in_foreground = true;
-				continue;
-			}
-			if (strcmp(argv[i], "--print-msgs") == 0 || strcmp(argv[i], "-p") == 0)
-			{
-				g_print_syslog_to_stderr = true;
-				continue;
-			}
-			if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
-			{
-				printHelp();
-				exit(3);
-			}
-			std::cout << "Unknown option \"" << argv[i] << "\"" << std::endl;
-			printHelp();
-			exit(1);
-		}
-	}
-}
-
-void fork_to_background()
-{
-	#ifndef WIN32
-	pid_t f_return = fork();
-	if (f_return == -1)
-	{
-		perror("fork");
-		exit(1);
-	}
-	if (f_return != 0)
-	{
-		std::cout << "Running in background as PID " << f_return << std::endl;
-		exit(0);
-	}
-	#else
-	std::cerr<<"fork is not available under windows\n";
-	#endif
-}
-
-void wait_and_restart_child()
-{
-	#ifndef WIN32
-	pid_t leaking_server;
-	while ((leaking_server = fork()) > 0)
-	{
-		int status;
-
-		// Wait for server to quit and refork
-		waitpid(leaking_server, &status, 0);
-		// Error will propably occur again
-		if (WEXITSTATUS(status) != 0)
-		{
-			exit(WEXITSTATUS(status));
-		}
-	}
-
-	if (leaking_server == -1)
-	{
-		perror("fork");
-		exit(1);
-	}
-	#else
-	std::cerr<<"fork is not available under windows\n";
-	#endif
-
-}
-
-void setup_physfs(char* argv0)
-{
-	PHYSFS_init(argv0);
-	PHYSFS_addToSearchPath("data", 1);
-	
-	#if defined(WIN32)
-	// Just write in installation directory
-	PHYSFS_setWriteDir("data");
-	#else
-	std::string userdir = PHYSFS_getUserDir();
-	std::string userAppend = ".blobby";
-	std::string homedir = userdir + userAppend;
-	PHYSFS_addToSearchPath(homedir.c_str(), 0);
-	PHYSFS_setWriteDir(homedir.c_str());
-	#endif
-
-}
+// functions for processing certain network packets
+void createNewGame();
 
 int main(int argc, char** argv)
 {
@@ -412,6 +303,8 @@ int main(int argc, char** argv)
 			}
 		}
 
+		std::cout << clients << "\n";
+
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
 			if (!(*iter)->step())
@@ -471,3 +364,141 @@ int main(int argc, char** argv)
 	closelog();
 	#endif
 }
+
+// -----------------------------------------------------------------------------------------
+
+void createNewGame()
+{
+	
+}
+
+// -----------------------------------------------------------------------------------------
+
+void printHelp()
+{
+	std::cout << "Usage: blobby-server [OPTION...]" << std::endl;
+	std::cout << "  -m, --memleak-hack        Workaround memory leaks by restarting regularly" << std::endl;
+	std::cout << "  -n, --no-daemon           Don´t run as background process" << std::endl;
+	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
+	std::cout << "  -h, --help                This message" << std::endl;
+}
+
+
+void process_arguments(int argc, char** argv)
+{
+	if (argc > 1)
+	{
+		for (int i = 1; i < argc; ++i)
+		{
+			if (strcmp(argv[i], "--memleak-hack") == 0 || strcmp(argv[i], "-m") == 0)
+			{
+				g_workaround_memleaks = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--no-daemon") == 0 || strcmp(argv[i], "-n") == 0)
+			{
+				g_run_in_foreground = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--print-msgs") == 0 || strcmp(argv[i], "-p") == 0)
+			{
+				g_print_syslog_to_stderr = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
+			{
+				printHelp();
+				exit(3);
+			}
+			std::cout << "Unknown option \"" << argv[i] << "\"" << std::endl;
+			printHelp();
+			exit(1);
+		}
+	}
+}
+
+void fork_to_background()
+{
+	#ifndef WIN32
+	pid_t f_return = fork();
+	if (f_return == -1)
+	{
+		perror("fork");
+		exit(1);
+	}
+	if (f_return != 0)
+	{
+		std::cout << "Running in background as PID " << f_return << std::endl;
+		exit(0);
+	}
+	#else
+	std::cerr<<"fork is not available under windows\n";
+	#endif
+}
+
+
+void wait_and_restart_child()
+{
+	#ifndef WIN32
+	pid_t leaking_server;
+	while ((leaking_server = fork()) > 0)
+	{
+		int status;
+
+		// Wait for server to quit and refork
+		waitpid(leaking_server, &status, 0);
+		// Error will propably occur again
+		if (WEXITSTATUS(status) != 0)
+		{
+			exit(WEXITSTATUS(status));
+		}
+	}
+
+	if (leaking_server == -1)
+	{
+		perror("fork");
+		exit(1);
+	}
+	#else
+	std::cerr<<"fork is not available under windows\n";
+	#endif
+
+}
+
+void setup_physfs(char* argv0)
+{
+	PHYSFS_init(argv0);
+	PHYSFS_addToSearchPath("data", 1);
+	
+	#if defined(WIN32)
+	// Just write in installation directory
+	PHYSFS_setWriteDir("data");
+	#else
+	std::string userdir = PHYSFS_getUserDir();
+	std::string userAppend = ".blobby";
+	std::string homedir = userdir + userAppend;
+	PHYSFS_addToSearchPath(homedir.c_str(), 0);
+	PHYSFS_setWriteDir(homedir.c_str());
+	#endif
+
+}
+
+
+#ifdef WIN32
+#undef main
+
+void syslog(int pri, const char* format, ...){
+	switch(pri){
+		case LOG_ERR:
+			std::cerr<<std::time(0)<<": "<<format<<"\n";
+			break;
+		case LOG_NOTICE:
+			std::cout<<std::time(0)<<": "<<format<<"\n";
+			break;
+		case LOG_DEBUG:
+			std::cout<<std::time(0)<<": "<<format<<"\n";
+			break;
+		
+	}
+}
+#endif
