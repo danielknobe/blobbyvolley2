@@ -38,6 +38,9 @@ const char AppTitle[] = "Blobby Volley 2 version 0.9b";
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
 
+// max. 1 ms additional latency, but much improved performance
+const int RAKNET_THREAD_SLEEP_TIME = 1;
+
 enum PlayerSide
 {
 	NO_PLAYER = -1,
