@@ -160,7 +160,7 @@ void NetworkSearchState::step()
 				printf("got ping response by \"%s\", trying to connect\n", hostname.c_str());
 				RakClient* newClient = new RakClient;
 				newClient->Connect(
-					hostname.c_str(), BLOBBY_PORT, 0, 0, 0);
+					hostname.c_str(), BLOBBY_PORT, 0, 0, RAKNET_THREAD_SLEEP_TIME);
 				mQueryClients.push_back(newClient);
 			}
 			default:
@@ -316,7 +316,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	RenderManager::getSingleton().redraw();
 
 	mClient = new RakClient();
-	if (mClient->Connect(servername.c_str(), port, 0, 0, 0))
+	if (mClient->Connect(servername.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		mNetworkState = CONNECTING;
 	else
 		mNetworkState = CONNECTION_FAILED;
