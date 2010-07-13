@@ -929,7 +929,8 @@ void MiscOptionsState::step()
 
 	std::stringstream FPSInPercent;
 	FPSInPercent << int((float)mGameFPS/75*100);
-	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str()+="%");
+	FPSInPercent << "%";
+	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str());
 
 	//! \todo this must be reworket
 	std::map<std::string, std::string>::iterator olang = TextManager::language_names.find(TextManager::getSingleton()->getLang());
