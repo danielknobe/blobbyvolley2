@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalGameState.h"
 
 #include <sstream>
+#include <boost/lexical_cast.hpp>
 
 #include "DuelMatch.h"
 #include "InputManager.h"
@@ -46,9 +47,7 @@ LocalGameState::LocalGameState()
 	mSaveReplay = false;
 	mWinner = false;
 	
-	std::stringstream temp;
-	temp << std::time(0);
-	mFilename = temp.str();
+	mFilename = boost::lexical_cast<std::string> (std::time(0));
 	
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");

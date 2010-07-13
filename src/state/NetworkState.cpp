@@ -33,6 +33,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <physfs.h>
 
+#include <boost/lexical_cast.hpp>
+
 #include "IMGUI.h"
 #include "SoundManager.h"
 #include "LocalInputSource.h"
@@ -309,9 +311,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput = new LocalInputSource(mOwnSide);
 	mSaveReplay = false;
-	std::stringstream temp;
-	temp << std::time(0);
-	mFilename = temp.str();
+	mFilename = boost::lexical_cast<std::string> (std::time(0));
 
 	RenderManager::getSingleton().redraw();
 
