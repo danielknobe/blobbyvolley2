@@ -27,6 +27,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 #include "Global.h"
 
+
+// Text definitions
+#define FONT_WIDTH_NORMAL	24	// Height and width of the normal font.
+#define LINE_SPACER_NORMAL	6	// Extra space between 2 lines in a normal SelectBox.
+#define FONT_WIDTH_SMALL	8	// Height and width of the small font.
+#define LINE_SPACER_SMALL	2	// Extra space between 2 lines in a small SelectBox.
+
+#define FONT_INDEX_ASTERISK	36 // M.W. : Currently a dot because there is no asterisk yet.
+
+
+// Text flags (usable for the RenderManager::drawText() flag parameter)
+// Just using one byte for now - up to 8 flags.
+#define TF_NORMAL		0x00 // 0 == false (backward compatibility for state modules)
+#define TF_HIGHLIGHT	0x01 // 1 == true (backward compatibility for state modules)
+#define TF_SMALL_FONT	0x02 // Draw a smaller font. (8px instead of 24px)
+#define TF_OBFUSCATE	0x04 // Obfuscate the text with asterisks. (for password Editboxes)
+
+
+
 // This rendering class reduces all drawing stuff to a few calls
 // to refresh the objects states. It also abstracts from specific
 // graphics APIs.
@@ -140,7 +159,7 @@ public:
 
 	// This simply draws the given text with its top left corner at the
 	// given position and doesn't care about line feeds.
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight) {};
+	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) {};
 	
 	// This loads and draws an image by name
 	// The according Surface is automatically colorkeyed

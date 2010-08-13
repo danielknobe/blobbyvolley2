@@ -124,17 +124,25 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 
 	}
 
-	for (int i = 0; i <= 52; ++i)
+	for (int i = 0; i <= 53; ++i)
 	{
-		char filename[64];
+		char filename[64], filename2[64];
 		sprintf(filename, "gf2x/font%02d.bmp", i);
+		sprintf(filename2, "gf2x/font_small/font%02d.bmp", i);
 		SDL_Surface *tempFont = loadSurface(filename);
+		SDL_Surface *tempFont2 = loadSurface(filename2);
 		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
+		SDL_SetColorKey(tempFont2, SDL_SRCCOLORKEY,
+			SDL_MapRGB(tempFont2->format, 0, 0, 0));
 		SDL_Surface *newFont = SDL_DisplayFormat(tempFont);
+		SDL_Surface *newFont2 = SDL_DisplayFormat(tempFont2);
 		SDL_FreeSurface(tempFont);
+		SDL_FreeSurface(tempFont2);
 		mFont.push_back(newFont);
 		mHighlightFont.push_back(highlightSurface(newFont, 60));
+		mSmallFont.push_back(newFont2);
+		mHighlightSmallFont.push_back(highlightSurface(newFont2, 60));
 	}
 }
 
@@ -155,7 +163,12 @@ void RenderManagerGP2X::deinit()
 	}
 
 	for (unsigned int i = 0; i < mFont.size(); ++i)
+	{
 		SDL_FreeSurface(mFont[i]);
+		SDL_FreeSurface(mHighlightFont[i]);
+		SDL_FreeSurface(mSmallFont[i]);
+		SDL_FreeSurface(mHighlightSmallFont[i]);
+	}
 }
 
 void RenderManagerGP2X::draw()
@@ -337,21 +350,32 @@ void RenderManagerGP2X::setTime(const std::string& t)
 	mTime = t;
 }
 
-void RenderManagerGP2X::drawText(const std::string& text, Vector2 position, bool highlight)
+void RenderManagerGP2X::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
 	int length = 0;
 	std::string string = text;
 	int index = getNextFontIndex(string);
 	while (index != -1)
 	{
-		length += 24;
+		if (flags & TF_OBFUSCATE)
+			index = FONT_INDEX_ASTERISK;
+		
+		length += (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 		SDL_Rect charPosition;
-		charPosition.x = lround(position.x) + length - 24;
+		charPosition.x = lround(position.x) + length - (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 		charPosition.y = lround(position.y);
-		if (highlight)
-			SDL_BlitSurface(mHighlightFont[index], 0, mScreen, &charPosition);
+		
+		if (flags & TF_SMALL_FONT)
+			if (flags & TF_HIGHLIGHT)
+				SDL_BlitSurface( mHighlightSmallFont[index], 0, mScreen, &charPosition );
+			else
+				SDL_BlitSurface( mSmallFont[index], 0, mScreen, &charPosition );
 		else
-			SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
+			if (flags & TF_HIGHLIGHT)
+				SDL_BlitSurface( mHighlightFont[index], 0, mScreen, &charPosition );
+			else
+				SDL_BlitSurface( mFont[index], 0, mScreen, &charPosition );
+		
 		index = getNextFontIndex(string);
 	}
 }

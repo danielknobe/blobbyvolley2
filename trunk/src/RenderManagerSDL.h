@@ -43,6 +43,8 @@ class RenderManagerSDL : public RenderManager
 
 	std::vector<SDL_Surface*> mFont;
 	std::vector<SDL_Surface*> mHighlightFont;
+	std::vector<SDL_Surface*> mSmallFont;
+	std::vector<SDL_Surface*> mHighlightSmallFont;
 	
 	SDL_Surface *mOverlaySurface;
 	SDL_Surface *mScreen;
@@ -97,7 +99,7 @@ public:
 
 	virtual void setMouseMarker(float position);
 			       
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
+	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
 	virtual void drawImage(const std::string& filename, Vector2 position);
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
 	virtual void drawBlob(const Vector2& pos, const Color& col);

@@ -53,6 +53,8 @@ private:
 	std::vector<GLuint> mBlobShadow;
 	std::vector<GLuint> mFont;
 	std::vector<GLuint> mHighlightFont;
+	std::vector<GLuint> mSmallFont;
+	std::vector<GLuint> mHighlightSmallFont;
 	GLuint mParticle;
 	GLuint mScroll;
 	
@@ -104,7 +106,7 @@ public:
 	virtual void setPlayernames(std::string leftName, std::string rightName);
 	virtual void setTime(const std::string& t);
 
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
+	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
 	virtual void drawImage(const std::string& filename, Vector2 position);
 	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
 	virtual void drawBlob(const Vector2& pos, const Color& col);
