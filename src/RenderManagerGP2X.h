@@ -39,6 +39,8 @@ class RenderManagerGP2X : public RenderManager
 
 	std::vector<SDL_Surface*> mFont;
 	std::vector<SDL_Surface*> mHighlightFont;
+	std::vector<SDL_Surface*> mSmallFont;
+	std::vector<SDL_Surface*> mHighlightSmallFont;
 
 	SDL_Surface *mScreen;
 
@@ -79,7 +81,7 @@ public:
 		       bool leftWarning, bool rightWarning);
 	virtual void setTime(const std::string& t);
 
-	virtual void drawText(const std::string& text, Vector2 position, bool highlight);
+	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
 	virtual void drawImage(const std::string& filename, Vector2 position) {};
 
 };

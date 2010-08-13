@@ -174,15 +174,22 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	for (int i = 0; i <= 53; ++i)
 	{
-		char filename[64];
+		char filename[64], filename2[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
+		sprintf(filename2, "gfx/font_small/font%02d.bmp", i);
 		GLuint newFont = loadTexture(loadSurface(filename), false);
+		GLuint newFont2 = loadTexture(loadSurface(filename2), false);
 		SDL_Surface* fontSurface = loadSurface(filename);
+		SDL_Surface* fontSurface2 = loadSurface(filename2);
 		SDL_Surface* highlight = highlightSurface(fontSurface, 60);
+		SDL_Surface* highlight2 = highlightSurface(fontSurface2, 60);
 		SDL_FreeSurface(fontSurface);
+		SDL_FreeSurface(fontSurface2);
 		
-		mHighlightFont.push_back(loadTexture(highlight, false));		
 		mFont.push_back(newFont);
+		mHighlightFont.push_back(loadTexture(highlight, false));
+		mSmallFont.push_back(newFont2);
+		mHighlightSmallFont.push_back(loadTexture(highlight2, false));
 	}
 
 	mParticle = loadTexture(loadSurface("gfx/blood.bmp"), false);
@@ -208,6 +215,9 @@ void RenderManagerGL2D::deinit()
 	glDeleteTextures(mBlobSpecular.size(), &mBlobSpecular[0]);
 	glDeleteTextures(mBlobShadow.size(), &mBlobShadow[0]);
 	glDeleteTextures(mFont.size(), &mFont[0]);
+	glDeleteTextures(mHighlightFont.size(), &mHighlightFont[0]);
+	glDeleteTextures(mSmallFont.size(), &mSmallFont[0]);
+	glDeleteTextures(mHighlightSmallFont.size(), &mHighlightSmallFont[0]);
 	glDeleteTextures(1, &mScroll);
 	
 	for (std::map<std::string, BufferedImage*>::iterator iter = mImageMap.begin();
@@ -460,7 +470,7 @@ void RenderManagerGL2D::setTime(const std::string& t)
 	mTime = t;
 }
 
-void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool highlight)
+void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glEnable(GL_TEXTURE_2D);
@@ -472,16 +482,27 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, bool
 	int index = getNextFontIndex(string);
 	while (index != -1)
 	{
+		if (flags & TF_OBFUSCATE)
+			index = FONT_INDEX_ASTERISK;
+		
 		glLoadIdentity();
-		glTranslatef(position.x + length + 12.0,
-				position.y + 12.0, 0.0);
-		if (highlight)
-			glBindTexture(GL_TEXTURE_2D, mHighlightFont[index]);
+		glTranslatef(position.x + length + ((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL)/2),
+				position.y + ((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL)/2), 0.0);
+		
+		if (flags & TF_SMALL_FONT)
+			if (flags & TF_HIGHLIGHT)
+				glBindTexture(GL_TEXTURE_2D, mHighlightSmallFont[index]);
+			else
+				glBindTexture(GL_TEXTURE_2D, mSmallFont[index]);
 		else
-			glBindTexture(GL_TEXTURE_2D, mFont[index]);
-		drawQuad(32.0, 32.0);
+			if (flags & TF_HIGHLIGHT)
+				glBindTexture(GL_TEXTURE_2D, mHighlightFont[index]);
+			else
+				glBindTexture(GL_TEXTURE_2D, mFont[index]);
+		
+		drawQuad((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8), (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8));
 		index = getNextFontIndex(string);
-		length += 24;
+		length += (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	}
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);

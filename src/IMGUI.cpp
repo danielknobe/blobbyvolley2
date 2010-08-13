@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
-#include "InputManager.h"
-#include "RenderManager.h"
-
 #include "IMGUI.h"
 
 enum ObjectType
@@ -32,13 +29,11 @@ enum ObjectType
 	IMAGE,
 	OVERLAY,
 	TEXT,
-	HIGHLIGHTTEXT,
-	BUTTON,
+	BUTTON, // Unused!
 	SCROLLBAR,
 	ACTIVESCROLLBAR,
 	EDITBOX,
 	ACTIVEEDITBOX,
-	HIGHLIGHTEDITBOX,
 	SELECTBOX,
 	ACTIVESELECTBOX,
 	BLOB
@@ -55,6 +50,7 @@ struct QueueObject
 	std::vector<std::string> entries;
 	int selected;
 	int length;
+	unsigned int flags;
 };
 
 typedef std::queue<QueueObject> RenderQueue;
@@ -65,7 +61,7 @@ RenderQueue *mQueue;
 IMGUI::IMGUI()
 {
 	mQueue = new RenderQueue;
-	mActiveButton = 0;
+	mActiveButton = -1;
 	mHeldWidget = 0;
 	mLastKeyAction = NONE;
 	mLastWidget = 0;
@@ -107,6 +103,7 @@ void IMGUI::begin()
 
 void IMGUI::end()
 {
+	int FontSize;
 	RenderManager& rmanager = RenderManager::getSingleton();
 	while (!mQueue->empty())
 	{
@@ -120,10 +117,7 @@ void IMGUI::end()
 				rmanager.drawOverlay(0.6, obj.pos1, obj.pos2, obj.col);
 				break;
 			case TEXT:
-				rmanager.drawText(obj.text, obj.pos1, false);
-				break;
-			case HIGHLIGHTTEXT:
-				rmanager.drawText(obj.text, obj.pos1, true);
+				rmanager.drawText(obj.text, obj.pos1, obj.flags);
 				break;
 			case SCROLLBAR:
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
@@ -132,31 +126,40 @@ void IMGUI::end()
 			case ACTIVESCROLLBAR:
 				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
-	
 				break;
 			case EDITBOX:
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
-				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), false);
+				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
+				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
 				break;
 			case ACTIVEEDITBOX:
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
-				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
+				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
+				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
+				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
 				if (obj.pos2.x >= 0)
-					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0, obj.pos1.y+5.0), Vector2((obj.pos2.x)*24.0+obj.pos1.x+5.0+3.0, obj.pos1.y+5.0+24.0), Color(255,255,255));
-				break;
-			case HIGHLIGHTEDITBOX:
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10.0+obj.length*24.0, 10.0+24.0));
-				rmanager.drawText(obj.text, obj.pos1+Vector2(5.0, 5.0), true);
+					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5, obj.pos1.y+5), Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5+3, obj.pos1.y+5+FontSize), Color(255,255,255));
 				break;
 			case SELECTBOX:
+				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
-					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
+				{
+					if(c == obj.selected)
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
+					else
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
+				}
 				break;
 			case ACTIVESELECTBOX:
+				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 				rmanager.drawOverlay(0.2, obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
-					rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*24)+5), (c == obj.selected));
+				{
+					if(c == obj.selected)
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
+					else
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
+				}
 				break;
 			case BLOB:
 				rmanager.drawBlob(obj.pos1, obj.col);
@@ -185,13 +188,14 @@ void IMGUI::doImage(int id, const Vector2& position, const std::string& name)
 	mQueue->push(obj);
 }
 
-void IMGUI::doText(int id, const Vector2& position, const std::string& text)
+void IMGUI::doText(int id, const Vector2& position, const std::string& text, unsigned int flags)
 {
 	QueueObject obj;
 	obj.type = TEXT;
 	obj.id = id;
 	obj.pos1 = position;
 	obj.text = text;
+	obj.flags = flags;
 	mQueue->push(obj);
 }
 
@@ -207,7 +211,7 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 	RenderManager::getSingleton().redraw();
 }
 
-bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
+bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, unsigned int flags)
 {
 	bool clicked = false;
 	QueueObject obj;
@@ -215,15 +219,36 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 	obj.pos1 = position;
 	obj.text = text;
 	obj.type = TEXT;
+	obj.flags = flags;
 	
 	if (!mInactive)
 	{
+		// M.W. : Activate cursorless object-highlighting once the up or down key is pressed.
+		if (mActiveButton == -1)
+		{
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		// Highlight first menu object for arrow key navigation.
 		if (mActiveButton == 0 && !mButtonReset)
 			mActiveButton = id;
 
+		// React to keyboard input.
 		if (id == mActiveButton)
 		{
-			obj.type = HIGHLIGHTTEXT;
+			obj.flags = obj.flags | TF_HIGHLIGHT;
 			switch (mLastKeyAction)
 			{
 				case DOWN:
@@ -243,13 +268,14 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text)
 			}
 		}
 
+		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > position.x &&
 			mousepos.y > position.y &&
-			mousepos.x < position.x + text.length() * 24 &&
-			mousepos.y < position.y + 24.0)
+			mousepos.x < position.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
+			mousepos.y < position.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
 		{
-			obj.type = HIGHLIGHTTEXT;
+			obj.flags = obj.flags | TF_HIGHLIGHT;
 			if (InputManager::getSingleton()->click())
 			{
 				clicked = true;
@@ -281,9 +307,29 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	
 	if (!mInactive)
 	{
+		// M.W. : Activate cursorless object-highlighting once the up or down key is pressed.
+		if (mActiveButton == -1)
+		{
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		// Highlight first menu object for arrow key navigation.
 		if (mActiveButton == 0 && !mButtonReset)
 			mActiveButton = id;
-
+		
+		// React to keyboard input.
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVESCROLLBAR;
@@ -309,7 +355,8 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 					break;
 			}
 		}
-
+		
+		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x + 5 > position.x &&
 			mousepos.y > position.y &&
@@ -347,40 +394,62 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 void IMGUI::resetSelection()
 {
 	mInactive = false;
-	mActiveButton = 0;
+	mActiveButton = -1;
 	mButtonReset = true;
 }
 
-bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos)
+bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags)
 {
-	// lenght does not actually work!
+	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = position;
 	obj.type = EDITBOX;
-	obj.length = length;
+	obj.length = length; // lenght does not actually work!
+	obj.flags = flags;
 
-		Vector2 mousepos = InputManager::getSingleton()->position();
-		if (mousepos.x > position.x &&
-			mousepos.y > position.y &&
-			mousepos.x < position.x + length * 24.0 + 10.0 &&
-			mousepos.y < position.y + 24.0 + 10.0)
+	// React to mouse input.
+	Vector2 mousepos = InputManager::getSingleton()->position();
+	if (mousepos.x > position.x &&
+		mousepos.y > position.y &&
+		mousepos.x < position.x + length * FontSize + 10 &&
+		mousepos.y < position.y + FontSize + 10)
+	{
+		obj.flags = obj.flags | TF_HIGHLIGHT;
+		if (InputManager::getSingleton()->click())
 		{
-			obj.type = HIGHLIGHTEDITBOX;
-			if (InputManager::getSingleton()->click())
-			{
-				if (mousepos.x < position.x + text.length() * 24.0)
-					cpos = (int)(mousepos.x-position.x-5.0+12)/24;
-				mActiveButton = id;
-			}
+			if (mousepos.x < position.x + text.length() * FontSize)
+				cpos = (int) ((mousepos.x-position.x-5+(FontSize/2)) / FontSize);
+			mActiveButton = id;
 		}
+	}
 
 	if (!mInactive)
 	{
+		// M.W. : Activate cursorless object-highlighting once the up or down key is pressed.
+		if (mActiveButton == -1)
+		{
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		// Highlight first menu object for arrow key navigation.
 		if (mActiveButton == 0 && !mButtonReset)
 			mActiveButton = id;
 
+		// React to keyboard input.
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVEEDITBOX;
@@ -511,23 +580,45 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 	return changed;
 }
 
-bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected)
+bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags)
 {
+	int FontSize = (flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 	bool changed = false;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = pos1;
 	obj.pos2 = pos2;
 	obj.type = SELECTBOX;
+	obj.flags = flags;
 
-	const int itemsPerPage = int(pos2.y - pos1.y - 10) / 24;
-	int first = (int)(selected / itemsPerPage)*itemsPerPage;	//the first visible element in the list
+	const int itemsPerPage = int(pos2.y - pos1.y - 10) / FontSize;
+	int first = (int)(selected / itemsPerPage)*itemsPerPage; //the first visible element in the list
 
 	if (!mInactive)
 	{
+		// M.W. : Activate cursorless object-highlighting once the up or down key is pressed.
+		if (mActiveButton == -1)
+		{
+			switch (mLastKeyAction)
+			{
+				case DOWN:
+					mActiveButton = 0;
+					mLastKeyAction = NONE;
+					break;
+				case UP:
+					mActiveButton = mLastWidget;
+					mLastKeyAction = NONE;
+					break;
+				default:
+					break;
+			}
+		}
+		
+		// Highlight first menu object for arrow key navigation.
 		if (mActiveButton == 0 && !mButtonReset)
 			mActiveButton = id;
-
+		
+		// React to keyboard input.
 		if (id == mActiveButton)
 		{
 			obj.type = ACTIVESELECTBOX;
@@ -562,6 +653,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 			}
 		}
 		
+		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > pos1.x && mousepos.y > pos1.y && mousepos.x < pos2.x && mousepos.y < pos2.y)
 		{
@@ -573,11 +665,11 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 		if (mousepos.x > pos1.x &&
 			mousepos.y > pos1.y+5 &&
 			mousepos.x < pos2.x-35 &&
-			mousepos.y < pos1.y+5+24*itemsPerPage)
+			mousepos.y < pos1.y+5+FontSize*itemsPerPage)
 		{
 			if (InputManager::getSingleton()->click())
 			{
-				int tmp = (int)((mousepos.y-pos1.y-5) / 24)+first;
+				int tmp = (int)((mousepos.y-pos1.y-5) / FontSize)+first;
 				if (tmp < entries.size())
 					selected = tmp;
 				mActiveButton = id;

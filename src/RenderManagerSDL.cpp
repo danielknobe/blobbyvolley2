@@ -160,15 +160,24 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 	for (int i = 0; i <= 53; ++i)
 	{
-		char filename[64];
+		char filename[64], filename2[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
+		sprintf(filename2, "gfx/font_small/font%02d.bmp", i);
 		SDL_Surface *tempFont = loadSurface(filename);
+		SDL_Surface *tempFont2 = loadSurface(filename2);
 		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY,
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
+		SDL_SetColorKey(tempFont2, SDL_SRCCOLORKEY,
+			SDL_MapRGB(tempFont2->format, 0, 0, 0));
 		SDL_Surface *newFont = SDL_DisplayFormatAlpha(tempFont);
+		SDL_Surface *newFont2 = SDL_DisplayFormatAlpha(tempFont2);
 		SDL_FreeSurface(tempFont);
+		SDL_FreeSurface(tempFont2);
+		
 		mFont.push_back(newFont);
 		mHighlightFont.push_back(highlightSurface(newFont, 60));
+		mSmallFont.push_back(newFont2);
+		mHighlightSmallFont.push_back(highlightSurface(newFont2, 60));
 	}
 
 	mScroll = loadSurface("gfx/scrollbar.bmp");
@@ -204,6 +213,8 @@ void RenderManagerSDL::deinit()
 	{
 		SDL_FreeSurface(mFont[i]);
 		SDL_FreeSurface(mHighlightFont[i]);
+		SDL_FreeSurface(mSmallFont[i]);
+		SDL_FreeSurface(mHighlightSmallFont[i]);
 	}
 }
 
@@ -464,22 +475,33 @@ void RenderManagerSDL::setTime(const std::string& t)
 }
 
 
-void RenderManagerSDL::drawText(const std::string& text, Vector2 position, bool highlight)
+void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
 	int length = 0;
 	std::string string = text;
 	int index = getNextFontIndex(string);
 	while (index != -1)
 	{
+		if (flags & TF_OBFUSCATE)
+			index = FONT_INDEX_ASTERISK;
+		
 		SDL_Rect charPosition;
 		charPosition.x = lround(position.x) + length;
 		charPosition.y = lround(position.y);
-		if (highlight)
-			SDL_BlitSurface(mHighlightFont[index], 0, mScreen, &charPosition);
+		
+		if (flags & TF_SMALL_FONT)
+			if (flags & TF_HIGHLIGHT)
+				SDL_BlitSurface( mHighlightSmallFont[index], 0, mScreen, &charPosition );
+			else
+				SDL_BlitSurface( mSmallFont[index], 0, mScreen, &charPosition );
 		else
-			SDL_BlitSurface(mFont[index], 0, mScreen, &charPosition);
+			if (flags & TF_HIGHLIGHT)
+				SDL_BlitSurface( mHighlightFont[index], 0, mScreen, &charPosition );
+			else
+				SDL_BlitSurface( mFont[index], 0, mScreen, &charPosition );
+		
 		index = getNextFontIndex(string);
-		length += 24;
+		length += (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	}
 }
 
