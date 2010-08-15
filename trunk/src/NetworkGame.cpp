@@ -256,7 +256,7 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 	
-	if(events & DuelMatch::EVENT_ERROR_LEFT)
+	if(events & DuelMatch::EVENT_BALL_HIT_LEFT_GROUND)
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
@@ -267,7 +267,7 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 	
-	if(events & DuelMatch::EVENT_ERROR_RIGHT)
+	if(events & DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND)
 	{
 		RakNet::BitStream stream;
 		// is it correct to send ID_BALL_GROUND_COLLISION even if the
