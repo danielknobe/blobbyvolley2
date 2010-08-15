@@ -441,13 +441,12 @@ void NetworkGameState::step()
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_BALL_GROUND_COLLISION
 				stream.Read(side);
-				// WHY ARE THE SIDES INVERTED ???
 				switch((PlayerSide)side){
 					case LEFT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND);
+						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_LEFT_GROUND);
 						break;
 					case RIGHT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_LEFT_GROUND);
+						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND);
 						break;
 					default:
 						assert(0);

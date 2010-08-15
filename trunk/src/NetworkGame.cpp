@@ -93,6 +93,20 @@ void NetworkGame::injectPacket(const packet_ptr& packet)
 
 void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream)
 {
+	// checks that stream and switchedstream don't have the same content.
+	// this is a common mistake that arises from constructs like:
+	//		BitStream stream
+	//		... fill common data into stream
+	//		BitStream switchedstream
+	//		.. fill data depending on side in both streams
+	//		broadcastBistream(stream, switchedstream)
+	//
+	//	here, the internal data of switchedstream is the same as stream so all
+	//	changes made with switchedstream are done with stream alike. this was not
+	//  the intention of this construct so it should be caught by this assertion.
+	
+	assert( stream->GetData() != switchedstream->GetData() );
+	
 	RakNet::BitStream* leftStream =
 		mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
 	RakNet::BitStream* rightStream =
@@ -239,9 +253,13 @@ bool NetworkGame::step()
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
 		stream.Write(mMatch->getWorld().lastHitIntensity());
-		RakNet::BitStream switchStream(stream);
 		stream.Write(LEFT_PLAYER);
+		
+		RakNet::BitStream switchStream;
+		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
+		switchStream.Write(mMatch->getWorld().lastHitIntensity());
 		switchStream.Write(RIGHT_PLAYER);
+		
 		broadcastBitstream(&stream, &switchStream);
 	}
 	
@@ -250,9 +268,13 @@ bool NetworkGame::step()
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
 		stream.Write(mMatch->getWorld().lastHitIntensity());
-		RakNet::BitStream switchStream(stream);
 		stream.Write(RIGHT_PLAYER);
+		
+		RakNet::BitStream switchStream;
+		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
+		switchStream.Write(mMatch->getWorld().lastHitIntensity());
 		switchStream.Write(LEFT_PLAYER);
+		
 		broadcastBitstream(&stream, &switchStream);
 	}
 	
