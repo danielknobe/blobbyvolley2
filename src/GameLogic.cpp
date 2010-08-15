@@ -62,8 +62,10 @@ void CGameLogic::onBallHitsPlayer(PlayerSide side)
 	// count the touches
 	mTouches[side2index(other_side(side))] = 0;
 	if(++(mTouches[side2index(side)]) > 3)
+	{
 		// if a player hits a forth time, it is an error
 		onError(side);
+	}
 }
 
 void CGameLogic::onPause()
@@ -160,7 +162,7 @@ void CGameLogic::onError(PlayerSide side)
 	mSquish[0] = 0;
 	mSquish[1] = 0;
 	
-	onOppError(other_side(side));
+	onOppError( other_side(side) );
 	mServingPlayer = other_side(side);
 }
 
