@@ -419,8 +419,12 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 		obj.flags = obj.flags | TF_HIGHLIGHT;
 		if (InputManager::getSingleton()->click())
 		{
+			// Handle click on the text.
 			if (mousepos.x < position.x + text.length() * FontSize)
 				cpos = (int) ((mousepos.x-position.x-5+(FontSize/2)) / FontSize);
+			// Handle click behind the text.
+			else if (mousepos.x < position.x + length * FontSize + 10)
+				cpos = (int) text.length();
 			mActiveButton = id;
 		}
 	}
@@ -443,12 +447,19 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				default:
 					break;
 			}
+			
+			// M.W. : Initialize the cursor position at the end of the string.
+			// IMPORTANT: If you make changes to EditBox text that alter the length
+			//				of the text, either call resetSelection() to come back
+			//				to this area of code or update cpos manually to prevent
+			//				crashes due to a misplaced cursor.
+			cpos = text.length();
 		}
 		
 		// Highlight first menu object for arrow key navigation.
 		if (mActiveButton == 0 && !mButtonReset)
 			mActiveButton = id;
-
+		
 		// React to keyboard input.
 		if (id == mActiveButton)
 		{
