@@ -477,6 +477,7 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 	glDisable(GL_DEPTH_TEST);
 	glAlphaFunc(GL_GREATER, 0.5);
 	glEnable(GL_ALPHA_TEST);
+	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	int length = 0;
 	std::string string = text;
 	int index = getNextFontIndex(string);
@@ -486,8 +487,7 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 			index = FONT_INDEX_ASTERISK;
 		
 		glLoadIdentity();
-		glTranslatef(position.x + length + ((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL)/2),
-				position.y + ((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL)/2), 0.0);
+		glTranslatef(position.x + length + (FontSize / 2), position.y + (FontSize / 2), 0.0);
 		
 		if (flags & TF_SMALL_FONT)
 			if (flags & TF_HIGHLIGHT)
@@ -500,9 +500,10 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 			else
 				glBindTexture(GL_TEXTURE_2D, mFont[index]);
 		
+		// Why does the quad for correctly displayed 24px symbols have to be 32x32?
 		drawQuad((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8), (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8));
 		index = getNextFontIndex(string);
-		length += (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
+		length += FontSize;
 	}
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_DEPTH_TEST);

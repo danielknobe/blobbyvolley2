@@ -477,6 +477,7 @@ void RenderManagerSDL::setTime(const std::string& t)
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
+	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	int length = 0;
 	std::string string = text;
 	int index = getNextFontIndex(string);
@@ -501,7 +502,7 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsig
 				SDL_BlitSurface( mFont[index], 0, mScreen, &charPosition );
 		
 		index = getNextFontIndex(string);
-		length += (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
+		length += FontSize;
 	}
 }
 
