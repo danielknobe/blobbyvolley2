@@ -73,6 +73,10 @@ if (UNIX)
 	target_link_libraries(blobby-server raknet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL_LIBRARY})
 endif (UNIX)
 
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+	set_target_properties(blobby PROPERTIES LINK_FLAGS "-mwindows") # disable the console window
+endif (CMAKE_SYSTEM_NAME STREQUAL Windows)
+
 if (WIN32)
 	install(TARGETS blobby DESTINATION .)
 elseif (UNIX)
