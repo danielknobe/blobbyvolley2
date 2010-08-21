@@ -531,6 +531,9 @@ void NetworkGameState::step()
 				mNetworkState = PLAYING;
 				// start game
 				mFakeMatch->unpause();
+				
+				// game ready whistle
+				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_CONNECTION_ATTEMPT_FAILED:
