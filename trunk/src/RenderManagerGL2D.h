@@ -84,6 +84,11 @@ private:
 	void drawQuad(float x, float y);
 	GLuint loadTexture(SDL_Surface* surface, bool specular);
 	int getNextPOT(int npot);
+	
+	void glEnable(unsigned int flag);
+	void glDisable(unsigned int flag);
+	
+	//int mDebugStateChanges;
 public:
 	RenderManagerGL2D();
 

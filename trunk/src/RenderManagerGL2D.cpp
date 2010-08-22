@@ -24,6 +24,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #if HAVE_LIBGL
 
+// Standard values:
+//		GL_DEPTH_TEST: false
+//		GL_TEXTURE_2D: true
+//		GL_ALPHA_TEST: true
+
+// wrapper functions for debugging purposes
+void RenderManagerGL2D::glEnable(unsigned int flag) {
+	//mDebugStateChanges++;
+	::glEnable(flag);
+}
+
+void RenderManagerGL2D::glDisable(unsigned int flag) {
+	//mDebugStateChanges++;
+	::glDisable(flag);
+}
+
 int RenderManagerGL2D::getNextPOT(int npot)
 {
 	int pot = 1;
@@ -203,7 +219,11 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	glClearDepth(1.0);
 	glDepthFunc(GL_LEQUAL);
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+
+	glAlphaFunc(GL_GREATER, 0.5);
+	glEnable(GL_ALPHA_TEST);
 }
 
 void RenderManagerGL2D::deinit()
@@ -236,10 +256,16 @@ void RenderManagerGL2D::draw()
 	if (!mDrawGame)
 		return;
 		
-	// General object settings
-	glEnable(GL_TEXTURE_2D);
-	glAlphaFunc(GL_GREATER, 0.5);
+	// Background
+	glDisable(GL_ALPHA_TEST);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, mBackground);
+	glLoadIdentity();
+	glTranslatef(400.0, 300.0, -0.5);
+	drawQuad(1024, 1024);
 	glEnable(GL_ALPHA_TEST);
+		
+	// General object settings
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	// The Ball
 	
@@ -294,32 +320,10 @@ void RenderManagerGL2D::draw()
 	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[int(mRightBlobAnimationState)  % 5]);
 	drawQuad(128.0, 128.0);
 	glDisable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
-
 	
-	// Background
-	glEnable(GL_TEXTURE_2D);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, mBackground);
-	glLoadIdentity();
-	glTranslatef(400.0, 300.0, -0.5);
-	drawQuad(1024, 1024);
-
-	// Secure rod
-
-	glLoadIdentity();
-	glTranslatef(0.0, 0.0, 1.0);
-	glColorMask(false, false, false, false);
-	glBegin(GL_QUADS);
-		glVertex2f(393.0, 300.0);
-		glVertex2f(407.0, 300.0);
-		glVertex2f(407.0, 600.0);
-		glVertex2f(393.0, 600.0);
-	glEnd();
-	glColorMask(true, true, true, true);
 
 	// Ball marker
-	
+	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
 	GLubyte markerColor = SDL_GetTicks() % 1000 >= 500 ? 255 : 0;
 	glColor3ub(markerColor, markerColor, markerColor);
@@ -332,11 +336,14 @@ void RenderManagerGL2D::draw()
 	glLoadIdentity();
 	glTranslatef(mMouseMarkerPosition, 592.5, -0.4);
 	drawQuad(5.0, 5.0);
+	
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
 
 	if(mShowShadow)
 	{
 		// Generic shadow settings
-		glEnable(GL_TEXTURE_2D);
+		
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 
@@ -473,10 +480,6 @@ void RenderManagerGL2D::setTime(const std::string& t)
 void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glEnable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
-	glAlphaFunc(GL_GREATER, 0.5);
-	glEnable(GL_ALPHA_TEST);
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	int length = 0;
 	std::string string = text;
@@ -505,9 +508,6 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 		index = getNextFontIndex(string);
 		length += FontSize;
 	}
-	glDisable(GL_ALPHA_TEST);
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_TEXTURE_2D);
 }
 
 void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
@@ -523,25 +523,18 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 		mImageMap[filename] = imageBuffer;
 	}
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	glAlphaFunc(GL_GREATER, 0.5);
-	glEnable(GL_ALPHA_TEST);
 	glLoadIdentity();
 	glTranslatef(position.x , position.y, 0.0);
 	glBindTexture(GL_TEXTURE_2D, imageBuffer->glHandle);
 	drawQuad(imageBuffer->w, imageBuffer->h);
-
-	glDisable(GL_ALPHA_TEST);
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_TEXTURE_2D);
 }
+
 void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	
 	glColor4f(col.r, col.g, col.b, opacity);
@@ -553,14 +546,12 @@ void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, C
 		glVertex2f(pos2.x, pos1.y);
 	glEnd();
 	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
 }
 
 void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 {
-	glEnable(GL_TEXTURE_2D);
-	glAlphaFunc(GL_GREATER, 0.5);
-	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glLoadIdentity();
@@ -574,16 +565,10 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[0]);
 	drawQuad(128.0, 128.0);
 	glDisable(GL_BLEND);
-
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_TEXTURE_2D);
 }
 
 void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 {
-	glEnable(GL_TEXTURE_2D);
-	glAlphaFunc(GL_GREATER, 0.5);
-	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glLoadIdentity();
@@ -596,14 +581,13 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	if (player > 1)
 		glColor3ubv(Color(255, 0, 0).val);
 	drawQuad(9.0, 9.0);
-
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_TEXTURE_2D);
 }
 
 void RenderManagerGL2D::refresh()
 {
+	//std::cout << mDebugStateChanges << "\n";
 	SDL_GL_SwapBuffers();
+	//mDebugStateChanges = 0;
 }
 
 #else
