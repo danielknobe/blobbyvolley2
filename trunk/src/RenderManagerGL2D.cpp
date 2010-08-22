@@ -263,6 +263,42 @@ void RenderManagerGL2D::draw()
 	glLoadIdentity();
 	glTranslatef(400.0, 300.0, -0.5);
 	drawQuad(1024, 1024);
+	
+	if(mShowShadow)
+	{
+		// Generic shadow settings
+		
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+
+		// Blob shadows
+		Vector2 pos;
+	
+		glLoadIdentity();
+		pos = blobShadowPosition(mLeftBlobPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
+		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
+		drawQuad(128.0, 32.0);
+	
+		glLoadIdentity();
+		pos = blobShadowPosition(mRightBlobPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
+		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
+		drawQuad(128.0, 32.0);
+
+		// Ball shadow	
+		glLoadIdentity();
+		pos = ballShadowPosition(mBallPosition);
+		glTranslatef(pos.x, pos.y, 0.2);
+		glColor4f(1.0, 1.0, 1.0, 0.5);
+		glBindTexture(GL_TEXTURE_2D, mBallShadow);
+		drawQuad(128.0, 32.0);
+
+		glDisable(GL_BLEND);
+	}
+	
 	glEnable(GL_ALPHA_TEST);
 		
 	// General object settings
@@ -339,41 +375,6 @@ void RenderManagerGL2D::draw()
 	
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);
-
-	if(mShowShadow)
-	{
-		// Generic shadow settings
-		
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-
-		// Blob shadows
-		Vector2 pos;
-	
-		glLoadIdentity();
-		pos = blobShadowPosition(mLeftBlobPosition);
-		glTranslatef(pos.x, pos.y, 0.2);
-		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
-		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
-		drawQuad(128.0, 32.0);
-	
-		glLoadIdentity();
-		pos = blobShadowPosition(mRightBlobPosition);
-		glTranslatef(pos.x, pos.y, 0.2);
-		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
-		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
-		drawQuad(128.0, 32.0);
-
-		// Ball shadow	
-		glLoadIdentity();
-		pos = ballShadowPosition(mBallPosition);
-		glTranslatef(pos.x, pos.y, 0.2);
-		glColor4f(1.0, 1.0, 1.0, 0.5);
-		glBindTexture(GL_TEXTURE_2D, mBallShadow);
-		drawQuad(128.0, 32.0);
-
-		glDisable(GL_BLEND);
-	}
 	
 	// Scores
 	char textBuffer[64];
@@ -481,16 +482,18 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 {
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-	int length = 0;
 	std::string string = text;
 	int index = getNextFontIndex(string);
+	
+	glLoadIdentity();
+	glTranslatef(position.x - (FontSize / 2), position.y + (FontSize / 2), 0.0);
+	
 	while (index != -1)
 	{
 		if (flags & TF_OBFUSCATE)
 			index = FONT_INDEX_ASTERISK;
 		
-		glLoadIdentity();
-		glTranslatef(position.x + length + (FontSize / 2), position.y + (FontSize / 2), 0.0);
+		glTranslatef(FontSize, 0.0, 0.0);
 		
 		if (flags & TF_SMALL_FONT)
 			if (flags & TF_HIGHLIGHT)
@@ -506,7 +509,6 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 		// Why does the quad for correctly displayed 24px symbols have to be 32x32?
 		drawQuad((flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8), (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8));
 		index = getNextFontIndex(string);
-		length += FontSize;
 	}
 }
 
