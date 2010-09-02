@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include "PhysicWorld.h"
+#include "GameConstants.h"
 #include "raknet/BitStream.h"
 
 #include <limits>
@@ -26,47 +27,11 @@ const int TIMESTEP = 5; // calculations per frame
 
 const float TIMEOUT_MAX = 2.5;
 
-// Blobby Settings
-const float BLOBBY_HEIGHT = 89;
-const float BLOBBY_WIDTH = 75;
-const float BLOBBY_UPPER_SPHERE = 19;
-const float BLOBBY_UPPER_RADIUS = 25;
-const float BLOBBY_LOWER_SPHERE = 13;
-const float BLOBBY_LOWER_RADIUS = 33;
-
-// Volley Ball Net
-const float NET_POSITION_X = 400;
-const float NET_POSITION_Y = 438;
-const float NET_RADIUS = 7;
-const float NET_SPHERE = 154;
-const float NET_SPHERE_POSITION = 284;
-
-// Ball Settings
-const float BALL_RADIUS = 31.5;
-
-const float GROUND_PLANE_HEIGHT_MAX = 500;
-const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
-
-// Border Settings
-const float LEFT_PLANE = 0;
-const float RIGHT_PLANE = 800.0;
-// These numbers should include the blobbys width, but in the original game
-// the blobbys can go a bit into the walls too.
-
-
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
-const float BLOBBY_JUMP_ACCELERATION = 15.1;
 
-// This is exactly the half of the gravitation, i checked it in
-// the original code
-const float BLOBBY_JUMP_BUFFER = 0.44;
-const float GRAVITATION = 0.88;
-const float BALL_GRAVITATION = 0.28;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
-
-const float BALL_COLLISION_VELOCITY = 13.125;
 
 PhysicWorld::PhysicWorld()
 {
