@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "ScriptedInputSource.h"
 #include "DuelMatch.h"
+#include "GameConstants.h"
 
 extern "C"
 {
@@ -60,6 +61,32 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	mState = lua_open();
 	lua_pushnumber(mState, playerside);
 	lua_setglobal(mState, "blobby_side");
+	
+	// set game constants
+	lua_pushnumber(mState, RIGHT_PLANE);
+	lua_setglobal(mState, "CONST_FIELD_WIDTH");
+	lua_pushnumber(mState, 600 - GROUND_PLANE_HEIGHT_MAX);
+	lua_setglobal(mState, "CONST_GROUND_HEIGHT");
+	lua_pushnumber(mState, BALL_GRAVITATION);
+	lua_setglobal(mState, "CONST_BALL_GRAVITY");
+	lua_pushnumber(mState, BALL_RADIUS);
+	lua_setglobal(mState, "CONST_BALL_RADIUS");
+	lua_pushnumber(mState, BLOBBY_JUMP_ACCELERATION);
+	lua_setglobal(mState, "CONST_BLOBBY_JUMP");
+	lua_pushnumber(mState, BLOBBY_LOWER_RADIUS);
+	lua_setglobal(mState, "CONST_BLOBBY_LRADIUS");
+	lua_pushnumber(mState, BLOBBY_UPPER_RADIUS);
+	lua_setglobal(mState, "CONST_BLOBBY_URADIUS");
+	lua_pushnumber(mState, BLOBBY_HEIGHT);
+	lua_setglobal(mState, "CONST_BLOBBY_HEIGHT");
+	lua_pushnumber(mState, GRAVITATION);
+	lua_setglobal(mState, "CONST_BLOBBY_GRAVITY");
+	lua_pushnumber(mState, 600 - NET_SPHERE_POSITION);
+	lua_setglobal(mState, "CONST_NET_HEIGHT");
+	lua_pushnumber(mState, NET_RADIUS);
+	lua_setglobal(mState, "CONST_NET_RADIUS");
+	
+	
 	luaopen_math(mState);
 	lua_register(mState, "touches", touches);
 	lua_register(mState, "launched", launched);
@@ -91,7 +118,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	PHYSFS_close(info.handle);
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
-        if (error)
+		if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
