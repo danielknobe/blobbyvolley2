@@ -41,6 +41,11 @@ void CGameLogic::setScoreToWin(int stw)
 		mScoreToWin = stw;
 }
 
+int CGameLogic::getScoreToWin() const 
+{
+	return mScoreToWin;
+}
+
 void CGameLogic::onBallHitsGround(PlayerSide side)
 {
 	onError(side);

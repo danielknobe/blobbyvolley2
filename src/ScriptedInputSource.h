@@ -69,6 +69,10 @@ private:
 	static int estimate(lua_State* state);
 	static int estimx(lua_State* state);
 	static int estimy(lua_State* state);
+	static int getScore(lua_State* state);
+	static int getOppScore(lua_State* state);
+	static int getScoreToWin(lua_State* state);
+	static int getGameTime(lua_State* state);
 
 	lua_State* mState;
 	unsigned int mStartTime;

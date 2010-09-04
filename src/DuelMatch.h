@@ -74,6 +74,7 @@ public:
 	// for scripted input sources
 
 	int getScore(PlayerSide player) const;
+	int getScoreToWin() const;
 	PlayerSide getServingPlayer() const;
 
 	int getHitcount(PlayerSide player) const;

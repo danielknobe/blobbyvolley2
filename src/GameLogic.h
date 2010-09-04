@@ -65,8 +65,9 @@ class CGameLogic
 		// after this request, the value is reset
 		PlayerSide getLastErrorSide();
 		
-		// method for setting the target score
+		// method for setting/getting the target score
 		void setScoreToWin(int stw);
+		int getScoreToWin() const;
 		
 		// constuctor and destructor
 		CGameLogic();
