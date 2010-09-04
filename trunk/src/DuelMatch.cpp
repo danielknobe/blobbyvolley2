@@ -173,6 +173,11 @@ int DuelMatch::getScore(PlayerSide player) const
 	return mLogic->getScore(player);
 }
 
+int DuelMatch::getScoreToWin() const 
+{
+	return mLogic->getScoreToWin();
+}
+
 bool DuelMatch::getBallDown() const
 {
 	return mBallDown;

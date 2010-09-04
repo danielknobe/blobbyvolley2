@@ -106,6 +106,10 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_register(mState, "estimate", estimate);
 	lua_register(mState, "estimx", estimx);
 	lua_register(mState, "estimy", estimy);
+	lua_register(mState, "getScore", getScore);
+	lua_register(mState, "getOppScore", getOppScore);
+	lua_register(mState, "getScoreToWin", getScoreToWin);	
+	lua_register(mState, "getGameTime", getGameTime);
 
 	ReaderInfo info;
 	info.handle = PHYSFS_openRead(filename.c_str());
@@ -494,6 +498,58 @@ int ScriptedInputSource::estimy(lua_State* state)
 	float estim = match->getBallTimeEstimation(num).y;
 	estim = 600.0 - estim;
 	lua_pushnumber(state, estim);
+	return 1;
+}
+
+int ScriptedInputSource::getScore(lua_State* state) 
+{
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0);
+		return 1;
+	}
+	float score = match->getScore( getSide(state) );
+	lua_pushnumber(state, score);
+	return 1;
+}
+
+int ScriptedInputSource::getOppScore(lua_State* state) 
+{
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0);
+		return 1;
+	}
+	float score = match->getScore( getSide(state) == LEFT_PLAYER ? RIGHT_PLAYER: LEFT_PLAYER );
+	lua_pushnumber(state, score);
+	return 1;
+}
+
+int ScriptedInputSource::getScoreToWin(lua_State* state) 
+{
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0);
+		return 1;
+	}
+	float score = match->getScoreToWin();
+	lua_pushnumber(state, score);
+	return 1;
+}
+
+int ScriptedInputSource::getGameTime(lua_State* state) 
+{
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+	{
+		lua_pushnumber(state, 0);
+		return 1;
+	}
+	float time = match->getClock().getTime();
+	lua_pushnumber(state, time);
 	return 1;
 }
 
