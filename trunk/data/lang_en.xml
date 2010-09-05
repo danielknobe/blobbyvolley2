@@ -8,7 +8,8 @@
 	<string english = "really quit?" translation = "really quit?" />
 	<string english = "continue" translation = "continue" />
 
-	<string english = "network game" translation = "network game" />
+	<string english = "online game" translation = "online game" />
+	<string english = "lan game" translation = "lan game" />
 	<string english = "start" translation = "start" />
 	<string english = "options" translation = "options" />
 	<string english = "watch replay" translation = "watch replay" />
