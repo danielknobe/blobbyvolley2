@@ -51,26 +51,11 @@ NetworkSearchState::NetworkSearchState()
 	mEnteringServer = false;
 
 	mPingClient = new RakClient;
-	broadcast();
 }
 
 NetworkSearchState::~NetworkSearchState()
 {
-	
-	try
-	{
-		UserConfig config;
-		config.loadFile("config.xml");
-		if (mScannedServers.size() > 0)
-			config.setString("network_last_server",
-					mScannedServers.at(mSelectedServer).hostname);
-		config.saveFile("config.xml");
-	}
-	catch (std::exception& e)
-	{
-		std::cerr << "ERROR! in ~NetworkSearchState() " << e.what() << std::endl;
-	}
-
+	// Disconnect from servers
 	for (ClientList::iterator iter = mQueryClients.begin();
 		iter != mQueryClients.end(); iter++)
 	{
@@ -183,7 +168,7 @@ void NetworkSearchState::step()
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(10, 20), TextManager::getSingleton()->getString(TextManager::NET_SERVER_SCAN)))
-		broadcast();
+		searchServers();
 
 	if (imgui.doButton(GEN_ID, Vector2(420, 20), TextManager::getSingleton()->getString(TextManager::NET_DIRECT_CONNECT)) &&
 			!mEnteringServer)
@@ -287,16 +272,35 @@ void NetworkSearchState::step()
 	}
 }
 
-void NetworkSearchState::broadcast()
+// the different networkmodi classes (online/LAN)
+OnlineSearchState::OnlineSearchState()
+{
+	searchServers();
+}
+
+
+void OnlineSearchState::searchServers()
 {
 	mScannedServers.clear();
-	mPingClient->PingServer("255.255.255.255", BLOBBY_PORT, 0, true);
+	//TODO: Insert Masterserverconnection code here! At the moment we are using the old code here!
 	mPingClient->PingServer("blobby.openanno.org", BLOBBY_PORT, 0, true);
-	UserConfig config;
+	/*UserConfig config;
 	config.loadFile("config.xml");
 	mPingClient->PingServer(
 		config.getString("network_last_server").c_str(),
 		BLOBBY_PORT, 0, true);
+	*/
+}
+
+LANSearchState::LANSearchState()
+{
+	searchServers();
+}
+
+void LANSearchState::searchServers()
+{
+	mScannedServers.clear();
+	mPingClient->PingServer("255.255.255.255", BLOBBY_PORT, 0, true);
 }
 
 NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):

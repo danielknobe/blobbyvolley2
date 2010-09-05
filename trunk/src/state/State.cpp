@@ -122,12 +122,12 @@ void MainMenuState::step()
 	if (imgui.doButton(GEN_ID, Vector2(434, 350.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_ONLINE)))
 	{
 		deleteCurrentState();
-		setCurrentState(new NetworkSearchState());
+		setCurrentState(new OnlineSearchState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434, 380.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_LAN)))
 	{
 		deleteCurrentState();
-		setCurrentState(new NetworkSearchState());
+		setCurrentState(new LANSearchState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 410.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START)))
 	{

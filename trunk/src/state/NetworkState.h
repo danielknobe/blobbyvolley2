@@ -38,14 +38,19 @@ public:
 	virtual ~NetworkSearchState();
 
 	virtual void step();
-private:
-	void broadcast();
+	// onlinegames connect to the masterserver
+	// LAN games send a broadcast to local network
+	virtual void searchServers() = 0;
 
-	typedef std::list<RakClient*> ClientList;
-
+protected:
+	std::vector<ServerInfo> mScannedServers;
 	RakClient* mPingClient;
 
-	std::vector<ServerInfo> mScannedServers;
+private:
+	typedef std::list<RakClient*> ClientList;
+
+
+
 	ClientList mQueryClients;
 
 	int mSelectedServer;
@@ -54,6 +59,22 @@ private:
 
 	std::string mEnteredServer;
 	unsigned mServerBoxPosition;
+};
+
+class OnlineSearchState : public NetworkSearchState
+{
+public:
+	OnlineSearchState();
+	virtual ~OnlineSearchState() {};
+	virtual void searchServers();
+};
+
+class LANSearchState : public NetworkSearchState
+{
+public:
+	LANSearchState();
+	virtual ~LANSearchState() {};
+	virtual void searchServers();
 };
 
 class NetworkGameState : public State
