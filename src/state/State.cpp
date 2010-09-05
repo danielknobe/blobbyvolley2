@@ -119,12 +119,17 @@ void MainMenuState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
-	if (imgui.doButton(GEN_ID, Vector2(484, 370.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_NETWORK)))
+	if (imgui.doButton(GEN_ID, Vector2(434, 350.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_ONLINE)))
 	{
 		deleteCurrentState();
 		setCurrentState(new NetworkSearchState());
 	}
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 400.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START)))
+	if (imgui.doButton(GEN_ID, Vector2(434, 380.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_LAN)))
+	{
+		deleteCurrentState();
+		setCurrentState(new NetworkSearchState());
+	}
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 410.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START)))
 	{
 		try
 		{
@@ -140,25 +145,25 @@ void MainMenuState::step()
 		}
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 430.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_OPTIONS)))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 440.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_OPTIONS)))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 460.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 470.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
 	{
 		deleteCurrentState();
 		setCurrentState(new ReplayMenuState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 490.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))
 	{
 		deleteCurrentState();
 		setCurrentState(new CreditsState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(484.0, 520.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_EXIT)))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 530.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_EXIT)))
 	{
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();

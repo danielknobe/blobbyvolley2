@@ -139,7 +139,8 @@ void TextManager::setDefault(){
 	mStrings[LBL_CONF_QUIT] = "really quit?";
 	mStrings[LBL_CONTINUE] = "continue";
 	
-	mStrings[MNU_LABEL_NETWORK] = "network game";
+	mStrings[MNU_LABEL_ONLINE] = "online game";
+	mStrings[MNU_LABEL_LAN] = "lan game";
 	mStrings[MNU_LABEL_START] = "start";
 	mStrings[MNU_LABEL_OPTIONS] = "options";
 	mStrings[MNU_LABEL_REPLAY] = "watch replay";

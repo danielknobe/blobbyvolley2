@@ -42,7 +42,8 @@ class TextManager{
 			LBL_CONTINUE,
 			
 			// labels for main menu
-			MNU_LABEL_NETWORK,
+			MNU_LABEL_ONLINE,
+			MNU_LABEL_LAN,
 			MNU_LABEL_START,
 			MNU_LABEL_OPTIONS,
 			MNU_LABEL_REPLAY,
