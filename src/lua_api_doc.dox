@@ -1,0 +1,331 @@
+/* This file contains the documentation of the blobby volley lua bot api
+in a form readable by doxygen for generating a clearer documentation.
+As doxygen is not capable of parsing lua source code, the function 
+declarations are in C++ syntax, providing parameter and return types,
+too (in contrast to lua functions which would be unable to define
+type inforamtion) */
+
+// ----------------------------------------------------------
+// |		documentation of the api function set           |
+// ----------------------------------------------------------
+
+/*! \defgroup lua_api API Documentation
+		Here you find the documentation of the functions offered
+		by Blobby Volley's lua interface for scripting a bot.
+		For each function you get to know what it does, which 
+		parameters are expected and which values are returned.
+		For easier navigation this documentation is subdivided 
+		into several function groups. These groups are:
+		\li	Functions for input simulation: \ref commands
+		\li Functions for getting data: \ref blob_info, 
+						\ref ball_info, \ref game_info
+		\li Estimation/Calculation functions: \ref calc_funcs
+		
+		All functions of the lua math library are also available.
+		You can find their documentation at:
+		http://www.lua.org/manual/5.1/manual.html#5.6 \n
+		
+		Besides these functions that are provided by Blobby Volley,
+		each script can define the functions listed in \ref script_funcs.
+		Note that some of them are even required for getting your bot
+		working.
+*/
+
+// ----------------------------------------------------------
+// 						other
+// ----------------------------------------------------------
+
+/*! \brief debugging
+	\details prints \p num to the debugging output (stderr)
+	\ingroup lua_api
+*/
+void debug(float num);
+
+// ----------------------------------------------------------
+// 				input performing functions
+// ----------------------------------------------------------
+
+/*! \defgroup commands Input Functions 
+	\ingroup lua_api
+	@{
+*/
+
+//!	\brief step to the left
+void left();
+//!	\brief step to the right
+void right();
+/*!	\brief simulate jump key
+	\details Simulates pressing the jump key, so a first call causes the
+			blobby to jump whereas successive calls (in the next time steps)
+			make the jump higher
+*/
+void jump();
+
+/*! \brief Move to position
+	\details moves to a given position, using a small buffer to avoid 
+			whobbling around the target
+	\param target destination
+*/
+void moveto(int target);
+
+//! @}
+
+// ----------------------------------------------------------
+//					 ball information querying
+// ----------------------------------------------------------
+
+/*! \defgroup ball_info Ball information
+	\ingroup lua_api
+	This set of functions allows the script to query information about 
+	ball position, velocity and the number of touches done by the bot.
+	@{
+*/
+
+
+/*! \brief get number of touches
+	\details returns the number of touches the player had made since
+			the opponend had touched the ball last.
+*/
+int touches();
+
+//! \brief x component of ball position
+float ballx();
+//! \brief y component of ball position
+float bally();
+//! \brief x component of ball velocity
+float bspeedx();
+//! \brief y component of ball velocity
+float bspeedy();
+
+//! @}
+
+// ----------------------------------------------------------
+//				 blob information querying
+// ----------------------------------------------------------
+
+/*! \defgroup blob_info Blobby information
+	\ingroup lua_api
+	@{
+*/
+
+//! \brief is blobby launched
+//! \return returns true if blobby doesn't stand on the ground
+bool launched();
+//! \brief x component of blobby position
+//! \sa oppx()
+float posx();
+//! \brief y component of blobby position
+//! \sa oppy()
+float posy();
+//! \brief x component of blobby position
+//! \sa posx()
+float oppx();
+//! \brief y component of blobby position
+//! \sa posy()
+float oppy();
+
+//! @}
+
+// ----------------------------------------------------------
+// 						game status
+// ----------------------------------------------------------
+
+/*! \defgroup game_info Game status information
+	\ingroup lua_api
+	@{
+*/
+
+/*! \brief get own score
+	\sa getOppScore()
+	\sa getScoreToWin()
+*/
+int getScore();
+
+/*! \brief get opponent's score
+	\sa getScore()
+	\sa getScoreToWin()
+*/
+int getOppScore();
+
+/*! \brief score required for winning
+	\sa getScore()
+	\sa getOppScore()
+*/
+int getScoreTpWin();
+
+//! \brief game time passed so far
+//!	\return game time in seconds
+int getGameTime();
+
+//! @}
+
+// ----------------------------------------------------------
+// 						estimations
+// ----------------------------------------------------------
+
+/*! \defgroup calc_funcs Calculation/Estimation functions
+	\ingroup lua_api
+	@{
+*/
+
+/*!	\brief estimates ball impact
+	\details Calculates the position where the ball is going to
+			hit the ground. Ignores bounces with walls and the
+			net.
+	\deprecated This funcion is relatively useless as both its
+				purpose (calculating ground impace, where it is
+				already to late to catch the ball) and its 
+				calculation itself (ignoring bounces) are not good.
+				As a consequence, it is hardly used in the current
+				bots so it may be removed in one of the next releases.
+	\return x component of the estimated position
+*/
+float estimate();
+
+/*! \brief estimates x position after certain time
+	\details calculates the estimated x position of the ball after
+			\p time steps, ignoring bounces with walls and net
+	\param time Number of steps to anticipate
+	\sa estimx()
+*/
+float estimx(int time);
+/*! \brief estimates y position after certain time
+	\details calculates the estimated y position of the ball after
+			\p time steps, ignoring bounces with walls and net
+	\warning May be a little inaccurate for long timespans as it uses
+				explicit formulars instead of step-by-step simulation
+	\param time Number of steps to anticipate
+	\sa estimy()
+*/
+float estimy(int time);
+
+//! @}
+
+// ----------------------------------------------------------
+// 					functions to be implemented by script
+// ----------------------------------------------------------
+
+/*! \defgroup script_funcs To-be-implemented functions
+	\ingroup lua_api
+	These functions are to be implemented by the scripter. They 
+	create the bot behaviour and allow response to certain events.
+	Some of them are required for a working bot and marked with 
+	\b required.
+	@{
+*/
+
+/*!	\brief function for serving
+	\details Called when the ball went down and the controlled
+	blob has to serve it next.
+	\param ballready true when ball is placed
+	\attention \b required
+*/
+
+void OnServe(bool ballready);
+/*!	\brief Oppenent is serving
+	\details Called after balldown when the opponent has to
+				serve the next ball
+*/
+void OnOpponentServe();
+
+/*!	\brief Mainloop function
+	\details Called each step during the normal game
+	\attention \b required
+*/
+void OnGame();
+
+/*!	\brief ball bounce event
+	\details Called when ball trajectory changes 
+			(i.e. ball hits border/net/blobby)
+*/
+void OnBounce();
+
+//! @}
+
+// ----------------------------------------------------------
+// |					tutorial				            |
+// ----------------------------------------------------------
+
+/*! \mainpage
+	\page tutorial
+	In diesem Tutorial werden die Grundlagen von Lua und der Botprogrammierung
+	von Blobby Volley 2 erläutert. Für weiterführende Informationen gibt es die
+	Dokumentation der Script-API. \n
+
+	Für Leute, die noch nie programmiert haben, empfehle ich folgendes Tutorial,
+	um die wichtigsten Grundlagen zu erlernen:
+	http://robertico.ro.funpic.de/index.php \n
+
+	Vor der Programmierung ist zu beachten, dass Blobby-Skripte in 
+	'data/scripts' abgelegt werden müssen und die Dateiendung '.lua' tragen
+	müssen, um vom Spiel erkannt zu werden \n
+
+	Für ein gültiges Blobby-Script müsst ihr 3 Funktionen festlegen: \n
+
+	\code
+	function OnServe(parameter)
+	  -- Wird aufgerufen wenn der Ball abgepfiffen wurde und man selber angeben
+	  -- soll. Der Parameter gibt an, ob der Ball schon in der Schwebe plaziert ist
+	end
+
+	function OnOpponentServe()
+	  -- Wird aufgerufen wenn der Gegner angeben soll
+	end
+
+	function OnGame()
+	  -- Wird ansonsten während des gesamten Spieles aufgerufen
+	  -- Mit -- werden übrigens Kommentare markiert, solltet ihr es noch nicht bemerkt haben ;D
+	end
+	\endcode
+
+	Bevor ihr jetzt loslegt, noch etwas zum Koordinatensystem:
+	Das Spielfeld ist 800 Einheiten breit und 600 Einheiten hoch, ganz an der
+	alten Blobby-Auflösung orientiert. X wächst dabei nach rechts und Y nach oben.
+	Damit wäre also 0,0 unten links und 800,600 oben rechts.
+	Falls ihr euch wundert dass es keine Möglichkeit gibt die eigene Seite
+	zu bestimmen, das ist Absicht. Programmiert einfach als ob der Bot immer
+	links stehen würde, das Programm dreht gegebenenfalls alle Koordinaten um.
+
+	Ich werde jetzt einfach mal ein Beispiel zeigen, wie ein simpler Bot aufgebaut
+	sein kann:
+
+	\code
+	function OnOpponentServe()
+	  moveto(130) -- Wenn der Gegner spielt, in Ausgangsposition gehen
+	end
+
+	function OnServe(ballready)
+	  moveto(ballx() - 40) -- Etwas links vom Ball hinstellen
+	  if posx() < ballx() - 37 and posx() > ballx() - 43 then
+		   -- Dieser zugegeben etwas komplizierte Ausdruck bewirkt, dass
+		   -- man sich erstmal unterhalb des Balles befinden muss. Leider muss
+		   -- das so aufwendig gemacht werden, weil moveto() niemals eine Stelle
+		   -- ganz exakt erreicht.
+		if ballready then 
+		  jump() -- Natürlich nur springen wenn der Ball schon bereitsteht
+		end
+	  end
+	end
+
+	function OnGame()
+	  if ballx() < 400 then -- Wenn sich der Ball links von der Mitte,
+							-- also auf unserer Seite befindet
+		moveto(ballx() - 20) -- Etwas links vom Ball ausrichten
+		if ballx() < posx() + 50 then
+		  jump() -- Wenn der Ball kurz vor oder hinter dem Blobby ist, springen
+		end
+	  end
+	end
+	\endcode
+
+
+	Ich hoffe, dieses Tutorial hat einen Eindruck entwickelt, wie man einen Bot
+	programmiert. Für weitere Informationen gibt es wie gesagt die 
+	Script-API-Doku. Um fortgeschrittene Bots zu programmieren, solltet ihr
+	auch nicht immer blind dem Ball hinterherrennen, sondern mit den 
+	estim*-Funktionen Vorhersagen machen.
+	Ansonsten kann ich euch nur als Tip mitgeben, euren Bot immer wieder zu
+	beobachten und gegen jede gefundene Schwäche einen Schutzmechanismus
+	zu entwickeln.
+
+*/
