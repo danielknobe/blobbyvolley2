@@ -104,5 +104,8 @@ private:
 	lua_State* mState;
 	unsigned int mStartTime;
 	
+	bool mOnOppServe;
+	bool mOnBounce;
+	
 	float mLastBallSpeed;
 };
