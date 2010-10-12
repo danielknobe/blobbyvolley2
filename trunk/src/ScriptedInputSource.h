@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "InputSource.h"
+#include "Vector.h"
 
 #include <iostream>
 
@@ -55,6 +56,7 @@ private:
 	// for making bot tournaments^^, so the idea of setting it for each 
 	// bot seems better to me
 	static DuelMatch* mMatch;
+	static ScriptedInputSource* mCurrentSource;
 	
 	static PlayerSide getSide(lua_State* state);
 
@@ -89,9 +91,15 @@ private:
 	static int getGameTime(lua_State* state);
 	
 	// predictions
-	static int estimate(lua_State* state);
+	static Vector2 calculateBallEstimation(float time);
+	static float estimateBallImpact(float target);
+	static int estimate(lua_State* state);		// deprecated
 	static int estimx(lua_State* state);
 	static int estimy(lua_State* state);
+	/*
+	// calculations
+	static int parabel(lua_State* state);
+*/
 
 	lua_State* mState;
 	unsigned int mStartTime;

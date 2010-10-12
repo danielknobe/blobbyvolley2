@@ -33,6 +33,7 @@ extern "C"
 #include <cmath>
 
 DuelMatch* ScriptedInputSource::mMatch = 0;
+ScriptedInputSource* ScriptedInputSource::mCurrentSource = 0;
 
 struct ReaderInfo
 {
@@ -111,6 +112,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_register(mState, "getOppScore", getOppScore);
 	lua_register(mState, "getScoreToWin", getScoreToWin);	
 	lua_register(mState, "getGameTime", getGameTime);
+	
+	//lua_register(mState, "parabel", parabel);
 
 	ReaderInfo info;
 	info.handle = PHYSFS_openRead(filename.c_str());
@@ -151,6 +154,7 @@ PlayerInput ScriptedInputSource::getInput()
 	lua_setglobal(mState, "blobby_moveright");
 	lua_setglobal(mState, "blobby_moveup");
 
+	mCurrentSource = this;
 	mMatch = DuelMatch::getMainGame();
 	if (mMatch == 0)
 	{
@@ -411,7 +415,8 @@ int ScriptedInputSource::oppy(lua_State* state)
 
 int ScriptedInputSource::estimate(lua_State* state)
 {
-	float estim = mMatch->getBallEstimation();
+	std::cerr << "lua function estimate() is deprecated!" << std::endl;
+	float estim = estimateBallImpact(GROUND_PLANE_HEIGHT_MAX + BALL_RADIUS);
 	if (getSide(state) == RIGHT_PLAYER)
 		estim = 800.0 - estim;
 	lua_pushnumber(state, estim);
@@ -422,7 +427,7 @@ int ScriptedInputSource::estimx(lua_State* state)
 {
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = mMatch->getBallTimeEstimation(num).x;
+	float estim = calculateBallEstimation(num).x;
 	if (getSide(state) == RIGHT_PLAYER)
 		estim = 800.0 - estim;
 	lua_pushnumber(state, estim);
@@ -433,7 +438,7 @@ int ScriptedInputSource::estimy(lua_State* state)
 {
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = mMatch->getBallTimeEstimation(num).y;
+	float estim = calculateBallEstimation(num).y;
 	estim = 600.0 - estim;
 	lua_pushnumber(state, estim);
 	return 1;
@@ -465,4 +470,18 @@ int ScriptedInputSource::getGameTime(lua_State* state)
 	float time = mMatch->getClock().getTime();
 	lua_pushnumber(state, time);
 	return 1;
+}
+
+float ScriptedInputSource::estimateBallImpact(float target) {
+	const Vector2& vel = mMatch->getBallVelocity();
+	const Vector2& pos = mMatch->getBallPosition();
+	float steps = (vel.y - std::sqrt((vel.y * vel.y)- (-2 * BALL_GRAVITATION * (-pos.y + target)))) / (-BALL_GRAVITATION);
+	return (vel.x * steps) + pos.x;
+}
+
+Vector2 ScriptedInputSource::calculateBallEstimation(float time) {
+	Vector2 ret = mMatch->getBallPosition();
+	ret.x += mMatch->getBallVelocity().x * time;
+	ret.y += (mMatch->getBallVelocity().y + 0.5 * (BALL_GRAVITATION * time)) * time;
+	return ret;
 }

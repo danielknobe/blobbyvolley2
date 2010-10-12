@@ -448,22 +448,6 @@ bool PhysicWorld::getBlobJump(PlayerSide player) const
 	return !blobbyHitGround(player);
 }
 
-float PhysicWorld::estimateBallImpact() const
-{
-	float steps;
-	steps = (mBallVelocity.y - sqrt((mBallVelocity.y * mBallVelocity.y)-
-	(-2 * BALL_GRAVITATION * (-mBallPosition.y + GROUND_PLANE_HEIGHT_MAX + BALL_RADIUS)))) / (-BALL_GRAVITATION);
-	return (mBallVelocity.x * steps) + mBallPosition.x;
-}
-
-Vector2 PhysicWorld::estimateBallPosition(int steps) const
-{
-	Vector2 ret;
-	ret.x = mBallVelocity.x * float(steps);
-	ret.y = (mBallVelocity.y + 0.5 * (BALL_GRAVITATION * float(steps))) * float(steps);
-	return mBallPosition + ret;
-}
-
 bool PhysicWorld::getBallActive() const
 {
 	return mIsGameRunning;

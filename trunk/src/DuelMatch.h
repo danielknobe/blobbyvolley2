@@ -95,11 +95,6 @@ public:
 	
 	bool isPaused() const{ return mPaused; }
 
-	// Estimates Ball impact point
-	float getBallEstimation() const;
-
-	Vector2 getBallTimeEstimation(int steps) const;
-
 	// This functions returns true if the player launched
 	// and is jumping at the moment
 	bool getBlobJump(PlayerSide player) const;
