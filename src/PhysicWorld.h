@@ -73,8 +73,6 @@ public:
 	Vector2 getBallVelocity() const;
 	bool getBlobJump(PlayerSide player) const;
 	bool getBallActive() const;
-	float estimateBallImpact() const;
-	Vector2 estimateBallPosition(int steps) const;
 
 	void setLeftInput(const PlayerInput& input);
 	void setRightInput(const PlayerInput& input);

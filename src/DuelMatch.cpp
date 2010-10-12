@@ -214,16 +214,6 @@ Vector2 DuelMatch::getBallVelocity() const
 	return mPhysicWorld.getBallVelocity();
 }
 
-float DuelMatch::getBallEstimation() const
-{
-	return mPhysicWorld.estimateBallImpact();
-}
-
-Vector2 DuelMatch::getBallTimeEstimation(int steps) const
-{
-	return mPhysicWorld.estimateBallPosition(steps);
-}
-
 PlayerSide DuelMatch::getServingPlayer() const
 {	// NO_PLAYER hack was moved into ScriptedInpurSource.cpp
 	return mLogic->getServingPlayer();
