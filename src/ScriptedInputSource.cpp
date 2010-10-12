@@ -136,6 +136,36 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 		lua_close(mState);
 		throw except;
 	}
+	
+	
+	// check whether all required lua functions are available
+	bool available = true;
+	lua_getglobal(mState, "OnServe");
+	available &= lua_isfunction(mState, -1);
+	lua_getglobal(mState, "OnGame");
+	available &= lua_isfunction(mState, -1);
+	if (!available)
+	{
+		std::string error_message = "Missing bot function ";
+		error_message += (lua_isfunction(mState, -1)) ? "OnServe()" : "OnGame()";
+		std::cerr << "Lua Error: " << error_message << std::endl;
+		
+		ScriptException except;
+		except.luaerror = error_message;
+		lua_pop(mState, 1);
+		lua_close(mState);
+		throw except;
+	}
+	
+	// record which of the optional functions are available
+	lua_getglobal(mState, "OnOpponentServe");
+	mOnOppServe = lua_isfunction(mState, -1);
+	lua_getglobal(mState, "OnBounce");
+	mOnBounce = lua_isfunction(mState, -1);
+	
+	if(!mOnOppServe)	std::cerr << "Lua Warning: Missing function OnOpponentServe" << std::endl; 
+	if(!mOnBounce)		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl; 
+	
 	lua_pop(mState, lua_gettop(mState));
 }
 
@@ -162,49 +192,32 @@ PlayerInput ScriptedInputSource::getInput()
 	}
 	
 	PlayerSide player = getSide(mState);
-	int error;
+	int error = 0;
 	
 	if (!mMatch->getBallActive() && player == 
 			// if no player is serving player, assume the left one is
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
 		serving = true;
+		
 		lua_getglobal(mState, "OnServe");
-		if (!lua_isfunction(mState, -1))
-		{
-			lua_pop(mState, 1);
-			std::cerr << "Lua Error: Could not find function ";
-			std::cerr << "OnServe()" << std::endl;
-			return PlayerInput();
-		}
 		lua_pushboolean(mState, !mMatch->getBallDown());
 		error = lua_pcall(mState, 1, 0, 0);
 	}
 	else if (!mMatch->getBallActive() && player != 
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
-		lua_getglobal(mState, "OnOpponentServe");
-		if (!lua_isfunction(mState, -1))
+		if(mOnOppServe)
 		{
-			lua_pop(mState, 1);
-			std::cerr << "Lua Error: Could not find function ";
-			std::cerr << "OnOpponentServe()" << std::endl;
-			return PlayerInput();
+			lua_getglobal(mState, "OnOpponentServe");
+			error = lua_pcall(mState, 0, 0, 0);
 		}
-		error = lua_pcall(mState, 0, 0, 0);
 	}
 	else
 	{
-		if ( mLastBallSpeed != DuelMatch::getMainGame()->getBallVelocity().x ) {
+		if ( mOnBounce && mLastBallSpeed != DuelMatch::getMainGame()->getBallVelocity().x ) {
 			mLastBallSpeed = DuelMatch::getMainGame()->getBallVelocity().x;
 			lua_getglobal(mState, "OnBounce");
-			if (!lua_isfunction(mState, -1))
-			{
-				lua_pop(mState, 1);
-				std::cerr << "Lua Error: Could not find function ";
-				std::cerr << "OnBounce()" << std::endl;
-				return PlayerInput();
-			}
 			error = lua_pcall(mState, 0, 0, 0);
 			if (error)
 			{
@@ -214,13 +227,6 @@ PlayerInput ScriptedInputSource::getInput()
 			}
 		}
 		lua_getglobal(mState, "OnGame");
-		if (!lua_isfunction(mState, -1))
-		{
-			lua_pop(mState, 1);
-			std::cerr << "Lua Error: Could not find function ";
-			std::cerr << "OnGame()" << std::endl;
-			return PlayerInput();
-		}
 		error = lua_pcall(mState, 0, 0, 0);
 	}
 	if (error)
