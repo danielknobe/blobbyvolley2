@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "InputSource.h"
 #include "Vector.h"
+#include <boost/circular_buffer.hpp>
 
 #include <iostream>
 // ScriptedInputSource provides an implementation of InputSource, which uses
@@ -42,7 +43,7 @@ public:
 	// The constructor automatically loads and initializes the script
 	// with the given filename. The side parameter tells the script
 	// which side is it on.
-	ScriptedInputSource(const std::string& filename, PlayerSide side);
+	ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
 	~ScriptedInputSource();
 	
 	virtual PlayerInput getInput();
@@ -109,13 +110,18 @@ private:
 	lua_State* mState;
 	unsigned int mStartTime;
 	
+	// ki strength values
+	unsigned int mMaxDelay;
+	unsigned int mCurDelay;
+	
 	// which functions are available
 	bool mOnOppServe;
 	bool mOnBounce;
 	
 	// ball position and velocity in adapted coordinate system
-	Vector2 mBallPosition;
-	Vector2 mBallVelocity;
+	boost::circular_buffer<Vector2> mBallPositions;
+	boost::circular_buffer<Vector2> mBallVelocities;
 	
 	float mLastBallSpeed;
+	float mLastBallSpeedVirtual;
 };
