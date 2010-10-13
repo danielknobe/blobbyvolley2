@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 
 #include <iostream>
-
 // ScriptedInputSource provides an implementation of InputSource, which uses
 // Lua scripts to get its input. The given script is automatically initialised
 // and provided with an interface to the game.
@@ -71,6 +70,9 @@ private:
 	static int moveto(lua_State* state);
 	
 	// ball information
+	// internals
+	static const Vector2& getBallPosition();
+	static const Vector2& getBallVelocity();
 	static int touches(lua_State* state);
 	static int ballx(lua_State* state);
 	static int bally(lua_State* state);
@@ -91,9 +93,11 @@ private:
 	static int getGameTime(lua_State* state);
 	
 	// predictions
+	static Vector2 calculateBallEstimation_bad(float time);
 	static Vector2 calculateBallEstimation(float time);
 	static float estimateBallImpact(float target);
 	static int estimate(lua_State* state);		// deprecated
+	static int predictImpact(lua_State* state);
 	static int estimx(lua_State* state);
 	static int estimy(lua_State* state);
 	/*
@@ -101,11 +105,17 @@ private:
 	static int parabel(lua_State* state);
 */
 
+
 	lua_State* mState;
 	unsigned int mStartTime;
 	
+	// which functions are available
 	bool mOnOppServe;
 	bool mOnBounce;
+	
+	// ball position and velocity in adapted coordinate system
+	Vector2 mBallPosition;
+	Vector2 mBallVelocity;
 	
 	float mLastBallSpeed;
 };
