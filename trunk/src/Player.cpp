@@ -47,7 +47,7 @@ void Player::loadFromConfig(const std::string& prefix, bool initInput)
 			mInputSource = new LocalInputSource(mPlayerSide);
 		} else {
 			mInputSource = new ScriptedInputSource("scripts/" +
-				gameConfig.getString(prefix + "_script_name"), mPlayerSide);
+				gameConfig.getString(prefix + "_script_name"), mPlayerSide, gameConfig.getInteger(prefix + "_script_strength"));
 		}
 	
 		mName = gameConfig.getBool(prefix + "_player_human") ?

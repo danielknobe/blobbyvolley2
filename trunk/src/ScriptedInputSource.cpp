@@ -57,7 +57,8 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 }
 
 ScriptedInputSource::ScriptedInputSource(const std::string& filename,
-						PlayerSide playerside): mLastBallSpeed(0)
+						PlayerSide playerside, unsigned int difficulty): mLastBallSpeed(0),
+										mMaxDelay(difficulty), mCurDelay(difficulty)
 {
 	mStartTime = SDL_GetTicks();
 	mState = lua_open();
@@ -168,6 +169,15 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	if(!mOnBounce)		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl; 
 	
 	lua_pop(mState, lua_gettop(mState));
+	
+	// init delay
+	mBallPositions.set_capacity(mMaxDelay + 1);
+	mBallVelocities.set_capacity(mMaxDelay + 1);
+	
+	for(unsigned int i = 0; i < mMaxDelay + 1; ++i) {
+		mBallPositions.push_back(Vector2(0,0));
+		mBallVelocities.push_back(Vector2(0,0));
+	}
 }
 
 ScriptedInputSource::~ScriptedInputSource()
@@ -193,8 +203,31 @@ PlayerInput ScriptedInputSource::getInput()
 	}
 	
 	// ball position and velocity update
-	mBallPosition = mMatch->getBallPosition();
-	mBallVelocity = mMatch->getBallVelocity();
+	mBallPositions.push_back(mMatch->getBallPosition());
+	mBallVelocities.push_back(mMatch->getBallVelocity());
+	
+	// adapt current delay
+	char action = rand() % 8;
+	switch(action) {
+		case 0:
+		case 1:
+			mCurDelay--;
+			break;
+		case 2:
+		case 3:
+			mCurDelay++;
+	}
+	
+	if ( mLastBallSpeed != DuelMatch::getMainGame()->getBallVelocity().x ) {
+		mLastBallSpeed = DuelMatch::getMainGame()->getBallVelocity().x;
+		// reaction time after bounce
+		mCurDelay += rand() % (mMaxDelay+1);
+	}
+	
+	if(mCurDelay == -1)
+		mCurDelay = 0;
+	if(mCurDelay > mMaxDelay)
+		mCurDelay = mMaxDelay;
 	
 	PlayerSide player = getSide(mState);
 	int error = 0;
@@ -219,8 +252,8 @@ PlayerInput ScriptedInputSource::getInput()
 	}
 	else
 	{
-		if ( mOnBounce && mLastBallSpeed != DuelMatch::getMainGame()->getBallVelocity().x ) {
-			mLastBallSpeed = DuelMatch::getMainGame()->getBallVelocity().x;
+		if ( mOnBounce && mLastBallSpeedVirtual != getBallVelocity().x ) {
+			mLastBallSpeedVirtual = getBallVelocity().x;
 			lua_getglobal(mState, "OnBounce");
 			error = lua_pcall(mState, 0, 0, 0);
 			if (error)
@@ -233,6 +266,7 @@ PlayerInput ScriptedInputSource::getInput()
 		lua_getglobal(mState, "OnGame");
 		error = lua_pcall(mState, 0, 0, 0);
 	}
+	
 	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
@@ -345,10 +379,10 @@ int ScriptedInputSource::moveto(lua_State* state)
 }
 
 const Vector2& ScriptedInputSource::getBallPosition() {
-	return mCurrentSource->mBallPosition;
+	return mCurrentSource->mBallPositions[mCurrentSource->mMaxDelay - mCurrentSource->mCurDelay];
 }
 const Vector2& ScriptedInputSource::getBallVelocity() {
-	return mCurrentSource->mBallVelocity;
+	return mCurrentSource->mBallVelocities[mCurrentSource->mMaxDelay - mCurrentSource->mCurDelay];
 }
 
 int ScriptedInputSource::ballx(lua_State* state)
