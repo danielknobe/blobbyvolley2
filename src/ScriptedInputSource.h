@@ -115,7 +115,6 @@ private:
 	unsigned int mCurDelay;
 	
 	// which functions are available
-	bool mOnOppServe;
 	bool mOnBounce;
 	
 	// ball position and velocity in adapted coordinate system

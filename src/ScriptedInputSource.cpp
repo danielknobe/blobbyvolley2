@@ -70,7 +70,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_setglobal(mState, "CONST_FIELD_WIDTH");
 	lua_pushnumber(mState, 600 - GROUND_PLANE_HEIGHT_MAX);
 	lua_setglobal(mState, "CONST_GROUND_HEIGHT");
-	lua_pushnumber(mState, BALL_GRAVITATION);
+	lua_pushnumber(mState, -BALL_GRAVITATION);
 	lua_setglobal(mState, "CONST_BALL_GRAVITY");
 	lua_pushnumber(mState, BALL_RADIUS);
 	lua_setglobal(mState, "CONST_BALL_RADIUS");
@@ -82,7 +82,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_setglobal(mState, "CONST_BLOBBY_HEAD_RADIUS");
 	lua_pushnumber(mState, BLOBBY_HEIGHT);
 	lua_setglobal(mState, "CONST_BLOBBY_HEIGHT");
-	lua_pushnumber(mState, GRAVITATION);
+	lua_pushnumber(mState, -GRAVITATION);
 	lua_setglobal(mState, "CONST_BLOBBY_GRAVITY");
 	lua_pushnumber(mState, 600 - NET_SPHERE_POSITION);
 	lua_setglobal(mState, "CONST_NET_HEIGHT");
@@ -141,15 +141,19 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	
 	
 	// check whether all required lua functions are available
-	bool available = true;
+	bool onserve, ongame, onoppserve;
 	lua_getglobal(mState, "OnServe");
-	available &= lua_isfunction(mState, -1);
+	onserve = lua_isfunction(mState, -1);
 	lua_getglobal(mState, "OnGame");
-	available &= lua_isfunction(mState, -1);
-	if (!available)
+	ongame = lua_isfunction(mState, -1);
+	lua_getglobal(mState, "OnOpponentServe");
+	onoppserve = lua_isfunction(mState, -1);
+	if (!onserve || !ongame ||!onoppserve)
 	{
 		std::string error_message = "Missing bot function ";
-		error_message += (lua_isfunction(mState, -1)) ? "OnServe()" : "OnGame()";
+		error_message += onserve ? "" : "OnServe() ";
+		error_message += ongame ? "" : "OnGame() ";
+		error_message += onoppserve ? "" : "OnOpponentServe() ";
 		std::cerr << "Lua Error: " << error_message << std::endl;
 		
 		ScriptException except;
@@ -160,12 +164,9 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	}
 	
 	// record which of the optional functions are available
-	lua_getglobal(mState, "OnOpponentServe");
-	mOnOppServe = lua_isfunction(mState, -1);
 	lua_getglobal(mState, "OnBounce");
 	mOnBounce = lua_isfunction(mState, -1);
 	
-	if(!mOnOppServe)	std::cerr << "Lua Warning: Missing function OnOpponentServe" << std::endl; 
 	if(!mOnBounce)		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl; 
 	
 	lua_pop(mState, lua_gettop(mState));
@@ -244,11 +245,8 @@ PlayerInput ScriptedInputSource::getInput()
 	else if (!mMatch->getBallActive() && player != 
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
-		if(mOnOppServe)
-		{
-			lua_getglobal(mState, "OnOpponentServe");
-			error = lua_pcall(mState, 0, 0, 0);
-		}
+		lua_getglobal(mState, "OnOpponentServe");
+		error = lua_pcall(mState, 0, 0, 0);
 	}
 	else
 	{
