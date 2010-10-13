@@ -14,21 +14,36 @@ type inforamtion) */
 		by Blobby Volley's lua interface for scripting a bot.
 		For each function you get to know what it does, which 
 		parameters are expected and which values are returned.
-		For easier navigation this documentation is subdivided 
-		into several function groups. These groups are:
-		\li	Functions for input simulation: \ref commands
-		\li Functions for getting data: \ref blob_info, 
-						\ref ball_info, \ref game_info
-		\li Estimation/Calculation functions: \ref calc_funcs
+		This documentation is subdivided into several function 
+		groups:
+		\li	Functions for input simulation: \ref command_func "Input"
+		\li Functions for getting data: \ref ball_func "Ball Information", 
+										\ref blobby_func "Blobby Information",
+										\ref game_status_func "Game Status"
+		\li Estimation/Calculation functions: \ref estim_func "Estimation/Calculation"
 		
 		All functions of the lua math library are also available.
 		You can find their documentation at:
 		http://www.lua.org/manual/5.1/manual.html#5.6 \n
 		
 		Besides these functions that are provided by Blobby Volley,
-		each script can define the functions listed in \ref script_funcs.
+		each script can define the functions listed under \ref script_func "Script Functions".
+		
 		Note that some of them are even required for getting your bot
 		working.
+		
+		In addition to these functions, the Blobby Volley 2 Lua API 
+		provides a lot of preset constants to simplify bot
+		development and make adaption to new circumstances
+		(e.g. different fieldsize, gravity) easier it gets implemented.
+		
+		\attention
+		Remember that Lua is \b not able to declare a variables as const. 
+		Thus, it is possible to change the value of these constants 
+		accidentially.  
+		
+		
+	@{
 */
 
 // ----------------------------------------------------------
@@ -45,9 +60,9 @@ void debug(float num);
 // 				input performing functions
 // ----------------------------------------------------------
 
-/*! \defgroup commands Input Functions 
-	\ingroup lua_api
-	@{
+/*! @{
+	\anchor command_func
+	\name Input Functions 
 */
 
 //!	\brief step to the left
@@ -74,11 +89,11 @@ void moveto(int target);
 //					 ball information querying
 // ----------------------------------------------------------
 
-/*! \defgroup ball_info Ball information
-	\ingroup lua_api
-	This set of functions allows the script to query information about 
+/*! @{
+	\anchor ball_func
+	\name Ball Information
+	This set of functions allows the script to query information about \n
 	ball position, velocity and the number of touches done by the bot.
-	@{
 */
 
 
@@ -103,25 +118,35 @@ float bspeedy();
 //				 blob information querying
 // ----------------------------------------------------------
 
-/*! \defgroup blob_info Blobby information
-	\ingroup lua_api
-	@{
+/*! @{
+	\anchor blobby_func
+	\name Blobby Information
 */
 
 //! \brief is blobby launched
 //! \return returns true if blobby doesn't stand on the ground
 bool launched();
-//! \brief x component of blobby position
-//! \sa oppx()
+/*! \brief x component of blobby position
+	\details returns the x component of the middle of the blobby
+	\sa oppx(), posy()
+*/
 float posx();
-//! \brief y component of blobby position
-//! \sa oppy()
+/*! \brief y component of blobby position
+	\details returns the y component of the middle of the blobby, 
+			i.e. the blobby's top minus half of \ref CONST_BLOBBY_HEIGHT.
+	\sa oppy(), posx()
+*/
 float posy();
-//! \brief x component of blobby position
-//! \sa posx()
+/*! \brief x component of enemy position
+	\details returns the x component of the middle of the enemy
+	\sa posx(), oppy()
+*/
 float oppx();
-//! \brief y component of blobby position
-//! \sa posy()
+/*! \brief y component of enemy position
+	\details returns the y component of the middle of the enemy, 
+			i.e. the enemy's top minus half of \ref CONST_BLOBBY_HEIGHT.
+	\sa posy(), oppy()
+*/
 float oppy();
 
 //! @}
@@ -130,9 +155,9 @@ float oppy();
 // 						game status
 // ----------------------------------------------------------
 
-/*! \defgroup game_info Game status information
-	\ingroup lua_api
-	@{
+/*! @{
+	\anchor game_status_func
+	\name Game Status Information
 */
 
 /*! \brief get own score
@@ -151,7 +176,7 @@ int getOppScore();
 	\sa getScore()
 	\sa getOppScore()
 */
-int getScoreTpWin();
+int getScoreToWin();
 
 //! \brief game time passed so far
 //!	\return game time in seconds
@@ -163,12 +188,12 @@ int getGameTime();
 // 						estimations
 // ----------------------------------------------------------
 
-/*! \defgroup calc_funcs Calculation/Estimation functions
-	\ingroup lua_api
-	@{
+/*! @{
+	\anchor estim_func
+	\name Calculation/Estimation Functions
 */
 
-/*!	\brief estimates ball impact
+/*!	\brief estimates ball impact on ground
 	\details Calculates the position where the ball is going to
 			hit the ground. Ignores bounces with walls and the
 			net.
@@ -179,6 +204,7 @@ int getGameTime();
 				As a consequence, it is hardly used in the current
 				bots so it may be removed in one of the next releases.
 	\return x component of the estimated position
+	\sa predictImpact
 */
 float estimate();
 
@@ -199,19 +225,27 @@ float estimx(int time);
 */
 float estimy(int time);
 
+/*!	\brief estimates ball impact on blobby head
+	\details Calculates the position where the ball will be
+				on height with the blobby head. Takes bounces
+				with the walls into account.
+	\return x component of the calculated position
+*/
+float predictImpact();
+
 //! @}
 
 // ----------------------------------------------------------
 // 					functions to be implemented by script
 // ----------------------------------------------------------
 
-/*! \defgroup script_funcs To-be-implemented functions
-	\ingroup lua_api
-	These functions are to be implemented by the scripter. They 
-	create the bot behaviour and allow response to certain events.
+/*! @{
+	\anchor script_func 
+	\name Script Functions
+	These functions are to be implemented by the scripter. \n They 
+	create the bot behaviour and allow response to certain events. \n
 	Some of them are required for a working bot and marked with 
 	\b required.
-	@{
 */
 
 /*!	\brief function for serving
@@ -239,6 +273,38 @@ void OnGame();
 			(i.e. ball hits border/net/blobby)
 */
 void OnBounce();
+
+//! @}
+//! @}
+
+// ----------------------------------------------------------
+// |					constants				            |
+// ----------------------------------------------------------
+
+//! width of the playing field
+const float CONST_FIELD_WIDTH 			= 800;
+//! y coordinate of the gound plane
+const float CONST_GROUND_HEIGHT 		= 100;
+//! strenght of the gravity that affects the ball
+const float CONST_BALL_GRAVITY 			=  -0.28;
+//! radius of ball
+const float CONST_BALL_RADIUS 			=  31.5;
+//! start velocity of jumping blobby
+const float CONST_BLOBBY_JUMP 			=  15.1;
+//! radius of the lower sphere of the blobby
+const float CONST_BLOBBY_BODY_RADIUS 	=  33;
+//! radius of the upper sphere of the blobby
+const float CONST_BLOBBY_HEAD_RADIUS 	=  25;
+//! height of the blobby
+const float CONST_BLOBBY_HEIGHT 		=  89;
+//! gravity that affects the blobby if jump() is not called.
+//! otherwise, half of this value is used
+const float CONST_BLOBBY_GRAVITY 		=  -0.88;
+//! y coordinate of the top of the net
+const float CONST_NET_HEIGHT 			= 316;
+//! radius of the net / half the breadth
+const float CONST_NET_RADIUS 			=   7;
+
 
 //! @}
 
