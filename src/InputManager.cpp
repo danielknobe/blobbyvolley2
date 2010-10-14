@@ -246,32 +246,32 @@ void InputManager::updateInput()
 
 
 // GUI-Methods
-bool InputManager::up()
+bool InputManager::up() const
 {
 	return mUp;
 }
 
-bool InputManager::down()
+bool InputManager::down() const
 {
 	return mDown;
 }
      
-bool InputManager::left()
+bool InputManager::left() const
 {
 	return mLeft;
 }
 
-bool InputManager::right()
+bool InputManager::right() const
 {
 	return mRight;
 }
 
-bool InputManager::select()
+bool InputManager::select() const
 {
 	return mSelect;
 }
 
-bool InputManager::exit()
+bool InputManager::exit() const
 {
 	return mExit;
 }
@@ -282,27 +282,27 @@ Vector2 InputManager::position()
 	return Vector2(mMouseX,mMouseY);
 }
 
-bool InputManager::click()
+bool InputManager::click() const
 {
 	return mClick;
 }
 
-bool InputManager::mouseWheelUp()
+bool InputManager::mouseWheelUp() const
 {
 	return mMouseWheelUp;
 }
 
-bool InputManager::mouseWheelDown()
+bool InputManager::mouseWheelDown() const
 {
 	return mMouseWheelDown;
 }
 
-bool InputManager::unclick()
+bool InputManager::unclick() const
 {
 	return mUnclick;
 }
 
-bool InputManager::running()
+bool InputManager::running() const
 {
 	return mRunning;
 }
@@ -601,7 +601,7 @@ std::string InputManager::getLastActionKey()
 		return "";
 }
 
-std::string InputManager::getLastJoyAction()
+std::string InputManager::getLastJoyAction() const
 {
 	return mLastJoyAction;
 }

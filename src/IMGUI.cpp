@@ -743,7 +743,7 @@ bool IMGUI::doBlob(int id, const Vector2& position, const Color& col)
 	return false;
 }
 
-bool IMGUI::usingCursor()
+bool IMGUI::usingCursor() const
 {
 	return mUsingCursor;
 }

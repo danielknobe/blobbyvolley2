@@ -63,7 +63,7 @@ public:
 	bool doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
 	bool doBlob(int id, const Vector2& position, const Color& col);
 
-	bool usingCursor();
+	bool usingCursor() const;
 	void doInactiveMode(bool inactive) { mInactive = inactive; }
 private:
 	IMGUI();

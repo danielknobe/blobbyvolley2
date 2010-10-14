@@ -42,16 +42,16 @@ class Vector2
 
 	void clear();
 	
-	Vector2 reflectX();
-	Vector2 reflectY();
-	Vector2 scale(float factor);
-	Vector2 scaleX(float factor);
-	Vector2 scaleY(float factor);
+	Vector2 reflectX() const;
+	Vector2 reflectY() const;
+	Vector2 scale(float factor) const;
+	Vector2 scaleX(float factor) const;
+	Vector2 scaleY(float factor) const;
 	float length() const;
 	Vector2 normalise();
 	Vector2 contraVector();
 	
-	inline Vector2 halfVector(const Vector2& vec)
+	inline Vector2 halfVector(const Vector2& vec) const
 	{
 		return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
 	}
@@ -127,17 +127,17 @@ class Vector2
 	}
 
 
-	inline float dotProduct(const Vector2& vector)
+	inline float dotProduct(const Vector2& vector) const
 	{
 		return x * vector.x + y * vector.y;
 	}
 	
-	inline float crossProduct(const Vector2& vector)
+	inline float crossProduct(const Vector2& vector) const
 	{
 		return x * vector.y - y * vector.x;
 	}
 	
-	inline Vector2 reflect(const Vector2& normal)
+	inline Vector2 reflect(const Vector2& normal) const
 	{
 		return Vector2(*this - (normal * 2 * dotProduct(normal)));
 	}
@@ -163,27 +163,27 @@ inline Vector2::Vector2(const Vector2& v1, const Vector2& v2)
 	y = v2.y - v1.y;
 }
 
-inline Vector2 Vector2::reflectX()
+inline Vector2 Vector2::reflectX() const
 {
 	return Vector2(-x, y);
 }
 
-inline Vector2 Vector2::reflectY()
+inline Vector2 Vector2::reflectY() const
 {
 	return Vector2(x, -y);
 }
 
-inline Vector2 Vector2::scale(float factor)
+inline Vector2 Vector2::scale(float factor) const
 {
 	return Vector2(x * factor, y * factor);
 }
 
-inline Vector2 Vector2::scaleX(float factor)
+inline Vector2 Vector2::scaleX(float factor) const
 {
 	return Vector2(x * factor, y);
 }
 
-inline Vector2 Vector2::scaleY(float factor)
+inline Vector2 Vector2::scaleY(float factor) const
 {
 	return Vector2(x, y * factor);
 }

@@ -39,12 +39,12 @@ public:
 	float getGameSpeed() const{return mGameFPS;}
 
 // This reports whether a framedrop is necessary to hold the real FPS
-	bool doFramedrop();
+	bool doFramedrop() const;
 
 //gives the caller the fps of the drawed frames:
-	int getFPS() { return mFPS; }
+	int getFPS() const { return mFPS; }
 	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
-	bool getDrawFPS() { return mDrawFPS; }
+	bool getDrawFPS() const { return mDrawFPS; }
 
 // This updates everything and waits the necessary time	
 	void update();

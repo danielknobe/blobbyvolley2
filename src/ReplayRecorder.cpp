@@ -186,7 +186,7 @@ void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& 
 	mPlayerNames[RIGHT_PLAYER] = right;
 }
 
-std::string ReplayRecorder::getPlayerName(const PlayerSide side)
+std::string ReplayRecorder::getPlayerName(const PlayerSide side) const
 {
 	return mPlayerNames[side];
 }
@@ -211,7 +211,7 @@ PlayerInput* ReplayRecorder::getInput()
 	return input;
 }
 
-PlayerSide ReplayRecorder::getServingPlayer()
+PlayerSide ReplayRecorder::getServingPlayer() const
 {
 	return mServingPlayer;
 }

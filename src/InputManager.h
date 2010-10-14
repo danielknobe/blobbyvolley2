@@ -73,29 +73,29 @@ public:
 	void beginGame(PlayerSide side);
 	void endGame();
 
-	bool running();
+	bool running() const;
 	PlayerInput getGameInput(int player);
 	void updateInput();
 
 	// For GUI navigation (Gamepad, Joystick or Keyboard)
-	bool up();
-	bool down();
-	bool left();
-	bool right();
-	bool select();
-	bool exit(); // extention for mouse included, so that right click = exit
+	bool up() const;
+	bool down() const;
+	bool left() const;
+	bool right() const;
+	bool select() const;
+	bool exit() const; // extention for mouse included, so that right click = exit
 
 	std::string getLastTextKey();
 	std::string getLastActionKey();
-	int getLastMouseButton() { return mLastMouseButton; }
-	std::string getLastJoyAction();
+	int getLastMouseButton() const { return mLastMouseButton; }
+	std::string getLastJoyAction() const;
 
 	// For GUI navigation (Mouse)
 	Vector2 position();
-	bool click();
-	bool mouseWheelUp();
-	bool mouseWheelDown();
-	bool unclick();
+	bool click() const;
+	bool mouseWheelUp() const;
+	bool mouseWheelDown() const;
+	bool unclick() const;
 	
 	// config conversion methods
 	std::string keyToString(SDLKey key);
