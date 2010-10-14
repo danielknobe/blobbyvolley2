@@ -77,11 +77,11 @@ public:
 	void record(const PlayerInput* input);
 	void setPlayerNames(const std::string& left, const std::string& right);
 
-	std::string getPlayerName(const PlayerSide side);
+	std::string getPlayerName(const PlayerSide side) const;
 
 	PlayerInput* getInput();
 
-	PlayerSide getServingPlayer();
+	PlayerSide getServingPlayer() const;
 	void setServingPlayer(PlayerSide side);
 
 	PacketType getPacketType();

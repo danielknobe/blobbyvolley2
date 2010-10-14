@@ -45,7 +45,7 @@ void SpeedController::setGameSpeed(float fps)
 	mGameFPS = fps;
 }
 
-bool SpeedController::doFramedrop()
+bool SpeedController::doFramedrop() const
 {
 	return mFramedrop;
 }

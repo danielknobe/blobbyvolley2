@@ -32,7 +32,7 @@ class Blood
 public:
 	Blood(Vector2 position, Vector2 direction, int player);
 	void step();
-	Vector2 getPosition() { return mPos; }
+	Vector2 getPosition() const { return mPos; }
 	int mLastFrame;
 };
 
