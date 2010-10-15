@@ -212,6 +212,7 @@ float estimate();
 	\details calculates the estimated x position of the ball after
 			\p time steps, ignoring bounces with walls and net
 	\param time Number of steps to anticipate
+	\deprecated use predictx() for more accurate estimations
 	\sa estimx()
 */
 float estimx(int time);
@@ -221,6 +222,7 @@ float estimx(int time);
 	\warning May be a little inaccurate for long timespans as it uses
 				explicit formulars instead of step-by-step simulation
 	\param time Number of steps to anticipate
+	\deprecated use predicty() for more accurate estimations
 	\sa estimy()
 */
 float estimy(int time);
@@ -230,8 +232,108 @@ float estimy(int time);
 				on height with the blobby head. Takes bounces
 				with the walls into account.
 	\return x component of the calculated position
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall before
+				it reaches its destination.
 */
 float predictImpact();
+
+/*!	\brief estimates time ball need to hit net top
+	\details Reckons the time the ball needs to hit the net's
+			center the next time. Collisions with blobbys, walls
+			or the ned rod are not calculated.
+	\attention extensive use may need a lot of cpu power
+*/
+float nettime();
+
+// ----------------------------------------------------------
+// spec in development
+// ----------------------------------------------------------
+
+/*!	\brief predicts ball position
+	\details Calculates the position the ball will have after \p
+			time steps, taking into account bounces with walls
+			and a simplified model for the net (i.e., the more
+			complicated collision with the net top is diregarded).
+	\warning 
+			As this uses explicit formulas instead of simulating
+			step by step, the results may slightly vary from 
+			the real values.
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall 
+				during the considered timespan.
+	\sa predicty(int time);
+*/
+float predictx(int time);
+
+/*!	\brief predicts ball position
+	\details Calculates the position the ball will have after \p
+			time steps, taking into account bounces with walls
+			and a simplified model for the net (i.e., the more
+			complicated collision with the net top is diregarded).
+	\warning 
+			As this uses explicit formulas instead of simulating
+			step by step, the results may slightly vary from 
+			the real values.
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall 
+				during the considered timespan.
+	\sa predictx(int time);
+*/
+float predicty(int time);
+
+/*!	\brief time ball needs to position
+	\details Calculates the duration until the ball reaches a certain 
+			position the next time. Bounces with the wall and net rod
+			are calculated correctly, net top is disregarded.			
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall before
+				reaching its destination.
+	\sa timetoy(float target)
+*/
+float timetox(float target);
+/*!	\brief time ball needs to position
+	\details Calculates the duration until the ball reaches a certain 
+			position the next time. Bounces with the wall and net rod
+			are calculated correctly, net top is disregarded.			
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall before
+				reaching its destination.
+	\sa timetoy(float target)
+*/
+float timetoy(float target);
+
+/*!	\brief x when ball reaches certain y
+	\details caluclates the x coordinate the ball has when it
+			reaches \p target. Equivalent to predictx(timetoy(target))
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall before
+				reaching its destination.
+	\sa yatx
+*/
+float xaty(float target);
+
+/*!	\brief y when ball reaches certain x
+	\details caluclates the y coordinate the ball has when it
+			reaches \p target. Equivalent to predicty(timetox(target))
+	\sideeffect Sets \ref FLAG_BOUNCE to true if ball hits a wall before
+				reaching its destination.
+	\sa xaty
+*/
+float yatx(float target);
+
+/*! \brief time the blobby needs to reach \p target
+*/
+float blobtimetox(float target);
+/*! \brief time the blobby needs to reach \p target. 
+	\details calculates the time the blobby needs to 
+			reach a certain height. It is assumed that
+			jump() is called incessantly.
+*/
+float blobtimetoy(float target);
+
+/*! \brief time till next event
+	\details calculates when the next event will occur.
+			in this context, event means bouncing against
+			the wall, the net or hitting the ground. 
+	\sideeffect Sets \ref FLAG_BOUNCE to true if next event
+				is hitting wall or net.
+*/
+float nextevent();
 
 //! @}
 
@@ -275,7 +377,6 @@ void OnGame();
 void OnBounce();
 
 //! @}
-//! @}
 
 // ----------------------------------------------------------
 // |					constants				            |
@@ -305,6 +406,17 @@ const float CONST_NET_HEIGHT 			= 316;
 //! radius of the net / half the breadth
 const float CONST_NET_RADIUS 			=   7;
 
+// ----------------------------------------------------------
+// |					variables				            |
+// ----------------------------------------------------------
+
+/*! \brief wall bounce calculated?
+	\details Is set by some functions to indicate whether
+			a collision with the wall had to be taken 
+			into account, i.e. the ball hits a wall 
+			during the processed timespan.
+*/
+extern bool FLAG_BOUNCE;
 
 //! @}
 

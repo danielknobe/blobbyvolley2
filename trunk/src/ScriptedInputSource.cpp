@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ScriptedInputSource.h"
 #include "DuelMatch.h"
 #include "GameConstants.h"
+#include "BotAPICalculations.h"
 
 extern "C"
 {
@@ -107,9 +108,16 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_register(mState, "oppx", oppx);
 	lua_register(mState, "oppy", oppy);
 	lua_register(mState, "estimate", estimate);
-	lua_register(mState, "predictImpact", predictImpact);
 	lua_register(mState, "estimx", estimx);
 	lua_register(mState, "estimy", estimy);
+	lua_register(mState, "timetox", timetox);
+	lua_register(mState, "timetoy", timetoy);
+	lua_register(mState, "predictx", predictx);
+	lua_register(mState, "predicty", predicty);
+	lua_register(mState, "xaty", xaty);
+	lua_register(mState, "yatx", yatx);
+	lua_register(mState, "nextevent", nextevent);
+	lua_register(mState, "predictImpact", predictImpact);
 	lua_register(mState, "getScore", getScore);
 	lua_register(mState, "getOppScore", getOppScore);
 	lua_register(mState, "getScoreToWin", getScoreToWin);	
@@ -296,6 +304,11 @@ PlayerInput ScriptedInputSource::getInput()
 		return currentInput;
 }
 
+void ScriptedInputSource::setflags(lua_State* state) {
+	lua_pushnumber(state, FLAG_BOUNCE);
+	lua_setglobal(state, "FLAG_BOUNCE");
+}
+
 PlayerSide ScriptedInputSource::getSide(lua_State* state)
 {
 	lua_getglobal(state, "blobby_side");
@@ -470,16 +483,14 @@ int ScriptedInputSource::estimate(lua_State* state)
 		warning_issued = true;
 		std::cerr << "Lua Warning: function estimate() is deprecated!" << std::endl;
 	}
+	
+	Vector2 pos = getBallPosition();
+	const Vector2& vel = getBallVelocity();
+	
+	float time = (vel.y - std::sqrt((vel.y * vel.y)- (-2 * BALL_GRAVITATION * (-pos.y + GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS)))) / (-BALL_GRAVITATION);
+	
+	float estim = pos.x + vel.x * time;
 		
-	float estim = estimateBallImpact(GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS);
-	if (getSide(state) == RIGHT_PLAYER)
-		estim = 800.0 - estim;
-	lua_pushnumber(state, estim);
-	return 1;
-}
-
-int ScriptedInputSource::predictImpact(lua_State* state) {
-	float estim = estimateBallImpact(GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS - BLOBBY_HEIGHT);
 	if (getSide(state) == RIGHT_PLAYER)
 		estim = 800.0 - estim;
 	lua_pushnumber(state, estim);
@@ -488,9 +499,15 @@ int ScriptedInputSource::predictImpact(lua_State* state) {
 
 int ScriptedInputSource::estimx(lua_State* state)
 {
+	static bool warning_issued = false;
+	if( !warning_issued ) 
+	{
+		warning_issued = true;
+		std::cerr << "Lua Warning: function estimx() is deprecated!" << std::endl;
+	}
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = calculateBallEstimation_bad(num).x;
+	float estim = getBallPosition().x + num * getBallVelocity().x;
 	if (getSide(state) == RIGHT_PLAYER)
 		estim = 800.0 - estim;
 	lua_pushnumber(state, estim);
@@ -499,11 +516,115 @@ int ScriptedInputSource::estimx(lua_State* state)
 
 int ScriptedInputSource::estimy(lua_State* state)
 {
+	static bool warning_issued = false;
+	if( !warning_issued ) 
+	{
+		warning_issued = true;
+		std::cerr << "Lua Warning: function estimy() is deprecated!" << std::endl;
+	}
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = calculateBallEstimation_bad(num).y;
+	float estim = getBallPosition().y + num * (getBallVelocity().y + 0.5*BALL_GRAVITATION*num);
 	estim = 600.0 - estim;
 	lua_pushnumber(state, estim);
+	return 1;
+}
+
+int ScriptedInputSource::predictx(lua_State* state) {
+	reset_flags();
+	float time = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	float estim = predict_x(getBallPosition(), getBallVelocity(), time);
+	if (getSide(state) == RIGHT_PLAYER)
+		estim = RIGHT_PLANE - estim;
+	lua_pushnumber(state, estim);
+	setflags(state);
+	return 1;
+}
+int ScriptedInputSource::predicty(lua_State* state) {
+	reset_flags();
+	float time = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	float estim = 600.0 - predict_y(getBallPosition(), getBallVelocity(), time);
+	lua_pushnumber(state, estim);
+	setflags(state);
+	return 1;
+}
+int ScriptedInputSource::timetox(lua_State* state) {
+	reset_flags();
+	float destination = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	
+	if (getSide(state) == RIGHT_PLAYER)
+		destination = RIGHT_PLANE - destination;
+	
+	float time = time_to_x(getBallPosition(), getBallVelocity(), destination);
+	
+	lua_pushnumber(state, time);
+	setflags(state);
+	return 1;
+}
+int ScriptedInputSource::timetoy(lua_State* state) {
+	reset_flags();
+	float destination = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	
+	destination = 600.0 - destination;
+	
+	float time = time_to_y(getBallPosition(), getBallVelocity(), destination);
+	
+	lua_pushnumber(state, time);
+	setflags(state);
+	return 1;
+}
+int ScriptedInputSource::xaty(lua_State* state) {
+	reset_flags();
+	float destination = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	
+	destination = 600.0 - destination;
+	
+	float x = x_at_y(getBallPosition(), getBallVelocity(), destination);
+	
+	if (getSide(state) == RIGHT_PLAYER)
+		x = RIGHT_PLANE - x;
+		
+	lua_pushnumber(state, x);
+	setflags(state);
+	return 1;
+}
+int ScriptedInputSource::yatx(lua_State* state) {
+	reset_flags();
+	float destination = lua_tonumber(state, -1);
+	lua_pop(state, 1);
+	
+	if (getSide(state) == RIGHT_PLAYER)
+		destination = RIGHT_PLANE - destination;
+	
+	float y = y_at_x(getBallPosition(), getBallVelocity(), destination);
+	
+	y = 600.0 - y;
+		
+	lua_pushnumber(state, y);
+	setflags(state);
+	return 1;
+}
+
+int ScriptedInputSource::predictImpact(lua_State* state) {
+	reset_flags();
+	float x = x_at_y(getBallPosition(), getBallVelocity(), GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT - BALL_RADIUS);
+	if (getSide(state) == RIGHT_PLAYER)
+		x = RIGHT_PLANE - x;
+	lua_pushnumber(state, x);
+	setflags(state);
+	return 1;
+}
+
+int ScriptedInputSource::nextevent(lua_State* state) {
+	reset_flags();
+	float time = next_event(getBallPosition(), getBallVelocity());
+	lua_pushnumber(state, time);
+	setflags(state);
 	return 1;
 }
 
@@ -533,86 +654,4 @@ int ScriptedInputSource::getGameTime(lua_State* state)
 	float time = mMatch->getClock().getTime();
 	lua_pushnumber(state, time);
 	return 1;
-}
-
-float ScriptedInputSource::estimateBallImpact(float target) {
-	const Vector2& vel = getBallVelocity();
-	const Vector2& pos = getBallPosition();
-	float steps = (vel.y - std::sqrt((vel.y * vel.y)- (-2 * BALL_GRAVITATION * (-pos.y + target)))) / (-BALL_GRAVITATION);
-	return calculateBallEstimation(steps).x;
-}
-/*
-int ScriptedInputSource::parabel(lua_State* state) 
-{
-	// load arguments
-	
-	// MODE:	0 - first positive solution
-	//			1 - second positive solution
-	int mode = lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	
-	float distance = lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	float velocity = lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	float gravity = lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	
-	float sq = velocity*velocity + 2*gravity*distance;
-
-	// if unreachable, return -1
-	if ( sq < 0 ) {
-		lua_pushnumber(state, -1);
-		return 1;
-	}
-	sq = sqrt(sq);
-	
-	float tmin = (-velocity - sq) / gravity;
-	float tmax = (-velocity + sq) / gravity;
-	
-	if ( gravity < 0 ) {
-		float temp = tmin;
-		tmin = tmax; tmax = temp;
-	}
-
-	if ( mode == 0 ) {
-		if ( tmin > 0 ) 
-			lua_pushnumber(state, tmin);
-		else if ( tmax > 0 )
-			lua_pushnumber(state, tmax);
-		else 
-			lua_pushnumber(state, -1);
-		
-	} else if ( mode == 1 ) {
-		if ( tmax > 0 ) 
-			lua_pushnumber(state, tmax);
-		else 
-			lua_pushnumber(state, -1);
-	}
-	return 1;
-}
-*/
-Vector2 ScriptedInputSource::calculateBallEstimation_bad(float time) {
-	Vector2 ret = getBallPosition();
-	const Vector2& vel = getBallVelocity();
-	ret.x += vel.x * time;
-	ret.y += (vel.y + 0.5 * (BALL_GRAVITATION * time)) * time;
-	return ret;
-}
-
-Vector2 ScriptedInputSource::calculateBallEstimation(float time) {
-	Vector2 ret = getBallPosition();
-	const Vector2& vel = getBallVelocity();
-	
-	// simple calculation
-	ret.x += vel.x * time;
-	ret.y += (vel.y + 0.5 * (BALL_GRAVITATION * time)) * time;
-	
-	// improvment: border collission
-	if ( ret.x < BALL_RADIUS )
-		ret.x = 2 * BALL_RADIUS - ret.x;
-	if ( ret.x > RIGHT_PLANE - BALL_RADIUS ) 
-		ret.x = 2 * (RIGHT_PLANE - BALL_RADIUS) - ret.x;
-		
-	return ret;
 }

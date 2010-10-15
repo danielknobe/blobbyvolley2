@@ -63,6 +63,7 @@ private:
 	// helpers
 	static int side(lua_State* state);
 	static int debug(lua_State* state);
+	static void setflags(lua_State* state);
 	
 	// commands
 	static int jump(lua_State* state);
@@ -94,17 +95,19 @@ private:
 	static int getGameTime(lua_State* state);
 	
 	// predictions
-	static Vector2 calculateBallEstimation_bad(float time);
-	static Vector2 calculateBallEstimation(float time);
-	static float estimateBallImpact(float target);
 	static int estimate(lua_State* state);		// deprecated
+	static int estimx(lua_State* state);		// deprecated
+	static int estimy(lua_State* state);		// deprecated
+	
+	static int predictx(lua_State* state);
+	static int predicty(lua_State* state);
+	static int timetox(lua_State* state);
+	static int timetoy(lua_State* state);
+	static int xaty(lua_State* state);
+	static int yatx(lua_State* state);
+	
+	static int nextevent(lua_State* state);
 	static int predictImpact(lua_State* state);
-	static int estimx(lua_State* state);
-	static int estimy(lua_State* state);
-	/*
-	// calculations
-	static int parabel(lua_State* state);
-*/
 
 
 	lua_State* mState;
