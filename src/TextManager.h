@@ -131,6 +131,10 @@ class TextManager{
 			OP_FAST,
 			OP_VFAST,
 			OP_LANGUAGE,
+			OP_DIFFICULTY,
+			OP_WEAK,
+			OP_MEDIUM,
+			OP_STRONG,
 			
 			COUNT
 		};

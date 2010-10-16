@@ -28,5 +28,7 @@
 	<var name="network_side" value="0"/>
 	<var name="use_remote_color" value="true"/>
 	<var name="language" value="en"/>
+	<var name="left_script_strength" value="13"/>
+	<var name="right_script_strength" value="13"/>
 </userconfig>
 
