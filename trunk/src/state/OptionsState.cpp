@@ -65,6 +65,9 @@ OptionState::OptionState()
 	mPlayerName[RIGHT_PLAYER] = mOptionConfig.getString("right_player_name");
 	mPlayerNamePosition[RIGHT_PLAYER] = 0;
 	mPlayerNamePosition[LEFT_PLAYER] = 0;
+	
+	mBotStrength[LEFT_PLAYER] = mOptionConfig.getInteger("left_script_strength");
+	mBotStrength[RIGHT_PLAYER] = mOptionConfig.getInteger("right_script_strength");
 }
 
 OptionState::~OptionState()
@@ -98,12 +101,16 @@ OptionState::~OptionState()
 		}
 		mOptionConfig.setString("left_player_name", mPlayerName[LEFT_PLAYER]);
 		mOptionConfig.setString("right_player_name", mPlayerName[RIGHT_PLAYER]);
+		mOptionConfig.setInteger("left_script_strength", mBotStrength[LEFT_PLAYER]);
+		mOptionConfig.setInteger("right_script_strength", mBotStrength[RIGHT_PLAYER]);
 		mOptionConfig.saveFile("config.xml");
 	}
 }
 
 void OptionState::step()
 {
+	const int MAX_BOT_DELAY = 25;		// 25 frames = 0.33s (gamespeed: normal)
+	
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -114,20 +121,36 @@ void OptionState::step()
 
 	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
+	
+	imgui.doText(GEN_ID, Vector2(270.0, 310.0), TextManager::getSingleton()->getString(TextManager::OP_DIFFICULTY) );
+	
+	float f = 1.f - (float)mBotStrength[0] / MAX_BOT_DELAY;
+	imgui.doScrollbar(GEN_ID, Vector2(15.0, 350.0), f);
+	mBotStrength[0] = static_cast<unsigned int> ((1.f-f) * MAX_BOT_DELAY + 0.5f);
+	imgui.doText(GEN_ID, Vector2(235.0, 350.0), f > 0.66 ? TextManager::getSingleton()->getString(TextManager::OP_STRONG) :
+											 (f > 0.33 ? TextManager::getSingleton()->getString(TextManager::OP_MEDIUM): 
+											TextManager::getSingleton()->getString(TextManager::OP_WEAK)));
+	
+	f = 1.f - (float)mBotStrength[1] / MAX_BOT_DELAY;
+	imgui.doScrollbar(GEN_ID, Vector2(440.0, 350.0), f);
+	mBotStrength[1] = static_cast<unsigned int> ((1.f - f) * MAX_BOT_DELAY + 0.5f);
+	imgui.doText(GEN_ID, Vector2(660.0, 350.0), f > 0.66 ? TextManager::getSingleton()->getString(TextManager::OP_STRONG) :
+											 (f > 0.33 ? TextManager::getSingleton()->getString(TextManager::OP_MEDIUM): 
+											TextManager::getSingleton()->getString(TextManager::OP_WEAK)));
 
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 360.0), TextManager::getSingleton()->getString(TextManager::OP_INPUT_OP)))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::getSingleton()->getString(TextManager::OP_INPUT_OP)))
 	{
 		mSaveConfig = true;
 		deleteCurrentState();
 		setCurrentState(new InputOptionsState());
 	}
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 400.0), TextManager::getSingleton()->getString(TextManager::OP_GFX_OP)))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::getSingleton()->getString(TextManager::OP_GFX_OP)))
 	{
 		mSaveConfig = true;
 		deleteCurrentState();
 		setCurrentState(new GraphicOptionsState());
 	}
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 440.0), TextManager::getSingleton()->getString(TextManager::OP_MISC)))
+	if (imgui.doButton(GEN_ID, Vector2(40.0, 470.0), TextManager::getSingleton()->getString(TextManager::OP_MISC)))
 	{
 		mSaveConfig = true;
 		deleteCurrentState();

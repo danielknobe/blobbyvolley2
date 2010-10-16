@@ -36,6 +36,7 @@ private:
 	bool mSaveConfig;
 	std::string mPlayerName[MAX_PLAYERS];
 	unsigned mPlayerNamePosition[MAX_PLAYERS];
+	unsigned mBotStrength[MAX_PLAYERS];
 };
 
 class GraphicOptionsState : public State

@@ -223,6 +223,10 @@ void TextManager::setDefault(){
 	mStrings[OP_FAST] = "fast";
 	mStrings[OP_VFAST] = "very fast";
 	mStrings[OP_LANGUAGE] = "language";
+	mStrings[OP_DIFFICULTY] = "bot strength";
+	mStrings[OP_WEAK] = "weak";
+	mStrings[OP_MEDIUM] = "medium";
+	mStrings[OP_STRONG] = "strong";
 }
 
 std::map<std::string, std::string> TextManager::language_names;
