@@ -32,6 +32,7 @@ extern "C"
 #include <SDL/SDL.h>
 #include <physfs.h>
 #include <cmath>
+#include <algorithm>
 
 DuelMatch* ScriptedInputSource::mMatch = 0;
 ScriptedInputSource* ScriptedInputSource::mCurrentSource = 0;
@@ -197,12 +198,10 @@ ScriptedInputSource::~ScriptedInputSource()
 PlayerInput ScriptedInputSource::getInput()
 {
 	bool serving = false;
-	lua_pushboolean(mState, false);
-	lua_pushboolean(mState, false);
-	lua_pushboolean(mState, false);
-	lua_setglobal(mState, "blobby_moveleft");
-	lua_setglobal(mState, "blobby_moveright");
-	lua_setglobal(mState, "blobby_moveup");
+	// reset input
+	mLeft = false; 
+	mRight = false; 
+	mJump = false;
 
 	mCurrentSource = this;
 	mMatch = DuelMatch::getMainGame();
@@ -280,14 +279,10 @@ PlayerInput ScriptedInputSource::getInput()
 		lua_pop(mState, 1);
 	}
 
-	lua_getglobal(mState, "blobby_moveleft");
-	lua_getglobal(mState, "blobby_moveright");
-	lua_getglobal(mState, "blobby_moveup");
-	bool wantLeft = lua_toboolean(mState, -3);
-	bool wantRight = lua_toboolean(mState, -2);
-	bool wantUp = lua_toboolean(mState, -1);
-	lua_pop(mState, 3);
-	PlayerInput currentInput = PlayerInput(wantLeft, wantRight, wantUp);
+	// swap left/right if side is swapped
+	if ( getSide(mState) == RIGHT_PLAYER )
+		std::swap(mLeft, mRight);
+	PlayerInput currentInput = PlayerInput(mLeft, mRight, mJump);
 
 	int stacksize = lua_gettop(mState);
 	if (stacksize > 0)
@@ -342,32 +337,19 @@ int ScriptedInputSource::debug(lua_State* state)
 
 int ScriptedInputSource::jump(lua_State* state)
 {
-	lua_pushboolean(state, true);
-	lua_setglobal(state, "blobby_moveup");
+	mCurrentSource->mJump = true;
 	return 0;
 }
 
 int ScriptedInputSource::left(lua_State* state)
 {
-	lua_pushboolean(state, true);
-	if (getSide(state) == LEFT_PLAYER)
-		lua_setglobal(state, "blobby_moveleft");
-	else if (getSide(state) == RIGHT_PLAYER)
-		lua_setglobal(state, "blobby_moveright");
-	else
-		lua_pop(state, 1);
+	mCurrentSource->mLeft = true;
 	return 0;
 }
 
 int ScriptedInputSource::right(lua_State* state)
 {
-	lua_pushboolean(state, true);
-	if (getSide(state) == LEFT_PLAYER)
-		lua_setglobal(state, "blobby_moveright");
-	else if (getSide(state) == RIGHT_PLAYER)
-		lua_setglobal(state, "blobby_moveleft");
-	else
-		lua_pop(state, 1);
+	mCurrentSource->mRight = true;
 	return 0;
 }
 
@@ -383,9 +365,9 @@ int ScriptedInputSource::moveto(lua_State* state)
 		position = 800.0 - position;
 	}
 	if (position > target + 2)
-		left(state);
+		mCurrentSource->mLeft = true;
 	if (position < target - 2)
-		right(state);
+		mCurrentSource->mRight = true;
 	return 0;
 }
 
