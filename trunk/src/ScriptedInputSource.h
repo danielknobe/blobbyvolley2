@@ -126,4 +126,7 @@ private:
 	
 	float mLastBallSpeed;
 	float mLastBallSpeedVirtual;
+	
+	// input data
+	bool mLeft, mRight, mJump;
 };
