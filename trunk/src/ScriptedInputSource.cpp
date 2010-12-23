@@ -37,6 +37,56 @@ extern "C"
 DuelMatch* ScriptedInputSource::mMatch = 0;
 ScriptedInputSource* ScriptedInputSource::mCurrentSource = 0;
 
+struct pos_x;
+struct pos_y;
+struct vel_x;
+struct vel_y;
+
+template<class T>
+float convert(float f);
+
+template<class T>
+struct ScriptedInputSource::coordinate {
+	coordinate(float f) : value(convert(f)) {
+	}
+	coordinate(double f) : value(convert(f)) {
+	}
+	
+	operator float() const {
+		return value;
+	}
+	
+	float value;
+	
+	private:
+		// other constructors ar prohibited !
+		template<class U>
+		coordinate(U u);
+		
+		static float convert(float f); 
+};
+
+// functions for coodinate transformation
+template<>
+float ScriptedInputSource::coordinate<pos_x>::convert (float val) {
+	return mCurrentSource->mSide == LEFT_PLAYER ? val : RIGHT_PLANE - val;
+}
+
+template<>
+float ScriptedInputSource::coordinate<pos_y>::convert (float val) {
+	return 600.f - val;
+}
+template<>
+float ScriptedInputSource::coordinate<vel_x>::convert (float val) {
+	return mCurrentSource->mSide == LEFT_PLAYER ? val : -val;
+}
+template<>
+float ScriptedInputSource::coordinate<vel_y>::convert (float val) {
+	return -val;
+}
+
+
+
 struct ReaderInfo
 {
 	PHYSFS_file* handle;
@@ -60,12 +110,10 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 
 ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 						PlayerSide playerside, unsigned int difficulty): mLastBallSpeed(0),
-										mMaxDelay(difficulty), mCurDelay(difficulty)
+										mMaxDelay(difficulty), mCurDelay(difficulty), mSide(playerside)
 {
 	mStartTime = SDL_GetTicks();
 	mState = lua_open();
-	lua_pushnumber(mState, playerside);
-	lua_setglobal(mState, "blobby_side");
 	
 	// set game constants
 	lua_pushnumber(mState, RIGHT_PLANE);
@@ -237,10 +285,9 @@ PlayerInput ScriptedInputSource::getInput()
 	if(mCurDelay > mMaxDelay)
 		mCurDelay = mMaxDelay;
 	
-	PlayerSide player = getSide(mState);
 	int error = 0;
 	
-	if (!mMatch->getBallActive() && player == 
+	if (!mMatch->getBallActive() && mSide == 
 			// if no player is serving player, assume the left one is
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
@@ -249,7 +296,7 @@ PlayerInput ScriptedInputSource::getInput()
 		lua_pushboolean(mState, !mMatch->getBallDown());
 		error = lua_pcall(mState, 1, 0, 0);
 	}
-	else if (!mMatch->getBallActive() && player != 
+	else if (!mMatch->getBallActive() && mCurrentSource->mSide != 
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
 		lua_getglobal(mState, "OnOpponentServe");
@@ -280,7 +327,7 @@ PlayerInput ScriptedInputSource::getInput()
 	}
 
 	// swap left/right if side is swapped
-	if ( getSide(mState) == RIGHT_PLAYER )
+	if ( mSide == RIGHT_PLAYER )
 		std::swap(mLeft, mRight);
 	PlayerInput currentInput = PlayerInput(mLeft, mRight, mJump);
 
@@ -304,26 +351,15 @@ void ScriptedInputSource::setflags(lua_State* state) {
 	lua_setglobal(state, "FLAG_BOUNCE");
 }
 
-PlayerSide ScriptedInputSource::getSide(lua_State* state)
-{
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	return player;
-}
-
 int ScriptedInputSource::touches(lua_State* state)
 {
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, -1);
-	lua_pushnumber(state, mMatch->getHitcount(player));
+	lua_pushnumber(state, mMatch->getHitcount(mCurrentSource->mSide));
 	return 1;
 }
 
 int ScriptedInputSource::launched(lua_State* state)
 {
-	lua_pushnumber(state, mMatch->getBlobJump(getSide(state)));
+	lua_pushnumber(state, mMatch->getBlobJump(mCurrentSource->mSide));
 	return 1;
 }
 
@@ -357,13 +393,8 @@ int ScriptedInputSource::moveto(lua_State* state)
 {
 	float target = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	PlayerSide player = getSide(state);
-	float position = mMatch->getBlobPosition(player).x;
-	if (player == RIGHT_PLAYER)
-	{
-//			target = 800.0 - target;
-		position = 800.0 - position;
-	}
+	coordinate<pos_x> position = mMatch->getBlobPosition(mCurrentSource->mSide).x;
+
 	if (position > target + 2)
 		mCurrentSource->mLeft = true;
 	if (position < target - 2)
@@ -380,79 +411,60 @@ const Vector2& ScriptedInputSource::getBallVelocity() {
 
 int ScriptedInputSource::ballx(lua_State* state)
 {
-	float pos = getBallPosition().x;
-	if (getSide(state) == RIGHT_PLAYER)
-		pos = 800.0 - pos;
+	coordinate<pos_x> pos = getBallPosition().x;
 	lua_pushnumber(state, pos);
 	return 1;
 }
 
 int ScriptedInputSource::bally(lua_State* state)
 {
-	float pos = getBallPosition().y;
-	pos = 600.0 - pos;
+	coordinate<pos_y> pos = getBallPosition().y;
 	lua_pushnumber(state, pos);
 	return 1;
 }
 
 int ScriptedInputSource::bspeedx(lua_State* state)
 {
-	float vel = getBallVelocity().x;
-	if (getSide(state) == RIGHT_PLAYER)
-		vel = -vel;
+	coordinate<vel_x> vel = getBallVelocity().x;
 	lua_pushnumber(state, vel);
 	return 1;
 }
 
 int ScriptedInputSource::bspeedy(lua_State* state)
 {
-	float vel = getBallVelocity().y;
-	vel = -vel;
+	coordinate<vel_y> vel = getBallVelocity().y;
 	lua_pushnumber(state, vel);
 	return 1;
 }
 
 int ScriptedInputSource::posx(lua_State* state)
 {
-	PlayerSide player = getSide(state);
-	float pos = mMatch->getBlobPosition(player).x;
-	if (player == RIGHT_PLAYER)
-		pos = 800.0 - pos;
+	coordinate<pos_x> pos = mMatch->getBlobPosition(mCurrentSource->mSide).x;
 	lua_pushnumber(state, pos);
 	return 1;
 }
 
 int ScriptedInputSource::posy(lua_State* state)
 {
-	lua_getglobal(state, "blobby_side");
-	PlayerSide player = (PlayerSide)lua_tonumber(state, -1);
-	lua_pop(state, 1);
-	float pos = mMatch->getBlobPosition(player).y;
-	pos = 600.0 - pos;
+	coordinate<pos_y> pos = mMatch->getBlobPosition(mCurrentSource->mSide).y;
 	lua_pushnumber(state, pos);
 	return 1;
 }
 
 int ScriptedInputSource::oppx(lua_State* state)
 {
-	PlayerSide player = getSide(state);
 	PlayerSide invPlayer = 
-		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
-	float pos = mMatch->getBlobPosition(invPlayer).x;
-	if (invPlayer == LEFT_PLAYER)
-	pos = 800.0 - pos;
+		mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
+	coordinate<pos_x> pos = mMatch->getBlobPosition(invPlayer).x;
 	lua_pushnumber(state, pos);
 	return 1;
 }
 
 int ScriptedInputSource::oppy(lua_State* state)
 {
-	PlayerSide player = getSide(state);
-
 	PlayerSide invPlayer =
-		player == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
-	float pos = mMatch->getBlobPosition(invPlayer).y;
-	pos = 600.0 - pos;
+		mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
+	coordinate<pos_y> pos = mMatch->getBlobPosition(invPlayer).y;
 	lua_pushnumber(state, pos);
 	return 1;
 }
@@ -471,10 +483,8 @@ int ScriptedInputSource::estimate(lua_State* state)
 	
 	float time = (vel.y - std::sqrt((vel.y * vel.y)- (-2 * BALL_GRAVITATION * (-pos.y + GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS)))) / (-BALL_GRAVITATION);
 	
-	float estim = pos.x + vel.x * time;
-		
-	if (getSide(state) == RIGHT_PLAYER)
-		estim = 800.0 - estim;
+	coordinate<pos_x> estim = pos.x + vel.x * time;
+	
 	lua_pushnumber(state, estim);
 	return 1;
 }
@@ -489,9 +499,8 @@ int ScriptedInputSource::estimx(lua_State* state)
 	}
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = getBallPosition().x + num * getBallVelocity().x;
-	if (getSide(state) == RIGHT_PLAYER)
-		estim = 800.0 - estim;
+	coordinate<pos_x> estim = getBallPosition().x + num * getBallVelocity().x;
+
 	lua_pushnumber(state, estim);
 	return 1;
 }
@@ -506,8 +515,7 @@ int ScriptedInputSource::estimy(lua_State* state)
 	}
 	int num = lround(lua_tonumber(state, -1));
 	lua_pop(state, 1);
-	float estim = getBallPosition().y + num * (getBallVelocity().y + 0.5*BALL_GRAVITATION*num);
-	estim = 600.0 - estim;
+	coordinate<pos_y> estim = getBallPosition().y + num * (getBallVelocity().y + 0.5*BALL_GRAVITATION*num);
 	lua_pushnumber(state, estim);
 	return 1;
 }
@@ -516,9 +524,7 @@ int ScriptedInputSource::predictx(lua_State* state) {
 	reset_flags();
 	float time = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	float estim = predict_x(getBallPosition(), getBallVelocity(), time);
-	if (getSide(state) == RIGHT_PLAYER)
-		estim = RIGHT_PLANE - estim;
+	coordinate<pos_x> estim = predict_x(getBallPosition(), getBallVelocity(), time);
 	lua_pushnumber(state, estim);
 	setflags(state);
 	return 1;
@@ -527,18 +533,15 @@ int ScriptedInputSource::predicty(lua_State* state) {
 	reset_flags();
 	float time = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	float estim = 600.0 - predict_y(getBallPosition(), getBallVelocity(), time);
+	coordinate<pos_y> estim = predict_y(getBallPosition(), getBallVelocity(), time);
 	lua_pushnumber(state, estim);
 	setflags(state);
 	return 1;
 }
 int ScriptedInputSource::timetox(lua_State* state) {
 	reset_flags();
-	float destination = lua_tonumber(state, -1);
+	coordinate<pos_x> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
-	if (getSide(state) == RIGHT_PLAYER)
-		destination = RIGHT_PLANE - destination;
 	
 	float time = time_to_x(getBallPosition(), getBallVelocity(), destination);
 	
@@ -548,10 +551,8 @@ int ScriptedInputSource::timetox(lua_State* state) {
 }
 int ScriptedInputSource::timetoy(lua_State* state) {
 	reset_flags();
-	float destination = lua_tonumber(state, -1);
+	coordinate<pos_y> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
-	destination = 600.0 - destination;
 	
 	float time = time_to_y(getBallPosition(), getBallVelocity(), destination);
 	
@@ -561,15 +562,10 @@ int ScriptedInputSource::timetoy(lua_State* state) {
 }
 int ScriptedInputSource::xaty(lua_State* state) {
 	reset_flags();
-	float destination = lua_tonumber(state, -1);
+	coordinate<pos_y> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
 	
-	destination = 600.0 - destination;
-	
-	float x = x_at_y(getBallPosition(), getBallVelocity(), destination);
-	
-	if (getSide(state) == RIGHT_PLAYER)
-		x = RIGHT_PLANE - x;
+	coordinate<pos_x> x = x_at_y(getBallPosition(), getBallVelocity(), destination);
 		
 	lua_pushnumber(state, x);
 	setflags(state);
@@ -577,16 +573,11 @@ int ScriptedInputSource::xaty(lua_State* state) {
 }
 int ScriptedInputSource::yatx(lua_State* state) {
 	reset_flags();
-	float destination = lua_tonumber(state, -1);
+	coordinate<pos_x> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
 	
-	if (getSide(state) == RIGHT_PLAYER)
-		destination = RIGHT_PLANE - destination;
-	
-	float y = y_at_x(getBallPosition(), getBallVelocity(), destination);
-	
-	y = 600.0 - y;
-		
+	coordinate<pos_y> y = y_at_x(getBallPosition(), getBallVelocity(), destination);
+
 	lua_pushnumber(state, y);
 	setflags(state);
 	return 1;
@@ -594,9 +585,7 @@ int ScriptedInputSource::yatx(lua_State* state) {
 
 int ScriptedInputSource::predictImpact(lua_State* state) {
 	reset_flags();
-	float x = x_at_y(getBallPosition(), getBallVelocity(), GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT - BALL_RADIUS);
-	if (getSide(state) == RIGHT_PLAYER)
-		x = RIGHT_PLANE - x;
+	coordinate<pos_x> x = x_at_y(getBallPosition(), getBallVelocity(), GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT - BALL_RADIUS);
 	lua_pushnumber(state, x);
 	setflags(state);
 	return 1;
@@ -612,14 +601,14 @@ int ScriptedInputSource::nextevent(lua_State* state) {
 
 int ScriptedInputSource::getScore(lua_State* state) 
 {
-	float score = mMatch->getScore( getSide(state) );
+	float score = mMatch->getScore( mCurrentSource->mSide );
 	lua_pushnumber(state, score);
 	return 1;
 }
 
 int ScriptedInputSource::getOppScore(lua_State* state) 
 {
-	float score = mMatch->getScore( getSide(state) == LEFT_PLAYER ? RIGHT_PLAYER: LEFT_PLAYER );
+	float score = mMatch->getScore( mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER: LEFT_PLAYER );
 	lua_pushnumber(state, score);
 	return 1;
 }
