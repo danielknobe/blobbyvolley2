@@ -57,13 +57,13 @@ private:
 	// bot seems better to me
 	static DuelMatch* mMatch;
 	static ScriptedInputSource* mCurrentSource;
-	
-	static PlayerSide getSide(lua_State* state);
 
 	// helpers
-	static int side(lua_State* state);
 	static int debug(lua_State* state);
 	static void setflags(lua_State* state);
+	// coordinate system conversion
+	template<class T>
+	struct coordinate;
 	
 	// commands
 	static int jump(lua_State* state);
@@ -126,6 +126,8 @@ private:
 	
 	float mLastBallSpeed;
 	float mLastBallSpeedVirtual;
+	
+	PlayerSide mSide;
 	
 	// input data
 	bool mLeft, mRight, mJump;
