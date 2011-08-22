@@ -82,6 +82,7 @@ private:
 	Color mRightBlobColor;
 
 	void drawQuad(float x, float y);
+	void drawQuad2(float x, float y, float width, float height);
 	GLuint loadTexture(SDL_Surface* surface, bool specular);
 	int getNextPOT(int npot);
 	
