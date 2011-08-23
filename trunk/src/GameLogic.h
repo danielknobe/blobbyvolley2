@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Clock.h"
 
+class lua_State;
+
 // this class is told what happens in the game and it applies the rules to count 
 // the points. it is designed as a abstract base class to provide different 
 // implementations (ie old/new volleyball rules)
@@ -54,7 +56,6 @@ class CGameLogic
 		
 		// method for querying the serving player
 		PlayerSide getServingPlayer() const;
-		
 		void setServingPlayer(PlayerSide side);
 		
 		// returns the winning player or NO_PLAYER if the
@@ -80,23 +81,22 @@ class CGameLogic
 			return clock;
 		}
 	
-	protected:		
+	private:	
 		// this method must be called if a team scores
 		// is increments the points of that team
 		void score(PlayerSide side);
 		
-	private:	
+		// lua functions
+		static int luaScore(lua_State* state); 
+		static int luaGetOpponent(lua_State* state);
+		static int luaGetServingPlayer(lua_State* state);
+		
 		// resets score and touches
 		void reset();
 		
 		// this is called when a player makes a
 		// mistake
 		void onError(PlayerSide side);
-		
-		// this is called when a player makes a mistake
-		// so the other player has won the rally. this 
-		// method is to be implemented to perform scoring
-		virtual void onOppError(PlayerSide side) = 0;
 		
 		PlayerSide checkWin() const;
 			
@@ -117,6 +117,10 @@ class CGameLogic
 		
 		// clock
 		Clock clock;
+		
+		// lua state
+		lua_State* mState;
+	
 	private:
 		// helper functions
 		
