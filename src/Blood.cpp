@@ -57,6 +57,7 @@ void BloodManager::step()
 {
 	if (!mEnabled)
 		return;
+	RenderManager::getSingleton().startDrawParticles();
 	std::list<Blood>::iterator it = mParticles.begin();
 	while (it != mParticles.end())
 	{
@@ -67,6 +68,7 @@ void BloodManager::step()
 		if (partPos.y > 600)
 			mParticles.erase(it2);
 	}
+	RenderManager::getSingleton().endDrawParticles();
 }
 
 void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
