@@ -570,21 +570,41 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 	glDisable(GL_BLEND);
 }
 
-void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
+void RenderManagerGL2D::startDrawParticles()
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glBindTexture(GL_TEXTURE_2D, mParticle);
+	glBegin(GL_QUADS);
+}
 
+void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
+{
 	//glLoadIdentity();
 	//glTranslatef(pos.x, pos.y, 0.6);
-	glBindTexture(GL_TEXTURE_2D, mParticle);
+	
 	if (player == LEFT_PLAYER)
 		glColor3ubv(mLeftBlobColor.val);
 	if (player == RIGHT_PLAYER)
 		glColor3ubv(mRightBlobColor.val);
 	if (player > 1)
 		glColor3ubv(Color(255, 0, 0).val);
-	drawQuad2(pos.x, pos.y, 9.0, 9.0);
+	
+	float w = 9.0;
+	float h = 9.0;
+	glTexCoord2f(0.0, 0.0);
+	glVertex2f(pos.x - w / 2.0, pos.y - h / 2.0);
+	glTexCoord2f(1.0, 0.0);
+	glVertex2f(pos.x + w / 2.0, pos.y - h / 2.0);
+	glTexCoord2f(1.0, 1.0);
+	glVertex2f(pos.x + w / 2.0, pos.y + h / 2.0);
+	glTexCoord2f(0.0, 1.0);
+	glVertex2f(pos.x - w / 2.0, pos.y + h / 2.0);
 }
+
+void RenderManagerGL2D::endDrawParticles()
+{
+	glEnd();
+}	
 
 void RenderManagerGL2D::refresh()
 {
