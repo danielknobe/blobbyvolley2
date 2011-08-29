@@ -67,8 +67,8 @@ class CGameLogic
 		PlayerSide getLastErrorSide();
 		
 		// method for setting/getting the target score
-		void setScoreToWin(int stw);
-		int getScoreToWin() const;
+		void setScoreToWin(unsigned int stw);
+		unsigned int getScoreToWin() const;
 		
 		// constuctor and destructor
 		CGameLogic();
@@ -107,7 +107,7 @@ class CGameLogic
 		int mTouches[RIGHT_PLAYER - LEFT_PLAYER + 1];
 		int mSquish[RIGHT_PLAYER - LEFT_PLAYER + 1];
 		
-		int mScoreToWin;
+		unsigned int mScoreToWin;
 		
 		PlayerSide mServingPlayer;
 		

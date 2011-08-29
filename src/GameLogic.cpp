@@ -78,6 +78,9 @@ CGameLogic::CGameLogic():	mLastError(NO_PLAYER),
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 	
+	lua_pushnumber(mState, mScoreToWin);
+	lua_setglobal(mState, "SCORE_TO_WIN");
+	
 	// add functions
 	lua_register(mState, "score", luaScore);
 	lua_register(mState, "opponent", luaGetOpponent);
@@ -112,13 +115,14 @@ CGameLogic::CGameLogic():	mLastError(NO_PLAYER),
 	
 }
 
-void CGameLogic::setScoreToWin(int stw)
+void CGameLogic::setScoreToWin(unsigned int stw)
 {
-	if(stw > 0)
-		mScoreToWin = stw;
+	mScoreToWin = stw;
+	lua_pushnumber(mState, mScoreToWin);
+	lua_setglobal(mState, "SCORE_TO_WIN");
 }
 
-int CGameLogic::getScoreToWin() const 
+unsigned int CGameLogic::getScoreToWin() const 
 {
 	return mScoreToWin;
 }
@@ -128,7 +132,8 @@ void CGameLogic::onBallHitsGround(PlayerSide side)
 	onError(side);
 }
 
-bool CGameLogic::isCollisionValid(PlayerSide side) const{
+bool CGameLogic::isCollisionValid(PlayerSide side) const
+{
 	// check whether the ball is squished
 	return mSquish[side2index(side)] < 0;
 }
@@ -216,12 +221,33 @@ void CGameLogic::score(PlayerSide side)
 
 PlayerSide CGameLogic::checkWin() const
 {
-	if(mScores[LEFT_PLAYER] >= mScoreToWin && mScores[LEFT_PLAYER] >= mScores[RIGHT_PLAYER] + 2)
-		return LEFT_PLAYER;
+	bool won = false;
+	lua_getglobal(mState, "IsWinning");
+	if(lua_isfunction(mState, -1)) 
+	{
+		lua_pushnumber(mState, mScores[LEFT_PLAYER]);
+		lua_pushnumber(mState, mScores[RIGHT_PLAYER]);
+		lua_pcall(mState, 2, 1, 0);
+		won = lua_toboolean(mState, -1);
+		lua_pop(mState, 1);
+	} 
+	else 
+	{
+		if(mScores[LEFT_PLAYER] >= mScoreToWin && mScores[LEFT_PLAYER] >= mScores[RIGHT_PLAYER] + 2)
+			won = true;
+		
+		if(mScores[RIGHT_PLAYER] >= mScoreToWin && mScores[RIGHT_PLAYER] >= mScores[LEFT_PLAYER] + 2)
+			won = true;
+	}
 	
-	if(mScores[RIGHT_PLAYER] >= mScoreToWin && mScores[RIGHT_PLAYER] >= mScores[LEFT_PLAYER] + 2)
-		return RIGHT_PLAYER;
-	
+	if(won) 
+	{
+		if(mScores[LEFT_PLAYER] > mScores[RIGHT_PLAYER])
+			return LEFT_PLAYER;
+			
+		if(mScores[LEFT_PLAYER] < mScores[RIGHT_PLAYER])
+			return RIGHT_PLAYER;
+	}
 	return NO_PLAYER;
 }
 
@@ -233,6 +259,7 @@ void CGameLogic::reset()
 	mTouches[1] = 0;
 	mSquish[0] = 0;
 	mSquish[1] = 0;
+	// TODO reload lua script
 }
 
 void CGameLogic::onError(PlayerSide side)
@@ -254,6 +281,9 @@ void CGameLogic::onError(PlayerSide side)
 			std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 			std::cerr << std::endl;
 		};
+	} else {
+		// simple fallback behaviour:
+		score(other_side(side));
 	}
 	mServingPlayer = other_side(side);
 }
