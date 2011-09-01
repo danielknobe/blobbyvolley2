@@ -26,14 +26,49 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Clock.h"
 
-class lua_State;
-
-// this class is told what happens in the game and it applies the rules to count 
-// the points. it is designed as a abstract base class to provide different 
-// implementations (ie old/new volleyball rules)
-class CGameLogic
+/// this class is told what happens in the game and it applies the rules to count 
+/// the points. it is designed as a abstract base class to provide different 
+/// implementations (ie old/new volleyball rules)
+class IGameLogic
 {
 	public:
+		// constuctor and destructor
+		IGameLogic();
+		virtual ~IGameLogic();
+		
+		// -----------------------------------------------------------------------------------------
+		// 								Read/Write Basic Data
+		// -----------------------------------------------------------------------------------------
+		
+		// methods for querying the score/touches of a patricular team
+		int getScore(PlayerSide side) const;
+		void setScore(PlayerSide side, int score);		// when might need such a method if we add saved games
+		
+		int getHits(PlayerSide side) const;
+		
+		// method for querying the serving player
+		PlayerSide getServingPlayer() const;
+		void setServingPlayer(PlayerSide side);
+		
+				
+		/// returns the winning player or NO_PLAYER if the
+		/// game still runs
+		PlayerSide getWinningPlayer() const;
+		
+		/// returns who has made the last mistake
+		/// after this request, the value is reset
+		PlayerSide getLastErrorSide();
+		
+		// methods for setting/getting the target score
+		void setScoreToWin(unsigned int stw);
+		unsigned int getScoreToWin() const;
+		
+		Clock& getClock();
+		
+		// -----------------------------------------------------------------------------------------
+		// 								Event - Handlers
+		// -----------------------------------------------------------------------------------------
+	
 		// methods to inform the game logic what is happening in the game
 		void onBallHitsGround(PlayerSide side);
 				
@@ -45,83 +80,14 @@ class CGameLogic
 		void onPause();
 		void onUnPause();
 		
-		// must be called every step
+		/// must be called every step
 		void step();		
-		
-		// method for querying the score/touches of a patricular team
-		int getScore(PlayerSide side) const;
-		int getHits(PlayerSide side) const;
-		
-		void setScore(PlayerSide side, int score);
-		
-		// method for querying the serving player
-		PlayerSide getServingPlayer() const;
-		void setServingPlayer(PlayerSide side);
-		
-		// returns the winning player or NO_PLAYER if the
-		// game still runs
-		PlayerSide getWinningPlayer() const;
-		
-		// returns who has made the last mistake
-		// after this request, the value is reset
-		PlayerSide getLastErrorSide();
-		
-		// method for setting/getting the target score
-		void setScoreToWin(unsigned int stw);
-		unsigned int getScoreToWin() const;
-		
-		// constuctor and destructor
-		CGameLogic();
-		
-		virtual ~CGameLogic()
-		{
-		};
-		
-		Clock& getClock(){
-			return clock;
-		}
-	
-	private:	
+
+	protected:
 		// this method must be called if a team scores
 		// is increments the points of that team
 		void score(PlayerSide side);
-		
-		// lua functions
-		static int luaScore(lua_State* state); 
-		static int luaGetOpponent(lua_State* state);
-		static int luaGetServingPlayer(lua_State* state);
-		
-		// resets score and touches
-		void reset();
-		
-		// this is called when a player makes a
-		// mistake
-		void onError(PlayerSide side);
-		
-		PlayerSide checkWin() const;
-			
-		
-		// data members
-		
-		int mScores[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		int mTouches[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		int mSquish[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		
-		unsigned int mScoreToWin;
-		
-		PlayerSide mServingPlayer;
-		
-		PlayerSide mLastError;
-		
-		PlayerSide mWinningPlayer;
-		
-		// clock
-		Clock clock;
-		
-		// lua state
-		lua_State* mState;
-	
-	private:
+
 		// helper functions
 		
 		// convert player side into array index
@@ -134,7 +100,8 @@ class CGameLogic
 		// determine the opposit player side
 		static inline PlayerSide other_side(PlayerSide side)
 		{
-			switch(side){
+			switch(side)
+			{
 				case LEFT_PLAYER:
 					return RIGHT_PLAYER;
 				case RIGHT_PLAYER:
@@ -143,18 +110,41 @@ class CGameLogic
 					assert(0);
 			}
 		}
+
+	private:	
+		// resets score and touches
+		void reset();
+		
+		// this is called when a player makes a
+		// mistake
+		void onError(PlayerSide side);
+		
+		
+		virtual void OnMistake(PlayerSide side) = 0;
+		virtual PlayerSide checkWin() const = 0;
+			
+		
+		// data memberss
+		
+		int mScores[RIGHT_PLAYER - LEFT_PLAYER + 1];
+		int mTouches[RIGHT_PLAYER - LEFT_PLAYER + 1];
+		int mSquish[RIGHT_PLAYER - LEFT_PLAYER + 1];
+		
+		
+		PlayerSide mLastError;
+		PlayerSide mServingPlayer;
+		PlayerSide mWinningPlayer;
+		
+		unsigned int mScoreToWin;
+		
+		// clock
+		Clock clock;
 };
 
 // typedef to make GameLogic an auto_ptr
-typedef std::auto_ptr<CGameLogic> GameLogic;
-
-// enumeration for rule types
-enum RuleVersion{
-	OLD_RULES,		// point only for serving player
-	NEW_RULES		// point for each error
-};
+typedef std::auto_ptr<IGameLogic> GameLogic;
 
 // function for creating a game logic object
-GameLogic createGameLogic(RuleVersion rv);
+GameLogic createGameLogic(const std::string& rulefile);
 
 
