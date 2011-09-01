@@ -45,7 +45,7 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 		0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
 	SDL_BlitSurface(surface, 0, newSurface, 0);
 	SDL_SetAlpha(newSurface, SDL_SRCALPHA, surface->format->alpha);
-	SDL_SetColorKey(newSurface, SDL_SRCCOLORKEY,
+	SDL_SetColorKey(newSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(newSurface->format, 0, 0, 0));
 	
     SDL_LockSurface(newSurface);

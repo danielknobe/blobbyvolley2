@@ -122,7 +122,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		char filename[64];
 		sprintf(filename, "gfx/ball%02d.bmp", i);
 		SDL_Surface* ballImage = loadSurface(filename);
-		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY,
+		SDL_SetColorKey(ballImage, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(ballImage->format, 0, 0, 0));
 		SDL_Surface *convertedBallImage = SDL_DisplayFormatAlpha(ballImage);
 		SDL_FreeSurface(ballImage);
@@ -130,7 +130,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	}
 
 	SDL_Surface *tempBallShadow = loadSurface("gfx/schball.bmp");
-	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY,
+	SDL_SetColorKey(tempBallShadow, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(tempBallShadow->format, 0, 0, 0));
 	SDL_SetAlpha(tempBallShadow, SDL_SRCALPHA, 127);
 	mBallShadow = SDL_DisplayFormatAlpha(tempBallShadow);
@@ -147,7 +147,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 		sprintf(filename, "gfx/sch1%d.bmp", i);
 		SDL_Surface* blobShadow = loadSurface(filename);
-		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY,
+		SDL_SetColorKey(blobShadow, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(blobShadow->format, 0, 0, 0));
 		SDL_SetAlpha(blobShadow, SDL_SRCALPHA, 127);
 		mStandardBlobShadow.push_back(blobShadow);
@@ -165,9 +165,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		sprintf(filename2, "gfx/font_small/font%02d.bmp", i);
 		SDL_Surface *tempFont = loadSurface(filename);
 		SDL_Surface *tempFont2 = loadSurface(filename2);
-		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY,
+		SDL_SetColorKey(tempFont, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(tempFont->format, 0, 0, 0));
-		SDL_SetColorKey(tempFont2, SDL_SRCCOLORKEY,
+		SDL_SetColorKey(tempFont2, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(tempFont2->format, 0, 0, 0));
 		SDL_Surface *newFont = SDL_DisplayFormatAlpha(tempFont);
 		SDL_Surface *newFont2 = SDL_DisplayFormatAlpha(tempFont2);
@@ -514,7 +514,7 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 	{
 		imageBuffer = new BufferedImage;
 		imageBuffer->sdlImage = loadSurface(filename);
-		SDL_SetColorKey(imageBuffer->sdlImage, SDL_SRCCOLORKEY,
+		SDL_SetColorKey(imageBuffer->sdlImage, SDL_SRCCOLORKEY | SDL_RLEACCEL,
 			SDL_MapRGB(mScreen->format, 0, 0, 0));
 		mImageMap[filename] = imageBuffer;
 	}
