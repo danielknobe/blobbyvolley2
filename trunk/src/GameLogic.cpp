@@ -59,11 +59,11 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 
 
 
-// how many steps must pass until the next hit can happen
+/// how many steps must pass until the next hit can happen
 const int SQUISH_TOLERANCE = 10;
 
 
-CGameLogic::CGameLogic():	mLastError(NO_PLAYER), 
+IGameLogic::IGameLogic():	mLastError(NO_PLAYER), 
 							mServingPlayer(NO_PLAYER), 
 							mWinningPlayer(NO_PLAYER),
 							mScoreToWin(15)
@@ -72,23 +72,202 @@ CGameLogic::CGameLogic():	mLastError(NO_PLAYER),
 	clock.reset();
 	clock.start();
 	reset();
+}
+
+IGameLogic::~IGameLogic() {
+	// nothing to do
+}
+
+int IGameLogic::getScore(PlayerSide side) const
+{
+	return mScores[side2index(side)];
+}
+
+void IGameLogic::setScore(PlayerSide side, int score)
+{
+	mScores[side2index(side)] = score;
+}
+
+
+void IGameLogic::setScoreToWin(unsigned int stw)
+{
+	mScoreToWin = stw;
+	// when are the values in the lua script updated?
+	//lua_pushnumber(mState, mScoreToWin);
+	//lua_setglobal(mState, "SCORE_TO_WIN");
+}
+
+unsigned int IGameLogic::getScoreToWin() const 
+{
+	return mScoreToWin;
+}
+
+PlayerSide IGameLogic::getServingPlayer() const
+{
+	return mServingPlayer;
+}
+
+void IGameLogic::setServingPlayer(PlayerSide side)
+{
+	mServingPlayer = side;
+}
+
+int IGameLogic::getHits(PlayerSide side) const
+{
+	return mTouches[side2index(side)];
+}
+
+PlayerSide IGameLogic::getWinningPlayer() const
+{
+	return mWinningPlayer;
+}
+
+Clock& IGameLogic::getClock()
+{
+	return clock;
+}
+
+PlayerSide IGameLogic::getLastErrorSide()
+{
+	PlayerSide t = mLastError;
+	mLastError = NO_PLAYER;
+	/// reset mLastError to NO_PLAYER
+	/// why?
+	return t;
+}
+
+// -------------------------------------------------------------------------------------------------
+//								Event Handlers
+// -------------------------------------------------------------------------------------------------
+void IGameLogic::step()
+{
+	clock.step();
 	
-	// init lua
-	mState = lua_open();
+	if(clock.isRunning())
+	{
+		--mSquish[0];
+		--mSquish[1];
+	}
+}
+
+void IGameLogic::onPause()
+{
+	clock.stop();
+}
+void IGameLogic::onUnPause()
+{
+	clock.start();
+}
+
+void IGameLogic::onBallHitsGround(PlayerSide side) 
+{
+	onError(side);
+}
+
+bool IGameLogic::isCollisionValid(PlayerSide side) const
+{
+	// check whether the ball is squished
+	return mSquish[side2index(side)] < 0;
+}
+
+void IGameLogic::onBallHitsPlayer(PlayerSide side)
+{
+	if(!isCollisionValid(side))
+		return;
+	
+	// otherwise, set the squish value
+	mSquish[side2index(side)] = SQUISH_TOLERANCE;
+	
+	// count the touches
+	mTouches[side2index(other_side(side))] = 0;
+	mTouches[side2index(side)]++;
+	if( mTouches[side2index(side)] > 3 )
+	{
+		// if a player hits a forth time, it is an error
+		onError(side);
+	}
+}
+
+
+void IGameLogic::score(PlayerSide side)
+{
+	++mScores[side2index(side)];
+	mTouches[0] = 0;
+	mTouches[1] = 0;
+	mWinningPlayer = checkWin();
+}
+
+void IGameLogic::reset()
+{
+	mScores[0] = 0;
+	mScores[1] = 0;
+	mTouches[0] = 0;
+	mTouches[1] = 0;
+	mSquish[0] = 0;
+	mSquish[1] = 0;
+}
+
+void IGameLogic::onError(PlayerSide side)
+{
+	mLastError = side;
+	
+	mTouches[0] = 0;
+	mTouches[1] = 0;
+	mSquish[0] = 0;
+	mSquish[1] = 0;
+	
+	OnMistake(side);
+	mServingPlayer = other_side(side);
+}
+
+
+// -------------------------------------------------------------------------------------------------
+
+
+class LuaGameLogic : public IGameLogic 
+{
+	public:
+		LuaGameLogic(const std::string& file);
+		virtual ~LuaGameLogic();
+		
+	private:
+		
+		virtual PlayerSide checkWin() const;
+		virtual void OnMistake(PlayerSide side);
+		
+		// lua functions
+		static int luaScore(lua_State* state); 
+		static int luaGetOpponent(lua_State* state);
+		static int luaGetServingPlayer(lua_State* state);
+		static int luaGetGameTime(lua_State* state);
+		
+		// lua state
+		lua_State* mState;
+};
+
+
+
+LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() ) 
+{
+	
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 	
-	lua_pushnumber(mState, mScoreToWin);
+	/// \todo how to push parameters???
+	///	\todo how to react when mScoreToWin changes?
+	lua_pushnumber(mState, getScoreToWin());
 	lua_setglobal(mState, "SCORE_TO_WIN");
 	
 	// add functions
 	lua_register(mState, "score", luaScore);
 	lua_register(mState, "opponent", luaGetOpponent);
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
+	lua_register(mState, "time", luaGetGameTime);
 	
-	// now load ruleset
+	
+	// now load script file
 	ReaderInfo info;
-	std::string filename = "rules.lua";
+	/// todo must this be closed somewhere????
 	info.handle = PHYSFS_openRead(filename.c_str());
 	if (!info.handle)
 	{
@@ -111,208 +290,89 @@ CGameLogic::CGameLogic():	mLastError(NO_PLAYER),
 		throw except;
 	}
 	
-	
-	
-}
-
-void CGameLogic::setScoreToWin(unsigned int stw)
-{
-	mScoreToWin = stw;
-	lua_pushnumber(mState, mScoreToWin);
-	lua_setglobal(mState, "SCORE_TO_WIN");
-}
-
-unsigned int CGameLogic::getScoreToWin() const 
-{
-	return mScoreToWin;
-}
-
-void CGameLogic::onBallHitsGround(PlayerSide side)
-{
-	onError(side);
-}
-
-bool CGameLogic::isCollisionValid(PlayerSide side) const
-{
-	// check whether the ball is squished
-	return mSquish[side2index(side)] < 0;
-}
-
-void CGameLogic::onBallHitsPlayer(PlayerSide side)
-{
-	if(!isCollisionValid(side))
-		return;
-	
-	// otherwise, set the squish value
-	mSquish[side2index(side)] = SQUISH_TOLERANCE;
-	
-	// count the touches
-	mTouches[side2index(other_side(side))] = 0;
-	if(++(mTouches[side2index(side)]) > 3)
+	// check that all functions are available
+	lua_getglobal(mState, "IsWinning");
+	if (!lua_isfunction(mState, -1)) 
 	{
-		// if a player hits a forth time, it is an error
-		onError(side);
+		std::cerr << "Script Error: Could not find function IsWinning";
+		std::cerr << std::endl;
+		ScriptException except;
+		except.luaerror = "Could not find function IsWinning";
+		lua_pop(mState, 1);
+		lua_close(mState);
+		throw except;
+	}
+	lua_getglobal(mState, "OnMistake");
+	if (!lua_isfunction(mState, -1)) 
+	{
+		std::cerr << "Script Error: Could not find function OnMistake";
+		std::cerr << std::endl;
+		ScriptException except;
+		except.luaerror = "Could not find function OnMistake";
+		lua_pop(mState, 1);
+		lua_close(mState);
+		throw except;
 	}
 }
 
-void CGameLogic::onPause()
+LuaGameLogic::~LuaGameLogic()
 {
-	clock.stop();
-}
-void CGameLogic::onUnPause()
-{
-	clock.start();
+	lua_close(mState);
 }
 
-void CGameLogic::step()
-{
-	clock.step();
-	if(clock.isRunning())
-	{
-		--mSquish[0];
-		--mSquish[1];
-	}
-}
-
-int CGameLogic::getScore(PlayerSide side) const
-{
-	return mScores[side2index(side)];
-}
-
-void CGameLogic::setScore(PlayerSide side, int score)
-{
-	mScores[side2index(side)] = score;
-}
-
-int CGameLogic::getHits(PlayerSide side) const
-{
-	return mTouches[side2index(side)];
-}
-
-PlayerSide CGameLogic::getServingPlayer() const
-{
-	return mServingPlayer;
-}
-
-void CGameLogic::setServingPlayer(PlayerSide side)
-{
-	mServingPlayer = side;
-}
-
-PlayerSide CGameLogic::getWinningPlayer() const
-{
-	return mWinningPlayer;
-}
-
-PlayerSide CGameLogic::getLastErrorSide()
-{
-	PlayerSide t = mLastError;
-	mLastError = NO_PLAYER;
-	return t;
-}
-
-void CGameLogic::score(PlayerSide side)
-{
-	++mScores[side2index(side)];
-	mTouches[0] = 0;
-	mTouches[1] = 0;
-	mWinningPlayer = checkWin();
-}
-
-PlayerSide CGameLogic::checkWin() const
+PlayerSide LuaGameLogic::checkWin() const
 {
 	bool won = false;
 	lua_getglobal(mState, "IsWinning");
-	if(lua_isfunction(mState, -1)) 
-	{
-		lua_pushnumber(mState, mScores[LEFT_PLAYER]);
-		lua_pushnumber(mState, mScores[RIGHT_PLAYER]);
-		lua_pcall(mState, 2, 1, 0);
-		won = lua_toboolean(mState, -1);
-		lua_pop(mState, 1);
-	} 
-	else 
-	{
-		if(mScores[LEFT_PLAYER] >= mScoreToWin && mScores[LEFT_PLAYER] >= mScores[RIGHT_PLAYER] + 2)
-			won = true;
-		
-		if(mScores[RIGHT_PLAYER] >= mScoreToWin && mScores[RIGHT_PLAYER] >= mScores[LEFT_PLAYER] + 2)
-			won = true;
-	}
 	
+	lua_pushnumber(mState, getScore(LEFT_PLAYER) );
+	lua_pushnumber(mState, getScore(RIGHT_PLAYER) );
+	if( lua_pcall(mState, 2, 1, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+	
+	won = lua_toboolean(mState, -1);
+	lua_pop(mState, 1);
+
 	if(won) 
 	{
-		if(mScores[LEFT_PLAYER] > mScores[RIGHT_PLAYER])
+		if( getScore(LEFT_PLAYER) > getScore(RIGHT_PLAYER) )
 			return LEFT_PLAYER;
 			
-		if(mScores[LEFT_PLAYER] < mScores[RIGHT_PLAYER])
+		if( getScore(LEFT_PLAYER) < getScore(RIGHT_PLAYER) )
 			return RIGHT_PLAYER;
 	}
+	
 	return NO_PLAYER;
 }
 
-void CGameLogic::reset()
+void LuaGameLogic::OnMistake(PlayerSide side) 
 {
-	mScores[0] = 0;
-	mScores[1] = 0;
-	mTouches[0] = 0;
-	mTouches[1] = 0;
-	mSquish[0] = 0;
-	mSquish[1] = 0;
-	// TODO reload lua script
-}
-
-void CGameLogic::onError(PlayerSide side)
-{
-	mLastError = side;
-	
-	mTouches[0] = 0;
-	mTouches[1] = 0;
-	mSquish[0] = 0;
-	mSquish[1] = 0;
-	
 	// call lua scoring rules
 	lua_getglobal(mState, "OnMistake");
-	if(lua_isfunction(mState, -1)) 
+	lua_pushnumber(mState, side);
+	if(lua_pcall(mState, 1, 0, 0)) 
 	{
-		lua_pushnumber(mState, side);
-		if(lua_pcall(mState, 1, 0, 0)) 
-		{
-			std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-			std::cerr << std::endl;
-		};
-	} else {
-		// simple fallback behaviour:
-		score(other_side(side));
-	}
-	mServingPlayer = other_side(side);
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
 }
 
-GameLogic createGameLogic(RuleVersion rv)
-{
-	switch(rv){
-		case OLD_RULES:
-			return std::auto_ptr<CGameLogic>(new CGameLogic());
-		case NEW_RULES:
-			//return std::auto_ptr<CGameLogic>(new GLImplNR);
-		default:
-			assert(0);
-	}
-}
-
-int CGameLogic::luaScore(lua_State* state) 
+int LuaGameLogic::luaScore(lua_State* state) 
 {
 	int pl = int(lua_tonumber(state, -1) + 0.5);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	CGameLogic* gl = (CGameLogic*)lua_touserdata(state, -1);
+	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
 	gl->score((PlayerSide)pl);
 	return 0;
 }
 
-int CGameLogic::luaGetOpponent(lua_State* state) 
+int LuaGameLogic::luaGetOpponent(lua_State* state) 
 {
 	int pl = int(lua_tonumber(state, -1) + 0.5);
 	lua_pop(state, 1);
@@ -320,12 +380,73 @@ int CGameLogic::luaGetOpponent(lua_State* state)
 	return 1;
 }
 
-int CGameLogic::luaGetServingPlayer(lua_State* state) 
+int LuaGameLogic::luaGetServingPlayer(lua_State* state) 
 {
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	CGameLogic* gl = (CGameLogic*)lua_touserdata(state, -1);
+	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 
 	lua_pushnumber(state, gl->getServingPlayer());
 	return 1;
+}
+
+int LuaGameLogic::luaGetGameTime(lua_State* state) 
+{
+	lua_getglobal(state, "__GAME_LOGIC_POINTER");
+	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
+	lua_pop(state, 1);
+	
+	lua_pushnumber(state, gl->getClock().getTime());
+	return 1;
+}
+
+
+class FallbackGameLogic : public IGameLogic 
+{
+	public:
+		FallbackGameLogic() 
+		{
+			
+		}
+		virtual ~FallbackGameLogic()
+		{
+			
+		}
+		
+	private:
+		
+		virtual PlayerSide checkWin() const 
+		{
+			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) {
+				return LEFT_PLAYER;
+			}
+			
+			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) {
+				return RIGHT_PLAYER;
+			}
+			
+			return NO_PLAYER;
+		}
+		
+		virtual void OnMistake(PlayerSide side) 
+		{
+			score( other_side(side) );
+		}
+};
+
+GameLogic createGameLogic(const std::string& file)
+{
+	try 
+	{
+		return std::auto_ptr<IGameLogic>( new LuaGameLogic(file) );
+	} 
+	catch(...) 
+	{
+		std::cerr << "Script Error: Could not create LuaGameLogic";
+		std::cerr << std::endl;
+		std::cerr << "              Using fallback ruleset";
+		std::cerr << std::endl;
+		return std::auto_ptr<IGameLogic>(new FallbackGameLogic());
+	}
+	
 }

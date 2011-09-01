@@ -26,12 +26,19 @@ function OnMistake(player)
 		--		PREDEFINED
 		--		param:  player - player who gets a point
 		--		return: none
+		
 		score(opponent(player))
 	end
 end 
 
-
+--	function IsWinning
+--		IMPLEMENTED BY RULES.lua
+--		called when it is determined whether a player has won
+--		params:		lscore: score of left player
+--					rscore: score of right player
+--		return: whether a player has won
 function IsWinning(lscore, rscore) 
+	-- constant SCORE_TO_WIN: number of points for a player to win
 	if lscore >= SCORE_TO_WIN and lscore > rscore + 2 then
 		return true
 	end
@@ -40,9 +47,6 @@ function IsWinning(lscore, rscore)
 	end
 	return false
 end
-
-
--- 
 
 
 
