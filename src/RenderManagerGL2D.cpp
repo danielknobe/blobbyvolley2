@@ -23,6 +23,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 
 #if HAVE_LIBGL
+
+RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) : w(width), h(height), texture(tex)
+{
+	assert(x + w <= tw);
+	assert(y + h <= th);
+	indices[0] = x / (float)tw;
+	indices[1] = y / (float)th;
+	indices[2] = (x + w) / (float)tw;
+	indices[3] = y / (float)th;
+	indices[4] = (x + w) / (float)tw;
+	indices[5] = (y + h) / (float)th;
+	indices[6] = x / (float)tw;
+	indices[7] = (y + h) / (float)th;
+}
 int debugStateChanges = 0;
 int debugBindTextureCount = 0;
 
@@ -157,6 +171,24 @@ void RenderManagerGL2D::drawQuad2(float x, float y, float w, float h)
 	glEnd();
 }
 
+void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBindTexture(tex.texture);
+	
+	float w = tex.w;
+	float h = tex.h;
+	glBegin(GL_QUADS);
+		glTexCoord2f(tex.indices[0], tex.indices[1]);
+		glVertex2f(x - w / 2.0, y - h / 2.0);
+		glTexCoord2f(tex.indices[2], tex.indices[3]);
+		glVertex2f(x + w / 2.0, y - h / 2.0);
+		glTexCoord2f(tex.indices[4], tex.indices[5]);
+		glVertex2f(x + w / 2.0, y + h / 2.0);
+		glTexCoord2f(tex.indices[6], tex.indices[7]);
+		glVertex2f(x - w / 2.0, y + h / 2.0);
+	glEnd();
+}
+
 RenderManagerGL2D::RenderManagerGL2D()
 	: RenderManager()
 {
@@ -223,24 +255,68 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		mBlobShadow.push_back(blobShadow);
 	}
 
+	// create text base textures
+	SDL_Surface* textbase = createEmptySurface(2048, 32);
+	SDL_Surface* hltextbase = createEmptySurface(2048, 32);
+	SDL_Surface* smalltextbase = createEmptySurface(1024, 16);
+	SDL_Surface* hlsmalltextbase = createEmptySurface(1024, 16);
+	int x = 0;
+	int sx = 0;
+
 	for (int i = 0; i <= 53; ++i)
 	{
 		char filename[64], filename2[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
 		sprintf(filename2, "gfx/font_small/font%02d.bmp", i);
-		GLuint newFont = loadTexture(loadSurface(filename), false);
-		GLuint newFont2 = loadTexture(loadSurface(filename2), false);
 		SDL_Surface* fontSurface = loadSurface(filename);
 		SDL_Surface* fontSurface2 = loadSurface(filename2);
+		
+		GLuint newFont = loadTexture(loadSurface(filename), false);
+		GLuint newFont2 = loadTexture(loadSurface(filename2), false);
 		SDL_Surface* highlight = highlightSurface(fontSurface, 60);
 		SDL_Surface* highlight2 = highlightSurface(fontSurface2, 60);
 		SDL_FreeSurface(fontSurface);
 		SDL_FreeSurface(fontSurface2);
 		
-		mFont.push_back(newFont);
-		mHighlightFont.push_back(loadTexture(highlight, false));
-		mSmallFont.push_back(newFont2);
-		mHighlightSmallFont.push_back(loadTexture(highlight2, false));
+		fontSurface = loadSurface(filename);
+		fontSurface2 = loadSurface(filename2);
+		
+		SDL_Rect r = {x, 0, fontSurface->w, fontSurface->h};
+		SDL_BlitSurface(fontSurface, 0, textbase, &r);
+		SDL_BlitSurface(highlight, 0, hltextbase, &r);
+		r = {sx, 0, fontSurface2->w, fontSurface2->h};
+		SDL_BlitSurface(fontSurface2, 0, smalltextbase, &r);
+		SDL_BlitSurface(highlight2, 0, hlsmalltextbase, &r);
+		//GLuint ballImage = loadTexture(sf, false);
+		//mBall.push_back(ballImage);
+		Texture s = Texture(0, x, 0, fontSurface->w, fontSurface->h, 2048, 32);
+		mFont.push_back(s);
+		mHighlightFont.push_back(s);
+		
+		s = Texture(0, sx, 0, fontSurface2->w, fontSurface2->h, 1024, 16);
+		
+		//mFont.push_back(newFont);
+		//mHighlightFont.push_back(loadTexture(highlight, false));
+		mSmallFont.push_back( s );
+		mHighlightSmallFont.push_back( s );
+		
+		x += fontSurface->w;
+		sx += fontSurface2->w;
+		
+		SDL_FreeSurface(fontSurface);
+		SDL_FreeSurface(fontSurface2);
+	}
+
+	GLuint texture =  loadTexture(textbase, false);
+	GLuint hltexture =  loadTexture(hltextbase, false);
+	GLuint smalltexture =  loadTexture(smalltextbase, false);
+	GLuint hlsmalltexture =  loadTexture(hlsmalltextbase, false);
+	for (int i = 0; i < mFont.size(); ++i)
+	{
+		mFont[i].texture = texture;
+		mHighlightFont[i].texture = hltexture;
+		mSmallFont[i].texture = smalltexture;
+		mHighlightSmallFont[i].texture = hlsmalltexture;
 	}
 
 	mParticle = loadTexture(loadSurface("gfx/blood.bmp"), false);
@@ -269,10 +345,10 @@ void RenderManagerGL2D::deinit()
 	glDeleteTextures(mBlob.size(), &mBlob[0]);
 	glDeleteTextures(mBlobSpecular.size(), &mBlobSpecular[0]);
 	glDeleteTextures(mBlobShadow.size(), &mBlobShadow[0]);
-	glDeleteTextures(mFont.size(), &mFont[0]);
-	glDeleteTextures(mHighlightFont.size(), &mHighlightFont[0]);
-	glDeleteTextures(mSmallFont.size(), &mSmallFont[0]);
-	glDeleteTextures(mHighlightSmallFont.size(), &mHighlightSmallFont[0]);
+	glDeleteTextures(1/*mFont.size()*/, &mFont[0].texture);
+	glDeleteTextures(/*mHighlightFont.size()*/1, &mHighlightFont[0].texture);
+	glDeleteTextures(/*mSmallFont.size()*/1, &mSmallFont[0].texture);
+	glDeleteTextures(/*mHighlightSmallFont.size()*/1, &mHighlightSmallFont[0].texture);
 	glDeleteTextures(1, &mScroll);
 	
 	for (std::map<std::string, BufferedImage*>::iterator iter = mImageMap.begin();
@@ -521,19 +597,15 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 		x += FontSize;
 		if (flags & TF_SMALL_FONT)
 			if (flags & TF_HIGHLIGHT)
-				glBindTexture(mHighlightSmallFont[index]);
+				drawQuad(x, y, mHighlightSmallFont[index]);
 			else
-				glBindTexture(mSmallFont[index]);
+				drawQuad(x, y, mSmallFont[index]);
 		else
 			if (flags & TF_HIGHLIGHT)
-				glBindTexture(mHighlightFont[index]);
+				drawQuad(x, y, mHighlightFont[index]);
 			else
-				glBindTexture(mFont[index]);
+				drawQuad(x, y, mFont[index]);
 		
-		// Why does the quad for correctly displayed 24px symbols have to be 32x32?
-		float width = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8);
-		float height = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8);
-		drawQuad2(x, y, width, height);
 		index = getNextFontIndex(string);
 	}
 }
@@ -642,7 +714,7 @@ void RenderManagerGL2D::endDrawParticles()
 
 void RenderManagerGL2D::refresh()
 {
-	std::cout << debugStateChanges << "\n";
+	//std::cout << debugStateChanges << "\n";
 	SDL_GL_SwapBuffers();
 	debugStateChanges = 0;
 	//std::cerr << debugBindTextureCount << "\n";

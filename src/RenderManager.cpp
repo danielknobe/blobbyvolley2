@@ -92,8 +92,23 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 }
 
 
+SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int height)
+{
+	SDL_Surface* newSurface = SDL_CreateRGBSurface(
+		SDL_SWSURFACE | SDL_SRCALPHA | SDL_SRCCOLORKEY,
+		width, height, 32,
+		0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
+	
+	return newSurface;
+}
+
+
 int RenderManager::getNextFontIndex(std::string& string)
 {
+	static int counter = 0;
+	counter++;
+	if(counter == 300000)
+		exit(0);
 	if (string.empty())
 		return -1;
 	int index = 47;
