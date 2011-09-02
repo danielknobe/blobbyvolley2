@@ -45,6 +45,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class RenderManagerGL2D : public RenderManager
 {
 private:
+	
+	struct Texture
+	{
+		float indices[8];
+		float w, h ;
+		GLuint texture;
+		
+		Texture( GLuint tex, int x, int y, int w, int h, int tw, int th );
+	};
+
 	GLuint mBackground;
 	GLuint mBallShadow;
 
@@ -52,10 +62,10 @@ private:
 	std::vector<GLuint> mBlob;
 	std::vector<GLuint> mBlobSpecular;
 	std::vector<GLuint> mBlobShadow;
-	std::vector<GLuint> mFont;
-	std::vector<GLuint> mHighlightFont;
-	std::vector<GLuint> mSmallFont;
-	std::vector<GLuint> mHighlightSmallFont;
+	std::vector<Texture> mFont;
+	std::vector<Texture> mHighlightFont;
+	std::vector<Texture> mSmallFont;
+	std::vector<Texture> mHighlightSmallFont;
 	GLuint mParticle;
 	GLuint mScroll;
 	
@@ -84,6 +94,7 @@ private:
 
 	void drawQuad(float x, float y);
 	void drawQuad2(float x, float y, float width, float height);
+	void drawQuad(float x, float y, const Texture& tex);
 	GLuint loadTexture(SDL_Surface* surface, bool specular);
 	int getNextPOT(int npot);
 	

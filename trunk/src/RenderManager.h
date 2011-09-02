@@ -84,6 +84,7 @@ protected:
 	int getNextFontIndex(std::string& string);
 	SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
 	SDL_Surface* loadSurface(std::string filename);
+	SDL_Surface* createEmptySurface(unsigned int width, unsigned int height);
 	
 	Vector2 blobShadowPosition(const Vector2& position);
 	Vector2 ballShadowPosition(const Vector2& position);
