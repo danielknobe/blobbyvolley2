@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include <list>
+#include <set>
 
 #include "RenderManager.h"
 
@@ -91,6 +92,7 @@ private:
 	void glBindTexture(GLuint texture);
 	
 	GLuint mCurrentTexture;
+	std::set<unsigned int> mCurrentFlags;
 public:
 	RenderManagerGL2D();
 

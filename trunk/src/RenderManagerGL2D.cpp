@@ -23,26 +23,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 
 #if HAVE_LIBGL
-
-// Standard values:
-//		GL_DEPTH_TEST: false
-//		GL_TEXTURE_2D: true
-//		GL_ALPHA_TEST: true
-
 int debugStateChanges = 0;
 int debugBindTextureCount = 0;
 
 // wrapper functions for debugging purposes
 void RenderManagerGL2D::glEnable(unsigned int flag) 
 {
-	//debugStateChanges++;
+	if(mCurrentFlags.find(flag) != mCurrentFlags.end())
+		return;
+	
+	debugStateChanges++;
 	::glEnable(flag);
+	mCurrentFlags.insert(flag);
 }
 
 void RenderManagerGL2D::glDisable(unsigned int flag) 
 {
-	//debugStateChanges++;
+	if( mCurrentFlags.find(flag) == mCurrentFlags.end() )  
+		return;
+		
+	debugStateChanges++;
 	::glDisable(flag);
+	mCurrentFlags.erase( mCurrentFlags.find(flag) );
 }
 
 void RenderManagerGL2D::glBindTexture(GLuint texture) 
@@ -51,6 +53,7 @@ void RenderManagerGL2D::glBindTexture(GLuint texture)
 		return;
 	debugBindTextureCount++;
 	::glBindTexture(GL_TEXTURE_2D, texture);
+	mCurrentTexture = texture;
 }
 
 
@@ -166,6 +169,9 @@ RenderManager* RenderManager::createRenderManagerGL2D()
 
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 {
+	mCurrentFlags.insert(GL_DEPTH_TEST);
+	mCurrentFlags.insert(GL_MULTISAMPLE);
+	
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -496,6 +502,10 @@ void RenderManagerGL2D::setTime(const std::string& t)
 
 void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	std::string string = text;
@@ -530,6 +540,10 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 
 void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 {
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	
 	BufferedImage* imageBuffer = mImageMap[filename];
 	if (!imageBuffer)
 	{
@@ -563,13 +577,14 @@ void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, C
 		glVertex2f(pos2.x, pos2.y);
 		glVertex2f(pos2.x, pos1.y);
 	glEnd();
-	glDisable(GL_BLEND);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_ALPHA_TEST);
 }
 
 void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 {
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	//glLoadIdentity();
@@ -587,6 +602,10 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 
 void RenderManagerGL2D::startDrawParticles()
 {
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	glBindTexture(mParticle);
 	glBegin(GL_QUADS);
@@ -623,10 +642,10 @@ void RenderManagerGL2D::endDrawParticles()
 
 void RenderManagerGL2D::refresh()
 {
-	//std::cout << mDebugStateChanges << "\n";
+	std::cout << debugStateChanges << "\n";
 	SDL_GL_SwapBuffers();
-	//debugStateChanges = 0;
-	std::cerr << debugBindTextureCount << "\n";
+	debugStateChanges = 0;
+	//std::cerr << debugBindTextureCount << "\n";
 	debugBindTextureCount = 0;
 	
 }
