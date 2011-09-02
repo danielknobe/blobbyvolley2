@@ -29,16 +29,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //		GL_TEXTURE_2D: true
 //		GL_ALPHA_TEST: true
 
+int debugStateChanges = 0;
+int debugBindTextureCount = 0;
+
 // wrapper functions for debugging purposes
-void RenderManagerGL2D::glEnable(unsigned int flag) {
-	//mDebugStateChanges++;
+void RenderManagerGL2D::glEnable(unsigned int flag) 
+{
+	//debugStateChanges++;
 	::glEnable(flag);
 }
 
-void RenderManagerGL2D::glDisable(unsigned int flag) {
-	//mDebugStateChanges++;
+void RenderManagerGL2D::glDisable(unsigned int flag) 
+{
+	//debugStateChanges++;
 	::glDisable(flag);
 }
+
+void RenderManagerGL2D::glBindTexture(GLuint texture) 
+{
+	if(mCurrentTexture == texture)
+		return;
+	debugBindTextureCount++;
+	::glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+
 
 int RenderManagerGL2D::getNextPOT(int npot)
 {
@@ -99,7 +114,7 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface,
 
 	GLuint texture;
 	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
@@ -273,7 +288,7 @@ void RenderManagerGL2D::draw()
 	// Background
 	glDisable(GL_ALPHA_TEST);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, mBackground);
+	glBindTexture(mBackground);
 	glLoadIdentity();
 	drawQuad2(400.0, 300.0, 1024.0, 1024.0);
 	
@@ -290,18 +305,18 @@ void RenderManagerGL2D::draw()
 	
 		pos = blobShadowPosition(mLeftBlobPosition);
 		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
-		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
+		glBindTexture(mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
 		drawQuad2(pos.x, pos.y, 128.0, 32.0);
 	
 		pos = blobShadowPosition(mRightBlobPosition);
 		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
-		glBindTexture(GL_TEXTURE_2D, mBlobShadow[int(mRightBlobAnimationState)  % 5]);
+		glBindTexture(mBlobShadow[int(mRightBlobAnimationState)  % 5]);
 		drawQuad2(pos.x, pos.y, 128.0, 32.0);
 
 		// Ball shadow	
 		pos = ballShadowPosition(mBallPosition);
 		glColor4f(1.0, 1.0, 1.0, 0.5);
-		glBindTexture(GL_TEXTURE_2D, mBallShadow);
+		glBindTexture(mBallShadow);
 		drawQuad2(pos.x, pos.y, 128.0, 32.0);
 
 		glDisable(GL_BLEND);
@@ -314,7 +329,7 @@ void RenderManagerGL2D::draw()
 	// The Ball
 	
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
+	glBindTexture(mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
 /*
 	float opacity = 0.0;
 	for (std::list<Vector2>::iterator iter = mLastBallStates.begin();
@@ -339,12 +354,12 @@ void RenderManagerGL2D::draw()
 	
 	// blob normal
 	// left blob
-	glBindTexture(GL_TEXTURE_2D, mBlob[int(mLeftBlobAnimationState)  % 5]);
+	glBindTexture(mBlob[int(mLeftBlobAnimationState)  % 5]);
 	glColor3ubv(mLeftBlobColor.val);
 	drawQuad2(mLeftBlobPosition.x, mLeftBlobPosition.y, 128.0, 128.0);
 	
 	// right blob
-	glBindTexture(GL_TEXTURE_2D, mBlob[int(mRightBlobAnimationState)  % 5]);
+	glBindTexture(mBlob[int(mRightBlobAnimationState)  % 5]);
 	glColor3ubv(mRightBlobColor.val);
 	drawQuad2(mRightBlobPosition.x, mRightBlobPosition.y, 128.0, 128.0);
 
@@ -352,11 +367,11 @@ void RenderManagerGL2D::draw()
 	glEnable(GL_BLEND);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	// left blob
-	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[int(mLeftBlobAnimationState)  % 5]);
+	glBindTexture(mBlobSpecular[int(mLeftBlobAnimationState)  % 5]);
 	drawQuad2(mLeftBlobPosition.x, mLeftBlobPosition.y, 128.0, 128.0);
 
 	// right blob
-	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[int(mRightBlobAnimationState)  % 5]);
+	glBindTexture(mBlobSpecular[int(mRightBlobAnimationState)  % 5]);
 	drawQuad2(mRightBlobPosition.x, mRightBlobPosition.y, 128.0, 128.0);
 	
 	glDisable(GL_BLEND);
@@ -496,14 +511,14 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 		x += FontSize;
 		if (flags & TF_SMALL_FONT)
 			if (flags & TF_HIGHLIGHT)
-				glBindTexture(GL_TEXTURE_2D, mHighlightSmallFont[index]);
+				glBindTexture(mHighlightSmallFont[index]);
 			else
-				glBindTexture(GL_TEXTURE_2D, mSmallFont[index]);
+				glBindTexture(mSmallFont[index]);
 		else
 			if (flags & TF_HIGHLIGHT)
-				glBindTexture(GL_TEXTURE_2D, mHighlightFont[index]);
+				glBindTexture(mHighlightFont[index]);
 			else
-				glBindTexture(GL_TEXTURE_2D, mFont[index]);
+				glBindTexture(mFont[index]);
 		
 		// Why does the quad for correctly displayed 24px symbols have to be 32x32?
 		float width = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL+8);
@@ -529,7 +544,7 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 	glDisable(GL_BLEND);
 	//glLoadIdentity();
 	//glTranslatef(position.x , position.y, 0.0);
-	glBindTexture(GL_TEXTURE_2D, imageBuffer->glHandle);
+	glBindTexture(imageBuffer->glHandle);
 	drawQuad2(position.x, position.y, imageBuffer->w, imageBuffer->h);
 }
 
@@ -559,13 +574,13 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 
 	//glLoadIdentity();
 	//glTranslatef(pos.x, pos.y, 0.6);
-	glBindTexture(GL_TEXTURE_2D, mBlob[0]);
+	glBindTexture(mBlob[0]);
 	glColor3ubv(col.val);
 	drawQuad2(pos.x, pos.y, 128.0, 128.0);
 
 	glEnable(GL_BLEND);
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, mBlobSpecular[0]);
+	glBindTexture(mBlobSpecular[0]);
 	drawQuad2(pos.x, pos.y, 128.0, 128.0);
 	glDisable(GL_BLEND);
 }
@@ -573,7 +588,7 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 void RenderManagerGL2D::startDrawParticles()
 {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	glBindTexture(GL_TEXTURE_2D, mParticle);
+	glBindTexture(mParticle);
 	glBegin(GL_QUADS);
 }
 
@@ -610,7 +625,10 @@ void RenderManagerGL2D::refresh()
 {
 	//std::cout << mDebugStateChanges << "\n";
 	SDL_GL_SwapBuffers();
-	//mDebugStateChanges = 0;
+	//debugStateChanges = 0;
+	std::cerr << debugBindTextureCount << "\n";
+	debugBindTextureCount = 0;
+	
 }
 
 #else

@@ -88,8 +88,9 @@ private:
 	
 	void glEnable(unsigned int flag);
 	void glDisable(unsigned int flag);
+	void glBindTexture(GLuint texture);
 	
-	//int mDebugStateChanges;
+	GLuint mCurrentTexture;
 public:
 	RenderManagerGL2D();
 
