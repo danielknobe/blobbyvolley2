@@ -22,21 +22,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctime>
 #include <sstream>
 
-Clock::Clock():mRunning(false), mGameTime(0), mLastTime(0){
+Clock::Clock():mRunning(false), mGameTime(0), mLastTime(0)
+{
 }
 
-void Clock::reset(){
+void Clock::reset()
+{
 	mRunning = false;
 	mGameTime = 0;
 	mLastTime = 0;
 }
 
-void Clock::start(){
+void Clock::start()
+{
 	mLastTime = std::time(0);
 	mRunning = true;
 }
 
-std::string Clock::getTimeString() const{
+std::string Clock::getTimeString() const
+{
 	int seconds = mGameTime % 60;
 	int minutes = ((mGameTime - seconds)/60) % 60;
 	int hours = ((mGameTime - 60 * minutes - seconds) / 3600) % 60;
@@ -53,10 +57,13 @@ std::string Clock::getTimeString() const{
 	return stream.str();
 }
 
-void Clock::step(){
-	if(mRunning){
+void Clock::step()
+{
+	if(mRunning)
+	{
 		time_t newTime = std::time(0);
-		if(newTime > mLastTime){
+		if(newTime > mLastTime)
+		{
 			mGameTime += newTime - mLastTime;
 		}
 		mLastTime = newTime;

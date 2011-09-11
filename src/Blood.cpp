@@ -55,7 +55,7 @@ BloodManager::BloodManager()
 
 void BloodManager::step()
 {
-	if (!mEnabled)
+	if (!mEnabled || mParticles.size() == 0)
 		return;
 	RenderManager::getSingleton().startDrawParticles();
 	std::list<Blood>::iterator it = mParticles.begin();
