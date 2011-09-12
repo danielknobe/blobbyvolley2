@@ -33,8 +33,8 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 			SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	SDL_LockSurface(newSurface);
-	for (int y = 0; y < surface->h; ++y)
-	for (int x = 0; x < surface->w; ++x)
+	for (int y = 0; y < newSurface->h; ++y)
+	for (int x = 0; x < newSurface->w; ++x)
 	{
 		SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
 			[y * newSurface->w +x]);
@@ -367,7 +367,7 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 	for (short int i = 0; i < 5; ++i)
 	{
 		SDL_FreeSurface((*handledBlob)[i]);
-		SDL_FreeSurface((*handledBlobShadow)[i]);
+		if(mShowShadow)		SDL_FreeSurface((*handledBlobShadow)[i]);
 	}
 	SDL_FreeSurface(*handledBlobBlood);
 
@@ -378,7 +378,7 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 	{
 		// no conversion becouse it is already done in colorSurface	
 		handledBlob->push_back(colorSurface(mStandardBlob[i], color));
-		handledBlobShadow->push_back(colorSurface(mStandardBlobShadow[i], color));
+		if(mShowShadow)		handledBlobShadow->push_back(colorSurface(mStandardBlobShadow[i], color));
 	}
 
 	*handledBlobBlood = colorSurface(mStandardBlobBlood, color);
