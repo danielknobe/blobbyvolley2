@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
 	ServerInfo myinfo(config);
 
-	if (!server.Start(150, 0, 0, port))
+	if (!server.Start(150, 0, 1, port))
 	{
 		syslog(LOG_ERR, "Couldn´t bind to port %i, exiting", port);
 		return 2;
@@ -313,7 +313,7 @@ int main(int argc, char** argv)
 														false);
 										}
 										else if (major < BLOBBY_VERSION_MAJOR
-						|| (major == BLOBBY_VERSION_MINOR && minor < BLOBBY_VERSION_MINOR))
+						|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{
 						stream2.Write((unsigned char)ID_OLD_CLIENT);
@@ -517,13 +517,13 @@ void setup_physfs(char* argv0)
 void syslog(int pri, const char* format, ...){
 	switch(pri){
 		case LOG_ERR:
-			std::cerr<<std::time(0)<<": "<<format<<"\n";
+			std::cerr << std::time(0)<<": "<<format<<"\n";
 			break;
 		case LOG_NOTICE:
-			std::cout<<std::time(0)<<": "<<format<<"\n";
+			std::cout << std::time(0)<<": "<<format<<"\n";
 			break;
 		case LOG_DEBUG:
-			std::cout<<std::time(0)<<": "<<format<<"\n";
+			std::cout << std::time(0)<<": "<<format<<"\n";
 			break;
 		
 	}
