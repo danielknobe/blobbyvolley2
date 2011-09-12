@@ -49,7 +49,7 @@ class Vector2
 	Vector2 scaleY(float factor) const;
 	float length() const;
 	Vector2 normalise();
-	Vector2 contraVector();
+	Vector2 contraVector() const ;
 	
 	inline Vector2 halfVector(const Vector2& vec) const
 	{
@@ -88,7 +88,7 @@ class Vector2
 		return Vector2(x * scalar, y * scalar);
 	}
 	
-	inline Vector2 operator * (Vector2 vector) const
+	inline Vector2 operator * (const Vector2& vector) const
 	{
 		return Vector2(x * vector.x, y * vector.y);
 	}
@@ -105,21 +105,21 @@ class Vector2
 		return Vector2(-x, -y);
 	}
 	
-	inline Vector2& operator += (Vector2 vector)
+	inline Vector2& operator += (const Vector2& vector)
 	{
 		x += vector.x;
 		y += vector.y;
 		return *this;
 	}
 	
-	inline Vector2& operator -= (Vector2 vector)
+	inline Vector2& operator -= (const Vector2& vector)
 	{
 		x -= vector.x;
 		y -= vector.y;
 		return *this;
 	}
 	
-	inline Vector2& operator *= (Vector2 vector)
+	inline Vector2& operator *= (const Vector2& vector)
 	{
 		x *= vector.x;
 		y *= vector.y;
@@ -218,7 +218,7 @@ inline Vector2 Vector2::normalise()
 	return *this;
 }
 
-inline Vector2 Vector2::contraVector()
+inline Vector2 Vector2::contraVector() const
 {
 	return Vector2(-x, -y);
 }
@@ -229,7 +229,7 @@ inline void Vector2::clear()
 	y = 0.0;
 }
 
-inline bool operator < (Vector2 v1, Vector2 v2)
+inline bool operator < (const Vector2& v1, const Vector2& v2)
 {
 	if (v1.x < v2.x)
 	if (v1.y < v2.y)
@@ -238,7 +238,7 @@ inline bool operator < (Vector2 v1, Vector2 v2)
 	
 }
 
-inline bool operator > (Vector2 v1, Vector2 v2)
+inline bool operator > (const Vector2& v1, const Vector2& v2)
 {
 	if (v1.x > v2.x)
 	if (v1.y > v2.y)
