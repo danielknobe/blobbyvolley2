@@ -33,11 +33,9 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 			SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	SDL_LockSurface(newSurface);
-	for (int y = 0; y < newSurface->h; ++y)
-	for (int x = 0; x < newSurface->w; ++x)
+	for (int p = 0; p < newSurface->w * newSurface->h; ++p)
 	{
-		SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
-			[y * newSurface->w +x]);
+		SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)[p]);
 
 		int rr = (int(pixel->r) * int(color.r)) >> 8;
 		int rg = (int(pixel->g) * int(color.g)) >> 8;
@@ -45,6 +43,14 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		int fak = int(pixel->r) * 5 - 4 * 256 - 138;
 
 		bool colorkey = !(pixel->r | pixel->g | pixel->b);
+
+		if (colorkey)
+		{
+			pixel->r = 0;
+			pixel->g = 0;
+			pixel->b = 0;
+			continue;
+		}
 
 		if (fak > 0)
 		{
@@ -58,18 +64,10 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 
 		// This is clamped to 1 because dark colors would be
 		// colorkeyed otherwise
-		if (colorkey)
-		{
-			pixel->r = 0;
-			pixel->g = 0;
-			pixel->b = 0;
-		}
-		else
-		{
-			pixel->r = rr > 0 ? rr : 1;
-			pixel->g = rg > 0 ? rg : 1;
-			pixel->b = rb > 0 ? rb : 1;
-		}
+		pixel->r = rr > 0 ? rr : 1;
+		pixel->g = rg > 0 ? rg : 1;
+		pixel->b = rb > 0 ? rb : 1;
+		
 	}
 	SDL_UnlockSurface(newSurface);
 	SDL_Surface *convSurface = SDL_DisplayFormatAlpha(newSurface);
