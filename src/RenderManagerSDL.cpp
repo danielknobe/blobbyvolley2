@@ -90,6 +90,10 @@ RenderManager* RenderManager::createRenderManagerSDL()
 
 void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 {
+	
+	mLeftPlayerNameTexture = 0;
+	mRightPlayerNameTexture = 0;
+	
 	Uint32 screenFlags = SDL_HWSURFACE | SDL_HWACCEL | SDL_DOUBLEBUF;
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
@@ -194,6 +198,9 @@ void RenderManagerSDL::deinit()
 	
 	SDL_FreeSurface(mLeftBlobBlood);
 	SDL_FreeSurface(mRightBlobBlood);
+	
+	SDL_FreeSurface(mLeftPlayerNameTexture);
+	SDL_FreeSurface(mRightPlayerNameTexture);
 	
 	for (unsigned int i = 0; i < mBall.size(); ++i)
 		SDL_FreeSurface(mBall[i]);
@@ -308,7 +315,11 @@ void RenderManagerSDL::draw()
 	drawText(textBuffer, Vector2(800 - 96, 24), false);
 
 	// Drawing the names
-	drawText(mLeftPlayerName, Vector2(12, 550), false);
+	//drawText(mLeftPlayerName, Vector2(12, 550), false);
+	SDL_Rect rect;
+	rect.x = 12;
+	rect.y = 550;
+	SDL_BlitSurface(mLeftPlayerNameTexture, 0, mScreen, &rect);
 
 	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
 	
@@ -465,6 +476,29 @@ void RenderManagerSDL::setPlayernames(std::string leftName, std::string rightNam
 {
 	mLeftPlayerName = leftName;
 	mRightPlayerName = rightName;
+	
+	int tl = mLeftPlayerName.size() * FONT_WIDTH_NORMAL;
+	SDL_FreeSurface(mLeftPlayerNameTexture);
+	SDL_Surface* surface = createEmptySurface(tl, 24);
+	SDL_SetAlpha(surface, SDL_SRCALPHA, 255);
+	SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL,
+			SDL_MapRGB(surface->format, 0, 0, 0));
+	drawTextImpl(mLeftPlayerName, Vector2(0,0), TF_NORMAL, surface);
+	
+	mLeftPlayerNameTexture = SDL_DisplayFormatAlpha(surface);
+	SDL_FreeSurface(surface);
+	
+	
+	tl = mRightPlayerName.size() * FONT_WIDTH_NORMAL;
+	SDL_FreeSurface(mRightPlayerNameTexture);
+	surface = createEmptySurface(tl, 24);
+	SDL_SetAlpha(surface, SDL_SRCALPHA, 255);
+	SDL_SetColorKey(surface, SDL_SRCCOLORKEY | SDL_RLEACCEL,
+			SDL_MapRGB(surface->format, 0, 0, 0));
+	drawTextImpl(mRightPlayerName, Vector2(0,0), TF_NORMAL, surface);
+	
+	mRightPlayerNameTexture = SDL_DisplayFormatAlpha(surface);
+	SDL_FreeSurface(surface);
 }
 
 void RenderManagerSDL::setTime(const std::string& t)
@@ -474,6 +508,11 @@ void RenderManagerSDL::setTime(const std::string& t)
 
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
+{
+	drawTextImpl(text, position, flags, mScreen);
+}
+
+void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, unsigned int flags, SDL_Surface* screen)
 {
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	int length = 0;
@@ -490,14 +529,14 @@ void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsig
 		
 		if (flags & TF_SMALL_FONT)
 			if (flags & TF_HIGHLIGHT)
-				SDL_BlitSurface( mHighlightSmallFont[index], 0, mScreen, &charPosition );
+				SDL_BlitSurface( mHighlightSmallFont[index], 0, screen, &charPosition );
 			else
-				SDL_BlitSurface( mSmallFont[index], 0, mScreen, &charPosition );
+				SDL_BlitSurface( mSmallFont[index], 0, screen, &charPosition );
 		else
 			if (flags & TF_HIGHLIGHT)
-				SDL_BlitSurface( mHighlightFont[index], 0, mScreen, &charPosition );
+				SDL_BlitSurface( mHighlightFont[index], 0, screen, &charPosition );
 			else
-				SDL_BlitSurface( mFont[index], 0, mScreen, &charPosition );
+				SDL_BlitSurface( mFont[index], 0, screen, &charPosition );
 		
 		index = getNextFontIndex(string);
 		length += FontSize;

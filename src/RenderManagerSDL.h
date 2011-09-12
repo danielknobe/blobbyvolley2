@@ -65,6 +65,8 @@ class RenderManagerSDL : public RenderManager
 
 	std::string mLeftPlayerName;
 	std::string mRightPlayerName;
+	SDL_Surface* mLeftPlayerNameTexture;
+	SDL_Surface* mRightPlayerNameTexture;
 	
 	std::string mTime;
 	
@@ -74,6 +76,8 @@ class RenderManagerSDL : public RenderManager
 	// colors a surface
 	// the returned SDL_Surface* is already converted into DisplayFormat
 	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
+	
+	void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags, SDL_Surface* screen);
 	
 public:
 	RenderManagerSDL();
