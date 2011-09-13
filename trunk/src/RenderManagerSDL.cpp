@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RenderManagerSDL.h"
 
 
-SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
+RenderManagerSDL::DynamicColoredSurface RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 {
     SDL_Surface *newSurface = SDL_CreateRGBSurface(
 		SDL_SWSURFACE | SDL_SRCALPHA | SDL_SRCCOLORKEY,
@@ -70,9 +70,11 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 		
 	}
 	SDL_UnlockSurface(newSurface);
+	SDL_SetColorKey(newSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL,
+			SDL_MapRGB(newSurface->format, 0, 0, 0));
 	SDL_Surface *convSurface = SDL_DisplayFormatAlpha(newSurface);
 	SDL_FreeSurface(newSurface);
-	return convSurface;
+	return DynamicColoredSurface(convSurface, color);
 }
 
 RenderManagerSDL::RenderManagerSDL()
@@ -208,10 +210,10 @@ void RenderManagerSDL::deinit()
 	{
 		SDL_FreeSurface(mStandardBlob[i]);
 		SDL_FreeSurface(mStandardBlobShadow[i]);
-		SDL_FreeSurface(mLeftBlob[i]);
-		SDL_FreeSurface(mLeftBlobShadow[i]);
-		SDL_FreeSurface(mRightBlob[i]);
-		SDL_FreeSurface(mRightBlobShadow[i]);
+		SDL_FreeSurface(mLeftBlob[i].mSDLsf);
+		SDL_FreeSurface(mLeftBlobShadow[i].mSDLsf);
+		SDL_FreeSurface(mRightBlob[i].mSDLsf);
+		SDL_FreeSurface(mRightBlobShadow[i].mSDLsf);
 	}
 
 	for (unsigned int i = 0; i < mFont.size(); ++i)
@@ -264,12 +266,12 @@ void RenderManagerSDL::draw()
 		// Left blob shadow
 		position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
 		animationState = int(mLeftBlobAnimationState)  % 5;
-		SDL_BlitSurface(mLeftBlobShadow[animationState], 0, mScreen, &position);
+		SDL_BlitSurface(mLeftBlobShadow[animationState].mSDLsf, 0, mScreen, &position);
 
 		// Right blob shadow
 		position = blobShadowRect(blobShadowPosition(mRightBlobPosition));
 		animationState = int(mRightBlobAnimationState)  % 5;
-		SDL_BlitSurface(mRightBlobShadow[animationState], 0, mScreen, &position);
+		SDL_BlitSurface(mRightBlobShadow[animationState].mSDLsf, 0, mScreen, &position);
 	}
 
 	// Restore the rod
@@ -295,15 +297,19 @@ void RenderManagerSDL::draw()
 	animationState = int(mBallRotation / M_PI / 2 * 16) % 16;
 	SDL_BlitSurface(mBall[animationState], 0, mScreen, &position);
 
+	// update blob colors
+	colorizeBlobs(LEFT_PLAYER);
+	colorizeBlobs(RIGHT_PLAYER);
+
 	// Drawing left blob
 	position = blobRect(mLeftBlobPosition);
 	animationState = int(mLeftBlobAnimationState)  % 5;
-	SDL_BlitSurface(mLeftBlob[animationState], 0, mScreen, &position);
+	SDL_BlitSurface(mLeftBlob[animationState].mSDLsf, 0, mScreen, &position);
 
 	// Drawing right blob
 	position = blobRect(mRightBlobPosition);
 	animationState = int(mRightBlobAnimationState)  % 5;
-	SDL_BlitSurface(mRightBlob[animationState], 0, mScreen, &position);
+	SDL_BlitSurface(mRightBlob[animationState].mSDLsf, 0, mScreen, &position);
 
 	// Drawing the score
 	char textBuffer[8];
@@ -356,43 +362,52 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 	} else {
 		return;
 	}
-
-	std::vector<SDL_Surface*> *handledBlob = 0;
-	std::vector<SDL_Surface*> *handledBlobShadow = 0;
+	
 	SDL_Surface** handledBlobBlood = 0;
+
+	if (player == LEFT_PLAYER)
+	{
+		handledBlobBlood = &mLeftBlobBlood;
+	}
+	if (player == RIGHT_PLAYER)
+	{
+		handledBlobBlood = &mRightBlobBlood;
+	}
+	
+	SDL_FreeSurface(*handledBlobBlood);
+	*handledBlobBlood = colorSurface(mStandardBlobBlood, color).mSDLsf;
+	
+}
+
+
+void RenderManagerSDL::colorizeBlobs(int player)
+{
+	std::vector<DynamicColoredSurface> *handledBlob = 0;
+	std::vector<DynamicColoredSurface> *handledBlobShadow = 0;
+	int frame;
 
 	if (player == LEFT_PLAYER)
 	{
 		handledBlob = &mLeftBlob;
 		handledBlobShadow = &mLeftBlobShadow;
-		handledBlobBlood = &mLeftBlobBlood;
+		frame = mLeftBlobAnimationState;
 	}
 	if (player == RIGHT_PLAYER)
 	{
 		handledBlob = &mRightBlob;
 		handledBlobShadow = &mRightBlobShadow;
-		handledBlobBlood = &mRightBlobBlood;
+		frame = mRightBlobAnimationState;
 	}
-	for (short int i = 0; i < 5; ++i)
-	{
-		SDL_FreeSurface((*handledBlob)[i]);
-		if(mShowShadow)		SDL_FreeSurface((*handledBlobShadow)[i]);
-	}
-	SDL_FreeSurface(*handledBlobBlood);
-
-	handledBlob->clear();
-	handledBlobShadow->clear();
-
-	for (int i = 0; i < 5; ++i)
-	{
-		// no conversion becouse it is already done in colorSurface	
-		handledBlob->push_back(colorSurface(mStandardBlob[i], color));
-		if(mShowShadow)		handledBlobShadow->push_back(colorSurface(mStandardBlobShadow[i], color));
-	}
-
-	*handledBlobBlood = colorSurface(mStandardBlobBlood, color);
 	
+	if( (*handledBlob)[frame].mColor != mBlobColor[player]) 
+	{
+		SDL_FreeSurface((*handledBlob)[frame].mSDLsf);
+		(*handledBlob)[frame] = colorSurface(mStandardBlob[frame], mBlobColor[player]);
+		SDL_FreeSurface((*handledBlobShadow)[frame].mSDLsf);
+		(*handledBlobShadow)[frame] = colorSurface(mStandardBlobShadow[frame], mBlobColor[player]);
+	}
 }
+
 
 void RenderManagerSDL::showShadow(bool shadow)
 {
@@ -605,12 +620,12 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 	if(toDraw == 1)
 	{
-		SDL_BlitSurface(mRightBlob[0], 0, mScreen, &position);
+		SDL_BlitSurface(mRightBlob[0].mSDLsf, 0, mScreen, &position);
 		toDraw = 0;
 	}
 	else
 	{
-		SDL_BlitSurface(mLeftBlob[0], 0, mScreen, &position);
+		SDL_BlitSurface(mLeftBlob[0].mSDLsf, 0, mScreen, &position);
 		toDraw = 1;
 	}
 }
