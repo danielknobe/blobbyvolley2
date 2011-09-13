@@ -26,6 +26,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class RenderManagerSDL : public RenderManager
 {
+	struct DynamicColoredSurface
+	{
+		// constructors
+		// start surface is expected to have color 0xffffff
+		DynamicColoredSurface() : mSDLsf(0), mColor(255, 255, 255) {};
+		explicit DynamicColoredSurface(SDL_Surface* sf) : mSDLsf(sf), mColor(255, 255, 255) {};
+		
+		DynamicColoredSurface(SDL_Surface* sf, Color c) : mSDLsf(sf), mColor(c) {};
+		
+		SDL_Surface* mSDLsf;
+		Color mColor;
+	};
+	
+	
 	SDL_Surface* mBackground;
 	SDL_Surface* mBallShadow;
 	SDL_Surface* mScroll;
@@ -34,11 +48,11 @@ class RenderManagerSDL : public RenderManager
 	std::vector<SDL_Surface*> mStandardBlob;
 	std::vector<SDL_Surface*> mStandardBlobShadow;
 	SDL_Surface*			  mStandardBlobBlood;
-	std::vector<SDL_Surface*> mLeftBlob;
-	std::vector<SDL_Surface*> mLeftBlobShadow;
+	std::vector<DynamicColoredSurface> mLeftBlob;
+	std::vector<DynamicColoredSurface> mLeftBlobShadow;
 	SDL_Surface*			  mLeftBlobBlood;
-	std::vector<SDL_Surface*> mRightBlob;
-	std::vector<SDL_Surface*> mRightBlobShadow;
+	std::vector<DynamicColoredSurface> mRightBlob;
+	std::vector<DynamicColoredSurface> mRightBlobShadow;
 	SDL_Surface*			  mRightBlobBlood;
 
 	std::vector<SDL_Surface*> mFont;
@@ -75,10 +89,10 @@ class RenderManagerSDL : public RenderManager
 
 	// colors a surface
 	// the returned SDL_Surface* is already converted into DisplayFormat
-	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
+	DynamicColoredSurface colorSurface(SDL_Surface *surface, Color color);
 	
 	void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags, SDL_Surface* screen);
-	
+	void colorizeBlobs(int player);
 public:
 	RenderManagerSDL();
 
