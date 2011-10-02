@@ -89,15 +89,16 @@ void IGameLogic::setScore(PlayerSide side, int score)
 }
 
 
-void IGameLogic::setScoreToWin(unsigned int stw)
+void IGameLogic::setScoreToWin(int stw)
 {
+	assert(stw > 0);
 	mScoreToWin = stw;
 	// when are the values in the lua script updated?
 	//lua_pushnumber(mState, mScoreToWin);
 	//lua_setglobal(mState, "SCORE_TO_WIN");
 }
 
-unsigned int IGameLogic::getScoreToWin() const 
+int IGameLogic::getScoreToWin() const 
 {
 	return mScoreToWin;
 }
