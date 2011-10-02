@@ -46,7 +46,7 @@ class IGameLogic
 		
 		int getHits(PlayerSide side) const;
 		
-		// method for querying the serving player
+		// method for querying and setting the serving player
 		PlayerSide getServingPlayer() const;
 		void setServingPlayer(PlayerSide side);
 		
@@ -55,7 +55,7 @@ class IGameLogic
 		/// game still runs
 		PlayerSide getWinningPlayer() const;
 		
-		/// returns who has made the last mistake
+		/// returns who has made the last mistake.
 		/// after this request, the value is reset
 		PlayerSide getLastErrorSide();
 		
@@ -63,6 +63,7 @@ class IGameLogic
 		void setScoreToWin(unsigned int stw);
 		unsigned int getScoreToWin() const;
 		
+		/// gets the associated clock
 		Clock& getClock();
 		
 		// -----------------------------------------------------------------------------------------
@@ -70,11 +71,17 @@ class IGameLogic
 		// -----------------------------------------------------------------------------------------
 	
 		// methods to inform the game logic what is happening in the game
+		
+		
+		/// called when ball hits ground
 		void onBallHitsGround(PlayerSide side);
-				
-		// returns whether the collision was valid
-		bool isCollisionValid(PlayerSide side) const;
+		
+		/// called when ball hits player
 		void onBallHitsPlayer(PlayerSide side);
+				
+		// returns whether the collision was valid (max. 3 hits)
+		bool isCollisionValid(PlayerSide side) const;
+
 		
 		// set/unset pause mode
 		void onPause();
@@ -84,8 +91,8 @@ class IGameLogic
 		void step();		
 
 	protected:
-		// this method must be called if a team scores
-		// is increments the points of that team
+		/// this method must be called if a team scores
+		/// is increments the points of that team
 		void score(PlayerSide side);
 
 		// helper functions
@@ -97,7 +104,7 @@ class IGameLogic
 			return side - LEFT_PLAYER;
 		}
 		
-		// determine the opposit player side
+		// determine the opposite player side
 		static inline PlayerSide other_side(PlayerSide side)
 		{
 			switch(side)
@@ -119,29 +126,40 @@ class IGameLogic
 		// mistake
 		void onError(PlayerSide side);
 		
-		
+		/// this function is called by on error, it contains the customizable part of the 
+		/// error handling
 		virtual void OnMistake(PlayerSide side) = 0;
+		
+		/// thic function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
 			
 		
 		// data memberss
+		/// this array contains the scores
+		int mScores[2];
+		/// in this array the number of touches are counted
+		int mTouches[2];
+		/// this is an helper array to prevent counting hits that happen too fast twice
+		int mSquish[2];
 		
-		int mScores[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		int mTouches[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		int mSquish[RIGHT_PLAYER - LEFT_PLAYER + 1];
-		
-		
+		/// last side that made an error
 		PlayerSide mLastError;
+		/// player that is currently serving
 		PlayerSide mServingPlayer;
+		/// player that has won the game
+		/// \todo do we really need to cache this information here??
 		PlayerSide mWinningPlayer;
 		
+		/// config parameter: score to win
+		/// \todo how do we use config parameters with lua rules?
 		unsigned int mScoreToWin;
 		
-		// clock
+		/// clock for determining game tome
 		Clock clock;
 };
 
-// typedef to make GameLogic an auto_ptr
+/// typedef to make GameLogic an auto_ptr
+/// \todo is auto_ptr the best choice here?
 typedef std::auto_ptr<IGameLogic> GameLogic;
 
 // function for creating a game logic object

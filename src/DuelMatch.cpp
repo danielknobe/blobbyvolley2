@@ -229,7 +229,7 @@ const PlayerInput* DuelMatch::getPlayersInput() const
 	return mPhysicWorld.getPlayersInput();
 }
 
-void DuelMatch::setPlayersInput(PlayerInput* input)
+void DuelMatch::setPlayersInput(const PlayerInput* input)
 {
 	mPhysicWorld.setLeftInput(input[LEFT_PLAYER]);
 	mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);

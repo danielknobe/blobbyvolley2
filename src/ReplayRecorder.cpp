@@ -202,7 +202,7 @@ PacketType ReplayRecorder::getPacketType()
 	}
 }
 
-PlayerInput* ReplayRecorder::getInput()
+const PlayerInput* ReplayRecorder::getInput()
 {
 	PlayerInput* input = new PlayerInput[MAX_PLAYERS];
 	const uint8_t packet = mReplayData[mReplayOffset++];

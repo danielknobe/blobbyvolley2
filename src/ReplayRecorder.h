@@ -79,7 +79,7 @@ public:
 
 	std::string getPlayerName(const PlayerSide side) const;
 
-	PlayerInput* getInput();
+	const PlayerInput* getInput();
 
 	PlayerSide getServingPlayer() const;
 	void setServingPlayer(PlayerSide side);
