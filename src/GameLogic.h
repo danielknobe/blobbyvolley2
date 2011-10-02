@@ -60,8 +60,8 @@ class IGameLogic
 		PlayerSide getLastErrorSide();
 		
 		// methods for setting/getting the target score
-		void setScoreToWin(unsigned int stw);
-		unsigned int getScoreToWin() const;
+		void setScoreToWin(int stw);
+		int getScoreToWin() const;
 		
 		/// gets the associated clock
 		Clock& getClock();
@@ -152,7 +152,7 @@ class IGameLogic
 		
 		/// config parameter: score to win
 		/// \todo how do we use config parameters with lua rules?
-		unsigned int mScoreToWin;
+		int mScoreToWin;
 		
 		/// clock for determining game tome
 		Clock clock;

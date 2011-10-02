@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool global, bool remote):mLogic(createGameLogic("rules.lua")), events(0), 
-					external_events(0), mPaused(false), mRemote(remote)
+				bool global, bool remote):mLogic(createGameLogic("rules.lua")),
+					mPaused(false), events(0), external_events(0), mRemote(remote)
 {
 	mGlobal = global;
 	if (mGlobal)

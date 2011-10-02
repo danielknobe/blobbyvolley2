@@ -105,10 +105,6 @@ SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int 
 
 int RenderManager::getNextFontIndex(std::string& string)
 {
-	static int counter = 0;
-	counter++;
-	if(counter == 300000)
-		exit(0);
 	if (string.empty())
 		return -1;
 	int index = 47;
