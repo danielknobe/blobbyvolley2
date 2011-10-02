@@ -1,3 +1,19 @@
+New in Alpha 9 (rev. ) since Alpha 8:
+- network game: reduced data transfer
+- fixed memleaks
+- OGL: improved text rendering speed
+- SDL: improved render speed for morphing blobs
+- generally improved performance
+- limited FPS in menu
+- chat
+- clock
+- blood in SDL mode
+- bots sorted
+- online replays
+- improved bots: difficulty adjustable, better api, better documentation
+- customizable rules file
+
+
 New in Alpha 8 (rev. 469) since Alpha 6:
 - some graphics improvements
 - performance improvements

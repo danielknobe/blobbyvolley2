@@ -145,22 +145,17 @@ class Vector2
 
 };
 
-inline Vector2::Vector2()
+inline Vector2::Vector2() : x(0), y(0)
 {
-	this->x=0;
-	this->y=0;
 }
 
-inline Vector2::Vector2(float x, float y)
+inline Vector2::Vector2(float a, float b) : x(a), y(b)
 {
-	this->x=x;
-	this->y=y;	
 }
 
-inline Vector2::Vector2(const Vector2& v1, const Vector2& v2)
+inline Vector2::Vector2(const Vector2& v1, const Vector2& v2) : x(v2.x - v1.x), y(v2.y - v1.y)
 {
-	x = v2.x - v1.x;
-	y = v2.y - v1.y;
+
 }
 
 inline Vector2 Vector2::reflectX() const
