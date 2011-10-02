@@ -29,18 +29,17 @@ type inforamtion) */
 		Besides these functions that are provided by Blobby Volley,
 		each script can define the functions listed under \ref script_func "Script Functions".
 		
-		Note that some of them are even required for getting your bot
+		Note that some of them are required to get your bot
 		working.
 		
 		In addition to these functions, the Blobby Volley 2 Lua API 
 		provides a lot of preset constants to simplify bot
 		development and make adaption to new circumstances
-		(e.g. different fieldsize, gravity) easier it gets implemented.
+		(e.g. different fieldsize, gravity) easier if that gets implemented.
 		
 		\attention
 		Remember that Lua is \b not able to declare a variables as const. 
-		Thus, it is possible to change the value of these constants 
-		accidentially.  
+		Thus, it IS possible to change the value of these constants.  
 		
 		
 	@{
@@ -202,7 +201,7 @@ int getGameTime();
 				already to late to catch the ball) and its 
 				calculation itself (ignoring bounces) are not good.
 				As a consequence, it is hardly used in the current
-				bots so it may be removed in one of the next releases.
+				bots so it might be removed in one of the next releases.
 	\return x component of the estimated position
 	\sa predictImpact
 */

@@ -25,6 +25,7 @@ estimate(): Estimated impact point of the ball, without collision
 estimx(number) : Estimates ball x component for n timesteps
 estimy(number) : Estimates ball y component for n timesteps
 
+
 ballx() : x component of the ball position
 
 bally() : y component of the ball position
@@ -43,6 +44,14 @@ oppy() : y component of opponent position
 
 debug(number) : Prints a number to stderr for debugging purposes
 
+getScore() : own score
+
+getOppScore() : opponent's score
+
+getScoreToWin() : score needed to win the match
+
+getGameTime(): time the game is running (for bots simulating exhaustion)
+
 All functions of the lua math library are also available.
 You can find their documentation at:
 http://www.lua.org/manual/5.1/manual.html#5.6
@@ -56,8 +65,3 @@ function OnServe(ballready) : Called when the ball went down and the controlled
 function OnOpponentServe() : Called after balldown when the opponent has to
 				serve the next ball
 function OnGame() : Called during the normal game
-
-
-What is missing:
-
-- Functions to query score (for dynamic strength bots)
