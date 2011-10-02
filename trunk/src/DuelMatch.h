@@ -104,7 +104,7 @@ public:
 
 	//Input stuff for recording and playing replays
 	const PlayerInput* getPlayersInput() const;
-	void setPlayersInput(PlayerInput* input);
+	void setPlayersInput(const PlayerInput* input);
 	
 	void setServingPlayer(PlayerSide side);
 	

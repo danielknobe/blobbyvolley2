@@ -27,21 +27,21 @@ class Clock{
 		
 		void start();
 		
-		void stop(){
+		void stop() {
 			mRunning = false;
 		}
 		
-		bool isRunning() const{
+		bool isRunning() const {
 			return mRunning;
 		}
 		
 		void step();
 		
-		int getTime() const{
+		int getTime() const {
 			return mGameTime;
 		}
 		
-		void setTime(int newTime){
+		void setTime(int newTime) {
 			mGameTime = newTime;
 		}
 		
