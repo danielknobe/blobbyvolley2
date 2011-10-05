@@ -61,6 +61,7 @@ public:
 
 private:
 	void broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream);
+	void broadcastBitstream(RakNet::BitStream* stream);
 	void broadcastPhysicState();
 
 	RakServer& mServer;
