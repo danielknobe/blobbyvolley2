@@ -104,7 +104,10 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStrea
 	//	here, the internal data of switchedstream is the same as stream so all
 	//	changes made with switchedstream are done with stream alike. this was not
 	//  the intention of this construct so it should be caught by this assertion.
+	/// NEVER USE THIS FUNCTION LIKE broadcastBitstream(str, str), use, broadcastBitstream(str) instead
+	/// this function is intended for sending two different streams to the two clients
 	
+	assert( stream != switchedstream );
 	assert( stream->GetData() != switchedstream->GetData() );
 	
 	RakNet::BitStream* leftStream =
@@ -115,6 +118,15 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStrea
 	mServer.Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
 	mServer.Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                        mRightPlayer, false);
+}
+
+void NetworkGame::broadcastBitstream(RakNet::BitStream* stream)
+{
+	
+	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+                        mLeftPlayer, false);
+	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mRightPlayer, false);
 }
 
@@ -134,7 +146,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_OPPONENT_DISCONNECTED);
-				broadcastBitstream(&stream, &stream);
+				broadcastBitstream(&stream);
 				mPausing = true;
 				mMatch->pause();
 				active = false;
@@ -173,7 +185,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_PAUSE);
-				broadcastBitstream(&stream, &stream);
+				broadcastBitstream(&stream);
 				mPausing = true;
 				mMatch->pause();
 				break;
@@ -182,7 +194,7 @@ bool NetworkGame::step()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
-				broadcastBitstream(&stream, &stream);
+				broadcastBitstream(&stream);
 				mPausing = false;
 				mMatch->unpause();
 				break;
