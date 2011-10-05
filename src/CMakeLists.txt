@@ -71,7 +71,7 @@ target_link_libraries(blobby lua raknet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIB
 
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
-	target_link_libraries(blobby-server raknet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL_LIBRARY})
+	target_link_libraries(blobby-server lua raknet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL_LIBRARY})
 endif (UNIX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
