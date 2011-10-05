@@ -480,7 +480,7 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 		mBlobVelocity[LEFT_PLAYER].y = 0;
 	}else{
 		readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		readCompressedFromBitStream(stream, mBlobVelocity[RIGHT_PLAYER].x, -30, 30);
+		readCompressedFromBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
 	if(rightGround){
