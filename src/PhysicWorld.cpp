@@ -501,6 +501,12 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 
 	readCompressedFromBitStream(stream, mBallVelocity.x, -30, 30);
 	readCompressedFromBitStream(stream, mBallVelocity.y, -30, 30);
+	
+	// if ball velocity not zero, we must assume that the game is active
+	// i'm not sure if this would be set correctly otherwise...
+	if(mBallVelocity != Vector2()) {
+		mIsGameRunning = true;
+	}
 
 	stream->Read(mPlayerInput[LEFT_PLAYER].left);
 	stream->Read(mPlayerInput[LEFT_PLAYER].right);
