@@ -70,6 +70,12 @@ void DuelMatch::step()
 		mPhysicWorld.setLeftInput(mLeftInput->getInput());
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
+		
+	// in pause mode, step does nothing except input being set
+	if(mPaused)
+		return;
+	
+	
 	mPhysicWorld.step();
 	mLogic->step();
 	
