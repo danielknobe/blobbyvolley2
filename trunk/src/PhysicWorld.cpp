@@ -504,8 +504,14 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	
 	// if ball velocity not zero, we must assume that the game is active
 	// i'm not sure if this would be set correctly otherwise...
-	if(mBallVelocity != Vector2()) {
+	// we must use this check with 0.1f because of precision loss when velocities are transmitted
+	// wo prevent setting a false value when the ball is at the parabels top, we check also if the 
+	// y - position is the starting y position
+	/// \todo maybe we should simply send a bit which contains this information? 
+	if( std::abs(mBallVelocity.x) > 0.1f || std::abs(mBallVelocity.y) > 0.1f || std::abs(mBallPosition.y - STANDARD_BALL_HEIGHT) > 0.1f) {
 		mIsGameRunning = true;
+	} else {
+		mIsGameRunning = false;
 	}
 
 	stream->Read(mPlayerInput[LEFT_PLAYER].left);
