@@ -185,23 +185,28 @@ void CreditsState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition), TextManager::getSingleton()->getString(TextManager::CRD_PROGRAMMERS));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+30), "Daniel Knobe");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+60), "(daniel-knobe(at)web.de)");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+95), "Jonathan Sieber");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+125), "(jonathan_sieber(at)yahoo.de)");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+160), "Sven Rech");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+190), "(svenrech(at)gmx.de)");
+	
+	const float xPosition = 50;
+	
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition), TextManager::getSingleton()->getString(TextManager::CRD_PROGRAMMERS));
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+30), "Daniel Knobe");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+60), "  (daniel-knobe(at)web.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+85), "Jonathan Sieber");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+115), "  (jonathan_sieber(at)yahoo.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+140), "Sven Rech");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+170), "  (svenrech(at)gmx.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+195), "Erik Schultheis");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+225), "  (erik-schutlheis(at)freenet.de)", TF_SMALL_FONT);
 
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+230), TextManager::getSingleton()->getString(TextManager::CRD_GRAPHICS));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+260), "Silvio Mummert");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+290), "(mummertathome(at)t-online.de)");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+325), "Richard Bertrand");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+355), "(ricbertrand(at)hotmail.com)");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+255), TextManager::getSingleton()->getString(TextManager::CRD_GRAPHICS));
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+285), "Silvio Mummert");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+315), "  (mummertathome(at)t-online.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+340), "Richard Bertrand");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+370), "  (ricbertrand(at)hotmail.com)", TF_SMALL_FONT);
 
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+400), TextManager::getSingleton()->getString(TextManager::CRD_THX));
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+430), "Daniel Skoraszewsky");
-	imgui.doText(GEN_ID, Vector2(40.0, mYPosition+460), "(skoraszewsky(at)t-online.de)");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+415), TextManager::getSingleton()->getString(TextManager::CRD_THX));
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+445), "Daniel Skoraszewsky");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+475), "  (skoraszewsky(at)t-online.de)", TF_SMALL_FONT);
 
 	if (mYPosition > 20)
 		mYPosition -= 2.5;
