@@ -9,7 +9,7 @@
 	<string english = "continue" translation = "fortsetzen" />
 
 	<string english = "online game" translation = "onlinespiel" />
-	<string english = "lan game" translation = "lan spiel" />
+	<string english = "lan game" translation = "lan-spiel" />
 	<string english = "start" translation = "start" />
 	<string english = "options" translation = "optionen" />
 	<string english = "watch replay" translation = "spiel ansehen" />
@@ -20,7 +20,7 @@
 	<string english = "graphics:" translation = "grafik:" />
 	<string english = "special thanks at:" translation = "besonderer dank an:" />
 
-	<string english = "show again" translation = "normal ansehen" />
+	<string english = "show again" translation = "nochmal ansehen" />
 	<string english = "play" translation = "abspielen" />
 	<string english = "delete" translation = "loeschen" />
 	<string english = "checksum error" translation = "checksum error" />
@@ -37,7 +37,7 @@
 	
 	<string english = "scan for servers" translation = "server suchen" />
 	<string english = "direct connect" translation = "direktverbindung" />
-	<string english = "server info" translation = "server info" />
+	<string english = "server info" translation = "serverinfo" />
 	<string english = "active games: " translation = "aktive spiele" />
 	<string english = "waiting player: " translation = "wartender spieler" />
 	<string english = "host game" translation = "spiel hosten" />
@@ -80,7 +80,7 @@
 	<string english = "press button for" translation = "taste druecken fuer" />
 	<string english = "background:" translation = "hintergrund:" />
 	<string english = "volume:" translation = "lautstaerke:" />
-	<string english = "mute" translation = "strumm" />
+	<string english = "mute" translation = "stumm" />
 	<string english = "show fps" translation = "fps" />
 	<string english = "show blood" translation = "zeige blut" />
 	<string english = "network side:" translation = "netzwerkseite:" />
