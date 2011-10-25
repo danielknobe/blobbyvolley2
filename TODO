@@ -2,25 +2,24 @@ TODO:
 
 coderework:
 - new clean rendererarchitecture
+- multithreading
 
 features:
 - option for 3 types of shadow (off, pixelshadow, alphablendingshadow)
-- chatfuncion
 - lobbysystem
-- multilanguage support
+- full unicode support (e.g. for Russian characters)
+- improve replays (fast forward, rewind, etc)
+- improve bot system (more commands, etc)
+
 
 bugs:
-- wrong blobbycolors in networkgame
 - mouse-input does not work very good in online-game
-- client should use the gamespeed of the server
-- replays in online-games don't work
 - net bugs:
- - squeezing ball through net
- - squeezing ball through blocking blobby
- - wrong velocity of flat balls
-- only two hits acceptet under special circumstances
-- mouse freezed in upper right corner after leaving the game (fullscreen mode)
-- cpu consumption in waiting for opponent state
+ - squeezing ball through blocking blobby ?  
+     Please try to verify this
 
-data:
-- new smaller font
+- only two hits acceptet under special circumstances?
+	 Replay which shows this problem
+
+- mouse freezed in upper right corner after leaving the game (fullscreen mode, SDL)
+
