@@ -3,13 +3,16 @@ TODO:
 coderework:
 - new clean rendererarchitecture
 - multithreading
+- new gui system
+- more lua scripting
 
 features:
 - option for 3 types of shadow (off, pixelshadow, alphablendingshadow)
 - lobbysystem
 - full unicode support (e.g. for Russian characters)
 - improve replays (fast forward, rewind, etc)
-- improve bot system (more commands, etc)
+- improve bot system (more commands etc)
+- more dedicated server options (black/whitelist, statistics, etc)
 
 
 bugs:
