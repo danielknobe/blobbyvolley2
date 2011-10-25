@@ -30,5 +30,6 @@
 	<var name="language" value="en"/>
 	<var name="left_script_strength" value="13"/>
 	<var name="right_script_strength" value="13"/>
+	<var name="network_last_server" value="0.0.0.0" />
 </userconfig>
 
