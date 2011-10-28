@@ -283,8 +283,8 @@ void OnlineSearchState::searchServers()
 {
 	mScannedServers.clear();
 	//TODO: Insert Masterserverconnection code here! At the moment we are using the old code here!
-	mPingClient->PingServer("blub-game.com", BLOBBY_PORT, 0, true);
-	mPingClient->PingServer("blobby.openanno.org", BLOBBY_PORT, 0, true);
+	mPingClient->PingServer("s0.blub-game.com", BLOBBY_PORT, 0, true);
+	mPingClient->PingServer("pgb.game-host.org", BLOBBY_PORT, 0, true);
 	
 	UserConfig config;
 	config.loadFile("config.xml");
