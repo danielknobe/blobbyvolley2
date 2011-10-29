@@ -3,6 +3,7 @@ TODO:
 coderework:
 - new clean rendererarchitecture
 - multithreading
+	fps independent physics
 - new gui system
 - more lua scripting
 
@@ -13,7 +14,6 @@ features:
 - improve replays (fast forward, rewind, etc)
 - improve bot system (more commands etc)
 - more dedicated server options (black/whitelist, statistics, etc)
-
 
 bugs:
 - mouse-input does not work very good in online-game
@@ -26,3 +26,12 @@ bugs:
 
 - mouse freezed in upper right corner after leaving the game (fullscreen mode, SDL)
 
+data:
+- new smaller font (current one too small?)
+- monochrome font
+- more translation
+
+FOR 0.9 final:
+ auto select chat editbox
+ mouse freeze bug? hopefully
+ esc key in chat

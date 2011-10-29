@@ -29,6 +29,7 @@ extern "C"
 #include "lua/lualib.h"
 }
 
+#include <iostream>
 #include <SDL/SDL.h>
 #include <physfs.h>
 #include <cmath>

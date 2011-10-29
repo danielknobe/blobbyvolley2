@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <iostream>
+#include <string>
 
 // This struct exists for easy exchange of a single player input frame
 
