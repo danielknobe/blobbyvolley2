@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <iostream>
 #include <list>
 #include <map>
 #include <SDL/SDL.h>
@@ -43,6 +42,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define TF_HIGHLIGHT	0x01 // 1 == true (backward compatibility for state modules)
 #define TF_SMALL_FONT	0x02 // Draw a smaller font. (8px instead of 24px)
 #define TF_OBFUSCATE	0x04 // Obfuscate the text with asterisks. (for password Editboxes)
+
+// Text Alignment Flags
+#define TF_ALIGN_LEFT		0x00	// Text aligned to the left (default)
+#define TF_ALIGN_CENTER		0x08	// Text centered
+#define	TF_ALIGN_RIGHT		0x10	// Text aligned right		
+
 
 
 

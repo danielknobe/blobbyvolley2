@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 #include <boost/circular_buffer.hpp>
 
-#include <iostream>
+#include <string>
 // ScriptedInputSource provides an implementation of InputSource, which uses
 // Lua scripts to get its input. The given script is automatically initialised
 // and provided with an interface to the game.
