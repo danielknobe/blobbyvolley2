@@ -27,7 +27,8 @@ set(install_files
 	server.xml
 	lang_de.xml
 	lang_en.xml
-	lang_fr.xml)
+	lang_fr.xml
+	rules.lua)
 
 if (WIN32)
 	install(FILES ${install_files} DESTINATION data)
