@@ -58,7 +58,7 @@ bool SpeedController::doFramedrop() const
 void SpeedController::update()
 {
 	mFramedrop = false;
-	int rateTicks = std::max(int(PRECISION_FACTOR * 1000 / mGameFPS), 1);
+	int rateTicks = std::max( static_cast<int>(PRECISION_FACTOR * 1000 / mGameFPS), 1);
 	
 	static int lastTicks = SDL_GetTicks();
 	static int lastDrawnFrame = lastTicks;
@@ -79,7 +79,7 @@ void SpeedController::update()
 	}
 
 	const int delta = SDL_GetTicks() - beginSecond;
-	if (delta / rateTicks * PRECISION_FACTOR <= counter)
+	if ( (PRECISION_FACTOR * delta) / rateTicks <= counter)
 	{
 		int wait = ((counter+1)*rateTicks/PRECISION_FACTOR) - delta;
 		if (wait > 0)
