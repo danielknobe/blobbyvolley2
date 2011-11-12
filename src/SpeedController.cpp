@@ -22,6 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL/SDL.h>
 
+/// this is required to reduce rounding errors. now we have a resolution of
+/// 1µs. This is much better than SDL_Delay can handle, but we prevent 
+/// accumulation errors.
+const int PRECISION_FACTOR = 1000;
+
 SpeedController* SpeedController::mMainInstance = NULL;
 
 SpeedController::SpeedController(float gameFPS)
@@ -53,7 +58,8 @@ bool SpeedController::doFramedrop() const
 void SpeedController::update()
 {
 	mFramedrop = false;
-	int rateTicks = std::max(int(1000 / mGameFPS), 1);
+	int rateTicks = std::max(int(PRECISION_FACTOR * 1000 / mGameFPS), 1);
+	
 	static int lastTicks = SDL_GetTicks();
 	static int lastDrawnFrame = lastTicks;
 	static unsigned int beginSecond = lastTicks;
@@ -73,9 +79,9 @@ void SpeedController::update()
 	}
 
 	const int delta = SDL_GetTicks() - beginSecond;
-	if (delta / rateTicks <= counter)
+	if (delta / rateTicks * PRECISION_FACTOR <= counter)
 	{
-		int wait = ((counter+1)*rateTicks) - delta;
+		int wait = ((counter+1)*rateTicks/PRECISION_FACTOR) - delta;
 		if (wait > 0)
 			SDL_Delay(wait);
 	}
