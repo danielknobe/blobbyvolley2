@@ -564,14 +564,14 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 	stream->Write(blobbyHitGround(RIGHT_PLAYER));
 	stream->Write(blobbyHitGround(LEFT_PLAYER));
 	
-	if(!blobbyHitGround(LEFT_PLAYER)){
-		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
-	}
-	
 	if(!blobbyHitGround(RIGHT_PLAYER)){
 		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
+	}
+	
+	if(!blobbyHitGround(LEFT_PLAYER)){
+		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
+		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
 	writeCompressedToBitStream(stream, 800 - mBlobPosition[RIGHT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
