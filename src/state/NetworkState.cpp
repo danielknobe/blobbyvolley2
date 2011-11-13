@@ -791,7 +791,7 @@ void NetworkGameState::step()
 			}
 			// Chat
 			imgui.doSelectbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage);
-			if (imgui.doEditbox(GEN_ID, Vector2(10, 460), 30, mChattext, mChatCursorPosition))
+			if (imgui.doEditbox(GEN_ID, Vector2(10, 460), 30, mChattext, mChatCursorPosition, 0, true))
 			{
 
 				// GUI-Hack, so that we can send messages
