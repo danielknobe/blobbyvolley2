@@ -398,7 +398,7 @@ void IMGUI::resetSelection()
 	mButtonReset = true;
 }
 
-bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags)
+bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags, bool force_active)
 {
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	bool changed = false;
@@ -461,7 +461,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			mActiveButton = id;
 		
 		// React to keyboard input.
-		if (id == mActiveButton)
+		if (id == mActiveButton || force_active)
 		{
 			obj.type = ACTIVEEDITBOX;
 			switch (mLastKeyAction)
