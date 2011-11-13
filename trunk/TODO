@@ -25,6 +25,8 @@ bugs:
 	 Replay which shows this problem
 
 - mouse freezed in upper right corner after leaving the game (fullscreen mode, SDL)
+- framedrop does nothing
+- don't close chat if one player leaves the game
 
 data:
 - new smaller font (current one too small?)

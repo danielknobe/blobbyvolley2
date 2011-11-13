@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <map>
 #include <list>
 
+/// \brief struct for holding sound data
 struct Sound
 {
 	Sound()
@@ -37,6 +38,7 @@ struct Sound
 	float volume;
 };
 
+/// \brief class managing game sound
 class SoundManager
 {
 private:
@@ -45,8 +47,8 @@ private:
 
 	static SoundManager* mSingleton;
 	
-	// This maps filenames to sound buffers, which are always in
-	// target format
+	/// This maps filenames to sound buffers, which are always in
+	/// target format
 	std::map<std::string, Sound*> mSound;
 	std::list<Sound> mPlayingSound;
 	SDL_AudioSpec mAudioSpec;

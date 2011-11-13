@@ -25,11 +25,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/circular_buffer.hpp>
 
 #include <string>
-// ScriptedInputSource provides an implementation of InputSource, which uses
-// Lua scripts to get its input. The given script is automatically initialised
-// and provided with an interface to the game.
 
-// The API documentation can now be found in doc/ScriptAPI.txt
+/// \class ScriptedInputSource
+/// \brief Bot controller
+/// \details ScriptedInputSource provides an implementation of InputSource, which uses
+/// Lua scripts to get its input. The given script is automatically initialised
+/// and provided with an interface to the game.
+
+/// The API documentation can now be found in doc/ScriptAPI.txt
 
 // The time the bot waits after game start
 const int WAITING_TIME = 1500;
@@ -40,21 +43,21 @@ class DuelMatch;
 class ScriptedInputSource : public InputSource
 {
 public:
-	// The constructor automatically loads and initializes the script
-	// with the given filename. The side parameter tells the script
-	// which side is it on.
+	/// The constructor automatically loads and initializes the script
+	/// with the given filename. The side parameter tells the script
+	/// which side is it on.
 	ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
 	~ScriptedInputSource();
 	
 	virtual PlayerInput getInput();
 	
 private:
-	// this variable saves the current match
-	// it is set each step in getInput
-	// as in current design, only in single match mode bots are allowed
-	// it would even be enough to set it once, but we may change this
-	// for making bot tournaments^^, so the idea of setting it for each 
-	// bot seems better to me
+	/// this variable saves the current match
+	/// it is set each step in getInput
+	/// as in current design, only in single match mode bots are allowed
+	/// it would even be enough to set it once, but we may change this
+	/// for making bot tournaments^^, so the idea of setting it for each 
+	/// bot seems better to me
 	static DuelMatch* mMatch;
 	static ScriptedInputSource* mCurrentSource;
 

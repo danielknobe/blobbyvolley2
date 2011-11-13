@@ -19,14 +19,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-// This class can control the game speed and the displayed FPS.
-// It is updated once a frame and waits the necessary time.
-// A distinction is made between game FPS and real FPS.
-// Game FPS is the number of game loop iterations per second,
-// real FPS is the number of screen updates per second. The real
-// FPS is reached with framedropping
-// The class can report how much time is actually waited. If this value
-// is close to zero, the real speed can be altered.
+/// \brief class controlling game speed
+/// \details This class can control the game speed and the displayed FPS.
+/// It is updated once a frame and waits the necessary time.
+/// A distinction is made between game FPS and real FPS.
+/// Game FPS is the number of game loop iterations per second,
+/// real FPS is the number of screen updates per second. The real
+/// FPS is reached with framedropping
+/// The class can report how much time is actually waited. If this value
+/// is close to zero, the real speed can be altered.
 
 
 class SpeedController
@@ -38,15 +39,15 @@ public:
 	void setGameSpeed(float fps);
 	float getGameSpeed() const{return mGameFPS;}
 
-// This reports whether a framedrop is necessary to hold the real FPS
+/// This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop() const;
 
-//gives the caller the fps of the drawed frames:
+/// gives the caller the fps of the drawed frames:
 	int getFPS() const { return mFPS; }
 	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
 	bool getDrawFPS() const { return mDrawFPS; }
 
-// This updates everything and waits the necessary time	
+/// This updates everything and waits the necessary time	
 	void update();
 
 	static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
