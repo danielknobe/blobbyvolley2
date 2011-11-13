@@ -19,53 +19,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <iostream>
-
-#include <SDL/SDL.h>
 #include <map>
-#include "RenderManager.h"
-#include "DuelMatch.h"
+#include "Global.h"
+#include "InputSource.h"
+
+//class SDL_Joystick;
 
 class JoystickPool
 {
 public:
-	static JoystickPool& getSingleton()
-	{
-		if (mSingleton == 0)
-			mSingleton = new JoystickPool();
-		return *mSingleton;
-	}
+	static JoystickPool& getSingleton();
 	
-	SDL_Joystick* getJoystick(int id)
-	{
-		SDL_Joystick* joy =  mJoyMap[id];
-		if (!joy)
-		
-			std::cerr << "Warning: could not find joystick number "
-				<< id << "!" << std::endl;
-		return joy;
-	}
+	SDL_Joystick* getJoystick(int id);
 	
-	int probeJoysticks()
-	{
-		int id = 0;
-		SDL_Joystick* lastjoy;
-		while ((lastjoy = SDL_JoystickOpen(id)))
-		{
-			mJoyMap[id] = lastjoy;
-			id++;
-		}
-		return id;
-	}
-	
-	void closeJoysticks()
-	{
-		for (JoyMap::iterator iter = mJoyMap.begin();
-			iter != mJoyMap.end(); ++iter)
-		{
-			SDL_JoystickClose((*iter).second);
-		}
-	}
+	int probeJoysticks();
+	void closeJoysticks();
 	
 private:
 	typedef std::map<int, SDL_Joystick*> JoyMap;
@@ -121,55 +89,8 @@ private:
 	bool mDelay; // The pressed button of the mainmenu must be ignored
 public:
 	virtual ~MouseInputDevice(){};
-	MouseInputDevice(PlayerSide player, int jumpbutton)
-		: InputDevice()
-	{
-		mJumpButton = jumpbutton;
-		mPlayer = player;
-		if (SDL_GetMouseState(NULL, NULL))
-			mDelay = true;
-		else
-			mDelay = false;
-	}
-	
-	void transferInput(PlayerInput& input)
-	{
-		input = PlayerInput();
-		DuelMatch* match = DuelMatch::getMainGame();
-		if (match == 0)
-			return;
-		
-		int mMouseXPos;
-		bool warp = SDL_GetAppState() & SDL_APPINPUTFOCUS;
-		int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
-
-		if (warp)
-			SDL_WarpMouse(mMouseXPos, 310);
-		
-		if (mouseState == 0)
-			mDelay = false;
-
-		if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
-			input.up = true;
-
-		const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
-		mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
-		if (mMouseXPos <= 201 && warp)
-			SDL_WarpMouse(201, 310);
-
-		mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
-		if (mMouseXPos >= 600 && warp)
-			SDL_WarpMouse(600, 310);
-		float blobpos = match->getBlobPosition(mPlayer).x;
-		mMarkerX = mMouseXPos + playerOffset;
-		if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
-			input.right = true;
-		else
-		if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
-			input.left = true;
-
-		RenderManager::getSingleton().setMouseMarker(mMarkerX);
-	}
+	MouseInputDevice(PlayerSide player, int jumpbutton);
+	void transferInput(PlayerInput& input);
 };
 
 class KeyboardInputDevice : public InputDevice
@@ -180,19 +101,8 @@ private:
 	SDLKey mJumpKey;
 public:
 	virtual ~KeyboardInputDevice(){};
-	KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey)
-		: InputDevice()
-	{
-		mLeftKey = leftKey;
-		mRightKey = rightKey;
-		mJumpKey = jumpKey;	
-	}
-	
-	void transferInput(PlayerInput& input)
-	{
-		Uint8* keyState = SDL_GetKeyState(0);	
-		input = PlayerInput(keyState[mLeftKey], keyState[mRightKey], keyState[mJumpKey]);
-	}
+	KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey);
+	void transferInput(PlayerInput& input);
 };
 
 class JoystickInputDevice : public InputDevice
@@ -206,17 +116,8 @@ private:
 public:
 	~JoystickInputDevice() {};
 	JoystickInputDevice(JoystickAction laction, JoystickAction raction,
-			JoystickAction jaction)
-		: mLeftAction(laction), mRightAction(raction),
-			mJumpAction(jaction)
-	{
-	}
+			JoystickAction jaction);
 
-	void transferInput(PlayerInput& input)
-	{
-		input.left = getAction(mLeftAction);
-		input.right = getAction(mRightAction);
-		input.up = getAction(mJumpAction);
-	}
+	void transferInput(PlayerInput& input);
 };
 

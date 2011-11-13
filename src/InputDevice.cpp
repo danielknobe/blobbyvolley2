@@ -19,10 +19,130 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "InputDevice.h"
 
+#include <iostream>
 #include <sstream>
 
+#include "DuelMatch.h"
+#include "RenderManager.h"
+
+// -------------------------------------------------------------------------------------------------
+// 		MOUSE INPUT
+// -------------------------------------------------------------------------------------------------
+MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton)
+	: InputDevice()
+{
+	mJumpButton = jumpbutton;
+	mPlayer = player;
+	if (SDL_GetMouseState(NULL, NULL))
+		mDelay = true;
+	else
+		mDelay = false;
+}
+
+void MouseInputDevice::transferInput(PlayerInput& input)
+{
+	input = PlayerInput();
+	DuelMatch* match = DuelMatch::getMainGame();
+	if (match == 0)
+		return;
+	
+	int mMouseXPos;
+	bool warp = SDL_GetAppState() & SDL_APPINPUTFOCUS;
+	int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
+
+	if (warp)
+		SDL_WarpMouse(mMouseXPos, 310);
+	
+	if (mouseState == 0)
+		mDelay = false;
+
+	if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
+		input.up = true;
+
+	const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
+	mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
+	if (mMouseXPos <= 201 && warp)
+		SDL_WarpMouse(201, 310);
+
+	mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
+	if (mMouseXPos >= 600 && warp)
+		SDL_WarpMouse(600, 310);
+	float blobpos = match->getBlobPosition(mPlayer).x;
+	mMarkerX = mMouseXPos + playerOffset;
+	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
+		input.right = true;
+	else
+	if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
+		input.left = true;
+
+	RenderManager::getSingleton().setMouseMarker(mMarkerX);
+}
+
+// -------------------------------------------------------------------------------------------------
+// 		KEYBOARD INPUT
+// -------------------------------------------------------------------------------------------------
+
+KeyboardInputDevice::KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey)
+	: InputDevice()
+{
+	mLeftKey = leftKey;
+	mRightKey = rightKey;
+	mJumpKey = jumpKey;	
+}
+
+void KeyboardInputDevice::transferInput(PlayerInput& input)
+{
+	Uint8* keyState = SDL_GetKeyState(0);	
+	input = PlayerInput(keyState[mLeftKey], keyState[mRightKey], keyState[mJumpKey]);
+}
+
+// -------------------------------------------------------------------------------------------------
+// 		JOYSTICK INPUT
+// -------------------------------------------------------------------------------------------------
+
+// Joystick Pool
 JoystickPool* JoystickPool::mSingleton = 0; //static
 
+JoystickPool& JoystickPool::getSingleton()
+	{
+		if (mSingleton == 0)
+			mSingleton = new JoystickPool();
+		return *mSingleton;
+	}
+	
+SDL_Joystick* JoystickPool::getJoystick(int id)
+{
+	SDL_Joystick* joy =  mJoyMap[id];
+	if (!joy)
+	
+		std::cerr << "Warning: could not find joystick number "
+			<< id << "!" << std::endl;
+	return joy;
+}
+	
+int JoystickPool::probeJoysticks()
+{
+	int id = 0;
+	SDL_Joystick* lastjoy;
+	while ((lastjoy = SDL_JoystickOpen(id)))
+	{
+		mJoyMap[id] = lastjoy;
+		id++;
+	}
+	return id;
+}
+
+void JoystickPool::closeJoysticks()
+{
+	for (JoyMap::iterator iter = mJoyMap.begin();
+		iter != mJoyMap.end(); ++iter)
+	{
+		SDL_JoystickClose((*iter).second);
+	}
+}
+	
+// Joystick Action
+	
 JoystickAction::JoystickAction(std::string string)
 {
 	type = AXIS;
@@ -77,6 +197,21 @@ std::string JoystickAction::toString()
 	return buf.str();
 }
 
+// Joystick Input Device
+JoystickInputDevice::JoystickInputDevice(JoystickAction laction, JoystickAction raction,
+		JoystickAction jaction)
+	: mLeftAction(laction), mRightAction(raction),
+		mJumpAction(jaction)
+{
+}
+
+void JoystickInputDevice::transferInput(PlayerInput& input)
+{
+	input.left = getAction(mLeftAction);
+	input.right = getAction(mRightAction);
+	input.up = getAction(mJumpAction);
+}
+
 bool JoystickInputDevice::getAction(const JoystickAction& action)
 {
 	if (action.joy != 0)
@@ -104,4 +239,3 @@ bool JoystickInputDevice::getAction(const JoystickAction& action)
 	}
 	return false;
 }
-
