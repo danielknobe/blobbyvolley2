@@ -24,14 +24,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <map>
 
-// class for managing the text
-// multilanguage support
-// the string can be loaded from a xml file
-// <string english="english" translation="translation />
+/// \brief class for managing the text
+/// \details multilanguage support
+/// the string can be loaded from a xml file
+/// <string english="english" translation="translation />
 
 class TextManager{
 	public:
-		// enumeration for strings
+		/// enumeration for strings
 		enum STRING{
 			// common labels
 			LBL_OK,
@@ -139,38 +139,39 @@ class TextManager{
 			COUNT
 		};
 		
-		// returns the string identified by str
+		/// returns the string identified by str
 		const std::string& getString(STRING str) const;
 		
 		std::string getLang() const;
 		
-		// retruns the mSingleton
+		/// returns the mSingleton
 		static const TextManager* getSingleton();
 		
-		// creates a textmanager for a particular language
+		/// creates a textmanager for a particular language
 		static TextManager* createTextManager(std::string langname);
 	
-		// switches the language
+		/// switches the language
 		static void switchLanguage(std::string langname);
 		
-		// map to map abbreviations to full name (e.g. de to deutsch)
+		/// map to map abbreviations to full name (e.g. de to deutsch)
 		static std::map<std::string, std::string> language_names;
+		
 	private:
-		// private construktor, use createTextManager
+		/// private construktor, use createTextManager
 		TextManager(std::string l);
 		
-		// Singleton
+		/// Singleton
 		static TextManager* mSingleton;
 		
-		// vector with all strings
+		/// vector with all strings
 		std::vector<std::string> mStrings;
 		
-		// string with language name
+		/// string with language name
 		std::string lang;
 		
-		// loads the language data from an xml file
+		/// loads the language data from an xml file
 		bool loadFromXML(std::string file);
 		
-		// sets the strings to the default values
+		/// sets the strings to the default values
 		void setDefault();
 };
