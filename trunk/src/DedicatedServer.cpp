@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef WIN32
 #include <syslog.h>
 #include <sys/wait.h>
+#else
+#include <cstdarg>
 #endif
 
 #include "raknet/RakServer.h"
@@ -123,7 +125,7 @@ int main(int argc, char** argv)
 	SpeedController scontroller(speed);
 	SpeedController::setMainInstance(&scontroller);
 
-	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MINOR, BLOBBY_VERSION_MAJOR);
+	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MAJOR, BLOBBY_VERSION_MINOR);
 
 	packet_ptr packet;
 
@@ -515,18 +517,37 @@ void setup_physfs(char* argv0)
 #ifdef WIN32
 #undef main
 
-void syslog(int pri, const char* format, ...){
-	switch(pri){
+void syslog(int pri, const char* format, ...) 
+{
+	// first, look where we want to send our message to
+	FILE* target = stdout;
+	switch(pri)
+	{
 		case LOG_ERR:
-			std::cerr << std::time(0)<<": "<<format<<"\n";
+			target = stderr;
 			break;
 		case LOG_NOTICE:
-			std::cout << std::time(0)<<": "<<format<<"\n";
-			break;
 		case LOG_DEBUG:
-			std::cout << std::time(0)<<": "<<format<<"\n";
+			target = stdout;
 			break;
-		
 	}
+	
+	// create a string containing date and time
+	std::time_t time_v = std::time(0);
+	std::tm* time = localtime(&time_v);
+	char buffer[128];
+	std::strftime(buffer, sizeof(buffer), "%x - %X", time);
+	
+	// print it
+	fprintf(target, "%s: ", buffer);
+	
+	// now relay the passed arguments and format string to vfprintf for output
+	va_list args;
+	va_start (args, format);
+	vfprintf(target, format, args);
+	va_end (args);
+	
+	// end finish with a newline
+	fprintf(target, "\n");
 }
 #endif
