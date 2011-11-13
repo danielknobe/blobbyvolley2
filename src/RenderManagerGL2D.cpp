@@ -284,7 +284,10 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Rect r = {x, 0, fontSurface->w, fontSurface->h};
 		SDL_BlitSurface(fontSurface, 0, textbase, &r);
 		SDL_BlitSurface(highlight, 0, hltextbase, &r);
-		r = {sx, 0, fontSurface2->w, fontSurface2->h};
+		r.x = sx;
+		r.y = 0;
+		r.w = fontSurface2->w;
+		r.h = fontSurface2->h;
 		SDL_BlitSurface(fontSurface2, 0, smalltextbase, &r);
 		SDL_BlitSurface(highlight2, 0, hlsmalltextbase, &r);
 		//GLuint ballImage = loadTexture(sf, false);
