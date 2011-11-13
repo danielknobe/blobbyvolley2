@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <exception>
-#include <SDL/SDL.h>
+#include <SDL/SDL_stdinc.h>
 
 // I hope the GP2X is the only combination of these systems
 #if defined(__linux__) && defined(__arm__)
@@ -99,6 +99,7 @@ struct Color
 
 };
 
+struct SDL_Surface;
 struct BufferedImage
 {
 	int w;
