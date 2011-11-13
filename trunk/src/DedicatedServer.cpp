@@ -383,11 +383,6 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		#ifndef WIN32
-		usleep(1);
-		#else
-		Sleep(1);
-		#endif
 	}
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
 	#ifndef WIN32
