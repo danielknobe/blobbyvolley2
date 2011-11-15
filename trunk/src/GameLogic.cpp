@@ -178,6 +178,8 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	
 	// otherwise, set the squish value
 	mSquish[side2index(side)] = SQUISH_TOLERANCE;
+	// now, the other blobby has to accept the new hit!
+	mSquish[side2index(other_side(side))] = 0;
 	
 	// count the touches
 	mTouches[side2index(other_side(side))] = 0;
