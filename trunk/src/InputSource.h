@@ -54,6 +54,16 @@ struct PlayerInput
 		left = right;
 		right = tmp;	
 	}
+	
+	bool operator==(const PlayerInput& other) const
+	{
+		return left == other.left && right == other.right && up == other.up;
+	}
+	
+	bool operator!=(const PlayerInput& other) const
+	{
+		return !(*this == other);
+	}
 
 	bool left;
 	bool right;

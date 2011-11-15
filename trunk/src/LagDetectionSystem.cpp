@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 LagDetector::LagDetector()
 {
+	/// \todo document what this values do
+	/// \todo adapt this values depending on gamespeed
+	/// \todo add a gamespeed changed callback to speedmanager
 	sended.resize(100);
 	received.resize(80);
 }
