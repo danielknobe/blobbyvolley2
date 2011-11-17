@@ -1,3 +1,14 @@
+New in 1.0 RC 1 (rev. 650) since Beta 9:
+- removed possible lag due to rounding issues in speed controller
+- fixed severe network problem
+- enabled writing in chat without clicking into editbox
+- [Windows]: fixed server output messages 
+- corrected version in server startup message
+- (added doxygen documentation)
+- removed needless wait in network server (only 1 ms)
+- Bugfix: only two hits accepted under special circumstances
+- (added test system)
+
 New in Beta 9 (rev. 622) since Alpha 8:
 - network game: reduced data transfer
 - fixed memleaks

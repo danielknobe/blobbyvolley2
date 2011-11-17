@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 #include <sstream>
+/// !!!!!!!!!!!!! DEBUGGING!
+#include <fstream>
 
 #include "DuelMatch.h"
 #include "RenderManager.h"
@@ -37,14 +39,23 @@ MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton)
 		mDelay = true;
 	else
 		mDelay = false;
+	
+	mInputs.set_capacity(10);
+	for(unsigned int i = 0; i < 10; ++i) 
+	{
+		mInputs.push_back( PlayerInput() );
+	}
 }
 
 void MouseInputDevice::transferInput(PlayerInput& input)
 {
-	input = PlayerInput();
+	// check if we have a running game, 
+	// otherwise leave directly
 	DuelMatch* match = DuelMatch::getMainGame();
 	if (match == 0)
 		return;
+		
+	input = PlayerInput();
 	
 	int mMouseXPos;
 	bool warp = SDL_GetAppState() & SDL_APPINPUTFOCUS;
@@ -67,16 +78,53 @@ void MouseInputDevice::transferInput(PlayerInput& input)
 	mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
 	if (mMouseXPos >= 600 && warp)
 		SDL_WarpMouse(600, 310);
+		
+	// here we load the current position of the player.
 	float blobpos = match->getBlobPosition(mPlayer).x;
+	
+	// ask our lag detector about estimated current lag
+	int lag = mLag.getLag();
+	
+	/// DEBUGGING FILE
+	static std::fstream file ("debug.txt", std::fstream::out);
+	
+	// when we assume lag this high, let debuggers check 
+	if(lag > 10)
+	{
+		file << lag << "\n " << mLag.getDebugString() << std::endl;
+	}
+	
+	// adapt this value
+	lag -= 1;
+	if(lag < 0)
+		lag = 0;
+ 
+	mInputs.set_capacity(lag+1);
+	
+	// now, simulate as many steps as we have lag
+	for(boost::circular_buffer<PlayerInput>::iterator i = mInputs.begin(); i != mInputs.end(); ++i)
+	{
+		if(i->right){
+			blobpos += BLOBBY_SPEED;
+		}
+		if(i->left) {
+			blobpos -= BLOBBY_SPEED;
+		}
+	}
+
 	mMarkerX = mMouseXPos + playerOffset;
 	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
 		input.right = true;
 	else
 	if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
 		input.left = true;
-
+	
+	// insert new data for evaluation
+	mLag.insertData(input, match->getPlayersInput()[mPlayer]);
+	mInputs.push_back(input);
 	RenderManager::getSingleton().setMouseMarker(mMarkerX);
 }
+
 
 // -------------------------------------------------------------------------------------------------
 // 		KEYBOARD INPUT
@@ -239,3 +287,4 @@ bool JoystickInputDevice::getAction(const JoystickAction& action)
 	}
 	return false;
 }
+
