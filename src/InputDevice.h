@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL/SDL_events.h>
 #include "Global.h"
 #include "InputSource.h"
+#include <boost/circular_buffer.hpp>
+#include "LagDetectionSystem.h"
 
 class JoystickPool
 {
@@ -86,6 +88,8 @@ private:
 	int mJumpButton;
 	int mMarkerX;
 	bool mDelay; // The pressed button of the mainmenu must be ignored
+	boost::circular_buffer<PlayerInput> mInputs;
+	LagDetector mLag;
 public:
 	virtual ~MouseInputDevice(){};
 	MouseInputDevice(PlayerSide player, int jumpbutton);
