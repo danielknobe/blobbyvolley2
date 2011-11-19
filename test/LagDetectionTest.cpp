@@ -6,6 +6,7 @@
 #include "InputSource.h"
 #include "LagDetectionSystem.h"
 #include <boost/circular_buffer.hpp>
+#include "CrossCorrelation.h"
 #include <fstream>
 #include <cmath>
 
@@ -25,8 +26,8 @@ PlayerInput randomInputR(int p)
 }
 
 
-template<class T>
-extern int crossCorrelation(const T& A, const T& B);
+/// \todo make a LaggingNetworkInputSimulator, parameters: lag, packet loss, input randomness
+/// \todo add a test which looks how good the algorithm performs on periodic data
 
 #include <iostream>
 BOOST_AUTO_TEST_SUITE( matrix_arithmetic )
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( self_correlation )
 		PlayerInput ip = randomInput();
 		buf.push_back(ip);
 	}
-	int t = crossCorrelation(buf, buf);
+	int t = crossCorrelation(buf, buf).offset;
 	BOOST_REQUIRE(t == 0);
 	
 }
@@ -104,13 +105,16 @@ BOOST_AUTO_TEST_CASE( constant_lag )
 			file << D.getDebugString() << "\n";
 			if( lag != clag )
 			{
-				std::cout << lag << "\n";
+				std::cout << lag<<" ! " <<clag << "\n";
 				
 				BOOST_FAIL("detected lag of %d when constant lag of %d was simulated");
 			};
 		}
 	}
 }
+
+// CONFIGURE:
+const int REAL_INPUT_PATTERN_LENGTH = 20;
 
 // check constant lag with bad input data
 BOOST_AUTO_TEST_CASE( constant_lag_real_input )
@@ -126,18 +130,18 @@ BOOST_AUTO_TEST_CASE( constant_lag_real_input )
 
 	for(int i=0; i < 20; ++i)
 	{
-		PlayerInput ip = randomInputR(20);
+		PlayerInput ip = randomInputR(REAL_INPUT_PATTERN_LENGTH);
 		oip.push_back(ip);
 		D.insertData(ip, oip.front());
 	}
 	
-	// now we do 50 steps and check for lag
+	// now we do 500 steps and check for lag
 	std::fstream file ("debug.txt", std::fstream::out);
 	int errors = 0;
 	int cum_err = 0;
 	for(int i = 0; i < 500; ++i)
 	{
-		PlayerInput ip = randomInputR(20);
+		PlayerInput ip = randomInputR(REAL_INPUT_PATTERN_LENGTH);
 		oip.push_back(ip);
 		D.insertData(ip, oip.front());
 		int lag = D.getLag();
@@ -153,7 +157,63 @@ BOOST_AUTO_TEST_CASE( constant_lag_real_input )
 	std::cout << 100 * errors / 500.f << " v: " << std::sqrt(cum_err / 500.f) << std::endl;
 	
 	if(errors != 0)
-		BOOST_ERROR("did not detect lag correctly");
+		BOOST_ERROR("some problems with difficult constant lag");
+}
+
+
+const int LAG_CHANGE_RATE = 10;
+// test with high quality data but changing lags
+BOOST_AUTO_TEST_CASE( changing_lag )
+{
+	// test for all small constant lags
+	int clag = rand() % 11;
+	LagDetector D;
+	// insert zero lag data
+	boost::circular_buffer<PlayerInput> oip;
+	oip.resize(clag + 1);
+
+	for(int i=0; i < 20; ++i)
+	{
+		PlayerInput ip = randomInput();
+		oip.push_back(ip);
+		D.insertData(ip, oip.front());
+	}
+		
+	// now we do 50 steps and check for lag
+	std::fstream file ("debug.txt", std::fstream::out);
+	for(int i = 0; i < 50; ++i)
+	{
+		PlayerInput ip = randomInput();
+		oip.push_back(ip);
+		
+		if(rand() % LAG_CHANGE_RATE == 0)
+		{
+			int nclag = (rand() % 2) * 2 - 1 + clag;
+			if(clag > 10)
+				clag = 10;
+			/*if(clag+1 < oip.size())
+			{
+				D.insertData(ip, oip.front());
+				oip.pop_front();
+			}*/	
+			if(clag != nclag)
+			{
+				clag = nclag;
+				oip.set_capacity(clag+1);
+			}
+		}
+		
+		
+		D.insertData(ip, oip.front());
+		int lag = D.getLag();
+		if( lag != clag )
+		{
+			std::cout << lag<<" ! " <<clag << "\n";
+			file << lag << " " << clag << "\n" << D.getDebugString() << "\n\n";
+		
+			BOOST_ERROR("detected lag of %d when constant lag of %d was simulated");
+		};
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()
