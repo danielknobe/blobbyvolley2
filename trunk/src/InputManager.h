@@ -32,6 +32,7 @@ struct InputKeyMap
         SDLKey key;
 };
 
+/// \brief class for managing input
 class InputManager
 {
 private:
@@ -55,7 +56,7 @@ private:
 	int mMouseX;
 	int mMouseY;
 	
-	SDLKey mLastInputKey;
+	SDL_keysym mLastInputKey;
 	int mLastMouseButton; 
 	std::string mLastJoyAction;
 
@@ -98,6 +99,6 @@ public:
 	bool unclick() const;
 	
 	// config conversion methods
-	std::string keyToString(SDLKey key);
+	std::string keyToString(const SDL_keysym& key);
 	SDLKey stringToKey(const std::string& keyname);
 };
