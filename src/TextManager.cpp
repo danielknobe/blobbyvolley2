@@ -109,7 +109,6 @@ bool TextManager::loadFromXML(std::string file){
 			stringel = stringel->NextSiblingElement("string")){
 		
 		
-		std::string label;
 		const char* e = stringel->Attribute("english");
 		const char* t = stringel->Attribute("translation");
 		if (t && e){

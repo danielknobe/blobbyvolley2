@@ -136,7 +136,7 @@ void MainMenuState::step()
 			deleteCurrentState();
 			setCurrentState(new LocalGameState());
 		}
-		catch (ScriptException except)
+		catch (const ScriptException& except)
 		{
 			FILE* file = fopen("lualog.txt", "wb");
 			fprintf(file, "Lua Error: %s\n",

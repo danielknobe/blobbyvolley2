@@ -715,7 +715,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 	doImage(GEN_ID, Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
 
 	first = (selected / itemsPerPage)*itemsPerPage; //recalc first
-	if (entries.size() != 0)
+	if ( !entries.empty() )
 	{
 		int last = first + itemsPerPage;
 		if (last > entries.size())
