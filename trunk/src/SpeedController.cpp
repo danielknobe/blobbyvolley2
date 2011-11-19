@@ -61,7 +61,6 @@ void SpeedController::update()
 	int rateTicks = std::max( static_cast<int>(PRECISION_FACTOR * 1000 / mGameFPS), 1);
 	
 	static int lastTicks = SDL_GetTicks();
-	static int lastDrawnFrame = lastTicks;
 	static unsigned int beginSecond = lastTicks;
 	static int counter = 0;
 

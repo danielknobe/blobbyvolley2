@@ -55,14 +55,14 @@ BloodManager::BloodManager()
 
 void BloodManager::step()
 {
-	if (!mEnabled || mParticles.size() == 0)
+	if ( !mEnabled || mParticles.empty() )
 		return;
 	RenderManager::getSingleton().startDrawParticles();
 	std::list<Blood>::iterator it = mParticles.begin();
 	while (it != mParticles.end())
 	{
 		std::list<Blood>::iterator it2 = it;
-		it++;	
+		++it;	
 		it2->step();
 		Vector2 partPos = it2->getPosition();
 		if (partPos.y > 600)

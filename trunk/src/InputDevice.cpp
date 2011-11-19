@@ -214,7 +214,7 @@ JoystickAction::JoystickAction(std::string string)
 
 		joy = JoystickPool::getSingleton().getJoystick(joyid);
 	}
-	catch (std::string e)
+	catch (const std::string& e)
 	{
 		std::cerr << "Parse error in joystick config: " << e << std::endl;
 	}

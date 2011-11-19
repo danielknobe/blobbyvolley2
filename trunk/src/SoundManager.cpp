@@ -101,7 +101,7 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 		mPlayingSound.push_back(soundInstance);
 		SDL_UnlockAudio();
 	}
-	catch (FileLoadException exception)
+	catch (const FileLoadException& exception)
 	{
 		std::cerr << "Warning: Couldn't load "
 			<< exception.filename << " !" << std::endl;

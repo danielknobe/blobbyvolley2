@@ -58,7 +58,7 @@ NetworkSearchState::~NetworkSearchState()
 {
 	// Disconnect from servers
 	for (ClientList::iterator iter = mQueryClients.begin();
-		iter != mQueryClients.end(); iter++)
+		iter != mQueryClients.end(); ++iter)
 	{
 		if (*iter)
 		{
@@ -74,7 +74,7 @@ void NetworkSearchState::step()
 	packet_ptr packet;
 	
 	for (ClientList::iterator iter = mQueryClients.begin();
-		iter != mQueryClients.end(); iter++)
+		iter != mQueryClients.end(); ++iter)
 	{
 		bool skip = false;
 		bool skip_iter = false;
