@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/circular_buffer.hpp>
 #include <string>
 
+class CC_Result;
+
 #include "InputSource.h"
 /*!	\class LagDetector
 	\brief Class for detecting network lag
@@ -80,8 +82,15 @@ class LagDetector
 		/// \todo would be good if we could get rid of the <string> include, though
 		std::string getDebugString() const;
 		
+		CC_Result getDebugData() const;
+		
 		
 	private:
+		/// is set to true, when new data is available for lag calculation
+		mutable bool recalc;
+		
+		/// last lag data cache
+		mutable int mLastLag;
 		
 		/// \todo it would be cool if we could hide this details in a pimpl pointer
 		boost::circular_buffer<PlayerInput> sended;
