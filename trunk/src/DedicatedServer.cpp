@@ -290,32 +290,32 @@ int main(int argc, char** argv)
 					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
 
-										// If the client knows nothing about versioning, the version is 0.0
-										int major = 0;
-										int minor = 0;
-										bool wrongPackageSize = true;
-	
-										// actuel client has bytesize 72
-	
-										if(packet->bitSize == 72)
-										{
-											stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
-											stream.Read(major);
-											stream.Read(minor);
-											wrongPackageSize = false;
-										}
+					// If the client knows nothing about versioning, the version is 0.0
+					int major = 0;
+					int minor = 0;
+					bool wrongPackageSize = true;
+
+					// actuel client has bytesize 72
+
+					if(packet->bitSize == 72)
+					{
+						stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
+						stream.Read(major);
+						stream.Read(minor);
+						wrongPackageSize = false;
+					}
 
 					RakNet::BitStream stream2;
 
-										if (wrongPackageSize)
-										{
-											printf("major: %d minor: %d\n", major, minor);
-											stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
-											server.Send(&stream2, LOW_PRIORITY,
-														RELIABLE_ORDERED, 0, packet->playerId,
-														false);
-										}
-										else if (major < BLOBBY_VERSION_MAJOR
+					if (wrongPackageSize)
+					{
+						printf("major: %d minor: %d\n", major, minor);
+						stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
+						server.Send(&stream2, LOW_PRIORITY,
+									RELIABLE_ORDERED, 0, packet->playerId,
+									false);
+					}
+					else if (major < BLOBBY_VERSION_MAJOR
 						|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{

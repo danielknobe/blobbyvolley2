@@ -205,6 +205,10 @@ bool NetworkGame::step()
 				
 				stream.IgnoreBytes(1); // ID_CHAT_MESSAGE
 				char message[31];
+				/// \todo we need to acertain that this package contains at least 31 bytes!
+				///			otherwise, we send just uninitialized memory to the client
+				///			thats no real security problem but i think we should address
+				///			this nonetheless
 				stream.Read(message, sizeof(message));
 
 				RakNet::BitStream stream2;
