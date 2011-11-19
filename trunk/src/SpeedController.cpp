@@ -102,8 +102,6 @@ void SpeedController::update()
 
 	//update for next call:
 	lastTicks = SDL_GetTicks();
-	if (!mFramedrop)
-		lastDrawnFrame = lastTicks;
 }
 
 
