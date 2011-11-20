@@ -84,6 +84,15 @@ void SpeedController::update()
 		if (wait > 0)
 			SDL_Delay(wait);
 	}
+	
+	// do we need framedrop?
+	// if passed time > time when we should have drawn next frame
+	// maybe we should limit the number of consecutive framedrops?
+	if ( delta * PRECISION_FACTOR > rateTicks * (counter + 1) )
+	{
+		mFramedrop = true;
+	}
+
 	counter++;
 
 	//calculate the FPS of drawn frames:
