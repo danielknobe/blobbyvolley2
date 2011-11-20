@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// \brief Results of Cross Correlation Test
 struct CC_Result
 {
-	CC_Result(int o) : offset(0)
+	CC_Result(int o) : offset(o)
 	{
 		
 	}
@@ -68,7 +68,7 @@ CC_Result crossCorrelation(const T& A, const T& B)
 	int boffset = 0;
 	int samevals = 0;
 	
-	for(int offset = 0; offset <= A.size() - B.size(); ++offset)
+	for(unsigned int offset = 0; offset <= A.size() - B.size(); ++offset)
 	{
 		float val = crossCorrelationTest(A, B, offset);
 		if(val > best)

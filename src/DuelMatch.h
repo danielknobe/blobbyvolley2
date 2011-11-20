@@ -23,14 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GameLogic.h"
 #include "Vector.h"
 
-// This class represents a single game between two players
-// It applys the rules itself and provides an interface for querying
-// different parameters. For this purpose it is designed as something
-// similar to a singleton, but it can be instantiated
-// multiple times on a server or be completely unavailable
-
 class InputSource;
 
+/// This class represents a single game between two players
+/// It applys the rules itself and provides an interface for querying
+/// different parameters. For this purpose it is designed as something
+/// similar to a singleton, but it can be instantiated
+/// multiple times on a server or be completely unavailable
 class DuelMatch
 {
 public:
