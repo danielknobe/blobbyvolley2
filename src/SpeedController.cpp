@@ -37,6 +37,8 @@ SpeedController::SpeedController(float gameFPS)
 	mFPSCounter = 0;
 	mOldTicks = SDL_GetTicks();
 	mFPS = 0;
+	mBeginSecond = mOldTicks;
+	mCounter = 0;
 }
 
 SpeedController::~SpeedController()
@@ -48,6 +50,10 @@ void SpeedController::setGameSpeed(float fps)
 	if (fps < 5)
 		fps = 5;
 	mGameFPS = fps;
+	
+	/// \todo maybe we should reset only if speed changed?
+	mBeginSecond = mOldTicks;
+	mCounter = 0;
 }
 
 bool SpeedController::doFramedrop() const
@@ -61,26 +67,24 @@ void SpeedController::update()
 	int rateTicks = std::max( static_cast<int>(PRECISION_FACTOR * 1000 / mGameFPS), 1);
 	
 	static int lastTicks = SDL_GetTicks();
-	static unsigned int beginSecond = lastTicks;
-	static int counter = 0;
 
-	if (counter == mGameFPS)
+	if (mCounter == mGameFPS)
 	{
-		const int delta = SDL_GetTicks() - beginSecond;
+		const int delta = SDL_GetTicks() - mBeginSecond;
 		int wait = 1000 - delta;
 		if (wait > 0)
 			SDL_Delay(wait);
 	}
-	if (beginSecond + 1000 <= SDL_GetTicks())
+	if (mBeginSecond + 1000 <= SDL_GetTicks())
 	{
-		beginSecond = SDL_GetTicks();
-		counter = 0;
+		mBeginSecond = SDL_GetTicks();
+		mCounter = 0;
 	}
 
-	const int delta = SDL_GetTicks() - beginSecond;
-	if ( (PRECISION_FACTOR * delta) / rateTicks <= counter)
+	const int delta = SDL_GetTicks() - mBeginSecond;
+	if ( (PRECISION_FACTOR * delta) / rateTicks <= mCounter)
 	{
-		int wait = ((counter+1)*rateTicks/PRECISION_FACTOR) - delta;
+		int wait = ((mCounter+1)*rateTicks/PRECISION_FACTOR) - delta;
 		if (wait > 0)
 			SDL_Delay(wait);
 	}
@@ -88,12 +92,12 @@ void SpeedController::update()
 	// do we need framedrop?
 	// if passed time > time when we should have drawn next frame
 	// maybe we should limit the number of consecutive framedrops?
-	if ( delta * PRECISION_FACTOR > rateTicks * (counter + 1) )
+	if ( delta * PRECISION_FACTOR > rateTicks * (mCounter + 1) )
 	{
 		mFramedrop = true;
 	}
 
-	counter++;
+	mCounter++;
 
 	//calculate the FPS of drawn frames:
 	if (mDrawFPS)

@@ -42,7 +42,7 @@ public:
 /// This reports whether a framedrop is necessary to hold the real FPS
 	bool doFramedrop() const;
 
-/// gives the caller the fps of the drawed frames:
+/// gives the caller the fps of the drawn frames:
 	int getFPS() const { return mFPS; }
 	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
 	bool getDrawFPS() const { return mDrawFPS; }
@@ -62,6 +62,9 @@ private:
 	static SpeedController* mMainInstance;
 	int mOldTicks;
 
+	// internal data
+	unsigned int mBeginSecond;
+	int mCounter;
 };
 
 
