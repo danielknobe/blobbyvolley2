@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <vector>
-
 #include "Global.h"
 #include "Player.h"
 
@@ -55,29 +53,6 @@ public:
 	MainMenuState();
 	virtual ~MainMenuState();
 	virtual void step();
-};
-
-class ReplayMenuState : public State
-{
-public:
-	ReplayMenuState();
-	virtual void step();
-private:
-	void loadCurrentReplay();
-	DuelMatch* mReplayMatch;
-	ReplayRecorder* mReplayRecorder;
-
-	std::vector<std::string> mReplayFiles;
-	int mSelectedReplay;
-	bool mReplaying;
-	bool mChecksumError;
-	
-	int mPlayButton;
-	int mCancelButton;
-	int mDeleteButton;
-
-	Player mLeftPlayer;
-	Player mRightPlayer;
 };
 
 class CreditsState : public State
