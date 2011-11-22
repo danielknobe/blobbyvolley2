@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 #include <cassert>
+#include <boost/scoped_array.hpp>
 #include <physfs.h> 
 #include "SoundManager.h"
 #include "Global.h"
@@ -31,10 +32,16 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	if (!fileHandle)
 		throw FileLoadException(std::string(filename));
 	int fileLength = PHYSFS_fileLength(fileHandle);
-	PHYSFS_uint8* fileBuffer = 
-		new PHYSFS_uint8[fileLength];
-	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
-	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer, fileLength);
+	
+	// safe file data into a scopred_array to ensure it is deleten properly
+	// in case of exceptions
+	boost::scoped_array<PHYSFS_uint8> fileBuffer (new PHYSFS_uint8[fileLength]);
+	
+	PHYSFS_read(fileHandle, fileBuffer.get(), 1, fileLength);
+	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer.get(), fileLength);
+	
+	// we don't need the file handle anymore
+	PHYSFS_close(fileHandle);
 
 	SDL_AudioSpec newSoundSpec;
 	Uint8* newSoundBuffer;
@@ -42,9 +49,9 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	if (!SDL_LoadWAV_RW(rwops , 1,
 			&newSoundSpec, &newSoundBuffer, &newSoundLength))
 		throw FileLoadException(filename);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
 
+
+	// check if current audio format is target format
 	if (newSoundSpec.freq == mAudioSpec.freq &&
 		newSoundSpec.format == mAudioSpec.format &&
 		newSoundSpec.channels == mAudioSpec.channels)
@@ -57,7 +64,7 @@ Sound* SoundManager::loadSound(const std::string& filename)
 		SDL_FreeWAV(newSoundBuffer);
                 return newSound;
 	}
-	else
+	else	// otherwise, convert audio
 	{
 		SDL_AudioCVT conversionStructure;
 		if (!SDL_BuildAudioCVT(&conversionStructure,
@@ -86,6 +93,11 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 {
 	if (!mInitialised)
 		return false;
+		
+	// everything is fine, so we return true
+	// but we don't need to play the sound
+	if( mMute )
+		return true;
 	try
 	{
 		Sound* soundBuffer = mSound[filename];
@@ -191,6 +203,7 @@ SoundManager* SoundManager::createSoundManager()
 
 SoundManager::SoundManager()
 {
+	mMute = false;
 	mSingleton = this;
 	mInitialised = false;
 }
@@ -232,5 +245,6 @@ void SoundManager::setMute(bool mute)
 		SDL_UnlockAudio();
 		locked = false;
 	}
+	mMute = mute;
 	SDL_PauseAudio((int)mute);
 }
