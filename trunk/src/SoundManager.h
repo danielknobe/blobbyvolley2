@@ -54,6 +54,7 @@ private:
 	SDL_AudioSpec mAudioSpec;
 	bool mInitialised;
 	float mVolume;
+	bool mMute;
 
 	Sound* loadSound(const std::string& filename);	
 	static void playCallback(void* singleton, Uint8* stream, int length);
