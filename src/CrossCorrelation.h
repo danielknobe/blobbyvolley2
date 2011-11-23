@@ -19,6 +19,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+typedef float(*timeWeightFunction)(float pdt);
+inline float constantWeightFunction(float )
+{
+	return 1;
+}
+
 /// \brief Results of Cross Correlation Test
 struct CC_Result
 {
@@ -42,16 +48,18 @@ extern CC_Result crossCorrelation(const T& A, const T& B);
 
 // Functions for cross correlation. we should move them into a seperate file
 template<class T>
-float crossCorrelationTest(const T& signal, const T& search_pattern, int offset)
+float crossCorrelationTest(const T& signal, const T& search_pattern, int offset, timeWeightFunction twf)
 {
 	float rel = 0;
 	typename T::const_iterator signal_read = signal.begin();
 	std::advance(signal_read, offset);
-	for(typename T::const_iterator comp = search_pattern.begin(); comp != search_pattern.end(); ++comp, ++signal_read)
+	int pos = 0;
+	int len = search_pattern.size();
+	for(typename T::const_iterator comp = search_pattern.begin(); comp != search_pattern.end(); ++comp, ++signal_read, ++pos)
 	{
 		assert(signal_read != signal.end());
 		if((*signal_read) == (*comp))
-			rel += 1;
+			rel += twf( (float)pos / len );
 	};
 	
 	return rel / search_pattern.size();
@@ -60,7 +68,7 @@ float crossCorrelationTest(const T& signal, const T& search_pattern, int offset)
 /// \brief Cross Correlation between to containers
 /// \todo document algorithm
 template<class T>
-CC_Result crossCorrelation(const T& A, const T& B)
+CC_Result crossCorrelation(const T& A, const T& B, timeWeightFunction f = constantWeightFunction)
 {
 	assert(A.size() >= B.size());
 	
@@ -70,7 +78,7 @@ CC_Result crossCorrelation(const T& A, const T& B)
 	
 	for(unsigned int offset = 0; offset <= A.size() - B.size(); ++offset)
 	{
-		float val = crossCorrelationTest(A, B, offset);
+		float val = crossCorrelationTest(A, B, offset, f);
 		if(val > best)
 		{
 			best = val;
