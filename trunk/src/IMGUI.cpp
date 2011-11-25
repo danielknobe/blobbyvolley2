@@ -591,10 +591,10 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 	return changed;
 }
 
-bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags)
+SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags)
 {
 	int FontSize = (flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-	bool changed = false;
+	SelectBoxAction changed = SBA_NONE;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = pos1;
@@ -647,7 +647,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 					if (selected > 0)
 					{
 						selected--;
-						changed = true;
+						changed = SBA_SELECT;
 					}
 					mLastKeyAction = NONE;
 					break;
@@ -655,7 +655,7 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 					if (selected < entries.size()-1)
 					{
 						selected++;
-						changed = true;
+						changed = SBA_SELECT;
 					}
 					mLastKeyAction = NONE;
 					break;
@@ -681,6 +681,11 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 			if (InputManager::getSingleton()->click())
 			{
 				int tmp = (int)((mousepos.y-pos1.y-5) / FontSize)+first;
+				/// \todo well, it's not really a doulbe click...
+				/// we need to do this in inputmanager
+				if( selected == tmp )
+					changed = SBA_DBL_CLICK;
+				
 				if (tmp < entries.size())
 					selected = tmp;
 				mActiveButton = id;
@@ -688,12 +693,12 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 			if ((InputManager::getSingleton()->mouseWheelUp()) && (selected > 0))
 			{
 				selected--;
-				changed = true;
+				changed = SBA_SELECT;
 			}
 			if ((InputManager::getSingleton()->mouseWheelDown()) && (selected < entries.size()-1))
 			{
 				selected++;
-				changed = true;
+				changed = SBA_SELECT;
 			}
 		}
 		//arrows mouseclick:
@@ -702,12 +707,12 @@ bool IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const 
 			if (mousepos.y > pos1.y+3 && mousepos.y < pos1.y+3+24 && selected > 0)
 			{
 				selected--;
-				changed = true;
+				changed = SBA_SELECT;
 			}
 			if (mousepos.y > pos2.y-27 && mousepos.y < pos2.y-27+24 && selected < entries.size()-1)
 			{
 				selected++;
-				changed = true;
+				changed = SBA_SELECT;
 			}
 		}
 	}
