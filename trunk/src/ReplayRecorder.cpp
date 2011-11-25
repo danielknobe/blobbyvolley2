@@ -90,6 +90,10 @@ void ReplayRecorder::save(const std::string& filename)
 	PHYSFS_write(fileHandle, &mServingPlayer, 1, sizeof(mServingPlayer));
 	PHYSFS_write(fileHandle, mPlayerNames[LEFT_PLAYER].c_str(), 1, mPlayerNames[LEFT_PLAYER].size()+1);
 	PHYSFS_write(fileHandle, mPlayerNames[RIGHT_PLAYER].c_str(), 1, mPlayerNames[RIGHT_PLAYER].size()+1);
+	
+	/// \todo shouldn't we write more than 1 char per step?
+	/// \todo why don't we zip it? even though it's quite compact, 
+	/// 		we still save a lot of redundant information.
 	for (int i=0; i<mSaveData.size(); i++)
 		PHYSFS_write(fileHandle, &mSaveData[i], 1, sizeof(char));
 
@@ -124,7 +128,9 @@ void ReplayRecorder::load(const std::string& filename)
 	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
 	if (!fileHandle)
 		throw FileLoadException(filename);
-	int fileLength = PHYSFS_fileLength(fileHandle);
+	
+	int fileLength = PHYSFS_fileLength(fileHandle);	
+	/// \todo LEAK: we don't close this file if we leave the function here!
 	if (fileLength < 8)
 	{
 		std::cout << "Error: Invalid replay file: " <<

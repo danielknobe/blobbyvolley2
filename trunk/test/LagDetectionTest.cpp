@@ -248,7 +248,7 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup<0> )
 	result << "changing lag - good input - small change\n";
 	
 	// test for all small constant lags
-	int clag = rand() % 10 + 1;
+	int clag = rand() % 8 + 4;
 	NetworkSimulator.changePing(clag);
 	
 	simulate(100);
@@ -260,6 +260,7 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup<0> )
 	int timer = 0;
 	int changes = 0;
 	int cum_timer = 0;
+	int cum_diff_timer = 0;
 	int max_timer = 0;
 	for(int i = 0; i < 500; ++i)
 	{		
@@ -268,8 +269,7 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup<0> )
 		if(rand() % LAG_CHANGE_RATE == 0 && clag == lag)
 		{
 			int nclag = (rand() % 2) * 2 - 1 + clag;
-			if(nclag > 10)
-				nclag = 10;
+			nclag = std::max(5, std::min(15, nclag));
 			
 			clag = nclag;
 			NetworkSimulator.changePing(clag);
@@ -290,7 +290,8 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup<0> )
 			
 			// calculate cum timer
 			cum_timer += timer;
-			max_timer = std::max(max_timer, timer);
+			max_timer = std::max(max_timer, std::max(0, timer - lag));
+			cum_diff_timer += std::max(0, timer - lag);
 			timer = 0;
 		}
 	}
@@ -298,15 +299,16 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup<0> )
 	// when we take longer than 10ms to detect the lag change after the first packet with new lag arrived
 	// we are too slow. 
 	// when we take longer than 15ms once, it is bad, too
-	if( cum_timer / changes > 11  || max_timer > 15)
+	if( cum_diff_timer / changes > 5  || max_timer > 15)
 	{
 		char errormsg[1024];
-		sprintf(errormsg, "LagDetector takes too long to detect lag change of 1ms. Avg: %d, Max: %d", cum_timer/changes, max_timer);
+		sprintf(errormsg, "LagDetector takes too long to detect lag change of 1ms. Add: %d, Avg: %d, Max: %d",  cum_diff_timer / changes, cum_timer/changes, max_timer);
 		BOOST_ERROR(errormsg);
 	}
 	
 	result << "maximum reaction time: " << max_timer << std::endl;
 	result << "average reaction time: " << cum_timer / changes << std::endl;
+	result << "average additional reaction time: " << cum_diff_timer / changes << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
