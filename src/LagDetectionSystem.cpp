@@ -20,6 +20,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LagDetectionSystem.h"
 #include "CrossCorrelation.h"
 
+/// time function
+/// we have to determine which function is best
+float weight(float tp)
+{
+	return 1 - tp;
+}
+
+/// this function seems to perform better,
+/// but we have not enough tests to check this
+/// assumption for real network data right now
+/// thats why we conservatively stick to 
+/// the linear weight function. 
+/*float weight(float tp)
+{
+	return (1 - tp) * 0.5/(tp + 0.5);
+}
+*/
+
 LagDetector::LagDetector() : recalc(true), mLastLag(0)
 {
 	/// \todo document what this values do
@@ -45,13 +63,14 @@ int LagDetector::getLag() const
 	// only do CC if data has changed
 	if( recalc ) 
 	{
-		CC_Result lagres = crossCorrelation(sended, received);
+		CC_Result lagres = crossCorrelation(sended, received, weight);
 		recalc = false;
 		mLastLag = lagres.offset;
 	}
 	return mLastLag;
 }
 
+#ifdef DEBUG
 std::string LagDetector::getDebugString() const
 {
 	// construct debug string
@@ -78,3 +97,4 @@ CC_Result LagDetector::getDebugData() const
 {
 	return crossCorrelation(sended, received);
 }
+#endif

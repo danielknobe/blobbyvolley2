@@ -73,6 +73,10 @@ void deinit()
 {
 	RenderManager::getSingleton().deinit();
 	SoundManager::getSingleton().deinit();	
+	/// \todo this is more a hack than a real solution
+	/// 		how do we make sure our current state 
+	///			is certainly destructed properly?
+	delete State::getCurrentState();
 	SDL_Quit();
 	PHYSFS_deinit();
 }
