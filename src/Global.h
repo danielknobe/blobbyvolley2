@@ -164,4 +164,5 @@ inline void set_fpu_single_precision()
 }
 
 /// we need to define this constant to make it compile with strict c++98 mode
+#undef M_PI
 const double M_PI = 3.141592653589793238462643383279;
