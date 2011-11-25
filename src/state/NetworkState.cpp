@@ -186,8 +186,12 @@ void NetworkSearchState::step()
 		servernames.push_back(mScannedServers[i].name);
 	}
 
-	imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
-			servernames, mSelectedServer);
+	bool doEnterServer = false;
+	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
+			servernames, mSelectedServer) == SBA_DBL_CLICK )
+	{
+		doEnterServer = true;
+	}
 
 	if (imgui.doButton(GEN_ID, Vector2(50, 480), TextManager::getSingleton()->getString(TextManager::NET_SERVER_INFO)) &&
 			!mDisplayInfo && !mScannedServers.empty())
@@ -260,7 +264,7 @@ void NetworkSearchState::step()
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::getSingleton()->getString(TextManager::LBL_OK)) 
-							&& !mScannedServers.empty())
+							&& !mScannedServers.empty() || doEnterServer)
 	{
 		std::string server = mScannedServers[mSelectedServer].hostname;
 		deleteCurrentState();
@@ -748,7 +752,7 @@ void NetworkGameState::step()
 			}
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_INPUT_UPDATE);
-			stream.Write((unsigned char)ID_TIMESTAMP);
+			stream.Write((unsigned char)ID_TIMESTAMP);	///! \todo do we really need this time stamps?
 			stream.Write(RakNet::GetTime());
 			stream.Write(input.left);
 			stream.Write(input.right);
