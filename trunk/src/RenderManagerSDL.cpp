@@ -108,7 +108,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		mScreen->w, mScreen->h, mScreen->format->BitsPerPixel,
 		mScreen->format->Rmask, mScreen->format->Gmask,
 		mScreen->format->Bmask, mScreen->format->Amask);
-	SDL_Rect screenRect = {0, 0, xResolution, yResolution};
+	SDL_Rect screenRect = {0, 0, (short)xResolution, (short)yResolution};
 	SDL_FillRect(mOverlaySurface, &screenRect, SDL_MapRGB(mScreen->format, 0, 0, 0));
 
 
@@ -162,7 +162,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 	}
 
-	for (int i = 0; i <= 53; ++i)
+	for (int i = 0; i <= 54; ++i)
 	{
 		char filename[64], filename2[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
@@ -313,10 +313,10 @@ void RenderManagerSDL::draw()
 
 	// Drawing the score
 	char textBuffer[8];
-	snprintf(textBuffer, 8, mLeftPlayerWarning ? "%02d!" : "%02d",
+	snprintf(textBuffer, sizeof(textBuffer), mLeftPlayerWarning ? "%02d!" : "%02d",
 			mLeftPlayerScore);
 	drawText(textBuffer, Vector2(24, 24), false);
-	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
+	snprintf(textBuffer, sizeof(textBuffer), mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);
 	drawText(textBuffer, Vector2(800 - 96, 24), false);
 
@@ -433,7 +433,7 @@ void RenderManagerSDL::setBall(const Vector2& position, float rotation)
 void RenderManagerSDL::setMouseMarker(float position)
 {
 	SDL_Rect restore = {
-		lround(mMouseMarkerPosition - 2.5),
+		short(lround(mMouseMarkerPosition - 2.5)),
 		590,
 		5,
 		5
@@ -572,10 +572,10 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 	}
 
 	SDL_Rect blitRect = {
-		lround(position.x - float(imageBuffer->sdlImage->w) / 2.0),
-		lround(position.y - float(imageBuffer->sdlImage->h) / 2.0),
-		lround(position.x + float(imageBuffer->sdlImage->w) / 2.0),
-		lround(position.y + float(imageBuffer->sdlImage->h) / 2.0),
+		(short)lround(position.x - float(imageBuffer->sdlImage->w) / 2.0),
+		(short)lround(position.y - float(imageBuffer->sdlImage->h) / 2.0),
+		(short)lround(position.x + float(imageBuffer->sdlImage->w) / 2.0),
+		(short)lround(position.y + float(imageBuffer->sdlImage->h) / 2.0),
 	};
 
 	SDL_BlitSurface(imageBuffer->sdlImage, 0, mScreen, &blitRect);
@@ -635,10 +635,10 @@ void RenderManagerSDL::drawParticle(const Vector2& pos, int player)
 	mNeedRedraw = true;
 	
 	SDL_Rect blitRect = {
-		lround(pos.x - float(9) / 2.0),
-		lround(pos.y - float(9) / 2.0),
-		lround(pos.x + float(9) / 2.0),
-		lround(pos.y + float(9) / 2.0),
+		(short)lround(pos.x - float(9) / 2.0),
+		(short)lround(pos.y - float(9) / 2.0),
+		(short)lround(pos.x + float(9) / 2.0),
+		(short)lround(pos.y + float(9) / 2.0),
 	};
 	
 	SDL_Surface* blood = player == LEFT_PLAYER ? mLeftBlobBlood : mRightBlobBlood;

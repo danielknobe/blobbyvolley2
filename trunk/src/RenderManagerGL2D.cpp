@@ -281,7 +281,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		fontSurface = loadSurface(filename);
 		fontSurface2 = loadSurface(filename2);
 		
-		SDL_Rect r = {x, 0, fontSurface->w, fontSurface->h};
+		SDL_Rect r = {(short)x, 0, (short)fontSurface->w, (short)fontSurface->h};
 		SDL_BlitSurface(fontSurface, 0, textbase, &r);
 		SDL_BlitSurface(highlight, 0, hltextbase, &r);
 		r.x = sx;
