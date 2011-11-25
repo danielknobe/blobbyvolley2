@@ -49,11 +49,22 @@ State* State::getCurrentState()
 	return mCurrentState;
 }
 
-void State::deleteCurrentState(){
+void State::deleteCurrentState()
+{
+	/// \todo well, the deleteCurrentState/setCurrentState as we have it now
+	///			seems to have several flaws. First, we have to delete our 
+	///			current state BEFORE we create the next one. If I recall right
+	///			this was because some destructors wrote things too disk which 
+	///			other constructors had to load (?), so they had to be called 
+	///			first. 
+	///			So, if the construction of the new state fails, the old is 
+	///			already deleted and we have now way to roll back.
+	///			Second, we need to methods were one should be sufficient.
 	delete mCurrentState;
 	mCurrentState = 0;
 }
-void State::setCurrentState(State* newState){
+void State::setCurrentState(State* newState) 
+{
 	assert(!mCurrentState);
 	mCurrentState = newState;
 }
@@ -164,6 +175,10 @@ void MainMenuState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 530.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_EXIT)))
 	{
+		/// \todo This is not the right way to end Blobby!
+		///		We have shutdown actions in main.cpp, if we change
+		///		those, we'd have to update these here too.
+		///		we should have this at just one place.
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
 		deleteCurrentState();

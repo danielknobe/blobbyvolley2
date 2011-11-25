@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 #include "RenderManagerGP2X.h"
 
-
 SDL_Surface* RenderManagerGP2X::colorSurface(SDL_Surface *surface, Color color)
 {
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(

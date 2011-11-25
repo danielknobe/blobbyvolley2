@@ -89,10 +89,12 @@ void MouseInputDevice::transferInput(PlayerInput& input)
 	static std::fstream file ("debug.txt", std::fstream::out);
 	
 	// when we assume lag this high, let debuggers check 
+	#ifdef DEBUG
 	if(lag > 10)
 	{
 		file << lag << "\n " << mLag.getDebugString() << std::endl;
 	}
+	#endif
 	
 	// adapt this value
 	lag -= 1;

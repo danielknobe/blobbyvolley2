@@ -1,4 +1,4 @@
-/*=============================================================================
+﻿/*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
 
@@ -174,19 +174,20 @@ void RenderManager::setMouseMarker(float position)
 SDL_Rect RenderManager::blobRect(const Vector2& position)
 {
 	SDL_Rect rect = {
-		lround(position.x) - 37,
-		lround(position.y) - 44,
+		(short)(lround(position.x) - 37),
+		(short)(lround(position.y) - 44),
 		75,
 		89
 	};
+	
 	return rect;
 }
 
 SDL_Rect RenderManager::ballRect(const Vector2& position)
 {
 	SDL_Rect rect = {
-		lround(position.x) - 32,
-		lround(position.y) - 32,
+		(short)(lround(position.x) - 32),
+		(short)(lround(position.y) - 32),
 		64,
 		64
 	};        
@@ -204,8 +205,8 @@ Vector2 RenderManager::ballShadowPosition(const Vector2& position)
 SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
 {
 	SDL_Rect rect = {
-		lround(position.x) - 64,
-		lround(position.y) - 16,
+		short(lround(position.x) - 64),
+		short(lround(position.y) - 16),
 		128,
 		32
 	};
@@ -223,8 +224,8 @@ Vector2 RenderManager::blobShadowPosition(const Vector2& position)
 SDL_Rect RenderManager::blobShadowRect(const Vector2& position)
 {
 	SDL_Rect rect = {
-		lround(position.x) - 64,
-		lround(position.y) - 16,
+		short(lround(position.x) - 64),
+		short(lround(position.y) - 16),
 		128,
 		32
 	};
