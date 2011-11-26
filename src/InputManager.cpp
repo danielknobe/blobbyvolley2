@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 InputManager* InputManager::mSingleton = 0;
 
+const int DOUBLE_CLICK_TIME = 200;
+
 InputManager::InputManager()
 {
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
@@ -40,6 +42,7 @@ InputManager::InputManager()
 	mInputDevice[RIGHT_PLAYER] = 0;
 	/// \todo init properly?
 	mLastInputKey.sym = SDLK_UNKNOWN;
+	mLastClickTime = 0;
 }
 
 InputManager::~InputManager()
@@ -189,6 +192,12 @@ void InputManager::updateInput()
 			{
 				case SDL_BUTTON_LEFT:
 					mClick = true;
+					
+					if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
+					{
+						mDoubleClick = true;
+					}
+					mLastClickTime = SDL_GetTicks();
 					break;
 				case SDL_BUTTON_WHEELUP:
 					mMouseWheelUp = true;
@@ -295,6 +304,12 @@ bool InputManager::click() const
 {
 	return mClick;
 }
+
+bool InputManager::doubleClick() const
+{
+	return mDoubleClick;
+}
+
 
 bool InputManager::mouseWheelUp() const
 {
