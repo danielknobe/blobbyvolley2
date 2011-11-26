@@ -39,10 +39,10 @@ end
 --		return: whether a player has won
 function IsWinning(lscore, rscore) 
 	-- constant SCORE_TO_WIN: number of points for a player to win
-	if lscore >= SCORE_TO_WIN and lscore > rscore + 2 then
+	if lscore >= SCORE_TO_WIN and lscore >= rscore + 2 then
 		return true
 	end
-	if rscore >= SCORE_TO_WIN and rscore > lscore + 2 then
+	if rscore >= SCORE_TO_WIN and rscore >= lscore + 2 then
 		return true
 	end
 	return false
