@@ -49,12 +49,14 @@ private:
 	bool mSelect;
 	bool mExit;
 	bool mClick;
+	bool mDoubleClick;
 	bool mMouseWheelUp;
 	bool mMouseWheelDown;
 	bool mUnclick;
 	
 	int mMouseX;
 	int mMouseY;
+	int mLastClickTime;
 	
 	SDL_keysym mLastInputKey;
 	int mLastMouseButton; 
@@ -94,6 +96,7 @@ public:
 	// For GUI navigation (Mouse)
 	Vector2 position();
 	bool click() const;
+	bool doubleClick() const;
 	bool mouseWheelUp() const;
 	bool mouseWheelDown() const;
 	bool unclick() const;
