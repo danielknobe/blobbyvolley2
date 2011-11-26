@@ -683,7 +683,7 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 				int tmp = (int)((mousepos.y-pos1.y-5) / FontSize)+first;
 				/// \todo well, it's not really a doulbe click...
 				/// we need to do this in inputmanager
-				if( selected == tmp )
+				if( selected == tmp && InputManager::getSingleton()->doubleClick() )
 					changed = SBA_DBL_CLICK;
 				
 				if (tmp < entries.size())
