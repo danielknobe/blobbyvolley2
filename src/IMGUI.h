@@ -67,6 +67,7 @@ public:
 	bool doScrollbar(int id, const Vector2& position, float& value);
 	bool doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
 	SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
+	void doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
 	bool doBlob(int id, const Vector2& position, const Color& col);
 
 	bool usingCursor() const;
