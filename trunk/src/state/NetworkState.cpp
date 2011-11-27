@@ -529,9 +529,9 @@ void NetworkGameState::step()
 		}
 		case PAUSING:
 		{
-			imgui.doOverlay(GEN_ID, Vector2(200, 30), Vector2(650, 180));
-			imgui.doText(GEN_ID, Vector2(300, 40), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
-			if (imgui.doButton(GEN_ID, Vector2(230, 100), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
+			imgui.doOverlay(GEN_ID, Vector2(175, 20), Vector2(625, 175));
+			imgui.doText(GEN_ID, Vector2(275, 35), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
+			if (imgui.doButton(GEN_ID, Vector2(205, 95), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
@@ -539,7 +539,7 @@ void NetworkGameState::step()
 			}
 			// Chat
 			imgui.doChatbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage);
-			if (imgui.doEditbox(GEN_ID, Vector2(10, 460), 30, mChattext, mChatCursorPosition, 0, true))
+			if (imgui.doEditbox(GEN_ID, Vector2(30, 460), 30, mChattext, mChatCursorPosition, 0, true))
 			{
 
 				// GUI-Hack, so that we can send messages
@@ -559,12 +559,12 @@ void NetworkGameState::step()
 					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				}
 			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 100), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
+			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(310, 130), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
