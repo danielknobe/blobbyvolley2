@@ -588,6 +588,11 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 	mLastWidget = id;
 	mQueue->push(obj);
 
+	// when content changed, it is active
+	// part of chat window hack
+	if( changed && force_active )
+		mActiveButton = id;
+
 	return changed;
 }
 
