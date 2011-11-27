@@ -352,8 +352,18 @@ void NetworkGameState::step()
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState);
+		if(mNetworkState == PAUSING)
+		{
+			// end pause
+			RakNet::BitStream stream;
+			stream.Write((unsigned char)ID_UNPAUSE);
+			mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+		} 
+		else
+		{
+			deleteCurrentState();
+			setCurrentState(new MainMenuState);
+		}
 	}
 	else if (InputManager::getSingleton()->exit() && mSaveReplay)
 	{
