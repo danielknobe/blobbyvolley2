@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalGameState.h"
 #include "ReplayState.h"
 #include "NetworkState.h"
+#include "NetworkSearchState.h"
 #include "OptionsState.h"
 
 #include "DuelMatch.h"
