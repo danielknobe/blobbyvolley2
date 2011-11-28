@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "TextManager.h"
+#include "SpeedController.h"
 #include <sstream>
 
 #include <physfs.h>
@@ -69,6 +70,11 @@ void ReplayMenuState::loadCurrentReplay()
 			mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				
+		UserConfig gameConfig;
+		gameConfig.loadFile("config.xml");
+		SpeedController::getMainInstance()->setGameSpeed((float)gameConfig.getInteger("gamefps"));
+	
 	}
 	catch (ChecksumException& e)
 	{
@@ -113,6 +119,7 @@ void ReplayMenuState::step()
 				delete mReplayMatch;
 				delete mReplayRecorder;
 				imgui.resetSelection();
+				SpeedController::getMainInstance()->setGameSpeed(75);
 			}
 			if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::RP_SHOW_AGAIN)))
 			{
@@ -129,6 +136,7 @@ void ReplayMenuState::step()
 			delete mReplayMatch;
 			delete mReplayRecorder;
 			imgui.resetSelection();
+			SpeedController::getMainInstance()->setGameSpeed(75);
 		}
 	}
 	else
