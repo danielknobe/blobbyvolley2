@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <physfs.h>
-#include <stdio.h>
+#include <cstdio>
 #include <errno.h>
 #include <unistd.h>
 #include <ctime>
@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
+#include <SDL/SDL_timer.h>
 // We need no stringcompressor only for the names
 
 #include "DedicatedServer.h"
