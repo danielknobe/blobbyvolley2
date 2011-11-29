@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "SpeedController.h"
 #include "RakNetPacket.h"
+#include "NetworkPlayer.h"
 
 #ifdef WIN32
 #undef main
@@ -104,10 +105,7 @@ int main(int argc, char** argv)
 	RakServer server;
 	UserConfig config;
 
-	PlayerID firstPlayer;
-	PlayerSide firstPlayerSide = NO_PLAYER;
-	std::string firstPlayerName;
-	Color firstPlayerColor;
+	NetworkPlayer firstPlayer;
 
 	config.loadFile("server.xml");
 
@@ -148,10 +146,13 @@ int main(int argc, char** argv)
 				case ID_CONNECTION_LOST:
 				case ID_DISCONNECTION_NOTIFICATION:
 				{
-					bool cond1 = firstPlayerSide != NO_PLAYER;
-					bool cond2 = firstPlayer == packet->playerId;
+					bool cond1 = firstPlayer.valid();
+					bool cond2 = firstPlayer.getID() == packet->playerId;
+					// if first player disconncted, reset
 					if (cond1 && cond2)
-						firstPlayerSide = NO_PLAYER;
+						firstPlayer = NetworkPlayer();
+					
+					// delete the disconnectiong player
 					if ( playermap.find(packet->playerId) != playermap.end() ) {
 						// inject the packet into the game
 						playermap[packet->playerId]->injectPacket(packet);
@@ -227,38 +228,37 @@ int main(int argc, char** argv)
 					std::string playerName(charName);
 					PlayerSide newSide = (PlayerSide)playerSide;
 
-					if (firstPlayerSide == NO_PLAYER)
+					if (!firstPlayer.valid())
 					{
-						firstPlayer = packet->playerId;
-						firstPlayerSide = newSide;
-						firstPlayerName = playerName;
-						firstPlayerColor = color;
+						firstPlayer = NetworkPlayer(packet->playerId, playerName, color, newSide);
 					}
 					else // We have two players now
 					{
+						/// \todo refactor this, this code is awful!
+						///  one swap should be enough
 						PlayerID leftPlayer =
-							LEFT_PLAYER == firstPlayerSide ?
-							firstPlayer : packet->playerId;
+							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getID() : packet->playerId;
 						PlayerID rightPlayer =
-							RIGHT_PLAYER == firstPlayerSide ?
-							firstPlayer : packet->playerId;
+							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getID() : packet->playerId;
 						PlayerSide switchSide = NO_PLAYER;
 
 						std::string leftPlayerName =
-							LEFT_PLAYER == firstPlayerSide ?
-							firstPlayerName : playerName;
+							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getName() : playerName;
 						std::string rightPlayerName =
-							RIGHT_PLAYER == firstPlayerSide ?
-							firstPlayerName : playerName;
+							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getName() : playerName;
 							
 						Color leftColor =
-							LEFT_PLAYER == firstPlayerSide ?
-							firstPlayerColor : color;
+							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getColor() : color;
 						Color rightColor =
-							RIGHT_PLAYER == firstPlayerSide ?
-							firstPlayerColor : color;
+							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
+							firstPlayer.getColor() : color;
 
-						if (newSide == firstPlayerSide)
+						if (newSide == firstPlayer.getDesiredSide())
 						{
 							if (newSide == LEFT_PLAYER)
 								switchSide = RIGHT_PLAYER;
@@ -280,7 +280,7 @@ int main(int argc, char** argv)
 									<< "\t\t\t" << rightPlayer.binaryAddress << " : " << rightPlayer.port << "\n";
 						#endif			
 
-						firstPlayerSide = NO_PLAYER;
+						firstPlayer = NetworkPlayer();
 					}
 					break;
 				}
@@ -328,14 +328,14 @@ int main(int argc, char** argv)
 					else
 					{
 						myinfo.activegames = gamelist.size();
-						if (firstPlayerSide == NO_PLAYER)
+						if (!firstPlayer.valid())
 						{
 							strncpy(myinfo.waitingplayer, "none",
 								sizeof(myinfo.waitingplayer) - 1);
 						}
 						else
 						{
-							strncpy(myinfo.waitingplayer, firstPlayerName.c_str(),
+							strncpy(myinfo.waitingplayer, firstPlayer.getName().c_str(),
 								sizeof(myinfo.waitingplayer) - 1);
 						}
 
@@ -378,7 +378,7 @@ int main(int argc, char** argv)
 			// connected
 			if ((SDL_GetTicks() - startTime) > 60 * 60 * 1000)
 			{
-				if (gamelist.empty() && firstPlayerSide == NO_PLAYER)
+				if (gamelist.empty() && !firstPlayer.valid())
 				{
 					exit(0);
 				}
