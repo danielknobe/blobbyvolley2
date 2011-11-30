@@ -210,69 +210,43 @@ int main(int argc, char** argv)
 					
 					stream.IgnoreBytes(1);	//ID_ENTER_GAME
 
-					int playerSide;
-					stream.Read(playerSide);
-
-					// Read the Playername
-					char charName[16];
-					stream.Read(charName, sizeof(charName));
-
-					// ensures that charName is null terminated
-					charName[sizeof(charName)-1] = '\0';
-					
-					// read colour data
-					int color;
-					stream.Read(color);
-
-
-					std::string playerName(charName);
-					PlayerSide newSide = (PlayerSide)playerSide;
-
 					if (!firstPlayer.valid())
 					{
-						firstPlayer = NetworkPlayer(packet->playerId, playerName, color, newSide);
+						/// \todo does the copy-ctor what i assume it does? deep copy?
+						firstPlayer = NetworkPlayer(packet->playerId, stream);
 					}
 					else // We have two players now
 					{
+						NetworkPlayer secondPlayer = NetworkPlayer(packet->playerId, stream);
 						/// \todo refactor this, this code is awful!
 						///  one swap should be enough
-						PlayerID leftPlayer =
-							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getID() : packet->playerId;
-						PlayerID rightPlayer =
-							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getID() : packet->playerId;
-						PlayerSide switchSide = NO_PLAYER;
-
-						std::string leftPlayerName =
-							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getName() : playerName;
-						std::string rightPlayerName =
-							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getName() : playerName;
-							
-						Color leftColor =
-							LEFT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getColor() : color;
-						Color rightColor =
-							RIGHT_PLAYER == firstPlayer.getDesiredSide() ?
-							firstPlayer.getColor() : color;
-
-						if (newSide == firstPlayer.getDesiredSide())
+						
+						NetworkPlayer leftPlayer = firstPlayer;
+						NetworkPlayer rightPlayer = secondPlayer;
+						PlayerSide switchSide;
+						
+						if (secondPlayer.getDesiredSide() == firstPlayer.getDesiredSide())
 						{
-							if (newSide == LEFT_PLAYER)
+							if (secondPlayer.getDesiredSide() == LEFT_PLAYER)
 								switchSide = RIGHT_PLAYER;
-							if (newSide == RIGHT_PLAYER)
+							if (secondPlayer.getDesiredSide() == RIGHT_PLAYER)
 								switchSide = LEFT_PLAYER;
 						}
+						
+						if(RIGHT_PLAYER == firstPlayer.getDesiredSide())
+						{
+							std::swap(leftPlayer, rightPlayer);
+						} 
+						
+						
 						boost::shared_ptr<NetworkGame> newgame (new NetworkGame(
-							server, leftPlayer, rightPlayer,
-							leftPlayerName, rightPlayerName,
-							leftColor, rightColor,
+							server, leftPlayer.getID(), rightPlayer.getID(),
+							leftPlayer.getName(), rightPlayer.getName(),
+							leftPlayer.getColor(), rightPlayer.getColor(),
 							switchSide) );
 						
-						playermap[leftPlayer] = newgame;
-						playermap[rightPlayer] = newgame;
+						playermap[leftPlayer.getID()] = newgame;
+						playermap[rightPlayer.getID()] = newgame;
 						gamelist.push_back(newgame);
 						
 						#ifdef DEBUG
