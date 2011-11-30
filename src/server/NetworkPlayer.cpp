@@ -30,9 +30,25 @@ NetworkPlayer::NetworkPlayer(PlayerID id, const std::string& name, Color color, 
 	
 }
 
-NetworkPlayer::NetworkPlayer(RakNet::BitStream stream)
+NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
 {
+	int playerSide;
+	stream.Read(playerSide);
+	mDesiredSide = (PlayerSide)playerSide;
+
+	// Read the Playername
+	char charName[16];
+	stream.Read(charName, sizeof(charName));
+
+	// ensures that charName is null terminated
+	charName[sizeof(charName)-1] = '\0';
 	
+	mName = charName;
+	
+	// read colour data
+	int color;
+	stream.Read(color);
+	mColor = color;
 }
 
 bool NetworkPlayer::valid() const
@@ -58,6 +74,7 @@ PlayerSide NetworkPlayer::getDesiredSide() const
 {
 	return mDesiredSide;
 }
+
 const boost::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
 {
 	return mGame;
