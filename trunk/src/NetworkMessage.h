@@ -208,6 +208,10 @@ struct ServerInfo
 	ServerInfo() {}
 
 	void writeToBitstream(RakNet::BitStream& stream);
+	
+	void setWaitingPlayer(const std::string& name);
+	
+	
 	int activegames;
 	int gamespeed;
 	char hostname[64];

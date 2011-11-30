@@ -153,21 +153,27 @@ int main(int argc, char** argv)
 						firstPlayer = NetworkPlayer();
 					
 					// delete the disconnectiong player
-					if ( playermap.find(packet->playerId) != playermap.end() ) {
+					if ( playermap.find(packet->playerId) != playermap.end() ) 
+					{
+						/// \todo what are we doing here???
+						/// seems not a good idea to let injectPacket remove the game from the game list...
+						/// maybe we should add a centralized way to delete unused games  and players!
 						// inject the packet into the game
+						/// strange, injectPacket just pushes the packet into a queue. That cannot delete 
+						/// the game???
 						playermap[packet->playerId]->injectPacket(packet);
 						
-						// then delete the player ...
-						// if it was the last player, the game is delete, too.
+						// if it was the last player, the game is removed from the game list.
 						// thus, give the game a last chance to process the last
 						// input
 						
-						// check, wether game was delete from this, in this case, process manually 
+						// check, wether game was removed from game list (not a good idea!), in that case, process manually 
 						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
 						{
 							playermap[packet->playerId]->step();
 						}
-						// then delete
+						
+						// then delete the player
 						playermap.erase(packet->playerId);
 					}
 					
@@ -184,6 +190,7 @@ int main(int argc, char** argv)
 						playermap[packet->playerId]->injectPacket(packet);
 						
 						// check, wether game was delete from this, in this case, process manually 
+						/// \todo here again, injectPacket is not able to delete the game. So, what are we doing here?
 						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
 						{
 							playermap[packet->playerId]->step();
@@ -304,13 +311,11 @@ int main(int argc, char** argv)
 						myinfo.activegames = gamelist.size();
 						if (!firstPlayer.valid())
 						{
-							strncpy(myinfo.waitingplayer, "none",
-								sizeof(myinfo.waitingplayer) - 1);
+							myinfo.setWaitingPlayer("none");
 						}
 						else
 						{
-							strncpy(myinfo.waitingplayer, firstPlayer.getName().c_str(),
-								sizeof(myinfo.waitingplayer) - 1);
+							myinfo.setWaitingPlayer(firstPlayer.getName());
 						}
 
 						stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);

@@ -63,6 +63,11 @@ void ServerInfo::writeToBitstream(RakNet::BitStream& stream)
 	stream.Write(description, sizeof(description));
 }
 
+void ServerInfo::setWaitingPlayer(const std::string& name)
+{
+	strncpy(waitingplayer, name.c_str(), sizeof(waitingplayer) - 1);
+}
+
 const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned char)ID_BLOBBY_SERVER_PRESENT)
 		+ 2 * sizeof(int) 	// activegames & gamespeed
 		+ 32				// name
