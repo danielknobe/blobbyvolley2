@@ -245,14 +245,15 @@ BOOST_FIXTURE_TEST_CASE( constant_lag_real_input, LagDetectionSetup )
 
 
 const int LAG_CHANGE_RATE = 10;
+
 // test with high quality data but changing lags
 // in this test, we can see how fast die algorithm can detect changing lag
 // in this test, the lag changes are only slight, so more than 1frame per change
 // does not happen
 BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup )
 {
-	file << "\nchanging lag - good input" << "\n";
-	result << "changing lag - good input - small change\n";
+	file << "\nchanging lag - real input" << "\n";
+	result << "changing lag - real input - small change\n";
 	
 	// test for all small constant lags
 	int clag = rand() % 8 + 4;
@@ -292,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup )
 			errors++;
 			timer++;
 		} else if(timer != 0) {
-			result << "took " << timer << "steps to recognice lag of "<< lag << std::endl;
+			result << "took " << timer << " steps to recognice lag of "<< lag << std::endl;
 			file << lag << " " << timer << "\n" << D.getDebugString() << "\n";
 			
 			// calculate cum timer
@@ -317,5 +318,84 @@ BOOST_FIXTURE_TEST_CASE( changing_lag, LagDetectionSetup )
 	result << "average reaction time: " << boost::accumulators::mean_of_variates<int, tag::covariate1>(acc) << std::endl;
 	result << "average additional reaction time: " << mean(acc) << std::endl;
 }
+
+// test with high quality data but changing lags
+// in this test, we can see how fast die algorithm can detect changing lag
+// in this test, the lag changes are only slight, so more than 1frame per change
+// does not happen
+BOOST_FIXTURE_TEST_CASE( changing_lag_real, LagDetectionSetup )
+{
+	file << "\nchanging lag - good input" << "\n";
+	result << "changing lag - good input - small change\n";
+	
+	for(int input_quality = 10; input_quality <= REAL_INPUT_PATTERN_LENGTH; input_quality += INPUT_CHANGE_STEP_WIDTH )
+	{
+		result << "data quality: " << input_quality << std::endl;
+		// test for all small constant lags
+		int clag = rand() % 8 + 4;
+		NetworkSimulator.changePing(clag);
+		
+		// start a game
+		simulate(100, input_quality);
+		
+		// accumulator for collecting statistical data of our run
+		accumulator_set< int, features< tag::count, tag::max, tag::mean, tag::mean_of_variates<int, tag::covariate1> > > acc;
+		
+		int lag = 0;
+		int errors = 0;
+		int timer = 0;
+		int cum_timer = 0;
+
+		// now we do 500 steps and check for lag
+		for(int i = 0; i < 500; ++i)
+		{		
+			// randomly change lags. we are friendly for now.
+			// only change lag after system has adapted to new lag
+			if(rand() % LAG_CHANGE_RATE == 0 && clag == lag)
+			{
+				int nclag = (rand() % 2) * 2 - 1 + clag;
+				nclag = std::max(5, std::min(15, nclag));
+				
+				clag = nclag;
+				NetworkSimulator.changePing(clag);
+				timer = 0;
+			}
+			simulate(1, input_quality);
+			
+			lag = D.getLag();
+			
+			if( lag != clag )
+			{
+				errors++;
+				timer++;
+			} else if(timer != 0) {
+				// don't do any reporting here, as we would get too much messags
+				// result << "took " << timer << " steps to recognice lag of "<< lag << std::endl;
+				// file << lag << " " << timer << "\n" << D.getDebugString() << "\n";
+				
+				// calculate cum timer
+				
+				cum_timer += timer;
+				acc(std::max(0, timer - lag), covariate1 = timer);
+				timer = 0;
+			}
+		}
+		
+		// when we take longer than 10ms to detect the lag change after the first packet with new lag arrived
+		// we are too slow. 
+		// when we take longer than 15ms once, it is bad, too
+		if( mean(acc) > 10  || max(acc) > 25)
+		{
+			char errormsg[1024];
+			sprintf(errormsg, "LagDetector takes too long to detect lag change of 1ms. Add: %d, Avg: %d, Max: %d",  (int)mean(acc), (int)boost::accumulators::mean_of_variates<int, tag::covariate1>(acc), max(acc));
+			BOOST_ERROR(errormsg);
+		}
+		
+		result << "maximum reaction time: " << max(acc) << std::endl;
+		result << "average reaction time: " << boost::accumulators::mean_of_variates<int, tag::covariate1>(acc) << std::endl;
+		result << "average additional reaction time: " << mean(acc) << std::endl;
+	}
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
