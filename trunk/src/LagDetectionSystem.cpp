@@ -38,15 +38,15 @@ float weight(float tp)
 }
 */
 
-LagDetector::LagDetector() : recalc(true), mLastLag(0)
+LagDetector::LagDetector(int buffer_length = 80) : recalc(true), mLastLag(0)
 {
 	/// \todo document what this values do
 	/// \todo adapt this values depending on gamespeed
 	/// \todo add a gamespeed changed callback to speedmanager
-	sended.resize(100);
-	received.resize(80);
+	sended.resize(buffer_length + 20);
+	received.resize(buffer_length);
 	
-	// difference between sended.size() and received.size() is maximum detected lag
+	///   difference between sended.size() and received.size() is maximum detected lag
 }
 
 void LagDetector::insertData(PlayerInput send_value, PlayerInput received_value)
