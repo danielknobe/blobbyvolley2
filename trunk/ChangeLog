@@ -1,13 +1,20 @@
-New in 1.0 RC 1 (rev. 650) since Beta 9:
+New in 1.0 RC 1 (rev. 685) since Beta 9:
 - removed possible lag due to rounding issues in speed controller
 - fixed severe network problem
 - enabled writing in chat without clicking into editbox
 - [Windows]: fixed server output messages 
 - corrected version in server startup message
-- (added doxygen documentation)
 - removed needless wait in network server (only 1 ms)
 - Bugfix: only two hits accepted under special circumstances
-- (added test system)
+- Blobby speed more stable on slow systems (framedrop)
+- auto disconnect when game is closed
+- use native keyboard layout when possible
+- improved Lag Detector
+- fixed some small and unlikely memleaks
+- send disconnection notification to server when leaving blobby
+- join server with double click
+- fixed a score problem in default rules
+- improved chat UI (WIP)
 
 New in Beta 9 (rev. 622) since Alpha 8:
 - network game: reduced data transfer
