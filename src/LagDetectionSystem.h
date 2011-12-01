@@ -59,7 +59,12 @@ class LagDetector
 		/// \brief constructor
 		/// \todo add parameters, as we have internals which affec how good the detection works
 		///		(and how much CPU power is consumed ;)
-		LagDetector();
+		/// \param buffer_length: Determines the size of the buffer used to store data.
+		///				The longer the buffer, the slower the data has to change in order to recognize
+		///				the lag. Note, however, that a long buffer increases CPU consumption and
+		///				does not neccesaryly lead to better results, eps. when lag changes, as the
+		///				data before the lag change becomes useless. 
+		LagDetector(int buffer_length = 80);
 		
 		/// \brief submit data for evaluation
 		/// \details This function has to be called every frame and gets 
