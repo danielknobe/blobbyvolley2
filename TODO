@@ -20,12 +20,8 @@ bugs:
 - net bugs:
  - squeezing ball through blocking blobby ?  
      Please try to verify this
-
-- only two hits acceptet under special circumstances?
-	 Replay which shows this problem
-
+ - flat ball (replay Mr. Enderson)
 - mouse freezed in upper right corner after leaving the game (fullscreen mode, SDL)
-- framedrop does nothing
 - don't close chat if one player leaves the game
 
 data:
@@ -33,7 +29,6 @@ data:
 - monochrome font
 - more translation
 
-FOR 0.9 final:
- auto select chat editbox
- mouse freeze bug? hopefully
- esc key in chat
+REQUIREMENTS FOR 1.0 RELEASE:
+ fully functional online replays with versioning support and possibility to extend capabilities in the future
+ 
