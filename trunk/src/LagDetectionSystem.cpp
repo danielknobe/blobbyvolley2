@@ -38,7 +38,7 @@ float weight(float tp)
 }
 */
 
-LagDetector::LagDetector(int buffer_length = 80) : recalc(true), mLastLag(0)
+LagDetector::LagDetector(int buffer_length) : recalc(true), mLastLag(0)
 {
 	/// \todo document what this values do
 	/// \todo adapt this values depending on gamespeed
