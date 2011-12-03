@@ -640,7 +640,6 @@ std::string InputManager::keyToString (const SDL_keysym& key)
 	{
 		if (mKeyMap[i].key == key.sym)
 		{
-			std::cout << "found: " << mKeyMap[i].keyname << "\n";
 			return mKeyMap[i].keyname;
 		}
 		++i;
