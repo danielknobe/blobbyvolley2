@@ -156,6 +156,7 @@ void TextManager::setDefault(){
 	mStrings[RP_CHECKSUM] = "checksum error";
 	mStrings[RP_FILE_CORRUPT] = "file is corrupt";
 	mStrings[RP_SAVE_NAME] = "name of the replay:";
+	mStrings[RP_WAIT_REPLAY] = "receiving replay...";
 	mStrings[RP_SAVE] = "save replay";
 	
 	mStrings[GAME_WIN] = "has won the game!";

@@ -62,6 +62,7 @@ class TextManager{
 			RP_CHECKSUM,
 			RP_FILE_CORRUPT,
 			RP_SAVE_NAME,
+			RP_WAIT_REPLAY,
 			RP_SAVE,
 			
 			// game texts

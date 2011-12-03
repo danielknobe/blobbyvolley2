@@ -55,6 +55,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput = new LocalInputSource(mOwnSide);
 	mSaveReplay = false;
+	mWaitingForReplay = false;
 	mFilename = boost::lexical_cast<std::string> (std::time(0));
 
 	RenderManager::getSingleton().redraw();
@@ -317,6 +318,11 @@ void NetworkGameState::step()
 			}
 			case ID_REPLAY:
 			{
+				/// \todo we should take more action if server sends replay
+				///		even if not requested!
+				if(!mWaitingForReplay)
+					break;
+				
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
 				int length;
@@ -334,6 +340,7 @@ void NetworkGameState::step()
 			
 				PHYSFS_write(fileHandle, data, 1, length);
 				PHYSFS_close(fileHandle);
+				mWaitingForReplay = false;
 				break;
 			}
 			default:
@@ -386,11 +393,24 @@ void NetworkGameState::step()
 				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 			}
 			mSaveReplay = false;
+			mWaitingForReplay = true;
 			imgui.resetSelection();
 		}
 		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
 			mSaveReplay = false;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
+	} 
+	else if (mWaitingForReplay)
+	{
+		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
+		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::getSingleton()->getString(TextManager::RP_WAIT_REPLAY));
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+		{
+			mSaveReplay = false;
+			mWaitingForReplay = false;
 			imgui.resetSelection();
 		}
 		imgui.doCursor();

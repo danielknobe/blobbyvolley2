@@ -62,6 +62,7 @@ private:
 	PlayerSide mServingPlayer;
 
 	bool mSaveReplay;
+	bool mWaitingForReplay;
 	std::string mFilename;
 
 	RakClient* mClient;
