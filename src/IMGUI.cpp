@@ -36,7 +36,8 @@ enum ObjectType
 	ACTIVEEDITBOX,
 	SELECTBOX,
 	ACTIVESELECTBOX,
-	BLOB
+	BLOB,
+	CHAT
 };
 
 struct QueueObject
@@ -156,6 +157,17 @@ void IMGUI::end()
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if(c == obj.selected)
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
+					else
+						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
+				}
+				break;
+			case CHAT:
+				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
+				for (unsigned int c = 0; c < obj.entries.size(); c++)
+				{
+					if (obj.text[c] == 'R' )
 						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
 					else
 						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
@@ -742,15 +754,16 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 	return changed;
 }
 
-void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags)
+void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, const std::vector<bool>& local, unsigned int flags)
 {
+	assert( entries.size() == local.size() );
 	int FontSize = (flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 	SelectBoxAction changed = SBA_NONE;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = pos1;
 	obj.pos2 = pos2;
-	obj.type = SELECTBOX;
+	obj.type = CHAT;
 	obj.flags = flags;
 
 	const int itemsPerPage = int(pos2.y - pos1.y - 10) / FontSize;
@@ -783,7 +796,6 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		// React to keyboard input.
 		if (id == mActiveButton)
 		{
-			obj.type = ACTIVESELECTBOX;
 			switch (mLastKeyAction)
 			{
 				case DOWN:
@@ -817,7 +829,6 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x > pos1.x && mousepos.y > pos1.y && mousepos.x < pos2.x && mousepos.y < pos2.y)
 		{
-			obj.type = ACTIVESELECTBOX;
 			if (InputManager::getSingleton()->click())
 				mActiveButton = id;
 		}
@@ -860,6 +871,13 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		if (first < 0)
 			first = 0;
 		obj.entries = std::vector<std::string>(entries.begin()+first, entries.begin()+last);
+		// HACK: we use taxt to store information which text is from local player and which from
+		//			remote player.
+		obj.text = "";
+		for(int i = first; i < last; ++i)
+		{
+			obj.text += local[i] ? 'L' : 'R';
+		}
 	}
 	else
 		obj.entries = std::vector<std::string>();
