@@ -312,6 +312,7 @@ void NetworkGameState::step()
 
 				// Insert Message in the log and focus the last element
 				mChatlog.push_back((std::string) message);
+				mChatOrigin.push_back(false);
 				mSelectedChatmessage = mChatlog.size() - 1;
 				SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				break;
@@ -558,7 +559,7 @@ void NetworkGameState::step()
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 			}
 			// Chat
-			imgui.doChatbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage);
+			imgui.doChatbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage, mChatOrigin);
 			if (imgui.doEditbox(GEN_ID, Vector2(30, 460), 30, mChattext, mChatCursorPosition, 0, true))
 			{
 
@@ -573,6 +574,7 @@ void NetworkGameState::step()
 					stream.Write(message, sizeof(message));
 					mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 					mChatlog.push_back(mChattext);
+					mChatOrigin.push_back(true);
 					mSelectedChatmessage = mChatlog.size() - 1;
 					mChattext = "";
 					mChatCursorPosition = 0;

@@ -74,6 +74,7 @@ private:
 
 	// Chat Vars
 	std::vector<std::string> mChatlog;
+	std::vector<bool > mChatOrigin;
 	int mSelectedChatmessage;
 	unsigned mChatCursorPosition;
 	std::string mChattext;
