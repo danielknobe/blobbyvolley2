@@ -23,6 +23,7 @@ set (blobby_SRC ${common_SRC}
 	TextManager.cpp TextManager.h
 	main.cpp
 	IMGUI.cpp IMGUI.h
+	LagDetectionSystem.cpp LagDetectionSystem.h
 	InputDevice.cpp InputDevice.h
 	InputManager.cpp InputManager.h
 	InputSource.cpp InputSource.h
@@ -40,10 +41,13 @@ set (blobby_SRC ${common_SRC}
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h
 	state/OptionsState.cpp state/OptionsState.h
+	state/NetworkSearchState.cpp state/NetworkSearchState.h
+	state/ReplayState.cpp state/ReplayState.h
 	)
 	
 set (blobby-server_SRC ${common_SRC}
-	DedicatedServer.cpp DedicatedServer.h
+	server/DedicatedServer.cpp server/DedicatedServer.h
+	server/NetworkPlayer.cpp server/NetworkPlayer.h
 	)
 
 find_package(Boost REQUIRED)
