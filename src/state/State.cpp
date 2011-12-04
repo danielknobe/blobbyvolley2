@@ -165,7 +165,7 @@ void MainMenuState::step()
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 470.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
 	{
 		deleteCurrentState();
-		setCurrentState(new ReplayMenuState());
+		setCurrentState(new ReplayState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))

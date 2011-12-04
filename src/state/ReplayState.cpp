@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <physfs.h>
 
-ReplayMenuState::ReplayMenuState() :
+ReplayState::ReplayState() :
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)
 {
@@ -56,7 +56,7 @@ ReplayMenuState::ReplayMenuState() :
 	mRightPlayer.loadFromConfig("right");
 }
 
-void ReplayMenuState::loadCurrentReplay()
+void ReplayState::loadCurrentReplay()
 {
 	mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
 
@@ -84,7 +84,7 @@ void ReplayMenuState::loadCurrentReplay()
 	}
 }
 
-void ReplayMenuState::step()
+void ReplayState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	if (mReplaying)
