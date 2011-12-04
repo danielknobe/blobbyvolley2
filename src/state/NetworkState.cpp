@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include <algorithm>
-#include <sstream>
 #include <iostream>
 #include <ctime>
 
@@ -26,9 +25,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 #include "TextManager.h"
-#include "Blood.h"
 
 #include "raknet/RakClient.h"
+#include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
 
@@ -39,7 +38,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "SoundManager.h"
 #include "LocalInputSource.h"
-#include "raknet/RakServer.h"
 #include "RakNetPacket.h"
 // We don't need the stringcompressor
 
@@ -526,14 +524,14 @@ void NetworkGameState::step()
 		}
 		case PLAYER_WON:
 		{
-			std::stringstream tmp;
+			std::string tmp;
 			if(mWinningPlayer==LEFT_PLAYER)
-				tmp << mLeftPlayer.getName();
+				tmp = mLeftPlayer.getName();
 			else
-				tmp << mRightPlayer.getName();
+				tmp = mRightPlayer.getName();
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-			imgui.doText(GEN_ID, Vector2(274, 240), tmp.str());
+			imgui.doText(GEN_ID, Vector2(274, 240), tmp);
 			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
