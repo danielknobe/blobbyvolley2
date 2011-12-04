@@ -116,8 +116,6 @@ void LocalGameState::step()
 	}
 	else if (mWinner)
 	{
-		UserConfig gameConfig;
-		gameConfig.loadFile("config.xml");
 		std::stringstream tmp;
 		if(mMatch->winningPlayer() == LEFT_PLAYER)
 			tmp << mLeftPlayer.getName();
