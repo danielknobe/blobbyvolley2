@@ -21,38 +21,50 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-class Clock{
+/*! \class Clock
+	\brief Game Timing Management
+	\details This class represents a clock. It can be started, paused, resetted,
+			and it is possible to get the time in a string for in-game representation
+*/
+class Clock
+{
 	public:
 		Clock();
 		
+		/// starts/unpauses the clock
 		void start();
-		
-		void stop() {
-			mRunning = false;
-		}
-		
-		bool isRunning() const {
-			return mRunning;
-		}
-		
-		void step();
-		
-		int getTime() const {
-			return mGameTime;
-		}
-		
-		void setTime(int newTime) {
-			mGameTime = newTime;
-		}
-		
+		/// pauses the clock
+		void stop();
+				
+		/// resets the clock. after this, the clock is paused.
 		void reset();
 		
+		/// gets whether the clock is currently running
+		bool isRunning() const;
+		
+		/// this function has to be called each frame. It calculates
+		///	the passed time;
+		void step();
+		
+		/// gets the time in seconds as an integer
+		int getTime() const;
+		
+		/// set the time to a specified value
+		/// \param newTime: new time in seconds
+		void setTime(int newTime);
+		
+		/// returns the time as a string
 		std::string getTimeString() const;
 		
 	private:
+		/// is the clock currently running?
 		bool mRunning;
 		
+		/// recorded time in seconds
 		time_t mGameTime;
+		
+		/// last time that step was called. 
+		/// needed to calculate the time difference.
 		time_t mLastTime;
 		
 };
