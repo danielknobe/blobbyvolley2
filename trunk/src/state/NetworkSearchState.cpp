@@ -311,13 +311,18 @@ OnlineSearchState::OnlineSearchState()
 
 void OnlineSearchState::searchServers()
 {
+	/// \todo does anyone know how exaclty mPingClient works?
 	mScannedServers.clear();
 	//TODO: Insert Masterserverconnection code here! At the moment we are using the old code here!
 	mPingClient->PingServer("blobby.blub-game.com", BLOBBY_PORT, 0, true);
+	/// \todo thats a hack to make us use our speed server. add a better 
+	///			method to connect to servers with arbitrary Ports
+	mPingClient->PingServer("blobby.blub-game.com", BLOBBY_PORT + 1, 0, true);
 	mPingClient->PingServer("pgb.game-host.org", BLOBBY_PORT, 0, true);
 	
 	UserConfig config;
 	config.loadFile("config.xml");
+	/// \todo check if we already try to connect to this one!
 	mPingClient->PingServer(
 		config.getString("network_last_server").c_str(),
 		BLOBBY_PORT, 0, true);
