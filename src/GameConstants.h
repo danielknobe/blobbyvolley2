@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+
+// Difficulty Settings
+const float BALL_SPEED_FACTOR = 1.00;
+
 // Border Settings
 const float LEFT_PLANE = 0;
 const float RIGHT_PLANE = 800.0;
@@ -42,8 +46,8 @@ const float BLOBBY_JUMP_ACCELERATION = 15.1;
 
 // Ball Settings
 const float BALL_RADIUS = 31.5;
-const float BALL_GRAVITATION = 0.28;
-const float BALL_COLLISION_VELOCITY = 13.125;
+const float BALL_GRAVITATION = 0.28 * BALL_SPEED_FACTOR * BALL_SPEED_FACTOR;
+const float BALL_COLLISION_VELOCITY = 13.125 * BALL_SPEED_FACTOR;
 
 
 // Volley Ball Net
