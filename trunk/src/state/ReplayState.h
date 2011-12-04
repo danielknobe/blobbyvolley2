@@ -26,10 +26,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class DuelMatch;
 class ReplayRecorder;
 
-class ReplayMenuState : public State
+class ReplayState : public State
 {
 public:
-	ReplayMenuState();
+	ReplayState();
 	virtual void step();
 private:
 	void loadCurrentReplay();
