@@ -868,8 +868,22 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 	{
 		int last = selected + 1;
 		first = last - itemsPerPage;
+		/// \todo maybe we should adapt selected so we even can't scroll up further!
+		// we don't want negative chatlog, so we just scroll upward without coming to negative
+		// elements.
 		if (first < 0)
+		{
+			// increase last element so we alway draw itemsPerPage items
+			last -= first;
 			first = 0;
+		}
+		
+		// check that we don't create out of bounds problems
+		if(last > entries.size())
+		{
+			last = entries.size();
+		}
+			
 		obj.entries = std::vector<std::string>(entries.begin()+first, entries.begin()+last);
 		// HACK: we use taxt to store information which text is from local player and which from
 		//			remote player.
