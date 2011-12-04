@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "LocalGameState.h"
 
-#include <sstream>
 #include <boost/lexical_cast.hpp>
 
 #include "DuelMatch.h"
@@ -116,14 +115,14 @@ void LocalGameState::step()
 	}
 	else if (mWinner)
 	{
-		std::stringstream tmp;
+		std::string tmp;
 		if(mMatch->winningPlayer() == LEFT_PLAYER)
-			tmp << mLeftPlayer.getName();
+			tmp = mLeftPlayer.getName();
 		else
-			tmp << mRightPlayer.getName();
+			tmp = mRightPlayer.getName();
 		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
+		imgui.doText(GEN_ID, Vector2(274, 250), tmp);
 		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
