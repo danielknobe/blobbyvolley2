@@ -40,6 +40,7 @@ private:
 	int mSelectedReplay;
 	bool mReplaying;
 	bool mChecksumError;
+	bool mVersionError;
 	
 	int mPlayButton;
 	int mCancelButton;

@@ -35,6 +35,7 @@ ReplayState::ReplayState() :
 	IMGUI::getSingleton().resetSelection();
 	mReplaying = false;
 	mChecksumError = false;
+	mVersionError = false;
 
 	mReplayMatch = 0;
 	mReplayRecorder = 0;
@@ -81,6 +82,12 @@ void ReplayState::loadCurrentReplay()
 		delete mReplayRecorder;
 		mReplayRecorder = 0;
 		mChecksumError = true;
+	}
+	catch (VersionMismatchException& e)
+	{
+		delete mReplayRecorder;
+		mReplayRecorder = 0;
+		mVersionError = true;
 	}
 }
 
@@ -179,6 +186,23 @@ void ReplayState::step()
 			if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 			{
 				mChecksumError = false;
+			}
+			else
+			{
+				imgui.doInactiveMode(true);
+			}
+		}
+		
+		if (mVersionError)
+		{
+			imgui.doInactiveMode(false);
+			imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
+			imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_VERSION));
+			imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_OUTDATED));
+
+			if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+			{
+				mVersionError = false;
 			}
 			else
 			{

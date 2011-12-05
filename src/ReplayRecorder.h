@@ -63,6 +63,19 @@ struct ChecksumException : public std::exception
 	std::string error;
 };
 
+struct VersionMismatchException : public std::exception
+{
+	VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor);
+	~VersionMismatchException() throw();
+	
+	virtual const char* what() const throw();
+	
+	std::string error;
+	uint8_t major;
+	uint8_t minor;
+
+};
+
 /// \brief recording game
 class ReplayRecorder
 {
