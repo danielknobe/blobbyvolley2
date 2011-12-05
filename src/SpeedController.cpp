@@ -63,7 +63,6 @@ bool SpeedController::doFramedrop() const
 
 void SpeedController::update()
 {
-	mFramedrop = false;
 	int rateTicks = std::max( static_cast<int>(PRECISION_FACTOR * 1000 / mGameFPS), 1);
 	
 	static int lastTicks = SDL_GetTicks();
@@ -92,10 +91,12 @@ void SpeedController::update()
 	// do we need framedrop?
 	// if passed time > time when we should have drawn next frame
 	// maybe we should limit the number of consecutive framedrops?
-	if ( delta * PRECISION_FACTOR > rateTicks * (mCounter + 1) )
+	// for now: we can't do a framedrop if we did a framedrop last frame
+	if ( delta * PRECISION_FACTOR > rateTicks * (mCounter + 1) && !mFramedrop)
 	{
 		mFramedrop = true;
-	}
+	} else
+		mFramedrop = false;
 
 	mCounter++;
 
