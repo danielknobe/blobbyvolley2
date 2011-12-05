@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 #include <boost/crc.hpp>
 #include <SDL/SDL.h>
+#include "Global.h"
 
 ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
 {
@@ -45,6 +46,28 @@ const char* ChecksumException::what() const throw()
 {
 	return error.c_str();
 }
+
+VersionMismatchException::VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor)
+{
+	std::stringstream errorstr;
+
+	errorstr << "Error: Outdated replay file: " << filename <<
+		std::endl << "expected version: " << (int)REPLAY_FILE_VERSION_MAJOR << "." 
+				<< (int)REPLAY_FILE_VERSION_MINOR << 
+		std::endl << "got: " << (int)major << "." << (int)minor << " instead!" << std::endl;
+	error = errorstr.str();
+}
+
+VersionMismatchException::~VersionMismatchException() throw()
+{
+}
+
+const char* VersionMismatchException::what() const throw()
+{
+	return error.c_str();
+}
+
+
 
 ReplayRecorder::ReplayRecorder(RecorderMode mode)
 {
@@ -77,6 +100,17 @@ void ReplayRecorder::save(const std::string& filename)
 	}
 
 	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
+	
+	// after the header, we write the replay version
+	// first, write zero. leading zero indicates that the following value
+	// really is a version number (and not a checksum of an older replay!)
+	unsigned char zero = 0;
+	PHYSFS_write(fileHandle, &zero, 1, 1);
+	PHYSFS_write(fileHandle, &REPLAY_FILE_VERSION_MAJOR, 1, sizeof(REPLAY_FILE_VERSION_MAJOR));
+	PHYSFS_write(fileHandle, &REPLAY_FILE_VERSION_MINOR, 1, sizeof(REPLAY_FILE_VERSION_MINOR));
+	// we're going to use this value somehow, maybe it can show recording settings.
+	PHYSFS_write(fileHandle, &zero, 1, 1);
+	
 	
 	boost::crc_32_type crc;
 	crc(mServingPlayer);
@@ -131,7 +165,7 @@ void ReplayRecorder::load(const std::string& filename)
 	
 	int fileLength = PHYSFS_fileLength(fileHandle);	
 	/// \todo LEAK: we don't close this file if we leave the function here!
-	if (fileLength < 8)
+	if (fileLength < 12)
 	{
 		std::cout << "Error: Invalid replay file: " <<
 			filename << std::endl;
@@ -145,6 +179,19 @@ void ReplayRecorder::load(const std::string& filename)
 			filename << std::endl;
 		return;
 	}
+	unsigned char version[4];
+	PHYSFS_read(fileHandle, version, 4, 1);
+	
+	// check if versions match
+	if(version[0] != 0)
+		throw(VersionMismatchException(filename, 0, 0));
+	
+	if(version[1] != REPLAY_FILE_VERSION_MAJOR)
+		throw(VersionMismatchException(filename, version[1], version[2]));
+	
+	if(version[2] > REPLAY_FILE_VERSION_MINOR)
+		throw(VersionMismatchException(filename, version[1], version[2]));
+	
 	uint32_t checksum;
 	PHYSFS_read(fileHandle, &checksum, 1, 4);
 	mBufferSize = fileLength-8;
