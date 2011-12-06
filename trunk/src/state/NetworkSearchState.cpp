@@ -37,6 +37,7 @@ NetworkSearchState::NetworkSearchState()
 	mServerBoxPosition = 0;
 	mDisplayInfo = false;
 	mEnteringServer = false;
+	mDisplayUpdateNotification = false;
 
 	mPingClient = new RakClient;
 }
@@ -115,33 +116,23 @@ void NetworkSearchState::step()
 					skip = true;
 					break;
 				}
-				case ID_OLD_CLIENT:
+				case ID_VERSION_MISMATCH:
 				{
-					/// \todo what should we do here? we need to send a notification
-					///			to the user, but we still need to make sure that 
-					///			one can play on not-updated servers.
-					///			just changing the server name seems like a start
-					///			but we have to do something better!
+					// this packet is send when the client is older than the server!
+					// so 
 					RakNet::BitStream stream((char*)packet->data,
 						packet->length, false);
-					printf("server is a blobby server\n");
-					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
-					ServerInfo info(stream,	(*iter)->PlayerIDToDottedIP(packet->playerId) );
+					stream.IgnoreBytes(1);	// ID_VERSION_MISMATCH
 					
-					// we adapt info to indicate that this client is outdated
-					const char* OLD_CLIENT_SERVER_MSG = "This server uses a newer Version of Blobby Volley. "
-														"You might be unable to play on it.";
-					const char* OLD_CLIENT_SERVER_NAME = "updated server";
-					/// \todo add information about servers version numbers here!
-					std::strncpy(info.name, OLD_CLIENT_SERVER_NAME, strlen(OLD_CLIENT_SERVER_NAME));
-					std::strncpy(info.description, OLD_CLIENT_SERVER_MSG, strlen(OLD_CLIENT_SERVER_MSG));
+					// default values if server does not send versions.
+					// thats the 0.9 behaviour
+					int smajor = 0, sminor = 9;		
+					stream.Read(smajor);	// load server version information
+					stream.Read(sminor);
+					printf("found blobby server with version %d.%d\n", smajor, sminor);
 					
-					if (std::find(
-							mScannedServers.begin(),
-							mScannedServers.end(),
-							info) == mScannedServers.end() ){
-						mScannedServers.push_back(info);
-					}
+					mDisplayUpdateNotification = true;
+					
 					// the RakClient will be deleted, so
 					// we must free the packet here
 					packet.reset();
@@ -299,6 +290,12 @@ void NetworkSearchState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState);
+	}
+	
+	if(mDisplayUpdateNotification)
+	{
+		imgui.doOverlay(GEN_ID, Vector2(71, 572), Vector2(729, 590), Color(128, 0, 0));
+		imgui.doText(GEN_ID, Vector2(85, 577), TextManager::getSingleton()->getString(TextManager::UPDATE_NOTIFICATION), TF_SMALL_FONT);
 	}
 }
 

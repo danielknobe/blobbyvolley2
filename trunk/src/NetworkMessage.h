@@ -40,8 +40,8 @@ enum MessageType
 	ID_PAUSE,
 	ID_UNPAUSE,
 	ID_BLOBBY_SERVER_PRESENT,
-	ID_OLD_CLIENT,
-	ID_UNKNOWN_CLIENT,
+	ID_VERSION_MISMATCH,
+	ID_CURRENTLY_UNUSED,	// this value is to ensure network protocol compatibility between 0.9c and 1.0
 	ID_REPLAY,
 	ID_CHAT_MESSAGE
 };
@@ -173,20 +173,14 @@ enum MessageType
 // 		major (int)
 // 		minor (int)
 //
-// ID_OLD_CLIENT
+// ID_VERSION_MISMATCH
 // 	Description:
 // 		Sent from server to client if the version number
-// 		is to old or simply missing
+// 		differes from the one of the server.
 // 	Structure:
-// 		ID_OLD_CLIENT
-//
-// ID_UNKNOWN_CLIENT
-// 	Description:
-// 		Sent from server to client if the version number
-// 		is unknown, typically because the client is more
-// 		recent than the server
-// 	Structure:
-// 		ID_UNKNOWN_CLIENT
+// 		ID_VERSION_MISMATCH
+//		server_major (int)
+//		server_minor (int)
 //
 // ID_REPLAY
 // 	Description:

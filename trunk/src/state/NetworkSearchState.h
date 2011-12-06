@@ -56,6 +56,7 @@ private:
 	int mSelectedServer;
 	bool mDisplayInfo;
 	bool mEnteringServer;
+	bool mDisplayUpdateNotification;
 
 	std::string mEnteredServer;
 	unsigned mServerBoxPosition;
