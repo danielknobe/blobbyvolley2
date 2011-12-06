@@ -82,12 +82,15 @@ void DuelMatch::step()
 	// check for all hit events
 	if(!mRemote)
 	{
-		if (mPhysicWorld.ballHitLeftPlayer())
+		// create game events
+		// ball/player hit events:
+		if (mPhysicWorld.ballHitLeftPlayer() && mLogic->isCollisionValid(LEFT_PLAYER))
 			events |= EVENT_LEFT_BLOBBY_HIT;
 
-		if (mPhysicWorld.ballHitRightPlayer())
+		if (mPhysicWorld.ballHitRightPlayer() && mLogic->isCollisionValid(RIGHT_PLAYER))
 			events |= EVENT_RIGHT_BLOBBY_HIT;
 
+		// ball/ground hit events:
 		if(mPhysicWorld.ballHitLeftGround())
 			events |= EVENT_BALL_HIT_LEFT_GROUND;
 
