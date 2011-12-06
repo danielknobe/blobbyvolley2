@@ -160,6 +160,11 @@ void DuelMatch::trigger(int event)
 	external_events |= event;
 }
 
+void DuelMatch::resetTriggeredEvents()
+{
+	external_events = 0;
+}
+
 void DuelMatch::pause()
 {
 	mLogic->onPause();

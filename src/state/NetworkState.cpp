@@ -176,6 +176,21 @@ void NetworkGameState::step()
 				mFakeMatch->setServingPlayer(mServingPlayer);
 				// sync the clocks... normally, they should not differ
 				mFakeMatch->getClock().setTime(time);
+				
+				/// \attention
+				/// we can get a problem here:
+				/// assume the packet informing about the game event which lead to this
+				///	either BALL_GROUND_COLLISION or BALL_PLAYER_COLLISION got stalled
+				/// and arrives at the same time time as this packet. Then we get the following behaviour:
+				/// we set the score to the right value... the event causing the score to happen gets processed
+				///  -> that player scores -> score is off!
+				///
+				/// i don't have a clean fix for this right now, so we'll have to live with a workaround for now
+				/// we just order the game to reset all triggered events.
+				mFakeMatch->resetTriggeredEvents();
+				/// \todo a good fix would involve ensuring we process all events in the right order
+				
+			
 				break;
 			}
 			case ID_BALL_GROUND_COLLISION:
