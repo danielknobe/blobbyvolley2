@@ -115,34 +115,34 @@ void IMGUI::end()
 				rmanager.drawImage(obj.text, obj.pos1);
 				break;
 			case OVERLAY:
-				rmanager.drawOverlay(0.6, obj.pos1, obj.pos2, obj.col);
+				rmanager.drawOverlay(0.65, obj.pos1, obj.pos2, obj.col);
 				break;
 			case TEXT:
 				rmanager.drawText(obj.text, obj.pos1, obj.flags);
 				break;
 			case SCROLLBAR:
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
 			case ACTIVESCROLLBAR:
-				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
+				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
 			case EDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
 				break;
 			case ACTIVEEDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
+				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
 				if (obj.pos2.x >= 0)
 					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5, obj.pos1.y+5), Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5+3, obj.pos1.y+5+FontSize), Color(255,255,255));
 				break;
 			case SELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if(c == obj.selected)
@@ -153,7 +153,7 @@ void IMGUI::end()
 				break;
 			case ACTIVESELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.2, obj.pos1, obj.pos2);
+				rmanager.drawOverlay(0.3, obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if(c == obj.selected)
@@ -164,7 +164,7 @@ void IMGUI::end()
 				break;
 			case CHAT:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos2);
+				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if (obj.text[c] == 'R' )
