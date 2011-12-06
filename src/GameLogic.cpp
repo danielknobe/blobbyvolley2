@@ -153,6 +153,7 @@ void IGameLogic::step()
 
 void IGameLogic::onPause()
 {
+	/// pausing for now only means stopping the clock
 	clock.stop();
 }
 void IGameLogic::onUnPause()

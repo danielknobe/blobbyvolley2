@@ -26,7 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Clock.h"
 
-/// this class is told what happens in the game and it applies the rules to count 
+/// \class IGameLogic
+/// \brief Interface for managing game rules, score counting etc.
+/// \details this class is told what happens in the game and it applies the rules to count 
 /// the points. it is designed as a abstract base class to provide different 
 /// implementations (ie old/new volleyball rules)
 class IGameLogic
@@ -41,13 +43,20 @@ class IGameLogic
 		// -----------------------------------------------------------------------------------------
 		
 		// methods for querying the score/touches of a patricular team
+		/// returns current points of one player
 		int getScore(PlayerSide side) const;
+		
+		/// sets the score of the specified player
 		void setScore(PlayerSide side, int score);		// when might need such a method if we add saved games
 		
+		
+		/// returns the number of times a player has hit the ball.
 		int getHits(PlayerSide side) const;
 		
 		// method for querying and setting the serving player
+		/// returns which player is the serving player
 		PlayerSide getServingPlayer() const;
+		/// sets which player is currently the serving player
 		void setServingPlayer(PlayerSide side);
 		
 				
@@ -55,12 +64,14 @@ class IGameLogic
 		/// game still runs
 		PlayerSide getWinningPlayer() const;
 		
-		/// returns who has made the last mistake.
-		/// after this request, the value is reset
+		/// \brief returns which player made the last mistake.
+		/// After this request, that value is reset.
 		PlayerSide getLastErrorSide();
 		
 		// methods for setting/getting the target score
+		/// sets the score required for winning.
 		void setScoreToWin(int stw);
+		/// returns the score required for winning.
 		int getScoreToWin() const;
 		
 		/// gets the associated clock
@@ -79,12 +90,14 @@ class IGameLogic
 		/// called when ball hits player
 		void onBallHitsPlayer(PlayerSide side);
 				
-		// returns whether the collision was valid (max. 3 hits)
+		/// returns whether the collision was valid (max. 3 hits)
 		bool isCollisionValid(PlayerSide side) const;
 
 		
 		// set/unset pause mode
+		/// pauses the game logic. 
 		void onPause();
+		/// disables pause mode
 		void onUnPause();
 		
 		/// must be called every step
@@ -97,14 +110,14 @@ class IGameLogic
 
 		// helper functions
 		
-		// convert player side into array index
+		/// convert player side into array index
 		static inline int side2index(PlayerSide side)
 		{
 			assert(side == LEFT_PLAYER || side == RIGHT_PLAYER);
 			return side - LEFT_PLAYER;
 		}
 		
-		// determine the opposite player side
+		/// determine the opposite player side
 		static inline PlayerSide other_side(PlayerSide side)
 		{
 			switch(side)
@@ -119,18 +132,17 @@ class IGameLogic
 		}
 
 	private:	
-		// resets score and touches
+		/// resets score and touches
 		void reset();
 		
-		// this is called when a player makes a
-		// mistake
+		/// this is called when a player makes a mistake
 		void onError(PlayerSide side);
 		
-		/// this function is called by on error, it contains the customizable part of the 
+		/// this function is called by onError, it contains the customizable part of the 
 		/// error handling
 		virtual void OnMistake(PlayerSide side) = 0;
 		
-		/// thic function checks whether a player has won the game
+		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
 			
 		
@@ -146,6 +158,7 @@ class IGameLogic
 		PlayerSide mLastError;
 		/// player that is currently serving
 		PlayerSide mServingPlayer;
+		
 		/// player that has won the game
 		/// \todo do we really need to cache this information here??
 		PlayerSide mWinningPlayer;
