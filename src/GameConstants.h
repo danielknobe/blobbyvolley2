@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 // Difficulty Settings
-const float BALL_SPEED_FACTOR = 1.00;
+const float BALL_SPEED_FACTOR = 1.05;
 
 // Border Settings
 const float LEFT_PLANE = 0;
