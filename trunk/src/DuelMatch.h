@@ -62,6 +62,7 @@ public:
 	void setScore(int left, int right);
 	
 	void trigger(int event);
+	void resetTriggeredEvents();
 
 	// This reports the index of the winning player and -1 if the
 	// game is still running
