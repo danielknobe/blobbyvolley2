@@ -292,7 +292,9 @@ int main(int argc, char** argv)
 					if (wrongPackageSize)
 					{
 						printf("major: %d minor: %d\n", major, minor);
-						stream2.Write((unsigned char)ID_UNKNOWN_CLIENT);
+						stream2.Write((unsigned char)ID_VERSION_MISMATCH);
+						stream2.Write((int)BLOBBY_VERSION_MAJOR);
+						stream2.Write((int)BLOBBY_VERSION_MINOR);
 						server.Send(&stream2, LOW_PRIORITY,
 									RELIABLE_ORDERED, 0, packet->playerId,
 									false);
@@ -301,7 +303,9 @@ int main(int argc, char** argv)
 						|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
 					// Check if the packet contains matching version numbers
 					{
-						stream2.Write((unsigned char)ID_OLD_CLIENT);
+						stream2.Write((unsigned char)ID_VERSION_MISMATCH);
+						stream2.Write((int)BLOBBY_VERSION_MAJOR);
+						stream2.Write((int)BLOBBY_VERSION_MINOR);
 												server.Send(&stream2, LOW_PRIORITY,
 							RELIABLE_ORDERED, 0, packet->playerId,
 							false);

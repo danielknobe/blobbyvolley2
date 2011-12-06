@@ -139,6 +139,8 @@ class TextManager{
 			OP_MEDIUM,
 			OP_STRONG,
 			
+			UPDATE_NOTIFICATION,
+			
 			COUNT
 		};
 		
