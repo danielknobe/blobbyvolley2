@@ -102,34 +102,55 @@ bool TextManager::loadFromXML(std::string file){
 	if (!language)
 		return false;
 	
+	int num_strings = mStrings.size();
+	int found_count = 0;
+	
 	// this loop assumes that the strings in the xml file are in the correct order
 	//  in each step, it reads the next string element and writes it to the next position in mStrings
 	for (	TiXmlElement* stringel = language->FirstChildElement("string"); 
 			stringel; 
-			stringel = stringel->NextSiblingElement("string")){
+			stringel = stringel->NextSiblingElement("string"))
+	
+	{
 		
-		
+		/// \todo we don't check for duplicate entries!
 		const char* e = stringel->Attribute("english");
 		const char* t = stringel->Attribute("translation");
 		if (t && e){
 			// search the english string and replace it with the translation
 			std::vector<std::string>::iterator found = std::find(mStrings.begin(), mStrings.end(), e);
 			if(found != mStrings.end())
+			{
+				found_count++;
 				*found = t;
+			}
 			else
-				std::cerr<<"error in language file: entry "<<e<<" -> "<<t<<" invalid\n";
+				std::cerr << "error in language file: entry " << e << " -> " << t << " invalid\n";
 		
-		}else if(t){
-			std::cerr<<"error in language file: english not found for "<<t<<"\n";
-		}else if(e){
-			std::cerr<<"error in language file: translation not found for "<<e<<"\n";
+		} 
+		else if(t)
+		{
+			std::cerr << "error in language file: english not found for " << t << std::endl;
 		}
+		else if(e)
+		{
+			std::cerr << "error in language file: translation not found for " << e << std::endl;
+		}
+		
+	}
+	
+	// do we check if we got all?
+	if(num_strings != found_count)
+	{
+		std::cerr << "missing translations: got " << found_count << 
+					" out of " << num_strings << " translation entries" << std::endl; 
 	}
 	
 	return true;
 }
 
-void TextManager::setDefault(){
+void TextManager::setDefault()
+{
 	// Hardcoded default language
 	mStrings[LBL_OK] = "ok";
 	mStrings[LBL_CANCEL] = "cancel";
@@ -229,6 +250,8 @@ void TextManager::setDefault(){
 	mStrings[OP_WEAK] = "weak";
 	mStrings[OP_MEDIUM] = "medium";
 	mStrings[OP_STRONG] = "strong";
+	
+	mStrings[UPDATE_NOTIFICATION] = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley";
 }
 
 std::map<std::string, std::string> TextManager::language_names;
