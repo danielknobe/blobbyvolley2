@@ -299,6 +299,11 @@ void NetworkSearchState::step()
 	}
 }
 
+const char* NetworkSearchState::getStateName() const
+{
+	return "NetworkSearchState";
+}
+
 // the different networkmodi classes (online/LAN)
 OnlineSearchState::OnlineSearchState()
 {
@@ -326,6 +331,11 @@ void OnlineSearchState::searchServers()
 	
 }
 
+const char* OnlineSearchState::getStateName() const
+{
+	return "OnlineSearchState";
+}
+
 LANSearchState::LANSearchState()
 {
 	searchServers();
@@ -335,4 +345,9 @@ void LANSearchState::searchServers()
 {
 	mScannedServers.clear();
 	mPingClient->PingServer("255.255.255.255", BLOBBY_PORT, 0, true);
+}
+
+const char* LANSearchState::getStateName() const
+{
+	return "LANSearchState";
 }

@@ -31,6 +31,7 @@ class ReplayState : public State
 public:
 	ReplayState();
 	virtual void step();
+	virtual const char* getStateName() const;
 private:
 	void loadCurrentReplay();
 	DuelMatch* mReplayMatch;

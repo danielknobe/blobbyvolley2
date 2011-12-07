@@ -178,4 +178,8 @@ void LocalGameState::step()
 	}
 }
 
+const char* LocalGameState::getStateName() const
+{
+	return "LocalGameState";
+}
 

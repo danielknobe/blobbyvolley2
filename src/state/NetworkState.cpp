@@ -609,6 +609,11 @@ void NetworkGameState::step()
 	}
 }
 
+const char* NetworkGameState::getStateName() const
+{
+	return "NetworkGameState";
+}
+
 NetworkHostState::NetworkHostState()
 {
 	mServer = new RakServer;
@@ -766,5 +771,10 @@ void NetworkHostState::step()
 				mNetworkGame->step();
 		}
 	}
+}
+
+const char* NetworkHostState::getStateName() const
+{
+	return "NetworkHostState";
 }
 

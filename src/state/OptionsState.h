@@ -29,6 +29,7 @@ public:
 	OptionState();
 	virtual ~OptionState();
 	virtual void step();
+	virtual const char* getStateName() const;
 private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
@@ -45,6 +46,7 @@ public:
 	GraphicOptionsState();
 	virtual ~GraphicOptionsState();
 	virtual void step();
+	virtual const char* getStateName() const;
 private:
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
@@ -61,6 +63,7 @@ public:
 	InputOptionsState();
 	virtual ~InputOptionsState();
 	virtual void step();
+	virtual const char* getStateName() const;
 private:
 	UserConfig mOptionConfig;
 	bool mSaveConfig;
@@ -93,6 +96,7 @@ public:
 	MiscOptionsState();
 	virtual ~MiscOptionsState();
 	virtual void step();
+	virtual const char* getStateName() const;
 private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mBackgrounds;

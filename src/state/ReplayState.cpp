@@ -212,3 +212,8 @@ void ReplayState::step()
 	}
 }
 
+const char* ReplayState::getStateName() const
+{
+	return "ReplayState";
+}
+

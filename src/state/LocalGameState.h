@@ -39,5 +39,7 @@ public:
 	virtual ~LocalGameState();
 	virtual void step();
 	
+	virtual const char* getStateName() const;
+	
 };
 
