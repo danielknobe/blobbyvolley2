@@ -187,7 +187,7 @@ RenderManager* RenderManager::createRenderManagerGL2D()
 
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 {
-	mCurrentFlags.insert(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	mCurrentFlags.insert(GL_MULTISAMPLE);
 	
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -317,9 +317,6 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glClearDepth(1.0);
-	glDepthFunc(GL_LEQUAL);
-	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 
 	glAlphaFunc(GL_GREATER, 0.5);
@@ -352,7 +349,6 @@ void RenderManagerGL2D::deinit()
 
 void RenderManagerGL2D::draw()
 {
-	glClear(GL_DEPTH_BUFFER_BIT);
 	if (!mDrawGame)
 		return;
 		
