@@ -109,6 +109,11 @@ void State::presentGame(const DuelMatch& match)
 
 }
 
+const char* State::getCurrenStateName()
+{
+	return getCurrentState()->getStateName();
+}
+
 MainMenuState::MainMenuState()
 {
 	IMGUI::getSingleton().resetSelection();
@@ -188,6 +193,11 @@ void MainMenuState::step()
 	}
 }
 
+const char* MainMenuState::getStateName() const
+{
+	return "MainMenuState";
+}
+
 CreditsState::CreditsState()
 {
 	IMGUI::getSingleton().resetSelection();
@@ -232,5 +242,10 @@ void CreditsState::step()
 		setCurrentState(new MainMenuState());
 		return;
 	}
+}
+
+const char* CreditsState::getStateName() const
+{
+	return "CreditsState";
 }
 

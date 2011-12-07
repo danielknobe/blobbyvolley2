@@ -35,6 +35,7 @@ public:
 	NetworkGameState(const std::string& servername, Uint16 port);
 	virtual ~NetworkGameState();
 	virtual void step();
+	virtual const char* getStateName() const;
 	
 private:
 	enum
@@ -90,6 +91,7 @@ public:
 	virtual ~NetworkHostState();
 
 	virtual void step();
+	virtual const char* getStateName() const;
 
 private:
 	NetworkGameState* mGameState;

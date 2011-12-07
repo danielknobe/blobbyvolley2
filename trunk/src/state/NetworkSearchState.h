@@ -42,6 +42,7 @@ public:
 	// LAN games send a broadcast to local network
 	virtual void searchServers() = 0;
 
+	virtual const char* getStateName() const;
 protected:
 	std::vector<ServerInfo> mScannedServers;
 	RakClient* mPingClient;
@@ -68,6 +69,7 @@ public:
 	OnlineSearchState();
 	virtual ~OnlineSearchState() {};
 	virtual void searchServers();
+	virtual const char* getStateName() const;
 };
 
 class LANSearchState : public NetworkSearchState
@@ -76,5 +78,6 @@ public:
 	LANSearchState();
 	virtual ~LANSearchState() {};
 	virtual void searchServers();
+	virtual const char* getStateName() const;
 };
 

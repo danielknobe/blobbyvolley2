@@ -171,6 +171,11 @@ void OptionState::step()
 	}
 }
 
+const char* OptionState::getStateName() const
+{
+	return "OptionState";
+}
+
 GraphicOptionsState::GraphicOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
@@ -360,6 +365,11 @@ void GraphicOptionsState::step()
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
+}
+
+const char* GraphicOptionsState::getStateName() const
+{
+	return "GraphicOptionsState";
 }
 
 InputOptionsState::InputOptionsState()
@@ -817,6 +827,11 @@ void InputOptionsState::step()
 	}
 }
 
+const char* InputOptionsState::getStateName() const
+{
+	return "InputOptionsState";
+}
+
 MiscOptionsState::MiscOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
@@ -978,4 +993,9 @@ void MiscOptionsState::step()
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
+}
+
+const char* MiscOptionsState::getStateName() const
+{
+	return "MiscOptionsState";
 }
