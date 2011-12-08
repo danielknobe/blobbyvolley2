@@ -68,7 +68,7 @@ bool UserConfig::loadFile(const std::string& filename)
 	return true;
 }
 
-bool UserConfig::saveFile(const std::string& filename)
+bool UserConfig::saveFile(const std::string& filename) const
 {
 	PHYSFS_file* fileHandle = PHYSFS_openWrite(filename.c_str());
 	if (!fileHandle)
@@ -93,22 +93,22 @@ bool UserConfig::saveFile(const std::string& filename)
 	return true;
 }
 
-float UserConfig::getFloat(const std::string& name)
+float UserConfig::getFloat(const std::string& name) const
 {
 	return atof(getValue(name).c_str());
 }
 
-std::string UserConfig::getString(const std::string& name)
+std::string UserConfig::getString(const std::string& name) const
 {
 	return getValue(name);
 }
 
-bool UserConfig::getBool(const std::string& name)
+bool UserConfig::getBool(const std::string& name) const
 {
 	return (getValue(name) == "true") ? true : false;
 }
 
-int UserConfig::getInteger(const std::string& name)
+int UserConfig::getInteger(const std::string& name) const
 {
 	return atoi(getValue(name).c_str());
 }
@@ -165,7 +165,7 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	var->Value = value;
 }
 
-std::string UserConfig::getValue(const std::string& name)
+std::string UserConfig::getValue(const std::string& name) const
 {
 	UserConfigVar *var = findVarByName(name);
 	if (!var)
@@ -183,7 +183,7 @@ UserConfig::~UserConfig()
 		delete mVars[i];
 }
 
-UserConfigVar* UserConfig::findVarByName(const std::string& name)
+UserConfigVar* UserConfig::findVarByName(const std::string& name) const
 {
 	for (unsigned int i = 0; i < mVars.size(); ++i)
 		if (mVars[i]->Name == name) return mVars[i];
