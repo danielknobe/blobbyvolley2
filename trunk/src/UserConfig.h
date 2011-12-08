@@ -35,17 +35,17 @@ public:
 	~UserConfig();
 	
 	bool loadFile(const std::string& filename);
-	bool saveFile(const std::string& filename);
+	bool saveFile(const std::string& filename) const;
 
 	void setValue(const std::string& name, const std::string& value);
-	std::string getValue(const std::string& name);
+	std::string getValue(const std::string& name) const;
 	UserConfigVar* createVar(const std::string& name, 
 			const std::string& defaultValue);
 
-	float getFloat(const std::string& name);
-	std::string getString(const std::string& name);
-	bool getBool(const std::string& name);
-	int getInteger(const std::string& name);
+	float getFloat(const std::string& name) const;
+	std::string getString(const std::string& name) const;
+	bool getBool(const std::string& name) const;
+	int getInteger(const std::string& name) const;
 
 	void setFloat(const std::string& name, float value);
 	void setString(const std::string& name, const std::string& value);
@@ -55,5 +55,5 @@ public:
 private:
 	std::vector<UserConfigVar*> mVars;
 	bool mChangeFlag;
-	UserConfigVar *findVarByName(const std::string& Name);
+	UserConfigVar *findVarByName(const std::string& Name) const;
 };
