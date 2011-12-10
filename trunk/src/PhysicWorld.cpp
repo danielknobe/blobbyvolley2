@@ -244,6 +244,8 @@ void PhysicWorld::handleBlob(PlayerSide player)
 	// Reset ball to blobby collision
 	mBallHitByBlob[player] = false;
 
+	float currentBlobbyGravity = GRAVITATION;
+
 	if (mPlayerInput[player].up)
 	{
 		if (blobbyHitGround(player))
@@ -251,7 +253,7 @@ void PhysicWorld::handleBlob(PlayerSide player)
 			mBlobVelocity[player].y = -BLOBBY_JUMP_ACCELERATION;
 			blobbyStartAnimation(PlayerSide(player));
 		}
-		mBlobVelocity[player].y -= BLOBBY_JUMP_BUFFER;
+		currentBlobbyGravity -= BLOBBY_JUMP_BUFFER;
 	}
 
 	if ((mPlayerInput[player].left || mPlayerInput[player].right)
@@ -264,12 +266,13 @@ void PhysicWorld::handleBlob(PlayerSide player)
 		(mPlayerInput[player].right ? BLOBBY_SPEED : 0) -
 		(mPlayerInput[player].left ? BLOBBY_SPEED : 0);
 
-	// Acceleration Integration
-	mBlobVelocity[player].y += GRAVITATION;
-
-	// Compute new position
-	mBlobPosition[player] += mBlobVelocity[player];
-
+	// compute blobby fall movement (dt = 1)
+	// ds = a/2 * dt^2 + v * dt
+	mBlobPosition[player] += Vector2(0, 0.5f * currentBlobbyGravity ) + mBlobVelocity[player];
+	// dv = a * dt
+	mBlobVelocity[player].y += currentBlobbyGravity;
+	
+	// Hitting the ground
 	if (mBlobPosition[player].y > GROUND_PLANE_HEIGHT)
 	{
 		if(mBlobVelocity[player].y > 3.5)
