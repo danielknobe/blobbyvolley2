@@ -325,12 +325,15 @@ void PhysicWorld::step()
 	handleBlob(LEFT_PLAYER);
 	handleBlob(RIGHT_PLAYER);
 
-	// Ball Gravitation
+	// Move ball when game is running
 	if (mIsGameRunning)
+	{
+		// dt = 1 !!
+		// move ball ds = a/2 * dt^2 + v * dt
+		mBallPosition += Vector2(0, 0.5f * BALL_GRAVITATION) + mBallVelocity;
+		// dv = a*dt
 		mBallVelocity.y += BALL_GRAVITATION;
-
-	// move ball
-	mBallPosition += mBallVelocity;
+	} 
 
 	// Collision detection
 	if(mIsBallValid)
