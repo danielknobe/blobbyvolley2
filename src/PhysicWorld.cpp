@@ -291,7 +291,7 @@ void PhysicWorld::handleBlob(PlayerSide player)
 	blobbyAnimationStep(player);
 }
 
-void PhysicWorld::checkBlobbyBallCollision(PlayerSide player)
+void PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 {
 	// Check for bottom circles
 	if(playerBottomBallCollision(player))
@@ -345,8 +345,8 @@ void PhysicWorld::step()
 	// Collision detection
 	if(mIsBallValid)
 	{
-		checkBlobbyBallCollision(LEFT_PLAYER);
-		checkBlobbyBallCollision(RIGHT_PLAYER);
+		handleBlobbyBallCollision(LEFT_PLAYER);
+		handleBlobbyBallCollision(RIGHT_PLAYER);
 	}
 	// Ball to ground Collision
 	else if (mBallPosition.y + BALL_RADIUS > 500.0)
@@ -441,6 +441,8 @@ void PhysicWorld::step()
 
 	mTimeSinceBallout = mIsBallValid ? 0.0 :
 		mTimeSinceBallout + 1.0 / 60;
+		
+	checkPhysicStateValidity();
 }
 
 void PhysicWorld::dampBall()
@@ -605,6 +607,35 @@ const PlayerInput* PhysicWorld::getPlayersInput() const
 {
 	return mPlayerInput;
 }
+
+// debugging:
+#ifdef DEBUG
+
+#include <iostream>
+
+bool PhysicWorld::checkPhysicStateValidity() const
+{
+	// check for blobby ball collisions
+	if(playerTopBallCollision(LEFT_PLAYER) || playerBottomBallCollision(LEFT_PLAYER))
+	{
+		std::cout << mBallPosition.x << " " << mBallPosition.y << "\n";
+		std::cout << mBlobPosition[LEFT_PLAYER].x << " " << mBlobPosition[LEFT_PLAYER].y << "\n";
+		return false;
+	}
+	
+	if(playerTopBallCollision(RIGHT_PLAYER) || playerBottomBallCollision(RIGHT_PLAYER))
+	{
+		std::cout << mBallPosition.x << " " << mBallPosition.y << "\n";
+		std::cout << mBlobPosition[RIGHT_PLAYER].x << " " << mBlobPosition[RIGHT_PLAYER].y << "\n";
+
+		return false;
+	}
+	
+	return true;
+}
+
+#endif
+
 
 inline void set_fpu_single_precision()
 {

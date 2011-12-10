@@ -31,6 +31,11 @@ namespace RakNet
 	class BitStream;
 }
 
+/*! \brief blobby world
+	\details This class encapuslates the physical world where blobby happens. It manages the two blobs,
+			the ball and collisions between them and the environment, it calculates object movements etc.
+	\todo remove all game logic related stuff!
+*/
 class PhysicWorld
 {
 public:
@@ -80,7 +85,7 @@ public:
 	// wants to know, which player begins.
 	void reset(PlayerSide player);
 
-	// This resets the player to their starting Positions
+	// This resets the player to their starting positions
 	void resetPlayer();
 
 	// Important: This assumes a fixed framerate of 60 FPS!
@@ -100,6 +105,10 @@ public:
 
 	//Input stuff for recording and playing replays
 	const PlayerInput* getPlayersInput() const;
+	
+	#ifdef DEBUG
+	bool checkPhysicStateValidity() const;
+	#endif
 
 private:
 	inline bool playerTopBallCollision(int player) const;
@@ -110,7 +119,7 @@ private:
 	void handleBlob(PlayerSide player);
 
 	// Detect and handle ball to blobby collisions
-	void checkBlobbyBallCollision(PlayerSide player);
+	void handleBlobbyBallCollision(PlayerSide player);
 
 	bool mBallHitByBlob[MAX_PLAYERS];
 
@@ -131,6 +140,7 @@ private:
 	bool mIsBallValid;
 
 	float mLastHitIntensity;
+	///! \todo thats not relevant for physics! It's game logic!!
 	float mTimeSinceBallout;
 };
 
