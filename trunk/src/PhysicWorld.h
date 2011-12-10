@@ -33,37 +33,6 @@ namespace RakNet
 
 class PhysicWorld
 {
-private:
-	inline bool playerTopBallCollision(int player) const;
-	inline bool playerBottomBallCollision(int player) const;
-	bool resetAreaClear()const;
-
-	// Do all blobby-related physic stuff which is independent from states
-	void handleBlob(PlayerSide player);
-
-	// Detect and handle ball to blobby collisions
-	void checkBlobbyBallCollision(PlayerSide player);
-
-	bool mBallHitByBlob[MAX_PLAYERS];
-
-	Vector2 mBlobPosition[MAX_PLAYERS];
-	Vector2 mBallPosition;
-
-	Vector2 mBlobVelocity[MAX_PLAYERS];
-	Vector2 mBallVelocity;
-
-	float mBallRotation;
-	float mBallAngularVelocity;
-	float mBlobState[MAX_PLAYERS];
-	float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
-
-	PlayerInput mPlayerInput[MAX_PLAYERS];
-
-	bool mIsGameRunning;
-	bool mIsBallValid;
-
-	float mLastHitIntensity;
-	float mTimeSinceBallout;
 public:
 	PhysicWorld();
 	~PhysicWorld();
@@ -131,6 +100,38 @@ public:
 
 	//Input stuff for recording and playing replays
 	const PlayerInput* getPlayersInput() const;
+
+private:
+	inline bool playerTopBallCollision(int player) const;
+	inline bool playerBottomBallCollision(int player) const;
+	bool resetAreaClear()const;
+
+	// Do all blobby-related physic stuff which is independent from states
+	void handleBlob(PlayerSide player);
+
+	// Detect and handle ball to blobby collisions
+	void checkBlobbyBallCollision(PlayerSide player);
+
+	bool mBallHitByBlob[MAX_PLAYERS];
+
+	Vector2 mBlobPosition[MAX_PLAYERS];
+	Vector2 mBallPosition;
+
+	Vector2 mBlobVelocity[MAX_PLAYERS];
+	Vector2 mBallVelocity;
+
+	float mBallRotation;
+	float mBallAngularVelocity;
+	float mBlobState[MAX_PLAYERS];
+	float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
+
+	PlayerInput mPlayerInput[MAX_PLAYERS];
+
+	bool mIsGameRunning;
+	bool mIsBallValid;
+
+	float mLastHitIntensity;
+	float mTimeSinceBallout;
 };
 
 
