@@ -33,6 +33,10 @@ const float BLOBBY_ANIMATION_SPEED = 0.5;
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
+// helper function for setting FPU precision
+
+inline void set_fpu_single_precision();
+
 PhysicWorld::PhysicWorld()
 {
 	reset(LEFT_PLAYER);
@@ -600,4 +604,23 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 const PlayerInput* PhysicWorld::getPlayersInput() const
 {
 	return mPlayerInput;
+}
+
+inline void set_fpu_single_precision()
+{
+#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
+	#if defined(__GNUC__)
+		volatile short cw;
+		asm volatile ("fstcw %0" : "=m"(cw));
+		cw = cw & 0xfcff;
+		asm volatile ("fldcw %0" :: "m"(cw));
+	#elif defined(_MSC_VER)
+		short cw;
+		asm fstcw cw;
+		cw = cw & 0xfcff;
+		asm fldcw cw;
+	#endif
+#else
+	#warning FPU precision may not conform to IEEE 754
+#endif
 }
