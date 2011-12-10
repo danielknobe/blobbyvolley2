@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 #include <sstream>
-/// !!!!!!!!!!!!! DEBUGGING!
-#include <fstream>
 
 #include "DuelMatch.h"
 #include "RenderManager.h"
@@ -84,17 +82,6 @@ void MouseInputDevice::transferInput(PlayerInput& input)
 	
 	// ask our lag detector about estimated current lag
 	int lag = mLag.getLag();
-	
-	/// DEBUGGING FILE
-	static std::fstream file ("debug.txt", std::fstream::out);
-	
-	// when we assume lag this high, let debuggers check 
-	#ifdef DEBUG
-	if(lag > 10)
-	{
-		file << lag << "\n " << mLag.getDebugString() << std::endl;
-	}
-	#endif
 	
 	// adapt this value
 	lag -= 1;
