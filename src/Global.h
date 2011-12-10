@@ -28,6 +28,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GP2X GP2X
 #endif
 
+/*!	\def DEBUG
+	\brief Enable debugging support
+	\details when this marko is present, Blobby generates some additional debugging code
+			usefull for tracking down bugs.
+*/
+
 const int BLOBBY_PORT = 1234;
 
 const int BLOBBY_VERSION_MAJOR = 0;
@@ -147,25 +153,6 @@ struct ScriptException : public std::exception
 	std::string luaerror;
 	~ScriptException() throw() {}
 };
-
-inline void set_fpu_single_precision()
-{
-#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
-	#if defined(__GNUC__)
-		volatile short cw;
-		asm volatile ("fstcw %0" : "=m"(cw));
-		cw = cw & 0xfcff;
-		asm volatile ("fldcw %0" :: "m"(cw));
-	#elif defined(_MSC_VER)
-		short cw;
-		asm fstcw cw;
-		cw = cw & 0xfcff;
-		asm fldcw cw;
-	#endif
-#else
-	#warning FPU precision may not conform to IEEE 754
-#endif
-}
 
 /// we need to define this constant to make it compile with strict c++98 mode
 #undef M_PI
