@@ -1,20 +1,32 @@
-New in 1.0 RC 1 (rev. 685) since Beta 9:
-- removed possible lag due to rounding issues in speed controller
-- fixed severe network problem
+New in 1.0 RC 1 (rev. 732) since Beta 9:
+* Features:
 - enabled writing in chat without clicking into editbox
-- [Windows]: fixed server output messages 
-- corrected version in server startup message
-- removed needless wait in network server (only 1 ms)
-- Bugfix: only two hits accepted under special circumstances
 - Blobby speed more stable on slow systems (framedrop)
 - auto disconnect when game is closed
 - use native keyboard layout when possible
-- improved Lag Detector
-- fixed some small and unlikely memleaks
-- send disconnection notification to server when leaving blobby
+- small physics improvements
+- mouse input for online games
 - join server with double click
-- fixed a score problem in default rules
-- improved chat UI (WIP)
+- improved chat UI
+- small gfx enhancements
+- [LIGA] added speedserver
+
+* Bugfixes:
+- Fix: severe network problem
+- Fix: "two hit bug"
+- Fix: wrong winning condition in default rules
+- Fix: online replays sometimes not saved
+- squished ball generates only one sound now
+- corrected version in server startup message
+- [Windows] fixed server output messages 
+
+* Performance:
+- removed possible lag due to rounding issues in speed controller
+- removed needless wait in network server (only 1 ms)
+- improved OpenGL performance significantly (10-30%)
+- fixed some small and unlikely memleaks
+- fixed performance killer in "... has won" screen
+
 
 New in Beta 9 (rev. 622) since Alpha 8:
 - network game: reduced data transfer
