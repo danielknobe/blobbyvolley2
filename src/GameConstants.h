@@ -39,14 +39,14 @@ const float BLOBBY_LOWER_RADIUS = 33;
 
 // This is exactly the half of the gravitation, i checked it in
 // the original code
-const float BLOBBY_JUMP_BUFFER = 0.44;
-const float GRAVITATION = 0.88;
+const float BLOBBY_JUMP_BUFFER = 0.45;
+const float GRAVITATION = 0.90;
 const float BLOBBY_JUMP_ACCELERATION = 15.1;
 
 
 // Ball Settings
 const float BALL_RADIUS = 31.5;
-const float BALL_GRAVITATION = 0.28 * BALL_SPEED_FACTOR * BALL_SPEED_FACTOR;
+const float BALL_GRAVITATION = 0.30 * BALL_SPEED_FACTOR * BALL_SPEED_FACTOR;
 const float BALL_COLLISION_VELOCITY = 13.125 * BALL_SPEED_FACTOR;
 
 
