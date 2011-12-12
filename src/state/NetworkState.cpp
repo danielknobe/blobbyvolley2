@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "LocalInputSource.h"
 #include "RakNetPacket.h"
+#include "UserConfig.h"
 // We don't need the stringcompressor
 
 NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
@@ -47,6 +48,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 {	
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
+	/// \todo we need read-only access here!
 	UserConfig config;
 	config.loadFile("config.xml");
 	mOwnSide = (PlayerSide)config.getInteger("network_side");

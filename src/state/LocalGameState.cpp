@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "Blood.h"
+#include "IUserConfigReader.h"
 #include <ctime>
 
 LocalGameState::~LocalGameState()
@@ -51,9 +52,9 @@ LocalGameState::LocalGameState()
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
 	
-	UserConfig gameConfig;
-	gameConfig.loadFile("config.xml");
-	SpeedController::getMainInstance()->setGameSpeed((float)gameConfig.getInteger("gamefps"));
+	SpeedController::getMainInstance()->setGameSpeed(
+			(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
+		);
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 

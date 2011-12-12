@@ -35,8 +35,9 @@ ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip)
 	stream.Read(description, sizeof(description));
 }
 
-ServerInfo::ServerInfo(UserConfig& config)
+ServerInfo::ServerInfo(const UserConfig& config)
 {
+	/// \todo we only need a config reader here!
 	memset(this, 0, sizeof(ServerInfo));
 	std::string tmp;
 	tmp = config.getString("name");
