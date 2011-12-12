@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#include "UserConfig.h"
+#include "IUserConfigReader.h"
 #include "DuelMatch.h"
 
 #include <cassert>
@@ -43,9 +43,8 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	mPhysicWorld.resetPlayer();
 	mPhysicWorld.step();
 
-	UserConfig gameConfig;
-	gameConfig.loadFile("config.xml");
-	mLogic->setScoreToWin(gameConfig.getInteger("scoretowin"));
+	/// \todo we better pass this as a parameter so DuelMatch has no coupeling with UserConfigs...s
+	mLogic->setScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin"));
 };
 
 DuelMatch::~DuelMatch()

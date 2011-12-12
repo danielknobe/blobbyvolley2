@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "TextManager.h"
 #include "SpeedController.h"
+#include "IUserConfigReader.h"
 #include <sstream>
 
 #include <physfs.h>
@@ -71,10 +72,10 @@ void ReplayState::loadCurrentReplay()
 			mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
-				
-		UserConfig gameConfig;
-		gameConfig.loadFile("config.xml");
-		SpeedController::getMainInstance()->setGameSpeed((float)gameConfig.getInteger("gamefps"));
+		
+		SpeedController::getMainInstance()->setGameSpeed(
+				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
+			);
 	
 	}
 	catch (ChecksumException& e)

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <SDL/SDL.h>
 #include "InputManager.h"
+#include "UserConfig.h"
 
 #include "IMGUI.h"
 //#include "SoundManager.h"
@@ -63,6 +64,7 @@ void InputManager::beginGame(PlayerSide side)
 		prefix = "right_blobby_";
 	
 	UserConfig config;
+	///  \todo we need only read only access here!
 	config.loadFile("inputconfig.xml");
 	// determine which device is to be used
 	std::string device = config.getString(prefix + "device");

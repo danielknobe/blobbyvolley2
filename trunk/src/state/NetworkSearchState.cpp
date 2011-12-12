@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "raknet/RakServer.h"
 #include "RakNetPacket.h"
+#include "IUserConfigReader.h"
 
 NetworkSearchState::NetworkSearchState()
 {
@@ -322,11 +323,9 @@ void OnlineSearchState::searchServers()
 	mPingClient->PingServer("blobby.blub-game.com", BLOBBY_PORT + 1, 0, true);
 	mPingClient->PingServer("pgb.game-host.org", BLOBBY_PORT, 0, true);
 	
-	UserConfig config;
-	config.loadFile("config.xml");
 	/// \todo check if we already try to connect to this one!
 	mPingClient->PingServer(
-		config.getString("network_last_server").c_str(),
+		IUserConfigReader::createUserConfigReader("config.xml")->getString("network_last_server").c_str(),
 		BLOBBY_PORT, 0, true);
 	
 }

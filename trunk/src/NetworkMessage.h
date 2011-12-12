@@ -197,7 +197,7 @@ class UserConfig;
 struct ServerInfo
 {
 	ServerInfo(RakNet::BitStream& stream, const char* ip);
-	ServerInfo(UserConfig& config);
+	ServerInfo(const UserConfig& config);
 	ServerInfo(const std::string& playername);
 	ServerInfo() {}
 

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Blood.h"
 #include "RenderManager.h"
-#include "UserConfig.h"
+#include "IUserConfigReader.h"
 #include <stdlib.h>
 
 BloodManager* BloodManager::mSingleton = NULL;
@@ -48,9 +48,7 @@ void Blood::step()
 
 BloodManager::BloodManager()
 {
-	UserConfig gameConfig;
-	gameConfig.loadFile("config.xml");
-	mEnabled = gameConfig.getBool("blood");
+	mEnabled =  IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood");
 }
 
 void BloodManager::step()
