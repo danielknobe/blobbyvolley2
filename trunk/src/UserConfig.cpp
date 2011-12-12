@@ -22,6 +22,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tinyxml/tinyxml.h"
 #include "UserConfig.h"
 #include "Global.h"
+#include <map>
+
+std::map<std::string, boost::shared_ptr<IUserConfigReader> > userConfigCache;
+
+boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
+{
+	// if we have this userconfig already cached, just return from cache
+	std::map<std::string, boost::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache.find(file);
+	if( cfg_cached != userConfigCache.end() )
+	{
+		return cfg_cached->second;
+	}
+	
+	// otherwise, load user config...
+	UserConfig* uc = new UserConfig();
+	uc->loadFile(file);
+	boost::shared_ptr<IUserConfigReader> config(uc);
+	
+	// ... and add to cache
+	userConfigCache[file] = config;
+	
+	return config;
+}
+
+
 
 bool UserConfig::loadFile(const std::string& filename)
 {
@@ -65,6 +90,7 @@ bool UserConfig::loadFile(const std::string& filename)
 			value = c;
 		createVar(name, value);
 	}
+	
 	return true;
 }
 
@@ -90,6 +116,14 @@ bool UserConfig::saveFile(const std::string& filename) const
 
 	PHYSFS_write(fileHandle, xmlFooter, 1, sizeof(xmlFooter) - 1);
 	PHYSFS_close(fileHandle);
+	
+	// we have to make sure that we don't cache any outdated user configs
+	std::map<std::string, boost::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache.find(filename);
+	if( cfg_cached != userConfigCache.end() )
+	{
+		userConfigCache.erase(cfg_cached);
+	}
+	
 	return true;
 }
 
