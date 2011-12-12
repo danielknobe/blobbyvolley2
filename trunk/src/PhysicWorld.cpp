@@ -441,8 +441,6 @@ void PhysicWorld::step()
 
 	mTimeSinceBallout = mIsBallValid ? 0.0 :
 		mTimeSinceBallout + 1.0 / 60;
-		
-	checkPhysicStateValidity();
 }
 
 void PhysicWorld::dampBall()
