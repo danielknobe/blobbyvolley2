@@ -230,8 +230,12 @@ int main(int argc, char** argv)
 						
 						NetworkPlayer leftPlayer = firstPlayer;
 						NetworkPlayer rightPlayer = secondPlayer;
-						PlayerSide switchSide;
+						PlayerSide switchSide = NO_PLAYER;
 						
+						if(RIGHT_PLAYER == firstPlayer.getDesiredSide())
+						{
+							std::swap(leftPlayer, rightPlayer);
+						} 
 						if (secondPlayer.getDesiredSide() == firstPlayer.getDesiredSide())
 						{
 							if (secondPlayer.getDesiredSide() == LEFT_PLAYER)
@@ -239,11 +243,6 @@ int main(int argc, char** argv)
 							if (secondPlayer.getDesiredSide() == RIGHT_PLAYER)
 								switchSide = LEFT_PLAYER;
 						}
-						
-						if(RIGHT_PLAYER == firstPlayer.getDesiredSide())
-						{
-							std::swap(leftPlayer, rightPlayer);
-						} 
 						
 						
 						boost::shared_ptr<NetworkGame> newgame (new NetworkGame(
