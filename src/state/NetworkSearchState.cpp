@@ -96,7 +96,7 @@ void NetworkSearchState::step()
 					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 					ServerInfo info(stream,
 						(*iter)->PlayerIDToDottedIP(
-							packet->playerId));
+							packet->playerId), packet->playerId.port);
 
 					if (std::find(
 							mScannedServers.begin(),

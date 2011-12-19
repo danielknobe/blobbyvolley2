@@ -196,18 +196,21 @@ class UserConfig;
 
 struct ServerInfo
 {
-	ServerInfo(RakNet::BitStream& stream, const char* ip);
+	ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t port);
 	ServerInfo(const UserConfig& config);
 	ServerInfo(const std::string& playername);
-	ServerInfo() {}
+	ServerInfo(uint16_t port) {}
 
 	void writeToBitstream(RakNet::BitStream& stream);
 	
 	void setWaitingPlayer(const std::string& name);
 	
-	
+	/// \todo maybe we should define ServerInfo a little bit more
+	///			as e.g., hostname can be left uninitialised on server
+	/// we combine to functionsalities here: server information and server addresses.
 	int activegames;
 	int gamespeed;
+	uint16_t port;
 	char hostname[64];
 	char name[32];
 	char waitingplayer[64];
