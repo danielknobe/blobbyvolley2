@@ -35,11 +35,12 @@ NetworkGame::NetworkGame(RakServer& server,
 			std::string leftPlayerName, std::string rightPlayerName,
 			Color leftColor, Color rightColor, 
 			PlayerSide switchedSide)
-	: mServer(server)
+	: 	mServer(server), 
+		mLeftInput (new DummyInputSource()), 
+		mRightInput(new DummyInputSource())
+
 {
-	mLeftInput = new DummyInputSource();
-	mRightInput = new DummyInputSource();
-	mMatch = new DuelMatch(mLeftInput, mRightInput, false, false);
+	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false);
 
 	mLeftPlayer = leftPlayer;
 	mRightPlayer = rightPlayer;
@@ -51,7 +52,7 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	mPausing = false;
 
-	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
+	mRecorder.reset(new ReplayRecorder(MODE_RECORDING_DUEL));
 	mRecorder->setPlayerNames(mLeftPlayerName.c_str(), mRightPlayerName.c_str());
 	mRecorder->setServingPlayer(LEFT_PLAYER);
 
@@ -82,8 +83,6 @@ NetworkGame::NetworkGame(RakServer& server,
 
 NetworkGame::~NetworkGame()
 {
-	delete mLeftInput;
-	delete mRightInput;
 	delete mMatch;
 }
 void NetworkGame::injectPacket(const packet_ptr& packet)
