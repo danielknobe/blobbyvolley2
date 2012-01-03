@@ -51,31 +51,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
-// This rendering class reduces all drawing stuff to a few calls
-// to refresh the objects states. It also abstracts from specific
-// graphics APIs.
-// The following implementations are planned (ordered by importance)
-//
-// RenderManagerSDL:
-// 	Uses standard SDL blits for drawing. It depends on precomputed
-// 	rotated sprites and colors the blobs manually.
-// 	Its fixed to the traditional resolution 800x600.
-// RenderManagerGL2D:
-// 	This manager relies on OpenGL to accelerate 2D drawing on systems
-// 	like Linux/X11 where SDL acceleration is difficult. It rotates and
-// 	colors its sprites in realtime, but still uses 2D graphics.
-// RenderManagerGL3D:
-// 	The GL3D is the top-end RenderManager. It uses newly created meshes
-// 	and therefore supports vertex morphing for the blobs. It makes use 
-// 	of OpenGL to present special effects like per-pixel-lighting, 
-// 	stencil shadows, motion blur, and much more. It will requiere
-// 	OpenGL 2.0 compliant graphics hardware.
-// RenderManagerGP2X:
-// 	This manager is used to port Blobby Volley to the GP2X handheld.
-// 	It makes use of a fixed resolution at 320x240 and others for TV-Out.
-// 	It also uses highly optimised loading routines with raw image data.
-// 	In all other terms its similar to the RenderManagerSDL
+/*! \class RenderManager
+	\brief class for managing rendering
+	\details 
+	This rendering class reduces all drawing stuff to a few calls
+	to refresh the objects states. It also abstracts from specific
+	graphics APIs.
+	The following implementations are planned (ordered by importance)
+	
+	RenderManagerSDL:
+	 Uses standard SDL blits for drawing. It depends on precomputed
+	 rotated sprites and colors the blobs manually.
+	 Its fixed to the traditional resolution 800x600.
+	RenderManagerGL2D:
+	 This manager relies on OpenGL to accelerate 2D drawing on systems
+	 like Linux/X11 where SDL acceleration is difficult. It rotates and
+	 colors its sprites in realtime, but still uses 2D graphics.
+	RenderManagerGL3D:
+     The GL3D is the top-end RenderManager. It uses newly created meshes
+     and therefore supports vertex morphing for the blobs. It makes use 
+     of OpenGL to present special effects like per-pixel-lighting, 
+     stencil shadows, motion blur, and much more. It will requiere
+     OpenGL 2.0 compliant graphics hardware.
+	RenderManagerGP2X:
+	 This manager is used to port Blobby Volley to the GP2X handheld.
+	 It makes use of a fixed resolution at 320x240 and others for TV-Out.
+	 It also uses highly optimised loading routines with raw image data.
+	 In all other terms its similar to the RenderManagerSDL
 
+	\todo This classes need a complete rework! They include far too much information about the actual game.
+*/
 class RenderManager
 {
 

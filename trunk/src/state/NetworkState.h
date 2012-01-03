@@ -29,10 +29,19 @@ class RakServer;
 class DuelMatch;
 class NetworkGame;
 
+/*! \class NetworkGameState
+	\brief State for Network Game
+	\details state which is responsible for presenting a network game, sending player input to the
+				server, managing chat etc.
+*/
 class NetworkGameState : public State
 {
 public:
+	/// create a NetworkGameState with connection to a certain server
+	/// \param servername Name of server
+	/// \param port Target port
 	NetworkGameState(const std::string& servername, Uint16 port);
+	
 	virtual ~NetworkGameState();
 	virtual void step();
 	virtual const char* getStateName() const;
@@ -82,8 +91,9 @@ private:
 };
 
 
-// This class is a wrapper for NetworkGameState to run an instance
-// of NetworkGame
+/// This class is a wrapper for NetworkGameState to run an instance
+/// of NetworkGame
+/// \todo this construction seems like a big hack ;)
 class NetworkHostState : public State
 {
 public:

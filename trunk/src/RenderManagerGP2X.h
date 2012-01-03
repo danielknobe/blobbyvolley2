@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "RenderManager.h"
 
+/*! \class RenderManagerGP2X
+	\brief SDL Render Manager for GP2X
+	\details as SDLRenderManager, but uses scaled down textures
+*/
 class RenderManagerGP2X : public RenderManager
 {
 	SDL_Surface* mBackground;

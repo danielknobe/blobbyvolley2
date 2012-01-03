@@ -38,7 +38,11 @@ struct Sound
 	float volume;
 };
 
-/// \brief class managing game sound
+/*! \class SoundManager
+	\brief class managing game sound.
+	\details Managing loading, converting to target format, muting, setting volume
+			and, of couse, playing of sounds.
+*/
 class SoundManager
 {
 private:

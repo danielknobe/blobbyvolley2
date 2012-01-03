@@ -24,6 +24,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "RenderManager.h"
 
+/*! \class RenderManagerSDL
+	\brief Render Manager on top of SDL
+	\details This render manager uses SDL for all drawing operations. This means it is
+			highly portable, but somewhat slow (e.g. when doing morphing blobs). 
+*/
 class RenderManagerSDL : public RenderManager
 {
 	struct DynamicColoredSurface
