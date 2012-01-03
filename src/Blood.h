@@ -21,36 +21,78 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Vector.h"
 #include <list>
+#include <boost/noncopyable.hpp>
 
 //Bleeding blobs can be a lot of fun :)
 
+/*!	\class Blood
+	\brief Container to hold the data of a single drop of blood
+*/
 class Blood
 {
-	Vector2 mPos;
-	Vector2 mDir;
-	int mPlayer;
-public:
-	Blood(Vector2 position, Vector2 direction, int player);
-	void step();
-	Vector2 getPosition() const { return mPos; }
-	int mLastFrame;
+	public:
+		/// \brief constructor, takes position, direction and player
+		/// \param position Position this drop starts at
+		/// \param direction initial velocity of the drop
+		///	\param player Player this blood drop started from.
+		Blood(const Vector2& position, const Vector2& direction, int player);
+		
+		/// this function has to be called each step
+		/// it updates position and velocity.
+		void step();
+		
+		/// gets the current position of this drop
+		const Vector2& getPosition() const { return mPos; }
+		
+	private:
+		Vector2 mPos;	///< the drops position
+		Vector2 mDir;	///< the drops current velocity
+		int mPlayer;	///< player who spilled this blood drop
+		int mLastFrame;	///< time this drop was updated for the last time
 };
 
-class BloodManager
+/*!	\class BloodManager
+	\brief Manages blood effects
+	\details this class is responsible for managing blood effects, creating and deleting the particles, 
+			updating their positions etc. It is designed as a singleton, so it is noncopyable.
+*/
+class BloodManager : private boost::noncopyable
 {
-	static BloodManager* mSingleton;
-	std::list<Blood> mParticles;
-	bool mEnabled;
-	BloodManager();
-	int random(int min, int max);
-public:
-	void step();
-	void spillBlood(Vector2 pos, float intensity, int player);
-	void enable(bool enable) { mEnabled = enable; }
-	static BloodManager& getSingleton()
-	{
-		if (!mSingleton)
-			mSingleton = new BloodManager;
-		return *mSingleton;
-	}
+	public:
+		/// update function, to be called each step.
+		void step();
+		
+		/// \brief creates a blood effect
+		/// \param pos Position the effect occurs
+		/// \param intensity intensity of the hit. determines the number of particles
+		/// \param player player which was hit, determines the colour of the particles
+		void spillBlood(Vector2 pos, float intensity, int player);
+		
+		/// enables or disables blood effects
+		void enable(bool enable) { mEnabled = enable; }
+		
+		/// gets the instance of BloodManager, creating one if it does not exists
+		static BloodManager& getSingleton()
+		{
+			if (!mSingleton)
+				mSingleton = new BloodManager;
+			return *mSingleton;
+		}
+	private:
+		/// default constructor, sets mEnabled to the value
+		///	set in config.xml
+		BloodManager();
+		
+		/// helper function which returns an integer between 
+		/// min and max, boundaries included
+		static int random(int min, int max);
+		
+		/// list which contains all currently existing blood particles
+		std::list<Blood> mParticles;
+		
+		/// true, if blood should be handled/drawn
+		bool mEnabled;
+		
+		/// singleton
+		static BloodManager* mSingleton;
 };
