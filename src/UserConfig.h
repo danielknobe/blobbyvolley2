@@ -31,6 +31,12 @@ struct UserConfigVar
 	std::string DefaultValue;	  
 };
 
+/*! \class UserConfig
+	\brief user configuration from xml data
+	\details This class manages user configurations read from/written to xml data.
+			It allows saving/loading from disk and getting/setting floats, booleans, 
+				strings and integers by name
+*/
 class UserConfig: public IUserConfigReader
 {
 public:
@@ -41,8 +47,6 @@ public:
 
 	void setValue(const std::string& name, const std::string& value);
 	std::string getValue(const std::string& name) const;
-	UserConfigVar* createVar(const std::string& name, 
-			const std::string& defaultValue);
 
 	float getFloat(const std::string& name) const;
 	std::string getString(const std::string& name) const;
@@ -58,4 +62,6 @@ private:
 	std::vector<UserConfigVar*> mVars;
 	bool mChangeFlag;
 	UserConfigVar *findVarByName(const std::string& Name) const;
+	UserConfigVar* createVar(const std::string& name, 
+			const std::string& defaultValue);
 };

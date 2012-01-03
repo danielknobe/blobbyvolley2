@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "State.h"
 
+/*! \class OptionState
+	\brief State for managing the main options menu
+*/
 class OptionState : public State
 {
 public:
@@ -40,6 +43,9 @@ private:
 	unsigned mBotStrength[MAX_PLAYERS];
 };
 
+/*! \class GraphicOptionsState
+	\brief State for managing the graphics options menu
+*/
 class GraphicOptionsState : public State
 {
 public:
@@ -57,6 +63,9 @@ private:
 	bool mShowShadow;
 };
 
+/*! \class InputOptionsState
+	\brief State for managing the input options menu
+*/
 class InputOptionsState : public State
 {
 public:
@@ -90,6 +99,9 @@ private:
 	std::string mRightBlobbyJoystickJump;
 };
 
+/*! \class MiscOptionsState
+	\brief State for managing the misc options menu
+*/
 class MiscOptionsState : public State
 {
 public:
