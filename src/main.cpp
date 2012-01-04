@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
 			// disable it if necessary
 			rmanager->drawGame(true);
 			IMGUI::getSingleton().begin();
-				State::getCurrentState()->step();
+			State::getCurrentState()->step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
 			if (scontroller.getDrawFPS())
