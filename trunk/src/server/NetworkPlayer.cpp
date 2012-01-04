@@ -19,7 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "NetworkPlayer.h"
 
-NetworkPlayer::NetworkPlayer() : mDesiredSide(NO_PLAYER)
+// initialise NetworkPlayer. Set NetworkID to 0.0.0.0:0, so we are sure no player
+// will ever have this.
+NetworkPlayer::NetworkPlayer() : mID(0, 0), mName(), mColor(), mDesiredSide(NO_PLAYER)
 {
 	
 }
