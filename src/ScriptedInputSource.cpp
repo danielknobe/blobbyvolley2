@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "GameConstants.h"
 #include "BotAPICalculations.h"
+#include "File.h"
 
 extern "C"
 {
@@ -31,7 +32,6 @@ extern "C"
 
 #include <iostream>
 #include <SDL/SDL.h>
-#include <physfs.h>
 #include <cmath>
 #include <algorithm>
 
@@ -90,14 +90,24 @@ float ScriptedInputSource::coordinate<vel_y>::convert (float val) {
 
 struct ReaderInfo
 {
-	PHYSFS_file* handle;
-	char readBuffer[2048];
+	File file;
+	char buffer[2048];
 };
 
 static const char* chunkReader(lua_State* state, void* data, size_t *size)
 {
 	ReaderInfo* info = (ReaderInfo*) data;
-	int bytesRead = PHYSFS_read(info->handle, info->readBuffer, 1, 2048);
+	
+	int bytesRead = 2048;
+	if(info->file.length() - info->file.tell() < 2048)
+	{
+		bytesRead = info->file.length() - info->file.tell();
+	}
+	
+	info->file.readRawBytes(info->buffer, bytesRead);
+	// if this doesn't throw, bytesRead is the actual number of bytes read
+	/// \todo we must do sth about this code, its just plains awful. 
+	/// 		File interface has to be improved to support such buffered reading.
 	*size = bytesRead;
 	if (bytesRead == 0)
 	{
@@ -105,7 +115,7 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	}
 	else
 	{
-		return info->readBuffer;
+		return info->buffer;
 	}
 }
 
@@ -176,14 +186,12 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	//lua_register(mState, "parabel", parabel);
 
 	ReaderInfo info;
-	info.handle = PHYSFS_openRead(filename.c_str());
-	if (!info.handle)
-	{
-		throw FileLoadException(filename);
-	}
+	info.file.open(filename, File::OPEN_READ);
+	
 	int error;
 	error = lua_load(mState, chunkReader, &info, filename.c_str());
-	PHYSFS_close(info.handle);
+	info.file.close();
+	
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
 		if (error)

@@ -29,22 +29,32 @@ extern "C"
 #include "lua/lualib.h"
 }
 
-#include <physfs.h>
+#include "File.h"
 #include <iostream>
 
 // copied from ScriptedInputSource
-// TODO avoid code duplication
+/// \todo avoid code duplication
 
 struct ReaderInfo
 {
-	PHYSFS_file* handle;
-	char readBuffer[2048];
+	File file;
+	char buffer[2048];
 };
 
 static const char* chunkReader(lua_State* state, void* data, size_t *size)
 {
 	ReaderInfo* info = (ReaderInfo*) data;
-	int bytesRead = PHYSFS_read(info->handle, info->readBuffer, 1, 2048);
+	
+	int bytesRead = 2048;
+	if(info->file.length() - info->file.tell() < 2048)
+	{
+		bytesRead = info->file.length() - info->file.tell();
+	}
+	
+	info->file.readRawBytes(info->buffer, bytesRead);
+	// if this doesn't throw, bytesRead is the actual number of bytes read
+	/// \todo we must do sth about this code, its just plains awful. 
+	/// 		File interface has to be improved to support such buffered reading.
 	*size = bytesRead;
 	if (bytesRead == 0)
 	{
@@ -52,7 +62,7 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	}
 	else
 	{
-		return info->readBuffer;
+		return info->buffer;
 	}
 }
 
@@ -271,14 +281,11 @@ LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() )
 	
 	// now load script file
 	ReaderInfo info;
-	/// todo must this be closed somewhere????
-	info.handle = PHYSFS_openRead(filename.c_str());
-	if (!info.handle)
-	{
-		throw FileLoadException(filename);
-	}
+	// this opens the file
+	info.file.open(filename, File::OPEN_READ);
+
 	int error = lua_load(mState, chunkReader, &info, filename.c_str());
-	PHYSFS_close(info.handle);
+	
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
 	

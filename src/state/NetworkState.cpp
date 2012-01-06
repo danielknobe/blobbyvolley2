@@ -25,13 +25,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 #include "TextManager.h"
+#include "File.h"
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
-
-#include <physfs.h>
 
 #include <boost/lexical_cast.hpp>
 
@@ -345,17 +344,10 @@ void NetworkGameState::step()
 				stream.Read(length);
 				char* data = new char[length];
 				stream.Read(data, length);
-				PHYSFS_file* fileHandle = PHYSFS_openWrite((std::string("replays/") + mFilename + std::string(".bvr")).c_str());
-				if (!fileHandle)
-				{
-					std::cerr << "Warning: Unable to write to ";
-					std::cerr << PHYSFS_getWriteDir() << std::string("replays/") + mFilename + std::string(".bvr");
-					std::cerr << std::endl;
-					return;
-				}
-			
-				PHYSFS_write(fileHandle, data, 1, length);
-				PHYSFS_close(fileHandle);
+				// may throw!
+				File file((std::string("replays/") + mFilename + std::string(".bvr")), File::OPEN_WRITE);
+				file.write(data, length);
+				file.close();
 				mWaitingForReplay = false;
 				break;
 			}

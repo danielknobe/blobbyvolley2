@@ -20,10 +20,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "TextManager.h"
 
-#include <iostream>
-#include <physfs.h>
-#include "tinyxml/tinyxml.h"
 #include "Global.h"
+#include "File.h"
+
+#include "tinyxml/tinyxml.h"
+
+#include <iostream>
 #include <algorithm>
 
 TextManager* TextManager::mSingleton = 0;
@@ -74,27 +76,26 @@ std::string TextManager::getLang() const{
 	return lang;
 }
 
-bool TextManager::loadFromXML(std::string file){
+/// \todo why no const std::string& ?
+bool TextManager::loadFromXML(std::string filename){
 	// create and load file
-	PHYSFS_file* fileHandle = PHYSFS_openRead(file.c_str());
-	if (!fileHandle)
-		throw FileLoadException(file);
+	File file(filename, File::OPEN_READ);
 
-	int fileLength = PHYSFS_fileLength(fileHandle);
-	char* fileBuffer = new char[fileLength + 1];
-	PHYSFS_read(fileHandle, fileBuffer, 1, fileLength);
+	int fileLength = file.length();
+	boost::shared_array<char> fileBuffer(new char[fileLength + 1]);
+	file.readRawBytes( fileBuffer.get(), fileLength );
+	// null-terminate
 	fileBuffer[fileLength] = 0;
-	
 	
 	// parse file
 	TiXmlDocument language_data;
-	language_data.Parse(fileBuffer);
-	delete[] fileBuffer;
-	PHYSFS_close(fileHandle);
+	language_data.Parse(fileBuffer.get());
+	fileBuffer.reset(0);
+	file.close();
 
 	if (language_data.Error())
 	{
-		std::cerr << "Warning: Parse error in " << file;
+		std::cerr << "Warning: Parse error in " << filename;
 		std::cerr << "!" << std::endl;
 	}
 
