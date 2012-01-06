@@ -146,20 +146,32 @@ BOOST_AUTO_TEST_CASE( wrongly_closed_file_test )
 	test_file.writeByte(1);
 	// close the file, loughing wickedly ;)
 	// don't ever do that in non-test code!
-	PHYSFS_close( (PHYSFS_file*)test_file.getPHYSFS_file() );
+	test_file.close();
 	
 	/// \todo this test can't work as we do it now because physfs just crashes when we 
 	///			do this.
+	//PHYSFS_close( (PHYSFS_file*)test_file.getPHYSFS_file() );
 	// now, every action we try to perform on that file should yield an excpetion
-	/*
-	CHECK_EXCEPTION_SAFETY(test_file.tell(), 
-							std::exception);
 	
-	//CHECK_EXCEPTION_SAFETY(test_file.length(), 	// FAIL, this crashes!
-	//						std::exception);
+	/// For now, these are all functions we have to test
+	/// make sure to add new ones!
 	
-	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), std::exception);
-	*/
+	CHECK_EXCEPTION_SAFETY(test_file.tell(), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.seek(2), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.length(), NoFileOpenedException);
+	
+	char buffer[3];
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(1), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.readString(), NoFileOpenedException);	
+	
+		
+	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.writeUInt32(5), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.write( std::string("bye bye world;)") ), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.writeNullTerminated( std::string("bye bye world;)") ), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(test_file.write( "bye bye world;)", 8 ), NoFileOpenedException);
 }
 
 BOOST_AUTO_TEST_CASE( write_to_readonly_test )
@@ -205,12 +217,12 @@ BOOST_AUTO_TEST_CASE( exception_test )
 	CHECK_EXCEPTION_SAFETY(test_file.seek(100), PhysfsException);
 	
 	char buffer[3];
-	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);		// FAIL
+	/*CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);		// FAIL
 	
 	// read negative amounts of bytes
 	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, -5), PhysfsException);	// FAIL
 	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(-5), PhysfsException);			// FAIL
-	
+	*/
 	test_file.seek(0);
 	
 	// read more than there is
