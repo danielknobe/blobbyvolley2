@@ -91,7 +91,8 @@ bool File::is_open() const
 
 uint32_t File::length() const
 {
-	assert(handle);
+	check_file_open();
+	
 	PHYSFS_sint64 len = PHYSFS_fileLength( reinterpret_cast<PHYSFS_file*> (handle) );
 	if( len == -1 )
 	{
@@ -103,7 +104,8 @@ uint32_t File::length() const
 
 uint32_t File::tell() const
 {
-	assert(handle);
+	check_file_open();
+	
 	PHYSFS_sint64 tp = PHYSFS_tell( reinterpret_cast<PHYSFS_file*> (handle) );
 	if(tp == -1) 
 		throw( PhysfsException() );
@@ -113,7 +115,8 @@ uint32_t File::tell() const
 
 uint32_t File::readRawBytes( char* target, std::size_t num_of_bytes )
 {
-	assert(handle);
+	check_file_open();
+	
 	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (handle), target, 1, num_of_bytes);
 	
 	// -1 indicates that reading was not possible
@@ -137,7 +140,8 @@ boost::shared_array<char> File::readRawBytes( std::size_t num_of_bytes )
 
 uint32_t File::readUInt32()
 {
-	assert(handle);
+	check_file_open();
+	
 	PHYSFS_uint32 ret;
 	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(handle),	&ret))
 	{
@@ -181,6 +185,8 @@ std::string File::readString()
 
 void File::seek(uint32_t target)
 {
+	check_file_open();
+	
 	if(!PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(handle), target)) 
 	{
 		throw( PhysfsException() );
@@ -194,7 +200,8 @@ void File::writeByte(char c)
 
 void File::writeUInt32(uint32_t v)
 {
-	assert(handle);
+	check_file_open();
+	
 	if( !PHYSFS_writeULE32( reinterpret_cast<PHYSFS_file*>(handle), v) )
 	{
 		throw( PhysfsException() );
@@ -213,11 +220,20 @@ void File::writeNullTerminated(const std::string& data)
 
 void File::write(const char* data, std::size_t length)
 {	
-	assert(handle);
+	check_file_open();
+	
 	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(handle), data, 1, length) != length ) 
 	{
 		throw( PhysfsException() );
 	}
+}
+
+void  File::check_file_open() const
+{
+	// check that we have a handle
+	if(!handle) {
+		throw( NoFileOpenedException() );
+	}		
 }
 
 
