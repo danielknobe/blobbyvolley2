@@ -26,7 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
 
-#include <physfs.h>
+#include "File.h"
+#include <physfs.h> // still needed for file deletion
 
 // We don't need the stringcompressor
 
@@ -226,27 +227,27 @@ bool NetworkGame::step()
 				temp << "replays/";
 				temp << RakNet::GetTime();
 				temp << packet->playerId.binaryAddress;
-				std::string file = temp.str();
-				mRecorder->save(file);
+				std::string filename = temp.str();
+				mRecorder->save(filename);
 				
-				PHYSFS_file* fileHandle = PHYSFS_openRead(file.c_str());
-				// what should we do if an error occures here?
-				//if (!fileHandle)
-				//	throw FileLoadException(filename);
-				int fileLength = PHYSFS_fileLength(fileHandle);
-				//if (fileLength < 8) {}
-				char* data = new char[fileLength];
-				PHYSFS_read(fileHandle, data, 1, fileLength);
+				// this may throw FileLoadExcpetion if
+				// the file could not be opened
+				/// \todo is the server secured against beeing crashed by exceptiong
+				///  i guess it's not
+				/// \todo if this throws an exception, we do not delete the file!
+				File file(filename, File::OPEN_READ);
+				
+				int length = file.length();
+				boost::shared_array<char> filecontent = file.readRawBytes( length );
 				
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_REPLAY);
-				stream.Write(fileLength);
-				stream.Write(data, fileLength);
+				stream.Write( length );
+				stream.Write(filecontent.get(), length);
 				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 				
-				delete[] data;
-				PHYSFS_close(fileHandle);
-				PHYSFS_delete(file.c_str());
+				file.close();	// make sure we close the file
+				PHYSFS_delete(filename.c_str());
 				break;
 			}
 			default:
