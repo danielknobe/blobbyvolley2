@@ -30,7 +30,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 			it automatically closes opened files on destruction to prevent leaks. 
 			For now, it is defined as noncopyable, because we don't have implemented
 			any copying behaviour yet.
-	\todo	check the return parameters of the PHYSFS functions, and do error handling accordingly
+	\exception PhysfsException When any physfs function call reported an error, this
+							exception is thrown. Its what() string contains the error
+							message physfs created.
 	\todo 	write tests for this class.
 */
 class File : boost::noncopyable 
@@ -87,12 +89,12 @@ class File : boost::noncopyable
 		/// \todo check if these return types fit!
 		/// gets the length of the currently opened file.
 		/// don't call it if there is no opened file!
-		/// \throw nothing
+		/// \throw PhysfsException when Physfs reports an error
 		uint32_t length() const;
 		
 		/// gets the current reading position.
 		/// don't call if no file opened
-		/// \throw nothing
+		/// \throw PhysfsException when Physfs reports an error
 		uint32_t tell() const;
 		
 		// ------------------------------------
@@ -101,33 +103,79 @@ class File : boost::noncopyable
 		/// reads bytes into a buffer
 		/// \param target buffer to read into
 		/// \param num_of_bytes number of bytes to read
-		/// \throw nothing (for now)
+		/// \throw PhysfsException when nothing could be read
 		uint32_t readRawBytes( char* target, std::size_t num_of_bytes );
 		
 		
 		/// reads bytes and returns a safe-pointed buffer
 		/// the buffer is allocated by this function and has a size of \p num_of_bytes
 		/// \param num_of_bytes Number of bytes to read; size of buffer
-		/// \throw nothing
+		/// \throw PhysfsException when nothing could be read
 		boost::shared_array<char> readRawBytes( std::size_t num_of_bytes );
+		
+		/// reads an unsinged 32 bit integer from the next four bytes in the file
+		/// the integer is expected to be in little-endian-order and is converted
+		/// to the native format.
+		/// \throw PhysfsException when Physfs reports an error
+		uint32_t readUInt32();
+		
+		/// reads a null-terminated string from the file
+		/// \throw PhysfsException when Physfs reports an error
+		std::string readString();
+		
+		/// moves the read/write cursor to the desired position
+		/// \throw PhysfsException when Physfs reports an error
+		void seek(uint32_t target);
 		
 		// ------------------------------------
 		//  writing interface
 		// ------------------------------------
 		
+		/// \brief writes one character
+		/// \details writes exactly the one character supplied.
+		/// \throw PhysfsException when Physfs reports an error
+		void writeByte(char c);
+		
+		/// \brief writes 32 bit integer
+		/// \details writes an integer, converted to little endian if necessary
+		/// \throw PhysfsException when Physfs reports an error
+		void writeUInt32(uint32_t v);
+		
 		/// \brief writes a std::string
 		/// \details writes the content of the string to the file.
 		/// 		does not write a null-termination character
-		/// \throw nothing
+		/// \throw PhysfsException when Physfs reports an error
 		void write(const std::string& data);
+		
+		/// \brief writes null-terminated std::string
+		/// \details writes the content of the string to the file.
+		/// 		ends the string with a null terminator.
+		/// \throw nothing
+		void writeNullTerminated(const std::string& data);
 		
 		/// \brief writes a sequence of characters
 		/// \details writes \p length characters from \p data to the file
-		/// \throw nothing
+		/// \throw PhysfsException when Physfs reports an error
 		void write(const char* data, std::size_t length);
 		
 	private:
 		/// we use void* instead of PHYSFS_file here, because we can't forward declare it
 		///	as it is a typedef.
 		void* handle;
+};
+
+
+class PhysfsException : public std::exception
+{
+	public:
+		PhysfsException();
+		
+		~PhysfsException() throw() { };
+		
+		 virtual const char* what() const throw()
+		{
+			return physfsErrorMsg.c_str();
+		}
+	private:
+		std::string physfsErrorMsg;
 };
