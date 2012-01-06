@@ -69,7 +69,12 @@ void File::close()
 	// we cannot assert this, because this function is run in the destrucor!
 	if(handle) 
 	{
-		PHYSFS_close( reinterpret_cast<PHYSFS_file*> (handle) );
+		if (PHYSFS_close( reinterpret_cast<PHYSFS_file*> (handle) ) )
+		{
+			/// we can't throw an error here, as this function gets called
+			/// in the destructor and therefore might be called while another
+			/// excpetion is active so we cant throw.
+		};
 		handle = 0;
 	}
 }
@@ -87,19 +92,35 @@ bool File::is_open() const
 uint32_t File::length() const
 {
 	assert(handle);
-	return PHYSFS_fileLength( reinterpret_cast<PHYSFS_file*> (handle) );
+	PHYSFS_sint64 len = PHYSFS_fileLength( reinterpret_cast<PHYSFS_file*> (handle) );
+	if( len == -1 )
+	{
+		throw( PhysfsException() );
+	}
+	
+	return len;
 }
 
 uint32_t File::tell() const
 {
 	assert(handle);
-	return PHYSFS_tell( reinterpret_cast<PHYSFS_file*> (handle) );
+	PHYSFS_sint64 tp = PHYSFS_tell( reinterpret_cast<PHYSFS_file*> (handle) );
+	if(tp == -1) 
+		throw( PhysfsException() );
+	
+	return tp;
 }
 
 uint32_t File::readRawBytes( char* target, std::size_t num_of_bytes )
 {
 	assert(handle);
-	uint32_t num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (handle), target, 1, num_of_bytes);
+	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (handle), target, 1, num_of_bytes);
+	
+	// -1 indicates that reading was not possible
+	if( num_read == -1) 
+	{
+		throw( PhysfsException() );
+	}
 	/// \todo use expection error handling here, assert does not fit!
 	assert(num_read == num_of_bytes );
 	return num_read;
@@ -114,13 +135,95 @@ boost::shared_array<char> File::readRawBytes( std::size_t num_of_bytes )
 	return buffer;
 }
 
+uint32_t File::readUInt32()
+{
+	assert(handle);
+	PHYSFS_uint32 ret;
+	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(handle),	&ret))
+	{
+		throw( PhysfsException() );
+	}
+	
+	return ret; 
+}
+
+std::string File::readString()
+{
+	char buffer[32]; 		// thats our read buffer
+	std::string read = "";	// thats what we read so far
+	uint32_t len = length();
+	
+	while(true)	// check that we can read as much as want
+	{
+		int maxread = std::min(sizeof(buffer), len - tell());
+		readRawBytes( buffer, maxread );	// read into buffer
+		
+		for(int i=0; i < maxread; ++i)
+		{
+			if(buffer[i] == 0) 
+			{
+				seek( tell() - 32 + i + 1);
+				return read;
+			} 
+			else 
+			{
+				read += buffer[i];	// this might not be the most efficient way...
+			}
+		}
+		
+		// when we reached the end of file
+		if(maxread < 32)
+			break;
+	}
+	
+	assert(0);	// did not find zero-terminated-string
+}
+
+void File::seek(uint32_t target)
+{
+	if(!PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(handle), target)) 
+	{
+		throw( PhysfsException() );
+	}
+}
+
+void File::writeByte(char c)
+{
+	write(&c, sizeof(c));
+}
+
+void File::writeUInt32(uint32_t v)
+{
+	assert(handle);
+	if( !PHYSFS_writeULE32( reinterpret_cast<PHYSFS_file*>(handle), v) )
+	{
+		throw( PhysfsException() );
+	}
+}
+
 void File::write(const std::string& data)
 {
 	write(data.data(), data.size());
 }
 
+void File::writeNullTerminated(const std::string& data)
+{
+	write(data.c_str(), data.size() + 1);
+}
+
 void File::write(const char* data, std::size_t length)
 {	
 	assert(handle);
-	PHYSFS_write(reinterpret_cast<PHYSFS_file*>(handle), data, 1, length);
+	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(handle), data, 1, length) != length ) 
+	{
+		throw( PhysfsException() );
+	}
 }
+
+
+
+
+PhysfsException::PhysfsException() : physfsErrorMsg( PHYSFS_getLastError() )
+{
+}
+

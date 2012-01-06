@@ -18,6 +18,16 @@ void init_Physfs()
 	}
 }
 
+#define CHECK_EXCEPTION_SAFETY(expr, excp) 	try { 	\
+											BOOST_TEST_CHECKPOINT("trying " #expr);		\
+											expr; \
+											BOOST_ERROR(#expr " does not cause " #excp " to be thrown");\
+											} \
+											catch(excp& e) {\
+												std::cout << "what: " << e.what() << std::endl; \
+											};
+
+
 BOOST_AUTO_TEST_SUITE( FileAbstraction )
 
 BOOST_AUTO_TEST_CASE( default_constructor )
@@ -56,7 +66,7 @@ BOOST_AUTO_TEST_CASE( open_write_constructor )
 		BOOST_ERROR("opening fiels with invalid names should lead to an exception");
 	} catch (std::exception& s) {
 		// fine
-	} 
+	} 	
 }
 
 
@@ -88,13 +98,8 @@ BOOST_AUTO_TEST_CASE( open_read_constructor )
 		BOOST_ERROR(e.what());
 	}
 	
-	try
-	{
-		File read_file("this_file_surely_does_not_exists?!@<|.tmp", File::OPEN_READ);
-		BOOST_ERROR("openeing unexisting file should lead to an exception!");
-	} catch (std::exception& s) {
-		// fine
-	} 
+	CHECK_EXCEPTION_SAFETY(File read_file("this_file_surely_does_not_exists?!@<|.tmp", File::OPEN_READ), 
+							std::exception);
 	
 	PHYSFS_delete("test_open_read_constructor.tmp");
 }
@@ -128,7 +133,89 @@ BOOST_AUTO_TEST_CASE( open_close_test )
 	// cleanup
 	PHYSFS_delete("test_open_close.tmp");
 	PHYSFS_delete("test_open_close2.tmp");
-	PHYSFS_deinit();
+}
+
+// wrongly closed file
+
+BOOST_AUTO_TEST_CASE( wrongly_closed_file_test )
+{	
+	init_Physfs() ;
+
+	File test_file("test_open_close.tmp", File::OPEN_WRITE);
+	
+	test_file.writeByte(1);
+	// close the file, loughing wickedly ;)
+	// don't ever do that in non-test code!
+	PHYSFS_close( (PHYSFS_file*)test_file.getPHYSFS_file() );
+	
+	/// \todo this test can't work as we do it now because physfs just crashes when we 
+	///			do this.
+	// now, every action we try to perform on that file should yield an excpetion
+	/*
+	CHECK_EXCEPTION_SAFETY(test_file.tell(), 
+							std::exception);
+	
+	//CHECK_EXCEPTION_SAFETY(test_file.length(), 	// FAIL, this crashes!
+	//						std::exception);
+	
+	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), std::exception);
+	*/
+}
+
+BOOST_AUTO_TEST_CASE( write_to_readonly_test )
+{	
+	init_Physfs() ;
+
+	// create a temp helper file
+	{
+		File helper("readonly.tmp", File::OPEN_WRITE);
+		helper.writeByte(5);
+	}
+
+	File test_file("readonly.tmp", File::OPEN_READ);
+	
+	BOOST_REQUIRE( test_file.is_open() == true );
+	
+	// now, every action we try to perform on that file should yield an excpetion
+	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.write("abc", 3), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.writeUInt32(12), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.write(std::string("hello world")), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.writeNullTerminated(std::string("hello world")), PhysfsException);
+}
+
+
+BOOST_AUTO_TEST_CASE( exception_test )
+{	
+	init_Physfs() ;
+
+	// create a temp helper file
+	{
+		File helper("read.tmp", File::OPEN_WRITE);
+		helper.writeByte(5);
+	}
+
+	File test_file("read.tmp", File::OPEN_READ);
+	
+	BOOST_REQUIRE( test_file.is_open() == true );
+	
+	// move reader in front of file beginning
+	CHECK_EXCEPTION_SAFETY(test_file.seek(-1), PhysfsException);
+	// move reader after file ending
+	CHECK_EXCEPTION_SAFETY(test_file.seek(100), PhysfsException);
+	
+	char buffer[3];
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);		// FAIL
+	
+	// read negative amounts of bytes
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, -5), PhysfsException);	// FAIL
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(-5), PhysfsException);			// FAIL
+	
+	test_file.seek(0);
+	
+	// read more than there is
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), PhysfsException);		// FAIL
 }
 
 BOOST_AUTO_TEST_SUITE_END()
