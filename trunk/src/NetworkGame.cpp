@@ -53,9 +53,9 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	mPausing = false;
 
-	mRecorder.reset(new ReplayRecorder(MODE_RECORDING_DUEL));
+	mRecorder.reset(new ReplayRecorder());
 	mRecorder->setPlayerNames(mLeftPlayerName.c_str(), mRightPlayerName.c_str());
-	mRecorder->setServingPlayer(LEFT_PLAYER);
+	mRecorder->setGameSpeed(SpeedController::getMainInstance()->getGameSpeed());
 
 	// buffer for playernames
 	char name[16];
