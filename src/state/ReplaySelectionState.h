@@ -20,38 +20,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "State.h"
-#include "Vector.h"
+
+#include <vector>
 
 class DuelMatch;
 class ReplayPlayer;
 
-class ReplayState : public State
+class ReplaySelectionState : public State
 {
 public:
-	ReplayState();
+	ReplaySelectionState();
 	virtual void step();
 	virtual const char* getStateName() const;
-	void loadReplay(const std::string& replay);
 	
 private:
-	
-	DuelMatch* mReplayMatch;
-	ReplayPlayer* mReplayPlayer;
 
+	std::vector<std::string> mReplayFiles;
+	int mSelectedReplay;
+	
 	bool mChecksumError;
 	bool mVersionError;
 	
-	Vector2 mLastMousePosition;
-	int mMouseShowTimer;
-
-	Player mLeftPlayer;
-	Player mRightPlayer;
-	
-	// controls
-	int mPositionJump;
-	bool mPaused;
-	
-	// replay speed control
-	int mSpeedValue;
-	int mSpeedTimer;
+	int mPlayButton;
+	int mCancelButton;
+	int mDeleteButton;
 };

@@ -23,35 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include <list>
 #include <vector>
 
 #include "Global.h"
+#include "ReplayDefs.h"
 #include "InputSource.h"
 
-
-const char validHeader[4] = { 'B', 'V', '2', 'R' };	//!< header of replay file
-
-/// \brief recording or playing
-/// \details this enums values determine wether ReplayRecorder plays
-///			a replay or records it.
-enum RecorderMode
-{
-	MODE_RECORDING_DUEL,	///< recording
-	MODE_REPLAY_DUEL		///< playing
-};
-
-/// \enum PacketType
-/// \brief enumerated types of replay "packets"
-/// \attention (should never be higher than 2 bits!)
-enum PacketType
-{
-	ID_INPUT = 0,	///<this packet contains inupt data of both players
-	ID_COMMAND = 1,	///<this packet contains command identificator
-					///<and next packet/packets are arguments of this
-					///<command
-	ID_ERROR = 2,	///<handles EOF
-};
+class File;
 
 struct ChecksumException : public std::exception
 {
@@ -77,51 +55,37 @@ struct VersionMismatchException : public std::exception
 };
 
 /// \brief recording game
+/// \todo we safe replays in continuous storeage (array or std::vector)
+///			which might be ineffective for huge replays (1h ~ 270kb) 
 class ReplayRecorder
 {
 public:
-	ReplayRecorder(RecorderMode mode);
+	ReplayRecorder();
 	~ReplayRecorder();
 
-	// This rewinds to the start when replaying
-	void reset();
-
-	void save(const std::string& filename);
-	void load(const std::string& filename);
-
-	// This reports whether the record is played to the end, so the
-	// blobbys don't have to stand around bored after an incomplete
-	// input record. This returns true if ReplayRecorder is not in
-	// replay mode, so the method can be used directly as exit condition
-	bool endOfFile();
-
+	void save(const std::string& filename) const;
 	void record(const PlayerInput* input);
+	
 	void setPlayerNames(const std::string& left, const std::string& right);
-
-	std::string getPlayerName(const PlayerSide side) const;
-
-	const PlayerInput* getInput();
-
-	PlayerSide getServingPlayer() const;
-	void setServingPlayer(PlayerSide side);
-
-	/// \brief type of current packet
-	PacketType getPacketType();
-
+	void setGameSpeed(int fps);
 private:
-	std::string readString();
-	int readInt();
-	char readChar();
 
-	PlayerInput getInput(PlayerSide side);
+	void writeFileHeader(File&, uint32_t checksum) const;
+	void writeReplayHeader(File&) const;
+	void writeAttributesSection(File&) const;
+	void writeJumpTable(File&) const;
+	void writeDataSection(File&) const;
 
-	RecorderMode mRecordMode;
-	char* mReplayData;
-	uint32_t mReplayOffset;
-	int mBufferSize;
 	std::vector<uint8_t> mSaveData;
 
+	// general replay attributes
 	std::string mPlayerNames[MAX_PLAYERS];
-	PlayerSide mServingPlayer;
-	PlayerSide mOwnSide;
+	int mGameSpeed;
+	
+	
+	// here we save the information needed to create the header
+	//  pointers  to replay sections
+	mutable uint32_t attr_ptr;
+	mutable uint32_t jptb_ptr;
+	mutable uint32_t data_ptr;
 };

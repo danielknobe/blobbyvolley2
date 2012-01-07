@@ -19,57 +19,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "ReplayState.h"
 #include "IMGUI.h"
-#include "ReplayRecorder.h"
+#include "ReplayPlayer.h"
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "IUserConfigReader.h"
 #include <sstream>
-
-#include <physfs.h>
+#include "ReplaySelectionState.h"
 
 ReplayState::ReplayState() :
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)
 {
 	IMGUI::getSingleton().resetSelection();
-	mReplaying = false;
-	mChecksumError = false;
-	mVersionError = false;
 
 	mReplayMatch = 0;
-	mReplayRecorder = 0;
-	mSelectedReplay = 0;
-	char** filenames = PHYSFS_enumerateFiles("replays");
-	for (int i = 0; filenames[i] != 0; ++i)
-	{
-		std::string tmp(filenames[i]);
-		if (tmp.find(".bvr") != std::string::npos)
-		{
-			mReplayFiles.push_back(std::string(tmp.begin(), tmp.end()-4));
-		}
-	}
-	if (mReplayFiles.size() == 0)
-		mSelectedReplay = -1;
-	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
+	mReplayPlayer = 0;
 
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
+	
+	mPositionJump = -1;
+	mPaused = false;
+	
+	mSpeedValue = 8;
+	mSpeedTimer = 0;
 }
 
-void ReplayState::loadCurrentReplay()
+void ReplayState::loadReplay(const std::string& file)
 {
-	mReplayRecorder = new ReplayRecorder(MODE_REPLAY_DUEL);
+	mReplayPlayer = new ReplayPlayer();
 
-	try
-	{
-		mReplayRecorder->load(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
-		mReplaying = true;
+	//try
+	//{
+		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
 		mReplayMatch = new DuelMatch(0, 0, true, false);
-		mReplayMatch->setServingPlayer(mReplayRecorder->getServingPlayer());
+		mReplayMatch->setServingPlayer(mReplayPlayer->getServingPlayer());
 		RenderManager::getSingleton().setPlayernames(
-			mReplayRecorder->getPlayerName(LEFT_PLAYER), mReplayRecorder->getPlayerName(RIGHT_PLAYER));
+			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 		
@@ -77,8 +65,8 @@ void ReplayState::loadCurrentReplay()
 				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
 			);
 	
-	}
-	catch (ChecksumException& e)
+	//}
+	/*catch (ChecksumException& e)
 	{
 		delete mReplayRecorder;
 		mReplayRecorder = 0;
@@ -89,127 +77,157 @@ void ReplayState::loadCurrentReplay()
 		delete mReplayRecorder;
 		mReplayRecorder = 0;
 		mVersionError = true;
-	}
+	}*/
+	/// \todo reintroduce error handling
 }
 
 void ReplayState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
-	if (mReplaying)
+	
+	RenderManager* rmanager = &RenderManager::getSingleton();
+	
+	// only draw cursor when mouse moved in the last second
+	if(mLastMousePosition != InputManager::getSingleton()->position())
 	{
-		RenderManager* rmanager = &RenderManager::getSingleton();
-
-		if(mReplayRecorder->getPacketType()==ID_INPUT)
-		{
-			mReplayMatch->setPlayersInput(mReplayRecorder->getInput());
-			mReplayMatch->step();
-		}
-		
-		presentGame(*mReplayMatch);
-		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
-		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
-
-		PlayerSide side = mReplayMatch->winningPlayer();
-		if (side != NO_PLAYER)
-		{
-			std::stringstream tmp;
-			if(side == LEFT_PLAYER)
-				tmp << mReplayRecorder->getPlayerName(LEFT_PLAYER);
-			else
-				tmp << mReplayRecorder->getPlayerName(RIGHT_PLAYER);
-			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
-			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-			imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
-			if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
-			{
-				mReplaying = false;
-				delete mReplayMatch;
-				delete mReplayRecorder;
-				imgui.resetSelection();
-				SpeedController::getMainInstance()->setGameSpeed(75);
-			}
-			if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::RP_SHOW_AGAIN)))
-			{
-				delete mReplayMatch;
-				delete mReplayRecorder;
-				loadCurrentReplay();
-				imgui.resetSelection();
-			}
-			imgui.doCursor();
-		}
-		else if ((InputManager::getSingleton()->exit()) || (mReplayRecorder->endOfFile()))
-		{
-			mReplaying = false;
-			delete mReplayMatch;
-			delete mReplayRecorder;
-			imgui.resetSelection();
-			SpeedController::getMainInstance()->setGameSpeed(75);
-		}
+		/// \todo we must do this framerate independent
+		mMouseShowTimer = 75;
 	}
-	else
+	
+	if(mMouseShowTimer > 0)
 	{
 		imgui.doCursor();
-		imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
-		imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+		mMouseShowTimer--;
+	}
+	
+	mLastMousePosition = InputManager::getSingleton()->position();
+	
+	
+	if(mPositionJump != -1)
+	{
+		if(mReplayPlayer->gotoPlayingPosition(mPositionJump, mReplayMatch))
+			mPositionJump = -1;
+	}
+		else if(!mPaused)
+	{
+		while( mSpeedTimer >= 8)
+		{
+			mPaused = !mReplayPlayer->play(mReplayMatch);
+			mSpeedTimer -= 8;
+			presentGame(*mReplayMatch);
+		} 
+		mSpeedTimer += mSpeedValue;
+		
+	}
 
-		if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), TextManager::getSingleton()->getString(TextManager::RP_PLAY)) &&
-					mSelectedReplay != -1)
+	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
+	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
+	
+	// draw the progress bar
+	Vector2 prog_pos = Vector2(50, 600-22);
+	imgui.doOverlay(GEN_ID, prog_pos, Vector2(750, 600-3), Color(0,0,0));
+	imgui.doOverlay(GEN_ID, prog_pos, Vector2(700*mReplayPlayer->getPlayProgress()+50, 600-3), Color(0,255,0));
+	//imgui.doImage(GEN_ID, Vector2(50 + 700*mReplayPlayer->getPlayProgress(), 600-16), "gfx/scrollbar.bmp");
+	
+	// control replay position
+	Vector2 mousepos = InputManager::getSingleton()->position();
+	if (mousepos.x + 5 > prog_pos.x &&
+		mousepos.y > prog_pos.y &&
+		mousepos.x < prog_pos.x + 700 &&
+		mousepos.y < prog_pos.y + 24.0)
+	{
+
+		if (InputManager::getSingleton()->click())
 		{
-			loadCurrentReplay();
-			imgui.resetSelection();
+			float pos = (mousepos.x - prog_pos.x) / 700.0;
+			mPositionJump = pos * mReplayPlayer->getReplayLength();
 		}
-		else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+	}
+	
+	// play/pause button
+	imgui.doOverlay(GEN_ID, Vector2(350, 535.0), Vector2(450, 575.0));
+	if(mPaused)
+	{
+		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_play.bmp");
+	} else
+	{
+		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_pause.bmp");
+	}
+	
+	imgui.doImage(GEN_ID, Vector2(430, 555.0), "gfx/btn_fast.bmp");
+	imgui.doImage(GEN_ID, Vector2(370, 555.0), "gfx/btn_slow.bmp");
+	
+	// handle these image buttons. IMGUI is not capable of doing this.
+	if (InputManager::getSingleton()->click())
+	{
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 btnpos = Vector2(400-12, 550.0-12);
+		if (mousepos.x > btnpos.x &&
+			mousepos.y > btnpos.y &&
+			mousepos.x < btnpos.x + 24.0 &&
+			mousepos.y < btnpos.y + 24.0)
 		{
-			deleteCurrentState();
-			setCurrentState(new MainMenuState());
-		}
-		else
-			imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
-		if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::getSingleton()->getString(TextManager::RP_DELETE)))
-		{
-			if (!mReplayFiles.empty())
-			if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr").c_str()))
+
+			if(mPaused) 
 			{
-				mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
-				if (mSelectedReplay >= mReplayFiles.size())
-					mSelectedReplay = mReplayFiles.size()-1;
-			}
-		}
-
-		if (mChecksumError)
-		{
-			imgui.doInactiveMode(false);
-			imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
-			imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_CHECKSUM));
-			imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_CORRUPT));
-
-			if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
-			{
-				mChecksumError = false;
+				mPaused = false;
+				if(mReplayPlayer->endOfFile())
+					mPositionJump = 0;
 			}
 			else
-			{
-				imgui.doInactiveMode(true);
-			}
+				mPaused = true;
 		}
 		
-		if (mVersionError)
-		{
-			imgui.doInactiveMode(false);
-			imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
-			imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_VERSION));
-			imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_OUTDATED));
-
-			if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
-			{
-				mVersionError = false;
-			}
-			else
-			{
-				imgui.doInactiveMode(true);
-			}
+		Vector2 fastpos = Vector2(430-12, 550.0-12);
+		if (mousepos.x > fastpos.x &&
+			mousepos.y > fastpos.y &&
+			mousepos.x < fastpos.x + 24.0 &&
+			mousepos.y < fastpos.y + 24.0)
+		{	
+			mSpeedValue *= 2;
+			if(mSpeedValue > 64)
+				mSpeedValue = 64;
 		}
+		
+		Vector2 slowpos = Vector2(370-12, 550.0-12);
+		if (mousepos.x > slowpos.x &&
+			mousepos.y > slowpos.y &&
+			mousepos.x < slowpos.x + 24.0 &&
+			mousepos.y < slowpos.y + 24.0)
+		{	
+			mSpeedValue /= 2;
+			if(mSpeedValue < 1)
+				mSpeedValue = 1;
+		}
+	}
+	
+	PlayerSide side = mReplayMatch->winningPlayer();
+	if (side != NO_PLAYER)
+	{
+		std::stringstream tmp;
+		if(side == LEFT_PLAYER)
+			tmp << mReplayPlayer->getPlayerName(LEFT_PLAYER);
+		else
+			tmp << mReplayPlayer->getPlayerName(RIGHT_PLAYER);
+		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
+		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
+		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
+		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
+		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		{
+			deleteCurrentState();
+			setCurrentState(new ReplaySelectionState());
+		}
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::RP_SHOW_AGAIN)))
+		{
+			/// \todo how do we handle reload?
+		}
+		imgui.doCursor();
+	}
+	else if ((InputManager::getSingleton()->exit()))
+	{
+		deleteCurrentState();
+		setCurrentState(new ReplaySelectionState());
 	}
 }
 

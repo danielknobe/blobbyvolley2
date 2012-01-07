@@ -53,6 +53,8 @@ public:
 	// singleton may be registered for the purpose of scripted or
 	// interactive input. Note this can return 0.
 	static DuelMatch* getMainGame();
+	
+	void reset();
 
 	// This steps through one frame
 	void step();
@@ -104,7 +106,7 @@ public:
 
 	//Input stuff for recording and playing replays
 	const PlayerInput* getPlayersInput() const;
-	void setPlayersInput(const PlayerInput* input);
+	void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
 	
 	void setServingPlayer(PlayerSide side);
 	

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "IUserConfigReader.h"
 #include "DuelMatch.h"
+#include "UserConfig.h"
 
 #include <cassert>
 
@@ -46,6 +47,21 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 	/// \todo we better pass this as a parameter so DuelMatch has no coupeling with UserConfigs...s
 	mLogic->setScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin"));
 };
+
+void DuelMatch::reset()
+{
+	mPhysicWorld = PhysicWorld();
+	mLogic = createGameLogic("rules.lua");
+	
+	mBallDown = false;
+
+	mPhysicWorld.resetPlayer();
+	mPhysicWorld.step();
+	
+	UserConfig gameConfig;
+	gameConfig.loadFile("config.xml");
+	mLogic->setScoreToWin(gameConfig.getInteger("scoretowin"));
+}
 
 DuelMatch::~DuelMatch()
 {
@@ -251,10 +267,10 @@ const PlayerInput* DuelMatch::getPlayersInput() const
 	return mPhysicWorld.getPlayersInput();
 }
 
-void DuelMatch::setPlayersInput(const PlayerInput* input)
+void DuelMatch::setPlayersInput(const PlayerInput& left, const PlayerInput& right)
 {
-	mPhysicWorld.setLeftInput(input[LEFT_PLAYER]);
-	mPhysicWorld.setRightInput(input[RIGHT_PLAYER]);
+	mPhysicWorld.setLeftInput( left );
+	mPhysicWorld.setRightInput( right );
 }
 
 void DuelMatch::setServingPlayer(PlayerSide side)

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 
 #include "LocalGameState.h"
-#include "ReplayState.h"
+#include "ReplaySelectionState.h"
 #include "NetworkState.h"
 #include "NetworkSearchState.h"
 #include "OptionsState.h"
@@ -169,7 +169,7 @@ void MainMenuState::step()
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 470.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_REPLAY)))
 	{
 		deleteCurrentState();
-		setCurrentState(new ReplayState());
+		setCurrentState(new ReplaySelectionState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_CREDITS)))

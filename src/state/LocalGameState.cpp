@@ -58,9 +58,9 @@ LocalGameState::LocalGameState()
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
-	mRecorder = new ReplayRecorder(MODE_RECORDING_DUEL);
+	mRecorder = new ReplayRecorder();
 	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
-	mRecorder->setServingPlayer(LEFT_PLAYER);
+	mRecorder->setGameSpeed((float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps"));
 
 	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false);
 
@@ -159,11 +159,6 @@ void LocalGameState::step()
 			RenderManager::getSingleton().redraw();
 			mMatch->pause();
 		}
-	}
-	else if (mRecorder->endOfFile())
-	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState);
 	}
 	else
 	{

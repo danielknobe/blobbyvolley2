@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include "ReplayRecorder.h"
-#include "physfs.h"
+#include "IReplayLoader.h"
+#include "File.h"
 #include "tinyxml/tinyxml.h"
 
 #include <algorithm>
@@ -27,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/crc.hpp>
 #include <SDL/SDL.h>
 #include "Global.h"
+#include <ctime>
 
 ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
 {
@@ -69,156 +71,143 @@ const char* VersionMismatchException::what() const throw()
 
 
 
-ReplayRecorder::ReplayRecorder(RecorderMode mode)
+ReplayRecorder::ReplayRecorder()
 {
-	mRecordMode = mode;
-	mReplayData = 0;
+	mGameSpeed = -1;
 }
 
 ReplayRecorder::~ReplayRecorder()
 {
-	delete[] mReplayData;
 }
 
-bool ReplayRecorder::endOfFile()
+void ReplayRecorder::save(const std::string& filename) const
 {
-	if (mRecordMode == MODE_REPLAY_DUEL)
-		return (mReplayOffset >= mBufferSize);
-	else
-		return false;
-}
-
-void ReplayRecorder::save(const std::string& filename)
-{
-	PHYSFS_file* fileHandle = PHYSFS_openWrite(filename.c_str());
-	if (!fileHandle)
-	{
-		std::cerr << "Warning: Unable to write to ";
-		std::cerr << PHYSFS_getWriteDir() << filename;
-		std::cerr << std::endl;
-		return;
-	}
-
-	PHYSFS_write(fileHandle, validHeader, 1, sizeof(validHeader));
-	
-	// after the header, we write the replay version
-	// first, write zero. leading zero indicates that the following value
-	// really is a version number (and not a checksum of an older replay!)
-	unsigned char zero = 0;
-	PHYSFS_write(fileHandle, &zero, 1, 1);
-	PHYSFS_write(fileHandle, &REPLAY_FILE_VERSION_MAJOR, 1, sizeof(REPLAY_FILE_VERSION_MAJOR));
-	PHYSFS_write(fileHandle, &REPLAY_FILE_VERSION_MINOR, 1, sizeof(REPLAY_FILE_VERSION_MINOR));
-	// we're going to use this value somehow, maybe it can show recording settings.
-	PHYSFS_write(fileHandle, &zero, 1, 1);
-	
+	/// this may throw FileLoadException
+	File file(filename, File::OPEN_WRITE);
 	
 	boost::crc_32_type crc;
-	crc(mServingPlayer);
 	crc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), crc);
 	crc = std::for_each(mPlayerNames[RIGHT_PLAYER].begin(), mPlayerNames[RIGHT_PLAYER].end(), crc);
 	crc = std::for_each(mSaveData.begin(), mSaveData.end(), crc);
 
 	uint32_t checksum = crc.checksum();
-	PHYSFS_write(fileHandle, &checksum, 1, sizeof(checksum));
+	
+	writeFileHeader(file, checksum);
+	
+	uint32_t replayHeaderStart = file.tell();
+	file.seek(replayHeaderStart + 7*sizeof(uint32_t));
+	writeAttributesSection(file);
+	writeJumpTable(file);
+	writeDataSection(file);
+	
+	// the last thing we write is the header again, so
+	// we can fill in all data we gathered during the
+	// rest of the writing process
+	file.seek(replayHeaderStart);
+	writeReplayHeader(file);
+	
+	file.close();
+}
 
-	PHYSFS_write(fileHandle, &mServingPlayer, 1, sizeof(mServingPlayer));
-	PHYSFS_write(fileHandle, mPlayerNames[LEFT_PLAYER].c_str(), 1, mPlayerNames[LEFT_PLAYER].size()+1);
-	PHYSFS_write(fileHandle, mPlayerNames[RIGHT_PLAYER].c_str(), 1, mPlayerNames[RIGHT_PLAYER].size()+1);
+void ReplayRecorder::writeFileHeader(File& file, uint32_t checksum) const
+{
+	file.write(validHeader, sizeof(validHeader));
+	
+	// after the header, we write the replay version
+	// first, write zero. leading zero indicates that the following value
+	// really is a version number (and not a checksum of an older replay!)
+	unsigned char zero = 0;
+	file.writeByte(0);
+	file.writeByte(REPLAY_FILE_VERSION_MAJOR);
+	file.writeByte(REPLAY_FILE_VERSION_MINOR);
+	file.writeByte(0);
+	
+	file.writeUInt32(checksum);
+}
+
+void ReplayRecorder::writeReplayHeader(File& file) const
+{
+	/// for now, this are fixed numbers
+	/// we have to make sure they are right! 
+	uint32_t header_ptr = file.tell();
+	uint32_t header_size =  7*sizeof(header_ptr);
+	
+	uint32_t attr_size = 128;	/// for now, we reserve 128 bytes!
+	uint32_t jptb_size = 128;	/// for now, we reserve 128 bytes!
+	uint32_t data_size = mSaveData.size();	/// assumes 1 byte per data record!
+	
+	
+	file.writeUInt32(header_size);
+	file.writeUInt32(attr_ptr);
+	file.writeUInt32(attr_size);
+	file.writeUInt32(jptb_ptr);
+	file.writeUInt32(jptb_size);
+	file.writeUInt32(data_ptr);
+	file.writeUInt32(data_size);
+	
+	// check that we really needed header_size space
+	assert( file.tell() - header_size );
+}
+
+void ReplayRecorder::writeAttributesSection(File& file) const
+{
+	attr_ptr = file.tell();
+	
+	// we have to check that we are at attr_ptr!
+	char attr_header[4] = {'a', 't', 'r', '\n'};
+	uint32_t gamespeed = mGameSpeed;
+	uint32_t gamelength = mSaveData.size();	/// \attention 1 byte = 1 step is assumed here
+	uint32_t gameduration = gamelength / gamespeed;
+	uint32_t gamedat = std::time(0);
+	// check that we can really safe time in gamedat. ideally, we should use a static assertion here
+	assert(sizeof(uint32_t) >= sizeof(time_t) );
+	
+	file.write(attr_header, sizeof(attr_header));
+	file.writeUInt32(gamespeed);
+	file.writeUInt32(gameduration);
+	file.writeUInt32(gamelength);
+	file.writeUInt32(gamedat);
+	
+	// write names
+	file.writeNullTerminated(mPlayerNames[LEFT_PLAYER]);
+	file.writeNullTerminated(mPlayerNames[RIGHT_PLAYER]);
+	
+	// we need to check that we don't use more space than we got!
+	
+	// set up writing for next section. not good!
+	file.seek(attr_ptr + 128);
+}
+
+void ReplayRecorder::writeJumpTable(File& file) const
+{
+	jptb_ptr = file.tell();
+	
+	// we have to check that we are at attr_ptr!
+	char jtbl_header[4] = {'j', 'p', 't', '\n'};
+	
+	file.write(jtbl_header, sizeof(jtbl_header));	
+	
+	file.seek(jptb_ptr + 128);
+}
+
+void ReplayRecorder::writeDataSection(File& file) const
+{
+	data_ptr = file.tell();
+	
+	// we have to check that we are at attr_ptr!
+	char data_header[4] = {'d', 'a', 't', '\n'};
+	file.write(data_header, sizeof(data_header));
+	
+	uint32_t recordcount = mSaveData.size();
+	
+	file.writeUInt32(recordcount);
 	
 	/// \todo shouldn't we write more than 1 char per step?
 	/// \todo why don't we zip it? even though it's quite compact, 
 	/// 		we still save a lot of redundant information.
 	for (int i=0; i<mSaveData.size(); i++)
-		PHYSFS_write(fileHandle, &mSaveData[i], 1, sizeof(char));
+		file.writeByte(mSaveData[i]);
 
-	PHYSFS_close(fileHandle);
-}
-
-std::string ReplayRecorder::readString()
-{
-	std::string str;
-	char c;
-	while ((c = mReplayData[mReplayOffset++]) != '\0')
-	{
-		str.append(1, c);
-	}
-	return str;
-}
-
-int ReplayRecorder::readInt()
-{
-	int ret = mReplayData[mReplayOffset];
-	mReplayOffset += sizeof(int);
-	return ret;
-}
-
-char ReplayRecorder::readChar()
-{
-	return mReplayData[mReplayOffset++];
-}
-
-void ReplayRecorder::load(const std::string& filename)
-{
-	PHYSFS_file* fileHandle = PHYSFS_openRead(filename.c_str());
-	if (!fileHandle)
-		throw FileLoadException(filename);
-	
-	int fileLength = PHYSFS_fileLength(fileHandle);	
-	/// \todo LEAK: we don't close this file if we leave the function here!
-	if (fileLength < 12)
-	{
-		std::cout << "Error: Invalid replay file: " <<
-			filename << std::endl;
-		return;
-	}
-	char header[4];
-	PHYSFS_read(fileHandle, header, 4, 1);
-	if (memcmp(&header, &validHeader, 4) != 0)
-	{
-		std::cout << "Error: Invalid replay file: " <<
-			filename << std::endl;
-		return;
-	}
-	unsigned char version[4];
-	PHYSFS_read(fileHandle, version, 4, 1);
-	
-	// check if versions match
-	if(version[0] != 0)
-		throw(VersionMismatchException(filename, 0, 0));
-	
-	if(version[1] != REPLAY_FILE_VERSION_MAJOR)
-		throw(VersionMismatchException(filename, version[1], version[2]));
-	
-	if(version[2] > REPLAY_FILE_VERSION_MINOR)
-		throw(VersionMismatchException(filename, version[1], version[2]));
-	
-	uint32_t checksum;
-	PHYSFS_read(fileHandle, &checksum, 1, 4);
-	mBufferSize = fileLength-8;
-
-	delete[] mReplayData;
-
-	mReplayData = new char[mBufferSize];
-
-	mBufferSize = PHYSFS_read(fileHandle, mReplayData, 1, mBufferSize);
-	PHYSFS_close(fileHandle);
-
-	mReplayOffset = 0;
-
-	mServingPlayer = (PlayerSide)readInt();
-	mPlayerNames[LEFT_PLAYER] = readString();
-	mPlayerNames[RIGHT_PLAYER] = readString();
-
-	boost::crc_32_type realcrc;
-	realcrc(mServingPlayer);
-	realcrc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), realcrc);
-	realcrc = std::for_each(mPlayerNames[RIGHT_PLAYER].begin(), mPlayerNames[RIGHT_PLAYER].end(), realcrc);
-	realcrc.process_bytes(mReplayData + mReplayOffset, mBufferSize - mReplayOffset);
-
-	if (realcrc.checksum() != checksum)
-	{
-		throw ChecksumException(filename, checksum, realcrc.checksum());
-	}
 }
 
 void ReplayRecorder::record(const PlayerInput* input)
@@ -240,39 +229,7 @@ void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& 
 	mPlayerNames[RIGHT_PLAYER] = right;
 }
 
-std::string ReplayRecorder::getPlayerName(const PlayerSide side) const
+void ReplayRecorder::setGameSpeed(int fps)
 {
-	return mPlayerNames[side];
+	mGameSpeed = fps;
 }
-
-PacketType ReplayRecorder::getPacketType()
-{
-	assert(mReplayData != 0);
-	if (!endOfFile()) {
-		uint8_t packet = mReplayData[mReplayOffset];
-		return static_cast<PacketType>(packet >> 6);
-	} else {
-		return ID_ERROR;
-	}
-}
-
-const PlayerInput* ReplayRecorder::getInput()
-{
-	PlayerInput* input = new PlayerInput[MAX_PLAYERS];
-	const uint8_t packet = mReplayData[mReplayOffset++];
-	input[LEFT_PLAYER].set((bool)(packet & 32), (bool)(packet & 16), (bool)(packet & 8));
-	input[RIGHT_PLAYER].set((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1));
-	return input;
-}
-
-PlayerSide ReplayRecorder::getServingPlayer() const
-{
-	return mServingPlayer;
-}
-
-void ReplayRecorder::setServingPlayer(PlayerSide side)
-{
-	mServingPlayer = side;
-}
-
-
