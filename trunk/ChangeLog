@@ -1,5 +1,11 @@
 New in 1.0 RC 1 (rev. 732) since Beta 9:
 * Features:
+- REPLAY PLAYER:
+    still in development, features for now:
+	- pausing
+	- fast forwarding
+	- jumping to certain positions in replay (may take some time
+	new replay save file format, not fixed yet, so replays may become incompatible in the future 
 - enabled writing in chat without clicking into editbox
 - Blobby speed more stable on slow systems (framedrop)
 - auto disconnect when game is closed
@@ -21,6 +27,7 @@ New in 1.0 RC 1 (rev. 732) since Beta 9:
 - [Windows] fixed server output messages 
 
 * Performance:
+- fixed a major memory leak in dedicated server
 - removed possible lag due to rounding issues in speed controller
 - removed needless wait in network server (only 1 ms)
 - improved OpenGL performance significantly (10-30%)

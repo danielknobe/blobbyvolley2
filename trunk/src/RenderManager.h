@@ -50,6 +50,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
+struct SDL_Surface;
+/*! \struct BufferedImage
+	\brief image data
+	\details couples the raw image data with its size in a way that is
+			independend of the used renderer.
+*/
+struct BufferedImage
+{
+	int w;
+	int h;
+	union
+	{
+		SDL_Surface* sdlImage;
+		unsigned glHandle;
+	};
+};
+
 
 /*! \class RenderManager
 	\brief class for managing rendering
