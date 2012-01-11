@@ -59,7 +59,7 @@ void State::deleteCurrentState()
 	///			first. 
 	///			So, if the construction of the new state fails, the old is 
 	///			already deleted and we have now way to roll back.
-	///			Second, we need to methods were one should be sufficient.
+	///			Second, we need two methods were one should be sufficient.
 	delete mCurrentState;
 	mCurrentState = 0;
 }

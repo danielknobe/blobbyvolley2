@@ -109,25 +109,6 @@ struct Color
 
 };
 
-struct SDL_Surface;
-/*! \struct BufferedImage
-	\brief image data
-	\details couples the raw image data with its size in a way that is
-			independend of the used renderer.
-	\todo is global really the right header for defining something so specific
-			for the rendermanagers?
-*/
-struct BufferedImage
-{
-	int w;
-	int h;
-	union
-	{
-		SDL_Surface* sdlImage;
-		unsigned glHandle;
-	};
-};
-
 struct FileLoadException : public std::exception
 {
 	std::string filename;
