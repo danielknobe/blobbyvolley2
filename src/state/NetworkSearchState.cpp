@@ -226,6 +226,7 @@ void NetworkSearchState::step()
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
 			//std::string server = mScannedServers[mSelectedServer].hostname;
+			/// \todo possibility to use custom port, too
 			deleteCurrentState();
 			setCurrentState(new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT));
 			return;
@@ -283,9 +284,9 @@ void NetworkSearchState::step()
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::getSingleton()->getString(TextManager::LBL_OK)) 
 							&& !mScannedServers.empty() || doEnterServer)
 	{
-		std::string server = mScannedServers[mSelectedServer].hostname;
+		ServerInfo server = mScannedServers[mSelectedServer];
 		deleteCurrentState();
-		setCurrentState(new NetworkGameState(server.c_str(), BLOBBY_PORT));
+		setCurrentState(new NetworkGameState(server.hostname, server.port));
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 	{

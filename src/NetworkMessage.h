@@ -199,7 +199,6 @@ struct ServerInfo
 	ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t port);
 	ServerInfo(const UserConfig& config);
 	ServerInfo(const std::string& playername);
-	ServerInfo(uint16_t port) {}
 
 	void writeToBitstream(RakNet::BitStream& stream);
 	
