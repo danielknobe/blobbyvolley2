@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayDefs.h"
 #include "InputSource.h"
 
-class File;
+class FileWrite;
 
 struct ChecksumException : public std::exception
 {
@@ -70,11 +70,11 @@ public:
 	void setGameSpeed(int fps);
 private:
 
-	void writeFileHeader(File&, uint32_t checksum) const;
-	void writeReplayHeader(File&) const;
-	void writeAttributesSection(File&) const;
-	void writeJumpTable(File&) const;
-	void writeDataSection(File&) const;
+	void writeFileHeader(FileWrite&, uint32_t checksum) const;
+	void writeReplayHeader(FileWrite&) const;
+	void writeAttributesSection(FileWrite&) const;
+	void writeJumpTable(FileWrite&) const;
+	void writeDataSection(FileWrite&) const;
 
 	std::vector<uint8_t> mSaveData;
 

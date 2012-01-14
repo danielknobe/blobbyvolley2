@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "RenderManager.h"
 
-#include "File.h"
+#include "FileRead.h"
 
 RenderManager* RenderManager::mSingleton = 0;
 
@@ -70,7 +70,7 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 
 SDL_Surface* RenderManager::loadSurface(std::string filename)
 {
-	File file(filename, File::OPEN_READ);
+	FileRead file(filename);
 	int fileLength = file.length();
 	
 	// just read the whole file

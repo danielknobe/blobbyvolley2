@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include <iostream>
-#include "File.h"
+#include "FileRead.h"
+#include "FileWrite.h"
 #include "tinyxml/tinyxml.h"
 #include "UserConfig.h"
 #include "Global.h"
@@ -50,7 +51,7 @@ boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(c
 
 bool UserConfig::loadFile(const std::string& filename)
 {
-	File file(filename, File::OPEN_READ);
+	FileRead file(filename);
 	int fileLength = file.length();
 	boost::shared_array<char> fileBuffer(new char[fileLength + 1]);
 	/// \todo our new file interface must be improved so we can load the whole file as null terminated string
@@ -93,7 +94,7 @@ bool UserConfig::loadFile(const std::string& filename)
 bool UserConfig::saveFile(const std::string& filename) const
 {
 	// this trows an exception if the file could not be opened for writing
-	File file(filename, File::OPEN_WRITE);
+	FileWrite file(filename);
 
 	const std::string xmlHeader =
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";

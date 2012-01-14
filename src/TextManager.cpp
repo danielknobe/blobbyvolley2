@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 
 #include "Global.h"
-#include "File.h"
+#include "FileRead.h"
 
 #include "tinyxml/tinyxml.h"
 
@@ -79,7 +79,7 @@ std::string TextManager::getLang() const{
 /// \todo why no const std::string& ?
 bool TextManager::loadFromXML(std::string filename){
 	// create and load file
-	File file(filename, File::OPEN_READ);
+	FileRead file(filename);
 
 	int fileLength = file.length();
 	boost::shared_array<char> fileBuffer(new char[fileLength + 1]);

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "ReplayDefs.h"
 
-class File;
+class FileRead;
 class PlayerInput;
 
 /// \class IReplayLoader
@@ -101,5 +101,5 @@ class IReplayLoader
 		
 	private:
 		/// \todo add documentation
-		virtual void initLoading(File& file_handle, int minor_version, uint32_t checksum) = 0;
+		virtual void initLoading(FileRead& file_handle, int minor_version, uint32_t checksum) = 0;
 };

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "GameConstants.h"
 #include "BotAPICalculations.h"
-#include "File.h"
+#include "FileRead.h"
 
 extern "C"
 {
@@ -90,7 +90,7 @@ float ScriptedInputSource::coordinate<vel_y>::convert (float val) {
 
 struct ReaderInfo
 {
-	File file;
+	FileRead file;
 	char buffer[2048];
 };
 
@@ -186,7 +186,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	//lua_register(mState, "parabel", parabel);
 
 	ReaderInfo info;
-	info.file.open(filename, File::OPEN_READ);
+	info.file.open(filename);
 	
 	int error;
 	error = lua_load(mState, chunkReader, &info, filename.c_str());

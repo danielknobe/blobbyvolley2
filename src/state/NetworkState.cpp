@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 #include "TextManager.h"
-#include "File.h"
+#include "FileWrite.h"
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
@@ -345,7 +345,7 @@ void NetworkGameState::step()
 				char* data = new char[length];
 				stream.Read(data, length);
 				// may throw!
-				File file((std::string("replays/") + mFilename + std::string(".bvr")), File::OPEN_WRITE);
+				FileWrite file((std::string("replays/") + mFilename + std::string(".bvr")));
 				file.write(data, length);
 				file.close();
 				mWaitingForReplay = false;

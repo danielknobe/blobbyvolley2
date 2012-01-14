@@ -109,25 +109,6 @@ struct Color
 
 };
 
-struct FileLoadException : public std::exception
-{
-	std::string filename;
-	FileLoadException(std::string name) : filename(name)
-	{
-		error = "Couldn't load " + filename;;
-	}
-	
-	~FileLoadException() throw() {}
-
-	virtual const char* what() const throw()
-	{
-		return error.c_str();
-	}
-	
-private:
-	std::string error;
-};
-
 
 struct ExtensionUnsupportedException : public std::exception
 {

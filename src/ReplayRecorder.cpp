@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "ReplayRecorder.h"
 #include "IReplayLoader.h"
-#include "File.h"
+#include "FileWrite.h"
 #include "tinyxml/tinyxml.h"
 
 #include <algorithm>
@@ -83,7 +83,7 @@ ReplayRecorder::~ReplayRecorder()
 void ReplayRecorder::save(const std::string& filename) const
 {
 	/// this may throw FileLoadException
-	File file(filename, File::OPEN_WRITE);
+	FileWrite file(filename);
 	
 	boost::crc_32_type crc;
 	crc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), crc);
@@ -109,7 +109,7 @@ void ReplayRecorder::save(const std::string& filename) const
 	file.close();
 }
 
-void ReplayRecorder::writeFileHeader(File& file, uint32_t checksum) const
+void ReplayRecorder::writeFileHeader(FileWrite& file, uint32_t checksum) const
 {
 	file.write(validHeader, sizeof(validHeader));
 	
@@ -124,7 +124,7 @@ void ReplayRecorder::writeFileHeader(File& file, uint32_t checksum) const
 	file.writeUInt32(checksum);
 }
 
-void ReplayRecorder::writeReplayHeader(File& file) const
+void ReplayRecorder::writeReplayHeader(FileWrite& file) const
 {
 	/// for now, this are fixed numbers
 	/// we have to make sure they are right! 
@@ -148,7 +148,7 @@ void ReplayRecorder::writeReplayHeader(File& file) const
 	assert( file.tell() - header_size );
 }
 
-void ReplayRecorder::writeAttributesSection(File& file) const
+void ReplayRecorder::writeAttributesSection(FileWrite& file) const
 {
 	attr_ptr = file.tell();
 	
@@ -177,7 +177,7 @@ void ReplayRecorder::writeAttributesSection(File& file) const
 	file.seek(attr_ptr + 128);
 }
 
-void ReplayRecorder::writeJumpTable(File& file) const
+void ReplayRecorder::writeJumpTable(FileWrite& file) const
 {
 	jptb_ptr = file.tell();
 	
@@ -189,7 +189,7 @@ void ReplayRecorder::writeJumpTable(File& file) const
 	file.seek(jptb_ptr + 128);
 }
 
-void ReplayRecorder::writeDataSection(File& file) const
+void ReplayRecorder::writeDataSection(FileWrite& file) const
 {
 	data_ptr = file.tell();
 	
