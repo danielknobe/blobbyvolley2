@@ -1,8 +1,10 @@
 #define BOOST_TEST_MODULE FileAbstraction
 #include <boost/test/unit_test.hpp>
 
-#include "File.h"
+#include "FileRead.h"
+#include "FileWrite.h"
 #include <iostream>
+#include <cstring>
 #include <physfs.h>
 
 // helper
@@ -28,47 +30,27 @@ void init_Physfs()
 											};
 
 
-BOOST_AUTO_TEST_SUITE( FileAbstraction )
+BOOST_AUTO_TEST_SUITE( ReadFileTest )
 
 BOOST_AUTO_TEST_CASE( default_constructor )
 {
-	File default_constructed;
+	FileRead default_constructed;
+	
 	// no file is opened after default construction
-	BOOST_REQUIRE( default_constructed.is_open() == false );
-	BOOST_REQUIRE( default_constructed.getPHYSFS_file() == 0 );
+	BOOST_CHECK( default_constructed.is_open() == false );
+	BOOST_CHECK( default_constructed.getPHYSFS_file() == 0 );
+	BOOST_CHECK( default_constructed.getFileName() == "" );
 	
 	// all other operations should raise an assertion!
+	CHECK_EXCEPTION_SAFETY (default_constructed.length(), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.tell(), NoFileOpenedException);
+	
+	char target;
+	CHECK_EXCEPTION_SAFETY (default_constructed.readRawBytes(&target, 1), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.readRawBytes(1), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.readUInt32(), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.readString(), NoFileOpenedException);
 }
-
-BOOST_AUTO_TEST_CASE( open_write_constructor )
-{
-	init_Physfs() ;
-	
-	File write_file("test_open_write_constructor.tmp", File::OPEN_WRITE);
-	
-	// now, a file is opened!
-	BOOST_REQUIRE( write_file.is_open() == true );
-	BOOST_REQUIRE( write_file.getPHYSFS_file() != 0 );
-	
-	// this file is new, so length should be 0
-	BOOST_REQUIRE( write_file.length() == 0 );
-	
-	write_file.close();
-	BOOST_REQUIRE( write_file.is_open() == false );
-	
-	// make sure we delete this file after the test, so we can run the test a second time
-	// under same circumstances
-	PHYSFS_delete("test_open_write_constructor.tmp");
-	
-	try
-	{
-		File write_file2("this_file_surely_does_not_exists?!@<|.tmp", File::OPEN_WRITE);
-		BOOST_ERROR("opening fiels with invalid names should lead to an exception");
-	} catch (std::exception& s) {
-		// fine
-	} 	
-}
-
 
 BOOST_AUTO_TEST_CASE( open_read_constructor )
 {
@@ -76,30 +58,34 @@ BOOST_AUTO_TEST_CASE( open_read_constructor )
 	
 	// create a temp file for the next check
 	try {
-		File write_file("test_open_read_constructor.tmp", File::OPEN_WRITE);
+		FileWrite write_file("test_open_read_constructor.tmp");
 		write_file.write("test");
 		write_file.close();
 	} catch (std::exception& s) {
-		BOOST_ERROR("this should never happen as we tested this behaviour in the test before!");
+		BOOST_ERROR("this should never happen!");
 	}
 	
 	// now this file exists
 	try{
-		File read_file("test_open_read_constructor.tmp", File::OPEN_READ);
+		FileRead read_file("test_open_read_constructor.tmp");
 	
 		// now, a file is opened!
 		BOOST_REQUIRE( read_file.is_open() == true );
-		BOOST_REQUIRE( read_file.getPHYSFS_file() != 0 );
+		BOOST_CHECK( read_file.getPHYSFS_file() != 0 );
+		BOOST_CHECK( read_file.getFileName() == "test_open_read_constructor.tmp" );
+		BOOST_CHECK( read_file.length() == 4);
 	
 		read_file.close();
-		BOOST_REQUIRE( read_file.is_open() == false );
+		BOOST_CHECK( read_file.is_open() == false );
+		BOOST_CHECK( read_file.getPHYSFS_file() == 0 );
+		BOOST_CHECK( read_file.getFileName() == "" );
+		
 	} catch (std::exception& e)
 	{
 		BOOST_ERROR(e.what());
 	}
 	
-	CHECK_EXCEPTION_SAFETY(File read_file("this_file_surely_does_not_exists?!@<|.tmp", File::OPEN_READ), 
-							std::exception);
+	CHECK_EXCEPTION_SAFETY(FileRead read_file("this_file_surely_does_not_exists?!@<|.tmp"), FileLoadException);
 	
 	PHYSFS_delete("test_open_read_constructor.tmp");
 }
@@ -109,31 +95,6 @@ BOOST_AUTO_TEST_CASE( open_read_constructor )
 // These are already tested together with the constructors (and other functions) 
 //
 
-BOOST_AUTO_TEST_CASE( open_close_test )
-{
-	init_Physfs();
-			
-	File test_file("test_open_close.tmp", File::OPEN_WRITE);
-	BOOST_REQUIRE( test_file.is_open() == true );
-	test_file.close();
-	BOOST_REQUIRE( test_file.is_open() == false );
-	
-	// now open another file
-	test_file.open("test_open_close2.tmp", File::OPEN_WRITE);
-	BOOST_REQUIRE( test_file.is_open() == true );
-	test_file.close();
-	BOOST_REQUIRE( test_file.is_open() == false );
-	
-	// and again the first file
-	test_file.open("test_open_close.tmp", File::OPEN_WRITE);
-	BOOST_REQUIRE( test_file.is_open() == true );
-	test_file.close();
-	BOOST_REQUIRE( test_file.is_open() == false );
-	
-	// cleanup
-	PHYSFS_delete("test_open_close.tmp");
-	PHYSFS_delete("test_open_close2.tmp");
-}
 
 // wrongly closed file
 
@@ -141,11 +102,14 @@ BOOST_AUTO_TEST_CASE( wrongly_closed_file_test )
 {	
 	init_Physfs() ;
 
-	File test_file("test_open_close.tmp", File::OPEN_WRITE);
+	FileWrite create_test_file("test_open_close.tmp");
 	
-	test_file.writeByte(1);
+	create_test_file.writeByte(1);
 	// close the file, loughing wickedly ;)
 	// don't ever do that in non-test code!
+	create_test_file.close();
+	
+	FileRead test_file ("test_open_close.tmp");
 	test_file.close();
 	
 	/// \todo this test can't work as we do it now because physfs just crashes when we 
@@ -166,36 +130,13 @@ BOOST_AUTO_TEST_CASE( wrongly_closed_file_test )
 	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), NoFileOpenedException);
 	CHECK_EXCEPTION_SAFETY(test_file.readString(), NoFileOpenedException);	
 	
-		
-	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), NoFileOpenedException);
-	CHECK_EXCEPTION_SAFETY(test_file.writeUInt32(5), NoFileOpenedException);
-	CHECK_EXCEPTION_SAFETY(test_file.write( std::string("bye bye world;)") ), NoFileOpenedException);
-	CHECK_EXCEPTION_SAFETY(test_file.writeNullTerminated( std::string("bye bye world;)") ), NoFileOpenedException);
-	CHECK_EXCEPTION_SAFETY(test_file.write( "bye bye world;)", 8 ), NoFileOpenedException);
-}
-
-BOOST_AUTO_TEST_CASE( write_to_readonly_test )
-{	
-	init_Physfs() ;
-
-	// create a temp helper file
-	{
-		File helper("readonly.tmp", File::OPEN_WRITE);
-		helper.writeByte(5);
-	}
-
-	File test_file("readonly.tmp", File::OPEN_READ);
+	CHECK_EXCEPTION_SAFETY(create_test_file.writeByte(5), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(create_test_file.writeUInt32(5), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(create_test_file.write( std::string("bye bye world;)") ), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(create_test_file.writeNullTerminated( std::string("bye bye world;)") ), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY(create_test_file.write( "bye bye world;)", 8 ), NoFileOpenedException);
 	
-	BOOST_REQUIRE( test_file.is_open() == true );
-	
-	// now, every action we try to perform on that file should yield an excpetion
-	CHECK_EXCEPTION_SAFETY(test_file.writeByte(5), PhysfsException);
-	CHECK_EXCEPTION_SAFETY(test_file.write("abc", 3), PhysfsException);
-	CHECK_EXCEPTION_SAFETY(test_file.writeUInt32(12), PhysfsException);
-	CHECK_EXCEPTION_SAFETY(test_file.write(std::string("hello world")), PhysfsException);
-	CHECK_EXCEPTION_SAFETY(test_file.writeNullTerminated(std::string("hello world")), PhysfsException);
 }
-
 
 BOOST_AUTO_TEST_CASE( exception_test )
 {	
@@ -203,11 +144,11 @@ BOOST_AUTO_TEST_CASE( exception_test )
 
 	// create a temp helper file
 	{
-		File helper("read.tmp", File::OPEN_WRITE);
+		FileWrite helper("read.tmp");
 		helper.writeByte(5);
 	}
 
-	File test_file("read.tmp", File::OPEN_READ);
+	FileRead test_file("read.tmp");
 	
 	BOOST_REQUIRE( test_file.is_open() == true );
 	
@@ -217,17 +158,160 @@ BOOST_AUTO_TEST_CASE( exception_test )
 	CHECK_EXCEPTION_SAFETY(test_file.seek(100), PhysfsException);
 	
 	char buffer[3];
-	/*CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);		// FAIL
-	
 	// read negative amounts of bytes
-	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, -5), PhysfsException);	// FAIL
-	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(-5), PhysfsException);			// FAIL
-	*/
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, -5), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(-5), std::bad_alloc);
+	
 	test_file.seek(0);
 	
 	// read more than there is
-	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), PhysfsException);
+	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), EOFException);
 	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), PhysfsException);		// FAIL
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE( WriteFileTest )
+
+BOOST_AUTO_TEST_CASE( default_constructor )
+{
+	FileWrite default_constructed;
+	
+	// no file is opened after default construction
+	BOOST_CHECK( default_constructed.is_open() == false );
+	BOOST_CHECK( default_constructed.getPHYSFS_file() == 0 );
+	BOOST_CHECK( default_constructed.getFileName() == "" );
+	
+	// all other operations should raise an assertion!
+	CHECK_EXCEPTION_SAFETY (default_constructed.length(), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.tell(), NoFileOpenedException);
+	
+	char target;
+	CHECK_EXCEPTION_SAFETY (default_constructed.writeByte('c'), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.write(std::string("c")), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.writeUInt32(5), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.writeNullTerminated(std::string("c")), NoFileOpenedException);
+	CHECK_EXCEPTION_SAFETY (default_constructed.write(&target, 1), NoFileOpenedException);
+}
+
+
+BOOST_AUTO_TEST_CASE( open_write_constructor )
+{
+	init_Physfs() ;
+	
+	FileWrite write_file("test_open_write_constructor.tmp");
+	
+	// now, a file is opened!
+	BOOST_REQUIRE( write_file.is_open() == true );
+	BOOST_CHECK( write_file.getPHYSFS_file() != 0 );
+	BOOST_CHECK( write_file.getFileName() == "test_open_write_constructor.tmp" );
+	
+	// this file is new, so length should be 0
+	BOOST_CHECK( write_file.length() == 0 );
+	
+	write_file.close();
+	BOOST_CHECK( write_file.is_open() == false );
+	
+	// make sure we delete this file after the test, so we can run the test a second time
+	// under same circumstances
+	PHYSFS_delete("test_open_write_constructor.tmp");
+	
+	try
+	{
+		FileWrite write_file2("this_file_surely_cannot_exists?!@<|.tmp");
+		BOOST_ERROR("opening fiels with invalid names should lead to an exception");
+	} catch (std::exception& s) {
+		// fine
+	} 	
+}
+
+
+BOOST_AUTO_TEST_CASE( open_close_test )
+{
+	init_Physfs();
+			
+	FileWrite test_file("test_open_close.tmp");
+	BOOST_REQUIRE( test_file.is_open() == true );
+	test_file.close();
+	BOOST_REQUIRE( test_file.is_open() == false );
+	
+	// now open another file
+	test_file.open("test_open_close2.tmp");
+	BOOST_REQUIRE( test_file.is_open() == true );
+	test_file.close();
+	BOOST_REQUIRE( test_file.is_open() == false );
+	
+	// and again the first file
+	test_file.open("test_open_close.tmp");
+	BOOST_REQUIRE( test_file.is_open() == true );
+	test_file.close();
+	BOOST_REQUIRE( test_file.is_open() == false );
+	
+	// cleanup
+	PHYSFS_delete("test_open_close.tmp");
+	PHYSFS_delete("test_open_close2.tmp");
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE( FileWriteReadCycle )
+
+BOOST_AUTO_TEST_CASE( raw_data_test )
+{
+	init_Physfs();
+	
+	char data[] = { 's', 'p', 'a', 'm', ' ', 't', 'e', 's', 't' };
+			
+	FileWrite writer("cycle.tmp");
+	BOOST_REQUIRE( writer.is_open() == true );
+	//FileRead reader_e("cycle.tmp");
+	/// \todo we need to define what happens when we open a file for reading and writing simultaniuosly
+	writer.write( data, sizeof(data) );
+	writer.close();
+	
+	FileRead reader("cycle.tmp");
+	char data2[sizeof(data)];
+	reader.readRawBytes(data2, sizeof(data));
+	
+	BOOST_CHECK( std::memcmp(data, data2, sizeof(data)) == 0 );
+	reader.seek(0);
+	boost::shared_array<char> data3 = reader.readRawBytes(sizeof(data));
+	BOOST_CHECK( std::memcmp(data, data3.get(), sizeof(data)) == 0 );
+	
+	PHYSFS_delete("cycle.tmp");
+}
+
+BOOST_AUTO_TEST_CASE( string_test )
+{
+	init_Physfs();
+	
+	std::string teststr = "hello world!";
+			
+	FileWrite writer("cycle.tmp");
+	BOOST_REQUIRE( writer.is_open() == true );
+
+	writer.write( teststr );
+	writer.writeNullTerminated( teststr );
+	writer.write( teststr );
+	writer.close();
+	
+	FileRead reader("cycle.tmp");
+	/// \todo convenience function for to reading null terminated strings
+	boost::shared_array<char> data = reader.readRawBytes(teststr.size());
+	BOOST_CHECK (reader.tell() == teststr.size() );
+	std::string str2 = reader.readString();
+	BOOST_CHECK (reader.tell() == 2 * teststr.size() + 1 );
+	std::cout << "read: " << str2 << "\n";
+	std::cout << "read: " << data.get() << "\n";
+	
+	BOOST_CHECK( std::memcmp(data.get(), teststr.data(), teststr.length()) == 0 );
+	BOOST_CHECK( teststr == str2 );
+	
+	// now, try to read as null terminated when it isn't
+	/// \todo we need a sensible check here
+	std::string str3 = reader.readString();
+	
+	PHYSFS_delete("cycle.tmp");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
