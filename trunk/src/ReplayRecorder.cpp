@@ -116,7 +116,6 @@ void ReplayRecorder::writeFileHeader(File& file, uint32_t checksum) const
 	// after the header, we write the replay version
 	// first, write zero. leading zero indicates that the following value
 	// really is a version number (and not a checksum of an older replay!)
-	unsigned char zero = 0;
 	file.writeByte(0);
 	file.writeByte(REPLAY_FILE_VERSION_MAJOR);
 	file.writeByte(REPLAY_FILE_VERSION_MINOR);

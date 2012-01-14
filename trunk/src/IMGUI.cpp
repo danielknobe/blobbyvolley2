@@ -758,7 +758,6 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 {
 	assert( entries.size() == local.size() );
 	int FontSize = (flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-	SelectBoxAction changed = SBA_NONE;
 	QueueObject obj;
 	obj.id = id;
 	obj.pos1 = pos1;

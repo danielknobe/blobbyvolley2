@@ -18,7 +18,7 @@ inline void to_utf8(wchar_t codepoint, char* target)
 	} else 
 	{
 	}
-};
+}
 
 // get following char length
 inline int getCodepointLength(char first)

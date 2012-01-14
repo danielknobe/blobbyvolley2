@@ -256,8 +256,6 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Surface* fontSurface = loadSurface(filename);
 		SDL_Surface* fontSurface2 = loadSurface(filename2);
 		
-		GLuint newFont = loadTexture(loadSurface(filename), false);
-		GLuint newFont2 = loadTexture(loadSurface(filename2), false);
 		SDL_Surface* highlight = highlightSurface(fontSurface, 60);
 		SDL_Surface* highlight2 = highlightSurface(fontSurface2, 60);
 		SDL_FreeSurface(fontSurface);
