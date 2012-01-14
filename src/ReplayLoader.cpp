@@ -69,7 +69,7 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 	loader->initLoading(file, minor, checksum);
 	
 	return loader;
-};
+}
 
 /***************************************************************************************************
 			              R E P L A Y   L O A D E R    V 0.1

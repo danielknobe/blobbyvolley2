@@ -46,7 +46,7 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
 
 	/// \todo we better pass this as a parameter so DuelMatch has no coupeling with UserConfigs...s
 	mLogic->setScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin"));
-};
+}
 
 void DuelMatch::reset()
 {

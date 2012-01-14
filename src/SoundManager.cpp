@@ -111,8 +111,7 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 	}
 	catch (const FileLoadException& exception)
 	{
-		std::cerr << "Warning: Couldn't load "
-			<< exception.filename << " !" << std::endl;
+		std::cerr << "Warning: " << exception.what() << std::endl;
 		return false;
 	}
 	return true;

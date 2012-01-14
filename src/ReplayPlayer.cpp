@@ -62,17 +62,6 @@ std::string ReplayPlayer::getPlayerName(const PlayerSide side) const
 	return mPlayerNames[side];
 }
 
-PacketType ReplayPlayer::getPacketType() const
-{
-	/*assert(mReplayData != 0);
-	if (!endOfFile()) {
-		uint8_t packet = mReplayData[mReplayOffset];
-		return static_cast<PacketType>(packet >> 6);
-	} else {
-		return ID_ERROR;
-	}*/
-}
-
 PlayerSide ReplayPlayer::getServingPlayer() const
 {
 	return mServingPlayer;
