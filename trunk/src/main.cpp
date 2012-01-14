@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "Blood.h"
 
+#include <ctime>
 #include <cstring>
 #include <sstream>
 #include <iostream>
@@ -44,6 +45,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 
 #ifdef WIN32
+#include <windows.h>
 #undef main
 #endif
 
@@ -146,7 +148,35 @@ int main(int argc, char* argv[])
 	// choose renderer
 	RenderManager *rmanager = 0;
 	SoundManager *smanager = 0;
-
+	
+	
+	// Test Version Startup Warning
+	#ifdef TEST_VERSION
+	struct tm* ptm;
+	time_t time = std::time(0);
+	ptm = gmtime ( &time );
+	
+	if( ptm->tm_year > (2012-1900) || ptm->tm_mon >= 2 ) {
+		#ifdef WIN32
+		MessageBox(0, (std::string("This is a test version of ") + AppTitle + " wich expired on "
+									"1.3.2012. Please visit blobby.sourceforge.net for a newer version").c_str(),
+					"TEST VERISON OUTDATED",
+					MB_OK);
+		#endif
+		return -1;
+	}
+	
+	#ifdef WIN32
+	MessageBox(0, (std::string("This is a test version of ") + AppTitle + " for testing only.\n"
+								"It might be unstable and/or incompatible to the current release. "
+								"Use of this version is limited to 1.3.2012.\nUntil then, "
+								"the final version will most like be released and you should update to that one.\n"
+								"Visit blobby.sourceforge.net for more information or bug reporting.").c_str(),
+				"TEST VERISON WARNING",
+				MB_OK);
+	#endif
+	#endif
+					
 	try
 	{
 		UserConfig gameConfig;
