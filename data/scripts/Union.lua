@@ -1,6 +1,7 @@
 --UNION
 --27.3.2007 - version 2
 --Enormator
+-- 11.1.12 - insert game-provided physic constants where possible - by ngc92
 
 --Startwerte setzen
 --set starting values
@@ -15,21 +16,14 @@ serve=false
 
 --Weltkonstanten definieren
 --define world constants
-fieldwidth = 800
-ballradius = 31.5
-groundheight = 100
-ballgravity = 0.28
-middle = fieldwidth/2
-wallright = fieldwidth - ballradius
-blobbyheight = 89
-blobbyheadradius = 25
-blobbyradius = 33
-blobbyheadheight = groundheight + blobbyheight + ballradius
+middle = CONST_FIELD_WIDTH/2
+wallright = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
+blobbyheadheight = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 blobbymaxjump = 393.625
-netradius = 7
-netheight = 323
-netcolissionleft = middle - netradius - ballradius 
-netcolissionright = middle + netradius + ballradius
+blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
+netheight = CONST_NET_HEIGHT + CONST_NET_RADIUS -- height is just the rod. for total height, we have to add the net-sphere-radius too
+netcolissionleft = middle - CONST_NET_RADIUS - CONST_BALL_RADIUS 
+netcolissionright = middle + CONST_NET_RADIUS + CONST_BALL_RADIUS
 
 --Hauptfunktionen
 --main functions
@@ -86,7 +80,7 @@ function OnGame()
   dofunc (3, decision, true) --Der Funktion sagen, dass sie im Spiel ist
                              --tell the function that it's OnGame
  end
- if (ballx()>netcolissionleft+ballradius) then --Falls Ball nicht mehr erreichbar
+ if (ballx()>netcolissionleft+CONST_BALL_RADIUS) then --Falls Ball nicht mehr erreichbar
                                                --If Ball not gettable by Bot
   serve=false --Aufschlagende erzwingen
               --Make an end to the serve
@@ -145,8 +139,8 @@ end
 function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45° Winkel an
                                    --plays ball in the air at height maxjump with 45° angle
                                    --funcno(s)=2,3
- maxjump=393.625
- distance=32.25
+ maxjump  = blobbymaxjump
+ distance = 32.25
  targetx=estimatex (maxjump) - distance
  if (funcno==1) then
   return -1
@@ -266,22 +260,21 @@ function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück
  if (bspeedy()==0) and (bspeedx()==0) then
   return ballx()
  end
- grav = 0.28
- time1 =(-bspeedy()-math.sqrt((bspeedy()^2)-(-2*grav*(bally()-destY))))/(-grav)
+ time1 =(-bspeedy()-math.sqrt((bspeedy()^2)-(2*CONST_BALL_GRAVITY * (bally()-destY)))) / CONST_BALL_GRAVITY
  resultX = (bspeedx() * time1) + ballx()
  estimbspeedx=bspeedx()
 
  if(resultX > wallright) then -- Korrigieren der Appraller an der Rechten Ebene
-  resultX = 2 * fieldwidth - resultX
+  resultX = 2 * CONST_FIELD_WIDTH - resultX
   estimbspeedx=-estimbspeedx
  end
 
- if(resultX < ballradius) then -- korrigieren der Appraller an der linken Ebene
-  resultX = 2 * ballradius - resultX
+ if(resultX < CONST_BALL_RADIUS) then -- korrigieren der Appraller an der linken Ebene
+  resultX = 2 * CONST_BALL_RADIUS - resultX
   estimbspeedx=-estimbspeedx
  end
 
- if (resultX > netcolissionleft) and (estimatey(netcolissionleft-ballradius) <= netheight) and (estimbspeedx > 0) then
+ if (resultX > netcolissionleft) and (estimatey(netcolissionleft-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
   resultX = 2 * netcolissionleft - resultX
   estimbspeedx=-estimbspeedx
  end
@@ -303,9 +296,9 @@ function blobtimetoy (y) --Zeit, die ein Blob braucht, um eine Y Position zu err
  if (y>383) then
   y=383
  end
- grav=-0.44
- time1=-14.5/grav+1/grav*math.sqrt(2*grav*(y-144.5)+14.5^2)
- time2=-14.5/grav-1/grav*math.sqrt(2*grav*(y-144.5)+14.5^2)
+ grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
+ time1 = -CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+ time2 = -CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
  timemin=math.min(time1,time2)
  return timemin
 end
@@ -329,7 +322,7 @@ end
 
 function ballyaftertime (t) --Y Position des Balls nach der angegebenen Zahl von Physikschritten
                             --y position of the ball after the given time
- y=1/2*(-0.28)*t^2+bspeedy()*t+bally()
+ y=1/2*CONST_BALL_GRAVITY*t^2+bspeedy()*t+bally()
  return y
 end
 
@@ -341,8 +334,8 @@ end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
                          --time needed by the ball to reach a given y position
- time1=-bspeedy()/-0.28+1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
- time2=-bspeedy()/-0.28-1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
+ time1=-bspeedy()/CONST_BALL_GRAVITY+1/CONST_BALL_GRAVITY*math.sqrt(2*CONST_BALL_GRAVITY*(y-bally())+bspeedy()^2)
+ time2=-bspeedy()/CONST_BALL_GRAVITY-1/CONST_BALL_GRAVITY*math.sqrt(2*CONST_BALL_GRAVITY*(y-bally())+bspeedy()^2)
  timemax=math.max(time1, time2)
  return timemax
 end
