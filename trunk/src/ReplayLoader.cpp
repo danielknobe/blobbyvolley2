@@ -27,13 +27,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/crc.hpp>
 
-#include "File.h"
+#include "FileRead.h"
 
 IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 {
 	// do some generic loading stuff:
 	// first, try to open the file
-	File file(filename, File::OPEN_READ);
+	FileRead file(filename);
 	
 	// then, check the file length. We need at least 12 bytes.
 	int fileLength = file.length();	
@@ -150,7 +150,7 @@ class ReplayLoader_V10: public IReplayLoader
 		}
 		
 	private:
-		virtual void initLoading(File& file, int minor_version, uint32_t checksum)
+		virtual void initLoading(FileRead& file, int minor_version, uint32_t checksum)
 		{
 			/// \todo check if minor_version < getVersionMinor, otherwise issue a warning
 			/// \todo add checksum checking. We should think about our checksum too!

@@ -29,7 +29,7 @@ extern "C"
 #include "lua/lualib.h"
 }
 
-#include "File.h"
+#include "FileRead.h"
 #include <iostream>
 
 // copied from ScriptedInputSource
@@ -37,7 +37,7 @@ extern "C"
 
 struct ReaderInfo
 {
-	File file;
+	FileRead file;
 	char buffer[2048];
 };
 
@@ -282,7 +282,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() )
 	// now load script file
 	ReaderInfo info;
 	// this opens the file
-	info.file.open(filename, File::OPEN_READ);
+	info.file.open(filename);
 
 	int error = lua_load(mState, chunkReader, &info, filename.c_str());
 	

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
 
-#include "File.h"
+#include "FileRead.h"
 #include <physfs.h> // still needed for file deletion
 
 // We don't need the stringcompressor
@@ -235,7 +235,7 @@ bool NetworkGame::step()
 				/// \todo is the server secured against beeing crashed by exceptiong
 				///  i guess it's not
 				/// \todo if this throws an exception, we do not delete the file!
-				File file(filename, File::OPEN_READ);
+				FileRead file(filename);
 				
 				int length = file.length();
 				boost::shared_array<char> filecontent = file.readRawBytes( length );

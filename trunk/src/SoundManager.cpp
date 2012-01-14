@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 #include <cassert>
-#include "File.h"
+#include "FileRead.h"
 #include "SoundManager.h"
 #include "Global.h"
 
@@ -27,7 +27,7 @@ SoundManager* SoundManager::mSingleton;
 
 Sound* SoundManager::loadSound(const std::string& filename)
 {
-	File file(filename, File::OPEN_READ);
+	FileRead file(filename);
 	int fileLength = file.length();
 	
 	// safe file data into a shared_array to ensure it is deleten properly
