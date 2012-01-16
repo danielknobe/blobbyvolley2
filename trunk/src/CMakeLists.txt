@@ -16,6 +16,9 @@ set(common_SRC
 	PhysicWorld.cpp PhysicWorld.h
 	SpeedController.cpp SpeedController.h
 	UserConfig.cpp UserConfig.h
+	File.cpp File.h
+	FileWrite.cpp FileWrite.h
+	FileRead.cpp FileRead.h
 	)
 	
 set (blobby_SRC ${common_SRC}
@@ -38,9 +41,8 @@ set (blobby_SRC ${common_SRC}
 	SoundManager.cpp SoundManager.h
 	Vector.h
 	ReplayRecorder.cpp ReplayRecorder.h
-	FileWrite.cpp FileWrite.h
-	FileRead.cpp FileRead.h
 	ReplayPlayer.cpp ReplayPlayer.h
+	ReplayLoader.cpp
 	state/State.cpp state/State.h
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h
