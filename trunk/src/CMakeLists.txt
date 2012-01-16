@@ -37,12 +37,17 @@ set (blobby_SRC ${common_SRC}
 	BotAPICalculations.cpp BotAPICalculations.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
+	ReplayRecorder.cpp ReplayRecorder.h
+	FileWrite.cpp FileWrite.h
+	FileRead.cpp FileRead.h
+	ReplayPlayer.cpp ReplayPlayer.h
 	state/State.cpp state/State.h
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h
 	state/OptionsState.cpp state/OptionsState.h
 	state/NetworkSearchState.cpp state/NetworkSearchState.h
 	state/ReplayState.cpp state/ReplayState.h
+	state/ReplaySelectionState.cpp state/ReplaySelectionState.h
 	)
 	
 set (blobby-server_SRC ${common_SRC}
