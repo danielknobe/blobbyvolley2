@@ -165,7 +165,7 @@ void NetworkSearchState::step()
 				printf("got ping response by \"%s\", trying to connect\n", hostname.c_str());
 				RakClient* newClient = new RakClient;
 				newClient->Connect(
-					hostname.c_str(), BLOBBY_PORT, 0, 0, RAKNET_THREAD_SLEEP_TIME);
+					hostname.c_str(), packet->playerId.port, 0, 0, RAKNET_THREAD_SLEEP_TIME);
 				mQueryClients.push_back(newClient);
 			}
 			default:
