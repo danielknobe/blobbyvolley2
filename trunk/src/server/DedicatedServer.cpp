@@ -72,6 +72,13 @@ void fork_to_background();
 void wait_and_restart_child();
 void setup_physfs(char* argv0);
 
+// server workload statistics
+int SWLS_PacketCount = 0;
+int SWLS_Connections = 0;
+int SWLS_Games		 = 0;
+int SWLS_GameSteps	 = 0;
+int SWLS_RunningTime = 0;
+
 // functions for processing certain network packets
 void createNewGame();
 
@@ -137,10 +144,14 @@ int main(int argc, char** argv)
 		
 		while ((packet = receivePacket(&server)))
 		{
+			
+			SWLS_PacketCount++;
+			
 			switch(packet->data[0])
 			{
 				case ID_NEW_INCOMING_CONNECTION:
 					clients++;
+					SWLS_Connections++;
 					syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", clients);
 					break;
 				case ID_CONNECTION_LOST:
@@ -254,10 +265,11 @@ int main(int argc, char** argv)
 						playermap[leftPlayer.getID()] = newgame;
 						playermap[rightPlayer.getID()] = newgame;
 						gamelist.push_back(newgame);
+						SWLS_Games++;
 						
 						#ifdef DEBUG
-						std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.binaryAddress << " : " << leftPlayer.port << "\n"
-									<< "\t\t\t" << rightPlayer.binaryAddress << " : " << rightPlayer.port << "\n";
+						std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
+									<< "\t\t\t" << rightPlayer.getID().binaryAddress << " : " << rightPlayer.getID().port << "\n";
 						#endif			
 
 						firstPlayer = NetworkPlayer();
@@ -340,8 +352,20 @@ int main(int argc, char** argv)
 		// now, step through all network games and process input - if a game ended, delete it
 		// -------------------------------------------------------------------------------
 		
+		SWLS_RunningTime++;
+		
+		if(SWLS_RunningTime % (75 * 60 * 60 /*1h*/) == 0 )
+		{
+			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / 75 / 60 / 60) << "h running \n";
+			std::cout << " packet count: " << SWLS_PacketCount << "\n";
+			std::cout << " accepted connections: " << SWLS_Connections << "\n";
+			std::cout << " started games: " << SWLS_Games << "\n";
+			std::cout << " game steps: " << SWLS_GameSteps << "\n";
+		}
+		
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
+			SWLS_GameSteps++;
 			if (!(*iter)->step())
 			{
 				iter = gamelist.erase(iter);
