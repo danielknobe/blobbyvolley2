@@ -663,17 +663,25 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 
 std::string InputManager::getLastTextKey()
 {
-	std::string key = getLastActionKey();
-	//Filterfunktionen
-	return key;
-}
-
-std::string InputManager::getLastActionKey()
-{
 	if (mLastInputKey.sym != SDLK_UNKNOWN)
 		return keyToString(mLastInputKey);
 	else 
 		return "";
+}
+
+std::string InputManager::getLastActionKey()
+{
+	/// \todo this is a hack we cannot prevent until SDL 1.3 is out
+	int i = 0;
+	while (mKeyMap[i].keyname != NULL)
+	{
+		if (mKeyMap[i].key == mLastInputKey.sym)
+		{
+			return mKeyMap[i].keyname;
+		}
+		++i;
+	}
+	return "";
 }
 
 std::string InputManager::getLastJoyAction() const
