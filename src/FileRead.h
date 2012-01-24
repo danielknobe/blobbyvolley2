@@ -23,6 +23,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /**
 	\class FileRead
+	\brief Extension of file interface for reading file access.	
+	\details Provides various methods
+			for reading numbers, strings and raw bytes from a file.
+	\todo add more convenience methods for easier integration with lua script loading
+			and tinyXML.
+	\sa FileWrite
 */
 class FileRead : public File
 {

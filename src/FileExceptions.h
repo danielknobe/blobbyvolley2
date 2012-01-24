@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 /*!	\class FileException
-	\brief common base type for file exceptions
+	\brief common base type for file exceptions.
+	\details does not owerride what(), so there is
+				no default error message for FileException s
 */
 class FileException: public std::exception {
 	public:
@@ -29,21 +31,27 @@ class FileException: public std::exception {
 		
 		virtual ~FileException() throw() {
 		}
+		
+		/// get the name of the file of the exception
 		const std::string& getFileName() const {
 			return filename;
 		} 
 	private:
-		std::string filename;
+		std::string filename;	///!< name of the file which caused the exception
 };
 
 /*! \class FileLoadException
-	\brief error thrown when a file could not be created
+	\brief error thrown when a file could not be opened or created.
+	\todo use a better name as FileLoadException does only fit for 
+			the open for reading case.
 */
 class FileLoadException : public FileException
 {
 	public:
 		FileLoadException(std::string name) : FileException(name)
 		{
+			/// \todo do we really need to do this? std::exception already
+			/// provides the functionality for setting exception messages, i think.
 			error = "Couldn't load " + name;
 		}
 		
@@ -55,7 +63,7 @@ class FileLoadException : public FileException
 		}
 		
 	private:
-		std::string error;
+		std::string error;	///< saves the error message
 };
 
 

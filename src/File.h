@@ -112,8 +112,8 @@ class File : boost::noncopyable
 		
 	protected:
 		enum OpenMode {
-			OPEN_READ,
-			OPEN_WRITE
+			OPEN_READ,		///!< open file for reading
+			OPEN_WRITE		///!< open file for writing
 		};
 		
 	

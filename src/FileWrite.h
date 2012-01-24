@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /**
 	\class FileWrite
+	\brief File interface extesion for writing.
+	\details This class provides methods for writing various data to files. Whenever
+			a file is opened for writing, all its previous content is erased, or, in case
+			it did not exist beforehand, the file is created.
+	\sa FileRead
 */
 class FileWrite : public File
 {
