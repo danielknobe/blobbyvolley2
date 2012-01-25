@@ -55,7 +55,6 @@ void ReplayState::loadReplay(const std::string& file)
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
 		mReplayMatch = new DuelMatch(0, 0, true, false);
-		mReplayMatch->setServingPlayer(mReplayPlayer->getServingPlayer());
 		RenderManager::getSingleton().setPlayernames(
 			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
