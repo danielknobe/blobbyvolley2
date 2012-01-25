@@ -34,9 +34,6 @@ ReplayState::ReplayState() :
 {
 	IMGUI::getSingleton().resetSelection();
 
-	mReplayMatch = 0;
-	mReplayPlayer = 0;
-
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
 	
@@ -49,12 +46,12 @@ ReplayState::ReplayState() :
 
 void ReplayState::loadReplay(const std::string& file)
 {
-	mReplayPlayer = new ReplayPlayer();
+	mReplayPlayer.reset( new ReplayPlayer() );
 
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mReplayMatch = new DuelMatch(0, 0, true, false);
+		mReplayMatch.reset(new DuelMatch(0, 0, true, false));
 		RenderManager::getSingleton().setPlayernames(
 			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
@@ -104,14 +101,14 @@ void ReplayState::step()
 	
 	if(mPositionJump != -1)
 	{
-		if(mReplayPlayer->gotoPlayingPosition(mPositionJump, mReplayMatch))
+		if(mReplayPlayer->gotoPlayingPosition(mPositionJump, mReplayMatch.get()))
 			mPositionJump = -1;
 	}
 		else if(!mPaused)
 	{
 		while( mSpeedTimer >= 8)
 		{
-			mPaused = !mReplayPlayer->play(mReplayMatch);
+			mPaused = !mReplayPlayer->play(mReplayMatch.get());
 			mSpeedTimer -= 8;
 			presentGame(*mReplayMatch);
 		} 
