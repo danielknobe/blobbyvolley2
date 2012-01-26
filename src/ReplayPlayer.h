@@ -50,7 +50,8 @@ class ReplayPlayer
 		// -----------------------------------------------------------------------------------------
 		
 		std::string getPlayerName(const PlayerSide side) const;
-		PlayerSide getServingPlayer() const;
+		Color getBlobColor(const PlayerSide side) const;
+		int getGameSpeed() const;
 		
 		// -----------------------------------------------------------------------------------------
 		// 							Status information
@@ -67,6 +68,10 @@ class ReplayPlayer
 		///			replay file version, this is either exact or a guess of the system (when we
 		///				don't know how long the replay is).
 		float getPlayProgress() const; 
+		
+		/// \brief current replay position
+		/// \details returns the current position in replay in steps. 
+		int getReplayPosition() const;
 		
 		/// \brief length of replay
 		/// \details returns the replay length in steps.
@@ -94,6 +99,5 @@ class ReplayPlayer
 		int mLength;
 		boost::scoped_ptr<IReplayLoader> loader;
 		
-		PlayerSide mServingPlayer;
 		std::string mPlayerNames[MAX_PLAYERS];
 };

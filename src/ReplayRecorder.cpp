@@ -158,14 +158,20 @@ void ReplayRecorder::writeAttributesSection(FileWrite& file) const
 	uint32_t gamelength = mSaveData.size();	/// \attention 1 byte = 1 step is assumed here
 	uint32_t gameduration = gamelength / gamespeed;
 	uint32_t gamedat = std::time(0);
+	uint32_t leftcol = mPlayerColors[LEFT_PLAYER].toInt();
+	uint32_t rightcol = mPlayerColors[RIGHT_PLAYER].toInt();
 	// check that we can really safe time in gamedat. ideally, we should use a static assertion here
-	assert(sizeof(uint32_t) >= sizeof(time_t) );
+	static_assert (sizeof(uint32_t) >= sizeof(time_t), "time_t does not fit into 32bit" );
 	
 	file.write(attr_header, sizeof(attr_header));
 	file.writeUInt32(gamespeed);
 	file.writeUInt32(gameduration);
 	file.writeUInt32(gamelength);
 	file.writeUInt32(gamedat);
+	
+	// write blob colors
+	file.writeUInt32(leftcol);
+	file.writeUInt32(rightcol);
 	
 	// write names
 	file.writeNullTerminated(mPlayerNames[LEFT_PLAYER]);
@@ -226,6 +232,12 @@ void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& 
 {
 	mPlayerNames[LEFT_PLAYER] = left;
 	mPlayerNames[RIGHT_PLAYER] = right;
+}
+
+void ReplayRecorder::setPlayerColors(Color left, Color right)
+{
+	mPlayerColors[LEFT_PLAYER] = left;
+	mPlayerColors[RIGHT_PLAYER] = right;
 }
 
 void ReplayRecorder::setGameSpeed(int fps)

@@ -43,7 +43,6 @@ void ReplayPlayer::load(const std::string& filename)
 {
 	loader.reset(IReplayLoader::createReplayLoader(filename));
 	
-	mServingPlayer = loader->getServingPlayer();
 	mPlayerNames[LEFT_PLAYER] = loader->getPlayerName(LEFT_PLAYER);
 	mPlayerNames[RIGHT_PLAYER] = loader->getPlayerName(RIGHT_PLAYER);
 	
@@ -62,14 +61,24 @@ std::string ReplayPlayer::getPlayerName(const PlayerSide side) const
 	return mPlayerNames[side];
 }
 
-PlayerSide ReplayPlayer::getServingPlayer() const
+Color ReplayPlayer::getBlobColor(const PlayerSide side) const
 {
-	return mServingPlayer;
+	return loader->getBlobColor(side);
+}
+
+int ReplayPlayer::getGameSpeed() const 
+{
+	return loader->getSpeed();
 }
 
 float ReplayPlayer::getPlayProgress() const
 {
 	return (float)mPosition / mLength;
+}
+
+int ReplayPlayer::getReplayPosition() const
+{
+	return mPosition;
 }
 
 int ReplayPlayer::getReplayLength() const

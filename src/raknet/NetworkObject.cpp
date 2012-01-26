@@ -41,7 +41,7 @@
 unsigned short NetworkObject::GetID( void )
 {
 	return NetworkIDGenerator::GetNetworkID();
-};
+}
 
 //-------------------------------------------------------------------------------------
 

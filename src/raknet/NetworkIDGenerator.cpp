@@ -126,7 +126,7 @@ ObjectID NetworkIDGenerator::GetNetworkID( void )
 		return UNASSIGNED_OBJECT_ID;
 	else
 		return objectID;
-};
+}
 
 //-------------------------------------------------------------------------------------
 
