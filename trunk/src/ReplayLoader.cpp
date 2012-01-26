@@ -110,10 +110,15 @@ class ReplayLoader_V10: public IReplayLoader
 				
 			assert(0);
 		}
-		virtual PlayerSide getServingPlayer() const
+		
+		virtual Color getBlobColor(PlayerSide player) const
 		{
-			// serving player is alsway LEFT_PLAYER
-			return LEFT_PLAYER;
+			if(player == LEFT_PLAYER)
+				return mLeftColor;
+			if(player == RIGHT_PLAYER)
+				return mRightColor;
+				
+			assert(0);
 		}
 		
 		virtual int getSpeed() const
@@ -180,6 +185,9 @@ class ReplayLoader_V10: public IReplayLoader
 			mGameLength = file.readUInt32();
 			mGameDate = file.readUInt32();
 			
+			mLeftColor = file.readUInt32();
+			mRightColor = file.readUInt32();
+			
 			mLeftPlayerName = file.readString();
 			mRightPlayerName = file.readString();
 			
@@ -216,6 +224,8 @@ class ReplayLoader_V10: public IReplayLoader
 		int mGameDate;
 		int mGameLength;
 		int mGameDuration;
+		Color mLeftColor;
+		Color mRightColor;
 };
 
 

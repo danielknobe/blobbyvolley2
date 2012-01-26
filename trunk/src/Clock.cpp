@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Clock.h"
 
-#include <ctime>
+#include "SDL/SDL.h"
 #include <sstream>
 
 Clock::Clock():mRunning(false), mGameTime(0), mLastTime(0)
@@ -31,12 +31,12 @@ void Clock::reset()
 	// set all variables to their default values
 	mRunning = false;
 	mGameTime = 0;
-	mLastTime = 0;
+	mLastTime = SDL_GetTicks();
 }
 
 void Clock::start()
 {
-	mLastTime = std::time(0);
+	mLastTime = SDL_GetTicks();
 	mRunning = true;
 }
 
@@ -52,11 +52,11 @@ bool Clock::isRunning() const
 
 int Clock::getTime() const 
 {
-	return mGameTime;
+	return mGameTime / 1000;
 }
 void Clock::setTime(int newTime) 
 {
-	mGameTime = newTime;
+	mGameTime = newTime * 1000;
 }
 
 std::string Clock::getTimeString() const
@@ -64,9 +64,11 @@ std::string Clock::getTimeString() const
 	/// \todo maybe it makes sense to cache this value. we call this function ~75times a seconds
 	///			when the string changes only once. guest it does not make that much of a difference, but still...
 	// calculate seconds, minutes and hours as integers
-	int seconds = mGameTime % 60;
-	int minutes = ((mGameTime - seconds)/60) % 60;
-	int hours = ((mGameTime - 60 * minutes - seconds) / 3600) % 60;
+	int time_sec = mGameTime / 1000;
+	
+	int seconds = time_sec % 60;
+	int minutes = ((time_sec - seconds)/60) % 60;
+	int hours = ((time_sec - 60 * minutes - seconds) / 3600) % 60;
 	
 	// now convert to string via stringstream
 	std::stringstream stream;
@@ -95,7 +97,7 @@ void Clock::step()
 {
 	if(mRunning)
 	{
-		time_t newTime = std::time(0);
+		int newTime = SDL_GetTicks();
 		if(newTime > mLastTime)
 		{
 			mGameTime += newTime - mLastTime;

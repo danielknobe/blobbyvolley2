@@ -60,6 +60,7 @@ LocalGameState::LocalGameState()
 
 	mRecorder = new ReplayRecorder();
 	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
+	mRecorder->setPlayerColors( mLeftPlayer.getColor(), mRightPlayer.getColor() );
 	mRecorder->setGameSpeed((float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps"));
 
 	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false);

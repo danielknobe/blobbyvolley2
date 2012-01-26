@@ -67,7 +67,9 @@ enum PacketType
 			<tr><td>AS+8</td><td>4 bytes</td><td>int</td><td>Game duration [sec]</td></tr>
 			<tr><td>AS+12</td><td>4 bytes</td><td>int</td><td>Game duration [steps]</td></tr>
 			<tr><td>AS+16</td><td>4 bytes</td><td>int</td><td>Date of match</td></tr>
-			<tr><td>AS+20</td><td>string</td><td>string</td><td>Left player name</td></tr>
+			<tr><td>AS+20</td><td>4 bytes</td><td>int</td><td>Left player color</td></tr>
+			<tr><td>AS+24</td><td>4 bytes</td><td>int</td><td>Right player color</td></tr>
+			<tr><td>AS+28</td><td>string</td><td>string</td><td>Left player name</td></tr>
 			<tr><td>...</td><td>string</td><td>string</td><td>Right player name</td></tr>
 			<tr><td colspan=4>...</td></tr>
 			

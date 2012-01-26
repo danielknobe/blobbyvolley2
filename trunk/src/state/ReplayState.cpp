@@ -57,6 +57,9 @@ void ReplayState::loadReplay(const std::string& file)
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 		
+		mLeftPlayer.setColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
+		mRightPlayer.setColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
+		
 		SpeedController::getMainInstance()->setGameSpeed(
 				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
 			);
@@ -115,6 +118,8 @@ void ReplayState::step()
 		mSpeedTimer += mSpeedValue;
 		
 	}
+	
+	mReplayMatch->getClock().setTime( mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed() );
 
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
 	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());

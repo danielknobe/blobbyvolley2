@@ -70,9 +70,8 @@ class IReplayLoader
 		
 		/// gets the name of a player
 		virtual std::string getPlayerName(PlayerSide player) const = 0;
-		/// gets the player side which started with serving;
-		/// \todo this is alway LEFT_PLAYER, so it seems a little useless!
-		virtual PlayerSide getServingPlayer() const = 0;
+		/// gets blob color of a player
+		virtual Color getBlobColor(PlayerSide player) const = 0;
 		
 		/// gets the speed this game was played
 		virtual int getSpeed() const = 0;

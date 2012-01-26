@@ -55,6 +55,7 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	mRecorder.reset(new ReplayRecorder());
 	mRecorder->setPlayerNames(mLeftPlayerName.c_str(), mRightPlayerName.c_str());
+	mRecorder->setPlayerColors(leftColor, rightColor);
 	mRecorder->setGameSpeed(SpeedController::getMainInstance()->getGameSpeed());
 
 	// buffer for playernames
@@ -247,7 +248,7 @@ bool NetworkGame::step()
 				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 				
 				file.close();	// make sure we close the file
-				PHYSFS_delete(filename.c_str());
+				//PHYSFS_delete(filename.c_str());
 				break;
 			}
 			default:

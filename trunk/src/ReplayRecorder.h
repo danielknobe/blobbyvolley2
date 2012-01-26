@@ -67,6 +67,7 @@ public:
 	void record(const PlayerInput* input);
 	
 	void setPlayerNames(const std::string& left, const std::string& right);
+	void setPlayerColors(Color left, Color right);
 	void setGameSpeed(int fps);
 private:
 
@@ -80,6 +81,7 @@ private:
 
 	// general replay attributes
 	std::string mPlayerNames[MAX_PLAYERS];
+	Color mPlayerColors[MAX_PLAYERS];
 	int mGameSpeed;
 	
 	
