@@ -21,7 +21,6 @@ bugs:
  - squeezing ball through blocking blobby ?  
      Please try to verify this
  - flat ball (replay Mr. Enderson)
-- mouse freezed in upper right corner after leaving the game (fullscreen mode, SDL)
 - don't close chat if one player leaves the game
 
 data:

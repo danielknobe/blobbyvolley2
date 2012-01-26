@@ -25,6 +25,7 @@ New in 1.0 RC 1 (rev. 732) since Beta 9:
 - squished ball generates only one sound now
 - corrected version in server startup message
 - [Windows] fixed server output messages 
+- [Windows] pointer no longer freezes when alt+tab
 
 * Performance:
 - fixed a major memory leak in dedicated server
