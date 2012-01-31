@@ -49,6 +49,12 @@ enum SelectBoxAction
 	SBA_DBL_CLICK
 };
 
+/*! \class IMGUI
+	\brief GUI Manager
+	\details This class manages drawing and input handling of the blobby GUI.
+			It is poorly designed, does not use OOP and makes extension difficult, so 
+			it needs a complete rewrite.
+*/
 class IMGUI
 {
 public:

@@ -31,6 +31,13 @@ class RakServer;
 class DuelMatch;
 class NetworkGame;
 
+/*! \class NetworkSearchState
+	\brief Base class for search states
+	\details This class provides a search interface.
+			The actual search process has to be implemented
+			by derived class by overriding the searchServers()
+			method.
+*/
 class NetworkSearchState : public State
 {
 public:
@@ -63,6 +70,9 @@ private:
 	unsigned mServerBoxPosition;
 };
 
+/*! \class OnlineSearchState
+	\brief State for online server search screen.
+*/
 class OnlineSearchState : public NetworkSearchState
 {
 public:
@@ -72,6 +82,10 @@ public:
 	virtual const char* getStateName() const;
 };
 
+
+/*! \class LANSearchState
+	\brief State for LAN game search screen.
+*/
 class LANSearchState : public NetworkSearchState
 {
 public:

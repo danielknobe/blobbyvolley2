@@ -69,10 +69,16 @@ enum InputDeviceName
 	JOYSTICK = 3
 };
 
+/*! \class Color
+	\brief represents RGB Colours
+	\details This class represents colors as RGB with one byte for each channel.
+*/
 struct Color
 {
 	Color(int red, int green, int blue)
 		: r(red), g(green), b(blue) {}
+	
+	/// \sa toInt()
 	Color(unsigned int col)
 		:r(col&0xff), g((col>>8)&0xff), b((col>>16)&0xff) {}
 	Color() {}

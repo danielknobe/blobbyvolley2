@@ -72,6 +72,9 @@ struct JoystickAction
 	int number;
 };
 
+/*! \class InputDevice
+	\brief Abstract base class for game input methods
+*/
 class InputDevice
 {
 public:
@@ -81,6 +84,9 @@ public:
 	virtual void transferInput(PlayerInput& mInput) = 0;
 };
 
+/*! \class MouseInputDevice
+	\brief Ingame mouse control
+*/
 class MouseInputDevice : public InputDevice
 {
 private:
@@ -96,6 +102,9 @@ public:
 	void transferInput(PlayerInput& input);
 };
 
+/*! \class KeyboardInputDevice
+	\brief Ingame keyboard input
+*/
 class KeyboardInputDevice : public InputDevice
 {
 private:
@@ -108,6 +117,9 @@ public:
 	void transferInput(PlayerInput& input);
 };
 
+/*! \class JoystickInputDevice
+	\brief Ingame Joystick input
+*/
 class JoystickInputDevice : public InputDevice
 {
 private:

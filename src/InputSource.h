@@ -21,8 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-// This struct exists for easy exchange of a single player input frame
-
+/*! \class PlayerInput
+	\brief struct for easy exchange of a single player input frame
+*/
 struct PlayerInput
 {
 	PlayerInput()
@@ -70,12 +71,14 @@ struct PlayerInput
 	bool up;
 };
 
-// This class abstracts several possible input sources, like local input 
-// from InputManager, input from a scripted player or input over network
-// which in turn can all be recorded over a decorator
-// It should be only called once per frame because some implementations
-// may use this to activate a refresh routine on their actual source
-
+/*! \class InputSource
+	\brief abstracts several possible input sources.
+	\details This class abstracts several possible input sources, like local input 
+		from InputManager, input from a scripted player or input over network
+		which in turn can all be recorded over a decorator
+		It should be only called once per frame because some implementations
+		may use this to activate a refresh routine on their actual source
+*/
 class InputSource
 {
 public:
