@@ -17,14 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#include <sstream>
-
 #include "NetworkGame.h"
 #include "NetworkMessage.h"
 #include "ReplayRecorder.h"
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
+#include <sstream>
 
 #include "FileRead.h"
 #include <physfs.h> // still needed for file deletion

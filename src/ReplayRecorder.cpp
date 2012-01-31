@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +18,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
 #include "ReplayRecorder.h"
+
+/* includes */
 #include "IReplayLoader.h"
 #include "FileWrite.h"
 #include "tinyxml/tinyxml.h"
@@ -30,6 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include <ctime>
 
+/* implementation */
 ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
 {
 	std::stringstream errorstr;
@@ -161,7 +166,7 @@ void ReplayRecorder::writeAttributesSection(FileWrite& file) const
 	uint32_t leftcol = mPlayerColors[LEFT_PLAYER].toInt();
 	uint32_t rightcol = mPlayerColors[RIGHT_PLAYER].toInt();
 	// check that we can really safe time in gamedat. ideally, we should use a static assertion here
-	static_assert (sizeof(uint32_t) >= sizeof(time_t), "time_t does not fit into 32bit" );
+	//static_assert (sizeof(uint32_t) >= sizeof(time_t), "time_t does not fit into 32bit" );
 	
 	file.write(attr_header, sizeof(attr_header));
 	file.writeUInt32(gamespeed);
