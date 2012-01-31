@@ -91,9 +91,13 @@ private:
 };
 
 
-/// This class is a wrapper for NetworkGameState to run an instance
-/// of NetworkGame
-/// \todo this construction seems like a big hack ;)
+/*! \class NetworkHostState
+	\brief state for hosting a game locally
+	\details
+	This class is a wrapper for NetworkGameState to run an instance
+	of NetworkGame
+	\todo this construction seems like a big hack ;)
+*/
 class NetworkHostState : public State
 {
 public:

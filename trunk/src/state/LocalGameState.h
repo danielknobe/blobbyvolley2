@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Player.h"
 #include "State.h"
 
+/*! \class LocalGameState
+	\brief state for singleplayer game
+*/
 class LocalGameState : public State
 {
 private:

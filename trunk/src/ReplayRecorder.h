@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class FileWrite;
 
+/*! \class ChecksumException
+	\brief thrown when actual and expected file checksum mismatch
+*/
 struct ChecksumException : public std::exception
 {
 	ChecksumException(std::string filename, uint32_t expected, uint32_t real);
@@ -41,6 +44,9 @@ struct ChecksumException : public std::exception
 	std::string error;
 };
 
+/*! \class VersionMismatchException
+	\brief thrown when replays of incompatible version are loaded.
+*/
 struct VersionMismatchException : public std::exception
 {
 	VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor);
