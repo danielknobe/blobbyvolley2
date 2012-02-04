@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/GetTime.h"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
 
 #include "IMGUI.h"
 #include "SoundManager.h"
@@ -342,12 +343,12 @@ void NetworkGameState::step()
 				stream.IgnoreBytes(1);	// ID_REPLAY
 				int length;
 				stream.Read(length);
-				char* data = new char[length];
-				stream.Read(data, length);
+				boost::scoped_array<char> data (new char[length]);
+				stream.Read(data.get(), length);
 				// may throw!
 				try {
 					FileWrite file((std::string("replays/") + mFilename + std::string(".bvr")));
-					file.write(data, length);
+					file.write(data.get(), length);
 					file.close();
 				} catch ( std::exception& e) {
 					imgui.resetSelection();
