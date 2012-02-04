@@ -345,10 +345,16 @@ void NetworkGameState::step()
 				char* data = new char[length];
 				stream.Read(data, length);
 				// may throw!
-				FileWrite file((std::string("replays/") + mFilename + std::string(".bvr")));
-				file.write(data, length);
-				file.close();
+				try {
+					FileWrite file((std::string("replays/") + mFilename + std::string(".bvr")));
+					file.write(data, length);
+					file.close();
+				} catch ( std::exception& e) {
+					imgui.resetSelection();
+					mSaveReplay = true;	// back to save replay menu if we could not save
+				}
 				mWaitingForReplay = false;
+				
 				break;
 			}
 			default:
