@@ -82,12 +82,24 @@ void LocalGameState::step()
 		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
 		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
 		{
-			if (mFilename != "")
+			try
+				{
+				if (mFilename != "")
+				{
+					/// \todo add a check whether we overwrite a file
+					mRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
+				}
+				mSaveReplay = false;
+				imgui.resetSelection();
+			} 
+			 catch( std::exception& ex) 
 			{
-				mRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
+				// only expected exception here is FileLoadException, which is thrown
+				// when we try to create a file with invalid name.
+				// don't reset selection when saving was not possible
+				/// \todo add notification of user
+				imgui.resetSelection();
 			}
-			mSaveReplay = false;
-			imgui.resetSelection();
 		}
 		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
 		{
