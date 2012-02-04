@@ -37,7 +37,17 @@ enum PacketType
 /**
 	\page replay_system Replay System
 	\section rep_file_spec Replay File Specification
-	
+		Blobby Volley replay files contain 6 sections. First, a file header with file header, 
+		file spec version and checksum. Thereafter, a replay header which contains basic information
+		about this replay file, such as length and starting points of the section.
+		Then, there is the attributes section which contains information about the
+		game itself, such as player names, duration, etc.
+		This is followed by a (currently unimplemented) jumptable which contains pointers to 
+		different section of the replay data for faster searching. Behind it, there is the 
+		control section which contains all blobby inputs in a continous byte stream one byte 
+		each frame. Thereafter comes the data section which contains saved blobby world states etc.
+		
+		
 		Blobby Volley Replay files have the following structure:
 		<dl>
 		<dt>Replay File V 1.x: </dt>
@@ -76,6 +86,11 @@ enum PacketType
 			<tr><td colspan=4>Jump Table (JT)</td></tr>
 			<tr><td>JT+0</td><td>4 bytes</td><td>jpt\n</td><td>Jump table beginning indicator</td></tr>
 			<tr><td colspan=4>[currently undefined]</td></tr>
+			
+			<tr><td colspan=4>Control Section (CS)</td></tr>
+			<tr><td>CS+0</td><td>4 bytes</td><td>jpt\n</td><td>Control beginning indicator</td></tr>
+			<tr><td>CS+4</td><td>4 bytes</td><td>int</td><td>Length of control section [steps]</td></tr>
+			<tr><td>CS+8</td><td>...</td><td>*Packet</td><td>control bytes</td></tr>
 			
 			<tr><td colspan=4>Data Section (DS)</td></tr>
 			<tr><td>DS+0</td><td>4 bytes</td><td>jpt\n</td><td>Data beginning indicator</td></tr>

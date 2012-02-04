@@ -103,6 +103,7 @@ void ReplayRecorder::save(const std::string& filename) const
 	file.seek(replayHeaderStart + 7*sizeof(uint32_t));
 	writeAttributesSection(file);
 	writeJumpTable(file);
+	writeControlSection(file);
 	writeDataSection(file);
 	
 	// the last thing we write is the header again, so
@@ -200,12 +201,12 @@ void ReplayRecorder::writeJumpTable(FileWrite& file) const
 	file.seek(jptb_ptr + 128);
 }
 
-void ReplayRecorder::writeDataSection(FileWrite& file) const
+void ReplayRecorder::writeControlSection(FileWrite& file) const
 {
 	data_ptr = file.tell();
 	
 	// we have to check that we are at attr_ptr!
-	char data_header[4] = {'d', 'a', 't', '\n'};
+	char data_header[4] = {'c', 't', 'l', '\n'};
 	file.write(data_header, sizeof(data_header));
 	
 	uint32_t recordcount = mSaveData.size();
@@ -218,6 +219,15 @@ void ReplayRecorder::writeDataSection(FileWrite& file) const
 	for (int i=0; i<mSaveData.size(); i++)
 		file.writeByte(mSaveData[i]);
 
+}
+
+void ReplayRecorder::writeDataSection(FileWrite& file) const
+{
+	data_ptr = file.tell();
+	
+	// we have to check that we are at attr_ptr!
+	char data_header[4] = {'d', 'a', 't', '\n'};
+	file.write(data_header, sizeof(data_header));
 }
 
 void ReplayRecorder::record(const PlayerInput* input)

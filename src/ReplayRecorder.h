@@ -75,12 +75,14 @@ public:
 	void setPlayerNames(const std::string& left, const std::string& right);
 	void setPlayerColors(Color left, Color right);
 	void setGameSpeed(int fps);
+	 
 private:
 
 	void writeFileHeader(FileWrite&, uint32_t checksum) const;
 	void writeReplayHeader(FileWrite&) const;
 	void writeAttributesSection(FileWrite&) const;
 	void writeJumpTable(FileWrite&) const;
+	void writeControlSection(FileWrite&) const;
 	void writeDataSection(FileWrite&) const;
 
 	std::vector<uint8_t> mSaveData;
