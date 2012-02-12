@@ -210,15 +210,12 @@ GraphicOptionsState::~GraphicOptionsState()
 			RenderManager::getSingleton().setBackground(
 				std::string("backgrounds/") +
 				mOptionConfig.getString("background"));
-			RenderManager::getSingleton().showShadow(mShowShadow);
 		}
-		else
+
+		if(mOptionConfig.getBool("show_shadow") != mShowShadow)
 		{
-			if(mOptionConfig.getBool("show_shadow") != mShowShadow)
-			{
-				RenderManager::getSingleton().showShadow(mShowShadow);
-				mOptionConfig.setBool("show_shadow", mShowShadow);
-			}
+			RenderManager::getSingleton().showShadow(mShowShadow);
+			mOptionConfig.setBool("show_shadow", mShowShadow);
 		}
 
 		mOptionConfig.setInteger("left_blobby_color_r", mR1);
