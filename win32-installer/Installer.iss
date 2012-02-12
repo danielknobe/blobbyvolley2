@@ -17,15 +17,15 @@ Name: "pl"; MessagesFile: "languages\Polish.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Version 1.0RC"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Version 1.0RC1"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2 Version 1.0RC
-AppVerName=Blobby Volley 2 Version 1.0RC
-DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC
-DefaultGroupName=Blobby Volley 2 Version 1.0RC
+AppName=Blobby Volley 2 Version 1.0RC1
+AppVerName=Blobby Volley 2 Version 1.0RC1
+DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC1
+DefaultGroupName=Blobby Volley 2 Version 1.0RC1
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
