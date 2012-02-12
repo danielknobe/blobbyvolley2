@@ -25,6 +25,9 @@
 	<string english = "delete" translation = "loeschen" />
 	<string english = "checksum error" translation = "checksum error" />
 	<string english = "file is corrupt" translation = "datei beschaedigt" />
+	<string english = "version error" translation = "version error" />
+	<string english = "file is outdated" translation = "datei veraltet" />
+	<string english = "receiving replay..." translation = "empfange replay..." />
 	<string english = "name of the replay:" translation = "name des replays:" />
 	<string english = "save replay" translation = "replay speichern" />
 	
@@ -92,4 +95,12 @@
 	<string english = "default" translation = "normal" />
 	<string english = "fast" translation = "schnell" />
 	<string english = "very fast" translation = "sehr schnell" />
+	
+	<string english = "language" translation = "sprache" />
+	<string english = "bot strength" translation = "Spielstaerke" />
+	<string english = "weak" translation = "einfach" />
+	<string english = "medium" translation = "mittel" />
+	<string english = "strong" translation = "schwer" />
+	
+	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" />
 </language>
