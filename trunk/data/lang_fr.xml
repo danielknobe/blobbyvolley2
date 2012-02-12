@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <language>
 	<string english = "ok" translation = "approuver" />
 	<string english = "cancel" translation = "annuler" />
@@ -25,9 +23,9 @@
 	<string english = "delete" translation = "effacer" />
 	<string english = "checksum error" translation = "erreur de la somme de controle" />
 	<string english = "file is corrupt" translation = "fichier endommage" />
-	<string english = "version error" translation = "version error" />
-	<string english = "file is outdated" translation = "file is outdated" />
-	<string english = "receiving replay..." translation = "receiving replay..." />
+	<string english = "version error" translation = "erreur de version" />
+	<string english = "file is outdated" translation = "fichier obsolète" />
+	<string english = "receiving replay..." translation = "recevant la vidéo..." />
 	<string english = "name of the replay:" translation = "nom de la video:" />
 	<string english = "save replay" translation = "sauvegarder la video" />
 	
@@ -96,11 +94,11 @@
 	<string english = "fast" translation = "rapide" />
 	<string english = "very fast" translation = "tres rapide" />
 	
-	<string english = "language" translation = "language" />
-	<string english = "bot strength" translation = "bot strength" />
-	<string english = "weak" translation = "weak" />
-	<string english = "medium" translation = "medium" />
-	<string english = "strong" translation = "strong" />
+	<string english = "language" translation = "langue" />
+	<string english = "bot strength" translation = "puissance du robot" />
+	<string english = "weak" translation = "faible" />
+	<string english = "medium" translation = "moyen" />
+	<string english = "strong" translation = "fort" />
 	
-	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" />
+	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "veuillez visiter http://blobby.sourceforge.net/ for a new version of blobby volley" />
 </language>
