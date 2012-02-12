@@ -1,15 +1,15 @@
 ; Problems: README must have .txt ending, so that it could be opened
 [Languages]
 Name: "de"; MessagesFile: "languages\German.isl"
-Name: "nl"; MessagesFile: "languages\Dutch.isl"
-Name: "ru"; MessagesFile: "languages\Russian.isl"
+;Name: "nl"; MessagesFile: "languages\Dutch.isl"
+;Name: "ru"; MessagesFile: "languages\Russian.isl"
 ;Name: "pt"; MessagesFile: "languages\Portuguese.isl"
-Name: "sk"; MessagesFile: "languages\Slovak.isl"
+;Name: "sk"; MessagesFile: "languages\Slovak.isl"
 Name: "pl"; MessagesFile: "languages\Polish.isl"
 ;Name: "no"; MessagesFile: "languages\Norwegian.isl"
 ;Name: "it"; MessagesFile: "languages\Italian.isl"
 ;Name: "hu"; MessagesFile: "languages\Hungarian.isl"
-Name: "fr"; MessagesFile: "languages\French.isl"
+;Name: "fr"; MessagesFile: "languages\French.isl"
 ;Name: "fi"; MessagesFile: "languages\Finnish.isl"
 ;Name: "dk"; MessagesFile: "languages\Danish.isl"
 ;Name: "cz"; MessagesFile: "languages\Czech.isl"
@@ -17,15 +17,15 @@ Name: "fr"; MessagesFile: "languages\French.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Version 0.9b"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Version 1.0RC"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2.0 Version 0.9b
-AppVerName=Blobby Volley 2.0 Version 0.9b
-DefaultDirName={pf}\Blobby Volley 2.0 Version 0.9b
-DefaultGroupName=Blobby Volley 2.0 Version 0.9b
+AppName=Blobby Volley 2 Version 1.0RC
+AppVerName=Blobby Volley 2 Version 1.0RC
+DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC
+DefaultGroupName=Blobby Volley 2 Version 1.0RC
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
