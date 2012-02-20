@@ -70,7 +70,7 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 
 
 /// how many steps must pass until the next hit can happen
-const int SQUISH_TOLERANCE = 10;
+const int SQUISH_TOLERANCE = 11;
 
 
 IGameLogic::IGameLogic():	mLastError(NO_PLAYER), 
@@ -179,7 +179,7 @@ void IGameLogic::onBallHitsGround(PlayerSide side)
 bool IGameLogic::isCollisionValid(PlayerSide side) const
 {
 	// check whether the ball is squished
-	return mSquish[side2index(side)] < 0;
+	return mSquish[side2index(side)] <= 0;
 }
 
 void IGameLogic::onBallHitsPlayer(PlayerSide side)
