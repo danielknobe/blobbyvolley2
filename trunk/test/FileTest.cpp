@@ -298,14 +298,12 @@ BOOST_AUTO_TEST_CASE( string_test )
 	FileRead reader("cycle.tmp");
 	/// \todo convenience function for to reading null terminated strings
 	boost::shared_array<char> data = reader.readRawBytes(teststr.size());
-	BOOST_CHECK (reader.tell() == teststr.size() );
+	BOOST_CHECK_EQUAL (reader.tell(), teststr.size() );
 	std::string str2 = reader.readString();
-	BOOST_CHECK (reader.tell() == 2 * teststr.size() + 1 );
-	std::cout << "read: " << str2 << "\n";
-	std::cout << "read: " << data.get() << "\n";
+	BOOST_CHECK_EQUAL (reader.tell(), 2 * teststr.size() + 1 );
 	
 	BOOST_CHECK( std::memcmp(data.get(), teststr.data(), teststr.length()) == 0 );
-	BOOST_CHECK( teststr == str2 );
+	BOOST_CHECK_EQUAL( teststr, str2 );
 	
 	// now, try to read as null terminated when it isn't
 	/// \todo we need a sensible check here

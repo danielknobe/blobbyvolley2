@@ -99,7 +99,7 @@ std::string FileRead::readString()
 		{
 			if(buffer[i] == 0) 
 			{
-				seek( tell() - 32 + i + 1);
+				seek( tell() - maxread + i + 1);
 				return read;
 			} 
 			else 
