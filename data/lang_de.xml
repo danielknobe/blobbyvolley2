@@ -42,7 +42,7 @@
 	<string english = "direct connect" translation = "direktverbindung" />
 	<string english = "server info" translation = "serverinfo" />
 	<string english = "active games: " translation = "aktive spiele" />
-	<string english = "waiting player: " translation = "wartender spieler" />
+	<string english = "waiting player: " translation = "wartender spieler: " />
 	<string english = "host game" translation = "spiel hosten" />
 	<string english = "connecting to server ..." translation = "verbindungsaufbau..." />
 	<string english = "disconnected from server" translation = "verbindung unterbrochen" />
