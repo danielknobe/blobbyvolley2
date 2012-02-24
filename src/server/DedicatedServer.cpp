@@ -114,13 +114,22 @@ int main(int argc, char** argv)
 
 	NetworkPlayer firstPlayer;
 
-	config.loadFile("server.xml");
-
-	int port = config.getInteger("port");
-	float speed = config.getFloat("speed");
+	int port = BLOBBY_PORT;
+	try 
+	{
+		config.loadFile("server.xml");
+		port = config.getInteger("port");
+	} 
+	catch (std::exception& e) 
+	{
+		syslog(LOG_ERR, "server.xml not found. Falling back to default values.");
+	}
+	
 	int clients = 0;
 
 	ServerInfo myinfo(config);
+	
+	float speed = myinfo.gamespeed;
 
 	if (!server.Start(150, 0, 1, port))
 	{
