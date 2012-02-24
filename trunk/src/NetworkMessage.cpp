@@ -44,13 +44,27 @@ ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t p)
 ServerInfo::ServerInfo(const UserConfig& config)
 {
 	/// \todo we only need a config reader here!
+	
+	// default values
+	std::string n = "Blobby Volley 2 Server";
+	std::string d = "no description available";
+	
 	memset(this, 0, sizeof(ServerInfo));
 	std::string tmp;
 	tmp = config.getString("name");
+	if( tmp == "" )
+		tmp = n;
+	
 	strncpy(name, tmp.c_str(), sizeof(name) - 1);
 	tmp = config.getString("description");
+	if( tmp == "" )
+		tmp = d;
+	
 	strncpy(description, tmp.c_str(), sizeof(description) - 1);
 	gamespeed = config.getInteger("speed");
+	/// \todo maybe we should check if that's a reasonable value, too.
+	if (gamespeed == 0)
+		gamespeed = 75;
 }
 
 ServerInfo::ServerInfo(const std::string& playername)

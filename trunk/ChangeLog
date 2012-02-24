@@ -1,3 +1,8 @@
+New in 1.0 RC 2 (rev. 732) since RC 1:
+- Added italian translation
+- Fix: "two hit bug" (again ;)
+- Fix: server crash when server could not find server.xml
+
 New in 1.0 RC 1 (rev. 732) since Beta 9:
 * Features:
 - REPLAY PLAYER:
@@ -15,7 +20,6 @@ New in 1.0 RC 1 (rev. 732) since Beta 9:
 - join server with double click
 - improved chat UI
 - small gfx enhancements
-- [LIGA] added speedserver
 
 * Bugfixes:
 - Fix: severe network problem
