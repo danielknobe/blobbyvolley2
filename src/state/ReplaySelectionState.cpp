@@ -18,12 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include "ReplaySelectionState.h"
+
 #include "ReplayState.h"
 #include "IMGUI.h"
 #include "TextManager.h"
 #include "SpeedController.h"
-
-#include <physfs.h>
+#include "FileSystem.h"
 
 ReplaySelectionState::ReplaySelectionState()
 {
@@ -32,15 +32,7 @@ ReplaySelectionState::ReplaySelectionState()
 	mVersionError = false;
 
 	mSelectedReplay = 0;
-	char** filenames = PHYSFS_enumerateFiles("replays");
-	for (int i = 0; filenames[i] != 0; ++i)
-	{
-		std::string tmp(filenames[i]);
-		if (tmp.find(".bvr") != std::string::npos)
-		{
-			mReplayFiles.push_back(std::string(tmp.begin(), tmp.end()-4));
-		}
-	}
+	mReplayFiles = enumerateFiles("replays", ".bvr");
 	if (mReplayFiles.size() == 0)
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
@@ -81,7 +73,7 @@ void ReplaySelectionState::step()
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::getSingleton()->getString(TextManager::RP_DELETE)))
 	{
 		if (!mReplayFiles.empty())
-		if (PHYSFS_delete(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr").c_str()))
+		if (deleteFile("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"))
 		{
 			mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 			if (mSelectedReplay >= mReplayFiles.size())

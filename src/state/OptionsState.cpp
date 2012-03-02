@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 #include "IMGUI.h"
 #include "TextManager.h"
+#include "FileSystem.h"
 
-#include <physfs.h>
 #include <sstream>
 #include <string>
 
@@ -41,26 +41,21 @@ OptionState::OptionState()
 	mScriptNames.push_back("Human");
 	std::string leftScript = mOptionConfig.getString("left_script_name");
 	std::string rightScript = mOptionConfig.getString("right_script_name");
-	char** filenames = PHYSFS_enumerateFiles("scripts");
-	for (int i = 0; filenames[i] != 0; ++i)
+	
+	mScriptNames = enumerateFiles("scripts", ".lua");
+	for(int i = 0; i < mScriptNames.size(); ++i)
 	{
-		std::string tmp(filenames[i]);
-		if (tmp.find(".lua") != std::string::npos)
-		{
-			mScriptNames.push_back(tmp);
-			int pos = mScriptNames.size() - 1;
-			if (tmp == leftScript)
-				mPlayerOptions[LEFT_PLAYER] = pos;
-			if (tmp == rightScript)
-				mPlayerOptions[RIGHT_PLAYER] = pos;
-		}
-
+		if (mScriptNames[i] == leftScript)
+			mPlayerOptions[LEFT_PLAYER] = i;
+		if (mScriptNames[i] == rightScript)
+			mPlayerOptions[RIGHT_PLAYER] = i;
 	}
+	
 	if (mOptionConfig.getBool("left_player_human"))
 		mPlayerOptions[LEFT_PLAYER] = 0;
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
-	PHYSFS_freeList(filenames);
+	
 	mPlayerName[LEFT_PLAYER] = mOptionConfig.getString("left_player_name");
 	mPlayerName[RIGHT_PLAYER] = mOptionConfig.getString("right_player_name");
 	mPlayerNamePosition[RIGHT_PLAYER] = 0;
@@ -836,19 +831,17 @@ MiscOptionsState::MiscOptionsState()
 	mOptionConfig.loadFile("config.xml");
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
-	char** filenames = PHYSFS_enumerateFiles("backgrounds");
-	for (int i = 0; filenames[i] != 0; ++i)
+	
+	mBackgrounds = enumerateFiles("backgrounds", ".bmp");
+	
+	for(int i = 0; i < mBackgrounds.size(); ++i)
 	{
-		std::string tmp(filenames[i]);
-		if (tmp.find(".bmp") != std::string::npos)
+		if (mBackgrounds[i] == currentBackground)
 		{
-			mBackgrounds.push_back(tmp);
-			int pos = mBackgrounds.size() - 1;
-			if (tmp == currentBackground)
-				mBackground = pos;
+			mBackground = i;
+			break;
 		}
 	}
-	PHYSFS_freeList(filenames);
 	mShowFPS = mOptionConfig.getBool("showfps");
 	mShowBlood = mOptionConfig.getBool("blood");
 	mVolume = mOptionConfig.getFloat("global_volume");
