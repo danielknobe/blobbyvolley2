@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 
 #include "FileRead.h"
-#include <physfs.h> // still needed for file deletion
+#include "FileSystem.h"
 
 // We don't need the stringcompressor
 
@@ -247,7 +247,7 @@ bool NetworkGame::step()
 				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 				
 				file.close();	// make sure we close the file
-				PHYSFS_delete(filename.c_str());
+				deleteFile(filename);
 				break;
 			}
 			default:

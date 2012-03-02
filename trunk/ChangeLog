@@ -2,6 +2,8 @@ New in 1.0 RC 2 (rev. 732) since RC 1:
 - Added italian translation
 - Fix: "two hit bug" (again ;)
 - Fix: server crash when server could not find server.xml
+- Fix: server did not delete temp replay files
+- Fix: file list properly freed in replay menu
 
 New in 1.0 RC 1 (rev. 732) since Beta 9:
 * Features:
