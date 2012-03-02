@@ -31,6 +31,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class FileWrite;
 
+namespace RakNet
+{
+	class BitStream;
+}
+
 /*! \class ChecksumException
 	\brief thrown when actual and expected file checksum mismatch
 */
@@ -70,6 +75,8 @@ public:
 	~ReplayRecorder();
 
 	void save(const std::string& filename) const;
+	void save(RakNet::BitStream& stream) const;
+	void receive(RakNet::BitStream& stream);
 	void record(const PlayerInput* input);
 	
 	void setPlayerNames(const std::string& left, const std::string& right);
