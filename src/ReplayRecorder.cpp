@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IReplayLoader.h"
 #include "FileWrite.h"
 #include "tinyxml/tinyxml.h"
+#include "raknet/BitStream.h"
 
 #include <algorithm>
 #include <iostream>
@@ -112,6 +113,49 @@ void ReplayRecorder::save(const std::string& filename) const
 	writeReplayHeader(file);
 	
 	file.close();
+}
+
+void ReplayRecorder::save(RakNet::BitStream& stream) const
+{
+	char name[16];
+	strncpy(name, mPlayerNames[LEFT_PLAYER].c_str(), sizeof(name));
+	stream.Write(name, sizeof(name));
+	strncpy(name, mPlayerNames[RIGHT_PLAYER].c_str(), sizeof(name));
+	stream.Write(name, sizeof(name));
+	stream.Write((int)mPlayerColors[LEFT_PLAYER].toInt());
+	stream.Write((int)mPlayerColors[RIGHT_PLAYER].toInt());
+	stream.Write((int)mGameSpeed);
+	stream.Write((int)mSaveData.size());
+	stream.Write(reinterpret_cast<const char*>(&mSaveData[0]), mSaveData.size());
+}
+
+void ReplayRecorder::receive(RakNet::BitStream& stream)
+{
+	char name[16];
+	stream.Read(name, sizeof(name));
+	name[15] = 0;
+	mPlayerNames[LEFT_PLAYER] = name;
+	stream.Read(name, sizeof(name));
+	name[15] = 0;
+	mPlayerNames[RIGHT_PLAYER] = name;
+	
+	int col;
+	stream.Read(col);
+	mPlayerColors[LEFT_PLAYER] = col;
+	stream.Read(col);
+	mPlayerColors[RIGHT_PLAYER] = col;
+	stream.Read(col);
+	mGameSpeed = col;
+	
+	stream.Read(col);
+	mSaveData.reserve(col);
+	
+	for(int i = 0; i < col; ++i)
+	{
+		char c;
+		stream.Read(c);
+		mSaveData.push_back(c);
+	}
 }
 
 void ReplayRecorder::writeFileHeader(FileWrite& file, uint32_t checksum) const

@@ -222,32 +222,11 @@ bool NetworkGame::step()
 			}
 			case ID_REPLAY:
 			{
-				// this should ensure that the created temponaries have unique names
-				std::stringstream temp;
-				temp << "replays/";
-				temp << RakNet::GetTime();
-				temp << packet->playerId.binaryAddress;
-				std::string filename = temp.str();
-				mRecorder->save(filename);
-				
-				// this may throw FileLoadExcpetion if
-				// the file could not be opened
-				/// \todo is the server secured against beeing crashed by exceptiong
-				///  i guess it's not
-				/// \todo if this throws an exception, we do not delete the file!
-				FileRead file(filename);
-				
-				int length = file.length();
-				boost::shared_array<char> filecontent = file.readRawBytes( length );
-				
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_REPLAY);
-				stream.Write( length );
-				stream.Write(filecontent.get(), length);
+				mRecorder->save(stream);
 				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 				
-				file.close();	// make sure we close the file
-				deleteFile(filename);
 				break;
 			}
 			default:

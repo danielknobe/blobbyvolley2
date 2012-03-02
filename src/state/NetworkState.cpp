@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
 #include "TextManager.h"
-#include "FileWrite.h"
+#include "ReplayRecorder.h"
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
@@ -341,19 +341,19 @@ void NetworkGameState::step()
 				
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
-				int length;
-				stream.Read(length);
-				boost::scoped_array<char> data (new char[length]);
-				stream.Read(data.get(), length);
-				// may throw!
-				try {
-					FileWrite file((std::string("replays/") + mFilename + std::string(".bvr")));
-					file.write(data.get(), length);
-					file.close();
-				} catch ( std::exception& e) {
+				
+				try 
+				{
+					ReplayRecorder dummyRec;
+					dummyRec.receive(stream);
+					dummyRec.save((std::string("replays/") + mFilename + std::string(".bvr")));
+				} 
+				catch ( std::exception& e) 
+				{
 					imgui.resetSelection();
 					mSaveReplay = true;	// back to save replay menu if we could not save
 				}
+				
 				mWaitingForReplay = false;
 				
 				break;
