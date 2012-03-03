@@ -148,34 +148,47 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface,
 
 void RenderManagerGL2D::drawQuad(float x, float y, float w, float h)
 {
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 0.0);
-		glVertex2f(x - w / 2.0, y - h / 2.0);
-		glTexCoord2f(1.0, 0.0);
-		glVertex2f(x + w / 2.0, y - h / 2.0);
-		glTexCoord2f(1.0, 1.0);
-		glVertex2f(x + w / 2.0, y + h / 2.0);
-		glTexCoord2f(0.0, 1.0);
-		glVertex2f(x - w / 2.0, y + h / 2.0);
-	glEnd();
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	GLfloat vertices[] = {x - w / 2.0, y - h / 2.0,
+	                      x + w / 2.0, y - h / 2.0,
+	                      x + w / 2.0, y + h / 2.0,
+	                      x - w / 2.0, y + h / 2.0};
+
+	GLfloat texCoords[] = {0.0, 0.0,
+	                       1.0, 0.0,
+	                       1.0, 1.0,
+	                       0.0, 1.0};
+
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
+        glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
-	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glBindTexture(tex.texture);
+        
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 	float w = tex.w;
 	float h = tex.h;
-	glBegin(GL_QUADS);
-		glTexCoord2f(tex.indices[0], tex.indices[1]);
-		glVertex2f(x - w / 2.0, y - h / 2.0);
-		glTexCoord2f(tex.indices[2], tex.indices[3]);
-		glVertex2f(x + w / 2.0, y - h / 2.0);
-		glTexCoord2f(tex.indices[4], tex.indices[5]);
-		glVertex2f(x + w / 2.0, y + h / 2.0);
-		glTexCoord2f(tex.indices[6], tex.indices[7]);
-		glVertex2f(x - w / 2.0, y + h / 2.0);
-	glEnd();
+        
+	GLfloat vertices[] = {x - w / 2.0, y - h / 2.0,
+	                      x + w / 2.0, y - h / 2.0,
+	                      x + w / 2.0, y + h / 2.0,
+	                      x - w / 2.0, y + h / 2.0};
+
+	glVertexPointer(2, GL_FLOAT, 0, vertices);
+        glTexCoordPointer(2, GL_FLOAT, 0, tex.indices);
+	glDrawArrays(GL_QUADS, 0, 4);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 RenderManagerGL2D::RenderManagerGL2D()
