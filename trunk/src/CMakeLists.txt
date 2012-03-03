@@ -19,6 +19,7 @@ set(common_SRC
 	File.cpp File.h
 	FileWrite.cpp FileWrite.h
 	FileRead.cpp FileRead.h
+	FileSystem.cpp FileSystem.h
 	)
 	
 set (blobby_SRC ${common_SRC}
