@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cstdlib>
 #include <iostream>
-#include <physfs.h>
 #include <cstdio>
 #include <errno.h>
 #include <unistd.h>
@@ -47,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "RakNetPacket.h"
 #include "NetworkPlayer.h"
+#include "FileSystem.h"
 
 #ifdef WIN32
 #undef main
@@ -85,6 +85,8 @@ void createNewGame();
 int main(int argc, char** argv)
 {
 	process_arguments(argc, argv);
+	
+	FileSystem fileSys(argv[0]);
 	
 	if (!g_run_in_foreground)
 	{
@@ -508,18 +510,17 @@ void wait_and_restart_child()
 
 void setup_physfs(char* argv0)
 {
-	PHYSFS_init(argv0);
-	PHYSFS_addToSearchPath("data", 1);
+	FileSystem& fs = FileSystem::getSingleton();
+	fs.addToSearchPath("data");
 	
 	#if defined(WIN32)
 	// Just write in installation directory
-	PHYSFS_setWriteDir("data");
+	fs.setWriteDir("data");
 	#else
-	std::string userdir = PHYSFS_getUserDir();
+	std::string userdir = fs.getUserDir();
 	std::string userAppend = ".blobby";
 	std::string homedir = userdir + userAppend;
-	PHYSFS_addToSearchPath(homedir.c_str(), 0);
-	PHYSFS_setWriteDir(homedir.c_str());
+	fs.setWriteDir(homedir);
 	#endif
 
 }

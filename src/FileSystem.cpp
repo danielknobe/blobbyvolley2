@@ -113,6 +113,10 @@ std::string FileSystem::getDirSeparator()
 {
 	return PHYSFS_getDirSeparator();
 }
+std::string FileSystem::getUserDir()
+{
+	return PHYSFS_getUserDir();
+}
 
 void FileSystem::probeDir(const std::string& dirname)
 {
