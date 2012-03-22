@@ -36,7 +36,7 @@ class FileWrite : public File
 		/// \brief default ctor
 		/// \details File has to be opended with open()
 		/// \throw nothing
-		explicit FileWrite() nothrow(true);
+		explicit FileWrite();
 		
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened for writing
@@ -52,7 +52,7 @@ class FileWrite : public File
 		/// destructor, closes the file (if any open)
 		/// \sa close()
 		/// \throw nothing
-		~FileWrite() nothrow(true);
+		~FileWrite();
 		
 		// ------------------------------------
 		//  writing interface

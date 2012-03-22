@@ -37,7 +37,7 @@ class FileRead : public File
 		/// \brief default ctor
 		/// \details File has to be opended with open()
 		/// \throw nothing
-		explicit FileRead() nothrow(true);
+		explicit FileRead();
 		
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened for reading
@@ -53,7 +53,7 @@ class FileRead : public File
 		/// destructor, closes the file (if any open)
 		/// \sa close()
 		/// \throw nothing
-		~FileRead() nothrow(true);
+		~FileRead();
 		
 		// ------------------------------------
 		//  reading interface
