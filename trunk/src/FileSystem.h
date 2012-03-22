@@ -71,4 +71,7 @@ class FileSystem : public boost::noncopyable
 	
 	/// \todo ideally, this method would never be needed by client code!!
 	std::string getDirSeparator();
+	
+	/// \todo ideally, this method would never be needed by client code!!
+	std::string getUserDir();
 };

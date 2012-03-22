@@ -84,7 +84,7 @@ void setupPHYSFS()
 
 		// Create a search path in the home directory and ensure that
 		// all paths exist and are actually directories
-		std::string userdir = PHYSFS_getUserDir();
+		std::string userdir = fs.getUserDir();
 		std::string userAppend = ".blobby";
 		std::string homedir = userdir + userAppend;
 		/// \todo please review this code and determine if we really need to add userdir to serach path
