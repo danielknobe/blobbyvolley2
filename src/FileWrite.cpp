@@ -24,14 +24,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cassert>
 
-FileWrite::FileWrite() {
+FileWrite::FileWrite()
+{
 }
 
 FileWrite::FileWrite(const std::string& filename) : File(filename, File::OPEN_WRITE)
 {
 }
 
-FileWrite::~FileWrite() {
+FileWrite::~FileWrite()
+{
 	// no more actions than what ~File already does
 }
 

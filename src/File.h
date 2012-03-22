@@ -28,12 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "FileExceptions.h"
 
-//#ifndef __GXX_EXPERIMENTAL_CXX0X__
-#define nothrow(x)	
-//#else
-//#define nothrow(x)	nothrow(x)
-//#endif
-
 /**
 	\class File
 	\brief convenience wrapper around PHYSFS_file
@@ -61,7 +55,7 @@ class File : boost::noncopyable
 		/// destructor, closes the file (if any open)
 		/// \sa close()
 		/// \throw nothing
-		~File() nothrow(true);
+		~File();
 		
 		/// \brief gets the PHYSFS_file as void*
 		/// \details We don't return a PHYSFS_file* here, as this type is a typedef so it cannot
@@ -73,7 +67,7 @@ class File : boost::noncopyable
 		///				class instead of using this function. 
 		///				You bypass all the security that this File class offers by using the direct
 		///				Physfs_file.
-		void* getPHYSFS_file() nothrow(true);
+		void* getPHYSFS_file();
 		
 		// ------------------------------------
 		// information querying interface
@@ -81,7 +75,7 @@ class File : boost::noncopyable
 		
 		/// \brief checks if a file is opened
 		/// \throw nothing
-		bool is_open() const nothrow(true);
+		bool is_open() const;
 		
 		/// \todo check if these return types fit!
 		
@@ -94,7 +88,7 @@ class File : boost::noncopyable
 		/// \todo function needs tests
 		/// \return name of the opened file, or "" when no file is opened
 		/// \throw nothing
-		std::string getFileName() const nothrow(true);
+		std::string getFileName() const;
 		
 		// ------------------------------------
 		//  cursor interface
@@ -120,7 +114,7 @@ class File : boost::noncopyable
 		/// \brief default ctor
 		/// \details File has to be opended with open()
 		/// \throw nothing
-		explicit File() nothrow(true);
+		explicit File();
 		
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened
