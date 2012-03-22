@@ -21,8 +21,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileSystem.h"
 
 #include <physfs.h>
+#include <cassert>
+#include <iostream> /// \todo remove this? currently needed for that probeDir error messages
 
-std::vector<std::string> enumerateFiles(const std::string& directory, const std::string& extension)
+FileSystem* mFileSystemSingleton = 0;
+
+FileSystem::FileSystem(const std::string& path)
+{
+	assert(mFileSystemSingleton == 0);
+	PHYSFS_init(path.c_str());
+	/// \todo do we need to check if this operation suceeded?
+	mFileSystemSingleton = this;
+}
+
+FileSystem& FileSystem::getSingleton()
+{
+	assert(mFileSystemSingleton);
+	/// \todo instead of assert, throw exception?
+	return *mFileSystemSingleton;
+}
+
+FileSystem::~FileSystem()
+{
+	PHYSFS_deinit();
+	mFileSystemSingleton = 0;
+}
+
+std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory, const std::string& extension)
 {
 	std::vector<std::string> files;
 	char** filenames = PHYSFS_enumerateFiles(directory.c_str());
@@ -44,7 +69,70 @@ std::vector<std::string> enumerateFiles(const std::string& directory, const std:
 	return files;
 }
 
-bool deleteFile(const std::string& filename)
+bool FileSystem::deleteFile(const std::string& filename)
 {
 	return PHYSFS_delete(filename.c_str());
+}
+
+bool FileSystem::exists(const std::string& filename) const
+{
+	return PHYSFS_exists(filename.c_str());
+}
+
+bool FileSystem::isDirectory(const std::string& dirname) const
+{
+	return PHYSFS_isDirectory(dirname.c_str());
+}
+
+bool FileSystem::mkdir(const std::string& dirname)
+{
+	return PHYSFS_mkdir(dirname.c_str());
+}
+
+void FileSystem::addToSearchPath(const std::string& dirname, bool append)
+{
+	/// \todo check if dir exists?
+	/// \todo use PHYSFS_mount? PHYSFS_addToSearchPath is listed as legacy function only there for binary 
+	///  compatibility with older version.
+	/// \todo check return value
+	PHYSFS_addToSearchPath(dirname.c_str(), append ? 1 : 0);
+}
+
+void FileSystem::removeFromSearchPath(const std::string& dirname)
+{
+	PHYSFS_removeFromSearchPath(dirname.c_str());
+}
+
+void FileSystem::setWriteDir(const std::string& dirname)
+{
+	PHYSFS_setWriteDir(dirname.c_str());
+	addToSearchPath(dirname, true);
+}
+
+std::string FileSystem::getDirSeparator()
+{
+	return PHYSFS_getDirSeparator();
+}
+
+void FileSystem::probeDir(const std::string& dirname)
+{
+	if ( !isDirectory(dirname) )
+	{
+		if (exists(dirname))
+		{
+			/// \todo simple delete such files without a warning???
+			deleteFile(dirname);
+		}
+		if (mkdir(dirname))
+		{
+			std::cout << PHYSFS_getWriteDir() <<
+				dirname << " created" << std::endl;
+		}
+		else
+		{
+			std::cout << "Warning: Creation of" << 
+				PHYSFS_getWriteDir() << dirname <<
+				" failed!" << std::endl;
+		}
+	}
 }

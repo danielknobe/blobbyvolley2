@@ -32,7 +32,7 @@ ReplaySelectionState::ReplaySelectionState()
 	mVersionError = false;
 
 	mSelectedReplay = 0;
-	mReplayFiles = enumerateFiles("replays", ".bvr");
+	mReplayFiles = FileSystem::getSingleton().enumerateFiles("replays", ".bvr");
 	if (mReplayFiles.size() == 0)
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
@@ -73,7 +73,7 @@ void ReplaySelectionState::step()
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::getSingleton()->getString(TextManager::RP_DELETE)))
 	{
 		if (!mReplayFiles.empty())
-		if (deleteFile("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"))
+		if (FileSystem::getSingleton().deleteFile("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"))
 		{
 			mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 			if (mSelectedReplay >= mReplayFiles.size())

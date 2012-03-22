@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "config.h"
 
-#include <physfs.h>
-
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "InputManager.h"
@@ -32,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "state/State.h"
 #include "SpeedController.h"
 #include "Blood.h"
+#include "FileSystem.h"
 
 #include <ctime>
 #include <cstring>
@@ -49,28 +48,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #undef main
 #endif
 
-void probeDir(const std::string& dirname)
-{
-	if (PHYSFS_isDirectory(dirname.c_str()) == 0)
-	{
-		if (PHYSFS_exists(dirname.c_str()))
-		{
-			PHYSFS_delete(dirname.c_str());
-		}
-		if (PHYSFS_mkdir(dirname.c_str()))
-		{
-			std::cout << PHYSFS_getWriteDir() <<
-				dirname << " created" << std::endl;
-		}
-		else
-		{
-			std::cout << "Warning: Creation of" << 
-				PHYSFS_getWriteDir() << dirname <<
-				" failed!" << std::endl;
-		}
-	}
-}
-
 void deinit()
 {
 	RenderManager::getSingleton().deinit();
@@ -80,64 +57,68 @@ void deinit()
 	///			is certainly destructed properly?
 	delete State::getCurrentState();
 	SDL_Quit();
-	PHYSFS_deinit();
 }
 
 void setupPHYSFS()
 {
-	std::string separator = PHYSFS_getDirSeparator();
+	FileSystem& fs = FileSystem::getSingleton();
+	std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all 
 	// platforms
-	PHYSFS_addToSearchPath("data", 1);
-	PHYSFS_addToSearchPath("data/gfx.zip", 1);
-	PHYSFS_addToSearchPath("data/sounds.zip", 1);
-	PHYSFS_addToSearchPath("data/scripts.zip", 1);
-	PHYSFS_addToSearchPath("data/backgrounds.zip", 1);
+	fs.addToSearchPath("data");
+	fs.addToSearchPath("data/gfx.zip");
+	fs.addToSearchPath("data/sounds.zip");
+	fs.addToSearchPath("data/scripts.zip");
+	fs.addToSearchPath("data/backgrounds.zip");
 
-#if defined(WIN32)
-	// Just write in installation directory
-	PHYSFS_setWriteDir("data");
-#else
-	// handle the case when it is installed
-	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby", 1);
-	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip", 1);
-	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip", 1);
-	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip", 1);
-	PHYSFS_addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip", 1);
+	#if defined(WIN32)
+		// Just write in installation directory
+		fs.setWriteDir("data");
+	#else
+		// handle the case when it is installed
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
 
-	// Create a search path in the home directory and ensure that
-	// all paths exist and are actually directories
-	std::string userdir = PHYSFS_getUserDir();
-	std::string userAppend = ".blobby";
-	std::string homedir = userdir + userAppend;
-	PHYSFS_addToSearchPath(userdir.c_str(), 0);
-	PHYSFS_setWriteDir(userdir.c_str());
-	probeDir(userAppend);
-	probeDir(userAppend + separator + "replays");
-	probeDir(userAppend + separator + "gfx");
-	probeDir(userAppend + separator + "sounds");
-	probeDir(userAppend + separator + "scripts");
-	probeDir(userAppend + separator + "backgrounds");
-	PHYSFS_removeFromSearchPath(userdir.c_str());
-	PHYSFS_setWriteDir(homedir.c_str());
-	PHYSFS_addToSearchPath(homedir.c_str(), 0);
-#if defined(GAMEDATADIR)
-	// A global installation path makes only sense on non-Windows
-	// platforms
-	std::string basedir = GAMEDATADIR;
-	PHYSFS_addToSearchPath(basedir.c_str(), 1);
-	PHYSFS_addToSearchPath((basedir + separator + "gfx.zip").c_str(), 1);
-	PHYSFS_addToSearchPath((basedir + separator + "sounds.zip").c_str(), 1);
-	PHYSFS_addToSearchPath((basedir + separator + "scripts.zip").c_str(), 1);
-	PHYSFS_addToSearchPath((basedir + separator + "backgrounds.zip").c_str(), 1);
-#endif
-#endif
+		// Create a search path in the home directory and ensure that
+		// all paths exist and are actually directories
+		std::string userdir = PHYSFS_getUserDir();
+		std::string userAppend = ".blobby";
+		std::string homedir = userdir + userAppend;
+		/// \todo please review this code and determine if we really need to add userdir to serach path
+		/// only to remove it later
+		fs.setWriteDir(userdir);
+		fs.probeDir(userAppend);
+		/// \todo why do we need separator here?
+		fs.probeDir(userAppend + separator + "replays");
+		fs.probeDir(userAppend + separator + "gfx");
+		fs.probeDir(userAppend + separator + "sounds");
+		fs.probeDir(userAppend + separator + "scripts");
+		fs.probeDir(userAppend + separator + "backgrounds");
+		fs.removeFromSearchPath(userdir);
+		// here we set the write dir anew!
+		fs.setWriteDir(homedir);
+		#if defined(GAMEDATADIR)
+		{
+			// A global installation path makes only sense on non-Windows
+			// platforms
+			std::string basedir = GAMEDATADIR;
+			fs.addToSearchPath(basedir);
+			fs.addToSearchPath(basedir + separator + "gfx.zip");
+			fs.addToSearchPath(basedir + separator + "sounds.zip");
+			fs.addToSearchPath(basedir + separator + "scripts.zip");
+			fs.addToSearchPath(basedir + separator + "backgrounds.zip");
+		}
+		#endif
+	#endif
 }
 #undef main
 extern "C"
 int main(int argc, char* argv[])
 {
-	PHYSFS_init(argv[0]);
+	FileSystem filesys(argv[0]);
 	setupPHYSFS();
 	
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
@@ -220,7 +201,7 @@ int main(int argc, char* argv[])
 		smanager->playSound("sounds/pfiff.wav", 0.0);
 
 		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
-		if (PHYSFS_exists(bg.c_str()))
+		if ( FileSystem::getSingleton().exists(bg) )
 			rmanager->setBackground(bg);
 
 		InputManager* inputmgr = InputManager::createInputManager();
@@ -272,7 +253,6 @@ int main(int argc, char* argv[])
 		if (smanager)
 			smanager->deinit();
 		SDL_Quit();
-		PHYSFS_deinit();
 		exit (EXIT_FAILURE);
 	}
 
