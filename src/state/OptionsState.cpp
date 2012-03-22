@@ -42,7 +42,7 @@ OptionState::OptionState()
 	std::string leftScript = mOptionConfig.getString("left_script_name");
 	std::string rightScript = mOptionConfig.getString("right_script_name");
 	
-	mScriptNames = enumerateFiles("scripts", ".lua");
+	mScriptNames = FileSystem::getSingleton().enumerateFiles("scripts", ".lua");
 	for(int i = 0; i < mScriptNames.size(); ++i)
 	{
 		if (mScriptNames[i] == leftScript)
@@ -832,7 +832,7 @@ MiscOptionsState::MiscOptionsState()
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
 	
-	mBackgrounds = enumerateFiles("backgrounds", ".bmp");
+	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp");
 	
 	for(int i = 0; i < mBackgrounds.size(); ++i)
 	{

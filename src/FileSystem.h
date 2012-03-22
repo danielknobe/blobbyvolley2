@@ -22,16 +22,53 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <vector>
+#include <boost/noncopyable.hpp>
 
 // some convenience wrappers around physfs
 
-/// \brief enumerates files
-/// \details searches for all files in a certain directory with a given extension. The found files
-///			are returned as a vector containing the filenames. The extension is cuttet from the filenames.
-/// \param directory where to search
-///	\param extension file types to search for.
-std::vector<std::string> enumerateFiles(const std::string& directory, const std::string& extension);
+class FileSystem : public boost::noncopyable
+{
+	public:
+	
+	FileSystem(const std::string& path);
+	~FileSystem();
+
+	/// \brief gets the file system
+	/// \details throws an error when file system has
+	/// not been initialised.
+	static FileSystem& getSingleton();
+	
+	/// \brief enumerates files
+	/// \details searches for all files in a certain directory with a given extension. The found files
+	///			are returned as a vector containing the filenames. The extension is cuttet from the filenames.
+	/// \param directory where to search
+	///	\param extension file types to search for.
+	std::vector<std::string> enumerateFiles(const std::string& directory, const std::string& extension);
+
+	/// \brief deletes a file
+	bool deleteFile(const std::string& filename);
+	
+	/// \brief tests whether a file exists
+	bool exists(const std::string& filename) const;
+
+	/// \brief tests wether given path is a directory
+	bool isDirectory(const std::string& dirname) const;
+
+	/// \brief creates a directory and reports success/failure
+	/// \return true, if the directory could be created
+	bool mkdir(const std::string& dirname);
 
 
-/// \brief deletes a file
-bool deleteFile(const std::string& filename);
+	// general setup methods
+	void addToSearchPath(const std::string& dirname, bool append = true);
+	void removeFromSearchPath(const std::string& dirname);
+	/// \details automatically registers this directory as primary read directory!
+	void setWriteDir(const std::string& dirname);
+	
+	/// \todo this method is currently only copied code. it needs some review and a spec what it really should 
+	/// do. also, its uses should be looked at again.
+	void probeDir(const std::string& dir);
+	
+	/// \todo ideally, this method would never be needed by client code!!
+	std::string getDirSeparator();
+};
