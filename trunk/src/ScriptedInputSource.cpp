@@ -92,39 +92,6 @@ float ScriptedInputSource::coordinate<vel_y>::convert (float val) {
 	return -val;
 }
 
-
-
-struct ReaderInfo
-{
-	FileRead file;
-	char buffer[2048];
-};
-
-static const char* chunkReader(lua_State* state, void* data, size_t *size)
-{
-	ReaderInfo* info = (ReaderInfo*) data;
-	
-	int bytesRead = 2048;
-	if(info->file.length() - info->file.tell() < 2048)
-	{
-		bytesRead = info->file.length() - info->file.tell();
-	}
-	
-	info->file.readRawBytes(info->buffer, bytesRead);
-	// if this doesn't throw, bytesRead is the actual number of bytes read
-	/// \todo we must do sth about this code, its just plains awful. 
-	/// 		File interface has to be improved to support such buffered reading.
-	*size = bytesRead;
-	if (bytesRead == 0)
-	{
-		return 0;
-	}
-	else
-	{
-		return info->buffer;
-	}
-}
-
 ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 						PlayerSide playerside, unsigned int difficulty): mLastBallSpeed(0),
 										mMaxDelay(difficulty), mCurDelay(difficulty), mSide(playerside)
@@ -191,16 +158,12 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	
 	//lua_register(mState, "parabel", parabel);
 
-	ReaderInfo info;
-	info.file.open(filename);
-	
-	int error;
-	error = lua_load(mState, chunkReader, &info, filename.c_str());
-	info.file.close();
+	int error = FileRead::readLuaScript(filename, mState);
 	
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
-		if (error)
+	
+	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;

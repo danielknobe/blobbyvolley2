@@ -123,4 +123,44 @@ std::string FileRead::readString()
 	assert(0);	// did not find zero-terminated-string
 }
 
+// reading lua script
 
+struct ReaderInfo
+{
+	FileRead file;
+	char buffer[2048];
+};
+
+static const char* chunkReader(lua_State* state, void* data, size_t *size)
+{
+	ReaderInfo* info = (ReaderInfo*) data;
+	
+	int bytesRead = 2048;
+	if(info->file.length() - info->file.tell() < 2048)
+	{
+		bytesRead = info->file.length() - info->file.tell();
+	}
+	
+	info->file.readRawBytes(info->buffer, bytesRead);
+	// if this doesn't throw, bytesRead is the actual number of bytes read
+	/// \todo we must do sth about this code, its just plains awful. 
+	/// 		File interface has to be improved to support such buffered reading.
+	*size = bytesRead;
+	if (bytesRead == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return info->buffer;
+	}
+}
+
+
+int FileRead::readLuaScript(const std::string& filename, lua_State* mState)
+{
+	ReaderInfo info;
+	info.file.open(filename);
+
+	return lua_load(mState, chunkReader, &info, filename.c_str());
+}

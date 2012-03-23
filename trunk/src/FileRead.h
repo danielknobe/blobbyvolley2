@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "File.h"
 
+struct lua_State;
+
 /**
 	\class FileRead
 	\brief Extension of file interface for reading file access.	
@@ -86,4 +88,10 @@ class FileRead : public File
 		/// \throw PhysfsException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		std::string readString();
+		
+		
+		// -----------------------------------------------------------------------------------------
+		// 								LUA reading helper function
+		// -----------------------------------------------------------------------------------------
+		static int readLuaScript(const std::string& filename, lua_State* mState);
 };
