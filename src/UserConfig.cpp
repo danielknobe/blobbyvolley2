@@ -71,8 +71,7 @@ bool UserConfig::loadFile(const std::string& filename)
 		configDoc->FirstChildElement("userconfig");
 	if (userConfigElem == NULL)
 		return false;
-	for (TiXmlElement* varElem =
-		userConfigElem->FirstChildElement("var");
+	for (TiXmlElement* varElem = userConfigElem->FirstChildElement("var");
 		varElem != NULL;
 		varElem = varElem->NextSiblingElement("var"))
 	{
@@ -95,8 +94,7 @@ bool UserConfig::saveFile(const std::string& filename) const
 	// this trows an exception if the file could not be opened for writing
 	FileWrite file(filename);
 
-	const std::string xmlHeader =
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
+	const std::string xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
 	
 	const std::string xmlFooter = "</userconfig>\n\n";
 	

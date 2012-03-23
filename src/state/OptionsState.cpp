@@ -76,28 +76,22 @@ OptionState::~OptionState()
 	{
 		if (mPlayerOptions[LEFT_PLAYER] == 0)
 		{
-			mOptionConfig.setBool(
-				"left_player_human", true);
+			mOptionConfig.setBool("left_player_human", true);
 		}
 		else
 		{
-			mOptionConfig.setBool(
-				"left_player_human", false);
-			mOptionConfig.setString("left_script_name",
-				mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
+			mOptionConfig.setBool("left_player_human", false);
+			mOptionConfig.setString("left_script_name", mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
 		}
 
 		if (mPlayerOptions[RIGHT_PLAYER] == 0)
 		{
-			mOptionConfig.setBool(
-				"right_player_human", true);
+			mOptionConfig.setBool("right_player_human", true);
 		}
 		else
 		{
-			mOptionConfig.setBool(
-				"right_player_human", false);
-			mOptionConfig.setString("right_script_name",
-				mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
+			mOptionConfig.setBool("right_player_human", false);
+			mOptionConfig.setString("right_script_name", mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
 		}
 		mOptionConfig.setString("left_player_name", mPlayerName[LEFT_PLAYER]);
 		mOptionConfig.setString("right_player_name", mPlayerName[RIGHT_PLAYER]);
@@ -128,15 +122,15 @@ void OptionState::step()
 	imgui.doScrollbar(GEN_ID, Vector2(15.0, 350.0), f);
 	mBotStrength[0] = static_cast<unsigned int> ((1.f-f) * MAX_BOT_DELAY + 0.5f);
 	imgui.doText(GEN_ID, Vector2(235.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
-											 (f > 0.33 ? TextManager::OP_MEDIUM: 
-											TextManager::OP_WEAK));
+											 	(f > 0.33 ? TextManager::OP_MEDIUM: 
+												TextManager::OP_WEAK));
 	
 	f = 1.f - (float)mBotStrength[1] / MAX_BOT_DELAY;
 	imgui.doScrollbar(GEN_ID, Vector2(440.0, 350.0), f);
 	mBotStrength[1] = static_cast<unsigned int> ((1.f - f) * MAX_BOT_DELAY + 0.5f);
 	imgui.doText(GEN_ID, Vector2(660.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
-											 (f > 0.33 ? TextManager::OP_MEDIUM: 
-											TextManager::OP_WEAK));
+											 	(f > 0.33 ? TextManager::OP_MEDIUM: 
+												TextManager::OP_WEAK));
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
 	{
