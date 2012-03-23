@@ -286,11 +286,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() )
 	
 	
 	// now load script file
-	ReaderInfo info;
-	// this opens the file
-	info.file.open(filename);
-
-	int error = lua_load(mState, chunkReader, &info, filename.c_str());
+	int error = FileRead::readLuaScript(filename, mState);
 	
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
