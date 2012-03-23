@@ -22,18 +22,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayRecorder.h"
 
 /* includes */
-#include "IReplayLoader.h"
-#include "FileWrite.h"
-#include "tinyxml/tinyxml.h"
-#include "raknet/BitStream.h"
-
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <boost/crc.hpp>
-#include <SDL/SDL.h>
-#include "Global.h"
 #include <ctime>
+
+#include <boost/crc.hpp>
+
+#include "tinyxml/tinyxml.h"
+
+#include "raknet/BitStream.h"
+
+#include <SDL/SDL.h>
+
+#include "Global.h"
+#include "IReplayLoader.h"
+#include "FileWrite.h"
 
 /* implementation */
 ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)

@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,27 +18,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
+#include "DedicatedServer.h"
+
+/* includes */
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
-#include <errno.h>
-#include <unistd.h>
 #include <ctime>
 
-#ifndef WIN32
-#include <syslog.h>
-#include <sys/wait.h>
-#else
-#include <cstdarg>
-#endif
+#include <errno.h>
+#include <unistd.h>
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
-#include <SDL/SDL_timer.h>
-// We need no stringcompressor only for the names
 
-#include "DedicatedServer.h"
+#include <SDL/SDL_timer.h>
+
 #include "InputSource.h"
 #include "PhysicWorld.h"
 #include "NetworkGame.h"
@@ -47,6 +45,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RakNetPacket.h"
 #include "NetworkPlayer.h"
 #include "FileSystem.h"
+
+// platform specific
+#ifndef WIN32
+#include <syslog.h>
+#include <sys/wait.h>
+#else
+#include <cstdarg>
+#endif
+
+
+
+/* implementation */
 
 #ifdef WIN32
 #undef main

@@ -22,10 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 
 /* includes */
-#include "GameConstants.h"
+#include <limits>
+
 #include "raknet/BitStream.h"
 
-#include <limits>
+#include "GameConstants.h"
 
 /* implementation */
 const int TIMESTEP = 5; // calculations per frame

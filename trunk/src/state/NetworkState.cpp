@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,31 +18,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
+
+/* includes */
 #include <algorithm>
 #include <iostream>
 #include <ctime>
 
-#include "NetworkState.h"
-#include "NetworkMessage.h"
-#include "NetworkGame.h"
-#include "TextManager.h"
-#include "ReplayRecorder.h"
+#include <boost/lexical_cast.hpp>
+#include <boost/scoped_array.hpp>
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/GetTime.h"
 
-#include <boost/lexical_cast.hpp>
-#include <boost/scoped_array.hpp>
-
+#include "NetworkState.h"
+#include "NetworkMessage.h"
+#include "NetworkGame.h"
+#include "RakNetPacket.h"
+#include "TextManager.h"
+#include "ReplayRecorder.h"
 #include "IMGUI.h"
 #include "SoundManager.h"
 #include "LocalInputSource.h"
-#include "RakNetPacket.h"
 #include "UserConfig.h"
-// We don't need the stringcompressor
 
+
+/* implementation */
 NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)

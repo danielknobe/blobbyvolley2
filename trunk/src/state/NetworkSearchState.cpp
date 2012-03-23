@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,20 +18,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
 #include "NetworkSearchState.h"
-#include "NetworkState.h"
-#include "TextManager.h"
+
+/* includes */
+#include <boost/lexical_cast.hpp>
 
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
-
-#include <boost/lexical_cast.hpp>
-
-#include "IMGUI.h"
 #include "raknet/RakServer.h"
+
+#include "NetworkState.h"
+#include "TextManager.h"
+#include "IMGUI.h"
 #include "RakNetPacket.h"
 #include "IUserConfigReader.h"
 
+
+/* implementation */
 NetworkSearchState::NetworkSearchState()
 {
 	IMGUI::getSingleton().resetSelection();

@@ -18,11 +18,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
 #include "FileSystem.h"
 
-#include <physfs.h>
+/* includes */
 #include <cassert>
 #include <iostream> /// \todo remove this? currently needed for that probeDir error messages
+
+#include <physfs.h>
+
+/* implementation */
 
 FileSystem* mFileSystemSingleton = 0;
 

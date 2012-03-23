@@ -22,10 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ScriptedInputSource.h"
 
 /* includes */
-#include "DuelMatch.h"
-#include "GameConstants.h"
-#include "BotAPICalculations.h"
-#include "FileRead.h"
+#include <cmath>
+#include <algorithm>
+#include <iostream>
+
+#include <SDL/SDL.h>
 
 extern "C"
 {
@@ -34,10 +35,10 @@ extern "C"
 #include "lua/lualib.h"
 }
 
-#include <iostream>
-#include <SDL/SDL.h>
-#include <cmath>
-#include <algorithm>
+#include "DuelMatch.h"
+#include "GameConstants.h"
+#include "BotAPICalculations.h"
+#include "FileRead.h"
 
 /* implementation */
 DuelMatch* ScriptedInputSource::mMatch = 0;

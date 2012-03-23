@@ -1,6 +1,7 @@
 ﻿/*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,15 +18,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* header include */
+#include "InputManager.h"
+
+/* includes */
 #include <cassert>
 #include <iostream>
-#include <SDL/SDL.h>
-#include "InputManager.h"
-#include "UserConfig.h"
 
+#include <SDL/SDL.h>
+
+#include "UserConfig.h"
 #include "IMGUI.h"
-//#include "SoundManager.h"
+//#include "SoundManager.h" // this is temponary commented out. check this.
 #include "utf8.h"
+
+/* implementation */
 
 InputManager* InputManager::mSingleton = 0;
 
