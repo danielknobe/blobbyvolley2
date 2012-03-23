@@ -216,6 +216,11 @@ void IMGUI::doText(int id, const Vector2& position, const std::string& text, uns
 	mQueue->push(obj);
 }
 
+void IMGUI::doText(int id, const Vector2& position, TextManager::STRING text, unsigned int flags)
+{
+	doText(id, position, TextManager::getSingleton()->getString(text), flags);
+}
+
 void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col)
 {
 	QueueObject obj;
@@ -226,6 +231,11 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 	obj.col = col;
 	mQueue->push(obj);
 	RenderManager::getSingleton().redraw();
+}
+
+bool IMGUI::doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags)
+{
+	return doButton(id, position, TextManager::getSingleton()->getString(text), flags);
 }
 
 bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, unsigned int flags)

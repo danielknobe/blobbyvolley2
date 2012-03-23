@@ -190,10 +190,10 @@ void NetworkSearchState::step()
 		imgui.doInactiveMode(true);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(10, 20), TextManager::getSingleton()->getString(TextManager::NET_SERVER_SCAN)))
+	if (imgui.doButton(GEN_ID, Vector2(10, 20), TextManager::NET_SERVER_SCAN))
 		searchServers();
 
-	if (imgui.doButton(GEN_ID, Vector2(420, 20), TextManager::getSingleton()->getString(TextManager::NET_DIRECT_CONNECT)) &&
+	if (imgui.doButton(GEN_ID, Vector2(420, 20), TextManager::NET_DIRECT_CONNECT) &&
 			!mEnteringServer)
 	{
 		mEnteringServer = true;
@@ -215,7 +215,7 @@ void NetworkSearchState::step()
 		doEnterServer = true;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(50, 480), TextManager::getSingleton()->getString(TextManager::NET_SERVER_INFO)) &&
+	if (imgui.doButton(GEN_ID, Vector2(50, 480), TextManager::NET_SERVER_INFO) &&
 			!mDisplayInfo && !mScannedServers.empty())
 	{
 		mDisplayInfo = true;
@@ -228,7 +228,7 @@ void NetworkSearchState::step()
 		imgui.doOverlay(GEN_ID, Vector2(100.0, 200.0), Vector2(650.0, 400.0));
 		// Game crashes if the mEnteredServer is not a possible input
 		imgui.doEditbox(GEN_ID, Vector2(130.0, 210.0), 20, mEnteredServer, mServerBoxPosition);
-		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::LBL_OK))
 		{
 			//std::string server = mScannedServers[mSelectedServer].hostname;
 			/// \todo possibility to use custom port, too
@@ -236,7 +236,7 @@ void NetworkSearchState::step()
 			setCurrentState(new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT));
 			return;
 		}
-		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::LBL_CANCEL))
 		{
 			mEnteringServer = false;
 			imgui.resetSelection();
@@ -252,7 +252,7 @@ void NetworkSearchState::step()
 		imgui.doText(GEN_ID, Vector2(50, 130), mScannedServers[mSelectedServer].hostname);
 
 		std::stringstream activegames;
-		activegames << TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES) 
+		activegames << TextManager::NET_ACTIVE_GAMES 
 					<< mScannedServers[mSelectedServer].activegames;
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
 		std::stringstream waitingplayer;
@@ -270,7 +270,7 @@ void NetworkSearchState::step()
 					description.substr(i, 29));
 		}
 
-		if (imgui.doButton(GEN_ID, Vector2(410, 405), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		if (imgui.doButton(GEN_ID, Vector2(410, 405), TextManager::LBL_OK))
 		{
 			mDisplayInfo = false;
 			imgui.resetSelection();
@@ -278,7 +278,7 @@ void NetworkSearchState::step()
 		imgui.doInactiveMode(true);
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(450, 480), TextManager::getSingleton()->getString(TextManager::NET_HOST_GAME)) &&
+	if (imgui.doButton(GEN_ID, Vector2(450, 480), TextManager::NET_HOST_GAME) &&
 			!mDisplayInfo)
 	{
 		deleteCurrentState();
@@ -286,14 +286,14 @@ void NetworkSearchState::step()
 		return;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::getSingleton()->getString(TextManager::LBL_OK)) 
+	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) 
 							&& !mScannedServers.empty() || doEnterServer)
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
 		deleteCurrentState();
 		setCurrentState(new NetworkGameState(server.hostname, server.port));
 	}
-	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState);
@@ -302,7 +302,7 @@ void NetworkSearchState::step()
 	if(mDisplayUpdateNotification)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(71, 572), Vector2(729, 590), Color(128, 0, 0));
-		imgui.doText(GEN_ID, Vector2(85, 577), TextManager::getSingleton()->getString(TextManager::UPDATE_NOTIFICATION), TF_SMALL_FONT);
+		imgui.doText(GEN_ID, Vector2(85, 577), TextManager::UPDATE_NOTIFICATION, TF_SMALL_FONT);
 	}
 }
 

@@ -399,10 +399,10 @@ void NetworkGameState::step()
 	else if (mSaveReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::getSingleton()->getString(TextManager::RP_SAVE_NAME));
+		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
 		static unsigned cpos;
 		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
-		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
 		{
 			if (mFilename != "")
 			{
@@ -415,7 +415,7 @@ void NetworkGameState::step()
 			mWaitingForReplay = true;
 			imgui.resetSelection();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::LBL_CANCEL))
 		{
 			mSaveReplay = false;
 			imgui.resetSelection();
@@ -425,8 +425,8 @@ void NetworkGameState::step()
 	else if (mWaitingForReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::getSingleton()->getString(TextManager::RP_WAIT_REPLAY));
-		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_WAIT_REPLAY);
+		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::LBL_CANCEL))
 		{
 			mSaveReplay = false;
 			mWaitingForReplay = false;
@@ -441,7 +441,7 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 310.0));
 			imgui.doText(GEN_ID, Vector2(150.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::NET_CONNECTING));
+					TextManager::NET_CONNECTING);
 			break;
 		}
 		case WAITING_FOR_OPPONENT:
@@ -449,7 +449,7 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 310.0));
 			imgui.doText(GEN_ID, Vector2(150.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::GAME_WAITING));
+					TextManager::GAME_WAITING);
 			break;
 		}
 		case OPPONENT_DISCONNECTED:
@@ -458,14 +458,14 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(140.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::GAME_OPP_LEFT));
+					TextManager::GAME_OPP_LEFT);
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 300.0),
-					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+					TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::RP_SAVE))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -478,14 +478,14 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(120.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::NET_DISCONNECT));
+					TextManager::NET_DISCONNECT);
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
-					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+					TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::RP_SAVE))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -498,9 +498,9 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::NET_CON_FAILED));
+					TextManager::NET_CON_FAILED);
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+					TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
@@ -513,9 +513,9 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
 					Vector2(700.0, 370.0));
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					TextManager::getSingleton()->getString(TextManager::NET_SERVER_FULL));
+					TextManager::NET_SERVER_FULL);
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+					TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
@@ -552,13 +552,13 @@ void NetworkGameState::step()
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 240), tmp);
-			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
-			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState());
 			}
-			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::RP_SAVE))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
@@ -569,8 +569,8 @@ void NetworkGameState::step()
 		case PAUSING:
 		{
 			imgui.doOverlay(GEN_ID, Vector2(175, 20), Vector2(625, 175));
-			imgui.doText(GEN_ID, Vector2(275, 35), TextManager::getSingleton()->getString(TextManager::GAME_PAUSED));
-			if (imgui.doButton(GEN_ID, Vector2(205, 95), TextManager::getSingleton()->getString(TextManager::LBL_CONTINUE)))
+			imgui.doText(GEN_ID, Vector2(275, 35), TextManager::GAME_PAUSED);
+			if (imgui.doButton(GEN_ID, Vector2(205, 95), TextManager::LBL_CONTINUE))
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
@@ -599,12 +599,12 @@ void NetworkGameState::step()
 					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				}
 			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::getSingleton()->getString(TextManager::GAME_QUIT)))
+			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::GAME_QUIT))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
-			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::getSingleton()->getString(TextManager::RP_SAVE)))
+			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::RP_SAVE))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
