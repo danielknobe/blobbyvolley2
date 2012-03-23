@@ -220,13 +220,13 @@ void ReplayState::step()
 		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::getSingleton()->getString(TextManager::GAME_WIN));
-		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
 			deleteCurrentState();
 			setCurrentState(new ReplaySelectionState());
 		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::getSingleton()->getString(TextManager::RP_SHOW_AGAIN)))
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
 		{
 			/// \todo how do we handle reload?
 		}

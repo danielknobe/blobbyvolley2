@@ -53,7 +53,7 @@ void ReplaySelectionState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), TextManager::getSingleton()->getString(TextManager::RP_PLAY)) &&
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), TextManager::RP_PLAY) &&
 				mSelectedReplay != -1)
 	{
 		std::string loadrep = mReplayFiles[mSelectedReplay];
@@ -67,14 +67,14 @@ void ReplaySelectionState::step()
 		setCurrentState(rs);
 		imgui.resetSelection();
 	}
-	else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::getSingleton()->getString(TextManager::LBL_CANCEL)))
+	else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());
 	}
 	else
 		imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
-	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::getSingleton()->getString(TextManager::RP_DELETE)))
+	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_DELETE))
 	{
 		if (!mReplayFiles.empty())
 		if (FileSystem::getSingleton().deleteFile("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"))
@@ -89,10 +89,10 @@ void ReplaySelectionState::step()
 	{
 		imgui.doInactiveMode(false);
 		imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
-		imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_CHECKSUM));
-		imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_CORRUPT));
+		imgui.doText(GEN_ID, Vector2(250, 200), TextManager::RP_CHECKSUM);
+		imgui.doText(GEN_ID, Vector2(250, 250), TextManager::RP_FILE_CORRUPT);
 
-		if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::LBL_OK))
 		{
 			mChecksumError = false;
 		}
@@ -106,10 +106,10 @@ void ReplaySelectionState::step()
 	{
 		imgui.doInactiveMode(false);
 		imgui.doOverlay(GEN_ID, Vector2(210, 180), Vector2(650, 370));
-		imgui.doText(GEN_ID, Vector2(250, 200), TextManager::getSingleton()->getString(TextManager::RP_VERSION));
-		imgui.doText(GEN_ID, Vector2(250, 250), TextManager::getSingleton()->getString(TextManager::RP_FILE_OUTDATED));
+		imgui.doText(GEN_ID, Vector2(250, 200), TextManager::RP_VERSION);
+		imgui.doText(GEN_ID, Vector2(250, 250), TextManager::RP_FILE_OUTDATED);
 
-		if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::getSingleton()->getString(TextManager::LBL_OK)))
+		if (imgui.doButton(GEN_ID, Vector2(400, 330), TextManager::LBL_OK))
 		{
 			mVersionError = false;
 		}
