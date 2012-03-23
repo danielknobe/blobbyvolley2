@@ -23,12 +23,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <iostream>
-#include "FileRead.h"
-#include "FileWrite.h"
+#include <map>
+
 #include "tinyxml/tinyxml.h"
 
 #include "Global.h"
-#include <map>
+#include "FileRead.h"
+#include "FileWrite.h"
+
 
 /* implementation */
 std::map<std::string, boost::shared_ptr<IUserConfigReader> > userConfigCache;

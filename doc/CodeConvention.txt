@@ -28,7 +28,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 
 
+includes are to be sorted by library. they should occur in the following order:
+ std   includes
+ boost includes
+ other 3rd party libraries we use (lua/tinyxml/raknet/SDL)
+ blobby includes
 
+
+
+Coding Style:
+ * opening curly braces are placed in a new line (except for cases when a function is defined in a class header and has at most one statement. then 
+                                                   it is permitted to write the whole function in just one line).
+ * class member variables are to be prefixed with m, except for those publicly visible.
+ * class members occur in the following order: public, protected, private
+ * do not write more than one statement into one source line.
+ * for big classes, it might be a good idea to group member functions into different categories.
 
 TODO:
 - Write a more detailed code-convention document

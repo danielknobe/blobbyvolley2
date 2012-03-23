@@ -22,13 +22,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 
 /* includes */
-#include "Global.h"
-#include "FileRead.h"
+#include <iostream>
+#include <algorithm>
 
 #include "tinyxml/tinyxml.h"
 
-#include <iostream>
-#include <algorithm>
+#include "Global.h"
+#include "FileRead.h"
 
 /* implementation */
 TextManager* TextManager::mSingleton = 0;

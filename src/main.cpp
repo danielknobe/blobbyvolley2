@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,6 +18,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/* includes */
+#include <ctime>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+
 #include <SDL/SDL.h>
 
 #include "config.h"
@@ -27,15 +34,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
-#include "state/State.h"
 #include "SpeedController.h"
 #include "Blood.h"
 #include "FileSystem.h"
-
-#include <ctime>
-#include <cstring>
-#include <sstream>
-#include <iostream>
+#include "state/State.h"
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR
@@ -47,6 +49,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #undef main
 #endif
+
+/* implementation */
 
 void deinit()
 {
