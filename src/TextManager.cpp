@@ -81,28 +81,16 @@ std::string TextManager::getLang() const{
 
 /// \todo why no const std::string& ?
 bool TextManager::loadFromXML(std::string filename){
-	// create and load file
-	FileRead file(filename);
-
-	int fileLength = file.length();
-	boost::shared_array<char> fileBuffer(new char[fileLength + 1]);
-	file.readRawBytes( fileBuffer.get(), fileLength );
-	// null-terminate
-	fileBuffer[fileLength] = 0;
+	// read and parse file
+	boost::shared_ptr<TiXmlDocument> language_data = FileRead::readXMLDocument(filename);
 	
-	// parse file
-	TiXmlDocument language_data;
-	language_data.Parse(fileBuffer.get());
-	fileBuffer.reset(0);
-	file.close();
-
-	if (language_data.Error())
+	if (language_data->Error())
 	{
 		std::cerr << "Warning: Parse error in " << filename;
 		std::cerr << "!" << std::endl;
 	}
 
-	TiXmlElement* language = language_data.FirstChildElement("language");
+	TiXmlElement* language = language_data->FirstChildElement("language");
 	if (!language)
 		return false;
 	

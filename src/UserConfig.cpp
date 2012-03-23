@@ -59,25 +59,16 @@ boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(c
 
 bool UserConfig::loadFile(const std::string& filename)
 {
-	FileRead file(filename);
-	int fileLength = file.length();
-	boost::shared_array<char> fileBuffer(new char[fileLength + 1]);
-	/// \todo our new file interface must be improved so we can load the whole file as null terminated string
-	file.readRawBytes( fileBuffer.get(), fileLength );
-	// null-terminate
-	fileBuffer[fileLength] = 0;
-	TiXmlDocument configDoc;
-	configDoc.Parse(fileBuffer.get());
-	fileBuffer.reset(0);
+	boost::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
 
-	if (configDoc.Error())
+	if (configDoc->Error())
 	{
 		std::cerr << "Warning: Parse error in " << filename;
 		std::cerr << "!" << std::endl;
 	}
 
 	TiXmlElement* userConfigElem =
-		configDoc.FirstChildElement("userconfig");
+		configDoc->FirstChildElement("userconfig");
 	if (userConfigElem == NULL)
 		return false;
 	for (TiXmlElement* varElem =
