@@ -20,8 +20,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "File.h"
-
+#include <boost/shared_ptr.hpp>
+ 
+// forward declarations for convenience functions
 struct lua_State;
+class TiXmlDocument;
 
 /**
 	\class FileRead
@@ -91,7 +94,9 @@ class FileRead : public File
 		
 		
 		// -----------------------------------------------------------------------------------------
-		// 								LUA reading helper function
+		// 								LUA/XML reading helper function
 		// -----------------------------------------------------------------------------------------
 		static int readLuaScript(const std::string& filename, lua_State* mState);
+		
+		static boost::shared_ptr<TiXmlDocument> readXMLDocument(const std::string& filename);
 };

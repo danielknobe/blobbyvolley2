@@ -26,6 +26,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <physfs.h>
 
+#include <boost/scoped_array.hpp>
+
+#include "tinyxml/tinyxml.h"
+
+extern "C"
+{
+#include "lua/lua.h"
+#include "lua/lauxlib.h"
+#include "lua/lualib.h"
+}
+
 #include "Global.h"
 
 
@@ -163,4 +174,25 @@ int FileRead::readLuaScript(const std::string& filename, lua_State* mState)
 	info.file.open(filename);
 
 	return lua_load(mState, chunkReader, &info, filename.c_str());
+}
+
+boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)
+{
+	// create and load file
+	FileRead file(filename);
+
+	// thats quite ugly
+	int fileLength = file.length();
+	boost::scoped_array<char> fileBuffer(new char[fileLength + 1]);
+	file.readRawBytes( fileBuffer.get(), fileLength );
+	// null-terminate
+	fileBuffer[fileLength] = 0;
+	
+	// parse file
+	boost::shared_ptr<TiXmlDocument> xml = boost::shared_ptr<TiXmlDocument> (new TiXmlDocument());
+	xml->Parse(fileBuffer.get());
+	
+	/// \todo do error handling here?
+	
+	return xml;
 }
