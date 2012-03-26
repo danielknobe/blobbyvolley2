@@ -66,6 +66,30 @@ class FileLoadException : public FileException
 		std::string error;	///< saves the error message
 };
 
+/*! \class FileAlreadyExistsException
+	\brief error thrown when trying to create a new file even though this file exists already.
+*/
+class FileAlreadyExistsException : public FileException
+{
+	public:
+		FileAlreadyExistsException(std::string name) : FileException(name)
+		{
+			/// \todo do we really need to do this? std::exception already
+			/// provides the functionality for setting exception messages, i think.
+			error = "File " + name + " already exists!";
+		}
+		
+		virtual ~FileAlreadyExistsException() throw() {}
+
+		virtual const char* what() const throw()
+		{
+			return error.c_str();
+		}
+		
+	private:
+		std::string error;	///< saves the error message
+};
+
 
 
 /*! class PhysfsException

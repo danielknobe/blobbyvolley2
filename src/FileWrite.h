@@ -40,14 +40,18 @@ class FileWrite : public File
 		
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened for writing
+		/// \param no_override Set to true if you want to forbid writing over existing file.
 		/// \throw FileLoadException, if the file could not be loaded
-		FileWrite(const std::string& filename);
+		/// \throw FileAlreadyExistsException in case of trying to write over existing file with no_override = true
+		FileWrite(const std::string& filename, bool no_override = false);
 		
 		/// \brief opens a file.
 		/// \param filename File to be opened for writing
+		/// \param no_override Set to true if you want to forbid writing over existing file.
 		/// \throw FileLoadException, if the file could not be created
+		/// \throw FileAlreadyExistsException in case of trying to write over existing file with no_override = true
 		/// \pre No file is currently opened.
-		void open(const std::string& filename);
+		void open(const std::string& filename, bool no_override = false);
 		
 		/// destructor, closes the file (if any open)
 		/// \sa close()

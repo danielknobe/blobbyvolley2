@@ -35,7 +35,7 @@ FileWrite::FileWrite()
 {
 }
 
-FileWrite::FileWrite(const std::string& filename) : File(filename, File::OPEN_WRITE)
+FileWrite::FileWrite(const std::string& filename, bool no_override) : File(filename, File::OPEN_WRITE, no_override)
 {
 }
 
@@ -44,9 +44,9 @@ FileWrite::~FileWrite()
 	// no more actions than what ~File already does
 }
 
-void FileWrite::open(const std::string& filename)
+void FileWrite::open(const std::string& filename, bool no_override)
 {
-	File::open(filename, File::OPEN_WRITE);
+	File::open(filename, File::OPEN_WRITE, no_override);
 }
 
 void FileWrite::writeByte(char c)
