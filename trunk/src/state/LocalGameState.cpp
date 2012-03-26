@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <ctime>
 
-#include <boost/lexical_cast.hpp>
-
 #include "DuelMatch.h"
 #include "InputManager.h"
 #include "IMGUI.h"
@@ -55,10 +53,17 @@ LocalGameState::LocalGameState()
 	mWinner = false;
 	mErrorMessage = "";
 	
-	mFilename = boost::lexical_cast<std::string> (std::time(0));
-	
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
+	
+	mFilename = mLeftPlayer.getName();
+	if(mFilename.size() > 7)
+		mFilename.resize(7);
+	mFilename += " vs ";
+	std::string oppname = mRightPlayer.getName();
+	if(oppname.size() > 7)
+		oppname.resize(7);
+	mFilename += oppname;
 	
 	SpeedController::getMainInstance()->setGameSpeed(
 			(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
