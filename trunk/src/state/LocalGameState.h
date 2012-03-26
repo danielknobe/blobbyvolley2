@@ -31,6 +31,7 @@ private:
 	Player mLeftPlayer;
 	Player mRightPlayer;
 	
+	std::string mErrorMessage;
 	bool mSaveReplay;
 	bool mWinner;
 	std::string mFilename;

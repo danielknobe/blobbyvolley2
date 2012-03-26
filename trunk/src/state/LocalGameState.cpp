@@ -35,6 +35,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "Blood.h"
 #include "IUserConfigReader.h"
+#include "FileExceptions.h"
+#include "FileSystem.h"
 
 /* implementation */
 LocalGameState::~LocalGameState()
@@ -51,6 +53,7 @@ LocalGameState::LocalGameState()
 {
 	mSaveReplay = false;
 	mWinner = false;
+	mErrorMessage = "";
 	
 	mFilename = boost::lexical_cast<std::string> (std::time(0));
 	
@@ -79,7 +82,21 @@ void LocalGameState::step()
 	RenderManager* rmanager = &RenderManager::getSingleton();
 
 	IMGUI& imgui = IMGUI::getSingleton();
-	if (mSaveReplay)
+	if(mErrorMessage != "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100, 200), Vector2(700, 360));
+		size_t split = mErrorMessage.find(':');
+		std::string mProblem = mErrorMessage.substr(0, split);
+		std::string mInfo = mErrorMessage.substr(split+1);
+		imgui.doText(GEN_ID, Vector2(120, 220), mProblem);
+		imgui.doText(GEN_ID, Vector2(120, 260), mInfo);
+		if(imgui.doButton(GEN_ID, Vector2(330, 320), TextManager::LBL_OK))
+		{
+			mErrorMessage = "";
+		}
+		imgui.doCursor();
+	} 
+	else if (mSaveReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
 		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
@@ -89,20 +106,29 @@ void LocalGameState::step()
 		{
 			try
 				{
+				std::string repFileName = std::string("replays/") + mFilename + std::string(".bvr");
 				if (mFilename != "")
 				{
 					/// \todo add a check whether we overwrite a file
-					mRecorder->save(std::string("replays/") + mFilename + std::string(".bvr"));
+					mRecorder->save(repFileName);
+					mSaveReplay = false;
 				}
-				mSaveReplay = false;
+				
 				imgui.resetSelection();
 			} 
+			catch( FileLoadException& ex) 
+			{
+				mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
+				imgui.resetSelection();
+			}
+			catch( FileAlreadyExistsException& ex) 
+			{
+				mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
+				imgui.resetSelection();
+			}
 			 catch( std::exception& ex) 
 			{
-				// only expected exception here is FileLoadException, which is thrown
-				// when we try to create a file with invalid name.
-				// don't reset selection when saving was not possible
-				/// \todo add notification of user
+				mErrorMessage = std::string("Could not save replay: ");
 				imgui.resetSelection();
 			}
 		}

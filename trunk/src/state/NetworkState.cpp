@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "LocalInputSource.h"
 #include "UserConfig.h"
+#include "FileExceptions.h"
 
 
 /* implementation */
@@ -60,6 +61,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mLocalInput = new LocalInputSource(mOwnSide);
 	mSaveReplay = false;
 	mWaitingForReplay = false;
+	mErrorMessage = "";
 	mFilename = boost::lexical_cast<std::string> (std::time(0));
 
 	RenderManager::getSingleton().redraw();
@@ -351,13 +353,26 @@ void NetworkGameState::step()
 					ReplayRecorder dummyRec;
 					dummyRec.receive(stream);
 					dummyRec.save((std::string("replays/") + mFilename + std::string(".bvr")));
-				} 
-				catch ( std::exception& e) 
+				} catch( FileLoadException& ex) 
 				{
-					imgui.resetSelection();
-					mSaveReplay = true;	// back to save replay menu if we could not save
+					mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
+					mSaveReplay = true;	// try again
+				}
+				catch( FileAlreadyExistsException& ex) 
+				{
+					mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
+					mSaveReplay = true;
+				}
+				 catch( std::exception& ex) 
+				{
+					mErrorMessage = std::string("Could not save replay: ");
+					// it is not expected to catch any exception here! save should only 
+					// create FileLoad and FileAlreadyExists exceptions
+					mSaveReplay = true;
 				}
 				
+				// mWaitingForReplay will be set to false even if replay could not be saved because 
+				// the server won't send it again.
 				mWaitingForReplay = false;
 				
 				break;
@@ -395,6 +410,20 @@ void NetworkGameState::step()
 	{
 		mSaveReplay = false;
 		IMGUI::getSingleton().resetSelection();
+	}
+	else if (mErrorMessage != "")
+	{
+		imgui.doOverlay(GEN_ID, Vector2(100, 200), Vector2(700, 360));
+		size_t split = mErrorMessage.find(':');
+		std::string mProblem = mErrorMessage.substr(0, split);
+		std::string mInfo = mErrorMessage.substr(split+1);
+		imgui.doText(GEN_ID, Vector2(120, 220), mProblem);
+		imgui.doText(GEN_ID, Vector2(120, 260), mInfo);
+		if(imgui.doButton(GEN_ID, Vector2(330, 320), TextManager::LBL_OK))
+		{
+			mErrorMessage = "";
+		}
+		imgui.doCursor();
 	}
 	else if (mSaveReplay)
 	{
