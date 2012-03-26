@@ -62,7 +62,6 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mSaveReplay = false;
 	mWaitingForReplay = false;
 	mErrorMessage = "";
-	mFilename = boost::lexical_cast<std::string> (std::time(0));
 
 	RenderManager::getSingleton().redraw();
 
@@ -278,6 +277,15 @@ void NetworkGameState::step()
 				Color ncolor = temp;
 
 				mRemotePlayer->setName(std::string(charName));
+				
+				mFilename = mLocalPlayer->getName();
+				if(mFilename.size() > 7)
+					mFilename.resize(7);
+				mFilename += " vs ";
+				std::string oppname = mRemotePlayer->getName();
+				if(oppname.size() > 7)
+					oppname.resize(7);
+				mFilename += oppname;
 				
 				// set names in render manager
 				RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
