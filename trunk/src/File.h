@@ -119,15 +119,19 @@ class File : boost::noncopyable
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened
 		/// \param mode Should this file be opened in reading or in writing mode.
+		/// \param no_override Set to true if you want to forbid writing over existing file.
 		/// \throw FileLoadException, if the file could not be loaded
-		File(const std::string& filename, OpenMode mode);
+		/// \throw FileAlreadyExistsException in case of trying to write over existing file with no_override = true
+		File(const std::string& filename, OpenMode mode, bool no_override = false);
 		
 		/// \brief opens a file.
 		/// \param filename File to be opened
 		/// \param mode Should this file be opened in reading or in writing mode.
+		/// \param no_override Set to true if you want to forbid writing over existing file.
 		/// \throw FileLoadException, if the file could not be loaded
+		/// \throw FileAlreadyExistsException in case of trying to write over existing file with no_override = true
 		/// \pre No file is currently opened.
-		void open(const std::string& filename, OpenMode mode);
+		void open(const std::string& filename, OpenMode mode, bool no_override = false);
 		
 		/// we use void* instead of PHYSFS_file here, because we can't forward declare it
 		///	as it is a typedef.

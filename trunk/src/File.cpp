@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 
 #include "Global.h"
+#include "FileSystem.h"
 
 /* implementation */
 
@@ -37,9 +38,9 @@ File::File() : handle(0)
 	
 }
 
-File::File(const std::string& filename, OpenMode mode) : handle(0), name("")
+File::File(const std::string& filename, OpenMode mode, bool no_override) : handle(0), name("")
 {
-	open(filename, mode);
+	open(filename, mode, no_override);
 }
 
 File::~File() 
@@ -48,7 +49,7 @@ File::~File()
 	close();
 }
 
-void File::open(const std::string& filename, OpenMode mode)
+void File::open(const std::string& filename, OpenMode mode, bool no_override)
 {
 	// check that we don't have anything opened!
 	/// \todo maybe we could just close the old file here... but
@@ -58,6 +59,10 @@ void File::open(const std::string& filename, OpenMode mode)
 	// open depending on mode
 	if( mode == OPEN_WRITE ) 
 	{
+		if(no_override && FileSystem::getSingleton().exists(filename))
+		{
+			throw FileAlreadyExistsException(filename);
+		}
 		handle = PHYSFS_openWrite(filename.c_str());
 	} 
 		else  
