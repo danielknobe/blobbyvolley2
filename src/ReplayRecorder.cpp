@@ -92,8 +92,8 @@ ReplayRecorder::~ReplayRecorder()
 
 void ReplayRecorder::save(const std::string& filename) const
 {
-	/// this may throw FileLoadException
-	FileWrite file(filename);
+	/// this may throw FileLoadException and FileAlreadyExistsExcpetion
+	FileWrite file(filename, true);
 	
 	boost::crc_32_type crc;
 	crc = std::for_each(mPlayerNames[LEFT_PLAYER].begin(), mPlayerNames[LEFT_PLAYER].end(), crc);

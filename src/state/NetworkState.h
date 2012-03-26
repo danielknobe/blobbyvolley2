@@ -74,6 +74,7 @@ private:
 	bool mSaveReplay;
 	bool mWaitingForReplay;
 	std::string mFilename;
+	std::string mErrorMessage;
 
 	RakClient* mClient;
 	PlayerSide mOwnSide;
