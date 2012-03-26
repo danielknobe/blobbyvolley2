@@ -201,6 +201,7 @@ int main(int argc, char* argv[])
 		smanager->init();
 		smanager->setVolume(gameConfig.getFloat("global_volume"));
 		smanager->setMute(gameConfig.getBool("mute"));
+		/// \todo play sound is misleading. what we actually want to do is load the sound
 		smanager->playSound("sounds/bums.wav", 0.0);
 		smanager->playSound("sounds/pfiff.wav", 0.0);
 
@@ -215,9 +216,6 @@ int main(int argc, char* argv[])
 			inputmgr->updateInput();
 			running = inputmgr->running();
 
-			// This is true by default for compatibility, GUI states may
-			// disable it if necessary
-			rmanager->drawGame(true);
 			IMGUI::getSingleton().begin();
 			State::getCurrentState()->step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
