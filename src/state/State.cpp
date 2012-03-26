@@ -79,6 +79,9 @@ void State::presentGame(const DuelMatch& match)
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
 	
+	// enable game drawing
+	rmanager.drawGame(true);
+	
 	rmanager.setScore(match.getScore(LEFT_PLAYER), match.getScore(RIGHT_PLAYER),
 		match.getServingPlayer() == LEFT_PLAYER, match.getServingPlayer() == RIGHT_PLAYER);
 		
