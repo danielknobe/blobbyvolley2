@@ -23,8 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 
+#include <boost/scoped_ptr.hpp>
+
 class DuelMatch;
 class ReplayPlayer;
+class IReplayLoader;
 
 /*! \class ReplaySelectionState
 	\brief State for replay selection screen
@@ -40,6 +43,8 @@ private:
 
 	std::vector<std::string> mReplayFiles;
 	int mSelectedReplay;
+	bool mShowReplayInfo;
+	boost::scoped_ptr<IReplayLoader> mReplayLoader;
 	
 	bool mChecksumError;
 	bool mVersionError;

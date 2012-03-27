@@ -22,11 +22,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplaySelectionState.h"
 
 /* includes */
+#include <algorithm>
+#include <ctime>
+
+#include <boost/lexical_cast.hpp>
+
 #include "ReplayState.h"
 #include "IMGUI.h"
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "FileSystem.h"
+#include "IReplayLoader.h"
 
 /* implementation */
 ReplaySelectionState::ReplaySelectionState()
@@ -34,6 +40,7 @@ ReplaySelectionState::ReplaySelectionState()
 	IMGUI::getSingleton().resetSelection();
 	mChecksumError = false;
 	mVersionError = false;
+	mShowReplayInfo = false;
 
 	mSelectedReplay = 0;
 	mReplayFiles = FileSystem::getSingleton().enumerateFiles("replays", ".bvr");
@@ -74,7 +81,12 @@ void ReplaySelectionState::step()
 	}
 	else
 		imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
-	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_DELETE))
+	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_INFO))
+	{
+		mShowReplayInfo = true;
+		mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+	}
+	if (imgui.doButton(GEN_ID, Vector2(644.0, 95.0), TextManager::RP_DELETE))
 	{
 		if (!mReplayFiles.empty())
 		if (FileSystem::getSingleton().deleteFile("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"))
@@ -82,6 +94,62 @@ void ReplaySelectionState::step()
 			mReplayFiles.erase(mReplayFiles.begin()+mSelectedReplay);
 			if (mSelectedReplay >= mReplayFiles.size())
 				mSelectedReplay = mReplayFiles.size()-1;
+		}
+	}
+	
+	if(mShowReplayInfo)
+	{
+		// setup
+		std::string left =  mReplayLoader->getPlayerName(LEFT_PLAYER);
+		std::string right =  mReplayLoader->getPlayerName(RIGHT_PLAYER);
+		
+		const int MARGIN = std::min(std::max(int(300 - 24*(std::max(left.size(),right.size()))), 50), 150);
+		
+		const int RIGHT = 800 - MARGIN;
+		imgui.doInactiveMode(false);
+		imgui.doOverlay(GEN_ID, Vector2(MARGIN, 180), Vector2(800-MARGIN, 410));
+		std::string repname = mReplayFiles[mSelectedReplay];
+		imgui.doText(GEN_ID, Vector2(400-repname.size()*12, 190), repname);
+
+		// calculate text positions
+		
+		
+		imgui.doText(GEN_ID, Vector2(MARGIN + 20, 225), left);
+		imgui.doText(GEN_ID, Vector2(400-24, 225), "vs");
+		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*right.size(), 225), right);
+		
+		time_t rd = mReplayLoader->getDate();
+		struct tm* ptm;
+		ptm = gmtime ( &rd );
+		//std::
+		char buffer[255];
+		std::strftime(buffer, sizeof(buffer), "%d.%m.%Y - %H:%M", ptm);
+		std::string date = buffer;
+		imgui.doText(GEN_ID, Vector2(400 - 12*date.size(), 255), date);
+		
+		imgui.doText(GEN_ID, Vector2(MARGIN+20, 300), TextManager::OP_SPEED);
+		std::string speed = boost::lexical_cast<std::string>(mReplayLoader->getSpeed() *100 / 75) + "%" ;
+		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*speed.size(), 300), speed);
+		
+		imgui.doText(GEN_ID, Vector2(MARGIN+20, 335), TextManager::RP_DURATION);
+		std::string dur;
+		if(mReplayLoader->getDuration() > 99)
+		{
+			// +30 because of rounding
+			dur = boost::lexical_cast<std::string>((mReplayLoader->getDuration() + 30) / 60) + "min";
+		} else
+		{
+			dur = boost::lexical_cast<std::string>(mReplayLoader->getDuration()) + "s";
+		}
+		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*dur.size(), 335), dur);
+		
+		if (imgui.doButton(GEN_ID, Vector2(400-24, 375), TextManager::LBL_OK))
+		{
+			mShowReplayInfo = false;
+		}
+		else
+		{
+			imgui.doInactiveMode(true);
 		}
 	}
 

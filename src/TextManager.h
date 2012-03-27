@@ -59,6 +59,8 @@ class TextManager{
 			RP_SHOW_AGAIN,
 			RP_PLAY,
 			RP_DELETE,
+			RP_INFO,
+			RP_DURATION,
 			RP_CHECKSUM,
 			RP_VERSION,
 			RP_FILE_OUTDATED,
