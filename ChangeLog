@@ -1,9 +1,17 @@
-New in 1.0 RC 2 (rev. 732) since RC 1:
+New in 1.0 RC 2 (rev. 887) since RC 1:
+- Added replay info screen
 - Added italian translation
+- Optimized sending replays over network
+- New replay default names
+- Fix: trying to save replays with invalid filename now issues an error message
+- Fix: writing over existing replays no longer possible
+- Fix: Ball speed
+- Fix: typos in translation
 - Fix: "two hit bug" (again ;)
 - Fix: server crash when server could not find server.xml
 - Fix: server did not delete temp replay files
 - Fix: file list properly freed in replay menu
+- some code refractoring
 
 New in 1.0 RC 1 (rev. 732) since Beta 9:
 * Features:
