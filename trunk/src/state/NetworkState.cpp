@@ -49,7 +49,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	mLeftPlayer(LEFT_PLAYER),
-	mRightPlayer(RIGHT_PLAYER)
+	mRightPlayer(RIGHT_PLAYER),
+	mClient(new RakClient()),
+	mFakeMatch(new DuelMatch(0, 0, true, true))
 {	
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
@@ -58,20 +60,19 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 	config.loadFile("config.xml");
 	mOwnSide = (PlayerSide)config.getInteger("network_side");
 	mUseRemoteColor = config.getBool("use_remote_color");
-	mLocalInput = new LocalInputSource(mOwnSide);
+	mLocalInput.reset(new LocalInputSource(mOwnSide));
 	mSaveReplay = false;
 	mWaitingForReplay = false;
 	mErrorMessage = "";
 
 	RenderManager::getSingleton().redraw();
 
-	mClient = new RakClient();
 	if (mClient->Connect(servername.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		mNetworkState = CONNECTING;
 	else
 		mNetworkState = CONNECTION_FAILED;
 
-	mFakeMatch = new DuelMatch(0, 0, true, true);
+	
 	// game is not started until two players are connected 
 	mFakeMatch->pause();
 	
@@ -99,9 +100,6 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 NetworkGameState::~NetworkGameState()
 {
 	mClient->Disconnect(50);
-	delete mLocalInput;
-	delete mClient;
-	delete mFakeMatch;
 }
 
 void NetworkGameState::step()
@@ -110,7 +108,7 @@ void NetworkGameState::step()
 	RenderManager* rmanager = &RenderManager::getSingleton();
 
 	packet_ptr packet;
-	while (packet = receivePacket(mClient))
+	while (packet = receivePacket(mClient.get()))
 	{
 		switch(packet->data[0])
 		{

@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Player.h"
 #include "State.h"
 
+#include <boost/scoped_ptr.hpp>
+
 /*! \class LocalGameState
 	\brief state for singleplayer game
 */
@@ -36,8 +38,8 @@ private:
 	bool mWinner;
 	std::string mFilename;
 	
-	DuelMatch* mMatch;
-	ReplayRecorder* mRecorder;
+	boost::scoped_ptr<DuelMatch> mMatch;
+	boost::scoped_ptr<ReplayRecorder> mRecorder;
 public:
 	LocalGameState();
 	virtual ~LocalGameState();

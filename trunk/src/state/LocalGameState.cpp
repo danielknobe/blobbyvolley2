@@ -39,15 +39,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 LocalGameState::~LocalGameState()
 {
-	delete mMatch;
-	delete mRecorder;
 	InputManager::getSingleton()->endGame();
 }
 
 LocalGameState::LocalGameState()
 	: State(),
 	mLeftPlayer(LEFT_PLAYER),
-	mRightPlayer(RIGHT_PLAYER)
+	mRightPlayer(RIGHT_PLAYER),
+	mRecorder(new ReplayRecorder())
 {
 	mSaveReplay = false;
 	mWinner = false;
@@ -56,6 +55,7 @@ LocalGameState::LocalGameState()
 	mLeftPlayer.loadFromConfig("left");
 	mRightPlayer.loadFromConfig("right");
 	
+	// create default replay name
 	mFilename = mLeftPlayer.getName();
 	if(mFilename.size() > 7)
 		mFilename.resize(7);
@@ -65,18 +65,18 @@ LocalGameState::LocalGameState()
 		oppname.resize(7);
 	mFilename += oppname;
 	
+	// set speed
 	SpeedController::getMainInstance()->setGameSpeed(
 			(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
 		);
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
-	mRecorder = new ReplayRecorder();
 	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
 	mRecorder->setPlayerColors( mLeftPlayer.getColor(), mRightPlayer.getColor() );
 	mRecorder->setGameSpeed((float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps"));
 
-	mMatch = new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false);
+	mMatch.reset(new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false));
 
 	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();

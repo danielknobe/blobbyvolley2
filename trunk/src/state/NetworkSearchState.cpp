@@ -36,7 +36,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
-NetworkSearchState::NetworkSearchState()
+NetworkSearchState::NetworkSearchState() :
+		mPingClient(new RakClient)
 {
 	IMGUI::getSingleton().resetSelection();
 	mSelectedServer = 0;
@@ -44,8 +45,6 @@ NetworkSearchState::NetworkSearchState()
 	mDisplayInfo = false;
 	mEnteringServer = false;
 	mDisplayUpdateNotification = false;
-
-	mPingClient = new RakClient;
 }
 
 NetworkSearchState::~NetworkSearchState()
@@ -60,7 +59,6 @@ NetworkSearchState::~NetworkSearchState()
 			delete *iter;
 		}
 	}
-	delete mPingClient;
 }
 
 void NetworkSearchState::step()
@@ -160,7 +158,7 @@ void NetworkSearchState::step()
 		if (skip_iter)
 			break;
 	}
-	while (packet = receivePacket(mPingClient))
+	while (packet = receivePacket(mPingClient.get()))
 	{
 		switch (packet->data[0])
 		{
