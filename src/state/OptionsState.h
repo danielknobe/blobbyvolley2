@@ -33,11 +33,14 @@ public:
 	virtual ~OptionState();
 	virtual void step();
 	virtual const char* getStateName() const;
+	
 private:
+	/// writes current settings to disk
+	void save();
+
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
 	int mPlayerOptions[MAX_PLAYERS];
-	bool mSaveConfig;
 	std::string mPlayerName[MAX_PLAYERS];
 	unsigned mPlayerNamePosition[MAX_PLAYERS];
 	unsigned mBotStrength[MAX_PLAYERS];
@@ -54,8 +57,10 @@ public:
 	virtual void step();
 	virtual const char* getStateName() const;
 private:
+	/// writes current settings to disk
+	void save();
+
 	UserConfig mOptionConfig;
-	bool mSaveConfig;
 	bool mFullscreen;
 	std::string mRenderer;
 	int mR1, mG1, mB1, mR2, mG2, mB2;
@@ -74,8 +79,10 @@ public:
 	virtual void step();
 	virtual const char* getStateName() const;
 private:
+	/// writes current settings to disk
+	void save();
+
 	UserConfig mOptionConfig;
-	bool mSaveConfig;
 	std::string oldString;
 	int mOldInteger;
 	int mSetKeyboard; // 1-10 for LeftKeyboard | 11-20 for RightKeyboard
@@ -110,6 +117,9 @@ public:
 	virtual void step();
 	virtual const char* getStateName() const;
 private:
+	/// writes current settings to disk
+	void save();
+	
 	UserConfig mOptionConfig;
 	std::vector<std::string> mBackgrounds;
 	int mBackground;
@@ -118,7 +128,6 @@ private:
 	int mGameFPS;
 	bool mShowFPS;
 	bool mShowBlood;
-	bool mSaveConfig;
 	int mNetworkSide;
 	std::string mLanguage;
 };
