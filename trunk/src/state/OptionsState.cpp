@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 OptionState::OptionState()
 {
 	IMGUI::getSingleton().resetSelection();
-	mSaveConfig = false;
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
 	mPlayerOptions[RIGHT_PLAYER] = 0;
@@ -72,33 +71,34 @@ OptionState::OptionState()
 
 OptionState::~OptionState()
 {
-	if (mSaveConfig)
-	{
-		if (mPlayerOptions[LEFT_PLAYER] == 0)
-		{
-			mOptionConfig.setBool("left_player_human", true);
-		}
-		else
-		{
-			mOptionConfig.setBool("left_player_human", false);
-			mOptionConfig.setString("left_script_name", mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
-		}
+}
 
-		if (mPlayerOptions[RIGHT_PLAYER] == 0)
-		{
-			mOptionConfig.setBool("right_player_human", true);
-		}
-		else
-		{
-			mOptionConfig.setBool("right_player_human", false);
-			mOptionConfig.setString("right_script_name", mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
-		}
-		mOptionConfig.setString("left_player_name", mPlayerName[LEFT_PLAYER]);
-		mOptionConfig.setString("right_player_name", mPlayerName[RIGHT_PLAYER]);
-		mOptionConfig.setInteger("left_script_strength", mBotStrength[LEFT_PLAYER]);
-		mOptionConfig.setInteger("right_script_strength", mBotStrength[RIGHT_PLAYER]);
-		mOptionConfig.saveFile("config.xml");
+void OptionState::save()
+{
+	if (mPlayerOptions[LEFT_PLAYER] == 0)
+	{
+		mOptionConfig.setBool("left_player_human", true);
 	}
+	else
+	{
+		mOptionConfig.setBool("left_player_human", false);
+		mOptionConfig.setString("left_script_name", mScriptNames[mPlayerOptions[LEFT_PLAYER]]);
+	}
+
+	if (mPlayerOptions[RIGHT_PLAYER] == 0)
+	{
+		mOptionConfig.setBool("right_player_human", true);
+	}
+	else
+	{
+		mOptionConfig.setBool("right_player_human", false);
+		mOptionConfig.setString("right_script_name", mScriptNames[mPlayerOptions[RIGHT_PLAYER]]);
+	}
+	mOptionConfig.setString("left_player_name", mPlayerName[LEFT_PLAYER]);
+	mOptionConfig.setString("right_player_name", mPlayerName[RIGHT_PLAYER]);
+	mOptionConfig.setInteger("left_script_strength", mBotStrength[LEFT_PLAYER]);
+	mOptionConfig.setInteger("right_script_strength", mBotStrength[RIGHT_PLAYER]);
+	mOptionConfig.saveFile("config.xml");
 }
 
 void OptionState::step()
@@ -134,27 +134,26 @@ void OptionState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new InputOptionsState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new GraphicOptionsState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 470.0), TextManager::OP_MISC))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new MiscOptionsState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
-		mSaveConfig = true;
-		deleteCurrentState();
+		save();
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());
 	}
@@ -173,7 +172,6 @@ const char* OptionState::getStateName() const
 GraphicOptionsState::GraphicOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
-	mSaveConfig = false;
 	mOptionConfig.loadFile("config.xml");
 	mFullscreen = mOptionConfig.getBool("fullscreen");
 	mRenderer = mOptionConfig.getString("device");
@@ -190,39 +188,40 @@ GraphicOptionsState::GraphicOptionsState()
 
 GraphicOptionsState::~GraphicOptionsState()
 {
-	if (mSaveConfig)
-	{
-		if ((mOptionConfig.getBool("fullscreen") != mFullscreen) ||
+}
+
+void GraphicOptionsState::save()
+{
+	if ((mOptionConfig.getBool("fullscreen") != mFullscreen) ||
 			(mOptionConfig.getString("device") != mRenderer))
-		{
-			mOptionConfig.setBool("fullscreen", mFullscreen);
-			mOptionConfig.setString("device", mRenderer);
-			if (mRenderer == "OpenGL")
-				RenderManager::createRenderManagerGL2D()->init(800, 600, mFullscreen);
-			else
-				RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
-			RenderManager::getSingleton().setBackground(
-				std::string("backgrounds/") +
-				mOptionConfig.getString("background"));
-		}
-
-		if(mOptionConfig.getBool("show_shadow") != mShowShadow)
-		{
-			RenderManager::getSingleton().showShadow(mShowShadow);
-			mOptionConfig.setBool("show_shadow", mShowShadow);
-		}
-
-		mOptionConfig.setInteger("left_blobby_color_r", mR1);
-		mOptionConfig.setInteger("left_blobby_color_g", mG1);
-		mOptionConfig.setInteger("left_blobby_color_b", mB1);
-		mOptionConfig.setInteger("right_blobby_color_r", mR2);
-		mOptionConfig.setInteger("right_blobby_color_g", mG2);
-		mOptionConfig.setInteger("right_blobby_color_b", mB2);
-		mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
-		mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
-
-		mOptionConfig.saveFile("config.xml");
+	{
+		mOptionConfig.setBool("fullscreen", mFullscreen);
+		mOptionConfig.setString("device", mRenderer);
+		if (mRenderer == "OpenGL")
+			RenderManager::createRenderManagerGL2D()->init(800, 600, mFullscreen);
+		else
+			RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
+		RenderManager::getSingleton().setBackground(
+			std::string("backgrounds/") +
+			mOptionConfig.getString("background"));
 	}
+
+	if(mOptionConfig.getBool("show_shadow") != mShowShadow)
+	{
+		RenderManager::getSingleton().showShadow(mShowShadow);
+		mOptionConfig.setBool("show_shadow", mShowShadow);
+	}
+
+	mOptionConfig.setInteger("left_blobby_color_r", mR1);
+	mOptionConfig.setInteger("left_blobby_color_g", mG1);
+	mOptionConfig.setInteger("left_blobby_color_b", mB1);
+	mOptionConfig.setInteger("right_blobby_color_r", mR2);
+	mOptionConfig.setInteger("right_blobby_color_g", mG2);
+	mOptionConfig.setInteger("right_blobby_color_b", mB2);
+	mOptionConfig.setBool("left_blobby_oscillate", mLeftMorphing);
+	mOptionConfig.setBool("right_blobby_oscillate", mRightMorphing);
+
+	mOptionConfig.saveFile("config.xml");
 }
 
 void GraphicOptionsState::step()
@@ -347,7 +346,7 @@ void GraphicOptionsState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
@@ -366,7 +365,6 @@ const char* GraphicOptionsState::getStateName() const
 InputOptionsState::InputOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
-	mSaveConfig = false;
 	mSetKeyboard = 0;
 	mOptionConfig.loadFile("inputconfig.xml");
 	//left data:
@@ -391,29 +389,30 @@ InputOptionsState::InputOptionsState()
 
 InputOptionsState::~InputOptionsState()
 {
-	if (mSaveConfig)
-	{
-		//left data:
-		mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
-		mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
-		mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboardLeft);
-		mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboardRight);
-		mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboardJump);
-		mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
-		mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
-		mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
-		//right data:
-		mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
-		mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
-		mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboardLeft);
-		mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboardRight);
-		mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboardJump);
-		mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
-		mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
-		mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
+}
 
-		mOptionConfig.saveFile("inputconfig.xml");
-	}
+void InputOptionsState::save()
+{
+	//left data:
+	mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
+	mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
+	mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboardLeft);
+	mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboardRight);
+	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboardJump);
+	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
+	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
+	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
+	//right data:
+	mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
+	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
+	mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboardLeft);
+	mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboardRight);
+	mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboardJump);
+	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
+	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
+	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
+
+	mOptionConfig.saveFile("inputconfig.xml");
 }
 
 void InputOptionsState::step()
@@ -807,7 +806,7 @@ void InputOptionsState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
@@ -826,7 +825,7 @@ const char* InputOptionsState::getStateName() const
 MiscOptionsState::MiscOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
-	mSaveConfig = false;
+	
 	mOptionConfig.loadFile("config.xml");
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
@@ -852,19 +851,21 @@ MiscOptionsState::MiscOptionsState()
 
 MiscOptionsState::~MiscOptionsState()
 {
-	if (mSaveConfig)
-	{
-		mOptionConfig.setBool("showfps", mShowFPS);
-		mOptionConfig.setBool("blood", mShowBlood);
-		mOptionConfig.setFloat("global_volume", mVolume);
-		mOptionConfig.setBool("mute", mMute);
-		mOptionConfig.setInteger("gamefps", mGameFPS);
-		mOptionConfig.setInteger("network_side", mNetworkSide);
-		mOptionConfig.setString("language", mLanguage);
-		if (mBackground > -1)
-			mOptionConfig.setString("background", mBackgrounds[mBackground]);
-		mOptionConfig.saveFile("config.xml");
-	}
+}
+
+void MiscOptionsState::save()
+{
+	mOptionConfig.setBool("showfps", mShowFPS);
+	mOptionConfig.setBool("blood", mShowBlood);
+	mOptionConfig.setFloat("global_volume", mVolume);
+	mOptionConfig.setBool("mute", mMute);
+	mOptionConfig.setInteger("gamefps", mGameFPS);
+	mOptionConfig.setInteger("network_side", mNetworkSide);
+	mOptionConfig.setString("language", mLanguage);
+	if (mBackground > -1)
+		mOptionConfig.setString("background", mBackgrounds[mBackground]);
+	mOptionConfig.saveFile("config.xml");
+	
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
@@ -973,7 +974,7 @@ void MiscOptionsState::step()
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
-		mSaveConfig = true;
+		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}

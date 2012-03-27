@@ -73,7 +73,13 @@ void State::setCurrentState(State* newState)
 	assert(!mCurrentState);
 	mCurrentState = newState;
 }
-
+/*
+void switchState(State* newState)
+{
+	delete mCurrentState;
+	mCurrentState = newState;
+}
+*/
 void State::presentGame(const DuelMatch& match)
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
