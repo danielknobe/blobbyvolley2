@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 
 #include <vector>
+#include <boost/scoped_ptr.hpp>
 
 class RakClient;
 class RakServer;
@@ -63,12 +64,13 @@ private:
 	Player mLeftPlayer;
 	Player mRightPlayer;
 	
+	// these are pointers to mLeftPlayer or mRightPlayer respectively, so we don't need a smart pointer here
 	Player* mLocalPlayer;
 	Player* mRemotePlayer;
 	
 	bool mUseRemoteColor;
 
-	InputSource* mLocalInput;
+	boost::scoped_ptr<InputSource> mLocalInput;
 	PlayerSide mServingPlayer;
 
 	bool mSaveReplay;
@@ -76,12 +78,12 @@ private:
 	std::string mFilename;
 	std::string mErrorMessage;
 
-	RakClient* mClient;
+	boost::scoped_ptr<RakClient> mClient;
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
 
-	DuelMatch* mFakeMatch; 	// This hack is necessary to let MouseInputDevice
-				// access the necessary game variables
+	boost::scoped_ptr<DuelMatch> mFakeMatch; 	// This hack is necessary to let MouseInputDevice
+												// access the necessary game variables
 
 	// Chat Vars
 	std::vector<std::string> mChatlog;

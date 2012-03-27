@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include <list>
+#include <boost/scoped_ptr.hpp>
 
 class RakClient;
 class RakServer;
@@ -52,7 +53,7 @@ public:
 	virtual const char* getStateName() const;
 protected:
 	std::vector<ServerInfo> mScannedServers;
-	RakClient* mPingClient;
+	boost::scoped_ptr<RakClient> mPingClient;
 
 private:
 	typedef std::list<RakClient*> ClientList;
