@@ -141,10 +141,10 @@ int main(int argc, char* argv[])
 	time_t time = std::time(0);
 	ptm = gmtime ( &time );
 	
-	if( ptm->tm_year > (2012-1900) || ptm->tm_mon >= 2 ) {
+	if( ptm->tm_year > (2012-1900) || ptm->tm_mon >= 4 ) {
 		#ifdef WIN32
 		MessageBox(0, (std::string("This is a test version of ") + AppTitle + " which expired on "
-									"1.3.2012. Please visit blobby.sourceforge.net for a newer version").c_str(),
+									"1.5.2012. Please visit blobby.sourceforge.net for a newer version").c_str(),
 					"TEST VERISON OUTDATED",
 					MB_OK);
 		#endif
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 	#ifdef WIN32
 	MessageBox(0, (std::string("This is a test version of ") + AppTitle + " for testing only.\n"
 								"It might be unstable and/or incompatible to the current release. "
-								"Use of this version is limited to 1.3.2012.\nUntil then, "
+								"Use of this version is limited to 1.5.2012.\nUntil then, "
 								"the final version will most likely be released and you should update to that one.\n"
 								"Visit blobby.sourceforge.net for more information or bug reporting.").c_str(),
 				"TEST VERISON WARNING",
