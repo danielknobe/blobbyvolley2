@@ -42,11 +42,15 @@ OptionState::OptionState()
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
 	mPlayerOptions[RIGHT_PLAYER] = 0;
-	mScriptNames.push_back("Human");
 	std::string leftScript = mOptionConfig.getString("left_script_name");
 	std::string rightScript = mOptionConfig.getString("right_script_name");
 	
 	mScriptNames = FileSystem::getSingleton().enumerateFiles("scripts", ".lua");
+	
+	// hack. we cant use something like push_front, though
+	mScriptNames.push_back("Human");
+	std::swap(mScriptNames[0], mScriptNames[mScriptNames.size() - 1]);
+	
 	for(int i = 0; i < mScriptNames.size(); ++i)
 	{
 		if (mScriptNames[i] == leftScript)
