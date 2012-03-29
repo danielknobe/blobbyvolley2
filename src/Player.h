@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
+#include <boost/scoped_ptr.hpp>
+
 #include "Global.h"
 
 class InputSource;
@@ -43,7 +45,7 @@ private:
 
 	bool mInitialised;
 	const PlayerSide mPlayerSide;
-	InputSource* mInputSource;
+	boost::scoped_ptr<InputSource> mInputSource;
 	std::string mName;
 	
 	Color mStaticColor;
