@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "UserConfig.h"
 #include "State.h"
+#include <vector>
 
 /*! \class OptionState
 	\brief State for managing the main options menu
