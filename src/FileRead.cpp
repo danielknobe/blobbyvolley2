@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 
 #include <boost/scoped_array.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "tinyxml/tinyxml.h"
 
@@ -167,12 +168,15 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	}
 }
 
-
-int FileRead::readLuaScript(const std::string& filename, lua_State* mState)
+int FileRead::readLuaScript(std::string filename, lua_State* mState)
 {
+	if( !boost::ends_with(filename, ".lua") )
+	{
+		filename += ".lua";
+	}
+	
 	ReaderInfo info;
 	info.file.open(filename);
-
 	return lua_load(mState, chunkReader, &info, filename.c_str());
 }
 
