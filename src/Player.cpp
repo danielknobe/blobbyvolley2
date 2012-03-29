@@ -46,10 +46,14 @@ void Player::loadFromConfig(const std::string& prefix, bool initInput)
 	gameConfig.loadFile("config.xml");
 
 	// init local input
-	if(initInput){
-		if (gameConfig.getBool(prefix + "_player_human")) {
+	if(initInput)
+	{
+		if (gameConfig.getBool(prefix + "_player_human")) 
+		{
 			mInputSource = new LocalInputSource(mPlayerSide);
-		} else {
+		} 
+		else 
+		{
 			mInputSource = new ScriptedInputSource("scripts/" +
 				gameConfig.getString(prefix + "_script_name"), mPlayerSide, gameConfig.getInteger(prefix + "_script_strength"));
 		}
@@ -57,14 +61,15 @@ void Player::loadFromConfig(const std::string& prefix, bool initInput)
 		mName = gameConfig.getBool(prefix + "_player_human") ?
 			gameConfig.getString(prefix + "_player_name") :
 			gameConfig.getString(prefix + "_script_name");
-	}else{
+	}
+	else
+	{
 		// input is set externally (network)
 		// so we need not to create any input source
 		mInputSource = 0;
 		// don't use bot name if extern input is used
 		mName = gameConfig.getString(prefix + "_player_name");
 	}
-	mInitialised = true;
 	
 	mStaticColor = Color(
 		gameConfig.getInteger(prefix + "_blobby_color_r"),
