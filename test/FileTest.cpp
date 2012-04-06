@@ -3,6 +3,7 @@
 
 #include "FileRead.h"
 #include "FileWrite.h"
+#include "FileSystem.h"
 #include <iostream>
 #include <cstring>
 #include <physfs.h>
@@ -13,7 +14,7 @@ void init_Physfs()
 	static bool initialised = false;
 	if(!initialised) 
 	{
-		BOOST_REQUIRE( PHYSFS_init("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\") );
+		FileSystem fs("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\");
 		PHYSFS_setWriteDir(".");
 		PHYSFS_addToSearchPath(".", 1);
 		initialised = true;
@@ -28,6 +29,54 @@ void init_Physfs()
 											catch(excp& e) {\
 												std::cout << "what: " << e.what() << std::endl; \
 											};
+
+
+// Tests of common FileSystem functions
+// test init
+
+BOOST_AUTO_TEST_SUITE( FileSystemTest )
+
+BOOST_AUTO_TEST_CASE( default_constructor )
+{
+	/// \todo spec what happens here; currently asserts
+	// FileSystem::getSingleton();
+	
+	/// \todo how to make this a sensible path on all platforms?
+	{
+		FileSystem fs("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\");
+	
+		BOOST_CHECK_EQUAL( &fs, &FileSystem::getSingleton());
+	
+		/// \todo currently, an assertion fails here!
+		// try to init again
+		//FileSystem fs2("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\");
+	}
+	// here, fs is deleted so we can create a new file system
+	// try to create it with spam path
+	/// \todo spec, what error happens here
+	FileSystem fs3("__SPAM__");
+}
+
+// the functions deleteFile, exists, isDirectory, addToSearchPath, removeFromSearchPath, setWriteDir and getUserDir
+// currently just wrap PHYSFS functions, so they actually don't do anything. Thus, these functions are not
+// tested here. Once we have a defined error reporting policy etc, tests will be added.
+
+/// \todo test EnumerateFiles
+/// \todo test probeDir
+
+BOOST_AUTO_TEST_SUITE_END()
+
+// most of the following functions just wrap to PHYSFS calls. 
+/// \todo how to test these? 
+// test enumerate files
+// test deleteFile
+// test exists
+// test isDirectory
+// test mkdir
+// ...
+
+/// \todo check all FileSystem methods are covered in tests
+/// \todo check all FileRead/FileWrite methods are covered in tests
 
 
 BOOST_AUTO_TEST_SUITE( ReadFileTest )
