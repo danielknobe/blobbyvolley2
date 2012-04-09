@@ -608,11 +608,13 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 	position.y = lround(pos.y);
 
 	static int toDraw = 0;
+	
+	mLeftBlobAnimationState = 0;
+	mRightBlobAnimationState = 0;
 
 	setBlobColor(toDraw, col);
-	/// \todo this recolores the current frame
+	/// \todo this recolores the current frame (0)
 	/// + shadows; thats not exactly what we want
-	/// moreover, if the current frame is not 0, this might fail
 	colorizeBlobs(toDraw);
 	
 
@@ -622,12 +624,12 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 	if(toDraw == 1)
 	{
-		SDL_BlitSurface(mRightBlob[0].mSDLsf, 0, mScreen, &position);
+		SDL_BlitSurface(mRightBlob[mRightBlobAnimationState].mSDLsf, 0, mScreen, &position);
 		toDraw = 0;
 	}
 	else
 	{
-		SDL_BlitSurface(mLeftBlob[0].mSDLsf, 0, mScreen, &position);
+		SDL_BlitSurface(mLeftBlob[mLeftBlobAnimationState].mSDLsf, 0, mScreen, &position);
 		toDraw = 1;
 	}
 }
