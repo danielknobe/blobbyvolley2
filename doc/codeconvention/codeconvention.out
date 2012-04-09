@@ -1,0 +1,9 @@
+\BOOKMARK [1][-]{section.1}{Structure of files}{}
+\BOOKMARK [2][-]{subsection.1.1}{Includes}{section.1}
+\BOOKMARK [2][-]{subsection.1.2}{Coding Style}{section.1}
+\BOOKMARK [3][-]{subsubsection.1.2.1}{Common}{subsection.1.2}
+\BOOKMARK [3][-]{subsubsection.1.2.2}{Classes}{subsection.1.2}
+\BOOKMARK [2][-]{subsection.1.3}{Namespaces}{section.1}
+\BOOKMARK [1][-]{section.2}{Things you should not do}{}
+\BOOKMARK [2][-]{subsection.2.1}{Pattern}{section.2}
+\BOOKMARK [1][-]{section.3}{Stuff that must be integrated in this file correctly}{}
