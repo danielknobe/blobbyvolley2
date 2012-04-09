@@ -606,17 +606,15 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 	SDL_Rect position;
 	position.x = lround(pos.x);
 	position.y = lround(pos.y);
-	// Workarround, so that surface will only be loaded when color is changed 
-	// Works only when 2 blobs are on the screen (like in IMGUI)
-	static Color lastColor[2] = {Color( -1, -1, -1), Color( -1, -1, -1)};
-	
+
 	static int toDraw = 0;
 
-	if (lastColor[toDraw].val != col.val)
-	{
-		setBlobColor(toDraw, col);
-		lastColor[toDraw] = col;
-	}
+	setBlobColor(toDraw, col);
+	/// \todo this recolores the current frame
+	/// + shadows; thats not exactly what we want
+	/// moreover, if the current frame is not 0, this might fail
+	colorizeBlobs(toDraw);
+	
 
 	//  Second dirty workaround in the function to have the right position of blobs in the GUI
 	position.x = position.x - (int)(75/2);
