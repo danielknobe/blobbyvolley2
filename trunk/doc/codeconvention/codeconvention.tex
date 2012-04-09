@@ -103,7 +103,9 @@ This section describes the coding style. If you think something is missing just 
 	\item Do not write more than one statement into one source line
 	\item Use smart pointers when ever possible
 	\item Code should be gcc 4.6 compatible
+	\item Don't use the deprecated exception handling of older c++ versions
 \end{itemize}
+
 
 
 \subsubsection{Classes}
@@ -111,6 +113,7 @@ This section describes the coding style. If you think something is missing just 
 	\item Member variables are to be prefixed with m
 	\item Members occur in the following order: public, protected, private
 	\item For big classes, it might be a good idea to group member functions into different categories
+	\item Initialize members by constructers initphase whenever possible
 \end{itemize}
 
 
