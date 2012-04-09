@@ -1,0 +1,162 @@
+\documentclass[a4paper]{scrartcl}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\definecolor{white}{rgb}{1.0,1.0,1.0}
+\lstset{
+	backgroundcolor=\color{white},
+	tabsize=4,
+	rulecolor=,
+	language=c++,
+    basicstyle=\scriptsize,
+    upquote=true,
+    aboveskip={1.5\baselineskip},
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=single,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    keywordstyle=\color[rgb]{0,0,1},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{0.627,0.126,0.941},
+    linewidth=\textwidth
+}
+
+
+
+\title{codeconventions of blobby volley 2}
+\author{the blobby volley developers}
+
+
+
+\begin{document}
+\begin{titlepage}
+\maketitle
+\thispagestyle{empty}
+\end{titlepage}
+
+
+
+\section{Structure of files}
+Every .cpp .h file has the following format:
+\begin{lstlisting}
+/*=============================================================================
+Blobby Volley 2
+Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=============================================================================*/
+
+/* header include */
+
+/* includes */
+
+/* implementation */
+
+\end{lstlisting}
+
+
+
+\subsection{Includes}
+Includes are to be sorted by library. They should occur in the following order:
+\begin{itemize}
+	\item Stdlib
+	\item Boost
+	\item Other 3rd party libraries we use (for Example: lua, tinyxml, raknet, SDL)
+	\item Blobby
+\end{itemize}
+
+
+
+\subsection{Coding Style}
+This section describes the coding style. If you think something is missing just add it.
+
+
+\subsubsection{Common}
+\begin{itemize}
+	\item Opening curly braces are placed in a new line
+	\item The left indention should be done by tabs, the rest by spaces
+	\item Do not write more than one statement into one source line
+	\item Use smart pointers when ever possible
+	\item Code should be gcc 4.6 compatible
+\end{itemize}
+
+
+\subsubsection{Classes}
+\begin{itemize}
+	\item Member variables are to be prefixed with m
+	\item Members occur in the following order: public, protected, private
+	\item For big classes, it might be a good idea to group member functions into different categories
+\end{itemize}
+
+
+
+\subsection{Namespaces}
+TODO
+
+
+\section{Things you should not do}
+Every contribution with this attributes will be rejected.
+
+
+
+\subsection{Pattern}
+The following patterns are not allowed to use:
+\begin{itemize}
+	\item Singleton (\url{http://en.wikipedia.org/wiki/Singleton_pattern})
+\end{itemize}
+ 
+
+
+\section{Stuff that must be integrated in this file correctly}
+TODO:
+- Write a more detailed code-convention document
+- Write a latex file instead of a textfile
+- Detailed desription of every section needed
+
+Following files implement the convention:
+- RenderManagerSDL.cpp
+- RenderManagerGL2D.cpp
+- UserConfig.cpp
+- TextManager.cpp
+- SpeedController.cpp
+- SoundManager.cpp
+- ScriptedInputSource.cpp
+- ReplayRecorder.cpp
+- ReplayPlayer.cpp
+- RenderManagerGP2X.cpp
+- RenderManager.cpp
+- Player.cpp
+- PhysicWorld.cpp
+- NetworkMessage.cpp
+TODO:
+- all .cpp in subfolder
+- src folder a - NetworkGame.cpp
+- ReplayLoader.cpp
+
+
+\end{document}
