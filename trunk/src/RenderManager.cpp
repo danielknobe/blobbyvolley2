@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 RenderManager* RenderManager::mSingleton = 0;
 
-RenderManager::RenderManager()
+RenderManager::RenderManager() : mDrawGame(false)
 {
 	//assert(!mSingleton);
 	if (mSingleton)
