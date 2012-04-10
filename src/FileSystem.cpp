@@ -145,3 +145,12 @@ void FileSystem::probeDir(const std::string& dirname)
 		}
 	}
 }
+
+
+// exception implementations
+
+
+PhysfsException::PhysfsException() : mPhysfsErrorMsg( PHYSFS_getLastError() )
+{
+}
+

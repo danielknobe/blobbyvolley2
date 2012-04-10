@@ -47,7 +47,7 @@ class File : boost::noncopyable
 {
 	public:
 		/// \brief closes the file
-		/// \details This function does nothing when the no file is opened.
+		/// \details This function does nothing when no file is opened.
 		///			This behaviour is necessary as this function is called in the destructor.
 		/// \throw nothing
 		void close();
@@ -80,7 +80,7 @@ class File : boost::noncopyable
 		/// \todo check if these return types fit!
 		
 		/// gets the length of the currently opened file.
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		uint32_t length() const;
 		
@@ -95,12 +95,12 @@ class File : boost::noncopyable
 		// ------------------------------------
 
 		/// gets the current reading position.
-		/// \throw PhysfsException when Physfs reports an error.
+		/// \throw PhysfsFileException when Physfs reports an error.
 		/// \throw NoFileOpenedException when called while no file is opened.
 		uint32_t tell() const;
 		
 		/// moves the read/write cursor to the desired position
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		void seek(uint32_t target);
 		
@@ -135,10 +135,10 @@ class File : boost::noncopyable
 		
 		/// we use void* instead of PHYSFS_file here, because we can't forward declare it
 		///	as it is a typedef.
-		void* handle;
+		void* mHandle;
 		
 		/// we safe the name of the opened file, too, mainly for debugging/logging purposes
-		std::string name;
+		std::string mFileName;
 		
 		/// helper function which checks if a file is opened and throws 
 		/// an exception otherwise.
@@ -147,7 +147,7 @@ class File : boost::noncopyable
 		/// doing an assert would be acceptable from a coders point of view
 		/// as trying to read/write/etc. from a closed file is clearly a
 		/// programming error. But we don't do anything performance critical with
-		/// files, and even then woudl hard-disk speed be the limiting factor, not
+		/// files, and even then woudl hard-disk speed be the limiting factor,
 		/// not the few additional cycles needed for this exception handling.
 		/// so, i think. doing an exception is the best choice here, as it allows
 		/// better error recorvery and error reporting.

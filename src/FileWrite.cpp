@@ -58,9 +58,9 @@ void FileWrite::writeUInt32(uint32_t v)
 {
 	check_file_open();
 	
-	if( !PHYSFS_writeULE32( reinterpret_cast<PHYSFS_file*>(handle), v) )
+	if( !PHYSFS_writeULE32( reinterpret_cast<PHYSFS_file*>(mHandle), v) )
 	{
-		throw( PhysfsException(name) );
+		throw( PhysfsFileException(mFileName) );
 	}
 }
 
@@ -78,8 +78,8 @@ void FileWrite::write(const char* data, std::size_t length)
 {	
 	check_file_open();
 	
-	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(handle), data, 1, length) != length ) 
+	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(mHandle), data, 1, length) != length ) 
 	{
-		throw( PhysfsException(name) );
+		throw( PhysfsFileException(mFileName) );
 	}
 }

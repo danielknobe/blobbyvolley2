@@ -65,17 +65,17 @@ uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 {
 	check_file_open();
 	
-	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (handle), target, 1, num_of_bytes);
+	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (mHandle), target, 1, num_of_bytes);
 	
 	// -1 indicates that reading was not possible
 	if( num_read == -1) 
 	{
-		throw( PhysfsException(name) );
+		throw( PhysfsFileException(mFileName) );
 	}
 	/// \todo use expection error handling here, assert does not fit!
 	if( num_read != num_of_bytes )
 	{
-		throw ( EOFException(name) );
+		throw ( EOFException(mFileName) );
 	}
 	
 	return num_read;
@@ -95,9 +95,9 @@ uint32_t FileRead::readUInt32()
 	check_file_open();
 	
 	PHYSFS_uint32 ret;
-	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(handle),	&ret))
+	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(mHandle),	&ret))
 	{
-		throw( PhysfsException(name) );
+		throw( PhysfsFileException(mFileName) );
 	}
 	
 	return ret; 

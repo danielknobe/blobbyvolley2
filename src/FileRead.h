@@ -66,7 +66,7 @@ class FileRead : public File
 		/// reads bytes into a buffer
 		/// \param target buffer to read into
 		/// \param num_of_bytes number of bytes to read
-		/// \throw PhysfsException when nothing could be read
+		/// \throw PhysfsFileException when nothing could be read
 		/// \throw NoFileOpenedException when called while no file is opened.
 		/// \throw EOFException when cless than \p num_of_bytes bytes are available.
 		uint32_t readRawBytes( char* target, std::size_t num_of_bytes );
@@ -75,7 +75,7 @@ class FileRead : public File
 		/// reads bytes and returns a safe-pointed buffer
 		/// the buffer is allocated by this function and has a size of \p num_of_bytes
 		/// \param num_of_bytes Number of bytes to read; size of buffer
-		/// \throw PhysfsException when nothing could be read
+		/// \throw PhysfsFileException when nothing could be read
 		/// \throw NoFileOpenedException when called while no file is opened.
 		/// \throw EOFException when cless than \p num_of_bytes bytes are available.
 		boost::shared_array<char> readRawBytes( std::size_t num_of_bytes );
@@ -83,12 +83,12 @@ class FileRead : public File
 		/// reads an unsinged 32 bit integer from the next four bytes in the file
 		/// the integer is expected to be in little-endian-order and is converted
 		/// to the native format.
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		uint32_t readUInt32();
 		
 		/// reads a null-terminated string from the file
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		std::string readString();
 		
