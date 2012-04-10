@@ -19,21 +19,96 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <exception>
+
+/*! \class FileSystemException
+	\brief common base class of all file system related errors
+*/
+class FileSystemException : public std::exception
+{
+	public:
+		FileSystemException() {};
+		~FileSystemException() throw() { };
+		
+		virtual const char* what() const throw()
+		{
+			return "a file system related exception occured!";
+		}
+};
+
+/*! \class PhysfsException
+	\brief signales errors reported by physfs
+	\details base class for all exceptions that report physfs errors;
+*/
+class PhysfsException : public FileSystemException
+{
+	public:
+		// implementation in FileSystem.cpp
+		PhysfsException();
+		
+		~PhysfsException() throw() { };
+		
+		virtual const char* what() const throw()
+		{
+			return ("physfs reported an error: " + getPhysfsMessage()).c_str();
+		}
+		
+		std::string getPhysfsMessage() const
+		{
+			return mPhysfsErrorMsg;
+		}
+	private:
+	
+		/// this string saves the error message
+		std::string mPhysfsErrorMsg;
+};
+
+/*! \class PhysfsInitException
+	\brief signals an error during the physfs initialisation phase
+*/
+class PhysfsInitException : public PhysfsException
+{
+	public:
+		PhysfsInitException(const std::string& path) : mPath(path)
+		{
+			
+		}
+		
+		~PhysfsInitException() throw()
+		{
+			
+		}
+		
+		virtual const char* what() const throw()
+		{
+			return ("could not initialise physfs to path " + getPath() + ": " + getPhysfsMessage()).c_str();
+		}
+		
+		std::string getPath() const
+		{
+			return mPath;
+		}
+		
+	private:
+		std::string mPath;
+};
+
 /*!	\class FileException
 	\brief common base type for file exceptions.
 	\details does not owerride what(), so there is
 				no default error message for FileException s
 */
-class FileException: public std::exception {
+class FileException: public FilesystemExcpetion {
 	public:
-		FileException(const std::string& f) : filename(f) {
+		FileException(const std::string& f) : filename(f) 
+		{
 		}
 		
-		virtual ~FileException() throw() {
-		}
+		virtual ~FileException() throw() {	}
 		
 		/// get the name of the file of the exception
-		const std::string& getFileName() const {
+		const std::string& getFileName() const 
+		{
 			return filename;
 		} 
 	private:
@@ -74,44 +149,34 @@ class FileAlreadyExistsException : public FileException
 	public:
 		FileAlreadyExistsException(std::string name) : FileException(name)
 		{
-			/// \todo do we really need to do this? std::exception already
-			/// provides the functionality for setting exception messages, i think.
-			error = "File " + name + " already exists!";
 		}
 		
 		virtual ~FileAlreadyExistsException() throw() {}
 
 		virtual const char* what() const throw()
 		{
-			return error.c_str();
+			return ("File " + getFileName() + " already exists.").c_str();
 		}
-		
-	private:
-		std::string error;	///< saves the error message
 };
 
 
 
-/*! class PhysfsException
-	\brief signales errors reported by physfs
-	\details Exceptions of this type are thrown when calls of physfs functions
-			report errors. what() gets the error string reportet by PHYSFS_getLastError()
+/*! \class PhysfsFileException
+	\brief combines FileException with PhysfsException
 */
-class PhysfsException : public FileException
+class PhysfsFileException : public FileException, public PhysfsException
 {
 	public:
-		PhysfsException(const std::string& filename);
+		PhysfsFileException(const std::string& filename) : FileException(filename)
+		{
+		};
 		
-		~PhysfsException() throw() { };
+		~PhysfsFileException() throw() { };
 		
 		virtual const char* what() const throw()
 		{
-			return (getFileName() + ": " + physfsErrorMsg).c_str();
+			return (getFileName() + ": " + getPhysfsMessage()).c_str();
 		}
-	private:
-	
-		/// this string saves the error message
-		std::string physfsErrorMsg;
 };
 
 /*!	\class NoFileOpenedException

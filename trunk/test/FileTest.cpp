@@ -62,6 +62,26 @@ BOOST_AUTO_TEST_CASE( default_constructor )
 // tested here. Once we have a defined error reporting policy etc, tests will be added.
 
 /// \todo test EnumerateFiles
+BOOST_AUTO_TEST_CASE( enumerate_files )
+{
+	/// \todo spec what happens here; currently asserts
+	// FileSystem::getSingleton();
+	
+	/// \todo how to make this a sensible path on all platforms?
+	{
+		FileSystem fs("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\");
+	
+		BOOST_CHECK_EQUAL( &fs, &FileSystem::getSingleton());
+	
+		/// \todo currently, an assertion fails here!
+		// try to init again
+		//FileSystem fs2("C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test\\bin\\debug\\");
+	}
+	// here, fs is deleted so we can create a new file system
+	// try to create it with spam path
+	/// \todo spec, what error happens here
+	FileSystem fs3("__SPAM__");
+}
 /// \todo test probeDir
 
 BOOST_AUTO_TEST_SUITE_END()

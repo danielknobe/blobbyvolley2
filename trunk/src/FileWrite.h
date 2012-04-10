@@ -64,20 +64,20 @@ class FileWrite : public File
 		
 		/// \brief writes one character
 		/// \details writes exactly the one character supplied.
-		/// \throw PhysfsException when Physfs reports an error.
+		/// \throw PhysfsFileException when Physfs reports an error.
 		/// \throw NoFileOpenedException when called while no file is opened.
 		void writeByte(char c);
 		
 		/// \brief writes 32 bit integer
 		/// \details writes an integer, converted to little endian if necessary
-		/// \throw PhysfsException when Physfs reports an error.
+		/// \throw PhysfsFileException when Physfs reports an error.
 		/// \throw NoFileOpenedException when called while no file is opened.
 		void writeUInt32(uint32_t v);
 		
 		/// \brief writes a std::string
 		/// \details writes the content of the string to the file.
 		/// 		does not write a null-termination character
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		void write(const std::string& data);
 		
@@ -85,10 +85,11 @@ class FileWrite : public File
 		/// \details writes the content of the string to the file.
 		/// 		ends the string with a null terminator.
 		/// \throw NoFileOpenedException when called while no file is opened.
+		/// \throw PhysfsFileException when Physfs reports an error
 		void writeNullTerminated(const std::string& data);
 		
 		/// \brief writes a sequence of characters
 		/// \details writes \p length characters from \p data to the file
-		/// \throw PhysfsException when Physfs reports an error
+		/// \throw PhysfsFileException when Physfs reports an error
 		void write(const char* data, std::size_t length);
 };
