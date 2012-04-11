@@ -111,7 +111,7 @@ void FileSystem::removeFromSearchPath(const std::string& dirname)
 void FileSystem::setWriteDir(const std::string& dirname)
 {
 	PHYSFS_setWriteDir(dirname.c_str());
-	addToSearchPath(dirname, true);
+	addToSearchPath(dirname, false);
 }
 
 std::string FileSystem::getDirSeparator()
