@@ -98,7 +98,7 @@ class PhysfsInitException : public PhysfsException
 	\details does not owerride what(), so there is
 				no default error message for FileException s
 */
-class FileException: public FilesystemExcpetion {
+class FileException: public FileSystemException {
 	public:
 		FileException(const std::string& f) : filename(f) 
 		{
