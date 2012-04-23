@@ -141,7 +141,6 @@ MainMenuState::~MainMenuState()
 
 void MainMenuState::step()
 {
-	RenderManager::getSingleton().drawGame(false);
 	IMGUI& imgui = IMGUI::getSingleton();
 
 	imgui.doCursor();
