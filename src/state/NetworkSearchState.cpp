@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkSearchState.h"
 
 /* includes */
+#include <string>
+
 #include <boost/lexical_cast.hpp>
 
 #include "raknet/RakClient.h"
@@ -229,9 +231,27 @@ void NetworkSearchState::step()
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::LBL_OK))
 		{
 			//std::string server = mScannedServers[mSelectedServer].hostname;
-			/// \todo possibility to use custom port, too
+			std::string server = mEnteredServer;
+			int port = BLOBBY_PORT;
+			std::size_t found = mEnteredServer.find(':');
+			if (found != std::string::npos) {
+				server = mEnteredServer.substr(0, found);
+				
+				try
+				{
+					port = boost::lexical_cast<int>(mEnteredServer.substr(found+1));
+				}
+				catch (boost::bad_lexical_cast)
+				{
+					/// \todo inform the user that default port was selected
+					
+				}
+				if ((port <= 0) || (port > 65535))
+					port = BLOBBY_PORT;
+			}
+
 			deleteCurrentState();
-			setCurrentState(new NetworkGameState(mEnteredServer.c_str(), BLOBBY_PORT));
+			setCurrentState(new NetworkGameState(server, port));
 			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::LBL_CANCEL))
