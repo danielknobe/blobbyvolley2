@@ -151,15 +151,15 @@ void RenderManagerGL2D::drawQuad(float x, float y, float w, float h)
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	GLfloat vertices[] = {x - w / 2.0, y - h / 2.0,
-	                      x + w / 2.0, y - h / 2.0,
-	                      x + w / 2.0, y + h / 2.0,
-	                      x - w / 2.0, y + h / 2.0};
+	GLfloat vertices[] = {x - w / 2.f, y - h / 2.f,
+	                      x + w / 2.f, y - h / 2.f,
+	                      x + w / 2.f, y + h / 2.f,
+	                      x - w / 2.f, y + h / 2.f};
 
-	GLfloat texCoords[] = {0.0, 0.0,
-	                       1.0, 0.0,
-	                       1.0, 1.0,
-	                       0.0, 1.0};
+	GLfloat texCoords[] = {0.f, 0.f,
+	                       1.f, 0.f,
+	                       1.f, 1.f,
+	                       0.f, 1.f};
 
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
         glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
@@ -178,10 +178,10 @@ void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
 	float w = tex.w;
 	float h = tex.h;
         
-	GLfloat vertices[] = {x - w / 2.0, y - h / 2.0,
-	                      x + w / 2.0, y - h / 2.0,
-	                      x + w / 2.0, y + h / 2.0,
-	                      x - w / 2.0, y + h / 2.0};
+	GLfloat vertices[] = {x - w / 2.f, y - h / 2.f,
+	                      x + w / 2.f, y - h / 2.f,
+	                      x + w / 2.f, y + h / 2.f,
+	                      x - w / 2.f, y + h / 2.f};
 
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
         glTexCoordPointer(2, GL_FLOAT, 0, tex.indices);
