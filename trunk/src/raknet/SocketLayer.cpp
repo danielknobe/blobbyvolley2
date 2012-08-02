@@ -66,14 +66,14 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #endif
 
 #if defined(_WIN32) && defined(_DEBUG)
-void win32Error(string messagePrefix)
+void win32Error(char* messagePrefix)
 {
 		DWORD dwIOError = GetLastError();
 		LPVOID messageBuffer;
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
 			( LPTSTR ) &messageBuffer, 0, NULL);
-		printf("%s:Error code - %d\n%s", messagePrefix.c_str(), dwIOError, messageBuffer);
+		printf("%s:Error code - %d\n%s", messagePrefix, dwIOError, messageBuffer);
 		LocalFree(messageBuffer);
 }
 #endif
