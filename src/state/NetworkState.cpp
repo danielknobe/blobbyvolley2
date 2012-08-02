@@ -657,7 +657,7 @@ const char* NetworkGameState::getStateName() const
 NetworkHostState::NetworkHostState()
 {
 	mServer = new RakServer;
-	mServer->Start(2, 0, 0, BLOBBY_PORT);
+	mServer->Start(2, 0, BLOBBY_PORT);
 	mNetworkGame = 0;
 	mGameState = new NetworkGameState("localhost", BLOBBY_PORT);
 	mLocalPlayerSide = NO_PLAYER;

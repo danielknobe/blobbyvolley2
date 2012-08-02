@@ -67,10 +67,10 @@ public:
 	* @param threadSleepTimer >=0 for how many ms to Sleep each internal update cycle (recommended 30 for low performance, 0 for regular)
 	* @param port is the port you want the server to read and write on
 	* Make sure this port is open for UDP
-	* @param forceHostAddress Can force RakNet to use a particular IP to host on.  Pass 0 to automatically pick an IP
+	* @param forceHostAddress Can force RakNet to use a particular IP to host on. Pass 0 to automatically pick an IP
 	* @return true on successful initiation, false otherwise
 	*/
-	bool Start( unsigned short AllowedPlayers, unsigned int depreciated, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 );
+	bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 );
 	/**
 	* Must be called while offline
 	* Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
