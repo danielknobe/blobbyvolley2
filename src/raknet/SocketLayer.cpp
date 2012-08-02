@@ -429,10 +429,9 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, unsigned int bi
 	}
 
 	return dwIOError;
+#else
+	return 1;
 #endif
-
-	#pragma warning( disable : 4702 ) // warning C4702: unreachable code
-	return 1; // error
 }
 
 int SocketLayer::SendTo( SOCKET s, const char *data, int length, char ip[ 16 ], unsigned short port )
@@ -453,7 +452,6 @@ void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 #ifdef _DEBUG
 		Error("gethostname failed");
 #endif
-
 		return ;
 	}
 
