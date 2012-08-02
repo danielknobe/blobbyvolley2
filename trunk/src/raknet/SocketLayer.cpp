@@ -66,7 +66,7 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #endif
 
 #if defined(_WIN32) && defined(_DEBUG)
-void win32Error(std::string messagePrefix)
+void win32Error(string messagePrefix)
 {
 		DWORD dwIOError = GetLastError();
 		LPVOID messageBuffer;
