@@ -48,7 +48,7 @@ typedef int socklen_t;
 bool SocketLayer::socketLayerStarted = false;
 
 SocketLayer SocketLayer::I;
-#define _DEBUG
+
 #ifdef _WIN32
 extern void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 #else
