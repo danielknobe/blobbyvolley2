@@ -58,8 +58,7 @@ void RakServer::DisableSecurity( void )
 	RakPeer::DisableSecurity();
 }
 
-#pragma warning( disable : 4100 ) // warning C4100: 'depreciated' : unreferenced formal parameter
-bool RakServer::Start( unsigned short AllowedPlayers, unsigned int depreciated, int threadSleepTimer, unsigned short port, const char *forceHostAddress )
+bool RakServer::Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress )
 {
 	bool init;
 

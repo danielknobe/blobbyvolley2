@@ -63,7 +63,7 @@ public:
 	 * @param forceHostAddress Can force RakNet to use a particular IP to host on.  Pass 0 to automatically pick an IP
 	 * @return true on successful initiation, false otherwise
 	 */
-	virtual bool Start( unsigned short AllowedPlayers, unsigned int depreciated, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 ) = 0;
+	virtual bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 ) = 0;
 	
 	/**
 	 * Must be called while offline
