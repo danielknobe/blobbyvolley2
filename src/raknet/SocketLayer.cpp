@@ -65,16 +65,20 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #include <stdio.h>
 #endif
 
-#if defined(_WIN32) && defined(_DEBUG)
-void win32Error(char* messagePrefix)
+#ifdef _DEBUG
+void Error(char* message)
 {
+#ifdef WIN32
 		DWORD dwIOError = GetLastError();
 		LPVOID messageBuffer;
 		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
 			( LPTSTR ) &messageBuffer, 0, NULL);
-		printf("%s:Error code - %d\n%s", messagePrefix, dwIOError, messageBuffer);
+		printf("%s:Error code - %d\n%s", message, dwIOError, messageBuffer);
 		LocalFree(messageBuffer);
+#else
+		printf("%s", message);
+#endif
 }
 #endif
 
@@ -91,7 +95,7 @@ SocketLayer::SocketLayer()
 		if (WSAStartup(MAKEWORD(2, 2), &winsockInfo ) != 0)
 		{
 #ifdef defined(_DEBUG)
-			win32Error("WSAStartup failed");
+			Error("WSAStartup failed");
 #endif
 		}
 #endif
@@ -124,8 +128,8 @@ SOCKET SocketLayer::Connect(SOCKET writeSocket, unsigned int binaryAddress, unsi
 
 	if ( connect( writeSocket, ( struct sockaddr * ) & connectSocketAddress, sizeof( struct sockaddr ) ) != 0 )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("WSAConnect failed");
+#ifdef _DEBUG
+		Error("WSAConnect failed");
 #endif
 	}
 
@@ -150,8 +154,8 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( listenSocket == INVALID_SOCKET )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("socket(...) failed");
+#ifdef _DEBUG
+		Error("socket(...) failed");
 #endif
 
 		return INVALID_SOCKET;
@@ -161,8 +165,8 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( setsockopt( listenSocket, SOL_SOCKET, SO_REUSEADDR, ( char * ) & sock_opt, sizeof ( sock_opt ) ) == -1 )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("setsockopt(SO_REUSEADDR) failed");
+#ifdef _DEBUG
+		Error("setsockopt(SO_REUSEADDR) failed");
 #endif
 	}
 
@@ -188,8 +192,8 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 	// Set broadcast capable
 	if ( setsockopt( listenSocket, SOL_SOCKET, SO_BROADCAST, ( char * ) & sock_opt, sizeof( sock_opt ) ) == -1 )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("setsockopt(SO_BROADCAST) failed");
+#ifdef _DEBUG
+		Error("setsockopt(SO_BROADCAST) failed");
 #endif
 
 	}
@@ -214,8 +218,8 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( ret == SOCKET_ERROR )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("bind(...) failed");
+#ifdef _DEBUG
+		Error("bind(...) failed");
 #endif
 
 		return INVALID_SOCKET;
@@ -370,7 +374,7 @@ int SocketLayer::RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode )
 		{
 			if ( dwIOError != WSAEINTR )
 			{
-				win32Error("recvfrom failed");
+				Error("recvfrom failed");
 			}
 		}
 #endif
@@ -419,7 +423,7 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, unsigned int bi
 	else
 	{
 #if defined(_DEBUG)
-		win32Error("recvfrom failed");
+		Error("recvfrom failed");
 #endif
 
 	}
@@ -440,25 +444,27 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, char ip[ 16 ], 
 
 void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 {
-	char ac[ 80 ];
+	// Longest possible Hostname
+	char hostname[80];
 
-	if ( gethostname( ac, sizeof( ac ) ) == SOCKET_ERROR )
+	// Get the hostname of the local maschine
+	if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR)
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("gethostname failed");
+#ifdef _DEBUG
+		Error("gethostname failed");
 #endif
 
 		return ;
 	}
 
-	//cout << "Host name is " << ac << "." << endl;
+	//cout << "Host name is " << hostname << "." << endl;
 
-	struct hostent *phe = gethostbyname( ac );
+	struct hostent *phe = gethostbyname( hostname );
 
 	if ( phe == 0 )
 	{
-#if defined(_WIN32) && defined(_DEBUG)
-		win32Error("gethostbyname failed");
+#ifdef _DEBUG
+		Error("gethostbyname failed");
 #endif
 
 		return ;
