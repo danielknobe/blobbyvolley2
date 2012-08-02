@@ -179,12 +179,15 @@ RakPeer::~RakPeer()
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short localPort, int _threadSleepTimer, const char *forceHostAddress )
 {
-	unsigned i;
+	// Maximum number of peers must be > 0
+	assert(MaximumNumberOfPeers > 0);
 
-	assert( MaximumNumberOfPeers > 0 );
-
-	if ( MaximumNumberOfPeers <= 0 )
+	if (MaximumNumberOfPeers <= 0)
+	{
 		return false;
+	}
+
+	unsigned i;
 
 	if ( connectionSocket == INVALID_SOCKET )
 	{

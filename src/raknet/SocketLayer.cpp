@@ -46,9 +46,7 @@ typedef int socklen_t;
 #endif
 
 bool SocketLayer::socketLayerStarted = false;
-#ifdef _WIN32
-WSADATA SocketLayer::winsockInfo;
-#endif
+
 SocketLayer SocketLayer::I;
 
 #ifdef _WIN32
@@ -69,45 +67,50 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 
 SocketLayer::SocketLayer()
 {
-	if ( socketLayerStarted == false )
+	// Check if the socketlayer is already started
+	if (socketLayerStarted == false)
 	{
 #ifdef _WIN32
+		WSADATA winsockInfo;
 
-		if ( WSAStartup( MAKEWORD( 2, 2 ), &winsockInfo ) != 0 )
+		// Initiate use of the Winsock DLL (Up to Verion 2.2) 
+		if (WSAStartup(MAKEWORD(2, 2), &winsockInfo ) != 0)
 		{
-#if defined(_WIN32) && defined(_DEBUG)
+#ifdef defined(_DEBUG)
+			// Error occured, printf an errormessage
 			DWORD dwIOError = GetLastError();
 			LPVOID messageBuffer;
-			FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),  // Default language
-				( LPTSTR ) & messageBuffer, 0, NULL );
+			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL, dwIOError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
+				(LPTSTR) & messageBuffer, 0, NULL);
 			// something has gone wrong here...
-			printf( "WSAStartup failed:Error code - %d\n%s", dwIOError, messageBuffer );
-			//Free the buffer.
-			LocalFree( messageBuffer );
+			printf("WSAStartup failed:Error code - %d\n%s", dwIOError, messageBuffer);
+			// Free the buffer.
+			LocalFree(messageBuffer);
 #endif
 		}
-
 #endif
+		// The socketlayer started
 		socketLayerStarted = true;
 	}
 }
 
 SocketLayer::~SocketLayer()
 {
-	if ( socketLayerStarted == true )
+	if (socketLayerStarted == true)
 	{
 #ifdef _WIN32
+		// Terminate use of the Winsock DLL
 		WSACleanup();
 #endif
-
+		// The socketlayer stopped
 		socketLayerStarted = false;
 	}
 }
 
-SOCKET SocketLayer::Connect( SOCKET writeSocket, unsigned int binaryAddress, unsigned short port )
+SOCKET SocketLayer::Connect(SOCKET writeSocket, unsigned int binaryAddress, unsigned short port)
 {
-	assert( writeSocket != INVALID_SOCKET );
+	assert(writeSocket != INVALID_SOCKET);
 	sockaddr_in connectSocketAddress;
 
 	connectSocketAddress.sin_family = AF_INET;
