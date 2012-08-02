@@ -69,15 +69,15 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 void Error(const char* message)
 {
 #ifdef WIN32
-		DWORD dwIOError = GetLastError();
-		LPVOID messageBuffer;
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
-			( LPTSTR ) &messageBuffer, 0, NULL);
-		printf("%s:Error code - %d\n%s", message, dwIOError, messageBuffer);
-		LocalFree(messageBuffer);
+	DWORD dwIOError = GetLastError();
+	LPVOID messageBuffer;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
+		( LPTSTR ) &messageBuffer, 0, NULL);
+	printf("%s:Error code - %d\n%s", message, dwIOError, messageBuffer);
+	LocalFree(messageBuffer);
 #else
-		printf("%s", message);
+	printf("%s", message);
 #endif
 }
 #endif
@@ -419,7 +419,6 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, unsigned int bi
 #endif
 
 	}
-
 	else
 	{
 #if defined(_DEBUG)
