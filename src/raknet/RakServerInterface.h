@@ -56,7 +56,6 @@ public:
 	/**
 	 * Call this to initiate the server with the number of players you want to be allowed connected at once
 	 * @param AllowedPlayers Current maximum number of allowed players is 65535
-	 * @param depreciated is for legacy purposes and is unused
 	 * @param threadSleepTimer >=0 for how many ms to Sleep each internal update cycle (recommended 30 for low performance, 0 for regular)
 	 * @param port is the port you want the server to read and write on
 	 * Make sure this port is open for UDP
