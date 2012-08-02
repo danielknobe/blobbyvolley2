@@ -173,18 +173,10 @@ public:
 	
 private:
 	/**
-	 * Tel whether or not the socket layer is already active 
+	 * Tell whether or not the socket layer is already active 
 	 */
 	static bool socketLayerStarted;
-#ifdef _WIN32
-	/**
-	 * @todo Document this 
-	 * 
-	 * @note Windows port only
-	 * 
-	 */
-	static WSADATA winsockInfo;
-#endif
+
 	/**
 	 * Singleton instance 
 	 */
