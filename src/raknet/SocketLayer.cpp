@@ -36,7 +36,6 @@
 typedef int socklen_t;
 #else
 #include <string.h> // memcpy
-#include <unistd.h>
 #include <fcntl.h>
 #endif
 
