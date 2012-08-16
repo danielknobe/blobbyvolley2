@@ -150,7 +150,7 @@ void ReplayRecorder::receive(RakNet::BitStream& stream)
 	mPlayerColors[RIGHT_PLAYER] = col;
 	stream.Read(col);
 	mGameSpeed = col;
-	
+	std::cout << col << std::endl;
 	stream.Read(col);
 	mSaveData.reserve(col);
 	
