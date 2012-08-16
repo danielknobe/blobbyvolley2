@@ -107,7 +107,7 @@ bool RakClient::Send( const char *data, const long length, PacketPriority priori
 	return RakPeer::Send( data, length, priority, reliability, orderingChannel, remoteSystemList[ 0 ].playerId, false );
 }
 
-bool RakClient::Send( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel )
+bool RakClient::Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel )
 {
 	if ( remoteSystemList == 0 )
 		return false;

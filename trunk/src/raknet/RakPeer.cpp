@@ -761,7 +761,7 @@ bool RakPeer::Send( const char *data, const long length, PacketPriority priority
 
 }
 
-bool RakPeer::Send( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast )
+bool RakPeer::Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast )
 {
 #ifdef _DEBUG
 	assert( bitStream->GetNumberOfBytesUsed() > 0 );
@@ -3141,7 +3141,7 @@ bool RakPeer::ValidSendTarget(PlayerID playerId, bool broadcast)
 	return false;
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SendBuffered( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode )
+void RakPeer::SendBuffered( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode )
 {
 	BufferedCommandStruct *bcs;
 	bcs=bufferedCommands.WriteLock();

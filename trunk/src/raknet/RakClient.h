@@ -126,7 +126,7 @@ public:
 	 * @param reliability the reliability policy required 
 	 * @param orderingChannel the channel to send the message to. 
 	 */
-	bool Send( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel );
+	bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel );
 	/**
 	 * Call this to get a packet from the incoming packet queue. Use
 	 * DeallocatePacket to deallocate the packet after you are done with

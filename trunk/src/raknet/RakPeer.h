@@ -221,7 +221,7 @@ public:
 	* @return 
 	* False if we are not connected to the specified recipient.  True otherwise
 	*/
-	bool Send( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast );
+	bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast );
 
 	/**
 	* Gets a packet from the incoming packet queue. Use DeallocatePacket to deallocate the packet after you are done with it.
@@ -998,7 +998,7 @@ protected:
 	bool ValidSendTarget(PlayerID playerId, bool broadcast);
 	// This stores the user send calls to be handled by the update thread.  This way we don't have thread contention over playerIDs
 	void CloseConnectionInternal( PlayerID target, bool sendDisconnectionNotification, bool performImmediate );
-	void SendBuffered( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode );
+	void SendBuffered( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode );
 	bool SendImmediate( char *data, int numberOfBitsToSend, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, bool useCallerDataAllocation, unsigned int currentTime );
 	bool HandleBufferedRPC(BufferedCommandStruct *bcs, unsigned time);
 	void ClearBufferedCommands(void);

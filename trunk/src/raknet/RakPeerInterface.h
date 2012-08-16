@@ -209,7 +209,7 @@ public:
 	 * @return 
 	 * False if we are not connected to the specified recipient.  True otherwise
 	 */
-	virtual bool Send( RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
+	virtual bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
 
 	/**
 	 * Gets a packet from the incoming packet queue. Use DeallocatePacket to deallocate the packet after you are done with it.
