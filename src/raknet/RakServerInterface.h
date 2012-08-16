@@ -130,7 +130,7 @@ public:
 	 * Set broadcast to true to broadcast to all connected clients EXCEPT the one specified in the playerId field.
 	 * To broadcast to everyone specify UNASSIGNED_PLAYER_ID for the playerId field.
 	 */
-	virtual bool Send( RakNet::BitStream *bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
+	virtual bool Send( const RakNet::BitStream *bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
 	
 	/**
 	 * Call this to get a packet from the incoming packet queue.  Use DeallocatePacket to deallocate the packet after you are done with it.
