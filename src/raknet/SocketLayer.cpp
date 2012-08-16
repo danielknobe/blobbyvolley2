@@ -27,6 +27,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "../blobnet/Logger.hpp"
+
 #include "SocketLayer.h"
 #include <assert.h>
 #include "MTUSize.h"
@@ -64,6 +66,7 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #include <stdio.h>
 #endif
 
+/*
 #ifdef _DEBUG
 void Error(const char* message)
 {
@@ -80,7 +83,7 @@ void Error(const char* message)
 #endif
 }
 #endif
-
+*/
 
 SocketLayer::SocketLayer()
 {
@@ -93,9 +96,7 @@ SocketLayer::SocketLayer()
 		// Initiate use of the Winsock DLL (Up to Verion 2.2) 
 		if (WSAStartup(MAKEWORD(2, 2), &winsockInfo ) != 0)
 		{
-#ifdef defined(_DEBUG)
-			Error("WSAStartup failed");
-#endif
+			LOG("SocketLayer", "WSAStartup failed")
 		}
 #endif
 		// The socketlayer started
@@ -127,9 +128,7 @@ SOCKET SocketLayer::Connect(SOCKET writeSocket, unsigned int binaryAddress, unsi
 
 	if ( connect( writeSocket, ( struct sockaddr * ) & connectSocketAddress, sizeof( struct sockaddr ) ) != 0 )
 	{
-#ifdef _DEBUG
-		Error("WSAConnect failed");
-#endif
+		LOG("SocketLayer", "WSAConnect failed")
 	}
 
 	return writeSocket;
@@ -153,9 +152,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( listenSocket == INVALID_SOCKET )
 	{
-#ifdef _DEBUG
-		Error("socket(...) failed");
-#endif
+		LOG("SocketLayer", "socket(...) failed")
 
 		return INVALID_SOCKET;
 	}
@@ -164,9 +161,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( setsockopt( listenSocket, SOL_SOCKET, SO_REUSEADDR, ( char * ) & sock_opt, sizeof ( sock_opt ) ) == -1 )
 	{
-#ifdef _DEBUG
-		Error("setsockopt(SO_REUSEADDR) failed");
-#endif
+		LOG("SocketLayer", "setsockopt(SO_REUSEADDR) failed")
 	}
 
 	//Set non-blocking
@@ -191,9 +186,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 	// Set broadcast capable
 	if ( setsockopt( listenSocket, SOL_SOCKET, SO_BROADCAST, ( char * ) & sock_opt, sizeof( sock_opt ) ) == -1 )
 	{
-#ifdef _DEBUG
-		Error("setsockopt(SO_BROADCAST) failed");
-#endif
+		LOG("SocketLayer", "setsockopt(SO_BROADCAST) failed")
 
 	}
 
@@ -217,9 +210,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( ret == SOCKET_ERROR )
 	{
-#ifdef _DEBUG
-		Error("bind(...) failed");
-#endif
+		LOG("SocketLayer", "bind(...) failed")
 
 		return INVALID_SOCKET;
 	}
@@ -332,8 +323,8 @@ int SocketLayer::RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode )
 
 	if ( len == 0 )
 	{
+		LOG("SocketLayer", "Recvfrom returned 0 on a connectionless blocking call\non port %i. This is a bug with Zone Alarm. Please turn off Zone Alarm.\n" << ntohs( sa.sin_port ) )
 #ifdef _DEBUG
-		printf( "Error: recvfrom returned 0 on a connectionless blocking call\non port %i.  This is a bug with Zone Alarm.  Please turn off Zone Alarm.\n", ntohs( sa.sin_port ) );
 		assert( 0 );
 #endif
 
@@ -373,7 +364,7 @@ int SocketLayer::RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode )
 		{
 			if ( dwIOError != WSAEINTR )
 			{
-				Error("recvfrom failed");
+				LOG("SocketLayer", "recvfrom failed")
 			}
 		}
 #endif
@@ -413,16 +404,11 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, unsigned int bi
 
 	if ( dwIOError == WSAECONNRESET )
 	{
-#if defined(_DEBUG)
-		printf( "A previous send operation resulted in an ICMP Port Unreachable message.\n" );
-#endif
-
+		LOG("A previous send operation resulted in an ICMP Port Unreachable message.\n" )
 	}
 	else
 	{
-#if defined(_DEBUG)
-		Error("recvfrom failed");
-#endif
+		LOG("SocketLayer", "recvfrom failed")
 
 	}
 
@@ -447,21 +433,18 @@ void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 	// Get the hostname of the local maschine
 	if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR)
 	{
-#ifdef _DEBUG
-		Error("gethostname failed");
-#endif
+		LOG("SocketLayer", "gethostname failed")
+
 		return ;
 	}
 
-	//cout << "Host name is " << hostname << "." << endl;
+	LOG("SocketLayer", "Host name is " << hostname )
 
 	struct hostent *phe = gethostbyname( hostname );
 
 	if ( phe == 0 )
 	{
-#ifdef _DEBUG
-		Error("gethostbyname failed");
-#endif
+		LOG("SocketLayer", "gethostbyname failed")
 
 		return ;
 	}
@@ -474,6 +457,7 @@ void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 		memcpy( &addr, phe->h_addr_list[ i ], sizeof( struct in_addr ) );
 		//cout << "Address " << i << ": " << inet_ntoa(addr) << endl;
 		strcpy( ipList[ i ], inet_ntoa( addr ) );
+		LOG("SocketLayer", "My IP addresses "<< ipList[ i ])
 	}
 }
 
