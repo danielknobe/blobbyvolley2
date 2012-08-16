@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * Macros for primitive plattform independend logging and debugging
  *
  * This header include the the logging macros for debugging. 
- * You can log information by calling the LOG(class, title, message) macro.
+ * You can log information by calling the LOG(class, message) macro.
  * There are the following log-modes available which you can set by changing the 
  * definition of the LOGGER_MODE macro:
  */
