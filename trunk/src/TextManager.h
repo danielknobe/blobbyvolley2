@@ -29,10 +29,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// the string can be loaded from a xml file
 /// <string english="english" translation="translation />
 
-class TextManager{
+class TextManager
+{
 	public:
 		/// enumeration for strings
-		enum STRING{
+		enum STRING
+		{
 			// common labels
 			LBL_OK,
 			LBL_CANCEL,

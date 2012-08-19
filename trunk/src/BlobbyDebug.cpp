@@ -28,6 +28,7 @@ std::map<std::string, CountingReport>& GetCounterMap()
 	static std::map<std::string, CountingReport> CounterMap;
 	return CounterMap;
 }
+
 int count(const std::type_info& type)
 {
 	std::string test = type.name();
@@ -35,6 +36,7 @@ int count(const std::type_info& type)
 	{
 		GetCounterMap()[type.name()] = CountingReport();
 	}
+	
 	GetCounterMap()[type.name()].created++;
 	GetCounterMap()[type.name()].alive++;
 }
@@ -54,7 +56,7 @@ void report(std::ostream& stream)
 	{
 		stream << i->first << "\n- - - - - - - - - -\n";
 		stream << " alive:   " << i->second.alive << "\n";
-		stream<< " created: " << i->second.created << "\n\n";
+		stream << " created: " << i->second.created << "\n\n";
 		sum += i->second.alive;
 	}
 	

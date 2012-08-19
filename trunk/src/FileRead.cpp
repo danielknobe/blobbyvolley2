@@ -72,7 +72,7 @@ uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 	{
 		throw( PhysfsFileException(mFileName) );
 	}
-	/// \todo use expection error handling here, assert does not fit!
+	
 	if( num_read != num_of_bytes )
 	{
 		throw ( EOFException(mFileName) );
@@ -114,14 +114,14 @@ std::string FileRead::readString()
 		int maxread = std::min(sizeof(buffer), len - tell());
 		readRawBytes( buffer, maxread );	// read into buffer
 		
-		for(int i=0; i < maxread; ++i)
+		for(int i = 0; i < maxread; ++i)
 		{
 			if(buffer[i] == 0) 
 			{
 				seek( tell() - maxread + i + 1);
 				return read;
 			} 
-			else 
+			 else 
 			{
 				read += buffer[i];	// this might not be the most efficient way...
 			}
@@ -162,7 +162,7 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	{
 		return 0;
 	}
-	else
+	 else
 	{
 		return info->buffer;
 	}

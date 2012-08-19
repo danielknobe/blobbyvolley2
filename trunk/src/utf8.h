@@ -7,7 +7,8 @@ inline void to_utf8(wchar_t codepoint, char* target)
 	if(codepoint <= 0x7F)
 	{
 		target[0] = codepoint;
-	} else if (codepoint <= 0x07FF )
+	} 
+	else if (codepoint <= 0x07FF )
 	{
 		unsigned char high = codepoint >> 8;
 		unsigned char low = codepoint & 0xFF;

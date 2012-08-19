@@ -91,18 +91,25 @@ void IMGUI::begin()
 {
 	mUsingCursor = false;
 	mButtonReset = false;
+	
 	while (!mQueue->empty())
 		mQueue->pop();
 	
+	
 	mLastKeyAction = NONE;
+	
 	if (InputManager::getSingleton()->up())
 		mLastKeyAction = UP;
+	
 	if (InputManager::getSingleton()->down())
 		mLastKeyAction = DOWN;
+	
 	if (InputManager::getSingleton()->left())
 		mLastKeyAction = LEFT;
+	
 	if (InputManager::getSingleton()->right())
 		mLastKeyAction = RIGHT;
+	
 	if (InputManager::getSingleton()->select())
 		mLastKeyAction = SELECT;
 }
@@ -111,6 +118,7 @@ void IMGUI::end()
 {
 	int FontSize;
 	RenderManager& rmanager = RenderManager::getSingleton();
+	
 	while (!mQueue->empty())
 	{
 		QueueObject& obj = mQueue->front();
@@ -119,25 +127,31 @@ void IMGUI::end()
 			case IMAGE:
 				rmanager.drawImage(obj.text, obj.pos1);
 				break;
+			
 			case OVERLAY:
 				rmanager.drawOverlay(0.65, obj.pos1, obj.pos2, obj.col);
 				break;
+			
 			case TEXT:
 				rmanager.drawText(obj.text, obj.pos1, obj.flags);
 				break;
+			
 			case SCROLLBAR:
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
+			
 			case ACTIVESCROLLBAR:
 				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
 				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
 				break;
+			
 			case EDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
 				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
 				break;
+			
 			case ACTIVEEDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
@@ -145,6 +159,7 @@ void IMGUI::end()
 				if (obj.pos2.x >= 0)
 					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5, obj.pos1.y+5), Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5+3, obj.pos1.y+5+FontSize), Color(255,255,255));
 				break;
+			
 			case SELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
@@ -156,6 +171,7 @@ void IMGUI::end()
 						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
 				}
 				break;
+			
 			case ACTIVESELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 				rmanager.drawOverlay(0.3, obj.pos1, obj.pos2);
@@ -167,6 +183,7 @@ void IMGUI::end()
 						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
 				}
 				break;
+			
 			case CHAT:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
 				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
@@ -178,9 +195,11 @@ void IMGUI::end()
 						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
 				}
 				break;
+			
 			case BLOB:
 				rmanager.drawBlob(obj.pos1, obj.col);
 				break;
+			
 			default:
 				break;		
 		}
@@ -188,9 +207,7 @@ void IMGUI::end()
 	}
 	if (mDrawCursor)
 	{
-		rmanager.drawImage("gfx/cursor.bmp", 
-			InputManager::getSingleton()->
-			position() + Vector2(24.0, 24.0));
+		rmanager.drawImage("gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2(24.0, 24.0));
 		mDrawCursor = false;
 	}
 }
@@ -259,10 +276,12 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -282,14 +301,17 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				case SELECT:
 					clicked = true;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -329,6 +351,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 	{
 		if (id == mHeldWidget)
 			deselected = true;
+		
 		mHeldWidget = 0;
 	}
 	
@@ -343,10 +366,12 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -366,18 +391,22 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				case LEFT:
 					value -= 0.1;
 					mLastKeyAction = NONE;
 					break;
+				
 				case RIGHT:
 					value += 0.1;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -396,6 +425,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			{
 				mHeldWidget = id;
 			}
+			
 			if (mHeldWidget == id)
 			{
 				value = (mousepos.x - position.x) / 200.0;
@@ -404,6 +434,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 
 			if(InputManager::getSingleton()->mouseWheelUp())
 				value += 0.1;
+			
 			if(InputManager::getSingleton()->mouseWheelDown())
 				value -= 0.1;
 		}
@@ -452,6 +483,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 			// Handle click behind the text.
 			else if (mousepos.x < position.x + length * FontSize + 10)
 				cpos = (int) text.length();
+			
 			mActiveButton = id;
 		}
 	}
@@ -467,10 +499,12 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -497,20 +531,24 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+				
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+				
 				case LEFT:
 					if (cpos > 0)
 						cpos--;
 					mLastKeyAction = NONE;
 					break;
+				
 				case RIGHT:
 					if (cpos < text.length())
 						cpos++;
 					mLastKeyAction = NONE;
 					break;
+				
 				default:
 					break;
 			}
@@ -520,86 +558,86 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				text.erase(cpos - 1, 1);
 				cpos--;
 			}
-			else if (input == "del" && text.length() > cpos)
+			 else if (input == "del" && text.length() > cpos)
 			{
 				text.erase(cpos, 1);
 			}
-			else if (input == "return")
+			 else if (input == "return")
 			{
 				// Workarround for chatwindow! Delete this after GUI-Rework
 				changed = true;
 			}
 			// This is a temporary solution until the new
 			// UTF-8 class can tell the real length!!!
-			else if (text.length() < length)
+			 else if (text.length() < length)
 			{
 				if (input == "space")
 				{
 					text.insert(cpos, " ");
 					cpos++;
 					changed = true;
-				}
-				if (input == "keypad0")
+				} 
+				 else if (input == "keypad0")
 				{
 					text.insert(cpos, "0");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad1")
+				 else if (input == "keypad1")
 				{
 					text.insert(cpos, "1");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad2")
+				 else if (input == "keypad2")
 				{
 					text.insert(cpos, "2");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad3")
+				 else if (input == "keypad3")
 				{
 					text.insert(cpos, "3");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad4")
+				 else if (input == "keypad4")
 				{
 					text.insert(cpos, "4");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad5")
+				 else if (input == "keypad5")
 				{
 					text.insert(cpos, "5");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad6")
+				 else if (input == "keypad6")
 				{
 					text.insert(cpos, "6");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad7")
+				 else if (input == "keypad7")
 				{
 					text.insert(cpos, "7");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad8")
+				 else if (input == "keypad8")
 				{
 					text.insert(cpos, "8");
 					cpos++;
 					changed = true;
 				}
-				else if (input == "keypad9")
+				 else if (input == "keypad9")
 				{
 					text.insert(cpos, "9");
 					cpos++;
 					changed = true;
 				}
-				else if (input.length() == 1)
+				 else if (input.length() == 1)
 				{
 					text.insert(cpos, input);
 					cpos++;
@@ -648,10 +686,12 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+					
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+					
 				default:
 					break;
 			}
@@ -671,10 +711,12 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+					
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+					
 				case LEFT:
 					if (selected > 0)
 					{
@@ -683,6 +725,7 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 					}
 					mLastKeyAction = NONE;
 					break;
+					
 				case RIGHT:
 					if (selected < entries.size()-1)
 					{
@@ -691,6 +734,7 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 					}
 					mLastKeyAction = NONE;
 					break;
+					
 				default:
 					break;
 			}
@@ -720,6 +764,7 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 				
 				if (tmp < entries.size())
 					selected = tmp;
+				
 				mActiveButton = id;
 			}
 			if ((InputManager::getSingleton()->mouseWheelUp()) && (selected > 0))
@@ -741,6 +786,7 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 				selected--;
 				changed = SBA_SELECT;
 			}
+			
 			if (mousepos.y > pos2.y-27 && mousepos.y < pos2.y-27+24 && selected < entries.size()-1)
 			{
 				selected++;
@@ -757,10 +803,12 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 		int last = first + itemsPerPage;
 		if (last > entries.size())
 			last = entries.size();
+		
 		obj.entries = std::vector<std::string>(entries.begin()+first, entries.begin()+last);
 	}
 	else
 		obj.entries = std::vector<std::string>();
+	
 	obj.selected = selected-first;
 
 	mLastWidget = id;
@@ -794,10 +842,12 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+					
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+					
 				default:
 					break;
 			}
@@ -816,10 +866,12 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 					mActiveButton = 0;
 					mLastKeyAction = NONE;
 					break;
+					
 				case UP:
 					mActiveButton = mLastWidget;
 					mLastKeyAction = NONE;
 					break;
+					
 				case LEFT:
 					if (selected > 0)
 					{
@@ -827,6 +879,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 					}
 					mLastKeyAction = NONE;
 					break;
+					
 				case RIGHT:
 					if (selected < entries.size()-1)
 					{
@@ -834,6 +887,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 					}
 					mLastKeyAction = NONE;
 					break;
+					
 				default:
 					break;
 			}
@@ -856,6 +910,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 			{
 				selected--;
 			}
+			
 			if ((InputManager::getSingleton()->mouseWheelDown()) && (selected < entries.size()-1))
 			{
 				selected++;
@@ -868,6 +923,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 			{
 				selected--;
 			}
+			
 			if (mousepos.y > pos2.y-27 && mousepos.y < pos2.y-27+24 && selected < entries.size()-1)
 			{
 				selected++;
@@ -909,6 +965,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 	}
 	else
 		obj.entries = std::vector<std::string>();
+	
 	obj.selected = selected-first;
 
 	mLastWidget = id;

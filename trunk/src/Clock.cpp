@@ -28,8 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-Clock::Clock():mRunning(false), mGameTime(0), mLastTime(0)
+Clock::Clock() : mRunning(false), mGameTime(0), mLastTime(0)
 {
+	
 }
 
 void Clock::reset()
@@ -73,7 +74,7 @@ std::string Clock::getTimeString() const
 	int time_sec = mGameTime / 1000;
 	
 	int seconds = time_sec % 60;
-	int minutes = ((time_sec - seconds)/60) % 60;
+	int minutes = ((time_sec - seconds) / 60) % 60;
 	int hours = ((time_sec - 60 * minutes - seconds) / 3600) % 60;
 	
 	// now convert to string via stringstream
@@ -87,12 +88,14 @@ std::string Clock::getTimeString() const
 	// leading 0 if minutes < 10
 	if(minutes < 10)
 		stream << "0";
+	
 	stream << minutes << ":";
 	
 	// write seconds
 	// leading 0 if seconds < 10
 	if(seconds < 10)
 		stream << "0";
+	
 	stream << seconds;
 	
 	// convert stringstream to string and return

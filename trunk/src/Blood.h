@@ -76,8 +76,10 @@ class BloodManager : private boost::noncopyable
 		{
 			if (!mSingleton)
 				mSingleton = new BloodManager;
+			
 			return *mSingleton;
 		}
+		
 	private:
 		/// default constructor, sets mEnabled to the value
 		///	set in config.xml

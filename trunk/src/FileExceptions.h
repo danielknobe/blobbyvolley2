@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileSystemException : public std::exception
 {
 	public:
-		FileSystemException() {};
+		FileSystemException() { };
 		~FileSystemException() throw() { };
 		
 		virtual const char* what() const throw()
@@ -111,6 +111,7 @@ class FileException: public FileSystemException {
 		{
 			return filename;
 		} 
+		
 	private:
 		std::string filename;	///!< name of the file which caused the exception
 };
@@ -151,7 +152,7 @@ class FileAlreadyExistsException : public FileException
 		{
 		}
 		
-		virtual ~FileAlreadyExistsException() throw() {}
+		virtual ~FileAlreadyExistsException() throw() { }
 
 		virtual const char* what() const throw()
 		{

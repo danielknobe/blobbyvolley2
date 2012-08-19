@@ -79,8 +79,13 @@ struct Color
 		: r(red), g(green), b(blue) {}
 	
 	/// \sa toInt()
-	Color(unsigned int col)
-		:r(col&0xff), g((col>>8)&0xff), b((col>>16)&0xff) {}
+	Color(unsigned int col) : 	r(col&0xff), 
+								g((col>>8)&0xff), 
+								b((col>>16)&0xff) 
+	{
+		
+	}
+	
 	Color() {}
 
 	union

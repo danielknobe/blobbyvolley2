@@ -95,15 +95,17 @@ void BloodManager::step()
 
 void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
 {
+	const double EL_X_AXIS = 30;
+	const double EL_Y_AXIS = 50;
 	for (int c = 0; c <= int(intensity*50); c++)
 	{
 		/// \todo maybe we can find a better algorithm, but for now,
 		///		we just discard particles outside the ellipses
 		///		so it doesn't look that much like a square.
-		int x = random(int(-30*intensity), int(30*intensity));
-		int y = random(int(-50*intensity), 3);
+		int x = random(int(-EL_X_AXIS * intensity), int(EL_X_AXIS * intensity));
+		int y = random(int(-EL_Y_AXIS * intensity), 3);
 		
-		if( y * y / (50 * 50 * intensity * intensity) + x*x / (30*30*intensity*intensity) > 1)
+		if( ( y * y / (EL_Y_AXIS * EL_Y_AXIS) + x * x / (EL_X_AXIS * EL_X_AXIS) ) > intensity * intensity)
 			continue;
 		
 		mParticles.push_front( Blood(pos, Vector2(x, y), player) );
@@ -113,5 +115,5 @@ void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
 int BloodManager::random(int min, int max)
 {
 	/// \todo is this really a good way of creating these numbers?
-	return (int)((double(rand())/RAND_MAX)*(max-min)) + min;
+	return (int)((double(rand()) / RAND_MAX) * (max - min)) + min;
 }
