@@ -100,122 +100,123 @@ struct BufferedImage
 */
 class RenderManager
 {
+	public:
+		virtual ~RenderManager(){};
 
-private:
-	static RenderManager *mSingleton;
+		static RenderManager* createRenderManagerSDL();
+		static RenderManager* createRenderManagerGP2X();
+		static RenderManager* createRenderManagerGL2D();
+		static RenderManager* createRenderManagerNull();
 
-protected:
-	RenderManager();
-	// Returns -1 on EOF
-	// Returns index for ? on unknown char
-	int getNextFontIndex(std::string& string);
-	SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
-	SDL_Surface* loadSurface(std::string filename);
-	SDL_Surface* createEmptySurface(unsigned int width, unsigned int height);
+		static RenderManager& getSingleton()
+		{
+			return *mSingleton;
+		}
+
+		// Draws the stuff
+		virtual void draw() = 0;
+		
+		// This swaps the screen buffers and should be called
+		// after all draw calls
+		virtual void refresh() {};
+
+		// Init with the desired Resolution.
+		// Note: It is not guaranteed that this resolution will be selected
+		virtual void init(int xResolution, int yResolution,
+			bool fullscreen) {};
+
+		// Frees all internal data
+		virtual void deinit() {};
+
+		// Set a background image by filename
+		// Note: There is a default, you dont need to do this
+		// Returns true on success
+		virtual bool setBackground(const std::string& filename) { return true; };
+
+		// Colors the standard blob image, which are red and green by default
+		virtual void setBlobColor(int player, Color color) {};
+
+		virtual void showShadow(bool shadow) {};
+		
+		// Takes the new balls position and its rotation in radians
+		virtual void setBall(const Vector2& position, float rotation) {};
+
+		// Takes the new position and the animation state as a float,
+		// because some renderers may interpolate the animation
+		virtual void setBlob(int player, const Vector2& position, 
+				float animationState) {};
+
+		virtual void setMouseMarker(float position);
+		
+		// Set the displayed score values and the serve notifications
+		virtual void setScore(int leftScore, int rightScore,
+			bool leftWarning, bool rightWarning) {};
+
+		// Set the names
+		virtual void setPlayernames(std::string leftName, std::string rightName) {};
+		
+		// Set the time
+		virtual void setTime(const std::string& time) {};
+
+		// This simply draws the given text with its top left corner at the
+		// given position and doesn't care about line feeds.
+		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) {};
+		
+		// This loads and draws an image by name
+		// The according Surface is automatically colorkeyed
+		// The image is centered around position
+		virtual void drawImage(const std::string& filename, Vector2 position) {};
+		
+		// This draws a greyed-out area
+		virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
+		
+		//Draws a blob 
+		virtual void drawBlob(const Vector2& pos, const Color& col){};
+
+		// Enables particle drawing
+		virtual void startDrawParticles() {};
+		//Draw blood particle
+		virtual void drawParticle(const Vector2& pos, int player){};
+		// Finishes drawing particles
+		virtual void endDrawParticles() {};
+
+		// This forces a redraw of the background, for example
+		// when the windows was minimized
+		void redraw();
+		
+		// This can disable the rendering of ingame graphics, for example for
+		// the main menu
+		void drawGame(bool draw);
+		
+		// This function may be useful for displaying framerates
+		void setTitle(const std::string& title);
 	
-	Vector2 blobShadowPosition(const Vector2& position);
-	Vector2 ballShadowPosition(const Vector2& position);
+	protected:
+		RenderManager();
+		// Returns -1 on EOF
+		// Returns index for ? on unknown char
+		int getNextFontIndex(std::string& string);
+		SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
+		SDL_Surface* loadSurface(std::string filename);
+		SDL_Surface* createEmptySurface(unsigned int width, unsigned int height);
+		
+		Vector2 blobShadowPosition(const Vector2& position);
+		Vector2 ballShadowPosition(const Vector2& position);
+		
+		SDL_Rect blobRect(const Vector2& position);
+		SDL_Rect blobShadowRect(const Vector2& position);
+		SDL_Rect ballRect(const Vector2& position);
+		SDL_Rect ballShadowRect(const Vector2& position);
+		
+		bool mDrawGame;
+		
+		std::map<std::string, BufferedImage*> mImageMap;
+
+		float mMouseMarkerPosition;
+		bool mNeedRedraw;
+		
 	
-	SDL_Rect blobRect(const Vector2& position);
-	SDL_Rect blobShadowRect(const Vector2& position);
-	SDL_Rect ballRect(const Vector2& position);
-	SDL_Rect ballShadowRect(const Vector2& position);
-	
-	bool mDrawGame;
-	
-	std::map<std::string, BufferedImage*> mImageMap;
+	private:
+		static RenderManager *mSingleton;
 
-	float mMouseMarkerPosition;
-	bool mNeedRedraw;
-	
-public:
-	virtual ~RenderManager(){};
-
-	static RenderManager* createRenderManagerSDL();
-	static RenderManager* createRenderManagerGP2X();
-	static RenderManager* createRenderManagerGL2D();
-	static RenderManager* createRenderManagerNull();
-
-	static RenderManager& getSingleton()
-	{
-		return *mSingleton;
-	}
-
-	// Draws the stuff
-	virtual void draw() = 0;
-	
-	// This swaps the screen buffers and should be called
-	// after all draw calls
-	virtual void refresh() {};
-
-	// Init with the desired Resolution.
-	// Note: It is not guaranteed that this resolution will be selected
-	virtual void init(int xResolution, int yResolution,
-		bool fullscreen) {};
-
-	// Frees all internal data
-	virtual void deinit() {};
-
-	// Set a background image by filename
-	// Note: There is a default, you dont need to do this
-	// Returns true on success
-	virtual bool setBackground(const std::string& filename) { return true; };
-
-	// Colors the standard blob image, which are red and green by default
-	virtual void setBlobColor(int player, Color color) {};
-
-	virtual void showShadow(bool shadow) {};
-	
-	// Takes the new balls position and its rotation in radians
-	virtual void setBall(const Vector2& position, float rotation) {};
-
-	// Takes the new position and the animation state as a float,
-	// because some renderers may interpolate the animation
-	virtual void setBlob(int player, const Vector2& position, 
-			float animationState) {};
-
-	virtual void setMouseMarker(float position);
-	
-	// Set the displayed score values and the serve notifications
-	virtual void setScore(int leftScore, int rightScore,
-		bool leftWarning, bool rightWarning) {};
-
-	// Set the names
-	virtual void setPlayernames(std::string leftName, std::string rightName) {};
-	
-	// Set the time
-	virtual void setTime(const std::string& time) {};
-
-	// This simply draws the given text with its top left corner at the
-	// given position and doesn't care about line feeds.
-	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) {};
-	
-	// This loads and draws an image by name
-	// The according Surface is automatically colorkeyed
-	// The image is centered around position
-	virtual void drawImage(const std::string& filename, Vector2 position) {};
-	
-	// This draws a greyed-out area
-	virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
-	
-	//Draws a blob 
-	virtual void drawBlob(const Vector2& pos, const Color& col){};
-
-	// Enables particle drawing
-	virtual void startDrawParticles() {};
-	//Draw blood particle
-	virtual void drawParticle(const Vector2& pos, int player){};
-	// Finishes drawing particles
-	virtual void endDrawParticles() {};
-
-	// This forces a redraw of the background, for example
-	// when the windows was minimized
-	void redraw();
-	
-	// This can disable the rendering of ingame graphics, for example for
-	// the main menu
-	void drawGame(bool draw);
-	
-	// This function may be useful for displaying framerates
-	void setTitle(const std::string& title);
 };

@@ -30,63 +30,64 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class RenderManagerGP2X : public RenderManager
 {
-	SDL_Surface* mBackground;
-	SDL_Surface* mBallShadow;
+	public:
+		RenderManagerGP2X();
 
-	std::vector<SDL_Surface*> mBall;
-	std::vector<SDL_Surface*> mStandardBlob;
-	std::vector<SDL_Surface*> mStandardBlobShadow;
-	std::vector<SDL_Surface*> mLeftBlob;
-	std::vector<SDL_Surface*> mLeftBlobShadow;
-	std::vector<SDL_Surface*> mRightBlob;
-	std::vector<SDL_Surface*> mRightBlobShadow;
+		virtual void init(int xResolution, int yResolution, bool fullscreen);
+		virtual void deinit();
+		virtual void draw();
+		virtual void refresh();
 
-	std::vector<SDL_Surface*> mFont;
-	std::vector<SDL_Surface*> mHighlightFont;
-	std::vector<SDL_Surface*> mSmallFont;
-	std::vector<SDL_Surface*> mHighlightSmallFont;
+		virtual bool setBackground(const std::string& filename);
+		virtual void setBlobColor(int player, Color color);
 
-	SDL_Surface *mScreen;
+		virtual void setBall(const Vector2& position, float rotation);
+		virtual void setBlob(int player, const Vector2& position,
+				float animationState);
 
-	Vector2 mBallPosition;
-	float mBallRotation;
-	Vector2 mLeftBlobPosition;
-	float mLeftBlobAnimationState;
-	Vector2 mRightBlobPosition;
-	float mRightBlobAnimationState;
+		virtual void setScore(int leftScore, int rightScore,
+				   bool leftWarning, bool rightWarning);
+		virtual void setTime(const std::string& t);
 
-	int mLeftPlayerScore;
-	int mRightPlayerScore;
-	bool mLeftPlayerWarning;
-	bool mRightPlayerWarning;
+		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
+		virtual void drawImage(const std::string& filename, Vector2 position) {};
 
-	std::string mLeftPlayerName;
-	std::string mRightPlayerName;
-	std::string mTime;
+	private:
+		SDL_Surface* mBackground;
+		SDL_Surface* mBallShadow;
 
-	SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
+		std::vector<SDL_Surface*> mBall;
+		std::vector<SDL_Surface*> mStandardBlob;
+		std::vector<SDL_Surface*> mStandardBlobShadow;
+		std::vector<SDL_Surface*> mLeftBlob;
+		std::vector<SDL_Surface*> mLeftBlobShadow;
+		std::vector<SDL_Surface*> mRightBlob;
+		std::vector<SDL_Surface*> mRightBlobShadow;
 
-public:
-	RenderManagerGP2X();
+		std::vector<SDL_Surface*> mFont;
+		std::vector<SDL_Surface*> mHighlightFont;
+		std::vector<SDL_Surface*> mSmallFont;
+		std::vector<SDL_Surface*> mHighlightSmallFont;
 
-	virtual void init(int xResolution, int yResolution, bool fullscreen);
-	virtual void deinit();
-	virtual void draw();
-	virtual void refresh();
+		SDL_Surface *mScreen;
 
-	virtual bool setBackground(const std::string& filename);
-	virtual void setBlobColor(int player, Color color);
+		Vector2 mBallPosition;
+		float mBallRotation;
+		Vector2 mLeftBlobPosition;
+		float mLeftBlobAnimationState;
+		Vector2 mRightBlobPosition;
+		float mRightBlobAnimationState;
 
-	virtual void setBall(const Vector2& position, float rotation);
-	virtual void setBlob(int player, const Vector2& position,
-			float animationState);
+		int mLeftPlayerScore;
+		int mRightPlayerScore;
+		bool mLeftPlayerWarning;
+		bool mRightPlayerWarning;
 
-	virtual void setScore(int leftScore, int rightScore,
-		       bool leftWarning, bool rightWarning);
-	virtual void setTime(const std::string& t);
+		std::string mLeftPlayerName;
+		std::string mRightPlayerName;
+		std::string mTime;
 
-	virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
-	virtual void drawImage(const std::string& filename, Vector2 position) {};
+		SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
 
 };
 

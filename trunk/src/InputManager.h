@@ -30,80 +30,81 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 struct InputKeyMap
 {
-        const char *keyname;
-        SDLKey key;
+	const char *keyname;
+	SDLKey key;
 };
 
 /// \brief class for managing input
 class InputManager
 {
-private:
-	static InputManager* mSingleton;
+	public:
+		static InputManager* createInputManager();
+		static InputManager* getSingleton();
+		~InputManager();
+
+		void beginGame(PlayerSide side);
+		void endGame();
+
+		bool running() const;
+		PlayerInput getGameInput(int player);
+		void updateInput();
+
+		// For GUI navigation (Gamepad, Joystick or Keyboard)
+		bool up() const;
+		bool down() const;
+		bool left() const;
+		bool right() const;
+		bool select() const;
+		bool exit() const; // extention for mouse included, so that right click = exit
+
+		std::string getLastTextKey();
+		std::string getLastActionKey();
+		int getLastMouseButton() const { return mLastMouseButton; }
+		std::string getLastJoyAction() const;
+
+		// For GUI navigation (Mouse)
+		Vector2 position();
+		bool click() const;
+		bool doubleClick() const;
+		bool mouseWheelUp() const;
+		bool mouseWheelDown() const;
+		bool unclick() const;
+		
+		// config conversion methods
+		std::string keyToString(const SDL_keysym& key);
+		SDLKey stringToKey(const std::string& keyname);
 	
-	// Keyboard
-	static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
+	private:
+		static InputManager* mSingleton;
+		
+		// Keyboard
+		static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
-	// GUI storage (because we need event based input for the GUI)
-	bool mUp;
-	bool mDown;
-	bool mLeft;
-	bool mRight;
-	bool mSelect;
-	bool mExit;
-	bool mClick;
-	bool mDoubleClick;
-	bool mMouseWheelUp;
-	bool mMouseWheelDown;
-	bool mUnclick;
-	
-	int mMouseX;
-	int mMouseY;
-	int mLastClickTime;
-	
-	SDL_keysym mLastInputKey;
-	int mLastMouseButton; 
-	std::string mLastJoyAction;
+		// GUI storage (because we need event based input for the GUI)
+		bool mUp;
+		bool mDown;
+		bool mLeft;
+		bool mRight;
+		bool mSelect;
+		bool mExit;
+		bool mClick;
+		bool mDoubleClick;
+		bool mMouseWheelUp;
+		bool mMouseWheelDown;
+		bool mUnclick;
+		
+		int mMouseX;
+		int mMouseY;
+		int mLastClickTime;
+		
+		SDL_keysym mLastInputKey;
+		int mLastMouseButton; 
+		std::string mLastJoyAction;
 
-	PlayerInput mInput[MAX_PLAYERS];	
-	InputDevice *mInputDevice[MAX_PLAYERS];	
-	bool mRunning;
-	
-	InputManager();
-	
-public:
-	static InputManager* createInputManager();
-	static InputManager* getSingleton();
-	~InputManager();
-
-	void beginGame(PlayerSide side);
-	void endGame();
-
-	bool running() const;
-	PlayerInput getGameInput(int player);
-	void updateInput();
-
-	// For GUI navigation (Gamepad, Joystick or Keyboard)
-	bool up() const;
-	bool down() const;
-	bool left() const;
-	bool right() const;
-	bool select() const;
-	bool exit() const; // extention for mouse included, so that right click = exit
-
-	std::string getLastTextKey();
-	std::string getLastActionKey();
-	int getLastMouseButton() const { return mLastMouseButton; }
-	std::string getLastJoyAction() const;
-
-	// For GUI navigation (Mouse)
-	Vector2 position();
-	bool click() const;
-	bool doubleClick() const;
-	bool mouseWheelUp() const;
-	bool mouseWheelDown() const;
-	bool unclick() const;
-	
-	// config conversion methods
-	std::string keyToString(const SDL_keysym& key);
-	SDLKey stringToKey(const std::string& keyname);
+		PlayerInput mInput[MAX_PLAYERS];	
+		InputDevice *mInputDevice[MAX_PLAYERS];	
+		bool mRunning;
+		
+		InputManager();
+		
 };

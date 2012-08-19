@@ -24,23 +24,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class LocalInputSource : public InputSource
 {
-private:
-	int mPlayer;
-public:
-	LocalInputSource(PlayerSide player)
-		: mPlayer(player)
-	{
-		 InputManager::getSingleton()->beginGame(player);
-	}
-	virtual PlayerInput getInput()
-	{
-		return InputManager::getSingleton()->getGameInput(mPlayer);
-	}
+	public:
+		LocalInputSource(PlayerSide player)
+			: mPlayer(player)
+		{
+			 InputManager::getSingleton()->beginGame(player);
+		}
+		
+		virtual PlayerInput getInput()
+		{
+			return InputManager::getSingleton()->getGameInput(mPlayer);
+		}
 
-	~LocalInputSource()
-	{
-		RenderManager::getSingleton().setMouseMarker(-6);
-		InputManager::getSingleton()->endGame();           
-	}
+		~LocalInputSource()
+		{
+			RenderManager::getSingleton().setMouseMarker(-6);
+			InputManager::getSingleton()->endGame();           
+		}
+		
+	private:
+		int mPlayer;
 };
 

@@ -36,114 +36,115 @@ class InputSource;
 */
 class DuelMatch
 {
-public:
-	// This constructor takes the input sources used to get player input
-	// The parameter output tells DuelMatch if it should report its
-	// results to the user through RenderManager and SoundManager.
-	// A deacivation of the output is useful on dedicated servers
+	public:
+		// This constructor takes the input sources used to get player input
+		// The parameter output tells DuelMatch if it should report its
+		// results to the user through RenderManager and SoundManager.
+		// A deacivation of the output is useful on dedicated servers
 
-	// If global is true, the instance registered as the main
-	// game and can be accessed from everywhere. There can only
-	// be one global game at a time, otherwise an assertion fails.
-	
-	// If remote is true, only physical responses will be calculated
-	// but hit events and score events are received from network
+		// If global is true, the instance registered as the main
+		// game and can be accessed from everywhere. There can only
+		// be one global game at a time, otherwise an assertion fails.
+		
+		// If remote is true, only physical responses will be calculated
+		// but hit events and score events are received from network
 
-	DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote);
+		DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote);
 
-	~DuelMatch();
+		~DuelMatch();
 
-	// Allthough DuelMatch can be instantiated multiple times, a
-	// singleton may be registered for the purpose of scripted or
-	// interactive input. Note this can return 0.
-	static DuelMatch* getMainGame();
-	
-	void reset();
+		// Allthough DuelMatch can be instantiated multiple times, a
+		// singleton may be registered for the purpose of scripted or
+		// interactive input. Note this can return 0.
+		static DuelMatch* getMainGame();
+		
+		void reset();
 
-	// This steps through one frame
-	void step();
-	
-	// this methods allow external input 
-	// events triggered by the network
-	void setScore(int left, int right);
-	
-	void trigger(int event);
-	void resetTriggeredEvents();
+		// This steps through one frame
+		void step();
+		
+		// this methods allow external input 
+		// events triggered by the network
+		void setScore(int left, int right);
+		
+		void trigger(int event);
+		void resetTriggeredEvents();
 
-	// This reports the index of the winning player and -1 if the
-	// game is still running
-	PlayerSide winningPlayer();
+		// This reports the index of the winning player and -1 if the
+		// game is still running
+		PlayerSide winningPlayer();
 
-	// This methods report the current game state and a useful for
-	// the input manager, which needs information about the blob
-	// positions and for lua export, which makes them accessable
-	// for scripted input sources
+		// This methods report the current game state and a useful for
+		// the input manager, which needs information about the blob
+		// positions and for lua export, which makes them accessable
+		// for scripted input sources
 
-	int getScore(PlayerSide player) const;
-	int getScoreToWin() const;
-	PlayerSide getServingPlayer() const;
+		int getScore(PlayerSide player) const;
+		int getScoreToWin() const;
+		PlayerSide getServingPlayer() const;
 
-	int getHitcount(PlayerSide player) const;
+		int getHitcount(PlayerSide player) const;
 
-	Vector2 getBallPosition() const;
-	Vector2 getBallVelocity() const;
-	Vector2 getBlobPosition(PlayerSide player) const;
-	
-	const PhysicWorld& getWorld() const{ return mPhysicWorld; };
-	const Clock& getClock() const;
-	Clock& getClock();
+		Vector2 getBallPosition() const;
+		Vector2 getBallVelocity() const;
+		Vector2 getBlobPosition(PlayerSide player) const;
+		
+		const PhysicWorld& getWorld() const{ return mPhysicWorld; };
+		const Clock& getClock() const;
+		Clock& getClock();
 
-	bool getBallDown() const;
-	bool getBallActive() const;
-	
-	void pause();
-	void unpause();
-	
-	bool isPaused() const{ return mPaused; }
+		bool getBallDown() const;
+		bool getBallActive() const;
+		
+		void pause();
+		void unpause();
+		
+		bool isPaused() const{ return mPaused; }
 
-	// This functions returns true if the player launched
-	// and is jumping at the moment
-	bool getBlobJump(PlayerSide player) const;
+		// This functions returns true if the player launched
+		// and is jumping at the moment
+		bool getBlobJump(PlayerSide player) const;
 
-	// Set a new state received from server over a RakNet BitStream
-	void setState(RakNet::BitStream* stream);
+		// Set a new state received from server over a RakNet BitStream
+		void setState(RakNet::BitStream* stream);
 
-	//Input stuff for recording and playing replays
-	const PlayerInput* getPlayersInput() const;
-	void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
-	
-	void setServingPlayer(PlayerSide side);
-	
-	enum {
-		EVENT_LEFT_BLOBBY_HIT = 1,
-		EVENT_RIGHT_BLOBBY_HIT = 2,
-		EVENT_BALL_HIT_LEFT_GROUND = 4,
-		EVENT_BALL_HIT_RIGHT_GROUND = 8,
-		EVENT_BALL_HIT_GROUND = EVENT_BALL_HIT_LEFT_GROUND | EVENT_BALL_HIT_RIGHT_GROUND,
-		EVENT_ERROR_LEFT = 16,
-		EVENT_ERROR_RIGHT = 32,
-		EVENT_ERROR = EVENT_ERROR_LEFT | EVENT_ERROR_RIGHT,
-		EVENT_RESET = 64
-	};
-	
-	int getEvents() const { return events; }
+		//Input stuff for recording and playing replays
+		const PlayerInput* getPlayersInput() const;
+		void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
+		
+		void setServingPlayer(PlayerSide side);
+		
+		enum 
+		{
+			EVENT_LEFT_BLOBBY_HIT = 1,
+			EVENT_RIGHT_BLOBBY_HIT = 2,
+			EVENT_BALL_HIT_LEFT_GROUND = 4,
+			EVENT_BALL_HIT_RIGHT_GROUND = 8,
+			EVENT_BALL_HIT_GROUND = EVENT_BALL_HIT_LEFT_GROUND | EVENT_BALL_HIT_RIGHT_GROUND,
+			EVENT_ERROR_LEFT = 16,
+			EVENT_ERROR_RIGHT = 32,
+			EVENT_ERROR = EVENT_ERROR_LEFT | EVENT_ERROR_RIGHT,
+			EVENT_RESET = 64
+		};
+		
+		int getEvents() const { return events; }
 
-private:
-	static DuelMatch* mMainGame;
-	bool mGlobal;
+	private:
+		static DuelMatch* mMainGame;
+		bool mGlobal;
 
-	PhysicWorld mPhysicWorld;
+		PhysicWorld mPhysicWorld;
 
-	InputSource* mLeftInput;
-	InputSource* mRightInput;
+		InputSource* mLeftInput;
+		InputSource* mRightInput;
 
-	GameLogic mLogic;
+		GameLogic mLogic;
 
-	bool mBallDown;
-	
-	bool mPaused;
+		bool mBallDown;
+		
+		bool mPaused;
 
-	int events;
-	int external_events;
-	bool mRemote;
+		int events;
+		int external_events;
+		bool mRemote;
 };

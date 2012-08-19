@@ -24,14 +24,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class IUserConfigReader
 {
-public:
-	IUserConfigReader() {};
-	static boost::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
-	virtual ~IUserConfigReader() {};
-	
-	virtual std::string getValue(const std::string& name) const = 0;
-	virtual float getFloat(const std::string& name) const = 0;
-	virtual std::string getString(const std::string& name) const = 0;
-	virtual bool getBool(const std::string& name) const = 0;
-	virtual int getInteger(const std::string& name) const = 0;
+	public:
+		IUserConfigReader() {};
+		static boost::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
+		virtual ~IUserConfigReader() {};
+		
+		virtual std::string getValue(const std::string& name) const = 0;
+		virtual float getFloat(const std::string& name) const = 0;
+		virtual std::string getString(const std::string& name) const = 0;
+		virtual bool getBool(const std::string& name) const = 0;
+		virtual int getInteger(const std::string& name) const = 0;
 };

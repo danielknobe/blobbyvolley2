@@ -32,39 +32,39 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class SpeedController
 {
-public:
-	SpeedController(float gameFPS);
-	~SpeedController();
-	
-	void setGameSpeed(float fps);
-	float getGameSpeed() const{return mGameFPS;}
+	public:
+		SpeedController(float gameFPS);
+		~SpeedController();
+		
+		void setGameSpeed(float fps);
+		float getGameSpeed() const{return mGameFPS;}
 
-/// This reports whether a framedrop is necessary to hold the real FPS
-	bool doFramedrop() const;
+	/// This reports whether a framedrop is necessary to hold the real FPS
+		bool doFramedrop() const;
 
-/// gives the caller the fps of the drawn frames:
-	int getFPS() const { return mFPS; }
-	void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
-	bool getDrawFPS() const { return mDrawFPS; }
+	/// gives the caller the fps of the drawn frames:
+		int getFPS() const { return mFPS; }
+		void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
+		bool getDrawFPS() const { return mDrawFPS; }
 
-/// This updates everything and waits the necessary time	
-	void update();
+	/// This updates everything and waits the necessary time	
+		void update();
 
-	static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
-	static SpeedController* getMainInstance() { return mMainInstance; }
-private:
-	float mGameFPS;
-	float mRealFPS;
-	int mFPS;
-	int mFPSCounter;
-	bool mFramedrop;
-	bool mDrawFPS;
-	static SpeedController* mMainInstance;
-	int mOldTicks;
+		static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
+		static SpeedController* getMainInstance() { return mMainInstance; }
+	private:
+		float mGameFPS;
+		float mRealFPS;
+		int mFPS;
+		int mFPSCounter;
+		bool mFramedrop;
+		bool mDrawFPS;
+		static SpeedController* mMainInstance;
+		int mOldTicks;
 
-	// internal data
-	unsigned int mBeginSecond;
-	int mCounter;
+		// internal data
+		unsigned int mBeginSecond;
+		int mCounter;
 };
 
 

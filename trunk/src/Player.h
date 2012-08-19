@@ -29,26 +29,26 @@ class InputSource;
 
 class Player
 {
-public:
-	Player(PlayerSide side);
-	~Player();
+	public:
+		Player(PlayerSide side);
+		~Player();
 
-	void loadFromConfig(const std::string& prefix, bool initInput = true);
+		void loadFromConfig(const std::string& prefix, bool initInput = true);
 
-	InputSource* getInputSource() const;
-	std::string getName() const;
-	Color getColor() const;
-	
-	void setColor(Color ncol);
-	void setName(const std::string& name);
-private:
+		InputSource* getInputSource() const;
+		std::string getName() const;
+		Color getColor() const;
+		
+		void setColor(Color ncol);
+		void setName(const std::string& name);
+	private:
 
-	bool mInitialised;
-	const PlayerSide mPlayerSide;
-	boost::scoped_ptr<InputSource> mInputSource;
-	std::string mName;
-	
-	Color mStaticColor;
-	bool mOscillating;
+		bool mInitialised;
+		const PlayerSide mPlayerSide;
+		boost::scoped_ptr<InputSource> mInputSource;
+		std::string mName;
+		
+		Color mStaticColor;
+		bool mOscillating;
 };
 
