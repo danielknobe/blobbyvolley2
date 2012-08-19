@@ -63,9 +63,10 @@ void File::open(const std::string& filename, OpenMode mode, bool no_override)
 		{
 			throw FileAlreadyExistsException(filename);
 		}
+		
 		mHandle = PHYSFS_openWrite(filename.c_str());
 	} 
-		else  
+	 else  
 	{
 		mHandle = PHYSFS_openRead(filename.c_str());
 	}
@@ -124,6 +125,7 @@ uint32_t File::tell() const
 	check_file_open();
 	
 	PHYSFS_sint64 tp = PHYSFS_tell( reinterpret_cast<PHYSFS_file*> (mHandle) );
+	
 	if(tp == -1) 
 		throw( PhysfsFileException(mFileName) );
 	

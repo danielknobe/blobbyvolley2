@@ -105,7 +105,8 @@ class File : boost::noncopyable
 		void seek(uint32_t target);
 		
 	protected:
-		enum OpenMode {
+		enum OpenMode 
+		{
 			OPEN_READ,		///!< open file for reading
 			OPEN_WRITE		///!< open file for writing
 		};

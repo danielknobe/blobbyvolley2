@@ -118,6 +118,7 @@ std::string FileSystem::getDirSeparator()
 {
 	return PHYSFS_getDirSeparator();
 }
+
 std::string FileSystem::getUserDir()
 {
 	return PHYSFS_getUserDir();
@@ -132,12 +133,13 @@ void FileSystem::probeDir(const std::string& dirname)
 			/// \todo simple delete such files without a warning???
 			deleteFile(dirname);
 		}
+		
 		if (mkdir(dirname))
 		{
 			std::cout << PHYSFS_getWriteDir() <<
 				dirname << " created" << std::endl;
 		}
-		else
+		 else
 		{
 			std::cout << "Warning: Creation of" << 
 				PHYSFS_getWriteDir() << dirname <<

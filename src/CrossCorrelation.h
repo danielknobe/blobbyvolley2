@@ -84,7 +84,8 @@ CC_Result crossCorrelation(const T& A, const T& B, timeWeightFunction f = consta
 			best = val;
 			boffset = offset;
 			samevals = 1;
-		} else if ( val == best)
+		} 
+		 else if ( val == best)
 		{
 			samevals++;
 		}
