@@ -39,29 +39,28 @@ struct UserConfigVar
 */
 class UserConfig: public IUserConfigReader
 {
-public:
-	~UserConfig();
-	
-	bool loadFile(const std::string& filename);
-	bool saveFile(const std::string& filename) const;
+	public:
+		~UserConfig();
+		
+		bool loadFile(const std::string& filename);
+		bool saveFile(const std::string& filename) const;
 
-	void setValue(const std::string& name, const std::string& value);
-	std::string getValue(const std::string& name) const;
+		void setValue(const std::string& name, const std::string& value);
+		std::string getValue(const std::string& name) const;
 
-	float getFloat(const std::string& name) const;
-	std::string getString(const std::string& name) const;
-	bool getBool(const std::string& name) const;
-	int getInteger(const std::string& name) const;
+		float getFloat(const std::string& name) const;
+		std::string getString(const std::string& name) const;
+		bool getBool(const std::string& name) const;
+		int getInteger(const std::string& name) const;
 
-	void setFloat(const std::string& name, float value);
-	void setString(const std::string& name, const std::string& value);
-	void setBool(const std::string& name, bool value);
-	void setInteger(const std::string& name, int value);
-	
-private:
-	std::vector<UserConfigVar*> mVars;
-	bool mChangeFlag;
-	UserConfigVar *findVarByName(const std::string& Name) const;
-	UserConfigVar* createVar(const std::string& name, 
-			const std::string& defaultValue);
+		void setFloat(const std::string& name, float value);
+		void setString(const std::string& name, const std::string& value);
+		void setBool(const std::string& name, bool value);
+		void setInteger(const std::string& name, int value);
+		
+	private:
+		std::vector<UserConfigVar*> mVars;
+		bool mChangeFlag;
+		UserConfigVar *findVarByName(const std::string& Name) const;
+		UserConfigVar* createVar(const std::string& name, const std::string& defaultValue);
 };

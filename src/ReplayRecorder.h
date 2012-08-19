@@ -70,37 +70,38 @@ struct VersionMismatchException : public std::exception
 ///			which might be ineffective for huge replays (1h ~ 270kb) 
 class ReplayRecorder
 {
-public:
-	ReplayRecorder();
-	~ReplayRecorder();
+	public:
+		ReplayRecorder();
+		~ReplayRecorder();
 
-	void save(const std::string& filename) const;
-	void save(RakNet::BitStream& stream) const;
-	void receive(RakNet::BitStream& stream);
-	void record(const PlayerInput* input);
-	
-	void setPlayerNames(const std::string& left, const std::string& right);
-	void setPlayerColors(Color left, Color right);
-	void setGameSpeed(int fps);
-private:
+		void save(const std::string& filename) const;
+		void save(RakNet::BitStream& stream) const;
+		void receive(RakNet::BitStream& stream);
+		void record(const PlayerInput* input);
+		
+		void setPlayerNames(const std::string& left, const std::string& right);
+		void setPlayerColors(Color left, Color right);
+		void setGameSpeed(int fps);
+		
+	private:
 
-	void writeFileHeader(FileWrite&, uint32_t checksum) const;
-	void writeReplayHeader(FileWrite&) const;
-	void writeAttributesSection(FileWrite&) const;
-	void writeJumpTable(FileWrite&) const;
-	void writeDataSection(FileWrite&) const;
+		void writeFileHeader(FileWrite&, uint32_t checksum) const;
+		void writeReplayHeader(FileWrite&) const;
+		void writeAttributesSection(FileWrite&) const;
+		void writeJumpTable(FileWrite&) const;
+		void writeDataSection(FileWrite&) const;
 
-	std::vector<uint8_t> mSaveData;
+		std::vector<uint8_t> mSaveData;
 
-	// general replay attributes
-	std::string mPlayerNames[MAX_PLAYERS];
-	Color mPlayerColors[MAX_PLAYERS];
-	int mGameSpeed;
-	
-	
-	// here we save the information needed to create the header
-	//  pointers  to replay sections
-	mutable uint32_t attr_ptr;
-	mutable uint32_t jptb_ptr;
-	mutable uint32_t data_ptr;
+		// general replay attributes
+		std::string mPlayerNames[MAX_PLAYERS];
+		Color mPlayerColors[MAX_PLAYERS];
+		int mGameSpeed;
+		
+		
+		// here we save the information needed to create the header
+		//  pointers  to replay sections
+		mutable uint32_t attr_ptr;
+		mutable uint32_t jptb_ptr;
+		mutable uint32_t data_ptr;
 };

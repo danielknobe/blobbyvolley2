@@ -38,110 +38,110 @@ namespace RakNet
 */
 class PhysicWorld
 {
-public:
-	PhysicWorld();
-	~PhysicWorld();
+	public:
+		PhysicWorld();
+		~PhysicWorld();
 
-	Vector2 getBallVelocity() const;
-	bool getBlobJump(PlayerSide player) const;
-	bool getBallActive() const;
+		Vector2 getBallVelocity() const;
+		bool getBlobJump(PlayerSide player) const;
+		bool getBallActive() const;
 
-	void setLeftInput(const PlayerInput& input);
-	void setRightInput(const PlayerInput& input);
+		void setLeftInput(const PlayerInput& input);
+		void setRightInput(const PlayerInput& input);
 
-	Vector2 getBlob(PlayerSide player) const;
-	Vector2 getBall() const;
+		Vector2 getBlob(PlayerSide player) const;
+		Vector2 getBall() const;
 
-	float getBlobState(PlayerSide player) const;
-	float getBallRotation() const;
+		float getBlobState(PlayerSide player) const;
+		float getBallRotation() const;
 
-	float getBallSpeed() const;
+		float getBallSpeed() const;
 
-	// These functions tell about ball collisions for game logic and sound
-	bool ballHitLeftPlayer() const;
-	bool ballHitRightPlayer() const;
-	bool ballHitLeftGround() const;
-	bool ballHitRightGround() const;
+		// These functions tell about ball collisions for game logic and sound
+		bool ballHitLeftPlayer() const;
+		bool ballHitRightPlayer() const;
+		bool ballHitLeftGround() const;
+		bool ballHitRightGround() const;
 
-	bool blobbyHitGround(PlayerSide player) const;
+		bool blobbyHitGround(PlayerSide player) const;
 
-	// Blobby animation methods
-	void blobbyAnimationStep(PlayerSide player);
-	void blobbyStartAnimation(PlayerSide player);
+		// Blobby animation methods
+		void blobbyAnimationStep(PlayerSide player);
+		void blobbyStartAnimation(PlayerSide player);
 
-	// This reports the intensity of the collision
-	// which was detected and also queried last.
-	float lastHitIntensity() const;
+		// This reports the intensity of the collision
+		// which was detected and also queried last.
+		float lastHitIntensity() const;
 
-	// Here the game logic can decide whether the ball is valid.
-	// If not, no ball to player collision checking is done,
-	// the input is ignored an the ball experiences a strong damping
-	void setBallValidity(bool validity);
+		// Here the game logic can decide whether the ball is valid.
+		// If not, no ball to player collision checking is done,
+		// the input is ignored an the ball experiences a strong damping
+		void setBallValidity(bool validity);
 
-	// This returns true if the ball is not valid and the ball is steady
-	bool roundFinished() const;
+		// This returns true if the ball is not valid and the ball is steady
+		bool roundFinished() const;
 
-	// This resets everything to the starting situation and
-	// wants to know, which player begins.
-	void reset(PlayerSide player);
+		// This resets everything to the starting situation and
+		// wants to know, which player begins.
+		void reset(PlayerSide player);
 
-	// This resets the player to their starting positions
-	void resetPlayer();
+		// This resets the player to their starting positions
+		void resetPlayer();
 
-	// Important: This assumes a fixed framerate of 60 FPS!
-	void step();
+		// Important: This assumes a fixed framerate of 60 FPS!
+		void step();
 
-	// For reducing ball speed after rule violation
-	void dampBall();
+		// For reducing ball speed after rule violation
+		void dampBall();
 
-	// Set a new state received from server over a RakNet BitStream
-	void setState(RakNet::BitStream* stream);
+		// Set a new state received from server over a RakNet BitStream
+		void setState(RakNet::BitStream* stream);
 
-	// Fill a Bitstream with the state
-	void getState(RakNet::BitStream* stream) const;
+		// Fill a Bitstream with the state
+		void getState(RakNet::BitStream* stream) const;
 
-	// Fill a Bitstream with a side reversed state
-	void getSwappedState(RakNet::BitStream* stream) const;
+		// Fill a Bitstream with a side reversed state
+		void getSwappedState(RakNet::BitStream* stream) const;
 
-	//Input stuff for recording and playing replays
-	const PlayerInput* getPlayersInput() const;
-	
-	#ifdef DEBUG
-	bool checkPhysicStateValidity() const;
-	#endif
+		//Input stuff for recording and playing replays
+		const PlayerInput* getPlayersInput() const;
+		
+		#ifdef DEBUG
+		bool checkPhysicStateValidity() const;
+		#endif
 
-private:
-	inline bool playerTopBallCollision(int player) const;
-	inline bool playerBottomBallCollision(int player) const;
-	bool resetAreaClear()const;
+	private:
+		inline bool playerTopBallCollision(int player) const;
+		inline bool playerBottomBallCollision(int player) const;
+		bool resetAreaClear()const;
 
-	// Do all blobby-related physic stuff which is independent from states
-	void handleBlob(PlayerSide player);
+		// Do all blobby-related physic stuff which is independent from states
+		void handleBlob(PlayerSide player);
 
-	// Detect and handle ball to blobby collisions
-	void handleBlobbyBallCollision(PlayerSide player);
+		// Detect and handle ball to blobby collisions
+		void handleBlobbyBallCollision(PlayerSide player);
 
-	bool mBallHitByBlob[MAX_PLAYERS];
+		bool mBallHitByBlob[MAX_PLAYERS];
 
-	Vector2 mBlobPosition[MAX_PLAYERS];
-	Vector2 mBallPosition;
+		Vector2 mBlobPosition[MAX_PLAYERS];
+		Vector2 mBallPosition;
 
-	Vector2 mBlobVelocity[MAX_PLAYERS];
-	Vector2 mBallVelocity;
+		Vector2 mBlobVelocity[MAX_PLAYERS];
+		Vector2 mBallVelocity;
 
-	float mBallRotation;
-	float mBallAngularVelocity;
-	float mBlobState[MAX_PLAYERS];
-	float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
+		float mBallRotation;
+		float mBallAngularVelocity;
+		float mBlobState[MAX_PLAYERS];
+		float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
 
-	PlayerInput mPlayerInput[MAX_PLAYERS];
+		PlayerInput mPlayerInput[MAX_PLAYERS];
 
-	bool mIsGameRunning;
-	bool mIsBallValid;
+		bool mIsGameRunning;
+		bool mIsBallValid;
 
-	float mLastHitIntensity;
-	///! \todo thats not relevant for physics! It's game logic!!
-	float mTimeSinceBallout;
+		float mLastHitIntensity;
+		///! \todo thats not relevant for physics! It's game logic!!
+		float mTimeSinceBallout;
 };
 
 

@@ -37,114 +37,117 @@ class Vector2
 			float val[2];
 		};
 	
-	Vector2();
-	Vector2(float x, float y);
-	Vector2(const Vector2& v1, const Vector2& v2);
+		Vector2();
+		Vector2(float x, float y);
+		Vector2(const Vector2& v1, const Vector2& v2);
 
-	void clear();
-	
-	Vector2 reflectX() const;
-	Vector2 reflectY() const;
-	Vector2 scale(float factor) const;
-	Vector2 scaleX(float factor) const;
-	Vector2 scaleY(float factor) const;
-	float length() const;
-	Vector2 normalise();
-	Vector2 contraVector() const ;
-	
-	inline Vector2 halfVector(const Vector2& vec) const
-	{
-		return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
-	}
+		void clear();
+		
+		Vector2 reflectX() const;
+		Vector2 reflectY() const;
+		Vector2 scale(float factor) const;
+		Vector2 scaleX(float factor) const;
+		Vector2 scaleY(float factor) const;
+		float length() const;
+		Vector2 normalise();
+		Vector2 contraVector() const ;
+		
+		inline Vector2 halfVector(const Vector2& vec) const
+		{
+			return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
+		}
 
-	inline Vector2& operator = (const Vector2& newVector)
-	{
-		x = newVector.x;
-		y = newVector.y;	
-		return *this;
-	}
-	
-	inline bool operator == (const Vector2& vector) const
-	{
-		return (x == vector.x && y == vector.y);
-	}
-	
-	inline bool operator != (const Vector2& vector) const
-	{
-		return (x != vector.x || y != vector.y);
-	}
-	
-	inline Vector2 operator + (const Vector2& vector) const
-	{
-		return Vector2(x + vector.x, y + vector.y);
-	}
-	
-	inline Vector2 operator - (const Vector2& vector) const
-	{
-		return Vector2(x - vector.x, y - vector.y);
-	}
-	
-	inline Vector2 operator * (float scalar) const
-	{
-		return Vector2(x * scalar, y * scalar);
-	}
-	
-	inline Vector2 operator * (const Vector2& vector) const
-	{
-		return Vector2(x * vector.x, y * vector.y);
-	}
-	
-	inline Vector2 operator / (float scalar) const
-	{
-		assert(scalar != 0.0);
-		float invert = 1.0 / scalar;
-		return Vector2(x * invert, y * invert);
-	}
-	
-	inline Vector2 operator - () const
-	{
-		return Vector2(-x, -y);
-	}
-	
-	inline Vector2& operator += (const Vector2& vector)
-	{
-		x += vector.x;
-		y += vector.y;
-		return *this;
-	}
-	
-	inline Vector2& operator -= (const Vector2& vector)
-	{
-		x -= vector.x;
-		y -= vector.y;
-		return *this;
-	}
-	
-	inline Vector2& operator *= (const Vector2& vector)
-	{
-		x *= vector.x;
-		y *= vector.y;
-		return *this;
-	}
+		inline Vector2& operator = (const Vector2& newVector)
+		{
+			x = newVector.x;
+			y = newVector.y;	
+			return *this;
+		}
+		
+		inline bool operator == (const Vector2& vector) const
+		{
+			return (x == vector.x && y == vector.y);
+		}
+		
+		inline bool operator != (const Vector2& vector) const
+		{
+			return (x != vector.x || y != vector.y);
+		}
+		
+		inline Vector2 operator + (const Vector2& vector) const
+		{
+			return Vector2(x + vector.x, y + vector.y);
+		}
+		
+		inline Vector2 operator - (const Vector2& vector) const
+		{
+			return Vector2(x - vector.x, y - vector.y);
+		}
+		
+		inline Vector2 operator * (float scalar) const
+		{
+			return Vector2(x * scalar, y * scalar);
+		}
+		
+		inline Vector2 operator * (const Vector2& vector) const
+		{
+			return Vector2(x * vector.x, y * vector.y);
+		}
+		
+		inline Vector2 operator / (float scalar) const
+		{
+			assert(scalar != 0.0);
+			float invert = 1.0 / scalar;
+			return Vector2(x * invert, y * invert);
+		}
+		
+		inline Vector2 operator - () const
+		{
+			return Vector2(-x, -y);
+		}
+		
+		inline Vector2& operator += (const Vector2& vector)
+		{
+			x += vector.x;
+			y += vector.y;
+			return *this;
+		}
+		
+		inline Vector2& operator -= (const Vector2& vector)
+		{
+			x -= vector.x;
+			y -= vector.y;
+			return *this;
+		}
+		
+		inline Vector2& operator *= (const Vector2& vector)
+		{
+			x *= vector.x;
+			y *= vector.y;
+			return *this;
+		}
 
 
-	inline float dotProduct(const Vector2& vector) const
-	{
-		return x * vector.x + y * vector.y;
-	}
-	
-	inline float crossProduct(const Vector2& vector) const
-	{
-		return x * vector.y - y * vector.x;
-	}
-	
-	inline Vector2 reflect(const Vector2& normal) const
-	{
-		return Vector2(*this - (normal * 2 * dotProduct(normal)));
-	}
-
+		inline float dotProduct(const Vector2& vector) const
+		{
+			return x * vector.x + y * vector.y;
+		}
+		
+		inline float crossProduct(const Vector2& vector) const
+		{
+			return x * vector.y - y * vector.x;
+		}
+		
+		inline Vector2 reflect(const Vector2& normal) const
+		{
+			return Vector2(*this - (normal * 2 * dotProduct(normal)));
+		}
 
 };
+
+// -------------------------------------------------------------------------------------------------
+//    							INLINE IMPLEMENTATION
+// -------------------------------------------------------------------------------------------------
 
 inline Vector2::Vector2() : x(0), y(0)
 {
@@ -211,6 +214,7 @@ inline Vector2 Vector2::normalise()
 	float fLength = length();
 	if (fLength > 1e-08)
 		return Vector2(x / fLength, y / fLength);	
+	
 	return *this;
 }
 
@@ -228,8 +232,11 @@ inline void Vector2::clear()
 inline bool operator < (const Vector2& v1, const Vector2& v2)
 {
 	if (v1.x < v2.x)
-	if (v1.y < v2.y)
-		return true;
+	{
+		if (v1.y < v2.y)
+			return true;
+	}
+	
 	return false;
 	
 }
@@ -237,8 +244,10 @@ inline bool operator < (const Vector2& v1, const Vector2& v2)
 inline bool operator > (const Vector2& v1, const Vector2& v2)
 {
 	if (v1.x > v2.x)
-	if (v1.y > v2.y)
-		return true;
+	{
+		if (v1.y > v2.y)
+			return true;
+	}
 	return false;
 }
 

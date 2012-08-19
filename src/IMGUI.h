@@ -58,42 +58,42 @@ enum SelectBoxAction
 */
 class IMGUI
 {
-public:
-	static IMGUI& getSingleton();
-	
-	void begin();
-	void end();
-	void resetSelection();
-	
-	void doImage(int id, const Vector2& position, const std::string& name);
-	void doText(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
-	void doText(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
-	void doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col = Color(0, 0, 0));
-	void doCursor(bool draw = true) { mDrawCursor = draw; 	mUsingCursor = true; }
+	public:
+		static IMGUI& getSingleton();
+		
+		void begin();
+		void end();
+		void resetSelection();
+		
+		void doImage(int id, const Vector2& position, const std::string& name);
+		void doText(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
+		void doText(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
+		void doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col = Color(0, 0, 0));
+		void doCursor(bool draw = true) { mDrawCursor = draw; 	mUsingCursor = true; }
 
-	bool doButton(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
-	bool doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
-	bool doScrollbar(int id, const Vector2& position, float& value);
-	bool doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
-	SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
-	void doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, const std::vector<bool>& local, unsigned int flags = TF_NORMAL);
-	bool doBlob(int id, const Vector2& position, const Color& col);
+		bool doButton(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
+		bool doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
+		bool doScrollbar(int id, const Vector2& position, float& value);
+		bool doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
+		SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
+		void doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, const std::vector<bool>& local, unsigned int flags = TF_NORMAL);
+		bool doBlob(int id, const Vector2& position, const Color& col);
 
-	bool usingCursor() const;
-	void doInactiveMode(bool inactive) { mInactive = inactive; }
-private:
-	IMGUI();
-	~IMGUI();
+		bool usingCursor() const;
+		void doInactiveMode(bool inactive) { mInactive = inactive; }
+	private:
+		IMGUI();
+		~IMGUI();
 
-	static IMGUI* mSingleton;
+		static IMGUI* mSingleton;
 
-	int mActiveButton;
-	int mHeldWidget;
-	KeyAction mLastKeyAction;
-	int mLastWidget;
-	bool mDrawCursor;
-	bool mButtonReset;
-	bool mInactive;
-	bool mUsingCursor;
+		int mActiveButton;
+		int mHeldWidget;
+		KeyAction mLastKeyAction;
+		int mLastWidget;
+		bool mDrawCursor;
+		bool mButtonReset;
+		bool mInactive;
+		bool mUsingCursor;
 };
 

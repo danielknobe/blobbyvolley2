@@ -94,22 +94,23 @@ public:
 
 class DummyInputSource : public InputSource
 {
-public:
-	virtual PlayerInput getInput()
-	{
-		return mInput;
-	}
-	virtual ~DummyInputSource()
-	{
-	}
-	
-	void setInput(PlayerInput input)
-	{
-		mInput = input;
-	}
-	
-private:
-	PlayerInput mInput;
+	public:
+		virtual PlayerInput getInput()
+		{
+			return mInput;
+		}
+		
+		virtual ~DummyInputSource()
+		{
+		}
+		
+		void setInput(PlayerInput input)
+		{
+			mInput = input;
+		}
+		
+	private:
+		PlayerInput mInput;
 };
 
 // This operator converts a PlayerInput structure in a packed string
