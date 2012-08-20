@@ -38,43 +38,6 @@ extern "C"
 
 /* implementation */
 
-// copied from ScriptedInputSource
-/// \todo avoid code duplication
-
-struct ReaderInfo
-{
-	FileRead file;
-	char buffer[2048];
-};
-
-static const char* chunkReader(lua_State* state, void* data, size_t *size)
-{
-	ReaderInfo* info = (ReaderInfo*) data;
-	
-	int bytesRead = 2048;
-	if(info->file.length() - info->file.tell() < 2048)
-	{
-		bytesRead = info->file.length() - info->file.tell();
-	}
-	
-	info->file.readRawBytes(info->buffer, bytesRead);
-	// if this doesn't throw, bytesRead is the actual number of bytes read
-	/// \todo we must do sth about this code, its just plains awful. 
-	/// 		File interface has to be improved to support such buffered reading.
-	*size = bytesRead;
-	if (bytesRead == 0)
-	{
-		return 0;
-	}
-	else
-	{
-		return info->buffer;
-	}
-}
-
-
-
-
 /// how many steps must pass until the next hit can happen
 const int SQUISH_TOLERANCE = 11;
 
@@ -90,7 +53,8 @@ IGameLogic::IGameLogic():	mLastError(NO_PLAYER),
 	reset();
 }
 
-IGameLogic::~IGameLogic() {
+IGameLogic::~IGameLogic() 
+{
 	// nothing to do
 }
 
@@ -172,6 +136,7 @@ void IGameLogic::onPause()
 	/// pausing for now only means stopping the clock
 	clock.stop();
 }
+
 void IGameLogic::onUnPause()
 {
 	clock.start();
@@ -315,7 +280,9 @@ LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() )
 		lua_close(mState);
 		throw except;
 	}
+	
 	lua_getglobal(mState, "OnMistake");
+	
 	if (!lua_isfunction(mState, -1)) 
 	{
 		std::cerr << "Script Error: Could not find function OnMistake";
@@ -430,11 +397,13 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual PlayerSide checkWin() const 
 		{
-			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) {
+			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) 
+			{
 				return LEFT_PLAYER;
 			}
 			
-			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) {
+			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) 
+			{
 				return RIGHT_PLAYER;
 			}
 			
