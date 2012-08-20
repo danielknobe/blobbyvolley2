@@ -99,14 +99,16 @@ This section describes the coding style. If you think something is missing just 
 \subsubsection{Common}
 \begin{itemize}
 	\item Opening curly braces are placed in a new line
+	\item Closing curly braces are followed by an empty line
 	\item The left indention should be done by tabs, the rest by spaces
 	\item Do not write more than one statement into one source line
+	\item Break statements within switch are followed by an empty line
 	\item Use smart pointers when ever possible
 	\item Code should be gcc 4.6 compatible
 	\item Code should compile in c++11 mode
 	\item Don't use the deprecated exception handling of older c++ versions
 	\item Binary/ternary operators are seperated from their operands by spaces (exception: long expression - for grouping purposes)
-	\item Leaving out braces for one line code blocks after if/for is allowed when appropriate, but must be followed by an empty line 
+	\item Leaving out braces for one line code blocks after if/for is allowed when the following instruction takes only one line, but must be followed by an empty line 
 	\item Use c++ headers instead of c ones for stdlib includes (e.g. <cmath> indstead of <math.h>)
 	\item Use c++ strings instead of c strings if possible
 	\item Prefer references over pointers
@@ -120,6 +122,8 @@ This section describes the coding style. If you think something is missing just 
 	\item Member variables are to be prefixed with m
 	\item Member functions start with a lower case letter
 	\item Members occur in the following order: public, protected, private
+	\item Access level specifiers (is it called that way? / public, protected, private) are indented one level
+	\item Members are indented two levels
 	\item For big classes, it might be a good idea to group member functions into different categories
 	\item Initialize members by constructers initphase whenever possible
 \end{itemize}
