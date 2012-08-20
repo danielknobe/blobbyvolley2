@@ -35,6 +35,7 @@ RenderManager::RenderManager() : mDrawGame(false)
 		mSingleton->deinit();
 		delete mSingleton;
 	}
+	
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
 	mNeedRedraw = true;
@@ -53,15 +54,17 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 	
     SDL_LockSurface(newSurface);
 	for (int y = 0; y < surface->h; ++y)
-	for (int x = 0; x < surface->w; ++x)
-	{
-		SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
-			[y * newSurface->w +x]);
-		if (surface->format->colorkey != ((Uint32*)newSurface->pixels)[y * newSurface->w +x])
+	{	
+		for (int x = 0; x < surface->w; ++x)
 		{
-			pixel->r = pixel->r + luminance > 255 ? 255 : pixel->r + luminance;
-			pixel->g = pixel->g + luminance > 255 ? 255 : pixel->g + luminance;
-			pixel->b = pixel->b + luminance > 255 ? 255 : pixel->b + luminance;
+			SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
+				[y * newSurface->w +x]);
+			if (surface->format->colorkey != ((Uint32*)newSurface->pixels)[y * newSurface->w +x])
+			{
+				pixel->r = pixel->r + luminance > 255 ? 255 : pixel->r + luminance;
+				pixel->g = pixel->g + luminance > 255 ? 255 : pixel->g + luminance;
+				pixel->b = pixel->b + luminance > 255 ? 255 : pixel->b + luminance;
+			}
 		}
 	}
 	SDL_UnlockSurface(newSurface);
@@ -85,6 +88,7 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 	
 	if (!newSurface)
 		throw FileLoadException(filename);
+	
 	return newSurface;
 }
 
@@ -104,6 +108,7 @@ int RenderManager::getNextFontIndex(std::string& string)
 {
 	if (string.empty())
 		return -1;
+	
 	int index = 47;
 	wchar_t testChar = string.at(0);
 	string.erase(string.begin());
@@ -160,6 +165,7 @@ int RenderManager::getNextFontIndex(std::string& string)
 		else if (testChar == std::string("Ü")[1])
 			index = 43;
 	}
+	
 	return index;
 }
 
@@ -207,6 +213,7 @@ SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
 		128,
 		32
 	};
+	
 	return rect;
 }
 

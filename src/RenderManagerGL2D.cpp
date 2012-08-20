@@ -27,7 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 #if HAVE_LIBGL
 
-RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) : w(width), h(height), texture(tex)
+RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) : 
+		w(width), h(height), texture(tex)
 {
 	assert(x + w <= tw);
 	assert(y + h <= th);
@@ -68,6 +69,7 @@ void RenderManagerGL2D::glBindTexture(GLuint texture)
 {
 	if(mCurrentTexture == texture)
 		return;
+	
 	debugBindTextureCount++;
 	::glBindTexture(GL_TEXTURE_2D, texture);
 	mCurrentTexture = texture;
@@ -80,11 +82,11 @@ int RenderManagerGL2D::getNextPOT(int npot)
 	int pot = 1;
 	while (pot < npot)
 		pot *= 2;
+	
 	return pot;
 }
 
-GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, 
-	bool specular)
+GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, bool specular)
 {
 	SDL_Surface* textureSurface;
 	SDL_Surface* convertedTexture;
@@ -118,17 +120,19 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface,
 	if (specular)
 	{
 		for (int y = 0; y < convertedTexture->h; ++y)
-		for (int x = 0; x < convertedTexture->w; ++x)
 		{
-			SDL_Color* pixel = 
-				&(((SDL_Color*)convertedTexture->pixels)
-				[y * convertedTexture->w +x]);
-			int luminance = int(pixel->r) * 5 - 4 * 256 - 138;
-			luminance = luminance > 0 ? luminance : 0;
-			luminance = luminance < 255 ? luminance : 255;
-			pixel->r = luminance;
-			pixel->g = luminance;
-			pixel->b = luminance;
+			for (int x = 0; x < convertedTexture->w; ++x)
+			{
+				SDL_Color* pixel = 
+					&(((SDL_Color*)convertedTexture->pixels)
+					[y * convertedTexture->w +x]);
+				int luminance = int(pixel->r) * 5 - 4 * 256 - 138;
+				luminance = luminance > 0 ? luminance : 0;
+				luminance = luminance < 255 ? luminance : 255;
+				pixel->r = luminance;
+				pixel->g = luminance;
+				pixel->b = luminance;
+			}
 		}
 	}
 
@@ -162,7 +166,7 @@ void RenderManagerGL2D::drawQuad(float x, float y, float w, float h)
 	                       0.f, 1.f};
 
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
-        glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 	glDrawArrays(GL_QUADS, 0, 4);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -184,7 +188,7 @@ void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
 	                      x - w / 2.f, y + h / 2.f};
 
 	glVertexPointer(2, GL_FLOAT, 0, vertices);
-        glTexCoordPointer(2, GL_FLOAT, 0, tex.indices);
+	glTexCoordPointer(2, GL_FLOAT, 0, tex.indices);
 	glDrawArrays(GL_QUADS, 0, 4);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -215,6 +219,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	Uint32 screenFlags = SDL_OPENGL;
 	if (fullscreen)
 		screenFlags |= SDL_FULLSCREEN;
+	
 	SDL_WM_SetCaption(AppTitle, "");
 	SDL_WM_SetIcon(SDL_LoadBMP("data/Icon.bmp"), NULL);
 	SDL_SetVideoMode(xResolution, yResolution, 0, screenFlags);
@@ -516,6 +521,7 @@ void RenderManagerGL2D::setBlobColor(int player, Color color)
 {
 	if (player == LEFT_PLAYER)
 		mLeftBlobColor = color;
+	
 	if (player == RIGHT_PLAYER)
 		mRightBlobColor = color;
 }
@@ -539,8 +545,7 @@ void RenderManagerGL2D::setBall(const Vector2& position, float rotation)
 	}
 }
 
-void RenderManagerGL2D::setBlob(int player, 
-		const Vector2& position, float animationState)
+void RenderManagerGL2D::setBlob(int player, const Vector2& position, float animationState)
 {
 	if (player == LEFT_PLAYER)
 	{
@@ -595,16 +600,19 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 		
 		x += FontSize;
 		if (flags & TF_SMALL_FONT)
+		{
 			if (flags & TF_HIGHLIGHT)
 				drawQuad(x, y, mHighlightSmallFont[index]);
 			else
 				drawQuad(x, y, mSmallFont[index]);
+		}
 		else
+		{
 			if (flags & TF_HIGHLIGHT)
 				drawQuad(x, y, mHighlightFont[index]);
 			else
 				drawQuad(x, y, mFont[index]);
-		
+		}
 		index = getNextFontIndex(string);
 	}
 }
@@ -625,6 +633,7 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
 		imageBuffer->glHandle = loadTexture(newSurface, false);
 		mImageMap[filename] = imageBuffer;
 	}
+	
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glDisable(GL_BLEND);
 	//glLoadIdentity();
