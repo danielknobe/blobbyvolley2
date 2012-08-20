@@ -67,6 +67,7 @@ void InputManager::beginGame(PlayerSide side)
 	std::string prefix;
 	if (side == LEFT_PLAYER)
 		prefix = "left_blobby_";
+	
 	if (side == RIGHT_PLAYER)
 		prefix = "right_blobby_";
 	
@@ -85,12 +86,9 @@ void InputManager::beginGame(PlayerSide side)
 	// load config for keyboard
 	else if (device == "keyboard")
 	{
-		SDLKey lkey = stringToKey(config.getString(prefix +
-					"keyboard_left"));
-		SDLKey rkey = stringToKey(config.getString(prefix +
-					"keyboard_right"));
-		SDLKey jkey = stringToKey(config.getString(prefix +
-					"keyboard_jump"));
+		SDLKey lkey = stringToKey(config.getString(prefix + "keyboard_left"));
+		SDLKey rkey = stringToKey(config.getString(prefix + "keyboard_right"));
+		SDLKey jkey = stringToKey(config.getString(prefix + "keyboard_jump"));
 		mInputDevice[side] = new KeyboardInputDevice(lkey, rkey, jkey);
 	}
 	// load config for joystick
@@ -113,6 +111,7 @@ void InputManager::endGame()
 		delete mInputDevice[LEFT_PLAYER];
 		mInputDevice[LEFT_PLAYER] = NULL;
 	}
+	
 	if (mInputDevice[RIGHT_PLAYER])
 	{
 		delete mInputDevice[RIGHT_PLAYER];
@@ -163,108 +162,123 @@ void InputManager::updateInput()
 
 	// process all SDL events
 	while (SDL_PollEvent(&event))
-	switch (event.type)
 	{
-		case SDL_QUIT:
-			mRunning = false;
-			break;
-		case SDL_KEYDOWN:
-			mLastInputKey = event.key.keysym;
-			switch (event.key.keysym.sym)
-			{
-				case SDLK_UP:
-					mUp = true;
-					break;
-				case SDLK_DOWN:
-					mDown = true;
-					break;
-				case SDLK_LEFT:
-					mLeft = true;
-					break;
-				case SDLK_RIGHT:
-					mRight = true;
-					break;
-				case SDLK_RETURN:
-				case SDLK_SPACE:
-					mSelect = true;
-					break;
-				case SDLK_ESCAPE:
-				//case SDLK_BACKSPACE:
-					mExit = true;
-					break;
-				default:
-					break;
-			}
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			mLastMouseButton = event.button.button;
-			switch (event.button.button)
-			{
-				case SDL_BUTTON_LEFT:
-					mClick = true;
-					
-					if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
-					{
-						mDoubleClick = true;
-					}
-					mLastClickTime = SDL_GetTicks();
-					break;
-				case SDL_BUTTON_WHEELUP:
-					mMouseWheelUp = true;
-					break;
-				case SDL_BUTTON_WHEELDOWN:
-					mMouseWheelDown = true;
-					break;
-			}
-			break;
-		case SDL_MOUSEBUTTONUP:
-			mUnclick = true;
-		break;
+		switch (event.type)
+		{
+			case SDL_QUIT:
+				mRunning = false;
+				break;
+				
+			case SDL_KEYDOWN:
+				mLastInputKey = event.key.keysym;
+				switch (event.key.keysym.sym)
+				{
+					case SDLK_UP:
+						mUp = true;
+						break;
+						
+					case SDLK_DOWN:
+						mDown = true;
+						break;
+						
+					case SDLK_LEFT:
+						mLeft = true;
+						break;
+						
+					case SDLK_RIGHT:
+						mRight = true;
+						break;
+						
+					case SDLK_RETURN:
+					case SDLK_SPACE:
+						mSelect = true;
+						break;
+						
+					case SDLK_ESCAPE:
+					//case SDLK_BACKSPACE:
+						mExit = true;
+						break;
+						
+					default:
+						break;
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				mLastMouseButton = event.button.button;
+				switch (event.button.button)
+				{
+					case SDL_BUTTON_LEFT:
+						mClick = true;
+						
+						if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
+						{
+							mDoubleClick = true;
+						}
+						
+						mLastClickTime = SDL_GetTicks();
+						break;
+						
+					case SDL_BUTTON_WHEELUP:
+						mMouseWheelUp = true;
+						break;
+						
+					case SDL_BUTTON_WHEELDOWN:
+						mMouseWheelDown = true;
+						break;
+						
+				}
+				break;
+				
+			case SDL_MOUSEBUTTONUP:
+				mUnclick = true;
+				break;
 
-		case SDL_JOYBUTTONDOWN:
-		{
-			JoystickAction joyAction(event.jbutton.which,
-				JoystickAction::BUTTON, event.jbutton.button);
-			mLastJoyAction = joyAction.toString();
-			break;
-		}
-		case SDL_JOYAXISMOTION:
-		{
-			if (abs(event.jaxis.value) > 10000)
+			case SDL_JOYBUTTONDOWN:
 			{
-				int axis = 0;
-				if (event.jaxis.value > 0)
-					axis = event.jaxis.axis + 1;
-				if (event.jaxis.value < 0)
-					axis = -(event.jaxis.axis + 1);
-				JoystickAction joyAction(event.jaxis.which,
-					JoystickAction::AXIS, axis);
+				JoystickAction joyAction(event.jbutton.which,
+					JoystickAction::BUTTON, event.jbutton.button);
 				mLastJoyAction = joyAction.toString();
+				break;
 			}
-			break;
-		}
-
-/* This handles the special buttons on the GP2X, this will
- * have to be renewed with the next GP2X release.
-/// even if we reintroduce this behaviour, we should move this code
-/// elsewhere...
-/// this is input processing not input retrieving/managing!
-#if defined(__arm__) && defined(linux)
-		case SDL_JOYBUTTONDOWN:
-			switch (event.jbutton.button)
+			case SDL_JOYAXISMOTION:
 			{
-				case 17:
-					volume -= 0.15;
-				break;
-				case 16:
-					volume += 0.15;
+				if (abs(event.jaxis.value) > 10000)
+				{
+					int axis = 0;
+					if (event.jaxis.value > 0)
+						axis = event.jaxis.axis + 1;
+					
+					if (event.jaxis.value < 0)
+						axis = -(event.jaxis.axis + 1);
+					
+					JoystickAction joyAction(event.jaxis.which, JoystickAction::AXIS, axis);
+					mLastJoyAction = joyAction.toString();
+				}
 				break;
 			}
-			SoundManager::getSingleton().setVolume(volume);
-			break;
-#else
-#endif
-*/
+
+	/* This handles the special buttons on the GP2X, this will
+	 * have to be renewed with the next GP2X release.
+	/// even if we reintroduce this behaviour, we should move this code
+	/// elsewhere...
+	/// this is input processing not input retrieving/managing!
+	#if defined(__arm__) && defined(linux)
+			case SDL_JOYBUTTONDOWN:
+				switch (event.jbutton.button)
+				{
+					case 17:
+						volume -= 0.15;
+					break;
+					case 16:
+						volume += 0.15;
+					break;
+				}
+				SoundManager::getSingleton().setVolume(volume);
+				break;
+	#else
+	#endif
+	*/
+		}
 	}
 
 	// Device gives status to the playerinput
@@ -612,7 +626,7 @@ std::string InputManager::keyToString (const SDL_keysym& key)
 	{
 		wchar_t c = key.unicode;
 		// we must convert from wchar_t to utf8
-		char cc[4] = {0,0,0,0};
+		char cc[4] = {0, 0, 0, 0};
 		to_utf8(c, cc);
 		
 		// if this is no multibyte character, we can use it directly
@@ -663,6 +677,7 @@ SDLKey InputManager::stringToKey (const std::string& keyname)
 	{
 		if (keyname == mKeyMap[i].keyname)
 			return mKeyMap[i].key;
+		
 		i++;
 	}
 	return SDLK_UNKNOWN; // stringinformation = ""

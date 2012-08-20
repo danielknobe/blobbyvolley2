@@ -98,19 +98,18 @@ void MouseInputDevice::transferInput(PlayerInput& input)
 	// now, simulate as many steps as we have lag
 	for(boost::circular_buffer<PlayerInput>::iterator i = mInputs.begin(); i != mInputs.end(); ++i)
 	{
-		if(i->right){
+		if(i->right)
 			blobpos += BLOBBY_SPEED;
-		}
-		if(i->left) {
+		
+		if(i->left) 
 			blobpos -= BLOBBY_SPEED;
-		}
+		
 	}
 
 	mMarkerX = mMouseXPos + playerOffset;
 	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
 		input.right = true;
-	else
-	if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
+	else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
 		input.left = true;
 	
 	// insert new data for evaluation
@@ -146,19 +145,21 @@ void KeyboardInputDevice::transferInput(PlayerInput& input)
 JoystickPool* JoystickPool::mSingleton = 0; //static
 
 JoystickPool& JoystickPool::getSingleton()
-	{
-		if (mSingleton == 0)
-			mSingleton = new JoystickPool();
-		return *mSingleton;
-	}
+{
+	if (mSingleton == 0)
+		mSingleton = new JoystickPool();
+	
+	return *mSingleton;
+}
 	
 SDL_Joystick* JoystickPool::getJoystick(int id)
 {
 	SDL_Joystick* joy =  mJoyMap[id];
-	if (!joy)
 	
+	if (!joy)
 		std::cerr << "Warning: could not find joystick number "
 			<< id << "!" << std::endl;
+	
 	return joy;
 }
 	
@@ -171,6 +172,7 @@ int JoystickPool::probeJoysticks()
 		mJoyMap[id] = lastjoy;
 		id++;
 	}
+	
 	return id;
 }
 
@@ -231,6 +233,7 @@ std::string JoystickAction::toString()
 	const char* typestr = "unknown";
 	if (type == AXIS)
 		typestr = "axis";
+	
 	if (type == BUTTON)
 		typestr = "button";
 		
@@ -257,27 +260,30 @@ void JoystickInputDevice::transferInput(PlayerInput& input)
 bool JoystickInputDevice::getAction(const JoystickAction& action)
 {
 	if (action.joy != 0)
-	switch (action.type)
 	{
-		case JoystickAction::AXIS:
-			if (action.number < 0)
-			{
-				if (SDL_JoystickGetAxis(action.joy,
-					-action.number - 1) < -15000)
+		switch (action.type)
+		{
+			case JoystickAction::AXIS:
+				if (action.number < 0)
+				{
+					if (SDL_JoystickGetAxis(action.joy,
+						-action.number - 1) < -15000)
+						return true;
+				}
+				else if (action.number > 0)
+				{
+					if (SDL_JoystickGetAxis(action.joy,
+						action.number - 1) > 15000)
+						return true;
+				}
+				break;
+				
+			case JoystickAction::BUTTON:
+				if (SDL_JoystickGetButton(action.joy,
+							action.number))
 					return true;
-			}
-			else if (action.number > 0)
-			{
-				if (SDL_JoystickGetAxis(action.joy,
-					action.number - 1) > 15000)
-					return true;
-			}
-			break;
-		case JoystickAction::BUTTON:
-			if (SDL_JoystickGetButton(action.joy,
-						action.number))
-				return true;
-			break;
+				break;
+		}
 	}
 	return false;
 }

@@ -32,9 +32,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 DuelMatch* DuelMatch::mMainGame = 0;
 
-DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput,
-				bool global, bool remote):mLogic(createGameLogic("rules.lua")),
-					mPaused(false), events(0), external_events(0), mRemote(remote)
+DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote) : 
+		mLogic(createGameLogic("rules.lua")),
+		mPaused(false), 
+		events(0), 
+		external_events(0), 
+		mRemote(remote)
 {
 	mGlobal = global;
 	if (mGlobal)
@@ -90,6 +93,7 @@ void DuelMatch::step()
 	// do steps in physic an logic
 	if (mLeftInput)
 		mPhysicWorld.setLeftInput(mLeftInput->getInput());
+	
 	if (mRightInput)
 		mPhysicWorld.setRightInput(mRightInput->getInput());
 		
@@ -192,6 +196,7 @@ void DuelMatch::pause()
 	mLogic->onPause();
 	mPaused = true;
 }
+
 void DuelMatch::unpause()
 {
 	mLogic->onUnPause();
