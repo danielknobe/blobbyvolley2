@@ -57,9 +57,7 @@ PhysicWorld::~PhysicWorld()
 
 bool PhysicWorld::resetAreaClear() const
 {
-	if (blobbyHitGround(LEFT_PLAYER) && blobbyHitGround(RIGHT_PLAYER))
-		return true;
-	return false;
+	return (blobbyHitGround(LEFT_PLAYER) && blobbyHitGround(RIGHT_PLAYER));
 }
 
 void PhysicWorld::reset(PlayerSide player)
@@ -86,27 +84,27 @@ void PhysicWorld::reset(PlayerSide player)
 
 void PhysicWorld::resetPlayer()
 {
-	mBlobPosition[LEFT_PLAYER] = Vector2( 200,
-		GROUND_PLANE_HEIGHT);
-	mBlobPosition[RIGHT_PLAYER] = Vector2(600,
-		GROUND_PLANE_HEIGHT);
+	mBlobPosition[LEFT_PLAYER] = Vector2( 200, GROUND_PLANE_HEIGHT);
+	mBlobPosition[RIGHT_PLAYER] = Vector2(600, GROUND_PLANE_HEIGHT);
 }
 
 bool PhysicWorld::ballHitRightGround() const
 {
 	if (mIsBallValid)
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
-			mBallPosition.x > NET_POSITION_X)
+	{
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x > NET_POSITION_X)
 			return true;
+	}
 	return false;
 }
 
 bool PhysicWorld::ballHitLeftGround() const
 {
 	if (mIsBallValid)
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT &&
-			mBallPosition.x < NET_POSITION_X)
+	{
+		if (mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x < NET_POSITION_X)
 			return true;
+	}
 	return false;
 }
 
@@ -114,17 +112,11 @@ bool PhysicWorld::blobbyHitGround(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER)
 	{
-		if (getBlob(LEFT_PLAYER).y >= GROUND_PLANE_HEIGHT)
-			return true;
-		else
-			return false;
+		return (getBlob(LEFT_PLAYER).y >= GROUND_PLANE_HEIGHT);
 	}
 	else if (player == RIGHT_PLAYER)
 	{
-		if (getBlob(RIGHT_PLAYER).y >= GROUND_PLANE_HEIGHT)
-			return true;
-		else
-			return false;
+		return (getBlob(RIGHT_PLAYER).y >= GROUND_PLANE_HEIGHT);
 	}
 	else
 		return false;
@@ -140,9 +132,10 @@ bool PhysicWorld::roundFinished() const
 	if (resetAreaClear())
 	{
 		if (!mIsBallValid)
-			if (mBallVelocity.y < 1.5 &&
-				mBallVelocity.y > -1.5 && mBallPosition.y > 430)
+		{
+			if (mBallVelocity.y < 1.5 && mBallVelocity.y > -1.5 && mBallPosition.y > 430)
 				return true;
+		}
 	}
 	if (mTimeSinceBallout > TIMEOUT_MAX)
 		return true;
@@ -157,21 +150,19 @@ float PhysicWorld::lastHitIntensity() const
 
 bool PhysicWorld::playerTopBallCollision(int player) const
 {
-	if (Vector2(mBallPosition,
-		Vector2(mBlobPosition[player].x,
-			mBlobPosition[player].y - BLOBBY_UPPER_SPHERE)
-			).length() <= BALL_RADIUS + BLOBBY_UPPER_RADIUS)
+	if (Vector2(mBallPosition, Vector2(mBlobPosition[player].x,	mBlobPosition[player].y - BLOBBY_UPPER_SPHERE)).length() 
+							<= BALL_RADIUS + BLOBBY_UPPER_RADIUS)
 		return true;
+	
 	return false;
 }
 
 inline bool PhysicWorld::playerBottomBallCollision(int player) const
 {
-	if (Vector2(mBallPosition,
-		Vector2(mBlobPosition[player].x,
-			mBlobPosition[player].y + BLOBBY_LOWER_SPHERE)
-			).length() <= BALL_RADIUS + BLOBBY_LOWER_RADIUS)
+	if (Vector2(mBallPosition, Vector2(mBlobPosition[player].x,	mBlobPosition[player].y + BLOBBY_LOWER_SPHERE)).length() 
+							<= BALL_RADIUS + BLOBBY_LOWER_RADIUS)
 		return true;
+	
 	return false;
 }
 
@@ -228,6 +219,7 @@ void PhysicWorld::blobbyAnimationStep(PlayerSide player)
 		mCurrentBlobbyAnimationSpeed[player] = 0;
 		mBlobState[player] = 0;
 	}
+	
 	if (mBlobState[player] >= 4.5)
 	{
 		mCurrentBlobbyAnimationSpeed[player]
@@ -245,8 +237,7 @@ void PhysicWorld::blobbyAnimationStep(PlayerSide player)
 void PhysicWorld::blobbyStartAnimation(PlayerSide player)
 {
 	if (mCurrentBlobbyAnimationSpeed[player] == 0)
-		mCurrentBlobbyAnimationSpeed[player] =
-			BLOBBY_ANIMATION_SPEED;
+		mCurrentBlobbyAnimationSpeed[player] = BLOBBY_ANIMATION_SPEED;
 }
 
 void PhysicWorld::handleBlob(PlayerSide player)
@@ -263,18 +254,17 @@ void PhysicWorld::handleBlob(PlayerSide player)
 			mBlobVelocity[player].y = -BLOBBY_JUMP_ACCELERATION;
 			blobbyStartAnimation(PlayerSide(player));
 		}
+		
 		currentBlobbyGravity -= BLOBBY_JUMP_BUFFER;
 	}
 
-	if ((mPlayerInput[player].left || mPlayerInput[player].right)
-			&& blobbyHitGround(player))
+	if ((mPlayerInput[player].left || mPlayerInput[player].right) && blobbyHitGround(player))
 	{
 		blobbyStartAnimation(player);
 	}
 
-	mBlobVelocity[player].x =
-		(mPlayerInput[player].right ? BLOBBY_SPEED : 0) -
-		(mPlayerInput[player].left ? BLOBBY_SPEED : 0);
+	mBlobVelocity[player].x = (mPlayerInput[player].right ? BLOBBY_SPEED : 0) -
+								(mPlayerInput[player].left ? BLOBBY_SPEED : 0);
 
 	// compute blobby fall movement (dt = 1)
 	// ds = a/2 * dt^2 + v * dt
@@ -313,7 +303,7 @@ void PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 		mBallPosition += mBallVelocity;
 		mBallHitByBlob[player] = true;
 	}
-	else if(playerTopBallCollision(player))
+	 else if(playerTopBallCollision(player))
 	{
 		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length();
 
@@ -445,8 +435,7 @@ void PhysicWorld::step()
 	else if (mBallRotation >= 6.25)
 		mBallRotation = mBallRotation - 6.25;
 
-	mTimeSinceBallout = mIsBallValid ? 0.0 :
-		mTimeSinceBallout + 1.0 / 60;
+	mTimeSinceBallout = mIsBallValid ? 0.0 : mTimeSinceBallout + 1.0 / 60;
 }
 
 void PhysicWorld::dampBall()
@@ -491,18 +480,24 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	bool rightGround;
 	stream->Read(leftGround);
 	stream->Read(rightGround);
-	if(leftGround){
+	if(leftGround)
+	{
 		mBlobPosition[LEFT_PLAYER].y = GROUND_PLANE_HEIGHT;
 		mBlobVelocity[LEFT_PLAYER].y = 0;
-	}else{
+	}
+	else
+	{
 		readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		readCompressedFromBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
-	if(rightGround){
+	if(rightGround)
+	{
 		mBlobPosition[RIGHT_PLAYER].y = GROUND_PLANE_HEIGHT;
 		mBlobVelocity[RIGHT_PLAYER].y = 0;
-	}else{
+	}
+	else
+	{
 		readCompressedFromBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		readCompressedFromBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
 	}
@@ -524,9 +519,12 @@ void PhysicWorld::setState(RakNet::BitStream* stream)
 	// wo prevent setting a false value when the ball is at the parabels top, we check also if the 
 	// y - position is the starting y position
 	/// \todo maybe we should simply send a bit which contains this information? 
-	if( std::abs(mBallVelocity.x) > 0.1f || std::abs(mBallVelocity.y) > 0.1f || std::abs(mBallPosition.y - STANDARD_BALL_HEIGHT) > 0.1f) {
+	if( std::abs(mBallVelocity.x) > 0.1f || std::abs(mBallVelocity.y) > 0.1f || std::abs(mBallPosition.y - STANDARD_BALL_HEIGHT) > 0.1f) 
+	{
 		mIsGameRunning = true;
-	} else {
+	} 
+	 else 
+	{
 		mIsGameRunning = false;
 	}
 
@@ -545,12 +543,14 @@ void PhysicWorld::getState(RakNet::BitStream* stream) const
 	stream->Write(blobbyHitGround(LEFT_PLAYER));
 	stream->Write(blobbyHitGround(RIGHT_PLAYER));
 	
-	if(!blobbyHitGround(LEFT_PLAYER)){
+	if(!blobbyHitGround(LEFT_PLAYER))
+	{
 		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
 	
-	if(!blobbyHitGround(RIGHT_PLAYER)){
+	if(!blobbyHitGround(RIGHT_PLAYER))
+	{
 		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
 	}
@@ -580,12 +580,14 @@ void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
 	stream->Write(blobbyHitGround(RIGHT_PLAYER));
 	stream->Write(blobbyHitGround(LEFT_PLAYER));
 	
-	if(!blobbyHitGround(RIGHT_PLAYER)){
+	if(!blobbyHitGround(RIGHT_PLAYER))
+	{
 		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
 	}
 	
-	if(!blobbyHitGround(LEFT_PLAYER)){
+	if(!blobbyHitGround(LEFT_PLAYER))
+	{
 		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
 		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
 	}
