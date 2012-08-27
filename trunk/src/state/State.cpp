@@ -233,7 +233,7 @@ void CreditsState::step()
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+140), "Sven Rech");
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+170), "  (svenrech(at)gmx.de)", TF_SMALL_FONT);
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+195), "Erik Schultheis");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+225), "  (erik-schutlheis(at)freenet.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+225), "  (erik-schultheis(at)freenet.de)", TF_SMALL_FONT);
 
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+255), TextManager::CRD_GRAPHICS);
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+285), "Silvio Mummert");
