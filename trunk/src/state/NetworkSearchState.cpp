@@ -348,9 +348,25 @@ void OnlineSearchState::searchServers()
 	mPingClient->PingServer("pgb.game-host.org", BLOBBY_PORT+1, 0, true);
 	
 	/// \todo check if we already try to connect to this one!
-	mPingClient->PingServer(
-		IUserConfigReader::createUserConfigReader("config.xml")->getString("network_last_server").c_str(),
-		BLOBBY_PORT, 0, true);
+	std::string address = IUserConfigReader::createUserConfigReader("config.xml")->getString("network_last_server");
+	std::string server = address;
+	int port = BLOBBY_PORT;
+	std::size_t found = address.find(':');
+	if (found != std::string::npos) {
+		server = address.substr(0, found);
+		
+		try
+		{
+			port = boost::lexical_cast<int>(address.substr(found+1));
+		}
+		 catch (boost::bad_lexical_cast)
+		{
+			/// \todo inform the user that default port was selected
+		}
+		if ((port <= 0) || (port > 65535))
+			port = BLOBBY_PORT;
+	}
+	mPingClient->PingServer(server.c_str(), port, 0, true);
 	
 }
 
