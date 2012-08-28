@@ -34,7 +34,6 @@ set (raknet_SRC
 	PacketEnumerations.h
 	PacketPool.cpp PacketPool.h
 	PacketPriority.h
-	Queue.h
 	QueueLinkedList.h
 	RakClient.cpp RakClient.h
 	RakClientInterface.h
