@@ -79,9 +79,9 @@ void NetworkSearchState::step()
 			{
 				case ID_CONNECTION_REQUEST_ACCEPTED:
 				{
-					printf("connection accepted from %s\n",
+					printf("connection accepted from %s:%d\n",
 						mPingClient->PlayerIDToDottedIP(
-							packet->playerId));
+							packet->playerId), packet->playerId.port);
 
 					RakNet::BitStream stream;
 					stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
@@ -167,7 +167,7 @@ void NetworkSearchState::step()
 			case ID_PONG:
 			{
 				std::string hostname = mPingClient->PlayerIDToDottedIP(packet->playerId);
-				printf("got ping response by \"%s\", trying to connect\n", hostname.c_str());
+				printf("got ping response by \"%s:%d\", trying to connect\n", hostname.c_str(), packet->playerId.port);
 				RakClient* newClient = new RakClient;
 				newClient->Connect(
 					hostname.c_str(), packet->playerId.port, 0, 0, RAKNET_THREAD_SLEEP_TIME);
