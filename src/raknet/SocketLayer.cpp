@@ -30,14 +30,14 @@
 #include "../blobnet/Logger.hpp"
 
 #include "SocketLayer.h"
-#include <assert.h>
+#include <cassert>
 #include "MTUSize.h"
 
 #ifdef _WIN32
 #include <process.h>
 typedef int socklen_t;
 #else
-#include <string.h> // memcpy
+#include <cstring> // memcpy
 #include <fcntl.h>
 #endif
 
@@ -63,7 +63,7 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #endif
 
 #ifdef _DEBUG
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 /*
@@ -404,7 +404,7 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, unsigned int bi
 
 	if ( dwIOError == WSAECONNRESET )
 	{
-		LOG("A previous send operation resulted in an ICMP Port Unreachable message.\n" )
+//		LOG("A previous send operation resulted in an ICMP Port Unreachable message.\n" )
 	}
 	else
 	{
