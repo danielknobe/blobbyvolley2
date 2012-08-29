@@ -40,7 +40,7 @@ class FileSystemException : public std::exception
 	\brief signales errors reported by physfs
 	\details base class for all exceptions that report physfs errors;
 */
-class PhysfsException : public FileSystemException
+class PhysfsException : public virtual FileSystemException
 {
 	public:
 		// implementation in FileSystem.cpp
@@ -98,7 +98,7 @@ class PhysfsInitException : public PhysfsException
 	\details does not owerride what(), so there is
 				no default error message for FileException s
 */
-class FileException: public FileSystemException {
+class FileException: public virtual FileSystemException {
 	public:
 		FileException(const std::string& f) : filename(f) 
 		{
