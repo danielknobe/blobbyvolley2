@@ -121,14 +121,14 @@ class FileException: public virtual FileSystemException {
 	\todo use a better name as FileLoadException does only fit for 
 			the open for reading case.
 */
-class FileLoadException : public FileException
+class FileLoadException : public FileException, public PhysfsException
 {
 	public:
 		FileLoadException(std::string name) : FileException(name)
 		{
 			/// \todo do we really need to do this? std::exception already
 			/// provides the functionality for setting exception messages, i think.
-			error = "Couldn't load " + name;
+			error = "Couldn't load " + name + ": " + getPhysfsMessage();
 		}
 		
 		virtual ~FileLoadException() throw() {}

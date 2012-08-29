@@ -110,7 +110,10 @@ void FileSystem::removeFromSearchPath(const std::string& dirname)
 
 void FileSystem::setWriteDir(const std::string& dirname)
 {
-	PHYSFS_setWriteDir(dirname.c_str());
+	if( !PHYSFS_setWriteDir(dirname.c_str()) )
+	{
+		throw( PhysfsException() );
+	};
 	addToSearchPath(dirname, false);
 }
 
