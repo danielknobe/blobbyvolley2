@@ -94,6 +94,11 @@ uint32_t FileRead::readUInt32()
 {
 	check_file_open();
 	
+	if ( length() - tell() < 4)
+	{
+		throw( EOFException(mFileName) );
+	}
+	
 	PHYSFS_uint32 ret;
 	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(mHandle),	&ret))
 	{
@@ -132,7 +137,7 @@ std::string FileRead::readString()
 			break;
 	}
 	
-	assert(0);	// did not find zero-terminated-string
+	throw(EOFException(mFileName));
 }
 
 // reading lua script
