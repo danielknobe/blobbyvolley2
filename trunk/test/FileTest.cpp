@@ -244,8 +244,9 @@ BOOST_AUTO_TEST_CASE( exception_test )
 	
 	// read more than there is
 	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(buffer, 3), EOFException);
-	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), EOFException);		// FAIL
+	CHECK_EXCEPTION_SAFETY(test_file.readUInt32(), EOFException);
 	CHECK_EXCEPTION_SAFETY(test_file.readRawBytes(5), EOFException);
+	CHECK_EXCEPTION_SAFETY(test_file.readString(), EOFException);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -365,7 +366,8 @@ BOOST_AUTO_TEST_CASE( string_test )
 	init_Physfs();
 	
 	std::string teststr = "hello world!";
-			
+	
+	BOOST_CHECKPOINT( "string_test: writing test file" );
 	FileWrite writer("cycle.tmp");
 	BOOST_REQUIRE( writer.is_open() == true );
 
@@ -374,8 +376,9 @@ BOOST_AUTO_TEST_CASE( string_test )
 	writer.write( teststr );
 	writer.close();
 	
+	BOOST_CHECKPOINT( "string_test: reading test file" );
 	FileRead reader("cycle.tmp");
-	/// \todo convenience function for to reading null terminated strings
+	
 	boost::shared_array<char> data = reader.readRawBytes(teststr.size());
 	BOOST_CHECK_EQUAL (reader.tell(), teststr.size() );
 	std::string str2 = reader.readString();
@@ -385,8 +388,7 @@ BOOST_AUTO_TEST_CASE( string_test )
 	BOOST_CHECK_EQUAL( teststr, str2 );
 	
 	// now, try to read as null terminated when it isn't
-	/// \todo we need a sensible check here
-	std::string str3 = reader.readString();
+	CHECK_EXCEPTION_SAFETY( reader.readString(), EOFException);
 	
 	PHYSFS_delete("cycle.tmp");
 }
