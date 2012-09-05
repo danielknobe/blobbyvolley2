@@ -393,4 +393,40 @@ BOOST_AUTO_TEST_CASE( string_test )
 	PHYSFS_delete("cycle.tmp");
 }
 
+
+BOOST_AUTO_TEST_CASE( int_test )
+{
+	init_Physfs();
+	
+	
+	BOOST_CHECKPOINT( "int_test: writing test file" );
+	FileWrite writer("cycle.tmp");
+	BOOST_REQUIRE( writer.is_open() == true );
+
+	const int TEST_INT_1 = 12;
+	const int TEST_INT_2 = -8;
+	const int TEST_INT_3 = 1275343;
+
+	writer.writeUInt32( TEST_INT_1 );
+	writer.writeUInt32( TEST_INT_2 );
+	writer.writeUInt32( TEST_INT_3 );
+	writer.writeByte( 5 );
+	writer.close();
+	
+	BOOST_CHECKPOINT( "int_test: reading test file" );
+	FileRead reader("cycle.tmp");
+	
+	int res = reader.readUInt32( );
+	BOOST_CHECK_EQUAL (res, TEST_INT_1 );
+	res = reader.readUInt32( );
+	BOOST_CHECK_EQUAL (res, TEST_INT_2 );
+	res = reader.readUInt32( );
+	BOOST_CHECK_EQUAL (res, TEST_INT_3 );
+	
+	// try to read more
+	CHECK_EXCEPTION_SAFETY( reader.readUInt32(), EOFException);
+	
+	PHYSFS_delete("cycle.tmp");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
