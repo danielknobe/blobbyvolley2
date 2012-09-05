@@ -102,16 +102,9 @@ using namespace RakNet;
 BitStream::BitStream()
 {
 	numberOfBitsUsed = 0;
-	//numberOfBitsAllocated = 32 * 8;
 	numberOfBitsAllocated = BITSTREAM_STACK_ALLOCATION_SIZE * 8;
 	readOffset = 0;
-	//data = ( unsigned char* ) malloc( 32 );
-	data = ( unsigned char* ) stackData;
-	
-#ifdef _DEBUG	
-//	assert( data );
-#endif
-	//memset(data, 0, 32);
+	data = stackData;
 	copyData = true;
 }
 
@@ -801,28 +794,6 @@ bool BitStream::Read( int &output )
 #endif
 }
 
-// This doesn't compile on windows.  Find another way to output the warning
-#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ )|| defined ( _WIN32 )
-//#warning Do NOT use 'long' for network data  - it is not cross-compiler nor 32/64-bit safe
-bool BitStream::Read( unsigned long &output )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	unsigned int tmp;
-	if ( !Read(tmp) ) return false;
-	output = tmp;
-	return true;
-}
-bool BitStream::Read( long &output )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	int tmp;
-	if ( !Read(tmp) ) return false;
-	output = tmp;
-	return true;
-}
-#endif
 
 // c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
 #ifdef HAS_INT64
@@ -1073,29 +1044,6 @@ bool BitStream::ReadCompressed( int &output )
 	return true;
 #endif
 }
-
-// This doesn't compile on windows.  Find another way to output the warning
-#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ )|| defined ( _WIN32 )
-//#warning Do NOT use 'long' for network data  - it is not cross-compiler nor 32/64-bit safe
-bool BitStream::ReadCompressed( unsigned long &output )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	unsigned int tmp;
-	if ( !ReadCompressed(tmp) ) return false;
-	output = tmp;
-	return true;
-}
-bool BitStream::ReadCompressed( long &output )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	int tmp;
-	if ( !ReadCompressed(tmp) ) return false;
-	output = tmp;
-	return true;
-}
-#endif
 
 // c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
 #ifdef HAS_INT64
