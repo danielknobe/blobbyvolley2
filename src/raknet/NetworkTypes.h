@@ -48,18 +48,6 @@ typedef unsigned char UniqueIDType;
 */
 typedef unsigned short PlayerIndex;
 /**
-* Typename for encoding RPC indices
-*/
-typedef unsigned char RPCIndex;
-/**
-* Maximum allowed registered RPC functions.
-*/
-const int MAX_RPC_MAP_SIZE=((RPCIndex)-1)-1;
-/**
-* Indicates an undefined index for an RPC,
-*/
-const int UNDEFINED_RPC_INDEX=((RPCIndex)-1);
-/**
 * @brief Player Identifier 
 *
 * This define a Player Unique Identifier.
@@ -192,15 +180,6 @@ struct Packet
 };
 
 class RakPeerInterface;
-
-// Sorry for changing the RPC parameters to a struct but this way I can change it in the future without making people change their code anymore.
-struct RPCParameters
-{
-	char *input;
-	unsigned int numberOfBitsOfData;
-	PlayerID sender;
-	RakPeerInterface *recipient;
-};
 
 //#pragma pack(push,1)
 
@@ -382,90 +361,6 @@ const ObjectID UNASSIGNED_OBJECT_ID = 65535;
 * Sizeof the Ping Array 
 */
 const int PING_TIMES_ARRAY_SIZE = 5;
-
-/**
-* @defgroup RAKNET_RPC Remote Procedure Call Subsystem. 
-* @brief RPC Function Implementation 
-* 
-* The Remote Procedure Call Subsystem provide the RPC paradigm to
-* RakNet user. It consists in providing remote function call over the
-* network.  A call to a remote function require you to prepare the
-* data for each parameter (using BitStream) for example. 
-* 
-*
-* Use the following C function prototype for your callbacks
-* @code
-* void functionName(RPCParameters *rpcParms);
-* @encode 
-* If you pass input data, you can parse the input data in two ways.
-*
-* 1.
-* Cast input to a struct (such as if you sent a struct)
-* i.e. MyStruct *s = (MyStruct*) input;
-* Make sure that the sizeof(MyStruct) is equal to the number of bytes passed!
-*
-* 2.
-* Create a BitStream instance with input as data and the number of bytes
-* i.e. BitStream myBitStream(input, (numberOfBitsOfData-1)/8+1)
-*
-* (numberOfBitsOfData-1)/8+1 is how convert from bits to bytes
-*
-* Full example:
-* @code
-* void MyFunc(RPCParameters *rpcParms) {}
-* RakClient *rakClient;
-* REGISTER_AS_REMOTE_PROCEDURE_CALL(rakClient, MyFunc);
-* This would allow MyFunc to be called from the server using  (for example)
-* rakServer->RPC("MyFunc", 0, clientID, false);
-* @endocde
-*/
-
-/**
-* @def REGISTER_STATIC_RPC
-* @ingroup RAKNET_RPC
-* Register a C function as a Remote procedure. 
-* @param networkObject The object that will handle the remote procedure call 
-* @param functionName The name of the function 
-*/
-// 12/01/05 REGISTER_AS_REMOTE_PROCEDURE_CALL renamed to REGISTER_STATIC_RPC.  Delete the old name sometime in the future
-#pragma deprecated(REGISTER_AS_REMOTE_PROCEDURE_CALL)
-#define REGISTER_AS_REMOTE_PROCEDURE_CALL(networkObject, functionName) REGISTER_STATIC_RPC(networkObject, functionName)
-#define REGISTER_STATIC_RPC(networkObject, functionName) (networkObject)->RegisterAsRemoteProcedureCall((#functionName),(functionName))
-/**
-* @def REGISTER_CLASS_INST_RPC
-* @ingroup RAKNET_RPC
-* Register a member function of an instantiated object as a Remote procedure call.
-* RPC member Functions MUST be marked __cdecl!  See the ObjectMemberRPC example.
-* CLASS_MEMBER_ID is a utility macro to generate a unique signature for a class and function pair and can be used for the Raknet functions RegisterClassMemberRPC(...) and RPC(...)
-* REGISTER_CLASS_MEMBER_RPC is a utility macro to more easily call RegisterClassMemberRPC
-* @param networkObject The object that will handle the remote procedure call 
-* @param className The class containing the function
-* @param functionName The name of the function 
-*/
-#define CLASS_MEMBER_ID(className, functionName) #className "_" #functionName
-#define REGISTER_CLASS_MEMBER_RPC(networkObject, className, functionName) {union {void (__cdecl className::*cFunc)( RPCParameters *rpcParms ); void* voidFunc;}; cFunc=&className::functionName; networkObject->RegisterClassMemberRPC(CLASS_MEMBER_ID(className, functionName),voidFunc);}
-
-/**
-* @def UNREGISTER_STATIC_RPC 
-* @ingroup RAKNET_RPC
-* Unregisters a remote procedure call
-* RPC member Functions MUST be marked __cdecl!  See the ObjectMemberRPC example.
-* @param networkObject The object that manages the function 
-* @param functionName The function name 
-*/
-// 12/01/05 UNREGISTER_AS_REMOTE_PROCEDURE_CALL Renamed to UNREGISTER_STATIC_RPC.  Delete the old name sometime in the future
-#pragma deprecated(UNREGISTER_AS_REMOTE_PROCEDURE_CALL)
-#define UNREGISTER_AS_REMOTE_PROCEDURE_CALL(networkObject,functionName) UNREGISTER_STATIC_RPC(networkObject,functionName)
-#define UNREGISTER_STATIC_RPC(networkObject,functionName) (networkObject)->UnregisterAsRemoteProcedureCall((#functionName))
-/**
-* @def UNREGISTER_CLASS_INST_RPC 
-* @ingroup RAKNET_RPC
-* Unregisters a member function of an instantiated object as a Remote procedure call.
-* @param networkObject The object that manages the function 
-* @param className The className that was originally passed to REGISTER_AS_REMOTE_PROCEDURE_CALL
-* @param functionName The function name 
-*/
-#define UNREGISTER_CLASS_MEMBER_RPC(networkObject, className, functionName) (networkObject)->UnregisterAsRemoteProcedureCall((#className "_" #functionName))
 
 #endif
 
