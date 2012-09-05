@@ -1,7 +1,6 @@
 set (raknet_SRC
 	ArrayList.h
 	AsynchronousFileIO.cpp AsynchronousFileIO.h
-	Autopatcher.cpp Autopatcher.h
 	BigTypes.h
 	BinarySearchTree.h
 	BitStream.cpp BitStream.h
@@ -13,10 +12,8 @@ set (raknet_SRC
 	DistributedNetworkObjectHeader.h
 	DistributedNetworkObjectManager.cpp DistributedNetworkObjectManager.h
 	DistributedNetworkObjectStub.cpp DistributedNetworkObjectStub.h
-	DownloadableFileDescriptor.cpp DownloadableFileDescriptor.h
 	EncodeClassName.cpp EncodeClassName.h
 	ExtendedOverlappedPool.cpp ExtendedOverlappedPool.h
-	FullyConnectedMesh.cpp FullyConnectedMesh.h
 	GetTime.cpp GetTime.h
 	HuffmanEncodingTree.cpp HuffmanEncodingTree.h
 	HuffmanEncodingTreeFactory.cpp HuffmanEncodingTreeFactory.h
@@ -26,7 +23,6 @@ set (raknet_SRC
 	LinkedList.h
 	MessageHandlerInterface.cpp MessageHandlerInterface.h
 	MTUSize.h
-	Multiplayer.h
 	NetworkIDGenerator.cpp NetworkIDGenerator.h
 	NetworkObject.cpp NetworkObject.h
 	NetworkTypes.cpp NetworkTypes.h
@@ -48,8 +44,6 @@ set (raknet_SRC
 	ReliabilityLayer.cpp ReliabilityLayer.h
 	rijndael-boxes.h
 	rijndael.cpp rijndael.h
-	RPCMap.cpp RPCMap.h
-	RPCNode.cpp RPCNode.h
 	RSACrypt.h
 	SHA1.cpp SHA1.h
 	SimpleMutex.cpp SimpleMutex.h

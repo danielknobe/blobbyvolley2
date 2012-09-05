@@ -382,45 +382,6 @@ bool RakClient::DeleteCompressionLayer( bool inputLayer )
 	return RakPeer::DeleteCompressionLayer( inputLayer );
 }
 
-void RakClient::RegisterAsRemoteProcedureCall( char* uniqueID, void ( *functionPointer ) ( RPCParameters *rpcParms ) )
-{
-	RakPeer::RegisterAsRemoteProcedureCall( uniqueID, functionPointer );
-}
-
-void RakClient::RegisterClassMemberRPC( char* uniqueID, void *functionPointer )
-{
-	RakPeer::RegisterClassMemberRPC( uniqueID, functionPointer );
-}
-
-void RakClient::UnregisterAsRemoteProcedureCall( char* uniqueID )
-{
-	RakPeer::UnregisterAsRemoteProcedureCall( uniqueID );
-}
-
-bool RakClient::RPC( char* uniqueID, const char *data, unsigned int bitLength, PacketPriority priority, PacketReliability reliability, char orderingChannel, bool shiftTimestamp, ObjectID objectID )
-{
-	if ( remoteSystemList == 0 )
-		return false;
-		
-	return RakPeer::RPC( uniqueID, data, bitLength, priority, reliability, orderingChannel, remoteSystemList[ 0 ].playerId, false, shiftTimestamp, objectID );
-}
-
-bool RakClient::RPC( char* uniqueID, RakNet::BitStream *parameters, PacketPriority priority, PacketReliability reliability, char orderingChannel, bool shiftTimestamp, ObjectID objectID )
-{
-	if ( remoteSystemList == 0 )
-		return false;
-		
-	return RakPeer::RPC( uniqueID, parameters, priority, reliability, orderingChannel, remoteSystemList[ 0 ].playerId, false, shiftTimestamp, objectID );
-}
-
-/*
-  bool RakClient::HandleRPCPacket(Packet* packet)
-  {
-  if (remoteSystemList==0)
-  return false;
-  return RakPeer::HandleRPCPacket(packet->data, packet->length, remoteSystemList[0].playerId);
-  }*/
-
 void RakClient::SetTrackFrequencyTable( bool b )
 {
 	RakPeer::SetCompileFrequencyTable( b );
