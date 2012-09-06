@@ -168,6 +168,7 @@ void TextManager::setDefault()
 	mStrings[RP_DELETE] = "delete";
 	mStrings[RP_INFO] = "info";
 	mStrings[RP_DURATION] = "duration:";
+	mStrings[RP_RESULT] = "result:";
 	mStrings[RP_CHECKSUM] = "checksum error";
 	mStrings[RP_FILE_CORRUPT] = "file is corrupt";
 	mStrings[RP_VERSION] = "version error";

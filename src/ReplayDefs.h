@@ -21,18 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 const char validHeader[4] = { 'B', 'V', '2', 'R' };	//!< header of replay file
 
-/// \enum PacketType
-/// \brief enumerated types of replay "packets"
-/// \attention (should never be higher than 2 bits!)
-enum PacketType
-{
-	ID_INPUT = 0,	///<this packet contains inupt data of both players
-	ID_COMMAND = 1,	///<this packet contains command identificator
-					///<and next packet/packets are arguments of this
-					///<command
-	ID_ERROR = 2,	///<handles EOF
-};
+const unsigned char REPLAY_FILE_VERSION_MAJOR = 1;
+const unsigned char REPLAY_FILE_VERSION_MINOR = 1;
 
+/*! \class ChecksumException
+	\brief thrown when actual and expected file checksum mismatch
+*/
+struct ChecksumException : public std::exception
+{
+	ChecksumException(std::string filename, uint32_t expected, uint32_t real);
+	~ChecksumException() throw();
+
+	virtual const char* what() const throw();
+
+	std::string error;
+};
 
 /**
 	\page replay_system Replay System
@@ -69,7 +72,9 @@ enum PacketType
 			<tr><td>AS+16</td><td>4 bytes</td><td>int</td><td>Date of match</td></tr>
 			<tr><td>AS+20</td><td>4 bytes</td><td>int</td><td>Left player color</td></tr>
 			<tr><td>AS+24</td><td>4 bytes</td><td>int</td><td>Right player color</td></tr>
-			<tr><td>AS+28</td><td>string</td><td>string</td><td>Left player name</td></tr>
+			<tr><td>AS+28</td><td>4 bytes</td><td>int</td><td>Left player score</td></tr>
+			<tr><td>AS+32</td><td>4 bytes</td><td>int</td><td>Right player score</td></tr>
+			<tr><td>AS+36</td><td>string</td><td>string</td><td>Left player name</td></tr>
 			<tr><td>...</td><td>string</td><td>string</td><td>Right player name</td></tr>
 			<tr><td colspan=4>...</td></tr>
 			

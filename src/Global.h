@@ -39,10 +39,6 @@ const int BLOBBY_PORT = 1234;
 const int BLOBBY_VERSION_MAJOR = 0;
 const int BLOBBY_VERSION_MINOR = 99;
 
-// will be set to 1.0 when we have our new replay format!
-const unsigned char REPLAY_FILE_VERSION_MAJOR = 1;
-const unsigned char REPLAY_FILE_VERSION_MINOR = 0;
-
 const char AppTitle[] = "Blobby Volley 2 Version 1.0 RC2";
 
 const float ROUND_START_SOUND_VOLUME = 0.2;

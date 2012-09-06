@@ -37,7 +37,6 @@ const float TIMEOUT_MAX = 2.5;
 const float BLOBBY_ANIMATION_SPEED = 0.5;
 
 const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
-const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
 // helper function for setting FPU precision
 

@@ -36,19 +36,6 @@ namespace RakNet
 	class BitStream;
 }
 
-/*! \class ChecksumException
-	\brief thrown when actual and expected file checksum mismatch
-*/
-struct ChecksumException : public std::exception
-{
-	ChecksumException(std::string filename, uint32_t expected, uint32_t real);
-	~ChecksumException() throw();
-
-	virtual const char* what() const throw();
-
-	std::string error;
-};
-
 /*! \class VersionMismatchException
 	\brief thrown when replays of incompatible version are loaded.
 */

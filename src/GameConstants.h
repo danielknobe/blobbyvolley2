@@ -64,4 +64,4 @@ const float NET_RADIUS = 7;
 //const float NET_SPHERE = 154;		// what is the meaning of this value ???????
 const float NET_SPHERE_POSITION = 284;
 
-
+const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;

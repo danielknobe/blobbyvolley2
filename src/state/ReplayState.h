@@ -34,6 +34,7 @@ class ReplayState : public State
 {
 public:
 	ReplayState();
+	~ReplayState();
 	virtual void step();
 	virtual const char* getStateName() const;
 	void loadReplay(const std::string& replay);

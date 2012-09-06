@@ -271,7 +271,6 @@ void ReplayRecorder::writeDataSection(FileWrite& file) const
 void ReplayRecorder::record(const PlayerInput* input)
 {
 	unsigned char packet = 0;
-	packet = ID_INPUT; packet <<= 1;
 	packet += (input[LEFT_PLAYER].left & 1); packet <<= 1;
 	packet += (input[LEFT_PLAYER].right & 1); packet <<= 1;
 	packet += (input[LEFT_PLAYER].up & 1); packet <<= 1;

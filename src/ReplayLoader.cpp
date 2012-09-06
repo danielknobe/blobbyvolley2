@@ -129,14 +129,17 @@ class ReplayLoader_V10: public IReplayLoader
 		{
 			return mGameSpeed;
 		};
+		
 		virtual int getDuration() const
 		{
 			return mGameDuration;
 		};
+		
 		virtual int getLength()  const
 		{
 			return mGameLength;
 		};
+		
 		virtual std::time_t getDate() const
 		{
 			return mGameDate;
