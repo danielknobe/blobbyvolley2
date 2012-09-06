@@ -127,10 +127,16 @@ int main(int argc, char** argv)
 	NetworkPlayer firstPlayer;
 
 	int port = BLOBBY_PORT;
+	int maxClients = 100;
 	try 
 	{
 		config.loadFile("server.xml");
 		port = config.getInteger("port");
+		maxClients = config.getInteger("maximum_clients");
+		
+		// bring that value into a sane range
+		if(maxClients <= 0 || maxClients > 1000)
+			maxClients = 150;
 	} 
 	catch (std::exception& e) 
 	{
@@ -143,7 +149,7 @@ int main(int argc, char** argv)
 	
 	float speed = myinfo.gamespeed;
 
-	if (!server.Start(150, 1, port))
+	if (!server.Start(maxClients, 1, port))
 	{
 		syslog(LOG_ERR, "Couldn´t bind to port %i, exiting", port);
 		return 2;
