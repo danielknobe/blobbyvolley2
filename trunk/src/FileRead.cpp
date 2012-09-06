@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <physfs.h>
 
+#include <boost/crc.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -90,6 +91,16 @@ boost::shared_array<char> FileRead::readRawBytes( std::size_t num_of_bytes )
 	return buffer;
 }
 
+char FileRead::readByte()
+{
+	check_file_open();
+	
+	char ret;
+	readRawBytes(reinterpret_cast<char*>(&ret), sizeof(ret));
+	
+	return ret;
+}
+
 uint32_t FileRead::readUInt32()
 {
 	check_file_open();
@@ -107,6 +118,17 @@ uint32_t FileRead::readUInt32()
 	
 	return ret; 
 }
+
+float FileRead::readFloat()
+{
+	check_file_open();
+	
+	float ret;
+	readRawBytes(reinterpret_cast<char*>(&ret), sizeof(ret));
+	
+	return ret;
+}
+
 
 std::string FileRead::readString()
 {
@@ -139,6 +161,41 @@ std::string FileRead::readString()
 	
 	throw(EOFException(mFileName));
 }
+
+
+uint32_t FileRead::calcChecksum(uint32_t start)
+{
+	uint32_t oldpos = tell();
+	seek(start);
+	
+	// buffered reading
+	char buffer[128];
+	size_t len = length();
+	
+	boost::crc_32_type crc;
+	
+	while(true)
+	{
+		int maxread = std::min(sizeof(buffer), len - tell());
+		readRawBytes( buffer, maxread );	// read into buffer
+		
+		for(int i = 0; i < maxread; ++i)
+		{
+			crc.process_bytes(buffer, maxread);
+		}
+		
+		if(maxread < 32)
+			break;
+	}
+	
+	// return read pointer back to old position
+	seek(oldpos);
+	
+	return crc();
+}
+
+
+
 
 // reading lua script
 

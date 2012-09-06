@@ -80,6 +80,11 @@ class FileRead : public File
 		/// \throw EOFException when cless than \p num_of_bytes bytes are available.
 		boost::shared_array<char> readRawBytes( std::size_t num_of_bytes );
 		
+		/// reads exactly one byte
+		/// \throw PhysfsFileException when Physfs reports an error
+		/// \throw NoFileOpenedException when called while no file is opened.
+		char readByte();
+		
 		/// reads an unsinged 32 bit integer from the next four bytes in the file
 		/// the integer is expected to be in little-endian-order and is converted
 		/// to the native format.
@@ -87,10 +92,20 @@ class FileRead : public File
 		/// \throw NoFileOpenedException when called while no file is opened.
 		uint32_t readUInt32();
 		
+		/// reads a 32 bit float from the next four bytes in the file
+		/// \throw PhysfsFileException when Physfs reports an error
+		/// \throw NoFileOpenedException when called while no file is opened.
+		float readFloat();
+		
 		/// reads a null-terminated string from the file
 		/// \throw PhysfsFileException when Physfs reports an error
 		/// \throw NoFileOpenedException when called while no file is opened.
 		std::string readString();
+		
+		
+		// helper function for checksum
+		/// calculates a crc checksum of the file contents beginning at posInFile till the end of the file.
+		uint32_t calcChecksum(uint32_t start);
 		
 		
 		// -----------------------------------------------------------------------------------------

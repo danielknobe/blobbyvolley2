@@ -51,6 +51,11 @@ ReplayState::ReplayState() :
 	mSpeedTimer = 0;
 }
 
+ReplayState::~ReplayState()
+{
+	
+}
+
 void ReplayState::loadReplay(const std::string& file)
 {
 	mReplayPlayer.reset( new ReplayPlayer() );

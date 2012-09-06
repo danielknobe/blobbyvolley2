@@ -92,7 +92,7 @@ int ReplayPlayer::getReplayLength() const
 bool ReplayPlayer::play(DuelMatch* virtual_match)
 {
 	mPosition++;
-	if(/*getPacketType() == ID_INPUT*/ mPosition < mLength)
+	if( mPosition < mLength )
 	{
 		
 		PlayerInput left;

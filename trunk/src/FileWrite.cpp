@@ -64,6 +64,11 @@ void FileWrite::writeUInt32(uint32_t v)
 	}
 }
 
+void FileWrite::writeFloat(float fl)
+{
+	write(reinterpret_cast<char*>(&fl), sizeof(fl));
+}
+
 void FileWrite::write(const std::string& data)
 {
 	write(data.data(), data.size());
