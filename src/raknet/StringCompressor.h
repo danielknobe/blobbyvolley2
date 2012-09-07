@@ -77,7 +77,7 @@ public:
 	 * @param maxCharsToWrite The size of @em input 
 	 * @param output The bitstream that will contain the data of the compressed string 
 	 */
-	void EncodeString( char *input, int maxCharsToWrite, RakNet::BitStream *output );
+	void EncodeString( const char *input, int maxCharsToWrite, RakNet::BitStream *output );
 	/**
 	 * Writes input to output, uncompressed.  Takes care of the null terminator for you.
 	 * maxCharsToWrite should be the allocated size of output
