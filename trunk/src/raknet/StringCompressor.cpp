@@ -344,7 +344,7 @@ StringCompressor::~StringCompressor()
 		delete huffmanEncodingTree;
 }
 
-void StringCompressor::EncodeString( char *input, int maxCharsToWrite, RakNet::BitStream *output )
+void StringCompressor::EncodeString( const char *input, int maxCharsToWrite, RakNet::BitStream *output )
 {
 	if ( input == 0 )
 	{
