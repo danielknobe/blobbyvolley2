@@ -47,8 +47,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-////#include "MemoryManager.h"
-
 //
 // uint32 must be an unsigned integer type capable of holding at least 32
 // bits; exactly 32 should be fastest, but 64 is better on an Alpha with
@@ -182,22 +180,5 @@ float frandomMT( void )
 	return ( float ) ( ( double ) randomMT() / 4294967296.0 );
 }
 
-/*
-int main(void)
-{
-int j;
 
-// you can seed with any uint32, but the best are odds in 0..(2^32 - 1)
-
-seedMT(4357U);
-
-// print the first 2,002 random numbers seven to a line as an example
-
-for(j=0; j<2002; j++)
-printf(" %10lu%s", (unsigned int) randomMT(), (j%7)==6 ? "\n" : "");
-
-return(EXIT_SUCCESS);
-}
-
-*/
 

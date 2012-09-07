@@ -370,24 +370,6 @@ void RakServer::StopSynchronizedRandomInteger( void )
 	synchronizedRandomInteger = false;
 }
 
-/*
-
-void RakServer::SynchronizeMemory(UniqueIDType uniqueIdentifier, char *memoryBlock, unsigned short size, bool isAuthority, bool (*synchronizationRules) (char*,char*),ObjectID secondaryUniqueIdentifier)
-{
-RakPeer::SynchronizeMemory(uniqueIdentifier, memoryBlock, size, isAuthority, synchronizationRules, secondaryUniqueIdentifier);
-}
-
-void RakServer::DesynchronizeMemory(UniqueIDType uniqueIdentifier, ObjectID secondaryUniqueIdentifier)
-{
-RakPeer::DesynchronizeMemory(uniqueIdentifier, secondaryUniqueIdentifier);
-}
-
-void RakServer::DesynchronizeAllMemory(void)
-{
-RakPeer::DesynchronizeAllMemory();
-}
-*/
-
 bool RakServer::GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer )
 {
 	return RakPeer::GenerateCompressionLayer( inputFrequencyTable, inputLayer );

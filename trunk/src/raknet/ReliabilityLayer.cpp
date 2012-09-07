@@ -41,8 +41,6 @@
 #include <stdlib.h>
 #endif
 
-//#include "MemoryManager.h"
-
 // Defined in rand.cpp
 extern void seedMT( unsigned int seed );
 extern inline unsigned int randomMT( void );

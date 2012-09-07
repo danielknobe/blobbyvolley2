@@ -356,22 +356,6 @@ unsigned int RakClient::GetSynchronizedRandomInteger( void ) const
 		return seed;
 }
 
-/*
-  void RakClient::SynchronizeMemory(UniqueIDType uniqueIdentifier, char *memoryBlock, unsigned short size, bool isAuthority, bool (*synchronizationRules) (char*,char*),ObjectID secondaryUniqueIdentifier)
-  {
-  RakPeer::SynchronizeMemory(uniqueIdentifier, memoryBlock, size, isAuthority, synchronizationRules, secondaryUniqueIdentifier);
-  }
- 
-  void RakClient::DesynchronizeMemory(UniqueIDType uniqueIdentifier, ObjectID secondaryUniqueIdentifier)
-  {
-  RakPeer::DesynchronizeMemory(uniqueIdentifier, secondaryUniqueIdentifier);
-  }
- 
-  void RakClient::DesynchronizeAllMemory(void)
-  {
-  RakPeer::DesynchronizeAllMemory();
-  }
-*/
 bool RakClient::GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer )
 {
 	return RakPeer::GenerateCompressionLayer( inputFrequencyTable, inputLayer );
