@@ -7,7 +7,6 @@ set (raknet_SRC
 	CheckSum.cpp CheckSum.h
 	ClientContextStruct.h
 	DataBlockEncryptor.cpp DataBlockEncryptor.h
-	EncodeClassName.cpp EncodeClassName.h
 	ExtendedOverlappedPool.cpp ExtendedOverlappedPool.h
 	GetTime.cpp GetTime.h
 	HuffmanEncodingTree.cpp HuffmanEncodingTree.h
@@ -18,7 +17,6 @@ set (raknet_SRC
 	LinkedList.h
 	MessageHandlerInterface.cpp MessageHandlerInterface.h
 	MTUSize.h
-	NetworkIDGenerator.cpp NetworkIDGenerator.h
 	NetworkTypes.cpp NetworkTypes.h
 	OrderedList.cpp OrderedList.h
 	PacketEnumerations.h
