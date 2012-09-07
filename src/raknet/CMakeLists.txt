@@ -18,7 +18,7 @@ set (raknet_SRC
 	MessageHandlerInterface.cpp MessageHandlerInterface.h
 	MTUSize.h
 	NetworkTypes.cpp NetworkTypes.h
-	OrderedList.cpp OrderedList.h
+	OrderedList.h
 	PacketEnumerations.h
 	PacketPool.cpp PacketPool.h
 	PacketPriority.h

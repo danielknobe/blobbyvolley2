@@ -309,23 +309,6 @@ void BitStream::Write( const int input )
 #endif
 }
 
-// This doesn't compile on windows.  Find another way to output the warning
-#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ )|| defined ( _WIN32 )
-//#warning Do NOT use 'long' for network data  - it is not cross-compiler nor 32/64-bit safe
-void BitStream::Write( const unsigned long input )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	Write( (const unsigned int) input );
-}
-void BitStream::Write( const long input )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	Write( (const int) input );
-}
-#endif
-
 // c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
 #ifdef HAS_INT64
 void BitStream::Write( const uint64_t input )
@@ -517,23 +500,6 @@ void BitStream::WriteCompressed( const int input )
 	WriteCompressed( int32wc, sizeof( input ) * 8, false );
 #endif
 }
-
-// Doesn't work on windows.  Find another way to output the warning
-#if defined ( __APPLE__ ) || defined ( __APPLE_CC__ )|| defined ( _WIN32 )
-//#warning Do NOT use 'long' for network data  - it is not compiler-safe nor 32/64-bit safe
-void BitStream::WriteCompressed( const unsigned long input )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	WriteCompressed( (const unsigned int) input );
-}
-void BitStream::WriteCompressed( const long input )
-{
-	printf("*** WARNING: Do not use 'long' to declare network data.\n");
-	printf("*** It is not safe betwen compilers or between 32/64-bit systems.\n");
-	WriteCompressed( (const int) input );
-}
-#endif
 
 // c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
 #ifdef HAS_INT64

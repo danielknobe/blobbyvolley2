@@ -1333,170 +1333,7 @@ void RakPeer::SetOccasionalPing( bool doPing )
 {
 	occasionalPing = doPing;
 }
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Automatically synchronizes a block of memory between systems.
-// Can be called anytime.  Calling it before a connection is initiated will cause the data to be synchronized on connection
-//
-// Parameters:
-// uniqueIdentifier: an integer (enum) corresponding to the same variable between clients and the server.  Start the indexing at 0
-// memoryBlock: Pointer to the data you want to read from or write to
-// size: Size of memoryBlock in bytes
-// isAuthority: True to tell all connected systems to match their data to yours.  Data changes are relayed to the authoritative
-// - client which broadcasts the change
-// synchronizationRules: Optional function pointer that decides whether or not to update changed memory.  It should
-// - return true if the two passed memory blocks are sufficiently different to synchronize them.  This is an optimization so
-// - data that changes rapidly, such as per-frame, can be made to not update every frame
-// - The first parameter to synchronizationRules is the new data, the second is the internal copy of the old data
-// secondaryUniqueIdentifier:  Optional and used when you have the same unique identifier and is intended for multiple instances of a class
-// - that derives from NetworkObject.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void RakPeer::SynchronizeMemory(UniqueIDType uniqueIdentifier, char *memoryBlock, unsigned short size, bool isAuthority, bool (*synchronizationRules) (char*,char*),ObjectID secondaryUniqueIdentifier)
-{
-automaticVariableSynchronizationMutex.Lock();
-if (uniqueIdentifier >= automaticVariableSynchronizationList.size() || automaticVariableSynchronizationList[uniqueIdentifier]==0)
-{
-automaticVariableSynchronizationList.replace(new BasicDataStructures::List<MemoryBlock>, 0, uniqueIdentifier);
-}
-else
-{
-// If we are using a secondary identifier, make sure that is unique
-#ifdef _DEBUG
-assert(secondaryUniqueIdentifier!=UNASSIGNED_OBJECT_ID);
-#endif
-if (secondaryUniqueIdentifier==UNASSIGNED_OBJECT_ID)
-{
-automaticVariableSynchronizationMutex.Unlock();
-return; // Cannot add to an existing list without a secondary identifier
-}
-
-for (unsigned i=0; i < automaticVariableSynchronizationList[uniqueIdentifier]->size(); i++)
-{
-#ifdef _DEBUG
-assert ((*(automaticVariableSynchronizationList[uniqueIdentifier]))[i].secondaryID != secondaryUniqueIdentifier);
-#endif
-if ((*(automaticVariableSynchronizationList[uniqueIdentifier]))[i].secondaryID == secondaryUniqueIdentifier)
-{
-automaticVariableSynchronizationMutex.Unlock();
-return; // Already used
-}
-}
-}
-automaticVariableSynchronizationMutex.Unlock();
-
-MemoryBlock newBlock;
-newBlock.original=memoryBlock;
-if (isAuthority)
-{
-newBlock.copy = new char[size];
-#ifdef _DEBUG
-assert(sizeof(char)==1);
-#endif
-memset(newBlock.copy, 0, size);
-}
-else
-newBlock.copy = 0; // no need to keep a copy if we are only receiving changes
-newBlock.size=size;
-newBlock.secondaryID=secondaryUniqueIdentifier;
-newBlock.isAuthority=isAuthority;
-newBlock.synchronizationRules=synchronizationRules;
-
-automaticVariableSynchronizationMutex.Lock();
-automaticVariableSynchronizationList[uniqueIdentifier]->insert(newBlock);
-automaticVariableSynchronizationMutex.Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Stops synchronization of a block of memory previously defined by uniqueIdentifier and secondaryUniqueIdentifier
-// by the call to SynchronizeMemory
-// CALL THIS BEFORE SYNCHRONIZED MEMORY IS DEALLOCATED!
-// It is not necessary to call this before disconnecting, as all synchronized states will be released then.
-// Parameters:
-// uniqueIdentifier: an integer (enum) corresponding to the same variable between clients and the server.  Start the indexing at 0
-// secondaryUniqueIdentifier:  Optional and used when you have the same unique identifier and is intended for multiple instances of a class
-// - that derives from NetworkObject.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::DesynchronizeMemory(UniqueIDType uniqueIdentifier, ObjectID secondaryUniqueIdentifier)
-{
-automaticVariableSynchronizationMutex.Lock();
-#ifdef _DEBUG
-assert(uniqueIdentifier < automaticVariableSynchronizationList.size());
-#endif
-if (uniqueIdentifier >= automaticVariableSynchronizationList.size())
-{
-automaticVariableSynchronizationMutex.Unlock();
-return;
-}
-#ifdef _DEBUG
-assert(automaticVariableSynchronizationList[uniqueIdentifier]!=0);
-#endif
-if (automaticVariableSynchronizationList[uniqueIdentifier]==0)
-{
-automaticVariableSynchronizationMutex.Unlock();
-return;
-}
-
-// If we don't specify a secondary identifier, then the list must only have one element
-#ifdef _DEBUG
-assert(!(secondaryUniqueIdentifier==UNASSIGNED_OBJECT_ID && automaticVariableSynchronizationList[uniqueIdentifier]->size()!=1));
-#endif
-if (secondaryUniqueIdentifier==UNASSIGNED_OBJECT_ID && automaticVariableSynchronizationList[uniqueIdentifier]->size()!=1)
-{
-automaticVariableSynchronizationMutex.Unlock();
-return;
-}
-
-for (unsigned i=0; i < automaticVariableSynchronizationList[uniqueIdentifier]->size(); i++)
-{
-if ((*(automaticVariableSynchronizationList[uniqueIdentifier]))[i].secondaryID == secondaryUniqueIdentifier)
-{
-delete [] (*(automaticVariableSynchronizationList[uniqueIdentifier]))[i].copy;
-automaticVariableSynchronizationList[uniqueIdentifier]->del(i);
-if (automaticVariableSynchronizationList[uniqueIdentifier]->size()==0) // The sublist is now empty
-{
-delete automaticVariableSynchronizationList[uniqueIdentifier];
-automaticVariableSynchronizationList[uniqueIdentifier]=0;
-automaticVariableSynchronizationMutex.Unlock();
-return;
-}
-}
-}
-
-automaticVariableSynchronizationMutex.Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Desynchronizes all synchronized memory
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::DesynchronizeAllMemory(void)
-{
-int i;
-
-automaticVariableSynchronizationMutex.Lock();
-for (i=0; i < (int)automaticVariableSynchronizationList.size(); i++)
-{
-if (automaticVariableSynchronizationList[i])
-{
-for (unsigned j=0; j < automaticVariableSynchronizationList[i]->size(); j++)
-delete [] (*(automaticVariableSynchronizationList[i]))[j].copy;
-delete automaticVariableSynchronizationList[i];
-}
-}
-automaticVariableSynchronizationList.clear();
-automaticVariableSynchronizationMutex.Unlock();
-
-synchronizedMemoryQueueMutex.Lock();
-while (synchronizedMemoryPacketQueue.size())
-{
-packetPool.ReleasePointer(synchronizedMemoryPacketQueue.pop());
-}
-synchronizedMemoryQueueMutex.Unlock();
-}
-*/ 
+ 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
 // All systems have a block of data associated with them, for user use.  This block of data can be used to easily
@@ -2021,27 +1858,6 @@ RakNetStatisticsStruct * const RakPeer::GetStatistics( PlayerID playerId )
 
 	return 0;
 }
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-void RakPeer::RemoveFromRequestedConnectionsList( PlayerID playerId )
-{
-	int i;
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Lock();
-
-	for ( i = 0; i < ( int ) requestedConnectionsList.size(); )
-	{
-		if ( requestedConnectionsList[ i ]->playerId == playerId )
-		{
-			delete requestedConnectionsList[ i ];
-			requestedConnectionsList.del( i );
-			break;
-		}
-	}
-
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Unlock();
-}
-*/
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::SendConnectionRequest( const char* host, unsigned short remotePort )
@@ -2600,25 +2416,6 @@ void RakPeer::PushPortRefused( PlayerID target )
 	incomingQueueMutex.Unlock();
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-RakPeer::BufferedCommandStruct *RakPeer::GetBufferedCommandStruct(void)
-{
-	BufferedCommandStruct *bcs;
-	rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Lock();
-	if (bufferedCommandPool.size())
-	{
-		bcs = bufferedCommandPool.pop();
-		rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Unlock();
-	}
-	else
-	{
-		rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Unlock();
-		bcs = new BufferedCommandStruct;
-	}
-	return bcs;
-}
-*/
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::AllowIncomingConnections(void) const
 {
 	return GetNumberOfRemoteInitiatedConnections() < GetMaximumIncomingConnections();
@@ -2843,70 +2640,7 @@ void RakPeer::ClearRequestedConnectionList(void)
 	}
 	requestedConnectionList.Clear();
 }
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*
-#ifdef _WIN32
-unsigned __stdcall RecvFromNetworkLoop(LPVOID arguments)
-#else
-void*  RecvFromNetworkLoop( void*  arguments )
-#endif
-{
-RakPeer *peer = (RakPeer *)arguments;
-unsigned int errorCode;
 
-#ifdef __USE_IO_COMPLETION_PORTS
-AsynchronousFileIO::Instance()->IncreaseUserCount();
-#endif
-
-peer->isRecvfromThreadActive=true;
-
-while(peer->endThreads==false)
-{
-peer->isSocketLayerBlocking=true;
-errorCode=SocketLayer::Instance()->RecvFrom(peer->connectionSocket, peer);
-peer->isSocketLayerBlocking=false;
-
-#ifdef _WIN32
-if (errorCode==WSAECONNRESET)
-{
-peer->PushPortRefused(UNASSIGNED_PLAYER_ID);
-//closesocket(peer->connectionSocket);
-//peer->connectionSocket = SocketLayer::Instance()->CreateBoundSocket(peer->myPlayerId.port, true);
-}
-else if (errorCode!=0 && peer->endThreads==false)
-{
-#ifdef _DEBUG
-printf("Server RecvFrom critical failure!\n");
-#endif
-// Some kind of critical error
-peer->isRecvfromThreadActive=false;
-peer->endThreads=true;
-peer->Disconnect();
-break;
-}
-#else
-if (errorCode==-1)
-{
-peer->isRecvfromThreadActive=false;
-peer->endThreads=true;
-peer->Disconnect();
-break;
-}
-#endif
-}
-
-#ifdef __USE_IO_COMPLETION_PORTS
-AsynchronousFileIO::Instance()->DecreaseUserCount();
-#endif
-
-peer->isRecvfromThreadActive=false;
-
-#ifdef _WIN32
-//_endthreadex( 0 );
-#endif
-return 0;
-}
-*/ 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
 #ifdef _WIN32
@@ -4041,20 +3775,3 @@ void* UpdateNetworkLoop( void* arguments )
 	return 0;
 }
 
-/*
-void RakPeer::RunMutexedUpdateCycle(void)
-{
-rakPeerMutexes[RakPeer::updateCycleIsRunning_Mutex].Lock();
-if (updateCycleIsRunning==false)
-{
-updateCycleIsRunning=true;
-rakPeerMutexes[RakPeer::updateCycleIsRunning_Mutex].Unlock();
-RunUpdateCycle(); // Do one update per call to Receive
-rakPeerMutexes[RakPeer::updateCycleIsRunning_Mutex].Lock();
-updateCycleIsRunning=false;
-rakPeerMutexes[RakPeer::updateCycleIsRunning_Mutex].Unlock();
-}
-else
-rakPeerMutexes[RakPeer::updateCycleIsRunning_Mutex].Unlock();
-}
-*/
