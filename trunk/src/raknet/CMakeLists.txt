@@ -7,7 +7,6 @@ set (raknet_SRC
 	CheckSum.cpp CheckSum.h
 	ClientContextStruct.h
 	DataBlockEncryptor.cpp DataBlockEncryptor.h
-	DataReplicator.cpp DataReplicator.h
 	DistributedNetworkObject.cpp DistributedNetworkObject.h
 	DistributedNetworkObjectHeader.h
 	DistributedNetworkObjectManager.cpp DistributedNetworkObjectManager.h
