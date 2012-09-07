@@ -51,8 +51,6 @@
 #include "PacketPool.h"
 #include "Rand.h"
 #include "MessageHandlerInterface.h"
-#include "StringCompressor.h"
-#include "NetworkIDGenerator.h"
 
 // alloca
 #ifdef _WIN32
