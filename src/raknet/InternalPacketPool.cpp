@@ -37,7 +37,6 @@ InternalPacketPool::InternalPacketPool()
 	packetsReleased = 0;
 #endif
 	
-	pool.clearAndForceAllocation( 64 );
 	unsigned i;
 	for (i=0; i < 64; i++)
 		pool.push(new InternalPacket);
@@ -57,9 +56,10 @@ void InternalPacketPool::ClearPool( void )
 {
 	InternalPacket * p;
 	
-	while ( pool.size() )
+	while ( !pool.empty() )
 	{
-		p = pool.pop();
+		p = pool.top();
+		pool.pop();
 		delete p;
 	}
 }
@@ -72,9 +72,11 @@ InternalPacket* InternalPacketPool::GetPointer( void )
 	
 	InternalPacket *p = 0;
 
-	if ( pool.size() )
-		p = pool.pop();
-
+	if ( !pool.empty() )
+	{
+		p = pool.top();
+		pool.pop();
+	}
 	
 	if ( p )
 		return p;

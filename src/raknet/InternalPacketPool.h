@@ -31,7 +31,7 @@
 
 #ifndef __INTERNAL_PACKET_POOL
 #define __INTERNAL_PACKET_POOL
-#include "RakNetQueue.h"
+#include <stack>
 #include "InternalPacket.h"
 
 /**
@@ -73,7 +73,7 @@ private:
 	/**
 	 * InternalPacket pool 
 	 */
-	BasicDataStructures::Queue<InternalPacket*> pool;
+	std::stack<InternalPacket*> pool;
 	/**
 	 * Multithread access management 
 	 */
