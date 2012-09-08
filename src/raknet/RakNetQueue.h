@@ -57,6 +57,8 @@
  *
  */
 
+#include <deque>
+#include <algorithm>
 
 #ifndef __QUEUE_H
 #define __QUEUE_H
@@ -64,7 +66,7 @@
 namespace BasicDataStructures
 {
 
-		const unsigned int initAllocationSize = 16; 
+	const unsigned int initAllocationSize = 16; 
 
 
 	/*!	\class Queue
@@ -83,7 +85,9 @@ namespace BasicDataStructures
 		/// @param originalCopy The queue which will be copied
 		Queue(const Queue& originalCopy);
 
-		QueueType& operator[] (unsigned int position) const;
+		const QueueType& operator[] (unsigned int position) const;
+		QueueType& operator[] (unsigned int position);
+
 		bool operator= ( const Queue& original_copy );
 
 		/// @brief Count of elements in the queue
@@ -91,11 +95,11 @@ namespace BasicDataStructures
 		inline const unsigned int size() const;
 
 		/// @brief Adds an element to the queue
-		/// @param Element to add
+		/// @param input Element to add
 		void push(const QueueType& input);
 
 		/// @brief Adds an element to the head of the queue
-		/// @param Element to add
+		/// @param input Element to add
 		void pushAtHead(const QueueType& input);
 
 		/// @brief Pops the first element of queue. Check if queue is not empty before.
@@ -113,7 +117,7 @@ namespace BasicDataStructures
 		void compress();
 
 		/// @brief Checks if element is in queue or not
-		/// @param Element
+		/// @param q Element
 		bool find(QueueType q);
 
 		/// @brief Returns first element of queue. Really dump implemented at the moment
@@ -121,340 +125,109 @@ namespace BasicDataStructures
 		inline const QueueType peek() const;
 
 		/// @brief Deletes an element. This is not very fast
-		/// @param Index of element
+		/// @param position Index of element
 		void del(unsigned int position);
 
 		/// @brief Reallocates the queue with no elements
-		/// @param Size of internal array size
-		void clearAndForceAllocation( int size );
+		/// @param size Size of internal array size
+		void clearAndForceAllocation(int size);
 
 	private:
-		QueueType* array;
 		unsigned int head; // First element with data
 		unsigned int tail; // First element without data
 		unsigned int allocation_size;
+
+		typedef std::deque<QueueType> ContainerType;
+		ContainerType array;
+
 	};
 
 	template <class QueueType> Queue<QueueType>::Queue()
 	{
-		allocation_size = initAllocationSize;
-		array = new QueueType[allocation_size];
-		head = 0;
-		tail = 0;
 	}
 
 	template <class QueueType> Queue<QueueType>::~Queue()
 	{
-		delete[] array;
 	}
 
 	template <class QueueType> Queue<QueueType>::Queue(const Queue& original_copy)
 	{
-		if (original_copy.size() == 0)
-		{
-			allocation_size = 0;
-		}
-		else
-		{
-			// dump
-			array = new QueueType[original_copy.size() + 1];
-
-			for (unsigned int counter = 0; counter < original_copy.size(); counter++)
-				array[counter] = original_copy.array[(original_copy.head + counter) % (original_copy.allocation_size)];
-
-			head = 0;
-			tail = original_copy.size();
-
-			allocation_size = original_copy.size() + 1;
-		}
+		this->array = original_copy->array;
 	}
 
-	template <class QueueType> inline QueueType& Queue<QueueType>::operator[] (unsigned int position) const
+	template <class QueueType> inline const QueueType& Queue<QueueType>::operator[] (unsigned int position) const
 	{
-		position = head + position;
-		
-		if (position >= allocation_size)
-		{
-			return array[position - allocation_size];
-		}
-		else
-		{
-			return array[position];
-		}
+		return this->array.at(position);
+	}
+
+	template <class QueueType> inline QueueType& Queue<QueueType>::operator[] (unsigned int position)
+	{
+		return this->array.at(position);
 	}
 
 	template <class QueueType> bool Queue<QueueType>::operator= (const Queue& original_copy)
 	{
-		if ((&original_copy) == this)
-			return false;
-
-		clear();
-
-		// Allocate memory for copy
-		if (original_copy.size() == 0)
-		{
-			allocation_size = 0;
-		}
-		else
-		{
-			// Dump!
-			array = new QueueType [original_copy.size() + 1];
-
-			for (unsigned int counter = 0; counter < original_copy.size(); counter++)
-				array[counter] = original_copy.array[(original_copy.head + counter) % (original_copy.allocation_size)];
-
-			head = 0;
-
-			tail = original_copy.size();
-
-			allocation_size = original_copy.size() + 1;
-		}
-
-		return true;
+		return this->array = original_copy->array;
 	}
 
 	template <class QueueType> inline const unsigned int Queue<QueueType>::size() const
 	{
-		if (head <= tail)
-		{
-			return tail - head;
-		}
-		else
-		{
-			return allocation_size - head + tail;
-		}
+		return this->array.size();
 	}
 
 	template <class QueueType> void Queue<QueueType>::push(const QueueType& input)
 	{
-		// If queue storage is not allocated, allocate it at push the element
-		if (allocation_size == 0)
-		{
-			array = new QueueType[initAllocationSize];
-			allocation_size = initAllocationSize;
-			head = 0;
-			tail = 1;
-			array[0] = input;
-			return;
-		}
-
-		// If queue storage is full, reorganize it
-		if (tail == allocation_size)
-		{
-			tail = 0;
-		}
-
-		if (tail == head)
-		{
-			QueueType * new_array;
-			new_array = new QueueType[allocation_size * 2];
-
-			for (unsigned int counter = 0; counter < allocation_size; counter++)
-			{
-				new_array[counter] = array[(head + counter) % (allocation_size)];
-			}
-
-			head = 0;
-
-			tail = allocation_size;
-
-			allocation_size *= 2;
-
-			delete [] array;
-			array = new_array;
-		}
-
-		// Add element
-		array[tail] = input;
-		tail++;
+		this->array.push_back(input);
 	}
 
 	template <class QueueType> void Queue<QueueType>::pushAtHead(const QueueType& input)
 	{
-		// If queue storage is not allocated, allocate it at push the element
-		if (allocation_size == 0)
-		{
-			push(input);
-		}
-
-		if (head == 0)
-		{
-			head = allocation_size - 1;
-		}
-		else
-		{
-			--head;
-		}
-
-		// If queue storage is full, reorganize it
-		if (tail == head)
-		{
-			QueueType * new_array;
-			new_array = new QueueType[allocation_size * 2];
-
-			for (unsigned int counter = 0; counter < allocation_size; ++counter)
-				new_array[counter+1] = array[(head + counter) % (allocation_size)];
-
-			head = 0;
-
-			tail = allocation_size;
-
-			allocation_size *= 2;
-
-			delete [] array;
-			array = new_array;
-		}
-
-		// Add element
-		array[head] = input;
+		this->array.push_front(input);
 	}
 
 	template <class QueueType> inline const QueueType Queue<QueueType>::pop()
 	{
-		if (allocation_size == 0)
-		{
-			// We should throw an exception here
-			return 0;
-		}
-
-		head++;
-
-		if (head == allocation_size)
-		{
-			head = 0;
-			return (QueueType) array[allocation_size - 1];
-		}
-	
-		return (QueueType) array[head - 1];
+		QueueType tmp = this->array.front();
+		this->array.pop_front();
+		
+		return tmp;
 	}
 
 	template <class QueueType> inline const unsigned int Queue<QueueType>::AllocationSize() const
 	{
-		return allocation_size;
+		return this->array.max_size();
 	}
 
 	template <class QueueType> inline void Queue<QueueType>::clear()
 	{
-		if (allocation_size == 0)
-			return ;
-
-		if (allocation_size > 32)
-		{
-			delete[] array;
-			allocation_size = 0;
-		}
-
-		head = 0;
-		tail = 0;
+		this->array.clear();
 	}
 
 	template <class QueueType> void Queue<QueueType>::compress()
 	{
-		if (allocation_size == 0)
-		{
-			return;
-		}
-
-		QueueType* new_array;
-		unsigned int newAllocationSize;
-
-
-		newAllocationSize = 1;
-
-		while (newAllocationSize <= size())
-		{
-			newAllocationSize <<= 1;
-		}
-
-		new_array = new QueueType [newAllocationSize];
-
-		for (unsigned int counter = 0; counter < size(); counter++)
-			new_array[counter] = array[(head + counter) % (allocation_size)];
-
-		tail=size();
-		allocation_size = newAllocationSize;
-		head = 0;
-
-		delete [] array;
-		array = new_array;
 	}
 
 	template <class QueueType> bool Queue<QueueType>::find(QueueType q)
 	{
-		if (allocation_size == 0)
-		{
-			return false;
-		}
+		typename ContainerType::iterator it;
+		it = std::find(this->array.begin(), this->array.end(), q);
 
-		unsigned int counter = head;
-
-		while ( counter != tail )
-		{
-			if (array[counter] == q)
-			{
-				return true;
-			}
-
-			counter = (counter + 1) % allocation_size;
-		}
-
-		return false;
+		return it != this->array.end();
 	}
 
 	template <class QueueType> inline const QueueType Queue<QueueType>::peek( void ) const
 	{
-		return (QueueType) array[head];
+		return this->array.front();
 	}
 
 	template <class QueueType> void Queue<QueueType>::del(unsigned int position)
 	{
-		if (head == tail || position >= size())
-		{
-			return;
-		}
-
-		unsigned int index = head + position;
-
-
-		if (index >= allocation_size)
-		{
-			index = index - allocation_size;
-		}
-
-		// Reorganize queue
-		unsigned int next = index + 1;
-
-		if (next == allocation_size)
-			next = 0;
-
-		while (next != tail)
-		{
-			// Overwrite the previous element
-			array[index] = array[next];
-			index = next;
-
-			if ( +next == allocation_size)
-				next = 0;
-		}
-
-		// Move the tail back
-		if (tail == 0)
-		{
-			tail = allocation_size - 1;
-		}
-		else
-		{
-			--tail;
-		}
+		this->array.erase(this->array.begin() + position);
 	}
 
 	template <class QueueType> void Queue<QueueType>::clearAndForceAllocation(int size)
 	{
-		delete [] array;
-		array = new QueueType[size];
-		allocation_size = size;
-		head = 0;
-		tail = 0;
+		return this->array.clear();
 	}
 } // End namespace
 
