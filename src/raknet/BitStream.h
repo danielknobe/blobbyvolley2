@@ -32,17 +32,6 @@
 #ifndef  __BITSTREAM_H
 #define __BITSTREAM_H
 
-#ifdef _MSC_VER
-#if defined (_INTEGRAL_MAX_BITS) &&  _INTEGRAL_MAX_BITS >= 64
-typedef signed __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#define HAS_INT64
-#endif
-#else
-#include <stdint.h>
-#define HAS_INT64
-#endif
-
 // Arbitrary size, just picking something likely to be larger than most packets
 #define BITSTREAM_STACK_ALLOCATION_SIZE 256
 
@@ -152,30 +141,6 @@ namespace RakNet
 		 * @param input The data 
 		 */
 		void Write( const int input );
-#if  defined ( __APPLE__ ) || defined (__APPLE_CC__ )||defined ( _WIN32 )
-		// These are only provided for MS Windows and
-		// Mac OSX (G4 processor) convenience and are
-		// equivalent to the (int) versions.
-		// The use of 'long' for any network data is
-		// a fault since it will not be portable to 64-bit CPUs.
-		void Write( const unsigned long input );
-		void Write( const long input );
-#endif
-
-#ifdef HAS_INT64
-		/**
-		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
-		 */
-		void Write( const uint64_t input );
-		/**
-		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
-		 */
-		void Write( const int64_t input );
-#endif
 		
 		/**
 		 * Write the native types to the end of the buffer
@@ -232,55 +197,7 @@ namespace RakNet
 		 * @param input The data.
 		 */
 		void WriteCompressed( const int input );
-#if  defined ( __APPLE__ ) || defined ( __APPLE_CC__ ) || defined ( _WIN32 )
-		// These are only provided for MS Windows and
-		// Mac OSX (G4 processor) convenience and are
-		// equivalent to the (int) versions.
-		// The use of 'long' for any network data is
-		// a fault since it will not be portable to 64-bit CPUs.
-		void WriteCompressed( const unsigned long input );
-		void WriteCompressed( const long input );
-#endif
-	
-#ifdef HAS_INT64
-		/**
-		 * Write the native types with simple compression.
-		 * Best used with  negatives and positives close to 0
-		 * @param input The data.
-		 */
-		void WriteCompressed( const uint64_t input );
-		/**
-		 * Write the native types with simple compression.
-		 * Best used with  negatives and positives close to 0
-		 * @param input The data.
-		 */
-		void WriteCompressed( const int64_t input );
-#endif
-		/**
-		 * Write the native types with simple compression.
-		 * Best used with  negatives and positives close to 0
-		 * @param input The data.
-		 */
-		void WriteCompressed( const float input );
-		/**
-		* Write 3 floats, using 1 byte each, where those floats comprise a normalized vector
-		* Lossy, but accurate to 1/256.
-		* 
-		* @param input The data.
-		*/
-		void WriteCompressed1( const float input1, const float input2, const float input3 );
-		/**
-		* Write 3 floats, using 2 bytes each, where those floats comprise a normalized vector
-		* Lossy, but accurate to 1/65536.
-		* @param input The data.
-		*/
-		void WriteCompressed2( const float input1, const float input2, const float input3 );
-		/**
-		 * Write the native types with simple compression.
-		 * Best used with  negatives and positives close to 0
-		 * @param input The data.
-		 */
-		void WriteCompressed( const double input );
+		
 		/**
 		 * Read the native types from the front of the buffer
 		 * @param output The readed value. 
@@ -338,24 +255,6 @@ namespace RakNet
 		 */
 		bool Read( int &output );
 		
-#ifdef HAS_INT64
-		/**
-		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
-		 */
-		bool Read( uint64_t &output );
-		/**
-		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
-		 */
-		bool Read( int64_t &output );
-#endif
 		/**
 		 * Read the native types from the front of the buffer
 		 * @param output The readed value. 
@@ -418,47 +317,6 @@ namespace RakNet
 		 */
 		bool ReadCompressed( int &output );
 
-#ifdef HAS_INT64
-		/**
-		 * Read the types you wrote with WriteCompressed
-		 * @param output The read value
-		 * @return true on success, false on not enough data to read
-		 */
-		bool ReadCompressed( uint64_t &output );
-		/**
-		 * Read the types you wrote with WriteCompressed
-		 * @param output The read value
-		 * @return true on success, false on not enough data to read
-		 */
-		bool ReadCompressed( int64_t &output );
-#endif
-		/**
-		 * Read the types you wrote with WriteCompressed
-		 * @param output The read value
-		 * @return true on success, false on not enough data to read
-		 */
-		bool ReadCompressed( float &output );
-		/**
-		* Write 3 floats, using 1 byte each, where those floats comprise a normalized vector
-		* Lossy, but accurate to 1/256.
-		* 
-		* @param output1, output2, output3 The read value
-		* @param renormalizeOutput - self explanitory.  If you don't do this the output probably will not be normalized.
-		*/
-		bool ReadCompressed1( float &output1, float &output2, float &output3, bool renormalizeOutput );
-		/**
-		* Write 3 floats, using 2 bytes each, where those floats comprise a normalized vector
-		* Lossy, but accurate to 1/65536.
-		* @param output1, output2, output3 The read value.
-		* @param renormalizeOutput - self explanitory.  If you don't do this the output probably will not be normalized.
-		*/
-		bool ReadCompressed2( float &output1, float &output2, float &output3, bool renormalizeOutput );
-		/**
-		 * Read the types you wrote with WriteCompressed
-		 * @param output The read value
-		 * @return true on success, false on not enough data to read
-		 */
-		bool ReadCompressed( double &output );
 		/**
 		 * Sets the read pointer back to the beginning of your data.
 		 */
