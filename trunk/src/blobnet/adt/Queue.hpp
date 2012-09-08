@@ -45,8 +45,7 @@ namespace ADT {
 
 		const QueueType& operator[] (unsigned int position) const;
 		QueueType& operator[] (unsigned int position);
-
-		bool operator= ( const Queue& original_copy );
+		bool operator= (const Queue& original_copy);
 
 		/// @brief Count of elements in the queue
 		/// @return Count of elements
