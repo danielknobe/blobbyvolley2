@@ -812,21 +812,6 @@ protected:
 	SimpleMutex incomingQueueMutex, banListMutex; //,synchronizedMemoryQueueMutex, automaticVariableSynchronizationMutex;
 	BasicDataStructures::Queue<Packet *> incomingPacketQueue; //, synchronizedMemoryPacketQueue;
 	// BitStream enumerationData;
-	/**
-	* @brief Automatic Variable Synchronization Mechanism
-	* 
-	* automatic variable synchronization takes a primary and secondary identifier
-	* The unique primary identifier is the index into the automaticVariableSynchronizationList
-	* The unique secondary identifier (UNASSIGNED_OBJECT_ID for none) is in an unsorted list of memory blocks
-	*/
-	struct MemoryBlock
-	{
-		char *original, *copy;
-		unsigned short size;
-		ObjectID secondaryID;
-		bool isAuthority;
-		bool ( *synchronizationRules ) ( char*, char* );
-	};
 
 	struct BanStruct
 	{
@@ -844,7 +829,6 @@ protected:
 		enum {CONNECT=1, PING=2, PING_OPEN_CONNECTIONS=4, ADVERTISE_SYSTEM=8} actionToTake;
 	};
 
-	//BasicDataStructures::List<BasicDataStructures::List<MemoryBlock>* > automaticVariableSynchronizationList;
 	BasicDataStructures::List<BanStruct*> banList;
 	BasicDataStructures::List<MessageHandlerInterface*> messageHandlerList;
 	BasicDataStructures::SingleProducerConsumer<RequestedConnectionStruct> requestedConnectionList;
