@@ -25,7 +25,6 @@ set (raknet_SRC
 	QueueLinkedList.h
 	RakClient.cpp RakClient.h
 	RakClientInterface.h
-	RakNetQueue.h
 	RakNetStatistics.cpp RakNetStatistics.h
 	RakNetworkFactory.cpp RakNetworkFactory.h
 	RakPeer.cpp RakPeer.h
