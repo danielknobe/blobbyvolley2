@@ -31,7 +31,6 @@
 
 #ifndef __INTERNAL_PACKET_POOL
 #define __INTERNAL_PACKET_POOL
-//#include "SimpleMutex.h"
 #include "RakNetQueue.h"
 #include "InternalPacket.h"
 
@@ -78,8 +77,7 @@ private:
 	/**
 	 * Multithread access management 
 	 */
-	// 10/17/05 - Don't need this now that all pool interactions are in the same thread
-	//SimpleMutex poolMutex;
+
 #ifdef _DEBUG
 	/**
 	 * Used in debugging stage to monitor the number of internal packet released. 
