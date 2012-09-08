@@ -2144,7 +2144,7 @@ void ReliabilityLayer::DeleteSequencedPacketsInList( unsigned char orderingChann
 // Search the specified list for sequenced packets with a value less than orderingIndex and delete them
 // Note - I added functionality so you can use the Queue as a list (in this case for searching) but it is less efficient to do so than a regular list
 //-------------------------------------------------------------------------------------------------------
-void ReliabilityLayer::DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::Queue<InternalPacket*>&theList )
+void ReliabilityLayer::DeleteSequencedPacketsInList( unsigned char orderingChannel, BlobNet::ADT::Queue<InternalPacket*>&theList )
 {
 	InternalPacket * internalPacket;
 	int listSize = theList.size();
