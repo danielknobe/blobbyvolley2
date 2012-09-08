@@ -830,7 +830,7 @@ protected:
 
 	struct BanStruct
 	{
-		char *IP;
+		char IP[16];
 		unsigned int timeout; // 0 for none
 	};
 
