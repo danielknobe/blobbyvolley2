@@ -309,58 +309,6 @@ void BitStream::Write( const int input )
 #endif
 }
 
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-#ifdef HAS_INT64
-void BitStream::Write( const uint64_t input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 7;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	static unsigned char uint64w[8];
-	uint64w[B64_7] = (input >> 56) & 0xff;
-	uint64w[B64_6] = (input >> 48) & 0xff;
-	uint64w[B64_5] = (input >> 40) & 0xff;
-	uint64w[B64_4] = (input >> 32) & 0xff;
-	uint64w[B64_3] = (input >> 24) & 0xff;
-	uint64w[B64_2] = (input >> 16) & 0xff;
-	uint64w[B64_1] = (input >> 8) & 0xff;
-	uint64w[B64_0] = input & 0xff;
-	
-	WriteBits( uint64w, sizeof( input ) * 8, true );
-#endif
-}
-
-void BitStream::Write( const int64_t input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 8;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	static unsigned char int64w[8];
-	int64w[B64_7] = (input >> 56) & 0xff;
-	int64w[B64_6] = (input >> 48) & 0xff;
-	int64w[B64_5] = (input >> 40) & 0xff;
-	int64w[B64_4] = (input >> 32) & 0xff;
-	int64w[B64_3] = (input >> 24) & 0xff;
-	int64w[B64_2] = (input >> 16) & 0xff;
-	int64w[B64_1] = (input >> 8) & 0xff;
-	int64w[B64_0] = input & 0xff;
-	
-	WriteBits( int64w, sizeof( input ) * 8, true );
-#endif
-}
-
-#endif
-
 void BitStream::Write( const float input )
 {
 #ifdef TYPE_CHECKING
@@ -383,12 +331,7 @@ void BitStream::Write( const double input )
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
 
-#if defined ( __BITSTREAM_NATIVE_END ) || ( ! defined (HAS_INT64) )
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	uint64_t intval = *((uint64_t *)(&input));
-	Write(intval);
-#endif
 }
 
 // Write an array or casted stream
@@ -498,108 +441,6 @@ void BitStream::WriteCompressed( const int input )
 	int32wc[B32_0] = (input)&(0x000000ff);
 	
 	WriteCompressed( int32wc, sizeof( input ) * 8, false );
-#endif
-}
-
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-#ifdef HAS_INT64
-void BitStream::WriteCompressed( const uint64_t input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 18;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	static unsigned char uint64wc[8];
-	uint64wc[B64_7] = (input >> 56) & 0xff;
-	uint64wc[B64_6] = (input >> 48) & 0xff;
-	uint64wc[B64_5] = (input >> 40) & 0xff;
-	uint64wc[B64_4] = (input >> 32) & 0xff;
-	uint64wc[B64_3] = (input >> 24) & 0xff;
-	uint64wc[B64_2] = (input >> 16) & 0xff;
-	uint64wc[B64_1] = (input >> 8) & 0xff;
-	uint64wc[B64_0] = input & 0xff;
-	
-	WriteCompressed( uint64wc, sizeof( input ) * 8, true );
-#endif
-}
-
-void BitStream::WriteCompressed( const int64_t input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 19;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	static unsigned char int64wc[8];
-	int64wc[B64_7] = (input >> 56) & 0xff;
-	int64wc[B64_6] = (input >> 48) & 0xff;
-	int64wc[B64_5] = (input >> 40) & 0xff;
-	int64wc[B64_4] = (input >> 32) & 0xff;
-	int64wc[B64_3] = (input >> 24) & 0xff;
-	int64wc[B64_2] = (input >> 16) & 0xff;
-	int64wc[B64_1] = (input >> 8) & 0xff;
-	int64wc[B64_0] = input & 0xff;
-	
-	WriteCompressed( int64wc, sizeof( input ) * 8, false );
-#endif
-}
-#endif
-
-
-void BitStream::WriteCompressed( const float input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 20;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-
-// Not yet implemented (no compression)
-#if defined ( __BITSTREAM_NATIVE_END )
-	WriteBits( ( unsigned char* ) &input, sizeof( input ) * 8, true );
-#else
-	Write( input );
-#endif
-}
-
-void BitStream::WriteCompressed1( const float input1, const float input2, const float input3 )
-{
-#ifdef _DEBUG
-	assert(input1 <= 1.0f && input2 <= 1.0f && input3 < 1.0f);
-#endif
-	Write((unsigned char)(input1*255.0f));
-	Write((unsigned char)(input2*255.0f));
-	Write((unsigned char)(input3*255.0f));
-}
-
-void BitStream::WriteCompressed2( const float input1, const float input2, const float input3 )
-{
-#ifdef _DEBUG
-	assert(input1 <= 1.0f && input2 <= 1.0f && input3 < 1.0f);
-#endif
-	Write((unsigned short)(input1*65535.0f));
-	Write((unsigned short)(input2*65535.0f));
-	Write((unsigned short)(input3*65535.0f));
-}
-
-void BitStream::WriteCompressed( const double input )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID = 21;
-	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
-#endif
-	
-	// Not yet implemented (no compression)
-#if defined ( __BITSTREAM_NATIVE_END )
-	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else
-	Write( input );
 #endif
 }
 
@@ -760,62 +601,6 @@ bool BitStream::Read( int &output )
 #endif
 }
 
-
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-#ifdef HAS_INT64
-bool BitStream::Read( uint64_t &output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 7 );
-	
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
-#else
-	static unsigned char uint64r[8];
-	if(ReadBits( uint64r, sizeof( output ) * 8 ) != true)
-		return false;
-	output = (((uint64_t) uint64r[B64_7])<<56)|(((uint64_t) uint64r[B64_6])<<48)|
-		(((uint64_t) uint64r[B64_5])<<40)|(((uint64_t) uint64r[B64_4])<<32)|
-		(((uint64_t) uint64r[B64_3])<<24)|(((uint64_t) uint64r[B64_2])<<16)|
-		(((uint64_t) uint64r[B64_1])<<8)|((uint64_t) uint64r[B64_0]);
-	return true;
-#endif
-}
-
-bool BitStream::Read( int64_t &output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 8 );
-	
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
-#else
-	static unsigned char int64r[8];
-	if(ReadBits( int64r, sizeof( output ) * 8 ) != true)
-		return false;
-	output = (((uint64_t) int64r[B64_7])<<56)|(((uint64_t) int64r[B64_6])<<48)|
-		(((uint64_t) int64r[B64_5])<<40)|(((uint64_t) int64r[B64_4])<<32)|
-		(((uint64_t) int64r[B64_3])<<24)|(((uint64_t) int64r[B64_2])<<16)|
-		(((uint64_t) int64r[B64_1])<<8)|((uint64_t) int64r[B64_0]);
-	return true;
-#endif
-}
-#endif
-
 bool BitStream::Read( float &output )
 {
 #ifdef TYPE_CHECKING
@@ -850,15 +635,8 @@ bool BitStream::Read( double &output )
 	
 #endif
 	
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-#if defined ( __BITSTREAM_NATIVE_END ) || ( ! defined ( HAS_INT64 ) )
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
-#else
-	uint64_t val;
-	if (Read(val) == false) return false;
-	output = *((double *)(&val));
-	return true;
-#endif
+
 }
 
 // Read an array or casted stream
@@ -1008,154 +786,6 @@ bool BitStream::ReadCompressed( int &output )
 		(((unsigned int) int32rc[B32_1])<<8)|
 		((unsigned int) int32rc[B32_0]);
 	return true;
-#endif
-}
-
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-#ifdef HAS_INT64
-bool BitStream::ReadCompressed( uint64_t &output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 18 );
-	
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
-#else
-	static unsigned char uint64rc[8];
-	if(ReadCompressed( uint64rc, sizeof( output ) * 8, true ) != true)
-		return false;
-	output = (((uint64_t) uint64rc[B64_7])<<56)|(((uint64_t) uint64rc[B64_6])<<48)|
-		(((uint64_t) uint64rc[B64_5])<<40)|(((uint64_t) uint64rc[B64_4])<<32)|
-		(((uint64_t) uint64rc[B64_3])<<24)|(((uint64_t) uint64rc[B64_2])<<16)|
-		(((uint64_t) uint64rc[B64_1])<<8)|((uint64_t) uint64rc[B64_0]);
-	return true;
-#endif
-}
-
-bool BitStream::ReadCompressed( int64_t& output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 19 );
-	
-#endif
-	
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
-#else
-	static unsigned char int64rc[8];
-	if(ReadCompressed( int64rc, sizeof( output ) * 8, false ) != true)
-		return false;
-	output = (((uint64_t) int64rc[B64_7])<<56)|(((uint64_t) int64rc[B64_6])<<48)|
-		(((uint64_t) int64rc[B64_5])<<40)|(((uint64_t) int64rc[B64_4])<<32)|
-		(((uint64_t) int64rc[B64_3])<<24)|(((uint64_t) int64rc[B64_2])<<16)|
-		(((uint64_t) int64rc[B64_1])<<8)|((uint64_t) int64rc[B64_0]);
-	return true;
-#endif
-}
-#endif
-
-bool BitStream::ReadCompressed( float &output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 20 );
-	
-#endif
-	
-	// ReadCompressed using int has no effect on this data format and would make the data bigger!
-//	unsigned int val;
-//	if (ReadCompressed(val) == false) return false;
-//	output = *((float *)(&val));
-//	return true;
-
-	// Not yet implemented
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
-#else
-	return Read( output );
-#endif
-}
-
-bool BitStream::ReadCompressed1( float &output1, float &output2, float &output3, bool renormalizeOutput )
-{
-	unsigned char compressed1, compressed2, compressed3;
-	bool success;
-	Read(compressed1);
-	Read(compressed2);
-	success=Read(compressed3);
-	if (success==false)
-		return false;
-	output1=(float)compressed1/255.0f;
-	output2=(float)compressed2/255.0f;
-	output3=(float)compressed3/255.0f;
-	if (renormalizeOutput)
-	{
-		float magnitude;
-		magnitude=sqrtf(output1*output1 + output2*output2 + output3*output3);
-		output1/=magnitude;
-		output2/=magnitude;
-		output3/=magnitude;
-	}
-	return true;
-}
-
-bool BitStream::ReadCompressed2( float &output1, float &output2, float &output3, bool renormalizeOutput )
-{
-	unsigned short compressed1, compressed2, compressed3;
-	bool success;
-	Read(compressed1);
-	Read(compressed2);
-	success=Read(compressed3);
-	if (success==false)
-		return false;
-	output1=(float)compressed1/65535.0f;
-	output2=(float)compressed2/65535.0f;
-	output3=(float)compressed3/65535.0f;
-	if (renormalizeOutput)
-	{
-		float magnitude;
-		magnitude=sqrtf(output1*output1 + output2*output2 + output3*output3);
-		output1/=magnitude;
-		output2/=magnitude;
-		output3/=magnitude;
-	}
-	return true;
-}
-
-bool BitStream::ReadCompressed( double &output )
-{
-#ifdef TYPE_CHECKING
-	unsigned char ID;
-	
-	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
-		return false;
-		
-	assert( ID == 21 );
-	
-#endif
-
-// c:\RakNet\Source\BitStream.cpp(1046) : error C2065: 'uint64_t' : undeclared identifier
-// ReadCompressed using int has no effect on this data format and would make the data bigger!
-#ifdef __BITSTREAM_NATIVE_END
-	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
-#else
-	return ReadBits( output );
 #endif
 }
 

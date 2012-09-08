@@ -453,26 +453,6 @@ namespace BasicDataStructures
 		list_size = 0;
 	}
 	
-	template <class list_type>
-	void List<list_type>::compress( void )
-	{
-		list_type * new_array;
-		
-		if ( allocation_size == 0 )
-			return ;
-			
-		new_array = new list_type [ allocation_size ];
-		
-		// copy old array over
-		for ( unsigned int counter = 0; counter < list_size; ++counter )
-			new_array[ counter ] = array[ counter ];
-			
-		// set old array to point to the newly allocated array
-		delete[] array;
-		
-		array = new_array;
-	}
-	
 } // End namespace
 
 #endif
