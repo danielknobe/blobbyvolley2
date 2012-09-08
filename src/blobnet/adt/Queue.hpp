@@ -64,10 +64,6 @@ namespace ADT {
 		/// @return First element of queue
 		inline const QueueType pop();
 
-		/// @brief Returns the internal size of the allocated array
-		/// @return Internal array size
-		inline const unsigned int AllocationSize() const;
-
 		/// @brief Deletes all elements of the array
 		inline void clear();
 
@@ -144,11 +140,6 @@ namespace ADT {
 		this->array.pop_front();
 		
 		return tmp;
-	}
-
-	template <class QueueType> inline const unsigned int Queue<QueueType>::AllocationSize() const
-	{
-		return this->array.max_size();
 	}
 
 	template <class QueueType> inline void Queue<QueueType>::clear()
