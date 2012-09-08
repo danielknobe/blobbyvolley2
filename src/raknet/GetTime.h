@@ -30,20 +30,6 @@
 #ifndef __GET_TIME_H
 #define __GET_TIME_H
 
-#ifndef RAKNET_DEPRECATED 
-/**
- * Retrieve the current time in seconds. 
- * 
- * @deprecated You should better use RakNet::GetTime(). 
- * It require the definition of the RAKNET_COMPATIBILITY 
- * preprocessor symbol during the compilation of RakNet 
- * to be available. 
- *
- * @see RakNet::GetTime 
- */
-#define RakNetGetTime(void) RakNet::GetTime(void)
-#endif
-
 namespace RakNet
 {
 	/**
