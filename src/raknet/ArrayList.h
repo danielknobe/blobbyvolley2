@@ -32,12 +32,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
-
-////#include "MemoryManager.h"
 
 #ifndef __LIST_H
 #define __LIST_H 
+
+#include <cassert>
+#include <vector>
+
 /**
  * Define the max unsigned int value available 
  * @todo Take this value from @em limits.h. 
@@ -165,95 +166,37 @@ namespace BasicDataStructures
 		 */
 		void clear( void );
 		
-		/**
-		 * Compress the list, to meet the current state of the list.  
-		 * @attention 
-		 * Do not use too often this operation if you are doing a lot of
-		 * insert/del operation because it implies memory realocation and copy of 
-		 * the element of the list. 
-		 */
-		void compress( void );
-		
 	private:
 		/**
 		 * Store all values 
 		 */
-		list_type* array;
+		 typedef std::vector<list_type> container_type;
+		 container_type array;
 		
-		/**
-		 * Number of element in the list 
-		 */
-		unsigned int list_size;
-		
-		/**
-		 * Size of @em array 
-		 */
-		unsigned int allocation_size;
 	};
 	
 	template <class list_type>
 	List<list_type>::List()
 	{
-		allocation_size = 16;
-		array = new list_type[ allocation_size ];
-		list_size = 0;
+		array.reserve(16);
 	}
 	
 	template <class list_type>
 	List<list_type>::~List()
 	{
-		if (allocation_size>0)
-			delete [] array;
 	}
 	
 	
 	template <class list_type>
 	List<list_type>::List( const List& original_copy )
 	{
-		// Allocate memory for copy
-		
-		if ( original_copy.list_size == 0 )
-		{
-			list_size = 0;
-			allocation_size = 0;
-		}
-		
-		else
-		{
-			array = new list_type [ original_copy.list_size ];
-			
-			for ( unsigned int counter = 0; counter < original_copy.list_size; ++counter )
-				array[ counter ] = original_copy.array[ counter ];
-				
-			list_size = allocation_size = original_copy.list_size;
-		}
+		array = original_copy.array;
 	}
 	
 	template <class list_type>
 	List<list_type>& List<list_type>::operator= ( const List& original_copy )
 	{
-		if ( ( &original_copy ) != this )
-		{
-			clear();
-			
-			// Allocate memory for copy
-			
-			if ( original_copy.list_size == 0 )
-			{
-				list_size = 0;
-				allocation_size = 0;
-			}
-			
-			else
-			{
-				array = new list_type [ original_copy.list_size ];
-				
-				for ( unsigned int counter = 0; counter < original_copy.list_size; ++counter )
-					array[ counter ] = original_copy.array[ counter ];
-					
-				list_size = allocation_size = original_copy.list_size;
-			}
-		}
+		array = original_copy.array;
 		
 		return *this;
 	}
@@ -262,170 +205,62 @@ namespace BasicDataStructures
 	template <class list_type>
 	inline list_type& List<list_type>::operator[] ( unsigned int position )
 	{
-		assert ( position < list_size );
-		return array[ position ];
+		return array.at(position);
 	}
 	
 	template <class list_type>
 	void List<list_type>::insert( list_type input, unsigned int position )
 	{
-#ifdef _DEBUG
-		assert( position <= list_size );
-#endif
+		array.insert(array.begin() + position, input);
 		
-		// Reallocate list if necessary
-		
-		if ( list_size == allocation_size )
-		{
-			// allocate twice the currently allocated memory
-			list_type * new_array;
-			
-			if ( allocation_size == 0 )
-				allocation_size = 16;
-			else
-				allocation_size *= 2;
-				
-			new_array = new list_type [ allocation_size ];
-			
-			// copy old array over
-			for ( unsigned int counter = 0; counter < list_size; ++counter )
-				new_array[ counter ] = array[ counter ];
-				
-			// set old array to point to the newly allocated and twice as large array
-			delete[] array;
-			
-			array = new_array;
-		}
-		
-		// Move the elements in the list to make room
-		for ( unsigned int counter = list_size; counter != position; counter-- )
-			array[ counter ] = array[ counter - 1 ];
-			
 		// Insert the new item at the correct spot
-		array[ position ] = input;
-		
-		++list_size;
-		
+		assert( array[ position ] == input );
 	}
 	
 	
 	template <class list_type>
 	void List<list_type>::insert( list_type input )
 	{
-		// Reallocate list if necessary
-		
-		if ( list_size == allocation_size )
-		{
-			// allocate twice the currently allocated memory
-			list_type * new_array;
-			
-			if ( allocation_size == 0 )
-				allocation_size = 16;
-			else
-				allocation_size *= 2;
-				
-			new_array = new list_type [ allocation_size ];
-			
-			// copy old array over
-			for ( unsigned int counter = 0; counter < list_size; ++counter )
-				new_array[ counter ] = array[ counter ];
-				
-			// set old array to point to the newly allocated and twice as large array
-			delete[] array;
-			
-			array = new_array;
-		}
-		
-		// Insert the new item at the correct spot
-		array[ list_size ] = input;
-		
-		++list_size;
+		array.push_back(input);
 	}
 	
 	template <class list_type>
 	inline void List<list_type>::replace( list_type input, list_type filler, unsigned int position )
 	{
-		if ( ( list_size > 0 ) && ( position < list_size ) )
+		if( position >= array.size() )
 		{
-			// Direct replacement
-			array[ position ] = input;
+			// reserve new memory
+			array.resize( position + 1, filler );
 		}
-		else
-		{
-			if ( position >= allocation_size )
-			{
-				// Reallocate the list to size position and fill in blanks with filler
-				list_type * new_array;
-				allocation_size = position + 1;
-				
-				new_array = new list_type [ allocation_size ];
-				
-				// copy old array over
-				
-				for ( unsigned int counter = 0; counter < list_size; ++counter )
-					new_array[ counter ] = array[ counter ];
-					
-				// set old array to point to the newly allocated array
-				delete[] array;
-				
-				array = new_array;
-			}
-			
-			// Fill in holes with filler
-			while ( list_size < position )
-				array[ list_size++ ] = filler;
-				
-			// Fill in the last element with the new item
-			array[ list_size++ ] = input;
-			
-#ifdef _DEBUG
-			
-			assert( list_size == position + 1 );
-			
-#endif
-			
-		}
+		
+		array[ position ] = input;
 	}
 	
 	template <class list_type>
 	inline void List<list_type>::replace( list_type input )
 	{
-		if ( list_size > 0 )
-			array[ list_size - 1 ] = input;
+		if ( !array.empty() )
+			array.back() = input;
 	}
 	
 	template <class list_type>
 	void List<list_type>::del( unsigned int position )
 	{
-#ifdef _DEBUG
-		assert( position < list_size );
-#endif
-		
-		if ( position < list_size )
-		{
-			// Compress the array
-			
-			for ( unsigned int counter = position; counter < list_size - 1 ; ++counter )
-				array[ counter ] = array[ counter + 1 ];
-				
-			del();
-		}
+
+		array.erase( array.begin() + position );
 	}
 	
 	template <class list_type>
 	inline void List<list_type>::del()
 	{
 		// Delete the last element on the list.  No compression needed
-#ifdef _DEBUG
-		assert(list_size>0);
-#endif
-		list_size--;
+		array.pop_back();
 	}
 	
 	template <class list_type>
 	unsigned int List<list_type>::getIndexOf( list_type input )
 	{
-		for ( unsigned int i = 0; i < list_size; ++i )
+		for ( unsigned int i = 0; i < array.size(); ++i )
 			if ( array[ i ] == input )
 				return i;
 				
@@ -435,22 +270,13 @@ namespace BasicDataStructures
 	template <class list_type>
 	inline const unsigned int List<list_type>::size( void ) const
 	{
-		return list_size;
+		return array.size();
 	}
 	
 	template <class list_type>
 	void List<list_type>::clear( void )
 	{
-		if ( allocation_size == 0 )
-			return;
-		
-		if (allocation_size>32)
-		{
-			delete [] array;
-			allocation_size = 0;
-			array = 0;
-		}
-		list_size = 0;
+		array.clear();
 	}
 	
 } // End namespace
