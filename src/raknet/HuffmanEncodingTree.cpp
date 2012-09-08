@@ -28,10 +28,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "HuffmanEncodingTree.h"
-#include "RakNetQueue.h"
+#include "../blobnet/adt/Queue.hpp"
 #include "BitStream.h"
 #include <assert.h> 
-
 
 HuffmanEncodingTree::HuffmanEncodingTree()
 {
@@ -49,7 +48,7 @@ void HuffmanEncodingTree::FreeMemory( void )
 		return ;
 		
 	// Use an in-order traversal to delete the tree
-	BasicDataStructures::Queue<HuffmanEncodingTreeNode *> nodeQueue;
+	BlobNet::ADT::Queue<HuffmanEncodingTreeNode *> nodeQueue;
 	
 	HuffmanEncodingTreeNode *node;
 	

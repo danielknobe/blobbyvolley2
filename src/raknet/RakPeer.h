@@ -794,7 +794,7 @@ protected:
 	/**
 	* The list of people we have tried to connect to recently
 	*/
-	//BasicDataStructures::Queue<RequestedConnectionStruct*> requestedConnectionsList;
+	//BlobNet::ADT::Queue<RequestedConnectionStruct*> requestedConnectionsList;
 	/**
 	* Data that both the client and the server needs
 	*/
@@ -810,7 +810,7 @@ protected:
 #endif
 		processPacketsThreadHandle, recvfromThreadHandle;
 	SimpleMutex incomingQueueMutex, banListMutex; //,synchronizedMemoryQueueMutex, automaticVariableSynchronizationMutex;
-	BasicDataStructures::Queue<Packet *> incomingPacketQueue; //, synchronizedMemoryPacketQueue;
+	BlobNet::ADT::Queue<Packet *> incomingPacketQueue; //, synchronizedMemoryPacketQueue;
 	// BitStream enumerationData;
 
 	struct BanStruct
@@ -865,8 +865,8 @@ protected:
 	//BufferedCommandStruct* bufferedCommandReadIndex, bufferedCommandWriteIndex;
 	BasicDataStructures::SingleProducerConsumer<BufferedCommandStruct> bufferedCommands;
 
-	//BasicDataStructures::Queue<BufferedCommandStruct *> bufferedCommandQueue;
-	//BasicDataStructures::Queue<BufferedCommandStruct *> bufferedCommandPool;
+	//BlobNet::ADT::Queue<BufferedCommandStruct *> bufferedCommandQueue;
+	//BlobNet::ADT::Queue<BufferedCommandStruct *> bufferedCommandPool;
 	//RakPeer::BufferedCommandStruct *LockWriteBufferedCommandStruct(bool *outParam_wasInserted); // Get the next BCS to write
 	//void UnlockWriteBufferedCommandStruct(RakPeer::BufferedCommandStruct *bcs, bool *outParam_wasInserted); // Done with the next BCS to write
 	//RakPeer::BufferedCommandStruct *LockReadBufferedCommandStruct(void); // Get the next BCS to read

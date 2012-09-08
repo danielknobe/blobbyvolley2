@@ -37,7 +37,6 @@
 #include "ArrayList.h"
 #include "SocketLayer.h"
 #include "PacketPriority.h"
-#include "RakNetQueue.h"
 #include "BitStream.h"
 #include "SimpleMutex.h"
 #include "InternalPacket.h"
@@ -46,6 +45,8 @@
 #include "RakNetStatistics.h"
 #include "SingleProducerConsumer.h"
 #include "SHA1.h"
+
+#include "../blobnet/adt/Queue.hpp"
 
 /**
 * Sizeof an UDP header in byte 
@@ -279,7 +280,7 @@ private:
 	// Search the specified list for sequenced packets on the specified ordering channel, optionally skipping those with splitPacketId, and delete them
 	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::List<InternalPacket*>&theList, int splitPacketId = -1 );
 	// Search the specified list for sequenced packets with a value less than orderingIndex and delete them
-	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::Queue<InternalPacket*>&theList );
+	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BlobNet::ADT::Queue<InternalPacket*>&theList );
 
 	// Returns true if newPacketOrderingIndex is older than the waitingForPacketOrderingIndex
 	bool IsOlderOrderedPacket( OrderingIndexType newPacketOrderingIndex, OrderingIndexType waitingForPacketOrderingIndex );
@@ -352,9 +353,9 @@ private:
 
 	BasicDataStructures::List<InternalPacket*> splitPacketList;
 	BasicDataStructures::List<BasicDataStructures::LinkedList<InternalPacket*>*> orderingList;
-	BasicDataStructures::Queue<InternalPacket*> acknowledgementQueue, outputQueue;
-	BasicDataStructures::Queue<InternalPacket*> resendQueue;
-	BasicDataStructures::Queue<InternalPacket*> sendPacketSet[ NUMBER_OF_PRIORITIES ];
+	BlobNet::ADT::Queue<InternalPacket*> acknowledgementQueue, outputQueue;
+	BlobNet::ADT::Queue<InternalPacket*> resendQueue;
+	BlobNet::ADT::Queue<InternalPacket*> sendPacketSet[ NUMBER_OF_PRIORITIES ];
 	PacketNumberType packetNumber;
 	//unsigned int windowSize;
 	unsigned int lastAckTime;
@@ -385,7 +386,7 @@ private:
 	//     We got a duplicate packet.
 	//   else
 	//     Add 0 times to the queue until (packetNumber - baseIndex) < queue size.
-	BasicDataStructures::Queue<unsigned int> receivedPackets;
+	BlobNet::ADT::Queue<unsigned int> receivedPackets;
 	PacketNumberType receivedPacketsBaseIndex;
 	bool resetReceivedPackets;
 
