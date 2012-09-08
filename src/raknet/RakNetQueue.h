@@ -61,11 +61,12 @@
 #ifndef __QUEUE_H
 #define __QUEUE_H
 
-// Template classes have to have all the code in the header file
-#include <cassert>
-
 namespace BasicDataStructures
 {
+
+		const unsigned int initAllocationSize = 16; 
+
+
 	/*!	\class Queue
 		\brief ADT for a Queue with some extra functionality
 	*/
@@ -82,30 +83,61 @@ namespace BasicDataStructures
 		/// @param originalCopy The queue which will be copied
 		Queue(const Queue& originalCopy);
 
+		QueueType& operator[] (unsigned int position) const;
 		bool operator= ( const Queue& original_copy );
-		void push( const QueueType& input );
-		void pushAtHead( const QueueType& input );
-		QueueType& operator[] ( unsigned int position ) const; // Not a normal thing you do with a queue but can be used for efficiency
-		void del( unsigned int position ); // Not a normal thing you do with a queue but can be used for efficiency
-		inline const QueueType peek( void ) const;
-		inline const QueueType pop( void );
-		inline const unsigned int size( void ) const;
-		inline const unsigned int AllocationSize( void ) const;
-		inline void clear( void );
-		void compress( void );
-		bool find ( QueueType q );
-		void clearAndForceAllocation( int size ); // Force a memory allocation to a certain larger size
+
+		/// @brief Count of elements in the queue
+		/// @return Count of elements
+		inline const unsigned int size() const;
+
+		/// @brief Adds an element to the queue
+		/// @param Element to add
+		void push(const QueueType& input);
+
+		/// @brief Adds an element to the head of the queue
+		/// @param Element to add
+		void pushAtHead(const QueueType& input);
+
+		/// @brief Pops the first element of queue. Check if queue is not empty before.
+		/// @return First element of queue
+		inline const QueueType pop();
+
+		/// @brief Returns the internal size of the allocated array
+		/// @return Internal array size
+		inline const unsigned int AllocationSize() const;
+
+		/// @brief Deletes all elements of the array
+		inline void clear();
+
+		/// @brief Reorganizes the queue. Really dump implemented at the moment
+		void compress();
+
+		/// @brief Checks if element is in queue or not
+		/// @param Element
+		bool find(QueueType q);
+
+		/// @brief Returns first element of queue. Really dump implemented at the moment
+		/// @return First element
+		inline const QueueType peek() const;
+
+		/// @brief Deletes an element. This is not very fast
+		/// @param Index of element
+		void del(unsigned int position);
+
+		/// @brief Reallocates the queue with no elements
+		/// @param Size of internal array size
+		void clearAndForceAllocation( int size );
 
 	private:
 		QueueType* array;
-		unsigned int head;  // Array index for the head of the queue
-		unsigned int tail; // Array index for the tail of the queue
+		unsigned int head; // First element with data
+		unsigned int tail; // First element without data
 		unsigned int allocation_size;
 	};
 
 	template <class QueueType> Queue<QueueType>::Queue()
 	{
-		allocation_size = 16;
+		allocation_size = initAllocationSize;
 		array = new QueueType[allocation_size];
 		head = 0;
 		tail = 0;
@@ -116,190 +148,60 @@ namespace BasicDataStructures
 		delete[] array;
 	}
 
-	template <class QueueType> Queue<QueueType>::Queue(const Queue& original_copy )
+	template <class QueueType> Queue<QueueType>::Queue(const Queue& original_copy)
 	{
-		if ( original_copy.size() == 0 )
+		if (original_copy.size() == 0)
 		{
 			allocation_size = 0;
 		}
 		else
 		{
-			array = new QueueType [ original_copy.size() + 1 ];
+			// dump
+			array = new QueueType[original_copy.size() + 1];
 
-			for ( unsigned int counter = 0; counter < original_copy.size(); ++counter )
-				array[ counter ] = original_copy.array[ ( original_copy.head + counter ) % ( original_copy.allocation_size ) ];
+			for (unsigned int counter = 0; counter < original_copy.size(); counter++)
+				array[counter] = original_copy.array[(original_copy.head + counter) % (original_copy.allocation_size)];
 
 			head = 0;
-
 			tail = original_copy.size();
 
 			allocation_size = original_copy.size() + 1;
 		}
 	}
 
-
-
-	template <class QueueType>
-		inline const unsigned int Queue<QueueType>::size( void ) const
+	template <class QueueType> inline QueueType& Queue<QueueType>::operator[] (unsigned int position) const
 	{
-		if ( head <= tail )
-			return tail -head;
+		position = head + position;
+		
+		if (position >= allocation_size)
+		{
+			return array[position - allocation_size];
+		}
 		else
-			return allocation_size -head + tail;
-	}
-
-	template <class QueueType>
-	inline const unsigned int Queue<QueueType>::AllocationSize( void ) const
-	{
-		return allocation_size;
-	}
-
-	template <class QueueType>
-		inline const QueueType Queue<QueueType>::pop( void )
-	{
-#ifdef _DEBUG
-		assert( allocation_size > 0 && size() >= 0 && head != tail);
-#endif
-		//head=(head+1) % allocation_size;
-
-		if ( ++head == allocation_size )
-			head = 0;
-
-		if ( head == 0 )
-			return ( QueueType ) array[ allocation_size -1 ];
-
-		return ( QueueType ) array[ head -1 ];
-	}
-
-	template <class QueueType>
-		void Queue<QueueType>::pushAtHead( const QueueType& input )
-	{
-		if ( allocation_size == 0 )
 		{
-			array = new QueueType[ 16 ];
-			head = 0;
-			tail = 1;
-			array[ 0 ] = input;
-			allocation_size = 16;
-			return ;
-		}
-
-		if ( head == 0 )
-			head = allocation_size - 1;
-		else
-			--head;
-
-		array[ head ] = input;
-
-		if ( tail == head )
-		{
-			//  unsigned int index=tail;
-
-			// Need to allocate more memory.
-			QueueType * new_array;
-			new_array = new QueueType[ allocation_size * 2 ];
-#ifdef _DEBUG
-
-			assert( new_array );
-#endif
-
-			for ( unsigned int counter = 0; counter < allocation_size; ++counter )
-				new_array[ counter ] = array[ ( head + counter ) % ( allocation_size ) ];
-
-			head = 0;
-
-			tail = allocation_size;
-
-			allocation_size *= 2;
-
-			// Delete the old array and move the pointer to the new array
-			delete [] array;
-
-			array = new_array;
+			return array[position];
 		}
 	}
 
-
-	template <class QueueType>
-		inline const QueueType Queue<QueueType>::peek( void ) const
+	template <class QueueType> bool Queue<QueueType>::operator= (const Queue& original_copy)
 	{
-#ifdef _DEBUG
-		assert( head != tail );
-		assert( allocation_size > 0 && size() >= 0 );
-#endif
-
-		return ( QueueType ) array[ head ];
-	}
-
-	template <class QueueType>
-		void Queue<QueueType>::push( const QueueType& input )
-	{
-		if ( allocation_size == 0 )
-		{
-			array = new QueueType[ 16 ];
-			head = 0;
-			tail = 1;
-			array[ 0 ] = input;
-			allocation_size = 16;
-			return ;
-		}
-
-		array[ tail++ ] = input;
-
-		if ( tail == allocation_size )
-			tail = 0;
-
-		if ( tail == head )
-		{
-			//  unsigned int index=tail;
-
-			// Need to allocate more memory.
-			QueueType * new_array;
-			new_array = new QueueType[ allocation_size * 2 ];
-#ifdef _DEBUG
-
-			assert( new_array );
-#endif
-
-			for ( unsigned int counter = 0; counter < allocation_size; ++counter )
-				new_array[ counter ] = array[ ( head + counter ) % ( allocation_size ) ];
-
-			head = 0;
-
-			tail = allocation_size;
-
-			allocation_size *= 2;
-
-			// Delete the old array and move the pointer to the new array
-			delete [] array;
-
-			array = new_array;
-		}
-
-	}
-
-
-
-	template <class QueueType>
-		bool Queue<QueueType>::operator= ( const Queue& original_copy )
-	{
-		if ( ( &original_copy ) == this )
+		if ((&original_copy) == this)
 			return false;
 
 		clear();
 
 		// Allocate memory for copy
-		if ( original_copy.size() == 0 )
+		if (original_copy.size() == 0)
 		{
 			allocation_size = 0;
 		}
-
 		else
 		{
-			array = new QueueType [ original_copy.size() + 1 ];
+			// Dump!
+			array = new QueueType [original_copy.size() + 1];
 
-			for ( unsigned int counter = 0; counter < original_copy.size(); ++counter )
-				array[ counter ] = original_copy.array[ ( original_copy.head + counter ) % ( original_copy.allocation_size ) ];
+			for (unsigned int counter = 0; counter < original_copy.size(); counter++)
+				array[counter] = original_copy.array[(original_copy.head + counter) % (original_copy.allocation_size)];
 
 			head = 0;
 
@@ -311,10 +213,129 @@ namespace BasicDataStructures
 		return true;
 	}
 
-	template <class QueueType>
-		inline void Queue<QueueType>::clear ( void )
+	template <class QueueType> inline const unsigned int Queue<QueueType>::size() const
 	{
-		if ( allocation_size == 0 )
+		if (head <= tail)
+		{
+			return tail - head;
+		}
+		else
+		{
+			return allocation_size - head + tail;
+		}
+	}
+
+	template <class QueueType> void Queue<QueueType>::push(const QueueType& input)
+	{
+		// If queue storage is not allocated, allocate it at push the element
+		if (allocation_size == 0)
+		{
+			array = new QueueType[initAllocationSize];
+			allocation_size = initAllocationSize;
+			head = 0;
+			tail = 1;
+			array[0] = input;
+			return;
+		}
+
+		// If queue storage is full, reorganize it
+		if (tail == allocation_size)
+		{
+			tail = 0;
+		}
+
+		if (tail == head)
+		{
+			QueueType * new_array;
+			new_array = new QueueType[allocation_size * 2];
+
+			for (unsigned int counter = 0; counter < allocation_size; counter++)
+			{
+				new_array[counter] = array[(head + counter) % (allocation_size)];
+			}
+
+			head = 0;
+
+			tail = allocation_size;
+
+			allocation_size *= 2;
+
+			delete [] array;
+			array = new_array;
+		}
+
+		// Add element
+		array[tail] = input;
+		tail++;
+	}
+
+	template <class QueueType> void Queue<QueueType>::pushAtHead(const QueueType& input)
+	{
+		// If queue storage is not allocated, allocate it at push the element
+		if (allocation_size == 0)
+		{
+			push(input);
+		}
+
+		if (head == 0)
+		{
+			head = allocation_size - 1;
+		}
+		else
+		{
+			--head;
+		}
+
+		// If queue storage is full, reorganize it
+		if (tail == head)
+		{
+			QueueType * new_array;
+			new_array = new QueueType[allocation_size * 2];
+
+			for (unsigned int counter = 0; counter < allocation_size; ++counter)
+				new_array[counter+1] = array[(head + counter) % (allocation_size)];
+
+			head = 0;
+
+			tail = allocation_size;
+
+			allocation_size *= 2;
+
+			delete [] array;
+			array = new_array;
+		}
+
+		// Add element
+		array[head] = input;
+	}
+
+	template <class QueueType> inline const QueueType Queue<QueueType>::pop()
+	{
+		if (allocation_size == 0)
+		{
+			// We should throw an exception here
+			return 0;
+		}
+
+		head++;
+
+		if (head == allocation_size)
+		{
+			head = 0;
+			return (QueueType) array[allocation_size - 1];
+		}
+	
+		return (QueueType) array[head - 1];
+	}
+
+	template <class QueueType> inline const unsigned int Queue<QueueType>::AllocationSize() const
+	{
+		return allocation_size;
+	}
+
+	template <class QueueType> inline void Queue<QueueType>::clear()
+	{
+		if (allocation_size == 0)
 			return ;
 
 		if (allocation_size > 32)
@@ -327,118 +348,113 @@ namespace BasicDataStructures
 		tail = 0;
 	}
 
-	template <class QueueType>
-		void Queue<QueueType>::compress ( void )
+	template <class QueueType> void Queue<QueueType>::compress()
 	{
+		if (allocation_size == 0)
+		{
+			return;
+		}
+
 		QueueType* new_array;
 		unsigned int newAllocationSize;
-		if (allocation_size==0)
-			return;
 
-		newAllocationSize=1;
+
+		newAllocationSize = 1;
+
 		while (newAllocationSize <= size())
-			newAllocationSize<<=1; // Must be a better way to do this but I'm too dumb to figure it out quickly :)
+		{
+			newAllocationSize <<= 1;
+		}
 
 		new_array = new QueueType [newAllocationSize];
 
-		for (unsigned int counter=0; counter < size(); ++counter)
-			new_array[counter] = array[(head + counter)%(allocation_size)];
+		for (unsigned int counter = 0; counter < size(); counter++)
+			new_array[counter] = array[(head + counter) % (allocation_size)];
 
 		tail=size();
-		allocation_size=newAllocationSize;
-		head=0;
+		allocation_size = newAllocationSize;
+		head = 0;
 
-		// Delete the old array and move the pointer to the new array
 		delete [] array;
-		array=new_array;
+		array = new_array;
 	}
 
-	template <class QueueType>
-		bool Queue<QueueType>::find ( QueueType q )
+	template <class QueueType> bool Queue<QueueType>::find(QueueType q)
 	{
-		if ( allocation_size == 0 )
+		if (allocation_size == 0)
+		{
 			return false;
+		}
 
 		unsigned int counter = head;
 
 		while ( counter != tail )
 		{
-			if ( array[ counter ] == q )
+			if (array[counter] == q)
+			{
 				return true;
+			}
 
-			counter = ( counter + 1 ) % allocation_size;
+			counter = (counter + 1) % allocation_size;
 		}
 
 		return false;
 	}
 
-	template <class QueueType>
-		void Queue<QueueType>::clearAndForceAllocation( int size )
+	template <class QueueType> inline const QueueType Queue<QueueType>::peek( void ) const
 	{
-		delete [] array;
-		array = new QueueType[ size ];
-		allocation_size = size;
-		head = 0;
-		tail = 0;
+		return (QueueType) array[head];
 	}
 
-	template <class QueueType>
-		inline QueueType& Queue<QueueType>::operator[] ( unsigned int position ) const
+	template <class QueueType> void Queue<QueueType>::del(unsigned int position)
 	{
-#ifdef _DEBUG
-		assert( position < size() );
-#endif
-		//return array[(head + position) % allocation_size];
+		if (head == tail || position >= size())
+		{
+			return;
+		}
 
-		if ( head + position >= allocation_size )
-			return array[ head + position - allocation_size ];
-		else
-			return array[ head + position ];
-	}
+		unsigned int index = head + position;
 
-	template <class QueueType>
-		void Queue<QueueType>::del( unsigned int position )
-	{
-#ifdef _DEBUG
-		assert( position < size() );
-		assert( head != tail );
-#endif
 
-		if ( head == tail || position >= size() )
-			return ;
+		if (index >= allocation_size)
+		{
+			index = index - allocation_size;
+		}
 
-		unsigned int index;
+		// Reorganize queue
+		unsigned int next = index + 1;
 
-		unsigned int next;
-
-		//index  = (head + position) % allocation_size;
-		if ( head + position >= allocation_size )
-			index = head + position - allocation_size;
-		else
-			index = head + position;
-
-		//next = (index + 1) % allocation_size;
-		next = index + 1;
-
-		if ( next == allocation_size )
+		if (next == allocation_size)
 			next = 0;
 
-		while ( next != tail )
+		while (next != tail)
 		{
 			// Overwrite the previous element
-			array[ index ] = array[ next ];
+			array[index] = array[next];
 			index = next;
-			//next = (next + 1) % allocation_size;
 
-			if ( ++next == allocation_size )
+			if ( +next == allocation_size)
 				next = 0;
 		}
 
 		// Move the tail back
-		if ( tail == 0 )
+		if (tail == 0)
+		{
 			tail = allocation_size - 1;
+		}
 		else
+		{
 			--tail;
+		}
+	}
+
+	template <class QueueType> void Queue<QueueType>::clearAndForceAllocation(int size)
+	{
+		delete [] array;
+		array = new QueueType[size];
+		allocation_size = size;
+		head = 0;
+		tail = 0;
 	}
 } // End namespace
 
