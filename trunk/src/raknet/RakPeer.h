@@ -862,17 +862,7 @@ protected:
 	};
 
 	// Single producer single consumer queue using a linked list
-	//BufferedCommandStruct* bufferedCommandReadIndex, bufferedCommandWriteIndex;
 	BasicDataStructures::SingleProducerConsumer<BufferedCommandStruct> bufferedCommands;
-
-	//BlobNet::ADT::Queue<BufferedCommandStruct *> bufferedCommandQueue;
-	//BlobNet::ADT::Queue<BufferedCommandStruct *> bufferedCommandPool;
-	//RakPeer::BufferedCommandStruct *LockWriteBufferedCommandStruct(bool *outParam_wasInserted); // Get the next BCS to write
-	//void UnlockWriteBufferedCommandStruct(RakPeer::BufferedCommandStruct *bcs, bool *outParam_wasInserted); // Done with the next BCS to write
-	//RakPeer::BufferedCommandStruct *LockReadBufferedCommandStruct(void); // Get the next BCS to read
-	//RakPeer::BufferedCommandStruct *UnlockReadBufferedCommandStruct(void); // Done with the next BCS to read
-	
-	//void FreeBufferedCommandStruct(RakPeer::BufferedCommandStruct *bcs);
 
 	bool AllowIncomingConnections(void) const;
 
