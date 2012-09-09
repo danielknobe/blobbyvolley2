@@ -909,10 +909,9 @@ unsigned short RakPeer::GetMaximumNumberOfPeers( void ) const
 // target: Which connection to close
 // sendDisconnectionNotification: True to send ID_DISCONNECTION_NOTIFICATION to the recipient. False to close it silently.
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#pragma warning( disable : 4100 ) // warning C4100: 'depreciated' : unreferenced formal parameter
-void RakPeer::CloseConnection( PlayerID target, bool sendDisconnectionNotification, int depreciated )
+void RakPeer::CloseConnection( PlayerID target, bool sendDisconnectionNotification )
 {
-	CloseConnectionInternal(target, sendDisconnectionNotification, false);
+	CloseConnectionInternalBuffered(target, sendDisconnectionNotification);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2456,46 +2455,46 @@ void RakPeer::PingInternal( PlayerID target, bool performImmediate )
 		Send( &bitStream, SYSTEM_PRIORITY, UNRELIABLE, 0, target, false );
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::CloseConnectionInternal( PlayerID target, bool sendDisconnectionNotification, bool performImmediate )
+void RakPeer::CloseConnectionInternalBuffered( PlayerID target, bool sendDisconnectionNotification )
 {
-	unsigned i;
-
 	if ( remoteSystemList == 0 || endThreads == true )
 		return;
 
 	if (sendDisconnectionNotification)
 	{
-		NotifyAndFlagForDisconnect(target, performImmediate);
+		NotifyAndFlagForDisconnect(target, false);
 	}
 	else
 	{
-		if (performImmediate)
-		{
-			i = 0;
-			for ( ; i < remoteSystemListSize; i++ )
-			{
-				if ( remoteSystemList[ i ].playerId == target )
-				{
-					// Reserve this reliability layer for ourselves
-					remoteSystemList[ i ].playerId = UNASSIGNED_PLAYER_ID;
-					//	remoteSystemList[ i ].allowPlayerIdAssigment=false;
+		BufferedCommandStruct *bcs;
+		bcs=bufferedCommands.WriteLock();
+		bcs->command=BufferedCommandStruct::BCS_CLOSE_CONNECTION;
+		bcs->playerId=target;
+		bcs->data=0;
+		bufferedCommands.WriteUnlock();
+	}
+}
 
-					// Remove any remaining packets.
-					remoteSystemList[ i ].reliabilityLayer.Reset();
-					break;
-				}
-			}
-		}
-		else
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void RakPeer::CloseConnectionInternalImmediate( PlayerID target)
+{
+	if ( remoteSystemList == 0 || endThreads == true )
+		return;
+
+	for (unsigned int i = 0 ; i < remoteSystemListSize; i++ )
+	{
+		if ( remoteSystemList[ i ].playerId == target )
 		{
-			BufferedCommandStruct *bcs;
-			bcs=bufferedCommands.WriteLock();
-			bcs->command=BufferedCommandStruct::BCS_CLOSE_CONNECTION;
-			bcs->playerId=target;
-			bcs->data=0;
-			bufferedCommands.WriteUnlock();
+			// Reserve this reliability layer for ourselves
+			remoteSystemList[ i ].playerId = UNASSIGNED_PLAYER_ID;
+			//	remoteSystemList[ i ].allowPlayerIdAssigment=false;
+
+			// Remove any remaining packets.
+			remoteSystemList[ i ].reliabilityLayer.Reset();
+			break;
 		}
 	}
+	
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::ValidSendTarget(PlayerID playerId, bool broadcast)
@@ -2941,7 +2940,7 @@ bool RakPeer::RunUpdateCycle( void )
 #ifdef _DEBUG
 			assert(bcs->command==BufferedCommandStruct::BCS_CLOSE_CONNECTION);
 #endif
-			CloseConnectionInternal(bcs->playerId, false, true);
+			CloseConnectionInternalImmediate(bcs->playerId);
 		}
 
 #ifdef _DEBUG
@@ -3084,7 +3083,7 @@ bool RakPeer::RunUpdateCycle( void )
 #ifdef _DO_PRINTF
 				printf("Connection dropped for player %i:%i\n", playerId.binaryAddress, playerId.port);
 #endif
-				CloseConnectionInternal( playerId, false, true );
+				CloseConnectionInternalImmediate( playerId );
 				continue;
 			}
 
@@ -3221,7 +3220,7 @@ bool RakPeer::RunUpdateCycle( void )
 					}
 					else
 					{
-						CloseConnectionInternal( playerId, false, true );
+						CloseConnectionInternalImmediate( playerId );
 #ifdef _DO_PRINTF
 						printf("Temporarily banning %i:%i for sending nonsense data\n", playerId.binaryAddress, playerId.port);
 #endif

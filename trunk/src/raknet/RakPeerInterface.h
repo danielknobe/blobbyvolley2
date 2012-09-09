@@ -244,7 +244,7 @@ public:
 	 * @param target Which connection to immediately close
 	 * @param sendDisconnectionNotification True to send ID_DISCONNECTION_NOTIFICATION to the recipient.  False to close it silently.
 	*/
-	virtual void CloseConnection( PlayerID target, bool sendDisconnectionNotification, int depreciated=0 ) = 0;
+	virtual void CloseConnection( PlayerID target, bool sendDisconnectionNotification ) = 0;
 
 	/**
 	 * Given a playerID, returns an index from 0 to the maximum number of players allowed - 1.
