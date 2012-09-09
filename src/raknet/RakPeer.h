@@ -255,7 +255,7 @@ public:
 	* @param target Which connection to close
 	* @param sendDisconnectionNotification True to send ID_DISCONNECTION_NOTIFICATION to the recipient.  False to close it silently.
 	*/
-	void CloseConnection( PlayerID target, bool sendDisconnectionNotification, int depreciated=0 );
+	void CloseConnection( PlayerID target, bool sendDisconnectionNotification );
 
 	/**
 	* Given a playerID, returns an index from 0 to the maximum number of players allowed - 1.
@@ -872,7 +872,8 @@ protected:
 	void PingInternal( PlayerID target, bool performImmediate );
 	bool ValidSendTarget(PlayerID playerId, bool broadcast);
 	// This stores the user send calls to be handled by the update thread.  This way we don't have thread contention over playerIDs
-	void CloseConnectionInternal( PlayerID target, bool sendDisconnectionNotification, bool performImmediate );
+	void CloseConnectionInternalBuffered( PlayerID target, bool sendDisconnectionNotification );
+	void CloseConnectionInternalImmediate( PlayerID target );
 	void SendBuffered( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode );
 	bool SendImmediate( char *data, int numberOfBitsToSend, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, bool useCallerDataAllocation, unsigned int currentTime );
 	
