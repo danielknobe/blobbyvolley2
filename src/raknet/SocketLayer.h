@@ -171,6 +171,36 @@ public:
 	 */
 	int SendTo( SOCKET s, const char *data, int length, unsigned int binaryAddress, unsigned short port );
 	
+
+
+
+
+
+
+
+
+	/// @brief Get the Ip address of an domain
+	/// @param name Name of the domain
+	/// @return Ip address
+	/// @todo This is only for IPv4. IPv6 is not available jet
+	const char* nameToIP(const char* name) const;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 private:
 	/**
 	 * Tell whether or not the socket layer is already active 
