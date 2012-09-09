@@ -461,3 +461,20 @@ void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 	}
 }
 
+
+const char* SocketLayer::nameToIP(const char* name) const
+{
+	struct in_addr address;
+
+	struct hostent * hostInformation = gethostbyname(name);
+
+	if (hostInformation == 0 || hostInformation->h_addr_list[0] == 0)
+	{
+		LOG("SocketLayer", "Domainname of ip can't be resolved")
+		return 0;
+	}
+
+	memcpy(&address, hostInformation->h_addr_list[0], sizeof(struct in_addr));
+	return inet_ntoa(address);
+}
+

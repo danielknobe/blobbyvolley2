@@ -487,8 +487,8 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 			statistics.messagesReceived++;
 
 			// If the allocated buffer is > DEFAULT_RECEIVED_PACKETS_SIZE and it is 3x greater than the number of elements actually being used
-			if (receivedPackets.AllocationSize() > DEFAULT_RECEIVED_PACKETS_SIZE && receivedPackets.AllocationSize() > receivedPackets.size() * 3)
-				receivedPackets.compress();
+			//if (receivedPackets.AllocationSize() > DEFAULT_RECEIVED_PACKETS_SIZE && receivedPackets.AllocationSize() > receivedPackets.size() * 3)
+			//	receivedPackets.compress();
 
 			// Keep on top of deleting old unreliable split packets so they don't clog the list.
 			if ( internalPacket->splitPacketCount > 0 )
