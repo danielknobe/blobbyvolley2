@@ -2489,14 +2489,10 @@ void RakPeer::CloseConnectionInternal( PlayerID target, bool sendDisconnectionNo
 		else
 		{
 			BufferedCommandStruct *bcs;
-			//bcs=GetBufferedCommandStruct();
 			bcs=bufferedCommands.WriteLock();
 			bcs->command=BufferedCommandStruct::BCS_CLOSE_CONNECTION;
 			bcs->playerId=target;
 			bcs->data=0;
-//			rakPeerMutexes[ RakPeer::bufferedCommandQueue_Mutex ].Lock();
-//			bufferedCommandQueue.push(bcs);
-//			rakPeerMutexes[ RakPeer::bufferedCommandQueue_Mutex ].Unlock();
 			bufferedCommands.WriteUnlock();
 		}
 	}
@@ -2522,19 +2518,6 @@ void RakPeer::SendBuffered( const RakNet::BitStream * bitStream, PacketPriority 
 {
 	BufferedCommandStruct *bcs;
 	bcs=bufferedCommands.WriteLock();
-	/*
-	rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Lock();
-	if (bufferedCommandPool.size())
-	{
-		bcs = bufferedCommandPool.pop();
-		rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Unlock();
-	}
-	else
-	{
-		rakPeerMutexes[ RakPeer::bufferedCommandPool_Mutex ].Unlock();
-		bcs = new BufferedCommandStruct;
-	}
-	*/
 
 	bcs->data = new char[bitStream->GetNumberOfBytesUsed()]; // Making a copy doesn't lose efficiency because I tell the reliability layer to use this allocation for its own copy
 	memcpy(bcs->data, bitStream->GetData(), bitStream->GetNumberOfBytesUsed());
@@ -2547,11 +2530,6 @@ void RakPeer::SendBuffered( const RakNet::BitStream * bitStream, PacketPriority 
 	bcs->connectionMode=connectionMode;
 	bcs->command=BufferedCommandStruct::BCS_SEND;
 	bufferedCommands.WriteUnlock();
-	/*
-	rakPeerMutexes[ RakPeer::bufferedCommandQueue_Mutex ].Lock();
-	bufferedCommandQueue.push(bcs);
-	rakPeerMutexes[ RakPeer::bufferedCommandQueue_Mutex ].Unlock();
-	*/
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::SendImmediate( char *data, int numberOfBitsToSend, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, bool useCallerDataAllocation, unsigned int currentTime )
@@ -2932,7 +2910,8 @@ bool RakPeer::RunUpdateCycle( void )
 	time=0;
 	
 	// Process all the deferred user thread Send and connect calls
-	while ((bcs=bufferedCommands.ReadLock())!=0) // Don't immediately check mutex since it's so slow to activate it
+	
+	while ( ( bcs = bufferedCommands.ReadLock() ) != 0 ) // Don't immediately check mutex since it's so slow to activate it
 	{
 		if (bcs->command==BufferedCommandStruct::BCS_SEND)
 		{

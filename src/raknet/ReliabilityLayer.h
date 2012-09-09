@@ -43,7 +43,6 @@
 #include "InternalPacketPool.h"
 #include "DataBlockEncryptor.h"
 #include "RakNetStatistics.h"
-#include "SingleProducerConsumer.h"
 #include "SHA1.h"
 
 #include "../blobnet/adt/Queue.hpp"

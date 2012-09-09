@@ -49,14 +49,17 @@ namespace BasicDataStructures
 		// Cancelling locks cancels all locks back up to the data passed.  So if you lock twice and cancel using the first lock, the second lock is ignored
 		void CancelWriteLock(SingleProducerConsumerType* cancelToLocation);
 		void WriteUnlock(void);
+		
 		// ReadLock must be immediately followed by ReadUnlock. These two functions must be called in the same thread.
 		SingleProducerConsumerType* ReadLock(void);
 		// Cancelling locks cancels all locks back up to the data passed.  So if you lock twice and cancel using the first lock, the second lock is ignored
 		void CancelReadLock(SingleProducerConsumerType* cancelToLocation);
 		void ReadUnlock(void);
+		
 		// Clear is not thread-safe and none of the lock or unlock functions should be called while it is running.
 		void Clear(void);
 		int Size(void) const; // An ESTIMATE of how many data elements are waiting to be read
+	
 	private:
 		struct DataPlusPtr
 		{
