@@ -30,7 +30,7 @@
  */
 
 #include "PacketPool.h"
-#include <assert.h>
+#include <cassert>
 
 PacketPool PacketPool::I;
 
@@ -59,9 +59,10 @@ void PacketPool::ClearPool( void )
 	Packet * p;
 	poolMutex.Lock();
 
-	while ( pool.size() )
+	while ( !pool.empty() )
 	{
-		p = pool.pop();
+		p = pool.top();
+		pool.pop();
 		delete [] p->data;
 		delete p;
 	}
@@ -79,9 +80,12 @@ Packet* PacketPool::GetPointer( void )
 	packetsReleased++;
 #endif
 
-	if ( pool.size() )
-		p = pool.pop();
-
+	if ( !pool.empty() )
+	{
+		p = pool.top();
+		pool.pop();
+	}
+	
 	poolMutex.Unlock();
 
 	if ( p )
