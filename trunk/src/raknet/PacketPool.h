@@ -34,7 +34,8 @@
 #include "SimpleMutex.h"
 #include "NetworkTypes.h"
 
-#include "../blobnet/adt/Queue.hpp"
+#include <stack>
+
 /**
 * @brief Manage memory for packet. 
 *
@@ -86,7 +87,7 @@ private:
 	/**
 	* Store packets 
 	*/
-	BlobNet::ADT::Queue<Packet*> pool;
+	std::stack<Packet*> pool;
 	/**
 	* Exclusive access to the pool
 	*/
