@@ -32,8 +32,6 @@
 #include "PacketPool.h"
 #include <cassert>
 
-PacketPool PacketPool::I;
-
 PacketPool::PacketPool()
 {
 #ifdef _DEBUG
@@ -48,7 +46,7 @@ PacketPool::~PacketPool()
 	// Either
 	// 1. You got a packet from Receive and didn't give it back to DeallocatePacket when you were done with it
 	// 2. You didn't call Disconnect before shutdown, and the order of destructor calls happened to hit the PacketPool singleton before it hit the RakPeer class(es).
-//	assert( packetsReleased == 0 );
+	assert( packetsReleased == 0 );
 #endif
 
 	ClearPool();

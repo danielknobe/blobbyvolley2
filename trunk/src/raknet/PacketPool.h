@@ -43,7 +43,6 @@
 * The PacketPool class as multiple roles : 
 *  - Managing memory associated to packets 
 *  - Reuse memory of old packet to increase performances. 
-* @note it implements Singleton Pattern 
 * 
 */
 
@@ -74,15 +73,6 @@ public:
 	*/
 	void ClearPool( void );
 
-	/**
-	* Retrieve the unique  instance of a PacketPool. 
-	* @return A pointer to the pool.  
-	*/
-	static inline PacketPool* Instance()
-	{
-		return & I;
-	}
-
 private:
 	/**
 	* Store packets 
@@ -92,10 +82,7 @@ private:
 	* Exclusive access to the pool
 	*/
 	SimpleMutex poolMutex;
-	/**
-	* Singleton Pattern unique instance 
-	*/
-	static PacketPool I;
+
 #ifdef _DEBUG
 	/**
 	* In debugging stage, stores the number of packet released
