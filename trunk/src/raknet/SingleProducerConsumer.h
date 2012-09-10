@@ -46,8 +46,6 @@ namespace BasicDataStructures
 
 		// WriteLock must be immediately followed by WriteUnlock.  These two functions must be called in the same thread.
 		SingleProducerConsumerType* WriteLock(void);
-		// Cancelling locks cancels all locks back up to the data passed.  So if you lock twice and cancel using the first lock, the second lock is ignored
-		void CancelWriteLock(SingleProducerConsumerType* cancelToLocation);
 		void WriteUnlock(void);
 		
 		// ReadLock must be immediately followed by ReadUnlock. These two functions must be called in the same thread.
@@ -122,12 +120,6 @@ namespace BasicDataStructures
 		last=writeAheadPointer;
 		writeAheadPointer=writeAheadPointer->next;
 		return (SingleProducerConsumerType*) last;
-	}
-
-	template <class SingleProducerConsumerType>
-	void SingleProducerConsumer<SingleProducerConsumerType>::CancelWriteLock( SingleProducerConsumerType* cancelToLocation )
-	{
-		writeAheadPointer=(DataPlusPtr *)cancelToLocation;
 	}
 
 	template <class SingleProducerConsumerType>
