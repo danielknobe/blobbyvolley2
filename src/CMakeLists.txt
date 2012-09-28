@@ -80,7 +80,7 @@ else (CMAKE_SYSTEM_NAME STREQUAL Windows)
 endif (CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 add_executable(blobby ${blobby_SRC})
-target_link_libraries(blobby lua raknet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
+target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
 
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
