@@ -1,6 +1,7 @@
 add_subdirectory(lua)
 add_subdirectory(tinyxml)
 add_subdirectory(raknet)
+add_subdirectory(blobnet)
 
 add_definitions(-DTIXML_USE_STL)
 include_directories(.)
