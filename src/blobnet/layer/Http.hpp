@@ -34,7 +34,7 @@ namespace Layer {
 	{
 	public:
 		/// @brief constructor, connects to an host
-		Http(const std::string& host, const int& port);
+		Http(const std::string& hostname, const int& port);
 
 		/// @brief deconstructor, closes connection to host
 		~Http();
@@ -44,6 +44,7 @@ namespace Layer {
 	private:
 		SOCKET mSocket;
 		SocketLayer mSocketLayer;
+		std::string mHostname;
 	};
 }
 }

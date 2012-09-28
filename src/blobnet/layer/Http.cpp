@@ -25,10 +25,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unistd.h>
 
 /* implementation */
-BlobNet::Layer::Http::Http(const std::string& host, const int& port)
+BlobNet::Layer::Http::Http(const std::string& hostname, const int& port)
 {
 	mSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	mSocketLayer.Connect(mSocket, inet_addr(mSocketLayer.nameToIP(host.c_str())), port);
+	mHostname = hostname;
+	mSocketLayer.Connect(mSocket, inet_addr(mSocketLayer.nameToIP(hostname.c_str())), port);
 }
 
 BlobNet::Layer::Http::~Http()
@@ -38,6 +39,8 @@ BlobNet::Layer::Http::~Http()
 
 void BlobNet::Layer::Http::request(const std::string& path)
 {
+	std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";
+
 	mSocketLayer.Write(mSocket, path.c_str(), path.size());
 }
 
