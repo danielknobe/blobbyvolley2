@@ -129,8 +129,9 @@ public:
 	 * @param writeSocket the socket to use to do the communication 
 	 * @param data a byte buffer containing the data 
 	 * @param length the size of the byte buffer  
+	 * return written bytes
 	 */
-	void Write( SOCKET writeSocket, const char* data, int length );
+	int Write( SOCKET writeSocket, const char* data, int length );
 	/**
 	 * Read data from a socket 
 	 * @param s the socket 

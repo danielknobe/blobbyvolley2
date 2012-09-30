@@ -236,7 +236,7 @@ const char* SocketLayer::DomainNameToIP( const char *domainName )
 	return inet_ntoa( addr );
 }
 
-void SocketLayer::Write( SOCKET writeSocket, const char* data, int length )
+int SocketLayer::Write( SOCKET writeSocket, const char* data, int length )
 {
 #ifdef _DEBUG
 	assert( writeSocket != INVALID_SOCKET );
@@ -250,9 +250,11 @@ void SocketLayer::Write( SOCKET writeSocket, const char* data, int length )
 
 	//AsynchronousFileIO::Instance()->PostWriteCompletion(ccs);
 	WriteAsynch( ( HANDLE ) writeSocket, eos );
+
+	return length;
 #else
 
-	send( writeSocket, data, length, 0 );
+	return send( writeSocket, data, length, 0 );
 #endif
 }
 
