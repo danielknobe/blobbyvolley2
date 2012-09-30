@@ -41,7 +41,9 @@ namespace Layer {
 		~Http();
 
 		/// @brief sends a request
-		void request(const std::string& path);
+		/// @param path Path to the requested file
+		/// @param response Stringstream where the response will pushed in
+		void request(const std::string& path, std::stringstream& response);
 	private:
 		void readHeader(int inOutSocket, std::stringstream& response);
 		void readBody(int inOutSocket, std::stringstream& response, int contentSize);

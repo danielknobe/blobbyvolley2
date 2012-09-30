@@ -42,7 +42,7 @@ BlobNet::Layer::Http::~Http()
 }
 
 
-void BlobNet::Layer::Http::request(const std::string& path)
+void BlobNet::Layer::Http::request(const std::string& path, std::stringstream& response)
 {
 	// Create TCP/IP Socket
 	SOCKET inOutSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -72,12 +72,12 @@ void BlobNet::Layer::Http::request(const std::string& path)
 	} while(bytesSend < request.size());
 
 	// Read the header of the response and extract content size
-	std::stringstream response;
+	std::stringstream header;
 
-	readHeader(inOutSocket, response);
-	int contentSize = getContentSize(response);
+	readHeader(inOutSocket, header);
+	int contentSize = getContentSize(header);
 
-	// Read the body
+	// Read the body	
 	readBody(inOutSocket, response, contentSize);
 
 	close(inOutSocket);
