@@ -24,23 +24,157 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <unistd.h>
 
+#include <iostream>
+#include <sstream>
+#include <typeinfo>
+#include <string>
+#include <cstdlib>
+
 /* implementation */
 BlobNet::Layer::Http::Http(const std::string& hostname, const int& port)
+: mHostname(hostname)
+, mPort(port)
 {
-	mSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	mHostname = hostname;
-	mSocketLayer.Connect(mSocket, inet_addr(mSocketLayer.nameToIP(hostname.c_str())), port);
 }
 
 BlobNet::Layer::Http::~Http()
 {
-	close(mSocket);
 }
+
 
 void BlobNet::Layer::Http::request(const std::string& path)
 {
+	// Create TCP/IP Socket
+	SOCKET inOutSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(inOutSocket == INVALID_SOCKET)
+	{
+		throw BlobNet::Exception::HttpException("Can't create HTTP-Socket.");
+	}
+
+	// Connect to the host
+	if(mSocketLayer.Connect(inOutSocket, inet_addr(mSocketLayer.nameToIP(mHostname.c_str())), mPort) == -1)
+	{
+		throw BlobNet::Exception::HttpException("Can't connect to host.");
+	};
+
+	// Message for a simple request
 	std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";
 
-	mSocketLayer.Write(mSocket, path.c_str(), path.size());
+	// Write the whole message
+	int bytesSend = 0;
+	do
+	{
+		bytesSend += mSocketLayer.Write(inOutSocket, request.c_str(), request.size());
+		if(bytesSend == -1)
+		{
+			throw BlobNet::Exception::HttpException("Can't send the request to host.");
+		}
+	} while(bytesSend < request.size());
+
+	// Read the header of the response and extract content size
+	std::stringstream response;
+
+	readHeader(inOutSocket, response);
+	int contentSize = getContentSize(response);
+
+	// Read the body
+	readBody(inOutSocket, response, contentSize);
+
+	close(inOutSocket);
+}
+
+void BlobNet::Layer::Http::readHeader(int inOutSocket, std::stringstream& response)
+{
+	// Parser variables
+	State state = something;
+	bool done = false;
+
+	// Read header
+	for(char c; (!done) && (recv(inOutSocket, &c, 1, 0) > 0); response << c)
+	{
+		switch(c)
+		{
+		case '\r':
+			if(state == something)
+			{
+				state = cr;
+				break;
+			}
+			if(state == crlf)
+			{
+				state = crlfcr;
+				break;
+			}								
+			state = error;
+			done = true;
+			break;
+
+		case '\n':
+			if(state == cr)
+			{
+				state = crlf;
+				break;
+			}
+			if(state == crlfcr)
+			{
+				state = headerDone;
+				return;
+			}
+			state = error;
+			done = true;
+			break;
+
+		default:
+			state = something;
+			break;
+		}
+	}
+	throw BlobNet::Exception::HttpException("Can't read response.");
+}
+
+void BlobNet::Layer::Http::readBody(int inOutSocket, std::stringstream& response, int contentSize)
+{
+	// Parser variables
+	int counter = 0;
+	State state = something;
+
+	// Read body
+	for(char c; recv(inOutSocket, &c, 1, 0) > 0; response << c)
+	{
+		counter += 1;
+		if(counter == contentSize)
+		{
+			return;
+		}
+	}
+	throw BlobNet::Exception::HttpException("Can't read response.");
+}
+
+int BlobNet::Layer::Http::getContentSize(std::stringstream& response)
+{
+	// Parser variables
+	std::string token;
+	State state = something;
+
+	// Data variables
+	int contentSize = -1;
+
+	// Parser
+	while(response >> token)
+	{
+		switch(state)
+		{
+		case something:
+			if(token == "Content-Length:")
+			{
+				state = contentlength;
+			}
+			break;
+		case contentlength:
+			state = headerDone;
+			return atoi(token.c_str());
+		}
+	}
+	throw BlobNet::Exception::HttpException("Can't get contentsize of http response.");
 }
 

@@ -17,50 +17,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#ifndef _BLOBNET_LAYER_HTTP_HPP_
-#define _BLOBNET_LAYER_HTTP_HPP_
+#ifndef _BLOBNET_EXCEPTION_HTTPEXCEPTION_HPP_
+#define _BLOBNET_EXCEPTION_HTTPEXCEPTION_HPP_
 
 /* Includes */
-#include "../exception/HttpException.hpp"
-#include "../../raknet/SocketLayer.h"
-
-#include <string>
+#include <stdexcept>
 
 namespace BlobNet {
-namespace Layer {
-	/*!	\class Http
-		\brief Simple Layer for HTTP communication over TCP/IP
+namespace Exception {
+	/*!	\class HttpException
+		\brief Runtimeexception for HttpErrors
 	*/
-	class Http
+	class HttpException : public std::runtime_error
 	{
 	public:
-		/// @brief constructor, connects to an host
-		Http(const std::string& hostname, const int& port);
-
-		/// @brief deconstructor, closes connection to host
-		~Http();
-
-		/// @brief sends a request
-		void request(const std::string& path);
-	private:
-		void readHeader(int inOutSocket, std::stringstream& response);
-		void readBody(int inOutSocket, std::stringstream& response, int contentSize);
-
-		int getContentSize(std::stringstream& response);
-
-		std::string mHostname;
-		int mPort;
-
-		SocketLayer mSocketLayer;
-
-		enum State {
-			cr,
-			crlf,
-			crlfcr,
-			headerDone,
-			contentlength,
-			something,			
-			error
+		/// @brief constructor
+		/// @param message Message to describe the error
+		HttpException(const std::string& message) : std::runtime_error(message)
+		{	
 		};
 	};
 }
