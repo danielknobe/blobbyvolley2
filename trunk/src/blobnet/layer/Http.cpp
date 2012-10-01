@@ -52,8 +52,16 @@ void BlobNet::Layer::Http::request(const std::string& path, std::stringstream& r
 	}
 
 	// Connect to the host
-	if(mSocketLayer.Connect(inOutSocket, inet_addr(mSocketLayer.nameToIP(mHostname.c_str())), mPort) == -1)
+	const char* ipAddress = mSocketLayer.nameToIP(mHostname.c_str());
+
+	if(ipAddress == NULL)
 	{
+		throw BlobNet::Exception::HttpException("Can't resolve IP Address.");
+	}
+
+	if(mSocketLayer.Connect(inOutSocket, inet_addr(ipAddress), mPort) == -1)
+	{
+
 		throw BlobNet::Exception::HttpException("Can't connect to host.");
 	};
 
