@@ -215,7 +215,7 @@ void NetworkSearchState::step()
 	std::vector<std::string> servernames;
 	for (int i = 0; i < mScannedServers.size(); i++)
 	{
-		servernames.push_back(mScannedServers[i].name);
+		servernames.push_back(std::string(mScannedServers[i].name) + " (" + mScannedServers[i].waitingplayer + ")" );
 	}
 
 	bool doEnterServer = false;
