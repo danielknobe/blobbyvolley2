@@ -142,6 +142,10 @@ class IGameLogic
 		/// error handling
 		virtual void OnMistake(PlayerSide side) = 0;
 		
+		/// this function handles ball/player hits
+		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits) = 0;
+		
+		
 		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
 			

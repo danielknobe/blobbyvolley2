@@ -32,7 +32,7 @@ function OnMistake(player)
 end 
 
 --	function IsWinning
---		IMPLEMENTED BY RULES.lua
+--		IMPLEMENTED BY rules.lua
 --		called when it is determined whether a player has won
 --		params:		lscore: score of left player
 --					rscore: score of right player
@@ -48,6 +48,16 @@ function IsWinning(lscore, rscore)
 	return false
 end
 
+-- function OnBallHitsPlayer
+--		IMPLEMENTEDBY rules.lua
+--		called when a valid collision between a player and the ball happens.
+--		params:		player:		The player that hit the ball
+--					touches:	Number of touches the player has made
+--		return: true, if this collision was allowed, false if it was a mistake. If false is returned,
+--				the ball is resetted and OnMistake is called.
+function OnBallHitsPlayer(player, touches)
 
+  return touches <= 3
+end
 
 
