@@ -206,7 +206,7 @@ private:
 	/**
 	 * Tell whether or not the socket layer is already active 
 	 */
-	static bool socketLayerStarted;
+	static int socketLayerInstanceCount;
 
 	/**
 	 * Singleton instance 
