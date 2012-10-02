@@ -166,7 +166,8 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	// count the touches
 	mTouches[side2index(other_side(side))] = 0;
 	mTouches[side2index(side)]++;
-	if( mTouches[side2index(side)] > 3 )
+	
+	if( ! OnBallHitsPlayerHandler(side, mTouches[side2index(side)]) )
 	{
 		// if a player hits a forth time, it is an error
 		onError(side);
@@ -219,6 +220,7 @@ class LuaGameLogic : public IGameLogic
 		
 		virtual PlayerSide checkWin() const;
 		virtual void OnMistake(PlayerSide side);
+		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits);
 		
 		// lua functions
 		static int luaScore(lua_State* state); 
@@ -340,6 +342,25 @@ void LuaGameLogic::OnMistake(PlayerSide side)
 	};
 }
 
+bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
+{
+	bool valid = false;
+	lua_getglobal(mState, "OnBallHitsPlayer");
+	
+	lua_pushnumber(mState, ply );
+	lua_pushnumber(mState, numOfHits );
+	if( lua_pcall(mState, 2, 1, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+	
+	valid = lua_toboolean(mState, -1);
+	lua_pop(mState, 1);
+
+	return valid;
+}
+
 int LuaGameLogic::luaScore(lua_State* state) 
 {
 	int pl = int(lua_tonumber(state, -1) + 0.5);
@@ -413,6 +434,11 @@ class FallbackGameLogic : public IGameLogic
 		virtual void OnMistake(PlayerSide side) 
 		{
 			score( other_side(side) );
+		}
+		
+		bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
+		{
+			return numOfHits <= 3;
 		}
 };
 
