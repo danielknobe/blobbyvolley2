@@ -291,7 +291,7 @@ void RakClient::PingServer( void )
 
 void RakClient::PingServer( const char* host, unsigned short serverPort, unsigned short clientPort, bool onlyReplyOnAcceptingConnections )
 {
-	RakPeer::Initialize( 1, clientPort, 0 );
+	RakPeer::Initialize( 1, clientPort, 10 );
 	RakPeer::Ping( host, serverPort, onlyReplyOnAcceptingConnections );
 }
 
