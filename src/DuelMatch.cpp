@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "IUserConfigReader.h"
 #include "UserConfig.h"
+#include "DuelMatchState.h"
 
 
 /* implementation */
@@ -271,7 +272,24 @@ PlayerSide DuelMatch::getServingPlayer() const
 
 void DuelMatch::setState(RakNet::BitStream* stream)
 {
-	mPhysicWorld.setState(stream);
+	PhysicState ps;
+	ps.readFromStream(stream);
+	mPhysicWorld.setState(ps);
+}
+
+void DuelMatch::setState(const DuelMatchState& state)
+{
+	mPhysicWorld.setState(state.worldState);
+	mLogic->setState(state.logicState);
+}
+
+DuelMatchState DuelMatch::getState() const
+{
+	DuelMatchState state;
+	state.worldState = mPhysicWorld.getState();
+	state.logicState = mLogic->getState();
+	
+	return state;
 }
 
 const PlayerInput* DuelMatch::getPlayersInput() const

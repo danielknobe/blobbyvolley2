@@ -21,11 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <ctime>	// for time_t
+#include <boost/shared_ptr.hpp>
 
 #include "Global.h"
 #include "ReplayDefs.h"
+#include "GenericIOFwd.h"
 
-class FileRead;
 class PlayerInput;
 
 /// \class IReplayLoader
@@ -72,6 +73,8 @@ class IReplayLoader
 		virtual std::string getPlayerName(PlayerSide player) const = 0;
 		/// gets blob color of a player
 		virtual Color getBlobColor(PlayerSide player) const = 0;
+		/// get final score of a player
+		virtual int getFinalScore(PlayerSide player) const = 0;
 		
 		/// gets the speed this game was played
 		virtual int getSpeed() const = 0;
@@ -81,6 +84,7 @@ class IReplayLoader
 		virtual int getLength()  const = 0;
 		/// gets the date this replay was recorded
 		virtual std::time_t getDate() const = 0;
+		
 		
 		// Replay data interface
 		
@@ -92,6 +96,26 @@ class IReplayLoader
 		virtual void getInputAt(int step, PlayerInput& left, PlayerInput& right) = 0;
 		
 		
+		/// \brief checks wether the specified position is a savepoint
+		/// \param position[in] position to check for savepoint
+		/// \param save_position[out] if \t position is a savepoint, this int
+		///					contains the index of the savepoint
+		/// \return true, if \t position is a savepoint
+		virtual bool isSavePoint(int position, int& save_position) const = 0 ;
+		
+		/// \brief gets the save point at position targetPosition
+		/// \details returns the index of the last safepoint before targetPosition,
+		///			so the game status at targetPosition can be calculated
+		///			by simulating as few steps as possible.
+		/// \param targetPosition[in] which position should be reached
+		/// \param save_position[out] which position the safepoint has
+		virtual int getSavePoint(int targetPosition, int& save_position) const = 0;
+		
+		/// \brief reads the specified savepoint
+		/// \param index[in] index of the savepoint, as returned by getSavePoint
+		/// \param state[out] the read savepoint is written there
+		virtual void readSavePoint(int index, ReplaySavePoint& state) const = 0;
+		
 	protected:
 		/// \brief protected constructor. 
 		/// \details Create IReplayLoaders with createReplayLoader functions.
@@ -100,5 +124,5 @@ class IReplayLoader
 		
 	private:
 		/// \todo add documentation
-		virtual void initLoading(FileRead& file_handle, int minor_version, uint32_t checksum) = 0;
+		virtual void initLoading(boost::shared_ptr<GenericIn> file_handle, int minor_version) = 0;
 };

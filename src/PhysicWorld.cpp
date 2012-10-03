@@ -457,155 +457,42 @@ bool PhysicWorld::getBallActive() const
 	return mIsGameRunning;
 }
 
-void writeCompressedToBitStream(RakNet::BitStream* stream, float value, float min, float max)
+PhysicState PhysicWorld::getState() const
 {
-	assert(min <= value && value <= max);
-	assert(stream);
-	unsigned short only2bytes = static_cast<unsigned short>((value - min) / (max - min) * std::numeric_limits<unsigned short>::max());
-	stream->Write(only2bytes);
+	PhysicState st;
+	st.blobPosition[LEFT_PLAYER] = mBlobPosition[LEFT_PLAYER];
+	st.blobPosition[RIGHT_PLAYER] = mBlobPosition[RIGHT_PLAYER];
+	st.blobVelocity[LEFT_PLAYER] = mBlobVelocity[LEFT_PLAYER];
+	st.blobVelocity[RIGHT_PLAYER] = mBlobVelocity[RIGHT_PLAYER];
+	
+	st.ballPosition = mBallPosition;
+	st.ballVelocity = mBallVelocity;
+	st.ballAngularVelocity = mBallAngularVelocity;
+	
+	st.isGameRunning = mIsGameRunning;
+	st.isBallValid = mIsBallValid;
+	
+	st.playerInput[LEFT_PLAYER] = mPlayerInput[LEFT_PLAYER];
+	st.playerInput[RIGHT_PLAYER] = mPlayerInput[RIGHT_PLAYER];
+	return st;
 }
 
-void readCompressedFromBitStream(RakNet::BitStream* stream, float& value, float min, float max)
+void PhysicWorld::setState(const PhysicState& ps)
 {
-	unsigned short only2bytes;
-	stream->Read(only2bytes);
-	value = static_cast<float>(only2bytes) / static_cast<float>(std::numeric_limits<unsigned short>::max()) * (max - min) + min;
-}
-
-
-void PhysicWorld::setState(RakNet::BitStream* stream)
-{
-	bool leftGround;
-	bool rightGround;
-	stream->Read(leftGround);
-	stream->Read(rightGround);
-	if(leftGround)
-	{
-		mBlobPosition[LEFT_PLAYER].y = GROUND_PLANE_HEIGHT;
-		mBlobVelocity[LEFT_PLAYER].y = 0;
-	}
-	else
-	{
-		readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		readCompressedFromBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
-	}
+	mBlobPosition[LEFT_PLAYER] = ps.blobPosition[LEFT_PLAYER];
+	mBlobPosition[RIGHT_PLAYER] = ps.blobPosition[RIGHT_PLAYER];
+	mBlobVelocity[LEFT_PLAYER] = ps.blobVelocity[LEFT_PLAYER];
+	mBlobVelocity[RIGHT_PLAYER] = ps.blobVelocity[RIGHT_PLAYER];
 	
-	if(rightGround)
-	{
-		mBlobPosition[RIGHT_PLAYER].y = GROUND_PLANE_HEIGHT;
-		mBlobVelocity[RIGHT_PLAYER].y = 0;
-	}
-	else
-	{
-		readCompressedFromBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		readCompressedFromBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
-	}
+	mBallPosition = ps.ballPosition;
+	mBallVelocity = ps.ballVelocity;
+	mBallAngularVelocity = ps.ballAngularVelocity;
 	
-	readCompressedFromBitStream(stream, mBlobPosition[LEFT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
-	readCompressedFromBitStream(stream, mBlobPosition[RIGHT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
+	mIsGameRunning = ps.isGameRunning;
+	mIsBallValid = ps.isBallValid;
 	
-	readCompressedFromBitStream(stream, mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
-	// maybe these values is a bit too pessimistic...
-	// but we have 65535 values, hence it should be precise enough
-	readCompressedFromBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
-
-	readCompressedFromBitStream(stream, mBallVelocity.x, -30, 30);
-	readCompressedFromBitStream(stream, mBallVelocity.y, -30, 30);
-	
-	// if ball velocity not zero, we must assume that the game is active
-	// i'm not sure if this would be set correctly otherwise...
-	// we must use this check with 0.1f because of precision loss when velocities are transmitted
-	// wo prevent setting a false value when the ball is at the parabels top, we check also if the 
-	// y - position is the starting y position
-	/// \todo maybe we should simply send a bit which contains this information? 
-	if( std::abs(mBallVelocity.x) > 0.1f || std::abs(mBallVelocity.y) > 0.1f || std::abs(mBallPosition.y - STANDARD_BALL_HEIGHT) > 0.1f) 
-	{
-		mIsGameRunning = true;
-	} 
-	 else 
-	{
-		mIsGameRunning = false;
-	}
-
-	stream->Read(mPlayerInput[LEFT_PLAYER].left);
-	stream->Read(mPlayerInput[LEFT_PLAYER].right);
-	stream->Read(mPlayerInput[LEFT_PLAYER].up);
-	stream->Read(mPlayerInput[RIGHT_PLAYER].left);
-	stream->Read(mPlayerInput[RIGHT_PLAYER].right);
-	stream->Read(mPlayerInput[RIGHT_PLAYER].up);
-}
-
-void PhysicWorld::getState(RakNet::BitStream* stream) const
-{
-	// if the blobbys are standing on the ground, we need not send
-	// y position and velocity
-	stream->Write(blobbyHitGround(LEFT_PLAYER));
-	stream->Write(blobbyHitGround(RIGHT_PLAYER));
-	
-	if(!blobbyHitGround(LEFT_PLAYER))
-	{
-		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
-	}
-	
-	if(!blobbyHitGround(RIGHT_PLAYER))
-	{
-		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
-	}
-	
-	writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
-	writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
-	
-	writeCompressedToBitStream(stream, mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
-	writeCompressedToBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
-
-	writeCompressedToBitStream(stream, mBallVelocity.x, -30, 30);
-	writeCompressedToBitStream(stream, mBallVelocity.y, -30, 30);
-
-	stream->Write(mPlayerInput[LEFT_PLAYER].left);
-	stream->Write(mPlayerInput[LEFT_PLAYER].right);
-	stream->Write(mPlayerInput[LEFT_PLAYER].up);
-	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
-	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
-	stream->Write(mPlayerInput[RIGHT_PLAYER].up);
-
-}
-
-void PhysicWorld::getSwappedState(RakNet::BitStream* stream) const
-{
-	// if the blobbys are standing on the ground, we need not send
-	// y position and velocity
-	stream->Write(blobbyHitGround(RIGHT_PLAYER));
-	stream->Write(blobbyHitGround(LEFT_PLAYER));
-	
-	if(!blobbyHitGround(RIGHT_PLAYER))
-	{
-		writeCompressedToBitStream(stream, mBlobPosition[RIGHT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		writeCompressedToBitStream(stream, mBlobVelocity[RIGHT_PLAYER].y, -30, 30);
-	}
-	
-	if(!blobbyHitGround(LEFT_PLAYER))
-	{
-		writeCompressedToBitStream(stream, mBlobPosition[LEFT_PLAYER].y, 0, GROUND_PLANE_HEIGHT);
-		writeCompressedToBitStream(stream, mBlobVelocity[LEFT_PLAYER].y, -30, 30);
-	}
-	
-	writeCompressedToBitStream(stream, 800 - mBlobPosition[RIGHT_PLAYER].x, LEFT_PLANE, NET_POSITION_X);
-	writeCompressedToBitStream(stream, 800 - mBlobPosition[LEFT_PLAYER].x, NET_POSITION_X, RIGHT_PLANE);
-	
-	writeCompressedToBitStream(stream, 800 - mBallPosition.x, LEFT_PLANE, RIGHT_PLANE);
-	writeCompressedToBitStream(stream, mBallPosition.y, -500, GROUND_PLANE_HEIGHT_MAX);
-
-	writeCompressedToBitStream(stream, -mBallVelocity.x, -30, 30);
-	writeCompressedToBitStream(stream, mBallVelocity.y, -30, 30);
-
-	stream->Write(mPlayerInput[RIGHT_PLAYER].right);
-	stream->Write(mPlayerInput[RIGHT_PLAYER].left);
-	stream->Write(mPlayerInput[RIGHT_PLAYER].up);
-	stream->Write(mPlayerInput[LEFT_PLAYER].right);
-	stream->Write(mPlayerInput[LEFT_PLAYER].left);
-	stream->Write(mPlayerInput[LEFT_PLAYER].up);
+	mPlayerInput[LEFT_PLAYER] = ps.playerInput[LEFT_PLAYER];
+	mPlayerInput[RIGHT_PLAYER] = ps.playerInput[RIGHT_PLAYER];
 }
 
 const PlayerInput* PhysicWorld::getPlayersInput() const

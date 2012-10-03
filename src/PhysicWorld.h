@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Vector.h"
 #include "InputSource.h"
-
+#include "PhysicState.h"
 
 const float BLOBBY_SPEED = 4.5; // BLOBBY_SPEED is necessary to determine the size of the input buffer
 
@@ -94,15 +94,13 @@ class PhysicWorld
 		// For reducing ball speed after rule violation
 		void dampBall();
 
-		// Set a new state received from server over a RakNet BitStream
-		void setState(RakNet::BitStream* stream);
+		// gets the phyisc state
+		PhysicState getState() const;
+	
+		// sets a new physic state
+		void setState(const PhysicState& state);
 
-		// Fill a Bitstream with the state
-		void getState(RakNet::BitStream* stream) const;
-
-		// Fill a Bitstream with a side reversed state
-		void getSwappedState(RakNet::BitStream* stream) const;
-
+	//Input stuff for recording and playing replays
 		//Input stuff for recording and playing replays
 		const PlayerInput* getPlayersInput() const;
 		

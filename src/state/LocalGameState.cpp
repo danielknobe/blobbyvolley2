@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <ctime>
 
+#include <boost/make_shared.hpp>
+
 #include "DuelMatch.h"
 #include "InputManager.h"
 #include "IMGUI.h"
@@ -35,6 +37,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IUserConfigReader.h"
 #include "FileExceptions.h"
 #include "FileSystem.h"
+#include "FileWrite.h"
+#include "GenericIO.h"
 
 /* implementation */
 LocalGameState::~LocalGameState()
@@ -114,8 +118,10 @@ void LocalGameState::step()
 				std::string repFileName = std::string("replays/") + mFilename + std::string(".bvr");
 				if (mFilename != "")
 				{
+					boost::shared_ptr<FileWrite> savetarget = boost::make_shared<FileWrite>(repFileName);
 					/// \todo add a check whether we overwrite a file
-					mRecorder->save(repFileName);
+					mRecorder->save(savetarget);
+					savetarget->close();
 					mSaveReplay = false;
 				}
 				
@@ -211,11 +217,14 @@ void LocalGameState::step()
 	}
 	else
 	{
-		mRecorder->record(mMatch->getPlayersInput());
+		mRecorder->record(mMatch->getState());
 		mMatch->step();
 
 		if (mMatch->winningPlayer() != NO_PLAYER)
+		{
 			mWinner = true;
+			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+		}
 			
 		presentGame(*mMatch);
 		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());

@@ -36,7 +36,6 @@ class IReplayLoader;
 ///			It uses the data the IReplayLoader gets from files and uses them to create a full replay.
 /// \todo maybe we should rename this class. It might be confused with Player (a blob) and NetworkPlayer 
 ///			(a network connection on server).
-/// \todo For now, this is only a copy of the playing related functions of ReplayRecorder.
 class ReplayPlayer
 {
 	public:
@@ -81,6 +80,7 @@ class ReplayPlayer
 		// 							replaying interface
 		// -----------------------------------------------------------------------------------------
 		
+		/// \brief advances the game one step
 		bool play(DuelMatch* virtual_match);
 		
 		/// \brief Jumps to a position in replay.

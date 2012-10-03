@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Clock.h"
 
+class GameLogicState;
+
 /// \class IGameLogic
 /// \brief Interface for managing game rules, score counting etc.
 /// \details this class is told what happens in the game and it applies the rules to count 
@@ -76,6 +78,14 @@ class IGameLogic
 		
 		/// gets the associated clock
 		Clock& getClock();
+		
+		// -----------------------------------------------------------------------------------------
+		//						Read / Write - State
+		// -----------------------------------------------------------------------------------------
+		
+		GameLogicState getState() const;
+		void setState(GameLogicState gls);
+		
 		
 		// -----------------------------------------------------------------------------------------
 		// 								Event - Handlers

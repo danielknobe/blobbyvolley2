@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <algorithm>
 #include <ctime>
+#include <iostream> // for cerr
 
 #include <boost/lexical_cast.hpp>
 
@@ -33,6 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "FileSystem.h"
 #include "IReplayLoader.h"
+
 
 /* implementation */
 ReplaySelectionState::ReplaySelectionState()
@@ -68,11 +70,25 @@ void ReplaySelectionState::step()
 		/// \todo we have to do something against this construction! 
 		///		this is dangerous. we delete this state before it has done
 		///		all of its work.
-		deleteCurrentState();
-		ReplayState* rs = new ReplayState();
-		rs->loadReplay(loadrep);
-		setCurrentState(rs);
-		imgui.resetSelection();
+		
+		ReplayState* rs = 0;
+		try
+		{
+			rs = new ReplayState();
+			rs->loadReplay(loadrep);
+			
+			imgui.resetSelection();
+			// at least make sure we end here!
+			
+			deleteCurrentState();
+			setCurrentState(rs);
+		} 
+		 catch (std::exception& exp)
+		{
+			delete rs;
+			std::cerr << exp.what() << "\n";
+		}
+		return;
 	}
 	else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::LBL_CANCEL))
 	{
@@ -81,10 +97,18 @@ void ReplaySelectionState::step()
 	}
 	else
 		imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
+	
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_INFO))
 	{
-		mShowReplayInfo = true;
-		mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+		try
+		{
+			mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+			mShowReplayInfo = true;
+		} 
+		 catch (std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+		}
 	}
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 95.0), TextManager::RP_DELETE))
 	{
@@ -107,7 +131,7 @@ void ReplaySelectionState::step()
 		
 		const int RIGHT = 800 - MARGIN;
 		imgui.doInactiveMode(false);
-		imgui.doOverlay(GEN_ID, Vector2(MARGIN, 180), Vector2(800-MARGIN, 410));
+		imgui.doOverlay(GEN_ID, Vector2(MARGIN, 180), Vector2(800-MARGIN, 445));
 		std::string repname = mReplayFiles[mSelectedReplay];
 		imgui.doText(GEN_ID, Vector2(400-repname.size()*12, 190), repname);
 
@@ -143,7 +167,13 @@ void ReplaySelectionState::step()
 		}
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*dur.size(), 335), dur);
 		
-		if (imgui.doButton(GEN_ID, Vector2(400-24, 375), TextManager::LBL_OK))
+		std::string res;
+		res = boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(LEFT_PLAYER)) + " : " +  boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(RIGHT_PLAYER));
+		
+		imgui.doText(GEN_ID, Vector2(MARGIN+20, 370), TextManager::RP_RESULT);
+		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*res.size(), 370), res);
+		
+		if (imgui.doButton(GEN_ID, Vector2(400-24, 410), TextManager::LBL_OK))
 		{
 			mShowReplayInfo = false;
 		}
