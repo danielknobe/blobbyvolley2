@@ -428,23 +428,9 @@ void OnlineSearchState::searchServers()
 		std::cout << "Can't read onlineserver.xml" << std::endl;
 	}
 
-	/// \todo does anyone know how exaclty mPingClient works?
-	mScannedServers.clear();
-
-	for(int i = 0; i < serverList.size(); i++)
-	{
-		mPingClient->PingServer(serverList[i].first.c_str(), serverList[i].second, 0, true);
-	}
-
-	/*	
-	//TODO: Insert Masterserverconnection code here! At the moment we are using the old code here!
-	mPingClient->PingServer("blobby.blub-game.com", BLOBBY_PORT, 0, true);
-	/// \todo thats a hack to make us use our speed server. add a better 
-	///			method to connect to servers with arbitrary Ports
-	mPingClient->PingServer("pgb.game-host.org", BLOBBY_PORT + 1, 0, true);
-	
+		
 	/// \todo check if we already try to connect to this one!
-	std::string address = IUserConfigReader::createUserConfigReader("config.xml")->getString("network_last_server");
+	std::string address = IUserConfigReader::createUserConfigReader("config.xml")->getString("additional_network_server");
 	std::string server = address;
 	int port = BLOBBY_PORT;
 	std::size_t found = address.find(':');
@@ -462,8 +448,19 @@ void OnlineSearchState::searchServers()
 		if ((port <= 0) || (port > 65535))
 			port = BLOBBY_PORT;
 	}
-	mPingClient->PingServer(server.c_str(), port, 0, true);
-	*/
+
+	std::pair<std::string, int> pairs(server.c_str(), port);
+	serverList.push_back(pairs);
+
+	/// \todo does anyone know how exaclty mPingClient works?
+	mScannedServers.clear();
+
+	for(int i = 0; i < serverList.size(); i++)
+	{
+		mPingClient->PingServer(serverList[i].first.c_str(), serverList[i].second, 0, true);
+	}
+
+
 	
 }
 
