@@ -39,7 +39,7 @@ class LocalInputSource : public InputSource
 		~LocalInputSource()
 		{
 			RenderManager::getSingleton().setMouseMarker(-6);
-			InputManager::getSingleton()->endGame();           
+			InputManager::getSingleton()->endGame();
 		}
 		
 	private:

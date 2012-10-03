@@ -66,7 +66,7 @@ class ReplayPlayer
 		/// \details returns (an estimate for) the replay progress in percent. Depending on
 		///			replay file version, this is either exact or a guess of the system (when we
 		///				don't know how long the replay is).
-		float getPlayProgress() const; 
+		float getPlayProgress() const;
 		
 		/// \brief current replay position
 		/// \details returns the current position in replay in steps. 

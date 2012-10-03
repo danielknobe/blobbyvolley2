@@ -97,22 +97,22 @@ namespace detail
 	template<>
 	struct has_default_io_implementation<unsigned char> : public boost::true_type
 	{
-	}; 
+	};
 	
 	template<>
 	struct has_default_io_implementation<unsigned int> : public boost::true_type
 	{
-	}; 
+	};
 	
 	template<>
 	struct has_default_io_implementation<float> : public boost::true_type
 	{
-	}; 
+	};
 	
 	template<>
 	struct has_default_io_implementation<std::string> : public boost::true_type
 	{
-	}; 
+	};
 	
 	template<>
 	struct has_default_io_implementation<PlayerSide> : public boost::true_type
@@ -122,7 +122,7 @@ namespace detail
 	template<>
 	struct has_default_io_implementation<Color> : public boost::true_type
 	{
-	}; 
+	};
 	
 	template<>
 	struct has_default_io_implementation<PlayerInput> : public boost::true_type
@@ -151,7 +151,7 @@ namespace detail
 		static no& test_begin(...);
 	 
 		// this is only true if size and begin functions exist.
-		static const bool value = sizeof(test_size<T>(0)) == sizeof(yes) && sizeof(test_begin<T>(0)) == sizeof(yes); 
+		static const bool value = sizeof(test_size<T>(0)) == sizeof(yes) && sizeof(test_begin<T>(0)) == sizeof(yes);
 	};
 	
 	

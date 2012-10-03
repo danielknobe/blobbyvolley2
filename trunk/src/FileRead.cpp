@@ -116,7 +116,7 @@ uint32_t FileRead::readUInt32()
 		throw( PhysfsFileException(mFileName) );
 	}
 	
-	return ret; 
+	return ret;
 }
 
 float FileRead::readFloat()

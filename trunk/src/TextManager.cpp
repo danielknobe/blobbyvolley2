@@ -99,8 +99,8 @@ bool TextManager::loadFromXML(std::string filename){
 	
 	// this loop assumes that the strings in the xml file are in the correct order
 	//  in each step, it reads the next string element and writes it to the next position in mStrings
-	for (	TiXmlElement* stringel = language->FirstChildElement("string"); 
-			stringel; 
+	for (	TiXmlElement* stringel = language->FirstChildElement("string");
+			stringel;
 			stringel = stringel->NextSiblingElement("string"))
 	
 	{
@@ -135,7 +135,7 @@ bool TextManager::loadFromXML(std::string filename){
 	if(num_strings != found_count)
 	{
 		std::cerr << "missing translations: got " << found_count << 
-					" out of " << num_strings << " translation entries" << std::endl; 
+					" out of " << num_strings << " translation entries" << std::endl;
 	}
 	
 	return true;

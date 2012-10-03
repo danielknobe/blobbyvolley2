@@ -93,7 +93,7 @@ std::string LagDetector::getDebugString() const
 	
 	for( boost::circular_buffer<PlayerInput>::const_iterator it = received.begin(); it != received.end(); ++it)
 	{
-		s += it->left ? (it->up ? (it->right ? '-' : 'L') : (it->right ? '_' : 'l')) : (it->up ? (it->right ? 'R' : '^') : (it->right ? 'r' : 'o'));  
+		s += it->left ? (it->up ? (it->right ? '-' : 'L') : (it->right ? '_' : 'l')) : (it->up ? (it->right ? 'R' : '^') : (it->right ? 'r' : 'o'));
 	}
 	
 	return s;
