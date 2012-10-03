@@ -200,11 +200,15 @@ class ReplayLoader_V1X: public IReplayLoader
 			int index = targetPosition / 750;
 			savepoint = index * 750;
 			return index;
+			if(index < mSavePoints.size())
+				return index;
+			
+			return -1;
 		}
 		
 		virtual void readSavePoint(int index, ReplaySavePoint& state) const
 		{
-			state = mSavePoints[index];
+			state = mSavePoints.at(index);
 		}
 		
 	private:
