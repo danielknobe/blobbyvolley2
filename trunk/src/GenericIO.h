@@ -113,7 +113,7 @@ class GenericIO : public boost::noncopyable
 		/// Additional user types can be serialized if the user defines the appropriate methods
 		///	in UserSerializer<T>.
 		template<class T>
-		void generic( typename detail::conster<tag, T>::type& data )
+		void generic( typename detail::conster<tag, T>::type data )
 		{
 			// thats a rather complicated template construct. It uses the serialize_dispatch template
 			// with working type T, boost::true_type or boost::false_type as init depending wether the
@@ -158,7 +158,7 @@ class GenericIO : public boost::noncopyable
 */
 #define USER_SERIALIZER_IMPLEMENTATION_HELPER( UD_TYPE )											\
 template<class TAG>																					\
-void doSerialize##UD_TYPE(GenericIO<TAG>&, typename detail::conster<TAG, UD_TYPE>::type& value);	\
+void doSerialize##UD_TYPE(GenericIO<TAG>&, typename detail::conster<TAG, UD_TYPE>::type value);	\
 template<>																							\
 void UserSerializer<UD_TYPE>::serialize( GenericOut& out, const UD_TYPE& value)						\
 {																									\
@@ -170,7 +170,7 @@ void UserSerializer<UD_TYPE>::serialize( GenericIn& in, UD_TYPE& value)								\
 	doSerialize##UD_TYPE(in, value);																\
 }																									\
 template<class TAG>																					\
-void doSerialize##UD_TYPE(GenericIO<TAG>& io, typename detail::conster<TAG, UD_TYPE>::type& value)
+void doSerialize##UD_TYPE(GenericIO<TAG>& io, typename detail::conster<TAG, UD_TYPE>::type value)
 
 
 // -------------------------------------------------------------------------------------------------
