@@ -45,7 +45,9 @@ class FileSystem : public boost::noncopyable
 		///			are returned as a vector containing the filenames. The extension is cuttet from the filenames.
 		/// \param directory where to search
 		///	\param extension file types to search for.
-		std::vector<std::string> enumerateFiles(const std::string& directory, const std::string& extension);
+		/// \param keepExtension If true, the return vector contains the full filenames, if false [default behaviour], 
+		///						only the filenames without the extensions are saved.
+		std::vector<std::string> enumerateFiles(const std::string& directory, const std::string& extension, bool keepExtension = false);
 
 		/// \brief deletes a file
 		bool deleteFile(const std::string& filename);

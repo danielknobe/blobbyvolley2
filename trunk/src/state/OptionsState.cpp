@@ -834,7 +834,7 @@ MiscOptionsState::MiscOptionsState()
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
 	
-	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp");
+	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp", true);
 	
 	for(int i = 0; i < mBackgrounds.size(); ++i)
 	{
