@@ -199,7 +199,6 @@ class ReplayLoader_V1X: public IReplayLoader
 			/// \todo detect if replay contains safepoints
 			int index = targetPosition / 750;
 			savepoint = index * 750;
-			return index;
 			if(index < mSavePoints.size())
 				return index;
 			
