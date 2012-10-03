@@ -95,9 +95,9 @@ void createNewGame();
 int main(int argc, char** argv)
 {
 	process_arguments(argc, argv);
-	
+
 	FileSystem fileSys(argv[0]);
-	
+
 	if (!g_run_in_foreground)
 	{
 		fork_to_background();
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 	{
 		wait_and_restart_child();
 	}
-	
+
 
 	int startTime = SDL_GetTicks();
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
 
 	openlog("blobby-server", syslog_options, LOG_DAEMON);
 	#endif
-	
+
 	setup_physfs(argv[0]);
 
 	GameList gamelist;
@@ -128,25 +128,25 @@ int main(int argc, char** argv)
 
 	int port = BLOBBY_PORT;
 	int maxClients = 100;
-	try 
+	try
 	{
 		config.loadFile("server.xml");
 		port = config.getInteger("port");
 		maxClients = config.getInteger("maximum_clients");
-		
+
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 1000)
 			maxClients = 150;
-	} 
-	catch (std::exception& e) 
+	}
+	catch (std::exception& e)
 	{
 		syslog(LOG_ERR, "server.xml not found. Falling back to default values.");
 	}
-	
+
 	int clients = 0;
 
 	ServerInfo myinfo(config);
-	
+
 	float speed = myinfo.gamespeed;
 
 	if (!server.Start(maxClients, 1, port))
@@ -164,16 +164,14 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
-		
 		// -------------------------------------------------------------------------------
 		// process all incoming packets , probably relay them to responsible network games
 		// -------------------------------------------------------------------------------
-		
+
 		while ((packet = receivePacket(&server)))
 		{
-			
 			SWLS_PacketCount++;
-			
+
 			switch(packet->data[0])
 			{
 				case ID_NEW_INCOMING_CONNECTION:
@@ -189,32 +187,32 @@ int main(int argc, char** argv)
 					// if first player disconncted, reset
 					if (cond1 && cond2)
 						firstPlayer = NetworkPlayer();
-					
+
 					// delete the disconnectiong player
-					if ( playermap.find(packet->playerId) != playermap.end() ) 
+					if ( playermap.find(packet->playerId) != playermap.end() )
 					{
 						/// \todo what are we doing here???
 						/// seems not a good idea to let injectPacket remove the game from the game list...
 						/// maybe we should add a centralized way to delete unused games  and players!
 						// inject the packet into the game
-						/// strange, injectPacket just pushes the packet into a queue. That cannot delete 
+						/// strange, injectPacket just pushes the packet into a queue. That cannot delete
 						/// the game???
 						playermap[packet->playerId]->injectPacket(packet);
-						
+
 						// if it was the last player, the game is removed from the game list.
 						// thus, give the game a last chance to process the last
 						// input
-						
-						// check, wether game was removed from game list (not a good idea!), in that case, process manually 
+
+						// check, wether game was removed from game list (not a good idea!), in that case, process manually
 						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
 						{
 							playermap[packet->playerId]->step();
 						}
-						
+
 						// then delete the player
 						playermap.erase(packet->playerId);
 					}
-					
+
 					clients--;
 					syslog(LOG_DEBUG, "Connection closed, %d clients connected now", clients);
 					break;
@@ -226,18 +224,18 @@ int main(int argc, char** argv)
 				case ID_REPLAY:
 					if (playermap.find(packet->playerId) != playermap.end()){
 						playermap[packet->playerId]->injectPacket(packet);
-						
-						// check, wether game was delete from this, in this case, process manually 
+
+						// check, wether game was delete from this, in this case, process manually
 						/// \todo here again, injectPacket is not able to delete the game. So, what are we doing here?
 						if( std::find(gamelist.begin(), gamelist.end(), playermap[packet->playerId]) == gamelist.end())
 						{
 							playermap[packet->playerId]->step();
 						}
-						
+
 					} else {
 						syslog(LOG_ERR, "player not found!");
 						#ifdef DEBUG
-						std::cout	<< " received game packet for no longer existing game! " 
+						std::cout	<< " received game packet for no longer existing game! "
 									<< (int)packet->data[0] << " - "
 									<< packet->playerId.binaryAddress << " : " << packet->playerId.port
 									<< "\n";
@@ -246,13 +244,13 @@ int main(int argc, char** argv)
 						return 3;
 						#endif
 					}
-						
+
 					break;
 				case ID_ENTER_GAME:
 				{
 					RakNet::BitStream stream((char*)packet->data,
 							packet->length, false);
-					
+
 					stream.IgnoreBytes(1);	//ID_ENTER_GAME
 
 					if (!firstPlayer.valid())
@@ -265,15 +263,15 @@ int main(int argc, char** argv)
 						NetworkPlayer secondPlayer = NetworkPlayer(packet->playerId, stream);
 						/// \todo refactor this, this code is awful!
 						///  one swap should be enough
-						
+
 						NetworkPlayer leftPlayer = firstPlayer;
 						NetworkPlayer rightPlayer = secondPlayer;
 						PlayerSide switchSide = NO_PLAYER;
-						
+
 						if(RIGHT_PLAYER == firstPlayer.getDesiredSide())
 						{
 							std::swap(leftPlayer, rightPlayer);
-						} 
+						}
 						if (secondPlayer.getDesiredSide() == firstPlayer.getDesiredSide())
 						{
 							if (secondPlayer.getDesiredSide() == LEFT_PLAYER)
@@ -281,23 +279,22 @@ int main(int argc, char** argv)
 							if (secondPlayer.getDesiredSide() == RIGHT_PLAYER)
 								switchSide = LEFT_PLAYER;
 						}
-						
-						
+
 						boost::shared_ptr<NetworkGame> newgame (new NetworkGame(
 							server, leftPlayer.getID(), rightPlayer.getID(),
 							leftPlayer.getName(), rightPlayer.getName(),
 							leftPlayer.getColor(), rightPlayer.getColor(),
 							switchSide) );
-						
+
 						playermap[leftPlayer.getID()] = newgame;
 						playermap[rightPlayer.getID()] = newgame;
 						gamelist.push_back(newgame);
 						SWLS_Games++;
-						
+
 						#ifdef DEBUG
 						std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
 									<< "\t\t\t" << rightPlayer.getID().binaryAddress << " : " << rightPlayer.getID().port << "\n";
-						#endif			
+						#endif
 
 						firstPlayer = NetworkPlayer();
 					}
@@ -378,9 +375,9 @@ int main(int argc, char** argv)
 		// -------------------------------------------------------------------------------
 		// now, step through all network games and process input - if a game ended, delete it
 		// -------------------------------------------------------------------------------
-		
+
 		SWLS_RunningTime++;
-		
+
 		if(SWLS_RunningTime % (75 * 60 * 60 /*1h*/) == 0 )
 		{
 			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / 75 / 60 / 60) << "h running \n";
@@ -389,7 +386,7 @@ int main(int argc, char** argv)
 			std::cout << " started games: " << SWLS_Games << "\n";
 			std::cout << " game steps: " << SWLS_GameSteps << "\n";
 		}
-		
+
 		for (GameList::iterator iter = gamelist.begin(); gamelist.end() != iter; ++iter)
 		{
 			SWLS_GameSteps++;
@@ -428,7 +425,6 @@ int main(int argc, char** argv)
 
 void createNewGame()
 {
-	
 }
 
 // -----------------------------------------------------------------------------------------
@@ -528,7 +524,7 @@ void setup_physfs(char* argv0)
 {
 	FileSystem& fs = FileSystem::getSingleton();
 	fs.addToSearchPath("data");
-	
+
 	#if defined(WIN32)
 	// Just write in installation directory
 	fs.setWriteDir("data");
@@ -545,7 +541,7 @@ void setup_physfs(char* argv0)
 #ifdef WIN32
 #undef main
 
-void syslog(int pri, const char* format, ...) 
+void syslog(int pri, const char* format, ...)
 {
 	// first, look where we want to send our message to
 	FILE* target = stdout;
@@ -559,22 +555,22 @@ void syslog(int pri, const char* format, ...)
 			target = stdout;
 			break;
 	}
-	
+
 	// create a string containing date and time
 	std::time_t time_v = std::time(0);
 	std::tm* time = localtime(&time_v);
 	char buffer[128];
 	std::strftime(buffer, sizeof(buffer), "%x - %X", time);
-	
+
 	// print it
 	fprintf(target, "%s: ", buffer);
-	
+
 	// now relay the passed arguments and format string to vfprintf for output
 	va_list args;
 	va_start (args, format);
 	vfprintf(target, format, args);
 	va_end (args);
-	
+
 	// end finish with a newline
 	fprintf(target, "\n");
 }
