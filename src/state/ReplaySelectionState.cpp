@@ -100,14 +100,17 @@ void ReplaySelectionState::step()
 	
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_INFO))
 	{
-		try
+		if (!mReplayFiles.empty())
 		{
-			mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
-			mShowReplayInfo = true;
-		} 
-		 catch (std::exception& e)
-		{
-			std::cerr << e.what() << std::endl;
+			try
+			{
+				mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+				mShowReplayInfo = true;
+			} 
+			catch (std::exception& e)
+			{
+				std::cerr << e.what() << std::endl;
+			}
 		}
 	}
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 95.0), TextManager::RP_DELETE))
