@@ -220,13 +220,13 @@ int main(int argc, char* argv[])
 			State::getCurrentState()->step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
+			static int lastfps = 0;
 			if (scontroller.getDrawFPS())
 			{
 				// We need to ensure that the title bar is only set
 				// when the framerate changed, because setting the
 				// title can ne quite resource intensive on some
 				// windows manager, like for example metacity.
-				static int lastfps = 0;
 				int newfps = scontroller.getFPS();
 				if (newfps != lastfps)
 				{
@@ -235,6 +235,15 @@ int main(int argc, char* argv[])
 					rmanager->setTitle(tmp.str());
 				}
 				lastfps = newfps;
+			}
+			// Dirty workarround for hiding fps in title
+			if (!scontroller.getDrawFPS() && (lastfps != -1))
+			{
+				std::stringstream tmp;
+				tmp << AppTitle;
+				rmanager->setTitle(tmp.str());
+
+				lastfps = -1;
 			}
 
 			if (!scontroller.doFramedrop())
