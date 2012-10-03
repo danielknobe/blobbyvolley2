@@ -21,6 +21,10 @@ set(common_SRC
 	FileWrite.cpp FileWrite.h
 	FileRead.cpp FileRead.h
 	FileSystem.cpp FileSystem.h
+	PhysicState.cpp PhysicState.h
+	DuelMatchState.cpp DuelMatchState.h
+	GameLogicState.cpp GameLogicState.h
+	GenericIO.cpp GenericIO.h
 	)
 	
 set (blobby_SRC ${common_SRC}
