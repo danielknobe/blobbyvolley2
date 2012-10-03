@@ -52,7 +52,7 @@ FileSystem::~FileSystem()
 	mFileSystemSingleton = 0;
 }
 
-std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory, const std::string& extension)
+std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory, const std::string& extension, bool keepExtension)
 {
 	std::vector<std::string> files;
 	char** filenames = PHYSFS_enumerateFiles(directory.c_str());
@@ -64,7 +64,7 @@ std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory
 		std::string tmp = filenames[i];
 		if (tmp.find(extension) != std::string::npos)
 		{
-			files.push_back(std::string(tmp.begin(), tmp.end() - extension.length()));
+			files.push_back(std::string(tmp.begin(), keepExtension ? (tmp.end()) : (tmp.end() - extension.length()) ));
 		}
 	}
 	
