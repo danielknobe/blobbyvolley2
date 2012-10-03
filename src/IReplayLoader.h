@@ -109,6 +109,7 @@ class IReplayLoader
 		///			by simulating as few steps as possible.
 		/// \param targetPosition[in] which position should be reached
 		/// \param save_position[out] which position the safepoint has
+		/// \return index of the savepoint, or -1 if none found.
 		virtual int getSavePoint(int targetPosition, int& save_position) const = 0;
 		
 		/// \brief reads the specified savepoint

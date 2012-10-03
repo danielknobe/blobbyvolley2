@@ -133,7 +133,7 @@ bool ReplayPlayer::gotoPlayingPosition(int rep_position, DuelMatch* virtual_matc
 	
 	// now compare safepoint and actual position
 	// if we have to forward and save_position is nearer than current position, jump
-	if(rep_position < mPosition || save_position > mPosition)
+	if(rep_position < mPosition || save_position > mPosition && savepoint >= 0)
 	{
 		// can't use mPosition
 		// set match to safepoint
