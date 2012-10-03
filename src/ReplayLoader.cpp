@@ -301,7 +301,7 @@ class ReplayLoader_V1X: public IReplayLoader
 					file->generic<DuelMatchState>(ms);					
 					
 					ReplaySavePoint sp;
-					sp.state = ms; 
+					sp.state = ms;
 					sp.step = 750 * i;
 					
 					mSavePoints.push_back(sp);

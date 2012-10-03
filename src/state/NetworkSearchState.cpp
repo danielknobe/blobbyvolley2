@@ -82,7 +82,7 @@ void NetworkSearchState::step()
 	{
 		bool skip = false;
 		bool skip_iter = false;
-		if (!skip)
+
 		while ((packet = receivePacket(*iter)) && !skip)
 		{
 			switch(packet->data[0])

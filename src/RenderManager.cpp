@@ -193,7 +193,7 @@ SDL_Rect RenderManager::ballRect(const Vector2& position)
 		(short)(lround(position.y) - 32),
 		64,
 		64
-	};        
+	};
 	return rect;
 }
 

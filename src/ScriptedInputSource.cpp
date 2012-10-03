@@ -70,7 +70,7 @@ struct ScriptedInputSource::coordinate {
 		template<class U>
 		coordinate(U u);
 		
-		static float convert(float f); 
+		static float convert(float f);
 };
 
 // functions for coodinate transformation
@@ -202,7 +202,10 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 	lua_getglobal(mState, "OnBounce");
 	mOnBounce = lua_isfunction(mState, -1);
 	
-	if(!mOnBounce)		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl; 
+	if(!mOnBounce)
+	{
+		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl;
+	}
 	
 	lua_pop(mState, lua_gettop(mState));
 	
@@ -225,8 +228,8 @@ PlayerInput ScriptedInputSource::getInput()
 {
 	bool serving = false;
 	// reset input
-	mLeft = false; 
-	mRight = false; 
+	mLeft = false;
+	mRight = false;
 	mJump = false;
 
 	mCurrentSource = this;

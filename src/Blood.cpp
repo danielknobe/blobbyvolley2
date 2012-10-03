@@ -50,7 +50,7 @@ void Blood::step()
 	///			is this intended behaviour???
 	int diff = SDL_GetTicks() - mLastFrame;
 	RenderManager::getSingleton().drawParticle(mPos, mPlayer);
-	const int SPEED = 45; 
+	const int SPEED = 45;
 	
 	//this calculation is NOT based on physical rules
 	mDir.y += GRAVITY / SPEED * diff;

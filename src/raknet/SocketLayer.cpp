@@ -154,7 +154,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 
 	if ( listenSocket == INVALID_SOCKET )
 	{
-		LOG("SocketLayer", "socket(...) failed");
+		LOG("SocketLayer", "socket(...) failed")
 
 		return INVALID_SOCKET;
 	}
