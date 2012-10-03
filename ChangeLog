@@ -1,9 +1,13 @@
-New in 1.0 RC 2 (rev. 887) since RC 1:
+New in 1.0 RC 2 (rev. 1092) since RC 1:
+- Show waiting player in network game menu (currently not updated)
+- Load server list from blobby.sourceforge.net
+- Option to specify maximum clients in server.xml
 - Added replay info screen
 - Added italian translation
 - Optimized sending replays over network
 - New replay default names
 - Possibility to select server port to connect to (Thanks to Stefano Ansaloni)
+- Fix: CPU usage in network game menu
 - Fix: trying to save replays with invalid filename now issues an error message
 - Fix: writing over existing replays no longer possible
 - Fix: Ball speed

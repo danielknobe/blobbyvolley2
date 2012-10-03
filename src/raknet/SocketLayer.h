@@ -52,7 +52,7 @@ typedef int SOCKET;
 /**
 * Invalid socket
 */
-#define INVALID_SOCKET -1 
+static const SOCKET INVALID_SOCKET = -1;
 /**
 * Socket error
 */
