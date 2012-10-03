@@ -34,6 +34,7 @@ extern "C"
 }
 
 #include "FileRead.h"
+#include "GameLogicState.h"
 
 
 /* implementation */
@@ -51,6 +52,8 @@ IGameLogic::IGameLogic():	mLastError(NO_PLAYER),
 	clock.reset();
 	clock.start();
 	reset();
+	mSquish[LEFT_PLAYER] = 0;
+	mSquish[RIGHT_PLAYER] = 0;
 }
 
 IGameLogic::~IGameLogic() 
@@ -115,6 +118,27 @@ PlayerSide IGameLogic::getLastErrorSide()
 	/// reset mLastError to NO_PLAYER
 	/// why?
 	return t;
+}
+
+GameLogicState IGameLogic::getState() const
+{
+	GameLogicState gls;
+	gls.leftScore = getScore(LEFT_PLAYER);
+	gls.rightScore = getScore(RIGHT_PLAYER);
+	gls.servingPlayer = getServingPlayer();
+	gls.leftSquish = mSquish[LEFT_PLAYER];
+	gls.rightSquish = mSquish[RIGHT_PLAYER];
+	
+	return gls;
+}
+
+void IGameLogic::setState(GameLogicState gls)
+{
+	setScore(LEFT_PLAYER, gls.leftScore);
+	setScore(RIGHT_PLAYER, gls.rightScore);
+	setServingPlayer(gls.servingPlayer);
+	mSquish[LEFT_PLAYER] = gls.leftSquish;
+	mSquish[RIGHT_PLAYER] = gls.rightSquish;
 }
 
 // -------------------------------------------------------------------------------------------------

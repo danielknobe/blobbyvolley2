@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <sstream>
 
+#include <boost/make_shared.hpp>
+
 #include "raknet/RakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
@@ -33,6 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayRecorder.h"
 #include "FileRead.h"
 #include "FileSystem.h"
+#include "GenericIO.h"
 
 
 /* implementation */
@@ -235,10 +238,13 @@ bool NetworkGame::step()
 			
 			case ID_REPLAY:
 			{
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_REPLAY);
-				mRecorder->save(stream);
-				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+				boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+				stream->Write((unsigned char)ID_REPLAY);
+				boost::shared_ptr<GenericOut> out = createGenericWriter(stream);
+				mRecorder->send( out );
+				assert( stream->GetData()[0] == ID_REPLAY );
+				
+				mServer.Send(stream.get(), LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 				
 				break;
 			}
@@ -252,7 +258,7 @@ bool NetworkGame::step()
 	
 	// don't record the pauses
 	if(!mMatch->isPaused())
-		mRecorder->record(mMatch->getPlayersInput());
+		mRecorder->record(mMatch->getState());
 	
 	mMatch->step();
 
@@ -331,6 +337,7 @@ bool NetworkGame::step()
 				// if someone has won, the game is paused 
 				mPausing = true;
 				mMatch->pause();
+				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 				return active;
 			}
 			break;
@@ -350,6 +357,7 @@ bool NetworkGame::step()
 				// if someone has won, the game is paused 
 				mPausing = true;
 				mMatch->pause();
+				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 				return active;
 			}
 			break;
@@ -383,7 +391,7 @@ bool NetworkGame::step()
 
 	return active;
 }
-
+#include <iostream>
 void NetworkGame::broadcastPhysicState()
 {
 	const PhysicWorld& world = mMatch->getWorld();
@@ -391,11 +399,12 @@ void NetworkGame::broadcastPhysicState()
 	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
 	stream.Write((unsigned char)ID_TIMESTAMP);
 	stream.Write(RakNet::GetTime());
-	
+	PhysicState ps = world.getState();
+	std::cout << mSwitchedSide << "\n";
 	if (mSwitchedSide == LEFT_PLAYER)
-		world.getSwappedState(&stream);
-	else
-		world.getState(&stream);
+		ps.swapSides();
+	ps.writeToStream(&stream);
+	
 	
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
 		mLeftPlayer, false);
@@ -406,9 +415,10 @@ void NetworkGame::broadcastPhysicState()
 	stream.Write(RakNet::GetTime());
 	
 	if (mSwitchedSide == RIGHT_PLAYER)
-		world.getSwappedState(&stream);
-	else
-		world.getState(&stream);
+		ps.swapSides();
+	
+	ps.writeToStream(&stream);
+	
 	
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
 		mRightPlayer, false);

@@ -13,6 +13,10 @@ New in 1.0 RC 2 (rev. 887) since RC 1:
 - Fix: server did not delete temp replay files
 - Fix: file list properly freed in replay menu
 - some code refractoring
+- REPLAY PLAYER:
+	- more information saved in replay files: final score
+    - better jumping to replay positions
+    - show replay info in replay menu
 
 New in 1.0 RC 1 (rev. 732) since Beta 9:
 * Features:

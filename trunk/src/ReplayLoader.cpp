@@ -24,23 +24,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <cassert>
 #include <algorithm>
+#include <vector>
 #include <ctime>
 #include <iostream> // debugging
 
 #include <boost/crc.hpp>
+#include <boost/make_shared.hpp>
 
 #include "InputSource.h"
 #include "FileRead.h"
+#include "GenericIO.h"
 
 /* implementation */
 IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 {
 	// do some generic loading stuff:
 	// first, try to open the file
-	FileRead file(filename);
+	boost::shared_ptr<FileRead> file = boost::make_shared<FileRead>(filename);
 	
 	// then, check the file length. We need at least 12 bytes.
-	int fileLength = file.length();	
+	int fileLength = file->length();	
 	if (fileLength < 12)
 	{
 		/// \todo add some error handling here!
@@ -49,7 +52,7 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 	
 	// check if file contains a valid BV2 header
 	char header[4];
-	file.readRawBytes(header, sizeof(header));
+	file->readRawBytes(header, sizeof(header));
 	if (memcmp(&header, &validHeader, 4) != 0)
 	{
 		/// \todo add some error handling here!
@@ -58,7 +61,7 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 	
 	// now, find out which version we need!
 	char version[4];
-	file.readRawBytes(version, sizeof(version));
+	file->readRawBytes(version, sizeof(version));
 	
 	// now we got our version number.
 	int major = version[1];
@@ -66,11 +69,19 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 	
 	// read checksum
 	uint32_t checksum;
-	file.readRawBytes((char*)&checksum, 4);
-	//PHYSFS_read(fileHandle, &checksum, 1, 4);
+	file->readRawBytes((char*)&checksum, 4);
+	
+	// calculate reference checksum
+	uint32_t refchecksum = file->calcChecksum(file->tell());
+	
+	if(refchecksum != checksum && major > 0 && minor > 0)
+	{
+		throw(ChecksumException(file->getFileName(), checksum, refchecksum));
+	}
 	
 	IReplayLoader* loader = createReplayLoader(major);
-	loader->initLoading(file, minor, checksum);
+	boost::shared_ptr<GenericIn> in = createGenericReader(file);
+	loader->initLoading(in, minor);
 	
 	return loader;
 }
@@ -87,23 +98,23 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 // 
 
 /***************************************************************************************************
-			              R E P L A Y   L O A D E R    V 1.0
+			              R E P L A Y   L O A D E R    V 1.x
 ***************************************************************************************************/
 
 
-/*! \class ReplayLoader_V10
-	\brief Replay Loader V 1.0
-	\details Replay Loader for 1.0 replays
+/*! \class ReplayLoader_V1X
+	\brief Replay Loader V 1.x
+	\details Replay Loader for 1.0 and 1.1 replays
 */
-class ReplayLoader_V10: public IReplayLoader
+class ReplayLoader_V1X: public IReplayLoader
 {
 	public:
-		ReplayLoader_V10() {};
+		ReplayLoader_V1X() {};
 		
-		virtual ~ReplayLoader_V10() { };
+		virtual ~ReplayLoader_V1X() { };
 		
 		virtual int getVersionMajor() const { return 1; };
-		virtual int getVersionMinor() const { return 0; };
+		virtual int getVersionMinor() const { return 1; };
 		
 		virtual std::string getPlayerName(PlayerSide player) const
 		{
@@ -121,6 +132,17 @@ class ReplayLoader_V10: public IReplayLoader
 				return mLeftColor;
 			if(player == RIGHT_PLAYER)
 				return mRightColor;
+				
+			assert(0);
+		}
+		
+				
+		virtual int getFinalScore(PlayerSide player) const
+		{
+			if(player == LEFT_PLAYER)
+				return mLeftFinalScore;
+			if(player == RIGHT_PLAYER)
+				return mRightFinalScore;
 				
 			assert(0);
 		}
@@ -145,6 +167,7 @@ class ReplayLoader_V10: public IReplayLoader
 			return mGameDate;
 		};
 		
+		
 		virtual void getInputAt(int step, PlayerInput& left, PlayerInput& right)
 		{
 			assert( step  < mGameLength );
@@ -161,78 +184,158 @@ class ReplayLoader_V10: public IReplayLoader
 			right.set((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1));
 		}
 		
-	private:
-		virtual void initLoading(FileRead& file, int minor_version, uint32_t checksum)
+		virtual bool isSavePoint(int position, int& save_position) const
 		{
+			if(position % 750 == 0 && mReplayFormatVersion != 0)
+			{
+				save_position = position / 750;
+				return true;
+			}
+			return false;
+		}
+		
+		virtual int getSavePoint(int targetPosition, int& savepoint) const
+		{
+			/// \todo detect if replay contains safepoints
+			int index = targetPosition / 750;
+			savepoint = index * 750;
+			return index;
+		}
+		
+		virtual void readSavePoint(int index, ReplaySavePoint& state) const
+		{
+			state = mSavePoints[index];
+		}
+		
+	private:
+		virtual void initLoading(boost::shared_ptr<GenericIn> file, int minor_version)
+		{
+			mReplayFormatVersion = minor_version;
+			mSavePoints.resize(0);
 			/// \todo check if minor_version < getVersionMinor, otherwise issue a warning
-			/// \todo add checksum checking. We should think about our checksum too!
-			
-			int fileLength = file.length();
 			
 			// we start with the replay header.
 			uint32_t header_size, attr_ptr , attr_size ,
-					jptb_ptr, jptb_size , data_ptr , data_size;
+					jptb_ptr, jptb_size , data_ptr , data_size,
+					states_ptr, states_size;
 			
-			header_size = file.readUInt32();
-			attr_ptr = file.readUInt32();
-			attr_size = file.readUInt32();
-			jptb_ptr = file.readUInt32();
-			jptb_size = file.readUInt32();
-			data_ptr = file.readUInt32();
-			data_size = file.readUInt32();
+			file->uint32(header_size);
+			file->uint32(attr_ptr);
+			file->uint32(attr_size);
+			file->uint32(jptb_ptr);
+			file->uint32(jptb_size);
+			file->uint32(data_ptr);
+			file->uint32(data_size);
+			
+			// legacy support for 1.0 RC 1 replays
+			if(minor_version != 0)
+			{
+				file->uint32(states_ptr);
+				file->uint32(states_size);
+			}
 			
 			// now, we read the attributes section
 			//  jump over the attr - marker
-			file.seek(attr_ptr + 4);
+			file->seek(attr_ptr + 4);
 			// copy attributes into buffer
 			
 			// read the attributes
-			mGameSpeed = file.readUInt32();
-			mGameDuration = file.readUInt32();
-			mGameLength = file.readUInt32();
-			mGameDate = file.readUInt32();
+			file->uint32(mGameSpeed);
+			file->uint32(mGameDuration);
+			file->uint32(mGameLength);
+			file->uint32(mGameDate);
 			
-			mLeftColor = file.readUInt32();
-			mRightColor = file.readUInt32();
+			file->generic<Color> (mLeftColor);
+			file->generic<Color> (mRightColor);
 			
-			mLeftPlayerName = file.readString();
-			mRightPlayerName = file.readString();
+			if(minor_version != 0)
+			{
+				file->uint32(mLeftFinalScore);
+				file->uint32(mRightFinalScore);
+			
+				file->string(mLeftPlayerName);
+				file->string(mRightPlayerName);
+			} 
+			 else
+			{
+				mLeftPlayerName = "";
+				
+				unsigned char c;
+				do
+				{
+					file->byte(c);
+					mLeftPlayerName += c;
+				} while(c);
+				
+				mRightPlayerName = "";
+				
+				do
+				{
+					file->byte(c);
+					mRightPlayerName += c;
+				} while(c);
+			}
 			
 			// now, read the raw data
-			file.seek(data_ptr + 8);		// jump over the dat marker and over the length value
+			file->seek(data_ptr + 8);		// jump over the dat marker and over the length value
 			/// \todo why do we set mBufferSize again? should we check if these two are identical
 			// read into buffer
 			std::cout << "read into buffer\n";
-			mBuffer = file.readRawBytes(data_size);
+			std::cout << "length: " << mGameLength << "   " << data_size << "\n";
+			mBuffer = boost::shared_array<char>(new char[data_size]);
+			file->array(mBuffer.get(), data_size);
 			mReplayOffset = 0;
-
-			/*
-			boost::crc_32_type realcrc;
-			realcrc(mServingPlayer);
-			realcrc = std::for_each(mLeftPlayerName.begin(), mLeftPlayerName.end(), realcrc);
-			realcrc = std::for_each(mRightPlayerName.begin(), mRightPlayerName.end(), realcrc);
-			realcrc.process_bytes(mBuffer + mReplayOffset, mBufferSize - mReplayOffset);
-
-			if (realcrc.checksum() != checksum)
+			
+			// now read safepoints
+			if(minor_version != 0)
 			{
-				/// \todo here, we don't know the filename anymore
-				//throw ChecksumException(file, checksum, realcrc.checksum());
+				file->seek(states_ptr + 4);		// jump over the sta marker
+				file->uint32(mSavePointsCount);
+				std::cout << "read " << mSavePointsCount << " safe points\n";
+				mSavePoints.reserve(mSavePointsCount);
+				for(int i = 0; i < mSavePointsCount; ++i)
+				{
+				
+					DuelMatchState ms;
+					
+					file->generic<DuelMatchState>(ms);					
+					
+					ReplaySavePoint sp;
+					sp.state = ms; 
+					sp.step = 750 * i;
+					
+					mSavePoints.push_back(sp);
+				}
 			}
-			*/
+			 else
+			{
+				mSavePointsCount = 0;
+			}
+			
+			/// \todo check that mSafePointsCount and states_size match
+
 		}
+
 		
 		boost::shared_array<char> mBuffer;
 		uint32_t mReplayOffset;
 		
+		std::vector<ReplaySavePoint> mSavePoints;
+		uint32_t mSavePointsCount;
+		
 		// specific data
 		std::string mLeftPlayerName;
 		std::string mRightPlayerName;
-		int mGameSpeed;
-		int mGameDate;
-		int mGameLength;
-		int mGameDuration;
+		unsigned int mLeftFinalScore;
+		unsigned int mRightFinalScore;
+		unsigned int mGameSpeed;
+		unsigned int mGameDate;
+		unsigned int mGameLength;
+		unsigned int mGameDuration;
 		Color mLeftColor;
 		Color mRightColor;
+		
+		unsigned char mReplayFormatVersion;
 };
 
 
@@ -246,7 +349,7 @@ IReplayLoader* IReplayLoader::createReplayLoader(int major)
 			0;
 			break;
 		case 1:
-			return new ReplayLoader_V10();
+			return new ReplayLoader_V1X();
 			break;
 	}
 	

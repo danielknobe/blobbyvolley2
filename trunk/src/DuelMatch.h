@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 
 class InputSource;
+class DuelMatchState;
 
 /*! \class DuelMatch
 	\brief class representing a blobby game.
@@ -108,12 +109,18 @@ class DuelMatch
 		// Set a new state received from server over a RakNet BitStream
 		void setState(RakNet::BitStream* stream);
 
+		/// Set a new state using a saved DuelMatchState
+		void setState(const DuelMatchState& state);
+	
+		/// gets the current state
+		DuelMatchState getState() const;
+
 		//Input stuff for recording and playing replays
 		const PlayerInput* getPlayersInput() const;
 		void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
-		
+	
 		void setServingPlayer(PlayerSide side);
-		
+	
 		enum 
 		{
 			EVENT_LEFT_BLOBBY_HIT = 1,
@@ -126,7 +133,7 @@ class DuelMatch
 			EVENT_ERROR = EVENT_ERROR_LEFT | EVENT_ERROR_RIGHT,
 			EVENT_RESET = 64
 		};
-		
+	
 		int getEvents() const { return events; }
 
 	private:

@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/lexical_cast.hpp>
 #include <boost/scoped_array.hpp>
+#include <boost/make_shared.hpp>
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
@@ -44,6 +45,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalInputSource.h"
 #include "UserConfig.h"
 #include "FileExceptions.h"
+#include "GenericIO.h"
+#include "FileWrite.h"
 
 
 /* implementation */
@@ -351,20 +354,24 @@ void NetworkGameState::step()
 				if(!mWaitingForReplay)
 					break;
 				
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.IgnoreBytes(1);	// ID_REPLAY
+				boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>((char*)packet->data, packet->length, false);
+				stream->IgnoreBytes(1);	// ID_REPLAY
 				
 				try 
 				{
+					boost::shared_ptr<GenericIn> reader = createGenericReader(stream);
 					ReplayRecorder dummyRec;
-					dummyRec.receive(stream);
-					dummyRec.save((std::string("replays/") + mFilename + std::string(".bvr")));
-				} catch( FileLoadException& ex) 
+					dummyRec.receive( reader );
+					
+					boost::shared_ptr<FileWrite> fw = boost::make_shared<FileWrite>((std::string("replays/") + mFilename + std::string(".bvr")));
+					dummyRec.save( fw );
+				}
+				 catch( FileLoadException& ex) 
 				{
 					mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
 					mSaveReplay = true;	// try again
 				}
-				catch( FileAlreadyExistsException& ex) 
+				 catch( FileAlreadyExistsException& ex) 
 				{
 					mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
 					mSaveReplay = true;
