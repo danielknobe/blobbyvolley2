@@ -24,6 +24,9 @@
 	<string english = "play" translation = "gioca" />
 	<string english = "delete" translation = "cancella" />
 	<string english = "checksum error" translation = "errore nel checksum" />
+	<string english = "info" translation = "informazione" />
+	<string english = "duration:" translation = "durata:" />
+	<string english = "result:" translation = "risultato:" />
 	<string english = "file is corrupt" translation = "file corrotto" />
 	<string english = "version error" translation = "errore di versione" />
 	<string english = "file is outdated" translation = "file troppo vecchio" />
