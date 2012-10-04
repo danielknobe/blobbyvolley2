@@ -23,6 +23,9 @@
 	<string english = "show again" translation = "show again" />
 	<string english = "play" translation = "play" />
 	<string english = "delete" translation = "delete" />
+	<string english = "info" translation = "info" />
+	<string english = "duration:" translation = "duration:" />
+	<string english = "result:" translation = "result:" />
 	<string english = "checksum error" translation = "checksum error" />
 	<string english = "file is corrupt" translation = "file is corrupt" />
 	<string english = "version error" translation = "version error" />

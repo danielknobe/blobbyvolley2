@@ -23,6 +23,9 @@
 	<string english = "show again" translation = "montrer de nouveau" />
 	<string english = "play" translation = "demarrer" />
 	<string english = "delete" translation = "effacer" />
+	<string english = "info" translation = "info" />
+	<string english = "duration:" translation = "durée:" />
+	<string english = "result:" translation = "score:" />
 	<string english = "checksum error" translation = "erreur de la somme de controle" />
 	<string english = "file is corrupt" translation = "fichier endommage" />
 	<string english = "version error" translation = "erreur de version" />
