@@ -272,7 +272,7 @@ PlayerSide DuelMatch::getServingPlayer() const
 
 void DuelMatch::setState(RakNet::BitStream* stream)
 {
-	PhysicState ps;
+	PhysicState ps = mPhysicWorld.getState();
 	ps.readFromStream(stream);
 	mPhysicWorld.setState(ps);
 }
