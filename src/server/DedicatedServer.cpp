@@ -524,17 +524,6 @@ void setup_physfs(char* argv0)
 {
 	FileSystem& fs = FileSystem::getSingleton();
 	fs.addToSearchPath("data");
-
-	#if defined(WIN32)
-	// Just write in installation directory
-	fs.setWriteDir("data");
-	#else
-	std::string userdir = fs.getUserDir();
-	std::string userAppend = ".blobby";
-	std::string homedir = userdir + userAppend;
-	fs.setWriteDir(homedir);
-	#endif
-
 }
 
 
