@@ -100,7 +100,6 @@ class PhysicWorld
 		// sets a new physic state
 		void setState(const PhysicState& state);
 
-	//Input stuff for recording and playing replays
 		//Input stuff for recording and playing replays
 		const PlayerInput* getPlayersInput() const;
 		

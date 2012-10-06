@@ -55,7 +55,7 @@ enum PlayerSide
 	//LEFT_PLAYER_2 = 2,
 	//RIGHT_PLAYER_2 = 3,
 	MAX_PLAYERS // This is always one more than the highest player enum
-			// and can be used to declare arrays
+	            // and can be used to declare arrays
 };
 
 enum InputDeviceName
@@ -72,12 +72,16 @@ enum InputDeviceName
 struct Color
 {
 	Color(int red, int green, int blue)
-		: r(red), g(green), b(blue) {}
+	: r(red)
+	, g(green)
+	, b(blue)
+	{}
 	
 	/// \sa toInt()
-	Color(unsigned int col) : 	r(col&0xff), 
-								g((col>>8)&0xff), 
-								b((col>>16)&0xff) 
+	Color(unsigned int col)
+	: r(col&0xff)
+	, g((col>>8)&0xff)
+	, b((col>>16)&0xff) 
 	{
 		
 	}
