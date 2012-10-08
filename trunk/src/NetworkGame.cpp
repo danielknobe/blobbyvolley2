@@ -408,6 +408,8 @@ void NetworkGame::broadcastPhysicState()
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
 		mLeftPlayer, false);
 
+	// reset state and stream
+	ps = world.getState();
 	stream.Reset();
 	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
 	stream.Write((unsigned char)ID_TIMESTAMP);
