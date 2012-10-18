@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
+#include <iosfwd>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
@@ -45,6 +46,9 @@ namespace RakNet
 boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<FileWrite> file);
 /// creates a generic writer that writes to a BitStream
 boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<RakNet::BitStream> stream);
+/// creates a generic writer that writes hman readable to a stream
+/// currently, there is no corresponding reader because this is mostly for debugging purposes
+boost::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream);
 
 /// creates a generic reader that reads from a file
 boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<FileRead> file);
