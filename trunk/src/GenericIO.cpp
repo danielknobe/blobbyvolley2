@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 
 #include <cstring>
+#include <ostream>
 
 #include <boost/make_shared.hpp>
 
@@ -282,6 +283,64 @@ class NetworkIn : public GenericIn
 		boost::shared_ptr<RakNet::BitStream> mStream;
 };
 
+// -------------------------------------------------------------------------------------------------
+//							File Output Class
+// -------------------------------------------------------------------------------------------------
+
+class StreamOut : public GenericOut
+{
+	public:
+		StreamOut(std::ostream& stream) : mStream(stream)
+		{
+			
+		}
+		
+	private:
+		virtual void byte(const unsigned char& data) 
+		{
+			mStream << data << "\n";
+		}
+		
+		virtual void boolean(const bool& data) 
+		{
+			mStream << data << "\n";
+		}
+		
+		virtual void uint32(const unsigned int& data) 
+		{
+			mStream << data << "\n";
+		}
+		
+		virtual void number(const float& data)
+		{
+			mStream << data << "\n";
+		}
+		
+		virtual void string(const std::string& string) 
+		{
+			mStream << string << "\n";
+		}
+		
+		/// currently not supported by StreamOut
+		virtual unsigned int tell() const 
+		{
+			return -1;
+		}
+		
+		virtual void seek(unsigned int pos) const 
+		{
+		}
+		
+		virtual void array(const char* data, unsigned int length)
+		{
+			std::string stringed(data, length);
+			mStream << stringed << "\n";
+		}
+		
+		std::ostream& mStream;
+};
+
+
 
 // -------------------------------------------------------------------------------------------------
 //							Factory Functions
@@ -295,6 +354,11 @@ boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<FileWrite>
 boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<RakNet::BitStream> stream)
 {
 	return boost::make_shared< NetworkOut > (stream);
+}
+
+boost::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream)
+{
+	return boost::shared_ptr< StreamOut > ( new StreamOut(stream) );
 }
 
 boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<FileRead> file)
