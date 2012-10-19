@@ -142,9 +142,11 @@ void ReplayState::step()
 	imgui.doOverlay(GEN_ID, prog_pos, Vector2(700*mReplayPlayer->getPlayProgress()+50, 600-3), Color(0,255,0));
 	//imgui.doImage(GEN_ID, Vector2(50 + 700*mReplayPlayer->getPlayProgress(), 600-16), "gfx/scrollbar.bmp");
 	
+	PlayerSide side = mReplayMatch->winningPlayer();
+	
 	// control replay position
 	Vector2 mousepos = InputManager::getSingleton()->position();
-	if (mousepos.x + 5 > prog_pos.x &&
+	if (side == NO_PLAYER && mousepos.x + 5 > prog_pos.x &&
 		mousepos.y > prog_pos.y &&
 		mousepos.x < prog_pos.x + 700 &&
 		mousepos.y < prog_pos.y + 24.0)
@@ -172,50 +174,53 @@ void ReplayState::step()
 	imgui.doImage(GEN_ID, Vector2(370, 555.0), "gfx/btn_slow.bmp");
 	
 	// handle these image buttons. IMGUI is not capable of doing this.
-	if (InputManager::getSingleton()->click())
+	if(side == NO_PLAYER)
 	{
-		Vector2 mousepos = InputManager::getSingleton()->position();
-		Vector2 btnpos = Vector2(400-12, 550.0-12);
-		if (mousepos.x > btnpos.x &&
-			mousepos.y > btnpos.y &&
-			mousepos.x < btnpos.x + 24.0 &&
-			mousepos.y < btnpos.y + 24.0)
+		if (InputManager::getSingleton()->click())
 		{
-
-			if(mPaused) 
+			Vector2 mousepos = InputManager::getSingleton()->position();
+			Vector2 btnpos = Vector2(400-12, 550.0-12);
+			if (mousepos.x > btnpos.x &&
+				mousepos.y > btnpos.y &&
+				mousepos.x < btnpos.x + 24.0 &&
+				mousepos.y < btnpos.y + 24.0)
 			{
-				mPaused = false;
-				if(mReplayPlayer->endOfFile())
-					mPositionJump = 0;
+
+				if(mPaused) 
+				{
+					mPaused = false;
+					if(mReplayPlayer->endOfFile())
+						mPositionJump = 0;
+				}
+				else
+					mPaused = true;
 			}
-			else
-				mPaused = true;
-		}
-		
-		Vector2 fastpos = Vector2(430-12, 550.0-12);
-		if (mousepos.x > fastpos.x &&
-			mousepos.y > fastpos.y &&
-			mousepos.x < fastpos.x + 24.0 &&
-			mousepos.y < fastpos.y + 24.0)
-		{	
-			mSpeedValue *= 2;
-			if(mSpeedValue > 64)
-				mSpeedValue = 64;
-		}
-		
-		Vector2 slowpos = Vector2(370-12, 550.0-12);
-		if (mousepos.x > slowpos.x &&
-			mousepos.y > slowpos.y &&
-			mousepos.x < slowpos.x + 24.0 &&
-			mousepos.y < slowpos.y + 24.0)
-		{	
-			mSpeedValue /= 2;
-			if(mSpeedValue < 1)
-				mSpeedValue = 1;
+			
+			Vector2 fastpos = Vector2(430-12, 550.0-12);
+			if (mousepos.x > fastpos.x &&
+				mousepos.y > fastpos.y &&
+				mousepos.x < fastpos.x + 24.0 &&
+				mousepos.y < fastpos.y + 24.0)
+			{	
+				mSpeedValue *= 2;
+				if(mSpeedValue > 64)
+					mSpeedValue = 64;
+			}
+			
+			Vector2 slowpos = Vector2(370-12, 550.0-12);
+			if (mousepos.x > slowpos.x &&
+				mousepos.y > slowpos.y &&
+				mousepos.x < slowpos.x + 24.0 &&
+				mousepos.y < slowpos.y + 24.0)
+			{	
+				mSpeedValue /= 2;
+				if(mSpeedValue < 1)
+					mSpeedValue = 1;
+			}
 		}
 	}
 	
-	PlayerSide side = mReplayMatch->winningPlayer();
+	
 	if (side != NO_PLAYER)
 	{
 		std::stringstream tmp;
