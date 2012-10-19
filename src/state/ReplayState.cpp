@@ -162,7 +162,8 @@ void ReplayState::step()
 	if(mPaused)
 	{
 		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_play.bmp");
-	} else
+	} 
+	 else
 	{
 		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_pause.bmp");
 	}
@@ -234,6 +235,24 @@ void ReplayState::step()
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
 		{
 			/// \todo how do we handle reload?
+			// reload... we have to do all the parsing again
+			mReplayMatch.reset( 0 );
+			
+			mReplayMatch.reset(new DuelMatch(0, 0, true, false));
+			RenderManager::getSingleton().setPlayernames(
+				mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
+			SoundManager::getSingleton().playSound(
+					"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+			
+			mLeftPlayer.setColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
+			mRightPlayer.setColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
+			
+			SpeedController::getMainInstance()->setGameSpeed(
+					(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
+				);
+				
+			mPaused = false;
+			mPositionJump = 0;
 		}
 		imgui.doCursor();
 	}
