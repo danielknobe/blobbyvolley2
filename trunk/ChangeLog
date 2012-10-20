@@ -1,4 +1,10 @@
-New in 1.0 RC 2 (rev. 1092) since RC 1:
+New in 1.0 RC 3 (rev. 1123) since RC 2:
+- Fixed ball rotation in onlinegame
+- Fixed switched player bug
+- Fixed missing colon in server info
+- Fixed broken play again button in replay player
+
+New in 1.0 RC 2 (rev. 1111) since RC 1:
 - Show waiting player in network game menu (currently not updated)
 - Load server list from blobby.sourceforge.net
 - Option to specify maximum clients in server.xml
