@@ -421,13 +421,13 @@ void PhysicWorld::step()
 		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
 
 	// Velocity Integration
-	if (mBallVelocity.x > 0.0)
-		mBallRotation += mBallAngularVelocity * (getBallSpeed() / 6);
-	else if (mBallVelocity.x < 0.0)
-		mBallRotation -= mBallAngularVelocity * (getBallSpeed() / 6);
-	else
+	if( !getBallActive() )
 		mBallRotation -= mBallAngularVelocity;
-
+	else if (mBallVelocity.x > 0.0)
+		mBallRotation += mBallAngularVelocity * (getBallSpeed() / 6);
+	else
+		mBallRotation -= mBallAngularVelocity * (getBallSpeed() / 6);
+	
 	// Overflow-Protection
 	if (mBallRotation <= 0)
 		mBallRotation = 6.25 + mBallRotation;
