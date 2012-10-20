@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <cassert>
-#include <iostream> // debugging
 
 #include "IReplayLoader.h"
 #include "DuelMatch.h"
@@ -51,12 +50,6 @@ void ReplayPlayer::load(const std::string& filename)
 	
 	mPosition = 0;
 	mLength = loader->getLength();
-	
-	// DEBUG:
-	// show all replay data
-	std::cout << "Speed: " << loader->getSpeed() << "\n";
-	std::cout << "Duration: " << loader->getDuration() << "\n";
-	std::cout << "Date: " << loader->getDate() << "\n";
 }
 
 std::string ReplayPlayer::getPlayerName(const PlayerSide side) const
