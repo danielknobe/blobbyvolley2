@@ -94,6 +94,7 @@ bool ReplayPlayer::play(DuelMatch* virtual_match)
 		virtual_match->setPlayersInput(left, right);
 		virtual_match->step();
 		
+		/*
 		int point;
 		if(loader->isSavePoint(mPosition, point))
 		{
@@ -102,7 +103,7 @@ bool ReplayPlayer::play(DuelMatch* virtual_match)
 			
 			DuelMatchState current = virtual_match->getState();
 			assert(reference.state == current);
-		}
+		}*/
 		
 		
 		// everything was as expected
