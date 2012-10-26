@@ -14,8 +14,8 @@
 	<var name="show_shadow" value="false"/>
 	<var name="left_script_name" value="hyp014"/>
 	<var name="right_script_name" value="reduced"/>
-	<var name="left_player_human" value="false"/>
-	<var name="right_player_human" value="false"/>
+	<var name="left_player_human" value="true"/>
+	<var name="right_player_human" value="true"/>
 	<var name="left_player_name" value="Left Player"/>
 	<var name="right_player_name" value="Right Player"/>
 	<var name="gamefps" value="120"/>
