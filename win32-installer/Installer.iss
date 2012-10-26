@@ -7,7 +7,7 @@ Name: "de"; MessagesFile: "languages\German.isl"
 ;Name: "sk"; MessagesFile: "languages\Slovak.isl"
 Name: "pl"; MessagesFile: "languages\Polish.isl"
 ;Name: "no"; MessagesFile: "languages\Norwegian.isl"
-;Name: "it"; MessagesFile: "languages\Italian.isl"
+Name: "it"; MessagesFile: "languages\Italian.isl"
 ;Name: "hu"; MessagesFile: "languages\Hungarian.isl"
 ;Name: "fr"; MessagesFile: "languages\French.isl"
 ;Name: "fi"; MessagesFile: "languages\Finnish.isl"
@@ -17,15 +17,15 @@ Name: "pl"; MessagesFile: "languages\Polish.isl"
 Name: "en"; MessagesFile: "languages\English.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Version 1.0RC1"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\Blobby Volley 2 Version 1.0RC3"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2 Version 1.0RC1
-AppVerName=Blobby Volley 2 Version 1.0RC1
-DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC1
-DefaultGroupName=Blobby Volley 2 Version 1.0RC1
+AppName=Blobby Volley 2 Version 1.0RC3
+AppVerName=Blobby Volley 2 Version 1.0RC3
+DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC3
+DefaultGroupName=Blobby Volley 2 Version 1.0RC3
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
@@ -44,7 +44,7 @@ Source: "../README.txt"; DestDir: "{app}"; Flags: isreadme
 Source: "../COPYING.txt";DestDir: "{app}";
 Source: "../AUTHORS.txt";DestDir: "{app}";
 Source: "../SDL.dll"; DestDir: "{app}"
-Source: "../physfs.dll"; DestDir: "{app}"
+Source: "../libphysfs.dll"; DestDir: "{app}"
 Source: "../data/*"; DestDir: "{app}/data"
 
 Source: "../doc/*"; DestDir: "{app}/doc"
