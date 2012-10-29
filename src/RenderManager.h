@@ -28,25 +28,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 // Text definitions
-#define FONT_WIDTH_NORMAL	24	// Height and width of the normal font.
-#define LINE_SPACER_NORMAL	6	// Extra space between 2 lines in a normal SelectBox.
-#define FONT_WIDTH_SMALL	8	// Height and width of the small font.
-#define LINE_SPACER_SMALL	2	// Extra space between 2 lines in a small SelectBox.
+static const int FONT_WIDTH_NORMAL 	=	24;	// Height and width of the normal font.
+static const int LINE_SPACER_NORMAL	=	 6;	// Extra space between 2 lines in a normal SelectBox.
+static const int FONT_WIDTH_SMALL	=	 8;	// Height and width of the small font.
+static const int LINE_SPACER_SMALL	=	 2;	// Extra space between 2 lines in a small SelectBox.
 
-#define FONT_INDEX_ASTERISK	36 // M.W. : Currently a dot because there is no asterisk yet.
+static const int FONT_INDEX_ASTERISK=	36; // M.W. : Currently a dot because there is no asterisk yet.
 
 
 // Text flags (usable for the RenderManager::drawText() flag parameter)
 // Just using one byte for now - up to 8 flags.
-#define TF_NORMAL		0x00 // 0 == false (backward compatibility for state modules)
-#define TF_HIGHLIGHT	0x01 // 1 == true (backward compatibility for state modules)
-#define TF_SMALL_FONT	0x02 // Draw a smaller font. (8px instead of 24px)
-#define TF_OBFUSCATE	0x04 // Obfuscate the text with asterisks. (for password Editboxes)
+static const int TF_NORMAL		= 0x00; // 0 == false (backward compatibility for state modules)
+static const int TF_HIGHLIGHT	= 0x01; // 1 == true (backward compatibility for state modules)
+static const int TF_SMALL_FONT	= 0x02; // Draw a smaller font. (8px instead of 24px)
+static const int TF_OBFUSCATE	= 0x04; // Obfuscate the text with asterisks. (for password Editboxes)
 
 // Text Alignment Flags
-#define TF_ALIGN_LEFT		0x00	// Text aligned to the left (default)
-#define TF_ALIGN_CENTER		0x08	// Text centered
-#define	TF_ALIGN_RIGHT		0x10	// Text aligned right		
+static const int TF_ALIGN_LEFT	= 0x00;	// Text aligned to the left (default)
+static const int TF_ALIGN_CENTER= 0x08;	// Text centered
+static const int TF_ALIGN_RIGHT = 0x10;	// Text aligned right		
 
 
 
