@@ -77,6 +77,8 @@ class PhysicWorld
 		// If not, no ball to player collision checking is done,
 		// the input is ignored an the ball experiences a strong damping
 		void setBallValidity(bool validity);
+		
+		bool getBallValid() const;
 
 		// This returns true if the ball is not valid and the ball is steady
 		bool roundFinished() const;

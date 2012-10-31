@@ -35,6 +35,7 @@ extern "C"
 
 #include "FileRead.h"
 #include "GameLogicState.h"
+#include "DuelMatch.h"
 
 
 /* implementation */
@@ -47,7 +48,8 @@ IGameLogic::IGameLogic(DuelMatch* match):	mLastError(NO_PLAYER),
 							mServingPlayer(NO_PLAYER), 
 							mWinningPlayer(NO_PLAYER),
 							mScoreToWin(15),
-							mMatch(match)
+							mMatch(match),
+							mSquishWall(0)
 {
 	// init clock
 	clock.reset();
@@ -102,11 +104,6 @@ void IGameLogic::setServingPlayer(PlayerSide side)
 	mServingPlayer = side;
 }
 
-int IGameLogic::getHits(PlayerSide side) const
-{
-	return mTouches[side2index(side)];
-}
-
 PlayerSide IGameLogic::getWinningPlayer() const
 {
 	return mWinningPlayer;
@@ -139,6 +136,7 @@ GameLogicState IGameLogic::getState() const
 	gls.servingPlayer = getServingPlayer();
 	gls.leftSquish = mSquish[LEFT_PLAYER];
 	gls.rightSquish = mSquish[RIGHT_PLAYER];
+	gls.squishWall = mSquishWall;
 	
 	return gls;
 }
@@ -150,6 +148,7 @@ void IGameLogic::setState(GameLogicState gls)
 	setServingPlayer(gls.servingPlayer);
 	mSquish[LEFT_PLAYER] = gls.leftSquish;
 	mSquish[RIGHT_PLAYER] = gls.rightSquish;
+	mSquishWall = gls.squishWall;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -163,6 +162,7 @@ void IGameLogic::step()
 	{
 		--mSquish[0];
 		--mSquish[1];
+		--mSquishWall;
 	}
 }
 
@@ -188,6 +188,12 @@ bool IGameLogic::isCollisionValid(PlayerSide side) const
 	return mSquish[side2index(side)] <= 0;
 }
 
+bool IGameLogic::isWallCollisionValid() const
+{
+	// check whether the ball is squished
+	return mSquishWall <= 0 && mMatch->getBallValid();
+}
+
 void IGameLogic::onBallHitsPlayer(PlayerSide side)
 {
 	if(!isCollisionValid(side))
@@ -209,6 +215,16 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	}
 }
 
+void IGameLogic::onBallHitsWall(PlayerSide side)
+{
+	if(!isWallCollisionValid())
+		return;
+	
+	// otherwise, set the squish value
+	mSquishWall = SQUISH_TOLERANCE;
+	
+	OnBallHitsWallHandler(side);
+}
 
 void IGameLogic::score(PlayerSide side)
 {
@@ -226,6 +242,7 @@ void IGameLogic::reset()
 	mTouches[1] = 0;
 	mSquish[0] = 0;
 	mSquish[1] = 0;
+	mSquishWall = 0;
 }
 
 void IGameLogic::onError(PlayerSide side)
@@ -256,7 +273,8 @@ class LuaGameLogic : public IGameLogic
 		virtual PlayerSide checkWin() const;
 		virtual void OnMistake(PlayerSide side);
 		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits);
-		
+		virtual void OnBallHitsWallHandler(PlayerSide ply);		
+
 		// lua functions
 		static int luaScore(lua_State* state); 
 		static int luaGetOpponent(lua_State* state);
@@ -396,6 +414,18 @@ bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
 	return valid;
 }
 
+void LuaGameLogic::OnBallHitsWallHandler(PlayerSide ply)
+{
+	lua_getglobal(mState, "OnBallHitsWall");
+ 	
+	lua_pushnumber(mState, ply );
+	if( lua_pcall(mState, 1, 0, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+}
+
 int LuaGameLogic::luaScore(lua_State* state) 
 {
 	int pl = int(lua_tonumber(state, -1) + 0.5);
@@ -474,6 +504,10 @@ class FallbackGameLogic : public IGameLogic
 		bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
 		{
 			return numOfHits <= 3;
+		}
+
+		void OnBallHitsWallHandler(PlayerSide ply)
+		{
 		}
 };
 
