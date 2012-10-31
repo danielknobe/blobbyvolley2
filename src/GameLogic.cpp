@@ -43,10 +43,11 @@ extern "C"
 const int SQUISH_TOLERANCE = 11;
 
 
-IGameLogic::IGameLogic():	mLastError(NO_PLAYER), 
+IGameLogic::IGameLogic(DuelMatch* match):	mLastError(NO_PLAYER), 
 							mServingPlayer(NO_PLAYER), 
 							mWinningPlayer(NO_PLAYER),
-							mScoreToWin(15)
+							mScoreToWin(15),
+							mMatch(match)
 {
 	// init clock
 	clock.reset();
@@ -64,6 +65,11 @@ IGameLogic::~IGameLogic()
 int IGameLogic::getScore(PlayerSide side) const
 {
 	return mScores[side2index(side)];
+}
+
+int IGameLogic::getTouches(PlayerSide side) const
+{
+	return mTouches[side2index(side)];
 }
 
 void IGameLogic::setScore(PlayerSide side, int score)
@@ -109,6 +115,11 @@ PlayerSide IGameLogic::getWinningPlayer() const
 Clock& IGameLogic::getClock()
 {
 	return clock;
+}
+
+DuelMatch* IGameLogic::getMatch()
+{
+	return mMatch;
 }
 
 PlayerSide IGameLogic::getLastErrorSide()
@@ -237,7 +248,7 @@ void IGameLogic::onError(PlayerSide side)
 class LuaGameLogic : public IGameLogic 
 {
 	public:
-		LuaGameLogic(const std::string& file);
+		LuaGameLogic(const std::string& file, DuelMatch* match);
 		virtual ~LuaGameLogic();
 		
 	private:
@@ -258,7 +269,7 @@ class LuaGameLogic : public IGameLogic
 
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename ) : mState( lua_open() ) 
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IGameLogic(match), mState( lua_open() ) 
 {
 	
 	lua_pushlightuserdata(mState, this);
@@ -429,7 +440,7 @@ int LuaGameLogic::luaGetGameTime(lua_State* state)
 class FallbackGameLogic : public IGameLogic 
 {
 	public:
-		FallbackGameLogic() 
+		FallbackGameLogic(DuelMatch* match) : IGameLogic(match) 
 		{
 			
 		}
@@ -466,11 +477,11 @@ class FallbackGameLogic : public IGameLogic
 		}
 };
 
-GameLogic createGameLogic(const std::string& file)
+GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 {
 	try 
 	{
-		return std::auto_ptr<IGameLogic>( new LuaGameLogic(file) );
+		return std::auto_ptr<IGameLogic>( new LuaGameLogic(file, match) );
 	} 
 	catch(...) 
 	{
@@ -478,7 +489,7 @@ GameLogic createGameLogic(const std::string& file)
 		std::cerr << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
-		return std::auto_ptr<IGameLogic>(new FallbackGameLogic());
+		return std::auto_ptr<IGameLogic>(new FallbackGameLogic(match));
 	}
 	
 }
