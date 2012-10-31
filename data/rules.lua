@@ -60,4 +60,10 @@ function OnBallHitsPlayer(player, touches)
   return touches <= 3
 end
 
-
+-- function OnBallHitsWall
+--		IMPLEMENTEDBY rules.lua
+--		called when a valid collision between the ball and a wall happens.
+--		params: player - the player on whos side the ball hit a wall
+--		return: none
+function OnBallHitsWall(player)
+end
