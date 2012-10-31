@@ -96,6 +96,7 @@ class DuelMatch
 
 		bool getBallDown() const;
 		bool getBallActive() const;
+		bool getBallValid() const;
 		
 		void pause();
 		void unpause();

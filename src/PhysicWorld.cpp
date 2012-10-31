@@ -126,6 +126,11 @@ void PhysicWorld::setBallValidity(bool validity)
 	mIsBallValid = validity;
 }
 
+bool PhysicWorld::getBallValid() const
+{
+	return mIsBallValid;
+}
+
 bool PhysicWorld::roundFinished() const
 {
 	if (resetAreaClear())

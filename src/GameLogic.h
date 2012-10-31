@@ -62,9 +62,6 @@ class IGameLogic
 		void setScore(PlayerSide side, int score);		// when might need such a method if we add saved games
 		
 		
-		/// returns the number of times a player has hit the ball.
-		int getHits(PlayerSide side) const;
-		
 		// method for querying and setting the serving player
 		/// returns which player is the serving player
 		PlayerSide getServingPlayer() const;
@@ -113,8 +110,12 @@ class IGameLogic
 		/// called when ball hits player
 		void onBallHitsPlayer(PlayerSide side);
 				
+		/// called when ball hits player
+		void onBallHitsWall(PlayerSide side);
+
 		/// returns whether the collision was valid (max. 3 hits)
 		bool isCollisionValid(PlayerSide side) const;
+		bool isWallCollisionValid() const;
 
 		
 		// set/unset pause mode
@@ -168,12 +169,15 @@ class IGameLogic
 		/// this function handles ball/player hits
 		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits) = 0;
 		
+		/// this function handles ball/wall hits
+		virtual void OnBallHitsWallHandler(PlayerSide ply) = 0;
+		
 		
 		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
 			
 		
-		// data memberss
+		// data members
 		/// link to the match
 		DuelMatch* mMatch;
 		/// this array contains the scores
@@ -182,6 +186,7 @@ class IGameLogic
 		int mTouches[2];
 		/// this is an helper array to prevent counting hits that happen too fast twice
 		int mSquish[2];
+		int mSquishWall;
 		
 		/// last side that made an error
 		PlayerSide mLastError;

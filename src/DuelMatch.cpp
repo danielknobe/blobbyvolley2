@@ -213,9 +213,9 @@ PlayerSide DuelMatch::winningPlayer()
 int DuelMatch::getHitcount(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER)
-		return mLogic->getHits(LEFT_PLAYER);
+		return mLogic->getTouches(LEFT_PLAYER);
 	else if (player == RIGHT_PLAYER)
-		return mLogic->getHits(RIGHT_PLAYER);
+		return mLogic->getTouches(RIGHT_PLAYER);
 	else
 		return 0;
 }
@@ -238,6 +238,11 @@ bool DuelMatch::getBallDown() const
 bool DuelMatch::getBallActive() const 
 {
 	return mPhysicWorld.getBallActive();
+}
+
+bool DuelMatch::getBallValid() const
+{
+	return mPhysicWorld.getBallValid();
 }
 
 
