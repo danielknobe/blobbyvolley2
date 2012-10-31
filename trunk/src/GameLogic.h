@@ -26,7 +26,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Clock.h"
 
+class IGameLogic;
+
+/// typedef to make GameLogic an auto_ptr
+/// \todo is auto_ptr the best choice here?
+typedef std::auto_ptr<IGameLogic> GameLogic;
+
 class GameLogicState;
+class DuelMatch;
 
 /// \class IGameLogic
 /// \brief Interface for managing game rules, score counting etc.
@@ -37,7 +44,7 @@ class IGameLogic
 {
 	public:
 		// constuctor and destructor
-		IGameLogic();
+		IGameLogic(DuelMatch* match);
 		virtual ~IGameLogic();
 		
 		// -----------------------------------------------------------------------------------------
@@ -47,6 +54,9 @@ class IGameLogic
 		// methods for querying the score/touches of a patricular team
 		/// returns current points of one player
 		int getScore(PlayerSide side) const;
+		
+		/// returns current points of one player
+		int getTouches(PlayerSide side) const;
 		
 		/// sets the score of the specified player
 		void setScore(PlayerSide side, int score);		// when might need such a method if we add saved games
@@ -78,6 +88,9 @@ class IGameLogic
 		
 		/// gets the associated clock
 		Clock& getClock();
+
+		/// gets the associated match
+		DuelMatch* getMatch();
 		
 		// -----------------------------------------------------------------------------------------
 		//						Read / Write - State
@@ -161,6 +174,8 @@ class IGameLogic
 			
 		
 		// data memberss
+		/// link to the match
+		DuelMatch* mMatch;
 		/// this array contains the scores
 		int mScores[2];
 		/// in this array the number of touches are counted
@@ -185,11 +200,7 @@ class IGameLogic
 		Clock clock;
 };
 
-/// typedef to make GameLogic an auto_ptr
-/// \todo is auto_ptr the best choice here?
-typedef std::auto_ptr<IGameLogic> GameLogic;
-
 // function for creating a game logic object
-GameLogic createGameLogic(const std::string& rulefile);
+GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match);
 
 

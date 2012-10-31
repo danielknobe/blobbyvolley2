@@ -34,7 +34,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 DuelMatch* DuelMatch::mMainGame = 0;
 
 DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote) : 
-		mLogic(createGameLogic("rules.lua")),
+		// we send a pointer to an unconstructed object here!
+		mLogic(createGameLogic("rules.lua", this)),
 		mPaused(false), 
 		events(0), 
 		external_events(0), 
@@ -62,7 +63,7 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool
 void DuelMatch::reset()
 {
 	mPhysicWorld = PhysicWorld();
-	mLogic = createGameLogic("rules.lua");
+	mLogic = createGameLogic("rules.lua", this);
 	
 	mBallDown = false;
 
