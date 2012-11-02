@@ -71,7 +71,7 @@ void PhysicWorld::reset(PlayerSide player)
 	mBallVelocity.clear();
 
 	mBallRotation = 0.0;
-	mBallAngularVelocity = STANDARD_BALL_ANGULAR_VELOCITY;
+	mBallAngularVelocity = player == RIGHT_PLAYER ? -STANDARD_BALL_ANGULAR_VELOCITY : STANDARD_BALL_ANGULAR_VELOCITY;
 	mBlobState[LEFT_PLAYER] = 0.0;
 	mBlobState[RIGHT_PLAYER] = 0.0;
 
@@ -180,6 +180,26 @@ bool PhysicWorld::ballHitRightPlayer() const
 	return mBallHitByBlob[RIGHT_PLAYER];
 }
 
+bool PhysicWorld::ballHitWall() const
+{
+	return mBallHitWallSide != NO_PLAYER;
+}
+
+PlayerSide PhysicWorld::ballHitWallSide() const
+{
+	return mBallHitWallSide;
+}
+
+bool PhysicWorld::ballHitNet() const
+{
+	return mBallHitNet;
+}
+
+PlayerSide PhysicWorld::ballHitNetSide() const
+{
+	return mBallHitNetSide;
+}
+
 Vector2 PhysicWorld::getBall() const
 {
 	return mBallPosition;
@@ -198,6 +218,11 @@ float PhysicWorld::getBallSpeed() const
 Vector2 PhysicWorld::getBlob(PlayerSide player) const
 {
 	return mBlobPosition[player];
+}
+
+Vector2 PhysicWorld::getBlobVelocity(PlayerSide player) const
+{
+	return mBlobVelocity[player];
 }
 
 float PhysicWorld::getBlobState(PlayerSide player) const
@@ -360,24 +385,32 @@ void PhysicWorld::step()
 		mIsGameRunning = true;
 
 	// Border Collision
+	mBallHitWallSide = NO_PLAYER;
+	mBallHitNet = false;
 	if (mBallPosition.x - BALL_RADIUS <= LEFT_PLANE && mBallVelocity.x < 0.0)
 	{
 		mBallVelocity = mBallVelocity.reflectX();
 		// set the ball's position
 		mBallPosition.x = LEFT_PLANE + BALL_RADIUS;
+		mBallHitWallSide = LEFT_PLAYER;
 	}
 	else if (mBallPosition.x + BALL_RADIUS >= RIGHT_PLANE && mBallVelocity.x > 0.0)
 	{
 		mBallVelocity = mBallVelocity.reflectX();
 		// set the ball's position
 		mBallPosition.x = RIGHT_PLANE - BALL_RADIUS;
+		mBallHitWallSide = RIGHT_PLAYER;
 	}
 	else if (mBallPosition.y > NET_SPHERE_POSITION &&
 			fabs(mBallPosition.x - NET_POSITION_X) < BALL_RADIUS + NET_RADIUS)
 	{
+		bool right = mBallPosition.x - NET_POSITION_X > 0;
 		mBallVelocity = mBallVelocity.reflectX();
 		// set the ball's position so that it touches the net
-		mBallPosition.x = NET_POSITION_X + ((mBallPosition.x - NET_POSITION_X > 0) ?( BALL_RADIUS + NET_RADIUS) : (- BALL_RADIUS - NET_RADIUS));
+		mBallPosition.x = NET_POSITION_X + (right ? (BALL_RADIUS + NET_RADIUS) : (-BALL_RADIUS - NET_RADIUS));
+
+		mBallHitNet = true;
+		mBallHitNetSide = right ? RIGHT_PLAYER : LEFT_PLAYER;
 	}
 	else
 	{
@@ -407,6 +440,9 @@ void PhysicWorld::step()
 
 			// pushes the ball out of the net
 			mBallPosition = (Vector2(NET_POSITION_X, NET_SPHERE_POSITION) - normal * (NET_RADIUS + BALL_RADIUS));
+
+			mBallHitNet = true;
+			mBallHitNetSide = NO_PLAYER;
 		}
 		// mBallVelocity = mBallVelocity.reflect( Vector2( mBallPosition, Vector2 (NET_POSITION_X, temp) ).normalise()).scale(0.75);
 	}
