@@ -50,6 +50,7 @@ class PhysicWorld
 		void setRightInput(const PlayerInput& input);
 
 		Vector2 getBlob(PlayerSide player) const;
+		Vector2 getBlobVelocity(PlayerSide player) const;
 		Vector2 getBall() const;
 
 		float getBlobState(PlayerSide player) const;
@@ -62,6 +63,10 @@ class PhysicWorld
 		bool ballHitRightPlayer() const;
 		bool ballHitLeftGround() const;
 		bool ballHitRightGround() const;
+		bool ballHitWall() const;
+		PlayerSide ballHitWallSide() const;
+		bool ballHitNet() const;
+		PlayerSide ballHitNetSide() const;
 
 		bool blobbyHitGround(PlayerSide player) const;
 
@@ -121,6 +126,9 @@ class PhysicWorld
 		void handleBlobbyBallCollision(PlayerSide player);
 
 		bool mBallHitByBlob[MAX_PLAYERS];
+		PlayerSide mBallHitWallSide;
+		bool mBallHitNet;
+		PlayerSide mBallHitNetSide;
 
 		Vector2 mBlobPosition[MAX_PLAYERS];
 		Vector2 mBallPosition;
