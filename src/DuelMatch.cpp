@@ -63,7 +63,7 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool
 void DuelMatch::reset()
 {
 	mPhysicWorld = PhysicWorld();
-	mLogic = createGameLogic("rules.lua", this);
+	mLogic = createGameLogic( mLogic->getSourceFile(), this);
 	
 	mBallDown = false;
 
