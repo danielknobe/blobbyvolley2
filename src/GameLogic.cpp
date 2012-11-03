@@ -255,11 +255,68 @@ void IGameLogic::onError(PlayerSide side)
 	mServingPlayer = other_side(side);
 }
 
+// -------------------------------------------------------------------------------------------------
+// 	Fallback Game Logic
+// ---------------------
+
+class FallbackGameLogic : public IGameLogic 
+{
+	public:
+		FallbackGameLogic(DuelMatch* match) : IGameLogic(match) 
+		{
+			
+		}
+		virtual ~FallbackGameLogic()
+		{
+			
+		}
+		
+		virtual std::string getSourceFile() const 
+		{
+			return std::string("?FALLBACK?");
+		}
+
+	protected:
+		
+		virtual PlayerSide checkWin() const 
+		{
+			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) 
+			{
+				return LEFT_PLAYER;
+			}
+			
+			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) 
+			{
+				return RIGHT_PLAYER;
+			}
+			
+			return NO_PLAYER;
+		}
+		
+		virtual void OnMistake(PlayerSide side) 
+		{
+			score( other_side(side) );
+		}
+		
+		bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
+		{
+			return numOfHits <= 3;
+		}
+
+		void OnBallHitsWallHandler(PlayerSide ply)
+		{
+		}
+		
+		virtual void OnGameHandler()
+		{
+		}
+};
+
 
 // -------------------------------------------------------------------------------------------------
 
 
-class LuaGameLogic : public IGameLogic 
+class LuaGameLogic : public FallbackGameLogic 
 {
 	public:
 		LuaGameLogic(const std::string& file, DuelMatch* match);
@@ -292,7 +349,7 @@ class LuaGameLogic : public IGameLogic
 
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IGameLogic(match), 
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : FallbackGameLogic(match), 
 																				mState( lua_open() ), 
 																				mSourceFile(filename) 
 {
@@ -320,39 +377,12 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IG
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
 	
-	//! \todo thats not good, needs a hardcoded fallback ruleset
 	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
 		ScriptException except;
 		except.luaerror = lua_tostring(mState, -1);
-		lua_pop(mState, 1);
-		lua_close(mState);
-		throw except;
-	}
-	
-	// check that all functions are available
-	lua_getglobal(mState, "IsWinning");
-	if (!lua_isfunction(mState, -1)) 
-	{
-		std::cerr << "Script Error: Could not find function IsWinning";
-		std::cerr << std::endl;
-		ScriptException except;
-		except.luaerror = "Could not find function IsWinning";
-		lua_pop(mState, 1);
-		lua_close(mState);
-		throw except;
-	}
-	
-	lua_getglobal(mState, "OnMistake");
-	
-	if (!lua_isfunction(mState, -1)) 
-	{
-		std::cerr << "Script Error: Could not find function OnMistake";
-		std::cerr << std::endl;
-		ScriptException except;
-		except.luaerror = "Could not find function OnMistake";
 		lua_pop(mState, 1);
 		lua_close(mState);
 		throw except;
@@ -368,6 +398,11 @@ PlayerSide LuaGameLogic::checkWin() const
 {
 	bool won = false;
 	lua_getglobal(mState, "IsWinning");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		return FallbackGameLogic::checkWin();
+	}
 	
 	lua_pushnumber(mState, getScore(LEFT_PLAYER) );
 	lua_pushnumber(mState, getScore(RIGHT_PLAYER) );
@@ -396,6 +431,13 @@ void LuaGameLogic::OnMistake(PlayerSide side)
 {
 	// call lua scoring rules
 	lua_getglobal(mState, "OnMistake");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		FallbackGameLogic::OnMistake(side);
+		return;
+	}
+	
 	lua_pushnumber(mState, side);
 	if(lua_pcall(mState, 1, 0, 0)) 
 	{
@@ -408,6 +450,11 @@ bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side, int numOfHits)
 {
 	bool valid = false;
 	lua_getglobal(mState, "OnBallHitsPlayer");
+	if (!lua_isfunction(mState, -1))
+ 	{
+		lua_pop(mState, 1);
+		return FallbackGameLogic::OnBallHitsPlayerHandler(side, numOfHits);
+	}
 	
 	lua_pushnumber(mState, side );
 	lua_pushnumber(mState, numOfHits );
@@ -426,6 +473,13 @@ bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side, int numOfHits)
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
 	lua_getglobal(mState, "OnBallHitsWall");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		FallbackGameLogic::OnBallHitsWallHandler(side);
+		return;
+	}
+
 	lua_pushnumber(mState, side);
 	if( lua_pcall(mState, 1, 0, 0) )
 	{
@@ -441,8 +495,10 @@ void LuaGameLogic::OnGameHandler()
 	if (!lua_isfunction(mState, -1))
 	{
 		lua_pop(mState, 1);
+		FallbackGameLogic::OnGameHandler();
 		return;
 	}
+
 	if( lua_pcall(mState, 0, 0, 0) )
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
@@ -489,60 +545,6 @@ int LuaGameLogic::luaGetGameTime(lua_State* state)
 	lua_pushnumber(state, gl->getClock().getTime());
 	return 1;
 }
-
-
-class FallbackGameLogic : public IGameLogic 
-{
-	public:
-		FallbackGameLogic(DuelMatch* match) : IGameLogic(match) 
-		{
-			
-		}
-		virtual ~FallbackGameLogic()
-		{
-			
-		}
-		
-		virtual std::string getSourceFile() const 
-		{
-			return std::string("?FALLBACK?");
-		}
-
-	private:
-		
-		virtual PlayerSide checkWin() const 
-		{
-			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) 
-			{
-				return LEFT_PLAYER;
-			}
-			
-			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) 
-			{
-				return RIGHT_PLAYER;
-			}
-			
-			return NO_PLAYER;
-		}
-		
-		virtual void OnMistake(PlayerSide side) 
-		{
-			score( other_side(side) );
-		}
-		
-		bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
-		{
-			return numOfHits <= 3;
-		}
-
-		void OnBallHitsWallHandler(PlayerSide ply)
-		{
-		}
-		
-		virtual void OnGameHandler()
-		{
-		}
-};
 
 GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 {
