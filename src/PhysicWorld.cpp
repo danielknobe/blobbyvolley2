@@ -89,22 +89,12 @@ void PhysicWorld::resetPlayer()
 
 bool PhysicWorld::ballHitRightGround() const
 {
-	if (mIsBallValid)
-	{
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x > NET_POSITION_X)
-			return true;
-	}
-	return false;
+	return mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x > NET_POSITION_X;
 }
 
 bool PhysicWorld::ballHitLeftGround() const
 {
-	if (mIsBallValid)
-	{
-		if (mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x < NET_POSITION_X)
-			return true;
-	}
-	return false;
+	return mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x < NET_POSITION_X;
 }
 
 bool PhysicWorld::blobbyHitGround(PlayerSide player) const
