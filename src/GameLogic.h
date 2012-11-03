@@ -154,7 +154,7 @@ class IGameLogic
 					assert(0);
 			}
 		}
-		
+
 		/// this is called when a player makes a mistake
 		void onError(PlayerSide side);
 		
@@ -168,10 +168,10 @@ class IGameLogic
 		virtual void OnMistake(PlayerSide side) = 0;
 		
 		/// this function handles ball/player hits
-		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits) = 0;
+		virtual void OnBallHitsPlayerHandler(PlayerSide side) = 0;
 		
 		/// this function handles ball/wall hits
-		virtual void OnBallHitsWallHandler(PlayerSide ply) = 0;
+		virtual void OnBallHitsWallHandler(PlayerSide side) = 0;
 		
 		/// this function gets called every frame
 		virtual void OnGameHandler() = 0;

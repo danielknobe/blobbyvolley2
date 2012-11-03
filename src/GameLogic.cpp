@@ -202,14 +202,9 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	mSquish[side2index(other_side(side))] = 0;
 	
 	// count the touches
-	mTouches[side2index(other_side(side))] = 0;
 	mTouches[side2index(side)]++;
-	
-	if( ! OnBallHitsPlayerHandler(side, mTouches[side2index(side)]) )
-	{
-		// if a player hits a forth time, it is an error
-		onError(side);
-	}
+	OnBallHitsPlayerHandler(side);
+	mTouches[side2index(other_side(side))] = 0;
 }
 
 void IGameLogic::onBallHitsWall(PlayerSide side)
@@ -273,19 +268,19 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual std::string getSourceFile() const 
 		{
-			return std::string("?FALLBACK?");
+			return std::string("");
 		}
-
+		
 	protected:
 		
 		virtual PlayerSide checkWin() const 
 		{
-			if( getScore(LEFT_PLAYER) >= getScoreToWin() ) 
+			if( getScore(LEFT_PLAYER) >= getScoreToWin() && getScore(LEFT_PLAYER) >= getScore(RIGHT_PLAYER) + 2 ) 
 			{
 				return LEFT_PLAYER;
 			}
 			
-			if( getScore(RIGHT_PLAYER) >= getScoreToWin() ) 
+			if( getScore(RIGHT_PLAYER) >= getScoreToWin() && getScore(RIGHT_PLAYER) >= getScore(LEFT_PLAYER) + 2 ) 
 			{
 				return RIGHT_PLAYER;
 			}
@@ -298,12 +293,12 @@ class FallbackGameLogic : public IGameLogic
 			score( other_side(side) );
 		}
 		
-		bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
+		virtual void OnBallHitsPlayerHandler(PlayerSide side)
 		{
-			return numOfHits <= 3;
+			if (getTouches(side) > 3) onError(side);
 		}
-
-		void OnBallHitsWallHandler(PlayerSide ply)
+		
+		virtual void OnBallHitsWallHandler(PlayerSide side)
 		{
 		}
 		
@@ -313,10 +308,7 @@ class FallbackGameLogic : public IGameLogic
 };
 
 
-// -------------------------------------------------------------------------------------------------
-
-
-class LuaGameLogic : public FallbackGameLogic 
+class LuaGameLogic : public FallbackGameLogic
 {
 	public:
 		LuaGameLogic(const std::string& file, DuelMatch* match);
@@ -331,7 +323,7 @@ class LuaGameLogic : public FallbackGameLogic
 		
 		virtual PlayerSide checkWin() const;
 		virtual void OnMistake(PlayerSide side);
-		virtual bool OnBallHitsPlayerHandler(PlayerSide side, int numOfHits);
+		virtual void OnBallHitsPlayerHandler(PlayerSide side);
 		virtual void OnBallHitsWallHandler(PlayerSide side);
 		virtual void OnGameHandler();
 
@@ -360,7 +352,6 @@ class LuaGameLogic : public FallbackGameLogic
 };
 
 
-
 LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : FallbackGameLogic(match), 
 																				mState( lua_open() ), 
 																				mSourceFile(filename) 
@@ -369,13 +360,12 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : Fa
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 	
-	/// \todo how to push parameters???
-	///	\todo how to react when mScoreToWin changes?
 	lua_pushlightuserdata(mState, match);
 	lua_setglobal(mState, "__MATCH_POINTER");
 	lua_pushnumber(mState, getScoreToWin());
 	lua_setglobal(mState, "SCORE_TO_WIN");
 	
+
 	// add functions
 	luaopen_math(mState);
 	lua_register(mState, "touches", luaTouches);
@@ -389,7 +379,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : Fa
 	lua_register(mState, "speedx", luaSpeedX);
 	lua_register(mState, "speedy", luaSpeedY);
 	lua_register(mState, "getScore", luaGetScore);
- 	lua_register(mState, "score", luaScore);
+	lua_register(mState, "score", luaScore);
 	lua_register(mState, "mistake", luaMistake);
 	lua_register(mState, "opponent", luaGetOpponent);
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
@@ -454,7 +444,6 @@ PlayerSide LuaGameLogic::checkWin() const
 
 void LuaGameLogic::OnMistake(PlayerSide side) 
 {
-	// call lua scoring rules
 	lua_getglobal(mState, "OnMistake");
 	if (!lua_isfunction(mState, -1))
 	{
@@ -462,7 +451,6 @@ void LuaGameLogic::OnMistake(PlayerSide side)
 		FallbackGameLogic::OnMistake(side);
 		return;
 	}
-	
 	lua_pushnumber(mState, side);
 	if(lua_pcall(mState, 1, 0, 0)) 
 	{
@@ -471,28 +459,21 @@ void LuaGameLogic::OnMistake(PlayerSide side)
 	};
 }
 
-bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side, int numOfHits)
+void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 {
-	bool valid = false;
 	lua_getglobal(mState, "OnBallHitsPlayer");
 	if (!lua_isfunction(mState, -1))
- 	{
+	{
 		lua_pop(mState, 1);
-		return FallbackGameLogic::OnBallHitsPlayerHandler(side, numOfHits);
+		FallbackGameLogic::OnBallHitsPlayerHandler(side);
+		return;
 	}
-	
-	lua_pushnumber(mState, side );
-	lua_pushnumber(mState, numOfHits );
-	if( lua_pcall(mState, 2, 1, 0) )
+	lua_pushnumber(mState, side);
+	if( lua_pcall(mState, 1, 0, 0) )
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
 	};
-	
-	valid = lua_toboolean(mState, -1);
-	lua_pop(mState, 1);
-
-	return valid;
 }
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
@@ -523,7 +504,6 @@ void LuaGameLogic::OnGameHandler()
 		FallbackGameLogic::OnGameHandler();
 		return;
 	}
-
 	if( lua_pcall(mState, 0, 0, 0) )
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
