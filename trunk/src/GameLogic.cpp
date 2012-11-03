@@ -263,6 +263,11 @@ class LuaGameLogic : public IGameLogic
 		LuaGameLogic(const std::string& file, DuelMatch* match);
 		virtual ~LuaGameLogic();
 		
+		virtual std::string getSourceFile() const 
+		{
+			return mSourceFile;
+		}
+		
 	private:
 		
 		virtual PlayerSide checkWin() const;
@@ -278,11 +283,15 @@ class LuaGameLogic : public IGameLogic
 		
 		// lua state
 		lua_State* mState;
+		
+		std::string mSourceFile;
 };
 
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IGameLogic(match), mState( lua_open() ) 
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IGameLogic(match), 
+																				mState( lua_open() ), 
+																				mSourceFile(filename) 
 {
 	
 	lua_pushlightuserdata(mState, this);
@@ -476,6 +485,11 @@ class FallbackGameLogic : public IGameLogic
 			
 		}
 		
+		virtual std::string getSourceFile() const 
+		{
+			return std::string("?FALLBACK?");
+		}
+
 	private:
 		
 		virtual PlayerSide checkWin() const 

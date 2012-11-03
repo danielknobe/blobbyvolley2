@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <memory>
 #include <cassert>
+#include <string>
 
 #include "Global.h"
 #include "Clock.h"
@@ -46,6 +47,8 @@ class IGameLogic
 		// constuctor and destructor
 		IGameLogic(DuelMatch* match);
 		virtual ~IGameLogic();
+		
+		virtual std::string getSourceFile() const = 0;
 		
 		// -----------------------------------------------------------------------------------------
 		// 								Read/Write Basic Data
@@ -126,7 +129,7 @@ class IGameLogic
 
 	protected:
 		/// this method must be called if a team scores
-		/// is increments the points of that team
+		/// it increments the points of that team
 		void score(PlayerSide side);
 
 		// helper functions
@@ -199,7 +202,7 @@ class IGameLogic
 		/// \todo how do we use config parameters with lua rules?
 		int mScoreToWin;
 		
-		/// clock for determining game tome
+		/// clock for determining game time
 		Clock clock;
 };
 
