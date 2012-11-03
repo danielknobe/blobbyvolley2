@@ -158,6 +158,8 @@ void IGameLogic::step()
 		--mSquish[0];
 		--mSquish[1];
 		--mSquishWall;
+		
+		OnGameHandler();
 	}
 }
 
@@ -274,6 +276,7 @@ class LuaGameLogic : public IGameLogic
 		virtual void OnMistake(PlayerSide side);
 		virtual bool OnBallHitsPlayerHandler(PlayerSide side, int numOfHits);
 		virtual void OnBallHitsWallHandler(PlayerSide side);
+		virtual void OnGameHandler();
 
 		// lua functions
 		static int luaScore(lua_State* state); 
@@ -432,6 +435,21 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 }
 
 
+void LuaGameLogic::OnGameHandler()
+{
+	lua_getglobal(mState, "OnGame");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		return;
+	}
+	if( lua_pcall(mState, 0, 0, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+}
+
 int LuaGameLogic::luaScore(lua_State* state) 
 {
 	int pl = int(lua_tonumber(state, -1) + 0.5);
@@ -518,6 +536,10 @@ class FallbackGameLogic : public IGameLogic
 		}
 
 		void OnBallHitsWallHandler(PlayerSide ply)
+		{
+		}
+		
+		virtual void OnGameHandler()
 		{
 		}
 };

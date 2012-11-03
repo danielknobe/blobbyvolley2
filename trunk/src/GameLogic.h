@@ -172,6 +172,8 @@ class IGameLogic
 		/// this function handles ball/wall hits
 		virtual void OnBallHitsWallHandler(PlayerSide ply) = 0;
 		
+		/// this function gets called every frame
+		virtual void OnGameHandler() = 0;
 		
 		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
