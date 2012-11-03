@@ -114,11 +114,6 @@ Clock& IGameLogic::getClock()
 	return clock;
 }
 
-DuelMatch* IGameLogic::getMatch()
-{
-	return mMatch;
-}
-
 PlayerSide IGameLogic::getLastErrorSide()
 {
 	PlayerSide t = mLastError;
@@ -272,8 +267,8 @@ class LuaGameLogic : public IGameLogic
 		
 		virtual PlayerSide checkWin() const;
 		virtual void OnMistake(PlayerSide side);
-		virtual bool OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits);
-		virtual void OnBallHitsWallHandler(PlayerSide ply);		
+		virtual bool OnBallHitsPlayerHandler(PlayerSide side, int numOfHits);
+		virtual void OnBallHitsWallHandler(PlayerSide side);
 
 		// lua functions
 		static int luaScore(lua_State* state); 
@@ -295,6 +290,8 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : IG
 	
 	/// \todo how to push parameters???
 	///	\todo how to react when mScoreToWin changes?
+	lua_pushlightuserdata(mState, match);
+	lua_setglobal(mState, "__MATCH_POINTER");
 	lua_pushnumber(mState, getScoreToWin());
 	lua_setglobal(mState, "SCORE_TO_WIN");
 	
@@ -395,12 +392,12 @@ void LuaGameLogic::OnMistake(PlayerSide side)
 	};
 }
 
-bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
+bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side, int numOfHits)
 {
 	bool valid = false;
 	lua_getglobal(mState, "OnBallHitsPlayer");
 	
-	lua_pushnumber(mState, ply );
+	lua_pushnumber(mState, side );
 	lua_pushnumber(mState, numOfHits );
 	if( lua_pcall(mState, 2, 1, 0) )
 	{
@@ -414,17 +411,17 @@ bool LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide ply, int numOfHits)
 	return valid;
 }
 
-void LuaGameLogic::OnBallHitsWallHandler(PlayerSide ply)
+void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
 	lua_getglobal(mState, "OnBallHitsWall");
- 	
-	lua_pushnumber(mState, ply );
+	lua_pushnumber(mState, side);
 	if( lua_pcall(mState, 1, 0, 0) )
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
 	};
 }
+
 
 int LuaGameLogic::luaScore(lua_State* state) 
 {

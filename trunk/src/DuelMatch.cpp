@@ -261,6 +261,16 @@ Vector2 DuelMatch::getBlobPosition(PlayerSide player) const
 		return Vector2(0.0, 0.0);
 }
 
+Vector2 DuelMatch::getBlobVelocity(PlayerSide player) const
+{
+	if (player == LEFT_PLAYER)
+		return mPhysicWorld.getBlobVelocity(LEFT_PLAYER);
+	else if (player == RIGHT_PLAYER)
+		return mPhysicWorld.getBlobVelocity(RIGHT_PLAYER);
+	else
+		return Vector2(0.0, 0.0);
+}
+
 Vector2 DuelMatch::getBallPosition() const
 {
 	return mPhysicWorld.getBall();

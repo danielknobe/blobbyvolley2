@@ -55,7 +55,7 @@ class IGameLogic
 		/// returns current points of one player
 		int getScore(PlayerSide side) const;
 		
-		/// returns current points of one player
+		/// returns hits count of the specified player
 		int getTouches(PlayerSide side) const;
 		
 		/// sets the score of the specified player
@@ -85,9 +85,6 @@ class IGameLogic
 		
 		/// gets the associated clock
 		Clock& getClock();
-
-		/// gets the associated match
-		DuelMatch* getMatch();
 		
 		// -----------------------------------------------------------------------------------------
 		//						Read / Write - State
@@ -106,11 +103,11 @@ class IGameLogic
 		
 		/// called when ball hits ground
 		void onBallHitsGround(PlayerSide side);
-		
+
 		/// called when ball hits player
 		void onBallHitsPlayer(PlayerSide side);
-				
-		/// called when ball hits player
+
+		/// called when ball hits wall
 		void onBallHitsWall(PlayerSide side);
 
 		/// returns whether the collision was valid (max. 3 hits)
@@ -184,7 +181,8 @@ class IGameLogic
 		int mScores[2];
 		/// in this array the number of touches are counted
 		int mTouches[2];
-		/// this is an helper array to prevent counting hits that happen too fast twice
+
+		/// these are helper arrays to prevent counting hits that happen too fast twice
 		int mSquish[2];
 		int mSquishWall;
 		
