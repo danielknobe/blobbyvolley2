@@ -154,13 +154,14 @@ class IGameLogic
 					assert(0);
 			}
 		}
+		
+		/// this is called when a player makes a mistake
+		void onError(PlayerSide side);
+		
 
 	private:	
 		/// resets score and touches
 		void reset();
-		
-		/// this is called when a player makes a mistake
-		void onError(PlayerSide side);
 		
 		/// this function is called by onError, it contains the customizable part of the 
 		/// error handling
