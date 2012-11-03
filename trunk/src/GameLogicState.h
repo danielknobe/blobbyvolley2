@@ -34,6 +34,7 @@ struct GameLogicState
 	unsigned int leftSquish;
 	unsigned int rightSquish;
 	unsigned int squishWall;
+	unsigned int squishGround;
 	
 	
 	void swapSides();

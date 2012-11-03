@@ -32,6 +32,7 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(GameLogicState)
 	io.uint32(value.leftSquish);
 	io.uint32(value.rightSquish);
 	io.uint32(value.squishWall);
+	io.uint32(value.squishGround);
 }
 
 void GameLogicState::swapSides()
@@ -59,6 +60,7 @@ bool GameLogicState::operator==(const GameLogicState& other) const
 std::ostream& operator<<(std::ostream& stream, const GameLogicState& state)
 {
 	stream << "GAME LOGIC STATE [ " << state.leftScore << " : " << state.rightScore << "  " << state.servingPlayer
-			<< "  " << state.leftSquish << " " << state.rightSquish << "  " << state.squishWall << "]";
+			<< "  " << state.leftSquish << " " << state.rightSquish << "  " << state.squishWall 
+			<< "  " << state.squishGround << "]";
 	return stream;
 }
