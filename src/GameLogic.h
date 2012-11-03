@@ -112,11 +112,14 @@ class IGameLogic
 
 		/// called when ball hits wall
 		void onBallHitsWall(PlayerSide side);
+		
+		/// called when ball hits net
+		void onBallHitsNet(PlayerSide side);
 
 		/// returns whether the collision was valid (max. 3 hits)
 		bool isCollisionValid(PlayerSide side) const;
 		bool isWallCollisionValid() const;
-
+		bool isGroundCollisionValid() const;
 		
 		// set/unset pause mode
 		/// pauses the game logic. 
@@ -173,6 +176,13 @@ class IGameLogic
 		/// this function handles ball/wall hits
 		virtual void OnBallHitsWallHandler(PlayerSide side) = 0;
 		
+		/// this function handles ball/ground hits
+		virtual void OnBallHitsGroundHandler(PlayerSide side) = 0;
+		
+		/// this function handles ball/net hits
+		virtual void OnBallHitsNetHandler(PlayerSide side) = 0;
+		
+		
 		/// this function gets called every frame
 		virtual void OnGameHandler() = 0;
 		
@@ -191,6 +201,7 @@ class IGameLogic
 		/// these are helper arrays to prevent counting hits that happen too fast twice
 		int mSquish[2];
 		int mSquishWall;
+		int mSquishGround;	// also for net squishes
 		
 		/// last side that made an error
 		PlayerSide mLastError;
