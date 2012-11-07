@@ -49,7 +49,8 @@ IGameLogic::IGameLogic(DuelMatch* match):	mLastError(NO_PLAYER),
 							mWinningPlayer(NO_PLAYER),
 							mScoreToWin(15),
 							mMatch(match),
-							mSquishWall(0)
+							mSquishWall(0),
+							mSquishGround(0)
 {
 	// init clock
 	clock.reset();
@@ -132,6 +133,7 @@ GameLogicState IGameLogic::getState() const
 	gls.leftSquish = mSquish[LEFT_PLAYER];
 	gls.rightSquish = mSquish[RIGHT_PLAYER];
 	gls.squishWall = mSquishWall;
+	gls.squishGround = mSquishGround;
 	
 	return gls;
 }
@@ -144,6 +146,7 @@ void IGameLogic::setState(GameLogicState gls)
 	mSquish[LEFT_PLAYER] = gls.leftSquish;
 	mSquish[RIGHT_PLAYER] = gls.rightSquish;
 	mSquishWall = gls.squishWall;
+	mSquishGround = gls.squishGround;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -158,6 +161,7 @@ void IGameLogic::step()
 		--mSquish[0];
 		--mSquish[1];
 		--mSquishWall;
+		--mSquishGround;
 		
 		OnGameHandler();
 	}
@@ -176,13 +180,26 @@ void IGameLogic::onUnPause()
 
 void IGameLogic::onBallHitsGround(PlayerSide side) 
 {
-	onError(side);
+	// check if collision valid
+	if(!isGroundCollisionValid())
+		return;
+	
+	// otherwise, set the squish value
+	mSquishGround = SQUISH_TOLERANCE;
+	
+	OnBallHitsGroundHandler(side);
 }
 
 bool IGameLogic::isCollisionValid(PlayerSide side) const
 {
 	// check whether the ball is squished
 	return mSquish[side2index(side)] <= 0;
+}
+
+bool IGameLogic::isGroundCollisionValid() const
+{
+	// check whether the ball is squished
+	return mSquishGround <= 0 && mMatch->getBallValid();
 }
 
 bool IGameLogic::isWallCollisionValid() const
@@ -203,8 +220,8 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	
 	// count the touches
 	mTouches[side2index(side)]++;
-	OnBallHitsPlayerHandler(side);
 	mTouches[side2index(other_side(side))] = 0;
+	OnBallHitsPlayerHandler(side);
 }
 
 void IGameLogic::onBallHitsWall(PlayerSide side)
@@ -218,11 +235,27 @@ void IGameLogic::onBallHitsWall(PlayerSide side)
 	OnBallHitsWallHandler(side);
 }
 
-void IGameLogic::score(PlayerSide side)
+void IGameLogic::onBallHitsNet(PlayerSide side)
+ {
+	if(!isWallCollisionValid())
+		return;
+	
+	// otherwise, set the squish value
+	mSquishWall = SQUISH_TOLERANCE;
+	
+	OnBallHitsNetHandler(side);
+}
+
+void IGameLogic::score(PlayerSide side, bool serve, int amount)
 {
-	++mScores[side2index(side)];
-	mTouches[0] = 0;
-	mTouches[1] = 0;
+	mScores[side2index(side)] += amount;
+	
+	// only reset play touches when serve follows
+	if(serve)
+	{
+		mTouches[0] = 0;
+		mTouches[1] = 0;
+	}
 	mWinningPlayer = checkWin();
 }
 
@@ -290,7 +323,7 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual void OnMistake(PlayerSide side) 
 		{
-			score( other_side(side) );
+			score( other_side(side), true, 1 );
 		}
 		
 		virtual void OnBallHitsPlayerHandler(PlayerSide side)
@@ -299,6 +332,14 @@ class FallbackGameLogic : public IGameLogic
 		}
 		
 		virtual void OnBallHitsWallHandler(PlayerSide side)
+		{
+		}
+		
+		virtual void OnBallHitsNetHandler(PlayerSide side)
+		{
+		}
+		
+		virtual void OnBallHitsGroundHandler(PlayerSide side)
 		{
 		}
 		
@@ -325,6 +366,8 @@ class LuaGameLogic : public FallbackGameLogic
 		virtual void OnMistake(PlayerSide side);
 		virtual void OnBallHitsPlayerHandler(PlayerSide side);
 		virtual void OnBallHitsWallHandler(PlayerSide side);
+		virtual void OnBallHitsNetHandler(PlayerSide side);
+		virtual void OnBallHitsGroundHandler(PlayerSide side);
 		virtual void OnGameHandler();
 
 		// lua functions
@@ -494,6 +537,43 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 	};
 }
 
+void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
+{
+	lua_getglobal(mState, "OnBallHitsNet");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		FallbackGameLogic::OnBallHitsNetHandler(side);
+		return;
+	}
+	
+	lua_pushnumber(mState, side);
+	
+	if( lua_pcall(mState, 1, 0, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+}
+
+void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
+{
+	lua_getglobal(mState, "OnBallHitsGround");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		FallbackGameLogic::OnBallHitsGroundHandler(side);
+		return;
+	}
+	
+	lua_pushnumber(mState, side);
+	
+	if( lua_pcall(mState, 1, 0, 0) )
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+}
 
 void LuaGameLogic::OnGameHandler()
 {
@@ -657,13 +737,17 @@ int LuaGameLogic::luaMistake(lua_State* state)
 
 int LuaGameLogic::luaScore(lua_State* state) 
 {
+	bool am = lua_tointeger(state, -1);
+	lua_pop(state, 1);
+	bool sc = lua_toboolean(state, -1);
+	lua_pop(state, 1);
 	int pl = int(lua_tonumber(state, -1) + 0.5);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	gl->score((PlayerSide)pl);
+	gl->score((PlayerSide)pl, sc, am);
 	return 0;
 }
 
