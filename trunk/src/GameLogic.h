@@ -133,7 +133,7 @@ class IGameLogic
 	protected:
 		/// this method must be called if a team scores
 		/// it increments the points of that team
-		void score(PlayerSide side);
+		void score(PlayerSide side, bool serve, int amount);
 
 		// helper functions
 		
