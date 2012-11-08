@@ -33,9 +33,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 DuelMatch* DuelMatch::mMainGame = 0;
 
-DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote) : 
+DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote, std::string rules) : 
 		// we send a pointer to an unconstructed object here!
-		mLogic(createGameLogic("rules.lua", this)),
+		mLogic(createGameLogic(rules, this)),
 		mPaused(false), 
 		events(0), 
 		external_events(0), 

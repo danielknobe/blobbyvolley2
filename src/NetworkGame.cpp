@@ -50,7 +50,7 @@ NetworkGame::NetworkGame(RakServer& server,
 		mRightInput(new DummyInputSource())
 
 {
-	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false);
+	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false, "rules.lua");
 
 	mLeftPlayer = leftPlayer;
 	mRightPlayer = rightPlayer;
