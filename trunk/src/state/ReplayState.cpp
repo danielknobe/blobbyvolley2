@@ -63,7 +63,7 @@ void ReplayState::loadReplay(const std::string& file)
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mReplayMatch.reset(new DuelMatch(0, 0, true, false));
+		mReplayMatch.reset(new DuelMatch(0, 0, true, false, "rules.lua"));
 		RenderManager::getSingleton().setPlayernames(
 			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
@@ -243,7 +243,7 @@ void ReplayState::step()
 			// reload... we have to do all the parsing again
 			mReplayMatch.reset( 0 );
 			
-			mReplayMatch.reset(new DuelMatch(0, 0, true, false));
+			mReplayMatch.reset(new DuelMatch(0, 0, true, false, "rules.lua"));
 			RenderManager::getSingleton().setPlayernames(
 				mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 			SoundManager::getSingleton().playSound(

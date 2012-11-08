@@ -80,7 +80,7 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerColors( mLeftPlayer.getColor(), mRightPlayer.getColor() );
 	mRecorder->setGameSpeed((float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps"));
 
-	mMatch.reset(new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false));
+	mMatch.reset(new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false, "rules.lua"));
 
 	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();

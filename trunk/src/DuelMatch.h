@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GameLogic.h"
 #include "Vector.h"
 
+#include <string>
+
 class InputSource;
 class DuelMatchState;
 
@@ -50,7 +52,7 @@ class DuelMatch
 		// If remote is true, only physical responses will be calculated
 		// but hit events and score events are received from network
 
-		DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote);
+		DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote, std::string rules);
 
 		~DuelMatch();
 
