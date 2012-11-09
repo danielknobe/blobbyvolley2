@@ -179,6 +179,11 @@ void IGameLogic::onUnPause()
 	clock.start();
 }
 
+PlayerInput IGameLogic::transformInput(PlayerInput ip, PlayerSide player)
+{
+	return handleInput(ip, player);
+}
+
 void IGameLogic::onBallHitsGround(PlayerSide side) 
 {
 	// check if collision valid
@@ -326,6 +331,11 @@ class FallbackGameLogic : public IGameLogic
 			return NO_PLAYER;
 		}
 		
+		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player)
+		{
+			return ip;
+		}
+		
 		virtual void OnMistake(PlayerSide side) 
 		{
 			score( other_side(side), true, 1 );
@@ -368,6 +378,7 @@ class LuaGameLogic : public FallbackGameLogic
 		
 	private:
 		
+		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player);
 		virtual PlayerSide checkWin() const;
 		virtual void OnMistake(PlayerSide side);
 		virtual void OnBallHitsPlayerHandler(PlayerSide side);
@@ -514,6 +525,31 @@ PlayerSide LuaGameLogic::checkWin() const
 	}
 	
 	return NO_PLAYER;
+}
+
+PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
+{
+	lua_getglobal(mState, "HandleInput");
+	if (!lua_isfunction(mState, -1))
+	{
+		lua_pop(mState, 1);
+		return FallbackGameLogic::handleInput(ip, player);
+	}
+	lua_pushnumber(mState, player);
+	lua_pushboolean(mState, ip.left);
+	lua_pushboolean(mState, ip.right);
+	lua_pushboolean(mState, ip.up);
+	if(lua_pcall(mState, 1, 0, 0)) 
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+	};
+	
+	PlayerInput ret;
+	ret.up = lua_toboolean(mState, -1);
+	ret.right = lua_toboolean(mState, -2);
+	ret.left = lua_toboolean(mState, -3);
+	return ret;
 }
 
 void LuaGameLogic::OnMistake(PlayerSide side) 

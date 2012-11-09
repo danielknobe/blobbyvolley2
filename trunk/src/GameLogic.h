@@ -35,6 +35,7 @@ typedef std::auto_ptr<IGameLogic> GameLogic;
 
 class GameLogicState;
 class DuelMatch;
+class PlayerInput;
 
 /// \class IGameLogic
 /// \brief Interface for managing game rules, score counting etc.
@@ -88,6 +89,9 @@ class IGameLogic
 		
 		/// gets the associated clock
 		Clock& getClock();
+		
+		/// transform input
+		PlayerInput transformInput(PlayerInput ip, PlayerSide player);
 		
 		// -----------------------------------------------------------------------------------------
 		//						Read / Write - State
@@ -165,6 +169,9 @@ class IGameLogic
 	private:	
 		/// resets score and touches
 		void reset();
+		
+		/// thi function can change input made by a player
+		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player) = 0;
 		
 		/// this function is called by onError, it contains the customizable part of the 
 		/// error handling

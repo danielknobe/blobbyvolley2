@@ -100,10 +100,10 @@ void DuelMatch::step()
 
 	// do steps in physic an logic
 	if (mLeftInput)
-		mPhysicWorld.setLeftInput(mLeftInput->getInput());
+		mPhysicWorld.setLeftInput( mLogic->transformInput( mLeftInput->getInput(), LEFT_PLAYER ) );
 	
 	if (mRightInput)
-		mPhysicWorld.setRightInput(mRightInput->getInput());
+		mPhysicWorld.setRightInput( mLogic->transformInput( mRightInput->getInput(), RIGHT_PLAYER ) );
 		
 	// in pause mode, step does nothing except input being set
 	if(mPaused)
