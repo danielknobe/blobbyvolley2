@@ -36,6 +36,7 @@ extern "C"
 #include "FileRead.h"
 #include "GameLogicState.h"
 #include "DuelMatch.h"
+#include "GameConstants.h"
 
 
 /* implementation */
@@ -374,7 +375,10 @@ class LuaGameLogic : public FallbackGameLogic
 		virtual void OnBallHitsNetHandler(PlayerSide side);
 		virtual void OnBallHitsGroundHandler(PlayerSide side);
 		virtual void OnGameHandler();
-
+		
+		// helper functions
+		void setLuaGlobalVariable(const char* name, double value);
+		
 		// lua functions
 		static int luaTouches(lua_State* state);
 		static int luaLaunched(lua_State* state);
@@ -433,6 +437,22 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : Fa
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
 	lua_register(mState, "time", luaGetGameTime);
 	
+		
+	// set game constants
+	setLuaGlobalVariable("CONST_FIELD_WIDTH", RIGHT_PLANE);
+	setLuaGlobalVariable("CONST_GROUND_HEIGHT", GROUND_PLANE_HEIGHT_MAX);
+	setLuaGlobalVariable("CONST_BALL_GRAVITY", -BALL_GRAVITATION);
+	setLuaGlobalVariable("CONST_BALL_RADIUS", BALL_RADIUS);
+	setLuaGlobalVariable("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
+	setLuaGlobalVariable("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
+	setLuaGlobalVariable("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
+	setLuaGlobalVariable("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
+	setLuaGlobalVariable("CONST_BLOBBY_GRAVITY", GRAVITATION);
+	setLuaGlobalVariable("CONST_NET_HEIGHT", NET_SPHERE_POSITION);
+	setLuaGlobalVariable("CONST_NET_RADIUS", NET_RADIUS);
+	setLuaGlobalVariable("NO_PLAYER", NO_PLAYER);
+	setLuaGlobalVariable("LEFT_PLAYER", LEFT_PLAYER);
+	setLuaGlobalVariable("RIGHT_PLAYER", RIGHT_PLAYER);
 	
 	// now load script file
 	int error = FileRead::readLuaScript(filename, mState);
@@ -455,6 +475,12 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : Fa
 LuaGameLogic::~LuaGameLogic()
 {
 	lua_close(mState);
+}
+
+void LuaGameLogic::setLuaGlobalVariable(const char* name, double value)
+{
+	lua_pushnumber(mState, value);
+	lua_setglobal(mState, name);
 }
 
 PlayerSide LuaGameLogic::checkWin() const
