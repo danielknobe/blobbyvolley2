@@ -290,6 +290,11 @@ void NetworkGameState::step()
 					rulesFile.write(rulesString.get(), rulesLength);
 					rulesFile.close();
 					mFakeMatch->setRules("server_rules.lua");
+				} 
+				 else
+				{
+					// either old server, or we have to use fallback ruleset
+					mFakeMatch->setRules("");
 				}
 				
 
