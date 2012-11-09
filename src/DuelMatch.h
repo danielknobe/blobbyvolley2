@@ -61,6 +61,8 @@ class DuelMatch
 		// interactive input. Note this can return 0.
 		static DuelMatch* getMainGame();
 		
+		void setRules(std::string rulesFile);
+		
 		void reset();
 
 		// This steps through one frame
