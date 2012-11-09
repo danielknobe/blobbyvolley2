@@ -129,7 +129,10 @@ enum MessageType
 // 	Structure:
 // 		ID_GAME_READY
 //		gamespeed (int)
-// 		opponentname(char[16])
+// 		opponent name (char[16])
+//		opponent color (int)
+// 		length of rules file (int)
+//		rules file content (char[])
 //
 // ID_ENTER_GAME
 // 	Description:

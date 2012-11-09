@@ -69,6 +69,13 @@ NetworkGame::NetworkGame(RakServer& server,
 
 	// buffer for playernames
 	char name[16];
+	
+	// read rulesfile into a string
+	FileRead file(rules);
+	int rulesLength = file.length();
+	boost::shared_array<char> rulesString = file.readRawBytes(rulesLength);
+	file.close();
+	
 
 	// writing data into leftStream
 	RakNet::BitStream leftStream;
@@ -77,6 +84,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	strncpy(name, mRightPlayerName.c_str(), sizeof(name));
 	leftStream.Write(name, sizeof(name));
 	leftStream.Write(rightColor.toInt());
+	leftStream.Write(rulesLength);
+	leftStream.Write(rulesString.get(), rulesLength);
 
 	// writing data into rightStream
 	RakNet::BitStream rightStream;
@@ -85,6 +94,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
 	rightStream.Write(name, sizeof(name));
 	rightStream.Write(leftColor.toInt());
+	rightStream.Write(rulesLength);
+	rightStream.Write(rulesString.get(), rulesLength);
 
 	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
