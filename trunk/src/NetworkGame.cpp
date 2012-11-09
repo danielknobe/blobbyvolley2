@@ -71,10 +71,18 @@ NetworkGame::NetworkGame(RakServer& server,
 	char name[16];
 	
 	// read rulesfile into a string
-	FileRead file(rules);
-	int rulesLength = file.length();
-	boost::shared_array<char> rulesString = file.readRawBytes(rulesLength);
-	file.close();
+	int rulesLength = 0;
+	boost::shared_array<char> rulesString;
+	try
+	{
+		FileRead file(rules);
+		rulesLength = file.length();
+		rulesString = file.readRawBytes(rulesLength);
+	} 
+	 catch (FileLoadException& ex)
+	{
+		std::cerr << "could not sent rules file to client: " << ex.what() << "\n"; 
+	}
 	
 
 	// writing data into leftStream
@@ -85,7 +93,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	leftStream.Write(name, sizeof(name));
 	leftStream.Write(rightColor.toInt());
 	leftStream.Write(rulesLength);
-	leftStream.Write(rulesString.get(), rulesLength);
+	if(rulesLength)
+		leftStream.Write(rulesString.get(), rulesLength);
 
 	// writing data into rightStream
 	RakNet::BitStream rightStream;
@@ -95,7 +104,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	rightStream.Write(name, sizeof(name));
 	rightStream.Write(leftColor.toInt());
 	rightStream.Write(rulesLength);
-	rightStream.Write(rulesString.get(), rulesLength);
+	if(rulesLength)
+		rightStream.Write(rulesString.get(), rulesLength);
 
 	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
                         mLeftPlayer, false);
@@ -274,7 +284,7 @@ bool NetworkGame::step()
 	mMatch->step();
 
 	int events = mMatch->getEvents();
-	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+	if(events & EVENT_LEFT_BLOBBY_HIT)
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
@@ -289,7 +299,7 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 
-	if(events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+	if(events & EVENT_RIGHT_BLOBBY_HIT)
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
@@ -304,7 +314,7 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 
-	if(events & DuelMatch::EVENT_BALL_HIT_LEFT_GROUND)
+	if(events & EVENT_BALL_HIT_LEFT_GROUND)
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
@@ -315,7 +325,7 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 
-	if(events & DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND)
+	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
 	{
 		RakNet::BitStream stream;
 		// is it correct to send ID_BALL_GROUND_COLLISION even if the
@@ -375,7 +385,7 @@ bool NetworkGame::step()
 		}
 	}
 
-	if (events & DuelMatch::EVENT_RESET)
+	if (events & EVENT_RESET)
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_RESET);
