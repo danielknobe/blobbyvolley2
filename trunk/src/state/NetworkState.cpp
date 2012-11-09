@@ -277,6 +277,22 @@ void NetworkGameState::step()
 				stream.Read(temp);
 				Color ncolor = temp;
 
+				// read rules
+				int rulesLength;
+				stream.Read(rulesLength);
+				if (rulesLength)
+				{
+					boost::shared_array<char>  rulesString( new char[rulesLength + 1] );
+					stream.Read(rulesString.get(), rulesLength);
+					// null terminate
+					rulesString[rulesLength] = 0;
+					FileWrite rulesFile("server_rules.lua");
+					rulesFile.write(rulesString.get(), rulesLength);
+					rulesFile.close();
+					mFakeMatch->setRules("server_rules.lua");
+				}
+				
+
 				mRemotePlayer->setName(std::string(charName));
 				
 				mFilename = mLocalPlayer->getName();
