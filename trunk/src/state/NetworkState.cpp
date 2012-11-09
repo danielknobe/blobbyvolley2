@@ -805,7 +805,7 @@ void NetworkHostState::step()
 						*mServer, leftPlayer, rightPlayer,
 						leftPlayerName, rightPlayerName,
 						mLeftColor, mRightColor,
-						switchSide);
+						switchSide, "rules.lua");
 				}
 			}
 		}

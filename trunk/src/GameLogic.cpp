@@ -220,8 +220,11 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	
 	// count the touches
 	mTouches[side2index(side)]++;
-	mTouches[side2index(other_side(side))] = 0;
 	OnBallHitsPlayerHandler(side);
+	
+	// reset other players touches after OnBallHitsPlayerHandler is called, so
+	// we have still access to its old value inside the handler function
+	mTouches[side2index(other_side(side))] = 0;
 }
 
 void IGameLogic::onBallHitsWall(PlayerSide side)
@@ -272,6 +275,8 @@ void IGameLogic::reset()
 
 void IGameLogic::onError(PlayerSide side)
 {
+	OnMistake(side);
+	
 	mLastError = side;
 	
 	mTouches[0] = 0;
@@ -279,7 +284,6 @@ void IGameLogic::onError(PlayerSide side)
 	mSquish[0] = 0;
 	mSquish[1] = 0;
 	
-	OnMistake(side);
 	mServingPlayer = other_side(side);
 }
 

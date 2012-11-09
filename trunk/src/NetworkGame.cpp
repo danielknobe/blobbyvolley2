@@ -44,13 +44,13 @@ NetworkGame::NetworkGame(RakServer& server,
 			PlayerID leftPlayer, PlayerID rightPlayer,
 			std::string leftPlayerName, std::string rightPlayerName,
 			Color leftColor, Color rightColor,
-			PlayerSide switchedSide)
+			PlayerSide switchedSide, std::string rules)
 	: 	mServer(server),
 		mLeftInput (new DummyInputSource()),
 		mRightInput(new DummyInputSource())
 
 {
-	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false, "rules.lua");
+	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false, rules);
 
 	mLeftPlayer = leftPlayer;
 	mRightPlayer = rightPlayer;

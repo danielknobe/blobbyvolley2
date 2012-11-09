@@ -48,7 +48,8 @@ class NetworkGame
 				PlayerID leftPlayer, PlayerID rightPlayer,
 				std::string leftPlayerName, std::string rightPlayerName,
 				Color leftColor, Color rightColor, 
-				PlayerSide switchedSide = NO_PLAYER);
+				PlayerSide switchedSide,
+				std::string rules);
 
 		~NetworkGame();
 
