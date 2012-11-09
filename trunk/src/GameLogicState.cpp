@@ -54,7 +54,8 @@ bool GameLogicState::operator==(const GameLogicState& other) const
 {
 	return leftScore == other.leftScore && rightScore == other.rightScore &&
 			servingPlayer == other.servingPlayer && leftSquish == other.leftSquish &&
-			rightSquish == other.rightSquish && squishWall == other.squishWall;
+			rightSquish == other.rightSquish && squishWall == other.squishWall &&
+			squishGround == other.squishGround;
 }
 
 std::ostream& operator<<(std::ostream& stream, const GameLogicState& state)

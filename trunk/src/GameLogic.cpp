@@ -345,6 +345,7 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual void OnBallHitsGroundHandler(PlayerSide side)
 		{
+			onError(side);
 		}
 		
 		virtual void OnGameHandler()
