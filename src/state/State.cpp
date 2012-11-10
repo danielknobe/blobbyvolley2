@@ -101,7 +101,7 @@ void State::presentGame(const DuelMatch& match)
 	rmanager.setTime(match.getClock().getTimeString());
 			
 	int events = match.getEvents();
-	if(events & DuelMatch::EVENT_LEFT_BLOBBY_HIT)
+	if(events & EVENT_LEFT_BLOBBY_HIT)
 	{
 		smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
 		Vector2 hitPos = match.getBallPosition() +
@@ -109,7 +109,7 @@ void State::presentGame(const DuelMatch& match)
 		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 0);
 	}
 	
-	if (events & DuelMatch::EVENT_RIGHT_BLOBBY_HIT)
+	if (events & EVENT_RIGHT_BLOBBY_HIT)
 	{
 		smanager.playSound("sounds/bums.wav", match.getWorld().lastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
 		Vector2 hitPos = match.getBallPosition() +
@@ -117,7 +117,7 @@ void State::presentGame(const DuelMatch& match)
 		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().lastHitIntensity(), 1);
 	}
 	
-	if (events & DuelMatch::EVENT_ERROR)
+	if (events & EVENT_ERROR)
 		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
 }

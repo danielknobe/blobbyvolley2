@@ -251,7 +251,6 @@ bool DuelMatch::getBallValid() const
 	return mPhysicWorld.getBallValid();
 }
 
-
 bool DuelMatch::getBlobJump(PlayerSide player) const
 {
 	return mPhysicWorld.getBlobJump(player);
