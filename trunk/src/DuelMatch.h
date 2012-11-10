@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 #include "GameLogic.h"
 #include "Vector.h"
+#include "MatchEvents.h"
 
 #include <string>
 
@@ -126,19 +127,6 @@ class DuelMatch
 		void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
 	
 		void setServingPlayer(PlayerSide side);
-	
-		enum 
-		{
-			EVENT_LEFT_BLOBBY_HIT = 1,
-			EVENT_RIGHT_BLOBBY_HIT = 2,
-			EVENT_BALL_HIT_LEFT_GROUND = 4,
-			EVENT_BALL_HIT_RIGHT_GROUND = 8,
-			EVENT_BALL_HIT_GROUND = EVENT_BALL_HIT_LEFT_GROUND | EVENT_BALL_HIT_RIGHT_GROUND,
-			EVENT_ERROR_LEFT = 16,
-			EVENT_ERROR_RIGHT = 32,
-			EVENT_ERROR = EVENT_ERROR_LEFT | EVENT_ERROR_RIGHT,
-			EVENT_RESET = 64
-		};
 	
 		int getEvents() const { return events; }
 

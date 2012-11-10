@@ -209,10 +209,10 @@ void NetworkGameState::step()
 				stream.Read(side);
 				switch((PlayerSide)side){
 					case LEFT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_LEFT_GROUND);
+						mFakeMatch->trigger(EVENT_BALL_HIT_LEFT_GROUND);
 						break;
 					case RIGHT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_BALL_HIT_RIGHT_GROUND);
+						mFakeMatch->trigger(EVENT_BALL_HIT_RIGHT_GROUND);
 						break;
 					default:
 						assert(0);
@@ -230,10 +230,10 @@ void NetworkGameState::step()
 				stream.Read(side);
 				switch((PlayerSide)side){
 					case LEFT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_LEFT_BLOBBY_HIT);
+						mFakeMatch->trigger(EVENT_LEFT_BLOBBY_HIT);
 						break;
 					case RIGHT_PLAYER:
-						mFakeMatch->trigger(DuelMatch::EVENT_RIGHT_BLOBBY_HIT);
+						mFakeMatch->trigger(EVENT_RIGHT_BLOBBY_HIT);
 						break;
 					default:
 						assert(0);
