@@ -539,7 +539,7 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 	lua_pushboolean(mState, ip.left);
 	lua_pushboolean(mState, ip.right);
 	lua_pushboolean(mState, ip.up);
-	if(lua_pcall(mState, 1, 0, 0)) 
+	if(lua_pcall(mState, 4, 3, 0)) 
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
