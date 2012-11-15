@@ -804,17 +804,17 @@ int LuaGameLogic::luaMistake(lua_State* state)
 
 int LuaGameLogic::luaScore(lua_State* state) 
 {
-	bool am = lua_tointeger(state, -1);
+	int amount = int(lua_tonumber(state, -1) + 0.5);
 	lua_pop(state, 1);
-	bool sc = lua_toboolean(state, -1);
+	bool serve = lua_toboolean(state, -1);
 	lua_pop(state, 1);
-	int pl = int(lua_tonumber(state, -1) + 0.5);
+	int player = int(lua_tonumber(state, -1) + 0.5);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	gl->score((PlayerSide)pl, sc, am);
+	gl->score((PlayerSide)player, serve, amount);
 	return 0;
 }
 
