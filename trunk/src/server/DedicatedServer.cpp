@@ -128,11 +128,13 @@ int main(int argc, char** argv)
 
 	int port = BLOBBY_PORT;
 	int maxClients = 100;
+	std::string rulesFile = "rules.lua";
 	try
 	{
 		config.loadFile("server.xml");
 		port = config.getInteger("port");
 		maxClients = config.getInteger("maximum_clients");
+		rulesFile = config.getString("rules");
 
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 1000)
@@ -151,7 +153,7 @@ int main(int argc, char** argv)
 
 	if (!server.Start(maxClients, 1, port))
 	{
-		syslog(LOG_ERR, "Couldn´t bind to port %i, exiting", port);
+		syslog(LOG_ERR, "Couldn't bind to port %i, exiting", port);
 		return 2;
 	}
 
@@ -284,7 +286,7 @@ int main(int argc, char** argv)
 							server, leftPlayer.getID(), rightPlayer.getID(),
 							leftPlayer.getName(), rightPlayer.getName(),
 							leftPlayer.getColor(), rightPlayer.getColor(),
-							switchSide) );
+							switchSide, rulesFile) );
 
 						playermap[leftPlayer.getID()] = newgame;
 						playermap[rightPlayer.getID()] = newgame;
