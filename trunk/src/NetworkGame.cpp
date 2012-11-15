@@ -341,6 +341,23 @@ bool NetworkGame::step()
 		broadcastBitstream(&stream, &switchStream);
 	}
 
+	if (events & EVENT_SEND_SCORE)
+	{
+		RakNet::BitStream stream;
+		stream.Write((unsigned char)ID_UPDATE_SCORE);
+		stream.Write(mMatch->getScore(LEFT_PLAYER));
+		stream.Write(mMatch->getScore(RIGHT_PLAYER));
+		stream.Write(mMatch->getClock().getTime());
+
+		RakNet::BitStream switchStream;
+		switchStream.Write((unsigned char)ID_UPDATE_SCORE);
+		switchStream.Write(mMatch->getScore(RIGHT_PLAYER));
+		switchStream.Write(mMatch->getScore(LEFT_PLAYER));
+		switchStream.Write(mMatch->getClock().getTime());
+
+		broadcastBitstream(&stream, &switchStream);
+	}
+
 	if(!mPausing)
 	{
 		switch(mMatch->winningPlayer()){
