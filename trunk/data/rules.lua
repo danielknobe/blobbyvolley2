@@ -5,30 +5,24 @@
 -- function OnMistake
 --		IMPLEMENTED BY RULES.lua
 --		called when a player makes a mistake
---		when this function is called, servinglayer() returns which player has
+--		when this function is called, servingplayer() returns which player has
 --		served (so it is not neccesarily the enemy of the player who made the mistake)
 --		param: player - player who made the mistake
 --		return: none
-
--- when a player makes a mistake, the other one gets a point if he was the serving player
 function OnMistake(player) 
 	--	function opponent
 	--		PREDEFINED
 	--		param:	player - player of whom you want to get the opponent
 	--		return:	opponent of the player, so, for LEFT_PLAYER, RIGHT_PLAYER is returned and vice-versa
 	
-	-- function servingplayer
+	--	function score
 	--		PREDEFINED
-	--		param: none
-	--		return: which player has served
-	if( opponent(player) == servingplayer() ) then
-		--	function score
-		--		PREDEFINED
-		--		param:  player - player who gets a point
-		--		return: none
-		
-		score(opponent(player))
-	end
+	--		params:		player - player who gets points
+	--					serve - true to make a new serve, false to continue playing
+	--					amount - how many points player gets
+	--		return: none
+	
+	score(opponent(player), true, 1)
 end 
 
 --	function IsWinning
@@ -51,13 +45,22 @@ end
 -- function OnBallHitsPlayer
 --		IMPLEMENTEDBY rules.lua
 --		called when a valid collision between a player and the ball happens.
---		params:		player:		The player that hit the ball
---					touches:	Number of touches the player has made
---		return: true, if this collision was allowed, false if it was a mistake. If false is returned,
---				the ball is resetted and OnMistake is called.
-function OnBallHitsPlayer(player, touches)
-
-  return touches <= 3
+--		params: player - the player that hit the ball
+--		return: none
+function OnBallHitsPlayer(player)
+	--	function touches
+	--		PREDEFINED
+	--		param:	player - player whos touches you want to get
+	--		return:	how many touches did player
+	
+	--	function mistake
+	--		PREDEFINED
+	--		param:  player - player who made a mistake
+	--		return: none
+	
+	if touches(player) > 3 then
+		mistake(player)
+	end
 end
 
 -- function OnBallHitsWall
@@ -67,3 +70,41 @@ end
 --		return: none
 function OnBallHitsWall(player)
 end
+
+-- function OnBallHitsNet
+--		IMPLEMENTEDBY rules.lua
+--		called when a valid collision between the ball and a net happens.
+--		params: player - the player on whos side the ball hits a net (NO_PLAYER for net top)
+--		return: none
+function OnBallHitsNet(player)
+end
+
+-- function OnBallHitsGround
+--		IMPLEMENTEDBY rules.lua
+--		called when the ball hits the ground.
+--		params: player - the player on whos side the ball hits the ground
+--		return: none
+function OnBallHitsGround(player)
+	mistake(player)
+end
+
+-- function OnGame
+--		IMPLEMENTEDBY rules.lua
+--		called for every moment in the game.
+--		params: none
+--		return: none
+function OnGame()
+end
+
+-- function HandleInput
+--		IMPLEMENTEDBY rules.lua
+--		called to control player movement
+--		params: player - the player to check
+--				left, right, up - source user input
+--		return: new input values
+function HandleInput(player, left, right, up)
+	return left, right, up
+end
+
+-- uncomment this to change number of points for a player to win
+-- SCORE_TO_WIN = 15
