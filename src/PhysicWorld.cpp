@@ -366,8 +366,8 @@ void PhysicWorld::step()
 	// Ball to ground Collision
 	else if (mBallPosition.y + BALL_RADIUS > 500.0)
 	{
-		mBallVelocity = mBallVelocity.reflectY().scaleY(0.5);
-		mBallVelocity = mBallVelocity.scaleX(0.55);
+		mBallVelocity = mBallVelocity.reflectY();
+		mBallVelocity = mBallVelocity.scaleX(0.95);
 		mBallPosition.y = 500 - BALL_RADIUS;
 	}
 

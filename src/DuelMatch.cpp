@@ -195,8 +195,7 @@ void DuelMatch::step()
 			// reset EVENT_ERROR_LEFT
 			events &= ~EVENT_ERROR_LEFT;
 			events |= EVENT_ERROR_RIGHT;
-			if (!(events & EVENT_BALL_HIT_GROUND))
-				mPhysicWorld.dampBall();
+			mPhysicWorld.dampBall();
 			
 			// now, the ball is not valid anymore
 			mPhysicWorld.setBallValidity(0);
@@ -205,7 +204,12 @@ void DuelMatch::step()
 			///			by for hits
 			mBallDown = true;
 			break;
-		
+		default:
+			if ((events & EVENT_BALL_HIT_GROUND) && !mPhysicWorld.getBallValid())
+			{
+				mPhysicWorld.dampBall();
+			}
+			break;
 	}
 
 	// if the round is finished, we 
