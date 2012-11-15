@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IUserConfigReader.h"
 #include "UserConfig.h"
 #include "DuelMatchState.h"
+#include "MatchEvents.h"
 
 
 /* implementation */
@@ -97,6 +98,9 @@ void DuelMatch::setRules(std::string rulesFile)
 void DuelMatch::step()
 {
 	events = external_events;
+	
+	int leftScore = mLogic->getScore(LEFT_PLAYER);
+	int rightScore = mLogic->getScore(RIGHT_PLAYER);
 
 	// do steps in physic an logic
 	if (mLeftInput)
@@ -130,6 +134,28 @@ void DuelMatch::step()
 
 		if(mPhysicWorld.ballHitRightGround())
 			events |= EVENT_BALL_HIT_RIGHT_GROUND;
+			
+		// ball/wall hit event:
+		if(mPhysicWorld.ballHitWall())
+			events |= mPhysicWorld.ballHitWallSide() == LEFT_PLAYER ? EVENT_BALL_HIT_LEFT_WALL : EVENT_BALL_HIT_RIGHT_WALL;
+
+		// ball/net hit events:
+		if(mPhysicWorld.ballHitNet())
+		{
+			switch (mPhysicWorld.ballHitNetSide())
+			{
+			case LEFT_PLAYER:
+				events |= EVENT_BALL_HIT_NET_LEFT;
+				break;
+			case RIGHT_PLAYER:
+				events |= EVENT_BALL_HIT_NET_RIGHT;
+				break;
+			case NO_PLAYER:
+			default:
+				events |= EVENT_BALL_HIT_NET_TOP;
+				break;
+			}
+		}
 	}
 	
 	// process events
@@ -145,6 +171,20 @@ void DuelMatch::step()
 	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
 		mLogic->onBallHitsGround(RIGHT_PLAYER);
 	
+	if(events & EVENT_BALL_HIT_LEFT_WALL)
+		mLogic->onBallHitsWall(LEFT_PLAYER);
+
+	if(events & EVENT_BALL_HIT_RIGHT_WALL)
+		mLogic->onBallHitsWall(RIGHT_PLAYER);
+
+	if(events & EVENT_BALL_HIT_NET_LEFT)
+		mLogic->onBallHitsNet(LEFT_PLAYER);
+
+	if(events & EVENT_BALL_HIT_NET_RIGHT)
+		mLogic->onBallHitsNet(RIGHT_PLAYER);
+
+	if(events & EVENT_BALL_HIT_NET_TOP)
+		mLogic->onBallHitsNet(NO_PLAYER);
 	
 
 	switch(mLogic->getLastErrorSide()){
@@ -177,6 +217,12 @@ void DuelMatch::step()
 		mBallDown = false;
 		mPhysicWorld.reset(mLogic->getServingPlayer());
 		events |= EVENT_RESET;
+	}
+	
+	// if score was changed, we send it to clients
+	if (!mRemote && (leftScore != mLogic->getScore(LEFT_PLAYER) || rightScore != mLogic->getScore(RIGHT_PLAYER)))
+	{
+		events |= EVENT_SEND_SCORE;
 	}
 	
 	// reset external events
