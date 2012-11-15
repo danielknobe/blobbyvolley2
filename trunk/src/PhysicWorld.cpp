@@ -364,7 +364,7 @@ void PhysicWorld::step()
 		handleBlobbyBallCollision(RIGHT_PLAYER);
 	}
 	// Ball to ground Collision
-	else if (mBallPosition.y + BALL_RADIUS > 500.0)
+	if (mBallPosition.y + BALL_RADIUS > 500.0)
 	{
 		mBallVelocity = mBallVelocity.reflectY();
 		mBallVelocity = mBallVelocity.scaleX(0.95);
