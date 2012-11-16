@@ -129,6 +129,7 @@ class PhysicWorld
 		PlayerSide mBallHitWallSide;
 		bool mBallHitNet;
 		PlayerSide mBallHitNetSide;
+		PlayerSide mBallHitGroundSide;
 
 		Vector2 mBlobPosition[MAX_PLAYERS];
 		Vector2 mBallPosition;

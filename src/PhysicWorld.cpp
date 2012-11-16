@@ -89,12 +89,12 @@ void PhysicWorld::resetPlayer()
 
 bool PhysicWorld::ballHitRightGround() const
 {
-	return mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x > NET_POSITION_X;
+	return mBallHitGroundSide == RIGHT_PLAYER;
 }
 
 bool PhysicWorld::ballHitLeftGround() const
 {
-	return mBallPosition.y > GROUND_PLANE_HEIGHT && mBallPosition.x < NET_POSITION_X;
+	return mBallHitGroundSide == LEFT_PLAYER;
 }
 
 bool PhysicWorld::blobbyHitGround(PlayerSide player) const
@@ -364,11 +364,16 @@ void PhysicWorld::step()
 		handleBlobbyBallCollision(RIGHT_PLAYER);
 	}
 	// Ball to ground Collision
-	if (mBallPosition.y + BALL_RADIUS > 500.0)
+	if (mBallPosition.y + BALL_RADIUS > GROUND_PLANE_HEIGHT_MAX)
 	{
 		mBallVelocity = mBallVelocity.reflectY();
 		mBallVelocity = mBallVelocity.scaleX(0.95);
-		mBallPosition.y = 500 - BALL_RADIUS;
+		mBallPosition.y = GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS;
+		mBallHitGroundSide = mBallPosition.x > NET_POSITION_X ? RIGHT_PLAYER : LEFT_PLAYER;
+	}
+	else
+	{
+		mBallHitGroundSide = NO_PLAYER;
 	}
 
 	if (ballHitLeftPlayer() || ballHitRightPlayer())
