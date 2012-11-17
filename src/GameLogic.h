@@ -46,9 +46,10 @@ class IGameLogic
 {
 	public:
 		// constuctor and destructor
-		IGameLogic(DuelMatch* match);
+		IGameLogic();
 		virtual ~IGameLogic();
 		
+		virtual GameLogic clone() const = 0;
 		virtual std::string getSourceFile() const = 0;
 		
 		// -----------------------------------------------------------------------------------------
@@ -56,11 +57,11 @@ class IGameLogic
 		// -----------------------------------------------------------------------------------------
 		
 		// methods for querying the score/touches of a patricular team
-		/// returns current points of one player
-		int getScore(PlayerSide side) const;
-		
 		/// returns hits count of the specified player
 		int getTouches(PlayerSide side) const;
+		
+		/// returns current points of one player
+		int getScore(PlayerSide side) const;
 		
 		/// sets the score of the specified player
 		void setScore(PlayerSide side, int score);		// when might need such a method if we add saved games
@@ -81,9 +82,7 @@ class IGameLogic
 		/// After this request, that value is reset.
 		PlayerSide getLastErrorSide();
 		
-		// methods for setting/getting the target score
-		/// sets the score required for winning.
-		void setScoreToWin(int stw);
+		// method for getting the target score
 		/// returns the score required for winning.
 		int getScoreToWin() const;
 		
@@ -108,6 +107,9 @@ class IGameLogic
 		// methods to inform the game logic what is happening in the game
 		
 		
+		/// called when the serve begins
+		void onServe();
+
 		/// called when ball hits ground
 		void onBallHitsGround(PlayerSide side);
 
@@ -120,6 +122,10 @@ class IGameLogic
 		/// called when ball hits net
 		void onBallHitsNet(PlayerSide side);
 
+		/// returns whether ball is valid
+		bool isBallValid() const;
+		/// returns whether game is running
+		bool isGameRunning() const;
 		/// returns whether the collision was valid (max. 3 hits)
 		bool isCollisionValid(PlayerSide side) const;
 		bool isWallCollisionValid() const;
@@ -144,8 +150,7 @@ class IGameLogic
 		/// convert player side into array index
 		static inline int side2index(PlayerSide side)
 		{
-			assert(side == LEFT_PLAYER || side == RIGHT_PLAYER);
-			return side - LEFT_PLAYER;
+			return side == NO_PLAYER ? MAX_PLAYERS : side - LEFT_PLAYER;
 		}
 		
 		/// determine the opposite player side
@@ -166,9 +171,6 @@ class IGameLogic
 		void onError(PlayerSide side);
 		
 
-	private:	
-		/// resets score and touches
-		void reset();
 		
 		/// thi function can change input made by a player
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player) = 0;
@@ -195,39 +197,44 @@ class IGameLogic
 		
 		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
-			
 		
+		/// config parameter: score to win
+		/// lua rules can change it by changing SCORE_TO_WIN variable in the global scope
+		int mScoreToWin;
+			
+	private:	
 		// data members
-		/// link to the match
-		DuelMatch* mMatch;
 		/// this array contains the scores
 		int mScores[2];
-		/// in this array the number of touches are counted
+		/// in this array the touches are counted
 		int mTouches[2];
 
 		/// these are helper arrays to prevent counting hits that happen too fast twice
 		int mSquish[2];
-		int mSquishWall;
-		int mSquishGround;	// also for net squishes
+		int mSquishWall;	// also for net squishes
+		int mSquishGround;
 		
 		/// last side that made an error
 		PlayerSide mLastError;
 		/// player that is currently serving
 		PlayerSide mServingPlayer;
+		/// whether ball is touchable
+		bool mIsBallValid;
+		/// whether game is running (first ball hit was made)
+		bool mIsGameRunning;
 		
 		/// player that has won the game
 		/// \todo do we really need to cache this information here??
 		PlayerSide mWinningPlayer;
 		
-		/// config parameter: score to win
-		/// \todo how do we use config parameters with lua rules?
-		int mScoreToWin;
-		
 		/// clock for determining game time
 		Clock clock;
 };
 
-// function for creating a game logic object
+extern const std::string DUMMY_RULES_NAME;
+extern const std::string FALLBACK_RULES_NAME;
+
+// functions for creating a game logic object
 GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match);
 
 

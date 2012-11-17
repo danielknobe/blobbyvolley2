@@ -144,7 +144,10 @@ void NetworkGameState::step()
 				stream.IgnoreBytes(1);	//ID_TIMESTAMP
 				stream.Read(ival);	//TODO: un-lag based on timestamp delta
 				//printf("Physic packet received. Time: %d\n", ival);
-				mFakeMatch->setState(&stream);
+				DuelMatchState ms;
+				boost::shared_ptr<GenericIn> in = createGenericReader(&stream);
+				in->generic<DuelMatchState> (ms);
+				mFakeMatch->setState(ms);
 				break;
 			}
 			case ID_WIN_NOTIFICATION:
@@ -244,8 +247,8 @@ void NetworkGameState::step()
 				int side;
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_PLAYER_BALL_COLLISION
-				// FIXME ensure that this intensity is used
 				stream.Read(intensity);
+				mFakeMatch->setLastHitIntensity(intensity);
 				stream.Read(side);
 				switch((PlayerSide)side){
 					case LEFT_PLAYER:
@@ -382,7 +385,7 @@ void NetworkGameState::step()
 				else
 				{
 					// either old server, or we have to use fallback ruleset
-					mFakeMatch->setRules( "" );
+					mFakeMatch->setRules( FALLBACK_RULES_NAME );
 				}
 				
 				break;
@@ -430,12 +433,12 @@ void NetworkGameState::step()
 				if(!mWaitingForReplay)
 					break;
 				
-				boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>((char*)packet->data, packet->length, false);
-				stream->IgnoreBytes(1);	// ID_REPLAY
+				RakNet::BitStream stream = RakNet::BitStream((char*)packet->data, packet->length, false);
+				stream.IgnoreBytes(1);	// ID_REPLAY
 				
 				try 
 				{
-					boost::shared_ptr<GenericIn> reader = createGenericReader(stream);
+					boost::shared_ptr<GenericIn> reader = createGenericReader( &stream );
 					ReplayRecorder dummyRec;
 					dummyRec.receive( reader );
 					
@@ -472,9 +475,6 @@ void NetworkGameState::step()
 				break;
 		}
 	}
-
-	PlayerInput input = mNetworkState == PLAYING ?
-		mLocalInput->getInput() : PlayerInput();
 
 	presentGame(*mFakeMatch);
 	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
@@ -643,6 +643,8 @@ void NetworkGameState::step()
 		case PLAYING:
 		{
 			mFakeMatch->step();
+
+			PlayerInput input = mLocalInput->updateInput();
 
 			if (InputManager::getSingleton()->exit())
 			{

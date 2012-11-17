@@ -164,7 +164,7 @@ class FileIn : public GenericIn
 class NetworkOut : public GenericOut
 {
 	public:
-		NetworkOut(boost::shared_ptr<RakNet::BitStream> stream) : mStream(stream)
+		NetworkOut(RakNet::BitStream* stream) : mStream(stream)
 		{
 			
 		}
@@ -212,7 +212,7 @@ class NetworkOut : public GenericOut
 			mStream->Write(data, length);	
 		}
 		
-		boost::shared_ptr<RakNet::BitStream> mStream;
+		RakNet::BitStream* mStream;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ class NetworkOut : public GenericOut
 class NetworkIn : public GenericIn
 {
 	public:
-		NetworkIn(boost::shared_ptr<RakNet::BitStream> stream) : mStream(stream)
+		NetworkIn(RakNet::BitStream* stream) : mStream(stream)
 		{
 			
 		}
@@ -280,7 +280,7 @@ class NetworkIn : public GenericIn
 			mStream->Read(data, length);	
 		}
 		
-		boost::shared_ptr<RakNet::BitStream> mStream;
+		RakNet::BitStream* mStream;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<FileWrite>
 	return boost::make_shared< FileOut > (file);
 }
 
-boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<RakNet::BitStream> stream)
+boost::shared_ptr< GenericOut > createGenericWriter(RakNet::BitStream* stream)
 {
 	return boost::make_shared< NetworkOut > (stream);
 }
@@ -366,7 +366,7 @@ boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<FileRead> f
 	return boost::make_shared< FileIn > (file);
 }
 
-boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<RakNet::BitStream> stream)
+boost::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream)
 {
 	return boost::make_shared< NetworkIn > (stream);
 }

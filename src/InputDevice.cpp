@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "DuelMatch.h"
 #include "RenderManager.h"
+#include "GameConstants.h"
 
 /* implementation */
 
@@ -113,7 +114,7 @@ void MouseInputDevice::transferInput(PlayerInput& input)
 		input.left = true;
 	
 	// insert new data for evaluation
-	mLag.insertData(input, match->getPlayersInput()[mPlayer]);
+	mLag.insertData(input, match->getInputSource( mPlayer )->getInput() );
 	mInputs.push_back(input);
 	RenderManager::getSingleton().setMouseMarker(mMarkerX);
 }

@@ -31,7 +31,7 @@ class LocalInputSource : public InputSource
 			 InputManager::getSingleton()->beginGame(player);
 		}
 		
-		virtual PlayerInput getInput()
+		virtual PlayerInput getNextInput()
 		{
 			return InputManager::getSingleton()->getGameInput(mPlayer);
 		}

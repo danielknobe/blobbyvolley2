@@ -49,8 +49,8 @@ NetworkGame::NetworkGame(RakServer& server,
 			Color leftColor, Color rightColor,
 			PlayerSide switchedSide, std::string rules)
 	: 	mServer(server),
-		mLeftInput (new DummyInputSource()),
-		mRightInput(new DummyInputSource())
+		mLeftInput (new InputSource()),
+		mRightInput(new InputSource())
 
 {
 	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false, rules);
@@ -242,13 +242,13 @@ bool NetworkGame::step()
 
 			case ID_REPLAY:
 			{
-				boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
-				stream->Write((unsigned char)ID_REPLAY);
-				boost::shared_ptr<GenericOut> out = createGenericWriter(stream);
+				RakNet::BitStream stream = RakNet::BitStream();
+				stream.Write((unsigned char)ID_REPLAY);
+				boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 				mRecorder->send( out );
-				assert( stream->GetData()[0] == ID_REPLAY );
+				assert( stream.GetData()[0] == ID_REPLAY );
 
-				mServer.Send(stream.get(), LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+				mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 
 				break;
 			}
@@ -322,12 +322,12 @@ bool NetworkGame::step()
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		stream.Write(mMatch->getWorld().lastHitIntensity());
+		stream.Write(mMatch->getWorld().getLastHitIntensity());
 		stream.Write(LEFT_PLAYER);
 
 		RakNet::BitStream switchStream;
 		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		switchStream.Write(mMatch->getWorld().lastHitIntensity());
+		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
 		switchStream.Write(RIGHT_PLAYER);
 
 		broadcastBitstream(&stream, &switchStream);
@@ -337,12 +337,12 @@ bool NetworkGame::step()
 	{
 		RakNet::BitStream stream;
 		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		stream.Write(mMatch->getWorld().lastHitIntensity());
+		stream.Write(mMatch->getWorld().getLastHitIntensity());
 		stream.Write(RIGHT_PLAYER);
 
 		RakNet::BitStream switchStream;
 		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		switchStream.Write(mMatch->getWorld().lastHitIntensity());
+		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
 		switchStream.Write(LEFT_PLAYER);
 
 		broadcastBitstream(&stream, &switchStream);
@@ -466,31 +466,35 @@ bool NetworkGame::step()
 
 void NetworkGame::broadcastPhysicState()
 {
-	const PhysicWorld& world = mMatch->getWorld();
 	RakNet::BitStream stream;
 	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
 	stream.Write((unsigned char)ID_TIMESTAMP);
 	stream.Write(RakNet::GetTime());
-	PhysicState ps = world.getState();
+	DuelMatchState ms = mMatch->getState();
+
+	boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 
 	if (mSwitchedSide == LEFT_PLAYER)
-		ps.swapSides();
-	ps.writeToStream(&stream);
+		ms.swapSides();
+	
+	out->generic<DuelMatchState> (ms);
 
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
 		mLeftPlayer, false);
 
 	// reset state and stream
-	ps = world.getState();
+	ms = mMatch->getState();
 	stream.Reset();
 	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
 	stream.Write((unsigned char)ID_TIMESTAMP);
 	stream.Write(RakNet::GetTime());
 
+	out = createGenericWriter( &stream );
+	
 	if (mSwitchedSide == RIGHT_PLAYER)
-		ps.swapSides();
+		ms.swapSides();
 
-	ps.writeToStream(&stream);
+	out->generic<DuelMatchState> (ms);
 
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
 		mRightPlayer, false);

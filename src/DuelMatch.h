@@ -19,14 +19,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "PhysicWorld.h"
+#include <string>
+#include <boost/scoped_ptr.hpp>
+
 #include "GameLogic.h"
 #include "Vector.h"
+#include "InputSource.h"
 
-#include <string>
+namespace RakNet
+{
+	class BitStream;
+}
+
 
 class InputSource;
 class DuelMatchState;
+class PhysicWorld;
 
 /*! \class DuelMatch
 	\brief class representing a blobby game.
@@ -87,6 +95,8 @@ class DuelMatch
 		int getScore(PlayerSide player) const;
 		int getScoreToWin() const;
 		PlayerSide getServingPlayer() const;
+		
+		void setLastHitIntensity(float intensity);
 
 		int getHitcount(PlayerSide player) const;
 
@@ -95,13 +105,12 @@ class DuelMatch
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
 		
-		const PhysicWorld& getWorld() const{ return mPhysicWorld; };
+		const PhysicWorld& getWorld() const{ return *mPhysicWorld.get(); };
 		const Clock& getClock() const;
 		Clock& getClock();
 
 		bool getBallDown() const;
 		bool getBallActive() const;
-		bool getBallValid() const;
 		
 		void pause();
 		void unpause();
@@ -112,9 +121,6 @@ class DuelMatch
 		// and is jumping at the moment
 		bool getBlobJump(PlayerSide player) const;
 
-		// Set a new state received from server over a RakNet BitStream
-		void setState(RakNet::BitStream* stream);
-
 		/// Set a new state using a saved DuelMatchState
 		void setState(const DuelMatchState& state);
 	
@@ -122,8 +128,7 @@ class DuelMatch
 		DuelMatchState getState() const;
 
 		//Input stuff for recording and playing replays
-		const PlayerInput* getPlayersInput() const;
-		void setPlayersInput(const PlayerInput& left, const PlayerInput& right);
+		InputSource* getInputSource(PlayerSide player) const;
 	
 		void setServingPlayer(PlayerSide side);
 	
@@ -133,15 +138,15 @@ class DuelMatch
 		static DuelMatch* mMainGame;
 		bool mGlobal;
 
-		PhysicWorld mPhysicWorld;
+		boost::scoped_ptr<PhysicWorld> mPhysicWorld;
 
 		InputSource* mLeftInput;
 		InputSource* mRightInput;
+		
+		PlayerInput mTransformedInput[MAX_PLAYERS];
 
 		GameLogic mLogic;
 
-		bool mBallDown;
-		
 		bool mPaused;
 
 		int events;

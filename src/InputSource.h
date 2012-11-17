@@ -96,35 +96,18 @@ struct PlayerInput
 */
 class InputSource
 {
-public:
-	virtual PlayerInput getInput() = 0;
-	virtual ~InputSource()
-	{
-	}
-};
-
-// This class serves as a dummy input source.
-// It can optionally be set from outside if low level input access
-// is required at a higher level
-
-class DummyInputSource : public InputSource
-{
 	public:
-		virtual PlayerInput getInput()
-		{
-			return mInput;
-		}
-		
-		virtual ~DummyInputSource()
+		virtual ~InputSource()
 		{
 		}
 		
-		void setInput(PlayerInput input)
-		{
-			mInput = input;
-		}
-		
+		PlayerInput updateInput();
+		PlayerInput getInput() const;
+		void setInput(PlayerInput ip);
+	
 	private:
+		virtual PlayerInput getNextInput();
+	
 		PlayerInput mInput;
 };
 

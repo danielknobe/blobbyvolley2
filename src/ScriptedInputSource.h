@@ -49,7 +49,7 @@ class ScriptedInputSource : public InputSource
 		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
 		~ScriptedInputSource();
 		
-		virtual PlayerInput getInput();
+		virtual PlayerInput getNextInput();
 		
 	private:
 		/// this variable saves the current match
