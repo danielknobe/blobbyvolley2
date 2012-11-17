@@ -224,6 +224,7 @@ int main(int argc, char** argv)
 				case ID_UNPAUSE:
 				case ID_CHAT_MESSAGE:
 				case ID_REPLAY:
+				case ID_RULES:
 					if (playermap.find(packet->playerId) != playermap.end()){
 						playermap[packet->playerId]->injectPacket(packet);
 

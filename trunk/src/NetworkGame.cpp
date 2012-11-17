@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileSystem.h"
 #include "GenericIO.h"
 #include "MatchEvents.h"
+#include "PhysicWorld.h"
 
 
 /* implementation */
@@ -59,6 +60,8 @@ NetworkGame::NetworkGame(RakServer& server,
 	mSwitchedSide = switchedSide;
 	mLeftPlayerName = leftPlayerName;
 	mRightPlayerName = rightPlayerName;
+	mLeftPlayerColor = leftColor;
+	mRightPlayerColor = rightColor;
 
 	mWinningPlayer = NO_PLAYER;
 
@@ -69,50 +72,28 @@ NetworkGame::NetworkGame(RakServer& server,
 	mRecorder->setPlayerColors(leftColor, rightColor);
 	mRecorder->setGameSpeed(SpeedController::getMainInstance()->getGameSpeed());
 
-	// buffer for playernames
-	char name[16];
-	
 	// read rulesfile into a string
-	int rulesLength = 0;
-	boost::shared_array<char> rulesString;
+	int checksum = 0;
+	mRulesLength = 0;
+	mRulesSent[0] = false;
+	mRulesSent[1] = false;
 	try
 	{
 		FileRead file(rules);
-		rulesLength = file.length();
-		rulesString = file.readRawBytes(rulesLength);
+		checksum = file.calcChecksum(0);
+		mRulesLength = file.length();
+		mRulesString = file.readRawBytes(mRulesLength);
 	} 
 	 catch (FileLoadException& ex)
 	{
 		std::cerr << "could not sent rules file to client: " << ex.what() << "\n"; 
 	}
 	
-
-	// writing data into leftStream
-	RakNet::BitStream leftStream;
-	leftStream.Write((unsigned char)ID_GAME_READY);
-	leftStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
-	strncpy(name, mRightPlayerName.c_str(), sizeof(name));
-	leftStream.Write(name, sizeof(name));
-	leftStream.Write(rightColor.toInt());
-	leftStream.Write(rulesLength);
-	if(rulesLength)
-		leftStream.Write(rulesString.get(), rulesLength);
-
-	// writing data into rightStream
-	RakNet::BitStream rightStream;
-	rightStream.Write((unsigned char)ID_GAME_READY);
-	rightStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
-	strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
-	rightStream.Write(name, sizeof(name));
-	rightStream.Write(leftColor.toInt());
-	rightStream.Write(rulesLength);
-	if(rulesLength)
-		rightStream.Write(rulesString.get(), rulesLength);
-
-	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mLeftPlayer, false);
-	mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mRightPlayer, false);
+	// writing rules checksum
+	RakNet::BitStream stream;
+	stream.Write((unsigned char)ID_RULES_CHECKSUM);
+	stream.Write(checksum);
+	broadcastBitstream(&stream);
 }
 
 NetworkGame::~NetworkGame()
@@ -272,12 +253,63 @@ bool NetworkGame::step()
 				break;
 			}
 
+			case ID_RULES:
+			{
+				boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+				bool needRules;
+				stream->Read(needRules);
+				mRulesSent[mLeftPlayer == packet->playerId ? LEFT_PLAYER : RIGHT_PLAYER] = true;
+				
+				if (needRules)
+				{
+					stream = boost::make_shared<RakNet::BitStream>();
+					stream->Write((unsigned char)ID_RULES);
+					stream->Write(mRulesLength);
+					stream->Write(mRulesString.get(), mRulesLength);
+					assert( stream->GetData()[0] == ID_RULES );
+					
+					mServer.Send(stream.get(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+				}
+				
+				if (isGameStarted())
+				{
+					// buffer for playernames
+					char name[16];
+					
+					// writing data into leftStream
+					RakNet::BitStream leftStream;
+					leftStream.Write((unsigned char)ID_GAME_READY);
+					leftStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
+					strncpy(name, mRightPlayerName.c_str(), sizeof(name));
+					leftStream.Write(name, sizeof(name));
+					leftStream.Write(mRightPlayerColor.toInt());
+					
+					// writing data into rightStream
+					RakNet::BitStream rightStream;
+					rightStream.Write((unsigned char)ID_GAME_READY);
+					rightStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
+					strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
+					rightStream.Write(name, sizeof(name));
+					rightStream.Write(mLeftPlayerColor.toInt());
+					
+					mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+						     mLeftPlayer, false);
+					mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+						     mRightPlayer, false);
+				}
+				
+				break;
+			}
+			
 			default:
 				printf("unknown packet %d received\n",
 					int(packet->data[0]));
 				break;
 		}
 	}
+	
+	if (!isGameStarted())
+		return active;
 
 	// don't record the pauses
 	if(!mMatch->isPaused())
