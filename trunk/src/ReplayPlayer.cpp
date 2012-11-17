@@ -90,20 +90,16 @@ bool ReplayPlayer::play(DuelMatch* virtual_match)
 		
 		PlayerInput left;
 		PlayerInput right;
-		loader->getInputAt(mPosition, left, right);
-		virtual_match->setPlayersInput(left, right);
+		loader->getInputAt(mPosition, virtual_match->getInputSource( LEFT_PLAYER ), virtual_match->getInputSource( RIGHT_PLAYER ));
 		virtual_match->step();
 		
-		/*
 		int point;
 		if(loader->isSavePoint(mPosition, point))
 		{
 			ReplaySavePoint reference;
 			loader->readSavePoint(point, reference);
-			
-			DuelMatchState current = virtual_match->getState();
-			assert(reference.state == current);
-		}*/
+			virtual_match->setState(reference.state);
+		}
 		
 		
 		// everything was as expected

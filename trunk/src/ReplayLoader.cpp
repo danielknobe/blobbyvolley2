@@ -168,7 +168,7 @@ class ReplayLoader_V1X: public IReplayLoader
 		};
 		
 		
-		virtual void getInputAt(int step, PlayerInput& left, PlayerInput& right)
+		virtual void getInputAt(int step, InputSource* left, InputSource* right)
 		{
 			assert( step  < mGameLength );
 			
@@ -180,29 +180,54 @@ class ReplayLoader_V1X: public IReplayLoader
 			char packet = mBuffer[mReplayOffset + step];
 			
 			// now read the packet data
-			left.set((bool)(packet & 32), (bool)(packet & 16), (bool)(packet & 8));
-			right.set((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1));
+			left->setInput(PlayerInput((bool)(packet & 32), (bool)(packet & 16), (bool)(packet & 8)));
+			right->setInput(PlayerInput((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1)));
 		}
 		
 		virtual bool isSavePoint(int position, int& save_position) const
 		{
-			if(position % 750 == 0 && mReplayFormatVersion != 0)
-			{
-				save_position = position / 750;
-				return true;
-			}
-			return false;
+			int foundPos;
+			save_position = getSavePoint(position, foundPos);
+			return save_position != -1 && foundPos == position;
 		}
 		
+		// TODO: add optional argument: int previous = 0;
+		// 		so we can start from it when calling
+		// 		getSavePoint in a row (without "jumping").
+		// 		we can save this parameter in ReplayPlayer
 		virtual int getSavePoint(int targetPosition, int& savepoint) const
 		{
-			/// \todo detect if replay contains safepoints
-			int index = targetPosition / 750;
-			savepoint = index * 750;
-			if(index < mSavePoints.size())
-				return index;
+			// desired index can't be lower that this value,
+			// cause additional savepoints could shift it only right
+			int index = targetPosition / REPLAY_SAVEPOINT_PERIOD;
 			
-			return -1;
+			if(index >= mSavePointsCount)
+				return -1;
+			
+			savepoint = mSavePoints[index].step;
+			
+			// watch right from initial index,
+			// cause best savepoint could be there.
+			// we have no much additional savepoints,
+			// so this cycle would be fast,
+			// maybe even faster than binary search.
+			do
+			{
+				int nextIndex = index + 1;
+				
+				if (nextIndex >= mSavePointsCount)
+					break;
+				
+				int nextPos = mSavePoints[nextIndex].step;
+				
+				if (nextPos > targetPosition)
+					break;
+				
+				index = nextIndex;
+				savepoint = nextPos;
+			} while (true);
+			
+			return index;
 		}
 		
 		virtual void readSavePoint(int index, ReplaySavePoint& state) const
@@ -289,24 +314,17 @@ class ReplayLoader_V1X: public IReplayLoader
 			file->array(mBuffer.get(), data_size);
 			mReplayOffset = 0;
 			
-			// now read safepoints
+			// now read savepoints
 			if(minor_version != 0)
 			{
 				file->seek(states_ptr + 4);		// jump over the sta marker
 				file->uint32(mSavePointsCount);
-				std::cout << "read " << mSavePointsCount << " safe points\n";
+				std::cout << "read " << mSavePointsCount << " savepoints\n";
 				mSavePoints.reserve(mSavePointsCount);
 				for(int i = 0; i < mSavePointsCount; ++i)
 				{
-				
-					DuelMatchState ms;
-					
-					file->generic<DuelMatchState>(ms);					
-					
 					ReplaySavePoint sp;
-					sp.state = ms;
-					sp.step = 750 * i;
-					
+					file->generic<ReplaySavePoint>(sp);					
 					mSavePoints.push_back(sp);
 				}
 			}
@@ -315,7 +333,7 @@ class ReplayLoader_V1X: public IReplayLoader
 				mSavePointsCount = 0;
 			}
 			
-			/// \todo check that mSafePointsCount and states_size match
+			/// \todo check that mSavePointsCount and states_size match
 
 		}
 

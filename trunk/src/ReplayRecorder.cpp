@@ -133,7 +133,7 @@ void ReplayRecorder::send(boost::shared_ptr<GenericOut> target) const
 	target->uint32( mEndScore[RIGHT_PLAYER] );
 	
 	target->generic<std::vector<unsigned char> >(mSaveData);
-	target->generic<std::vector<DuelMatchState> > (mSavedStates);
+	target->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
 void ReplayRecorder::receive(boost::shared_ptr<GenericIn> source)
@@ -149,7 +149,7 @@ void ReplayRecorder::receive(boost::shared_ptr<GenericIn> source)
 	source->uint32( mEndScore[RIGHT_PLAYER] );
 	
 	source->generic<std::vector<unsigned char> >(mSaveData);
-	source->generic<std::vector<DuelMatchState> > (mSavedStates);
+	source->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
 void ReplayRecorder::writeFileHeader(boost::shared_ptr<GenericOut> file, uint32_t checksum) const
@@ -177,7 +177,7 @@ void ReplayRecorder::writeReplayHeader(boost::shared_ptr<GenericOut> file) const
 	uint32_t attr_size = 128;											/// for now, we reserve 128 bytes!
 	uint32_t jptb_size = 128;											/// for now, we reserve 128 bytes!
 	uint32_t data_size = mSaveData.size();								/// assumes 1 byte per data record!
-	uint32_t states_size = mSavedStates.size() * sizeof(PhysicState);
+	uint32_t states_size = mSavePoints.size() * sizeof(ReplaySavePoint);
 	
 	file->uint32(header_size);
 	file->uint32(attr_ptr);
@@ -264,22 +264,28 @@ void ReplayRecorder::writeStatesSection(boost::shared_ptr<GenericOut> file) cons
 	char states_header[4] = {'s', 't', 'a', '\n'};
 	file->array(states_header, sizeof(states_header));
 	
-	file->generic<std::vector<DuelMatchState> > (mSavedStates);
+	file->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
 void ReplayRecorder::record(const DuelMatchState& state)
-{	
-	// save the state every 750 frames (10 secs for normal gamespeed)
-	if(mSaveData.size() % 750 == 0)
+{
+	// save the state every REPLAY_SAVEPOINT_PERIOD frames
+	// or when something interesting occurs
+	if(mSaveData.size() % REPLAY_SAVEPOINT_PERIOD == 0 ||
+		mEndScore[LEFT_PLAYER] != state.logicState.leftScore ||
+		mEndScore[RIGHT_PLAYER] != state.logicState.rightScore)
 	{
-		mSavedStates.push_back(state);
+		ReplaySavePoint sp;
+		sp.state = state;
+		sp.step = mSaveData.size();
+		mSavePoints.push_back(sp);
 	}
 	
 	// we save this 1 here just for compatibility
 	// set highest bit to 1
-	unsigned char packet = 0 << 7;
-	packet |= (state.worldState.playerInput[LEFT_PLAYER].getAll() & 7) << 3;
-	packet |= (state.worldState.playerInput[RIGHT_PLAYER].getAll() & 7) ;
+	unsigned char packet = 1 << 7;
+	packet |= (state.playerInput[LEFT_PLAYER].getAll() & 7) << 3;
+	packet |= (state.playerInput[RIGHT_PLAYER].getAll() & 7) ;
 	mSaveData.push_back(packet);
 	
 	// update the score

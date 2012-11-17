@@ -25,6 +25,7 @@ set(common_SRC
 	DuelMatchState.cpp DuelMatchState.h
 	GameLogicState.cpp GameLogicState.h
 	GenericIO.cpp GenericIO.h
+	ReplaySavePoint.cpp ReplaySavePoint.h
 	)
 	
 set (blobby_SRC ${common_SRC}

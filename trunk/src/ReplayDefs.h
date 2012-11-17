@@ -19,18 +19,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "DuelMatchState.h"
+#include "ReplaySavePoint.h"
 
 const char validHeader[4] = { 'B', 'V', '2', 'R' };	//!< header of replay file
 
 const unsigned char REPLAY_FILE_VERSION_MAJOR = 1;
 const unsigned char REPLAY_FILE_VERSION_MINOR = 1;
 
-struct ReplaySavePoint
-{
-	DuelMatchState state;		// state of the match when the snapshot occured
-	int step;					// number of game step this snapshot happened
-};
+// 10 secs for normal gamespeed
+const int REPLAY_SAVEPOINT_PERIOD = 750;
 
 
 /*! \class ChecksumException

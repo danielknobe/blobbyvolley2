@@ -90,7 +90,7 @@ class ReplayRecorder
 		void writeStatesSection(boost::shared_ptr<GenericOut>) const;
 
 		std::vector<uint8_t> mSaveData;
-		std::vector<DuelMatchState> mSavedStates;
+		std::vector<ReplaySavePoint> mSavePoints;
 
 		// general replay attributes
 		std::string mPlayerNames[MAX_PLAYERS];
