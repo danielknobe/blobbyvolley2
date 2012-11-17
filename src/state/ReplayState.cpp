@@ -33,8 +33,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IUserConfigReader.h"
 #include "ReplaySelectionState.h"
 
-
 /* implementation */
+
+extern const std::string DUMMY_RULES_NAME;
+
 ReplayState::ReplayState() :
 	mLeftPlayer(LEFT_PLAYER),
 	mRightPlayer(RIGHT_PLAYER)
@@ -63,7 +65,7 @@ void ReplayState::loadReplay(const std::string& file)
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mReplayMatch.reset(new DuelMatch(0, 0, true, false, "rules.lua"));
+		mReplayMatch.reset(new DuelMatch(0, 0, true, false, DUMMY_RULES_NAME));
 		RenderManager::getSingleton().setPlayernames(
 			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
@@ -239,19 +241,13 @@ void ReplayState::step()
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
 		{
-			/// \todo how do we handle reload?
-			// reload... we have to do all the parsing again
-			mReplayMatch.reset( 0 );
-			
-			mReplayMatch.reset(new DuelMatch(0, 0, true, false, "rules.lua"));
-			RenderManager::getSingleton().setPlayernames(
-				mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
+			// we don't have to reset the match, cause we don't use lua rules
+			// we just have to jump to the beginning
 			SoundManager::getSingleton().playSound(
 					"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 			
-			mLeftPlayer.setColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
-			mRightPlayer.setColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
-			
+			// do we really need this?
+			// maybe, users want to replay the game on the current speed
 			SpeedController::getMainInstance()->setGameSpeed(
 					(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
 				);
