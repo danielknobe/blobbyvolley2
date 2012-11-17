@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "FileExceptions.h"
 #include "GenericIO.h"
+#include "FileRead.h"
 #include "FileWrite.h"
 #include "MatchEvents.h"
 
@@ -171,7 +172,7 @@ void NetworkGameState::step()
 			case ID_UPDATE_SCORE:
 			{
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.IgnoreBytes(1);	//ID_SCORE_RESET
+				stream.IgnoreBytes(1);	//ID_UPDATE_SCORE
 				
 				// read and set new score
 				int nLeftScore;
@@ -295,27 +296,6 @@ void NetworkGameState::step()
 				stream.Read(temp);
 				Color ncolor = temp;
 
-				// read rules
-				int rulesLength;
-				stream.Read(rulesLength);
-				if (rulesLength)
-				{
-					boost::shared_array<char>  rulesString( new char[rulesLength + 1] );
-					stream.Read(rulesString.get(), rulesLength);
-					// null terminate
-					rulesString[rulesLength] = 0;
-					FileWrite rulesFile("server_rules.lua");
-					rulesFile.write(rulesString.get(), rulesLength);
-					rulesFile.close();
-					mFakeMatch->setRules("server_rules.lua");
-				} 
-				 else
-				{
-					// either old server, or we have to use fallback ruleset
-					mFakeMatch->setRules("");
-				}
-				
-
 				mRemotePlayer->setName(std::string(charName));
 				
 				mFilename = mLocalPlayer->getName();
@@ -348,6 +328,63 @@ void NetworkGameState::step()
 				
 				// game ready whistle
 				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				break;
+			}
+			case ID_RULES_CHECKSUM:
+			{
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				
+				stream.IgnoreBytes(1);	// ignore ID_RULES_CHECKSUM
+				
+				int serverChecksum;
+				stream.Read(serverChecksum);
+				int ourChecksum = 0;
+				if (serverChecksum != 0)
+				{
+					try
+					{
+						FileRead rulesFile("server_rules.lua");
+						ourChecksum = rulesFile.calcChecksum(0);
+						rulesFile.close();
+					}
+					catch( FileLoadException& ex )
+					{
+						// file doesn't exist - nothing to do here
+					}
+				}
+				
+				RakNet::BitStream stream2;
+				stream2.Write((unsigned char)ID_RULES);
+				stream2.Write(bool(serverChecksum != 0 && serverChecksum != ourChecksum));
+				mClient->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+				
+				break;
+			}
+			case ID_RULES:
+			{
+				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				
+				stream.IgnoreBytes(1);	// ignore ID_RULES
+				
+				int rulesLength;
+				stream.Read(rulesLength);
+				if (rulesLength)
+				{
+					boost::shared_array<char>  rulesString( new char[rulesLength + 1] );
+					stream.Read(rulesString.get(), rulesLength);
+					// null terminate
+					rulesString[rulesLength] = 0;
+					FileWrite rulesFile("server_rules.lua");
+					rulesFile.write(rulesString.get(), rulesLength);
+					rulesFile.close();
+					mFakeMatch->setRules("server_rules.lua");
+				} 
+				else
+				{
+					// either old server, or we have to use fallback ruleset
+					mFakeMatch->setRules( "" );
+				}
+				
 				break;
 			}
 			case ID_CONNECTION_ATTEMPT_FAILED:

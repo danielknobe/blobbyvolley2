@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <list>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_array.hpp>
 
 #include "Global.h"
 #include "raknet/NetworkTypes.h"
@@ -65,6 +66,7 @@ class NetworkGame
 		void broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream);
 		void broadcastBitstream(RakNet::BitStream* stream);
 		void broadcastPhysicState();
+		bool isGameStarted() { return mRulesSent[LEFT_PLAYER] && mRulesSent[RIGHT_PLAYER]; }
 
 		RakServer& mServer;
 		PlayerID mLeftPlayer;
@@ -72,6 +74,8 @@ class NetworkGame
 		PlayerSide mSwitchedSide;
 		std::string mLeftPlayerName;
 		std::string mRightPlayerName;
+		Color mLeftPlayerColor;
+		Color mRightPlayerColor;
 
 		PacketQueue mPacketQueue;
 
@@ -86,5 +90,9 @@ class NetworkGame
 
 		float mGameSpeed;
 		SpeedController* mGameFPSController;
+
+		bool mRulesSent[MAX_PLAYERS];
+		int mRulesLength;
+		boost::shared_array<char> mRulesString;
 };
 

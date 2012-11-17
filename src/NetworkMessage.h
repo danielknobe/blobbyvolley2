@@ -44,7 +44,9 @@ enum MessageType
 	ID_CURRENTLY_UNUSED,	// this value is to ensure network protocol compatibility between 0.9c and 1.0
 	ID_REPLAY,
 	ID_CHAT_MESSAGE,
-	ID_UPDATE_SCORE
+	ID_UPDATE_SCORE,
+	ID_RULES_CHECKSUM,
+	ID_RULES
 };
 
 // General Information:
@@ -132,8 +134,6 @@ enum MessageType
 //		gamespeed (int)
 // 		opponent name (char[16])
 //		opponent color (int)
-// 		length of rules file (int)
-//		rules file content (char[])
 //
 // ID_ENTER_GAME
 // 	Description:
@@ -206,6 +206,29 @@ enum MessageType
 // 		right score (int)
 //		time (int)
 //
+// ID_RULES_CHECKSUM
+// 	Description:
+// 		Sent from server to client to tell rules file checksum
+// 		Client should send ID_RULES after receiving ID_RULES_CHECKSUM
+// 			to tell server if he needs rules file transmitting
+// 	Structure:
+// 		ID_RULES_CHECKSUM
+//		checksum (int)
+//
+// ID_RULES
+// 	Description:
+// 		Sent from client to server to request a rules file
+// 		Sent from server to client to transmit the rules file
+// 		Game is starting only after transmitting a rules file
+// 	Structure (from client ro server):
+// 		ID_RULES
+//		needRules (bool)
+// 	Structure (from server ro client):
+// 		ID_RULES
+//		size (int)
+//		data
+//
+
 class UserConfig;
 
 struct ServerInfo
