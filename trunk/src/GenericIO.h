@@ -45,7 +45,7 @@ namespace RakNet
 /// creates a generic writer that writes to a file
 boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<FileWrite> file);
 /// creates a generic writer that writes to a BitStream
-boost::shared_ptr< GenericOut > createGenericWriter(boost::shared_ptr<RakNet::BitStream> stream);
+boost::shared_ptr< GenericOut > createGenericWriter(RakNet::BitStream* stream);
 /// creates a generic writer that writes hman readable to a stream
 /// currently, there is no corresponding reader because this is mostly for debugging purposes
 boost::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream);
@@ -53,7 +53,7 @@ boost::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream);
 /// creates a generic reader that reads from a file
 boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<FileRead> file);
 /// creates a generic reader that reads from a BitStream
-boost::shared_ptr< GenericIn > createGenericReader(boost::shared_ptr<RakNet::BitStream> stream);
+boost::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream);
 
 
 // GenericIO class template

@@ -224,7 +224,7 @@ ScriptedInputSource::~ScriptedInputSource()
 	lua_close(mState);
 }
 
-PlayerInput ScriptedInputSource::getInput()
+PlayerInput ScriptedInputSource::getNextInput()
 {
 	bool serving = false;
 	// reset input

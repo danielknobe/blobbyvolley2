@@ -37,6 +37,8 @@ extern "C"
 #include "GameLogicState.h"
 #include "DuelMatch.h"
 #include "GameConstants.h"
+#include "IUserConfigReader.h"
+#include "InputSource.h"
 
 
 /* implementation */
@@ -44,19 +46,26 @@ extern "C"
 /// how many steps must pass until the next hit can happen
 const int SQUISH_TOLERANCE = 11;
 
+const std::string FALLBACK_RULES_NAME = "__FALLBACK__";
+const std::string DUMMY_RULES_NAME = "__DUMMY__";
 
-IGameLogic::IGameLogic(DuelMatch* match):	mLastError(NO_PLAYER), 
+
+IGameLogic::IGameLogic():	mLastError(NO_PLAYER), 
 							mServingPlayer(NO_PLAYER), 
 							mWinningPlayer(NO_PLAYER),
-							mScoreToWin(15),
-							mMatch(match),
+							mScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin")),
 							mSquishWall(0),
-							mSquishGround(0)
+							mSquishGround(0),
+							mIsBallValid(true),
+							mIsGameRunning(false)
 {
 	// init clock
 	clock.reset();
 	clock.start();
-	reset();
+	mScores[LEFT_PLAYER] = 0;
+	mScores[RIGHT_PLAYER] = 0;
+	mTouches[LEFT_PLAYER] = 0;
+	mTouches[RIGHT_PLAYER] = 0;
 	mSquish[LEFT_PLAYER] = 0;
 	mSquish[RIGHT_PLAYER] = 0;
 }
@@ -66,14 +75,14 @@ IGameLogic::~IGameLogic()
 	// nothing to do
 }
 
-int IGameLogic::getScore(PlayerSide side) const
-{
-	return mScores[side2index(side)];
-}
-
 int IGameLogic::getTouches(PlayerSide side) const
 {
 	return mTouches[side2index(side)];
+}
+
+int IGameLogic::getScore(PlayerSide side) const
+{
+	return mScores[side2index(side)];
 }
 
 void IGameLogic::setScore(PlayerSide side, int score)
@@ -81,15 +90,6 @@ void IGameLogic::setScore(PlayerSide side, int score)
 	mScores[side2index(side)] = score;
 }
 
-
-void IGameLogic::setScoreToWin(int stw)
-{
-	assert(stw > 0);
-	mScoreToWin = stw;
-	// when are the values in the lua script updated?
-	//lua_pushnumber(mState, mScoreToWin);
-	//lua_setglobal(mState, "SCORE_TO_WIN");
-}
 
 int IGameLogic::getScoreToWin() const 
 {
@@ -135,6 +135,8 @@ GameLogicState IGameLogic::getState() const
 	gls.rightSquish = mSquish[RIGHT_PLAYER];
 	gls.squishWall = mSquishWall;
 	gls.squishGround = mSquishGround;
+	gls.isGameRunning = mIsGameRunning;
+	gls.isBallValid = mIsBallValid;
 	
 	return gls;
 }
@@ -148,6 +150,8 @@ void IGameLogic::setState(GameLogicState gls)
 	mSquish[RIGHT_PLAYER] = gls.rightSquish;
 	mSquishWall = gls.squishWall;
 	mSquishGround = gls.squishGround;
+	mIsGameRunning = gls.isGameRunning;
+	mIsBallValid = gls.isBallValid;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -184,6 +188,12 @@ PlayerInput IGameLogic::transformInput(PlayerInput ip, PlayerSide player)
 	return handleInput(ip, player);
 }
 
+void IGameLogic::onServe()
+{
+	mIsBallValid = true;
+	mIsGameRunning = false;
+}
+
 void IGameLogic::onBallHitsGround(PlayerSide side) 
 {
 	// check if collision valid
@@ -193,7 +203,19 @@ void IGameLogic::onBallHitsGround(PlayerSide side)
 	// otherwise, set the squish value
 	mSquishGround = SQUISH_TOLERANCE;
 	
+	mTouches[other_side(side)] = 0;
+	
 	OnBallHitsGroundHandler(side);
+}
+
+bool IGameLogic::isBallValid() const
+{
+	return mIsBallValid;
+}
+
+bool IGameLogic::isGameRunning() const
+{
+	return mIsGameRunning;
 }
 
 bool IGameLogic::isCollisionValid(PlayerSide side) const
@@ -205,13 +227,13 @@ bool IGameLogic::isCollisionValid(PlayerSide side) const
 bool IGameLogic::isGroundCollisionValid() const
 {
 	// check whether the ball is squished
-	return mSquishGround <= 0 && mMatch->getBallValid();
+	return mSquishGround <= 0 && isBallValid();
 }
 
 bool IGameLogic::isWallCollisionValid() const
 {
 	// check whether the ball is squished
-	return mSquishWall <= 0 && mMatch->getBallValid();
+	return mSquishWall <= 0 && isBallValid();
 }
 
 void IGameLogic::onBallHitsPlayer(PlayerSide side)
@@ -224,6 +246,9 @@ void IGameLogic::onBallHitsPlayer(PlayerSide side)
 	// now, the other blobby has to accept the new hit!
 	mSquish[side2index(other_side(side))] = 0;
 	
+	// set the ball activity
+	mIsGameRunning = true;
+
 	// count the touches
 	mTouches[side2index(side)]++;
 	OnBallHitsPlayerHandler(side);
@@ -245,7 +270,7 @@ void IGameLogic::onBallHitsWall(PlayerSide side)
 }
 
 void IGameLogic::onBallHitsNet(PlayerSide side)
- {
+{
 	if(!isWallCollisionValid())
 		return;
 	
@@ -268,45 +293,42 @@ void IGameLogic::score(PlayerSide side, bool serve, int amount)
 	mWinningPlayer = checkWin();
 }
 
-void IGameLogic::reset()
-{
-	mScores[0] = 0;
-	mScores[1] = 0;
-	mTouches[0] = 0;
-	mTouches[1] = 0;
-	mSquish[0] = 0;
-	mSquish[1] = 0;
-	mSquishWall = 0;
-}
-
 void IGameLogic::onError(PlayerSide side)
 {
 	OnMistake(side);
 	
 	mLastError = side;
+	mIsBallValid = false;
 	
 	mTouches[0] = 0;
 	mTouches[1] = 0;
 	mSquish[0] = 0;
 	mSquish[1] = 0;
+	mSquishWall = 0;
+	mSquishGround = 0;
 	
 	mServingPlayer = other_side(side);
 }
 
 // -------------------------------------------------------------------------------------------------
-// 	Fallback Game Logic
+// 	Dummy Game Logic
 // ---------------------
 
-class FallbackGameLogic : public IGameLogic 
+class DummyGameLogic : public IGameLogic 
 {
 	public:
-		FallbackGameLogic(DuelMatch* match) : IGameLogic(match) 
+		DummyGameLogic() 
 		{
 			
 		}
-		virtual ~FallbackGameLogic()
+		virtual ~DummyGameLogic()
 		{
 			
+		}
+		
+		virtual GameLogic clone() const
+		{
+			return GameLogic(new DummyGameLogic());
 		}
 		
 		virtual std::string getSourceFile() const 
@@ -318,16 +340,6 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual PlayerSide checkWin() const 
 		{
-			if( getScore(LEFT_PLAYER) >= getScoreToWin() && getScore(LEFT_PLAYER) >= getScore(RIGHT_PLAYER) + 2 ) 
-			{
-				return LEFT_PLAYER;
-			}
-			
-			if( getScore(RIGHT_PLAYER) >= getScoreToWin() && getScore(RIGHT_PLAYER) >= getScore(LEFT_PLAYER) + 2 ) 
-			{
-				return RIGHT_PLAYER;
-			}
-			
 			return NO_PLAYER;
 		}
 		
@@ -338,12 +350,10 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual void OnMistake(PlayerSide side) 
 		{
-			score( other_side(side), true, 1 );
 		}
 		
 		virtual void OnBallHitsPlayerHandler(PlayerSide side)
 		{
-			if (getTouches(side) > 3) onError(side);
 		}
 		
 		virtual void OnBallHitsWallHandler(PlayerSide side)
@@ -356,11 +366,68 @@ class FallbackGameLogic : public IGameLogic
 		
 		virtual void OnBallHitsGroundHandler(PlayerSide side)
 		{
-			onError(side);
 		}
 		
 		virtual void OnGameHandler()
 		{
+		}
+};
+
+
+// -------------------------------------------------------------------------------------------------
+// 	Fallback Game Logic
+// ---------------------
+
+class FallbackGameLogic : public DummyGameLogic 
+{
+	public:
+		FallbackGameLogic() 
+		{
+			
+		}
+		virtual ~FallbackGameLogic()
+		{
+			
+		}
+		
+		virtual GameLogic clone() const
+		{
+			return GameLogic(new FallbackGameLogic());
+		}
+		
+protected:
+		
+		virtual PlayerSide checkWin() const 
+		{
+			int left = getScore(LEFT_PLAYER);
+			int right = getScore(RIGHT_PLAYER);
+			int stw = getScoreToWin();
+			if( left >= stw && left >= right + 2 ) 
+			{
+				return LEFT_PLAYER;
+			}
+			
+			if( right >= stw && right >= left + 2 ) 
+			{
+				return RIGHT_PLAYER;
+			}
+			
+			return NO_PLAYER;
+		}
+		
+		virtual void OnMistake(PlayerSide side) 
+		{
+			score( other_side(side), true, 1 );
+		}
+		
+		virtual void OnBallHitsPlayerHandler(PlayerSide side)
+		{
+			if (getTouches(side) > 3) onError(side);
+		}
+		
+		virtual void OnBallHitsGroundHandler(PlayerSide side)
+		{
+			onError(side);
 		}
 };
 
@@ -376,7 +443,15 @@ class LuaGameLogic : public FallbackGameLogic
 			return mSourceFile;
 		}
 		
-	private:
+		virtual GameLogic clone() const
+		{
+			lua_getglobal(mState, "__MATCH_POINTER");
+			DuelMatch* match = (DuelMatch*)lua_touserdata(mState, -1);
+			lua_pop(mState, 1);
+			return GameLogic(new LuaGameLogic(mSourceFile, match));
+		}
+		
+	protected:
 		
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player);
 		virtual PlayerSide checkWin() const;
@@ -389,6 +464,8 @@ class LuaGameLogic : public FallbackGameLogic
 		
 		// helper functions
 		void setLuaGlobalVariable(const char* name, double value);
+		
+	private:
 		
 		// lua functions
 		static int luaTouches(lua_State* state);
@@ -415,9 +492,7 @@ class LuaGameLogic : public FallbackGameLogic
 };
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : FallbackGameLogic(match), 
-																				mState( lua_open() ), 
-																				mSourceFile(filename) 
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mState( lua_open() ), mSourceFile(filename) 
 {
 	
 	lua_pushlightuserdata(mState, this);
@@ -481,6 +556,10 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : Fa
 		lua_close(mState);
 		throw except;
 	}
+
+	lua_getglobal(mState, "SCORE_TO_WIN");
+	mScoreToWin = int(lua_tonumber(mState, -1) + 0.5);
+	lua_pop(mState, 1);
 }
 
 LuaGameLogic::~LuaGameLogic()
@@ -678,7 +757,7 @@ int LuaGameLogic::luaLaunched(lua_State* state)
 	
 	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	lua_pushnumber(state, match->getBlobJump(side));
+	lua_pushboolean(state, match->getBlobJump(side));
 	return 1;
 }
 
@@ -846,11 +925,24 @@ int LuaGameLogic::luaGetGameTime(lua_State* state)
 	return 1;
 }
 
+GameLogic createGameLogic()
+{
+	return GameLogic(new DummyGameLogic());
+}
 GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 {
+	if(file == DUMMY_RULES_NAME)
+	{
+		return GameLogic(new DummyGameLogic());
+	} 
+		else if (file == FALLBACK_RULES_NAME)
+	{
+		return GameLogic(new FallbackGameLogic());
+	}
+	
 	try 
 	{
-		return std::auto_ptr<IGameLogic>( new LuaGameLogic(file, match) );
+		return GameLogic( new LuaGameLogic(file, match) );
 	} 
 	catch(...) 
 	{
@@ -858,7 +950,7 @@ GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 		std::cerr << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
-		return std::auto_ptr<IGameLogic>(new FallbackGameLogic(match));
+		return GameLogic(new FallbackGameLogic());
 	}
 	
 }

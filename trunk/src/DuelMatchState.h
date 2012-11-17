@@ -31,4 +31,6 @@ struct DuelMatchState
 	
 	PhysicState worldState;
 	GameLogicState logicState;
+	
+	PlayerInput playerInput[MAX_PLAYERS];
 };

@@ -80,8 +80,8 @@ class NetworkGame
 		PacketQueue mPacketQueue;
 
 		DuelMatch* mMatch;
-		boost::scoped_ptr<DummyInputSource> mLeftInput;
-		boost::scoped_ptr<DummyInputSource> mRightInput;
+		boost::scoped_ptr<InputSource> mLeftInput;
+		boost::scoped_ptr<InputSource> mRightInput;
 		PlayerSide mWinningPlayer;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;

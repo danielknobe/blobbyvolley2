@@ -64,7 +64,7 @@ void Player::loadFromConfig(const std::string& prefix, bool initInput)
 		{
 			/// \todo REWORK ERROR REPORTING
 			std::cerr << e.what() << std::endl;
-			mInputSource.reset(new DummyInputSource());
+			mInputSource.reset(new InputSource());
 		}
 	
 		mName = gameConfig.getBool(prefix + "_player_human") ?

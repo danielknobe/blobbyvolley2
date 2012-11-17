@@ -39,22 +39,6 @@ struct PhysicState
 	Vector2 ballVelocity;
 	float ballAngularVelocity;
 	
-	bool isGameRunning;
-	bool isBallValid;
-	
-	PlayerInput playerInput[MAX_PLAYERS];
-	
-	/// \todo remove code duplication!
-	///       this function is needed for compressing stream
-	bool blobbyHitGround(PlayerSide player) const;
-	
-	void writeToStream(RakNet::BitStream* stream) const;
-	void readFromStream(RakNet::BitStream* stream);
-	
-	// generic reading/writing
-	void serialize(GenericOut* io) const;
-	void deserialize(GenericIn* io);
-	
 	// equality comparision
 	bool operator==(const PhysicState& other) const;
 	

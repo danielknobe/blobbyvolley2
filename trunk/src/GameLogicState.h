@@ -36,6 +36,9 @@ struct GameLogicState
 	unsigned int squishWall;
 	unsigned int squishGround;
 	
+	bool isGameRunning;
+	bool isBallValid;
+	
 	
 	void swapSides();
 	
