@@ -26,6 +26,7 @@ set(common_SRC
 	GameLogicState.cpp GameLogicState.h
 	GenericIO.cpp GenericIO.h
 	ReplaySavePoint.cpp ReplaySavePoint.h
+	InputSource.cpp InputSource.h
 	)
 	
 set (blobby_SRC ${common_SRC}
@@ -36,7 +37,6 @@ set (blobby_SRC ${common_SRC}
 	LagDetectionSystem.cpp LagDetectionSystem.h
 	InputDevice.cpp InputDevice.h
 	InputManager.cpp InputManager.h
-	InputSource.cpp InputSource.h
 	LocalInputSource.h
 	Player.cpp Player.h
 	RenderManager.cpp RenderManager.h
