@@ -1,6 +1,10 @@
 -- most simple ruleset: for each mistake, the opponent gets a point
 -- includes comments for documentation purposes
 
+
+__AUTHOR__ = "Blobby Volley 2 Developers"
+__TITLE__  = "BV2 Default Rules"
+
 -- rules.lua doc
 -- function OnMistake
 --		IMPLEMENTED BY RULES.lua

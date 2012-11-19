@@ -93,6 +93,7 @@ NetworkGame::NetworkGame(RakServer& server,
 	RakNet::BitStream stream;
 	stream.Write((unsigned char)ID_RULES_CHECKSUM);
 	stream.Write(checksum);
+	/// \todo write file author and title, too; maybe add a version number in scripts, too.
 	broadcastBitstream(&stream);
 }
 
