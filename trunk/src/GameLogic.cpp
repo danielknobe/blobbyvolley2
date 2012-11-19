@@ -57,7 +57,9 @@ IGameLogic::IGameLogic():	mLastError(NO_PLAYER),
 							mSquishWall(0),
 							mSquishGround(0),
 							mIsBallValid(true),
-							mIsGameRunning(false)
+							mIsGameRunning(false),
+							mAuthor("unknown author"),
+							mTitle("untitled script")
 {
 	// init clock
 	clock.reset();
@@ -152,6 +154,26 @@ void IGameLogic::setState(GameLogicState gls)
 	mSquishGround = gls.squishGround;
 	mIsGameRunning = gls.isGameRunning;
 	mIsBallValid = gls.isBallValid;
+}
+
+void IGameLogic::setAuthor(std::string author)
+{
+	mAuthor = author;
+}
+
+void IGameLogic::setTitle(std::string title)
+{
+	mTitle = title;
+}
+
+std::string IGameLogic::getAuthor() const
+{
+	return mAuthor;
+}
+
+std::string IGameLogic::getTitle() const
+{
+	return mTitle;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -319,7 +341,8 @@ class DummyGameLogic : public IGameLogic
 	public:
 		DummyGameLogic() 
 		{
-			
+			setAuthor("Blobby Volley 2 Developers");
+			setTitle( DUMMY_RULES_NAME );
 		}
 		virtual ~DummyGameLogic()
 		{
@@ -383,7 +406,8 @@ class FallbackGameLogic : public DummyGameLogic
 	public:
 		FallbackGameLogic() 
 		{
-			
+			setAuthor("Blobby Volley 2 Developers");
+			setTitle( FALLBACK_RULES_NAME );
 		}
 		virtual ~FallbackGameLogic()
 		{
@@ -494,6 +518,10 @@ class LuaGameLogic : public FallbackGameLogic
 
 LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mState( lua_open() ), mSourceFile(filename) 
 {
+	// the inheritance hierachy makes this a little more complicated
+	setAuthor("unknown author");
+	setTitle("untitled script");
+	
 	
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
@@ -560,6 +588,16 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_getglobal(mState, "SCORE_TO_WIN");
 	mScoreToWin = int(lua_tonumber(mState, -1) + 0.5);
 	lua_pop(mState, 1);
+	
+	lua_getglobal(mState, "__AUTHOR__");
+	setAuthor( lua_tostring(mState, -1) );
+	lua_pop(mState, 1);
+	
+	lua_getglobal(mState, "__TITLE__");
+	setTitle( lua_tostring(mState, -1) );
+	lua_pop(mState, 1);
+	
+	std::cout << "loaded rules "<< getTitle()<< " by " << getAuthor() << " from " << mSourceFile << std::endl;
 }
 
 LuaGameLogic::~LuaGameLogic()
