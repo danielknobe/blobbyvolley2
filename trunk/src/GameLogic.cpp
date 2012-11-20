@@ -518,11 +518,6 @@ class LuaGameLogic : public FallbackGameLogic
 
 LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mState( lua_open() ), mSourceFile(filename) 
 {
-	// the inheritance hierachy makes this a little more complicated
-	setAuthor("unknown author");
-	setTitle("untitled script");
-	
-	
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 	
@@ -590,11 +585,13 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_pop(mState, 1);
 	
 	lua_getglobal(mState, "__AUTHOR__");
-	setAuthor( lua_tostring(mState, -1) );
+	const char* author = lua_tostring(mState, -1);
+	setAuthor( author ? author : "unknown author" );
 	lua_pop(mState, 1);
 	
 	lua_getglobal(mState, "__TITLE__");
-	setTitle( lua_tostring(mState, -1) );
+	const char* title = lua_tostring(mState, -1);
+	setTitle( title ? title : "untitled script" );
 	lua_pop(mState, 1);
 	
 	std::cout << "loaded rules "<< getTitle()<< " by " << getAuthor() << " from " << mSourceFile << std::endl;
@@ -982,10 +979,10 @@ GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 	{
 		return GameLogic( new LuaGameLogic(file, match) );
 	} 
-	catch(...) 
+	catch( std::exception& exp) 
 	{
-		std::cerr << "Script Error: Could not create LuaGameLogic";
-		std::cerr << std::endl;
+		std::cerr << "Script Error: Could not create LuaGameLogic: \n";
+		std::cerr << exp.what() << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
 		return GameLogic(new FallbackGameLogic());
