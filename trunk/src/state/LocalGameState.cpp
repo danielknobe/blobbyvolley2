@@ -223,6 +223,7 @@ void LocalGameState::step()
 		if (mMatch->winningPlayer() != NO_PLAYER)
 		{
 			mWinner = true;
+			mRecorder->record(mMatch->getState());
 			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 		}
 			
