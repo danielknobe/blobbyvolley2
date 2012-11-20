@@ -394,46 +394,25 @@ bool NetworkGame::step()
 
 	if(!mPausing)
 	{
-		switch(mMatch->winningPlayer()){
-			case LEFT_PLAYER:
-			{
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-				stream.Write(LEFT_PLAYER);
+		PlayerSide winning = mMatch->winningPlayer();
+		if (winning != NO_PLAYER)
+		{
+			RakNet::BitStream stream;
+			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			stream.Write(winning);
 
-				RakNet::BitStream switchStream;
-				switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-				switchStream.Write(RIGHT_PLAYER);
+			RakNet::BitStream switchStream;
+			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+			switchStream.Write(winning == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 
-				broadcastBitstream(&stream, &switchStream);
+			broadcastBitstream(&stream, &switchStream);
 
-				// if someone has won, the game is paused
-				mPausing = true;
-				mMatch->pause();
-				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
-				return active;
-			}
-			break;
-
-			case RIGHT_PLAYER:
-			{
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-				stream.Write(RIGHT_PLAYER);
-
-				RakNet::BitStream switchStream;
-				switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-				switchStream.Write(LEFT_PLAYER);
-
-				broadcastBitstream(&stream, &switchStream);
-
-				// if someone has won, the game is paused
-				mPausing = true;
-				mMatch->pause();
-				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
-				return active;
-			}
-			break;
+			// if someone has won, the game is paused
+			mPausing = true;
+			mMatch->pause();
+			mRecorder->record(mMatch->getState());
+			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+			return active;
 		}
 	}
 

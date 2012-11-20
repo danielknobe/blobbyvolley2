@@ -144,7 +144,19 @@ void ReplayState::step()
 	imgui.doOverlay(GEN_ID, prog_pos, Vector2(700*mReplayPlayer->getPlayProgress()+50, 600-3), Color(0,255,0));
 	//imgui.doImage(GEN_ID, Vector2(50 + 700*mReplayPlayer->getPlayProgress(), 600-16), "gfx/scrollbar.bmp");
 	
-	PlayerSide side = mReplayMatch->winningPlayer();
+	PlayerSide side = NO_PLAYER;
+	if (mReplayPlayer->endOfFile())
+	{
+		int diff = mReplayMatch->getScore(LEFT_PLAYER) - mReplayMatch->getScore(RIGHT_PLAYER);
+		if (diff > 0)
+		{
+			side = LEFT_PLAYER;
+		}
+		else if (diff < 0)
+		{
+			side = RIGHT_PLAYER;
+		}
+	}
 	
 	// control replay position
 	Vector2 mousepos = InputManager::getSingleton()->position();

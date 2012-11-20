@@ -37,6 +37,16 @@ void DuelMatchState::swapSides()
 	std::swap(playerInput[LEFT_PLAYER].left, playerInput[LEFT_PLAYER].right);
 	std::swap(playerInput[RIGHT_PLAYER].left, playerInput[RIGHT_PLAYER].right);
 	std::swap(playerInput[LEFT_PLAYER], playerInput[RIGHT_PLAYER]);
+	
+	switch (errorSide)
+	{
+		case LEFT_PLAYER:
+			errorSide = RIGHT_PLAYER;
+			break;
+		case RIGHT_PLAYER:
+			errorSide = LEFT_PLAYER;
+			break;
+	}
 }
 
 USER_SERIALIZER_IMPLEMENTATION_HELPER(DuelMatchState)
@@ -48,11 +58,14 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(DuelMatchState)
 	// a template function and does not complain about <>.
 	io.template generic<PlayerInput> ( value.playerInput[LEFT_PLAYER] );
 	io.template generic<PlayerInput> ( value.playerInput[RIGHT_PLAYER] );
+	
+	io.byte(value.errorSide);
 }
 
 bool DuelMatchState::operator==(const DuelMatchState& other) const
 {
 	return worldState == other.worldState  &&  logicState == other.logicState &&
 		playerInput[LEFT_PLAYER] == other.playerInput[LEFT_PLAYER] && 
-		playerInput[RIGHT_PLAYER] == other.playerInput[RIGHT_PLAYER];
+		playerInput[RIGHT_PLAYER] == other.playerInput[RIGHT_PLAYER] &&
+		errorSide == other.errorSide;
 }
