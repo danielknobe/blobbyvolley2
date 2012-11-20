@@ -57,9 +57,7 @@ IGameLogic::IGameLogic():	mLastError(NO_PLAYER),
 							mSquishWall(0),
 							mSquishGround(0),
 							mIsBallValid(true),
-							mIsGameRunning(false),
-							mAuthor("unknown author"),
-							mTitle("untitled script")
+							mIsGameRunning(false)
 {
 	// init clock
 	clock.reset();
@@ -154,26 +152,6 @@ void IGameLogic::setState(GameLogicState gls)
 	mSquishGround = gls.squishGround;
 	mIsGameRunning = gls.isGameRunning;
 	mIsBallValid = gls.isBallValid;
-}
-
-void IGameLogic::setAuthor(std::string author)
-{
-	mAuthor = author;
-}
-
-void IGameLogic::setTitle(std::string title)
-{
-	mTitle = title;
-}
-
-std::string IGameLogic::getAuthor() const
-{
-	return mAuthor;
-}
-
-std::string IGameLogic::getTitle() const
-{
-	return mTitle;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -341,8 +319,6 @@ class DummyGameLogic : public IGameLogic
 	public:
 		DummyGameLogic() 
 		{
-			setAuthor("Blobby Volley 2 Developers");
-			setTitle( DUMMY_RULES_NAME );
 		}
 		virtual ~DummyGameLogic()
 		{
@@ -359,6 +335,16 @@ class DummyGameLogic : public IGameLogic
 			return std::string("");
 		}
 		
+		virtual std::string getAuthor() const 
+		{
+			return "Blobby Volley 2 Developers";
+		}
+		
+		virtual std::string getTitle() const 
+		{
+			return DUMMY_RULES_NAME;
+		}
+
 	protected:
 		
 		virtual PlayerSide checkWin() const 
@@ -406,8 +392,6 @@ class FallbackGameLogic : public DummyGameLogic
 	public:
 		FallbackGameLogic() 
 		{
-			setAuthor("Blobby Volley 2 Developers");
-			setTitle( FALLBACK_RULES_NAME );
 		}
 		virtual ~FallbackGameLogic()
 		{
@@ -417,6 +401,11 @@ class FallbackGameLogic : public DummyGameLogic
 		virtual GameLogic clone() const
 		{
 			return GameLogic(new FallbackGameLogic());
+		}
+		
+		virtual std::string getTitle() const 
+		{
+			return FALLBACK_RULES_NAME;
 		}
 		
 protected:
@@ -475,6 +464,17 @@ class LuaGameLogic : public FallbackGameLogic
 			return GameLogic(new LuaGameLogic(mSourceFile, match));
 		}
 		
+		virtual std::string getAuthor() const
+		{
+			return mAuthor;
+		}
+		
+		virtual std::string getTitle() const
+		{
+			return mTitle;
+		}
+
+		
 	protected:
 		
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player);
@@ -513,6 +513,9 @@ class LuaGameLogic : public FallbackGameLogic
 		lua_State* mState;
 		
 		std::string mSourceFile;
+		
+		std::string mAuthor;
+		std::string mTitle;
 };
 
 
@@ -586,12 +589,12 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	
 	lua_getglobal(mState, "__AUTHOR__");
 	const char* author = lua_tostring(mState, -1);
-	setAuthor( author ? author : "unknown author" );
+	mAuthor = ( author ? author : "unknown author" );
 	lua_pop(mState, 1);
 	
 	lua_getglobal(mState, "__TITLE__");
 	const char* title = lua_tostring(mState, -1);
-	setTitle( title ? title : "untitled script" );
+	mTitle = ( title ? title : "untitled script" );
 	lua_pop(mState, 1);
 	
 	std::cout << "loaded rules "<< getTitle()<< " by " << getAuthor() << " from " << mSourceFile << std::endl;

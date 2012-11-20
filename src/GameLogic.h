@@ -141,8 +141,8 @@ class IGameLogic
 		void step();		
 		
 		// script information
-		std::string getAuthor() const;
-		std::string getTitle() const;
+		virtual std::string getAuthor() const = 0;
+		virtual std::string getTitle() const  = 0;
 
 	protected:
 		/// this method must be called if a team scores
@@ -206,10 +206,6 @@ class IGameLogic
 		/// lua rules can change it by changing SCORE_TO_WIN variable in the global scope
 		int mScoreToWin;
 		
-		
-		void setAuthor(std::string author);
-		void setTitle(std::string title);
-			
 	private:	
 		// data members
 		/// this array contains the scores
@@ -237,10 +233,6 @@ class IGameLogic
 		
 		/// clock for determining game time
 		Clock clock;
-		
-		
-		std::string mAuthor;
-		std::string mTitle;
 };
 
 extern const std::string DUMMY_RULES_NAME;
