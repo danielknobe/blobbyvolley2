@@ -6,29 +6,6 @@ __AUTHOR__ = "Blobby Volley 2 Developers"
 __TITLE__  = "BV2 Default Rules"
 
 -- rules.lua doc
--- function OnMistake
---		IMPLEMENTED BY RULES.lua
---		called when a player makes a mistake
---		when this function is called, servingplayer() returns which player has
---		served (so it is not neccesarily the enemy of the player who made the mistake)
---		param: player - player who made the mistake
---		return: none
-function OnMistake(player) 
-	--	function opponent
-	--		PREDEFINED
-	--		param:	player - player of whom you want to get the opponent
-	--		return:	opponent of the player, so, for LEFT_PLAYER, RIGHT_PLAYER is returned and vice-versa
-	
-	--	function score
-	--		PREDEFINED
-	--		params:		player - player who gets points
-	--					serve - true to make a new serve, false to continue playing
-	--					amount - how many points player gets
-	--		return: none
-	
-	score(opponent(player), true, 1)
-end 
-
 --	function IsWinning
 --		IMPLEMENTED BY rules.lua
 --		called when it is determined whether a player has won
@@ -57,13 +34,20 @@ function OnBallHitsPlayer(player)
 	--		param:	player - player whos touches you want to get
 	--		return:	how many touches did player
 	
+	--	function opponent
+	--		PREDEFINED
+	--		param:	player - player of whom you want to get the opponent
+	--		return:	opponent of the player, so, for LEFT_PLAYER, RIGHT_PLAYER is returned and vice-versa
+	
 	--	function mistake
 	--		PREDEFINED
-	--		param:  player - player who made a mistake
+	--		params:	mistakeSide - player who made a mistake
+	--				serveSide - player who should make a serve
+	--				amount - how many points opponent of mistakeSide gets
 	--		return: none
 	
 	if touches(player) > 3 then
-		mistake(player)
+		mistake(player, opponent(player), 1)
 	end
 end
 
@@ -89,7 +73,7 @@ end
 --		params: player - the player on whos side the ball hits the ground
 --		return: none
 function OnBallHitsGround(player)
-	mistake(player)
+	mistake(player, opponent(player), 1)
 end
 
 -- function OnGame
