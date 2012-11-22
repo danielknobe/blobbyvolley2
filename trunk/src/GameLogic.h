@@ -147,7 +147,7 @@ class IGameLogic
 	protected:
 		/// this method must be called if a team scores
 		/// it increments the points of that team
-		void score(PlayerSide side, bool serve, int amount);
+		void score(PlayerSide side, int amount);
 
 		// helper functions
 		
@@ -172,16 +172,12 @@ class IGameLogic
 		}
 
 		/// this is called when a player makes a mistake
-		void onError(PlayerSide side);
+		void onError(PlayerSide errorSide, PlayerSide serveSide);
 		
 
 		
 		/// thi function can change input made by a player
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player) = 0;
-		
-		/// this function is called by onError, it contains the customizable part of the 
-		/// error handling
-		virtual void OnMistake(PlayerSide side) = 0;
 		
 		/// this function handles ball/player hits
 		virtual void OnBallHitsPlayerHandler(PlayerSide side) = 0;

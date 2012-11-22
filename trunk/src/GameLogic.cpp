@@ -41,6 +41,13 @@ extern "C"
 #include "InputSource.h"
 
 
+int lua_toint(lua_State* state, int index)
+{
+	double value = lua_tonumber(state, index);
+	return int(value + (value > 0 ? 0.5 : -0.5));
+}
+
+
 /* implementation */
 
 /// how many steps must pass until the next hit can happen
@@ -280,24 +287,19 @@ void IGameLogic::onBallHitsNet(PlayerSide side)
 	OnBallHitsNetHandler(side);
 }
 
-void IGameLogic::score(PlayerSide side, bool serve, int amount)
+void IGameLogic::score(PlayerSide side, int amount)
 {
-	mScores[side2index(side)] += amount;
+	int index = side2index(side);
+	mScores[index] += amount;
+	if (mScores[index] < 0)
+		mScores[index] = 0;
 	
-	// only reset play touches when serve follows
-	if(serve)
-	{
-		mTouches[0] = 0;
-		mTouches[1] = 0;
-	}
 	mWinningPlayer = checkWin();
 }
 
-void IGameLogic::onError(PlayerSide side)
+void IGameLogic::onError(PlayerSide errorSide, PlayerSide serveSide)
 {
-	OnMistake(side);
-	
-	mLastError = side;
+	mLastError = errorSide;
 	mIsBallValid = false;
 	
 	mTouches[0] = 0;
@@ -307,7 +309,7 @@ void IGameLogic::onError(PlayerSide side)
 	mSquishWall = 0;
 	mSquishGround = 0;
 	
-	mServingPlayer = other_side(side);
+	mServingPlayer = serveSide;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -355,10 +357,6 @@ class DummyGameLogic : public IGameLogic
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player)
 		{
 			return ip;
-		}
-		
-		virtual void OnMistake(PlayerSide side) 
-		{
 		}
 		
 		virtual void OnBallHitsPlayerHandler(PlayerSide side)
@@ -428,19 +426,19 @@ protected:
 			return NO_PLAYER;
 		}
 		
-		virtual void OnMistake(PlayerSide side) 
-		{
-			score( other_side(side), true, 1 );
-		}
-		
 		virtual void OnBallHitsPlayerHandler(PlayerSide side)
 		{
-			if (getTouches(side) > 3) onError(side);
+			if (getTouches(side) > 3)
+			{
+				score( other_side(side), 1 );
+				onError( side, other_side(side) );
+			}
 		}
 		
 		virtual void OnBallHitsGroundHandler(PlayerSide side)
 		{
-			onError(side);
+			score( other_side(side), 1 );
+			onError( side, other_side(side) );
 		}
 };
 
@@ -479,7 +477,6 @@ class LuaGameLogic : public FallbackGameLogic
 		
 		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player);
 		virtual PlayerSide checkWin() const;
-		virtual void OnMistake(PlayerSide side);
 		virtual void OnBallHitsPlayerHandler(PlayerSide side);
 		virtual void OnBallHitsWallHandler(PlayerSide side);
 		virtual void OnBallHitsNetHandler(PlayerSide side);
@@ -584,7 +581,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	}
 
 	lua_getglobal(mState, "SCORE_TO_WIN");
-	mScoreToWin = int(lua_tonumber(mState, -1) + 0.5);
+	mScoreToWin = lua_toint(mState, -1);
 	lua_pop(mState, 1);
 	
 	lua_getglobal(mState, "__AUTHOR__");
@@ -667,23 +664,6 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 	ret.right = lua_toboolean(mState, -2);
 	ret.left = lua_toboolean(mState, -3);
 	return ret;
-}
-
-void LuaGameLogic::OnMistake(PlayerSide side) 
-{
-	lua_getglobal(mState, "OnMistake");
-	if (!lua_isfunction(mState, -1))
-	{
-		lua_pop(mState, 1);
-		FallbackGameLogic::OnMistake(side);
-		return;
-	}
-	lua_pushnumber(mState, side);
-	if(lua_pcall(mState, 1, 0, 0)) 
-	{
-		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-		std::cerr << std::endl;
-	};
 }
 
 void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
@@ -781,7 +761,7 @@ int LuaGameLogic::luaTouches(lua_State* state)
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_pushnumber(state, gl->getTouches(side));
 	return 1;
@@ -793,7 +773,7 @@ int LuaGameLogic::luaLaunched(lua_State* state)
 	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_pushboolean(state, match->getBlobJump(side));
 	return 1;
@@ -849,7 +829,7 @@ int LuaGameLogic::luaPosX(lua_State* state)
 	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	float pos = match->getBlobPosition(side).x;
 	lua_pushnumber(state, pos);
@@ -862,7 +842,7 @@ int LuaGameLogic::luaPosY(lua_State* state)
 	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	float pos = match->getBlobPosition(side).y;
 	lua_pushnumber(state, pos);
@@ -875,7 +855,7 @@ int LuaGameLogic::luaSpeedX(lua_State* state)
 	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	float pos = match->getBlobVelocity(side).x;
 	lua_pushnumber(state, pos);
@@ -888,7 +868,7 @@ int LuaGameLogic::luaSpeedY(lua_State* state)
 	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	PlayerSide side = (PlayerSide)lua_tonumber(state, -1);
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	float pos = match->getBlobVelocity(side).y;
 	lua_pushnumber(state, pos);
@@ -897,7 +877,7 @@ int LuaGameLogic::luaSpeedY(lua_State* state)
 
 int LuaGameLogic::luaGetScore(lua_State* state)
 {
-	int pl = int(lua_tonumber(state, -1) + 0.5);
+	int pl = lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
@@ -909,35 +889,38 @@ int LuaGameLogic::luaGetScore(lua_State* state)
 
 int LuaGameLogic::luaMistake(lua_State* state) 
 {
-	int pl = int(lua_tonumber(state, -1) + 0.5);
+	int amount = lua_toint(state, -1);
+ 	lua_pop(state, 1);
+	PlayerSide serveSide = (PlayerSide)lua_toint(state, -1);
+	lua_pop(state, 1);
+	PlayerSide mistakeSide = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	gl->onError((PlayerSide)pl);
+	gl->score(other_side(mistakeSide), amount);
+	gl->onError(mistakeSide, serveSide);
 	return 0;
 }
 
 int LuaGameLogic::luaScore(lua_State* state) 
 {
-	int amount = int(lua_tonumber(state, -1) + 0.5);
+	int amount = lua_toint(state, -1);
 	lua_pop(state, 1);
-	bool serve = lua_toboolean(state, -1);
-	lua_pop(state, 1);
-	int player = int(lua_tonumber(state, -1) + 0.5);
+	int player = lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	
-	gl->score((PlayerSide)player, serve, amount);
+	gl->score((PlayerSide)player, amount);
 	return 0;
 }
 
 int LuaGameLogic::luaGetOpponent(lua_State* state) 
 {
-	int pl = int(lua_tonumber(state, -1) + 0.5);
+	int pl = lua_toint(state, -1);
 	lua_pop(state, 1);
 	lua_pushnumber(state, other_side((PlayerSide)pl));
 	return 1;
