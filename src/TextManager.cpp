@@ -194,6 +194,7 @@ void TextManager::setDefault()
 	mStrings[NET_DISCONNECT] = "disconnected from server";
 	mStrings[NET_CON_FAILED] = "connection failed";
 	mStrings[NET_SERVER_FULL] = "server full";
+	mStrings[NET_STAY_ON_SERVER] = "stay on server";
 	
 	mStrings[OP_INPUT_OP] = "input options";
 	mStrings[OP_GFX_OP] = "graphic options";
