@@ -61,6 +61,10 @@ private:
 		PAUSING
 	} mNetworkState;
 
+	// server info
+	std::string mServerAddress;
+	uint16_t mPort;
+
 	Player mLeftPlayer;
 	Player mRightPlayer;
 	

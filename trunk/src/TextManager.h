@@ -91,6 +91,7 @@ class TextManager
 			NET_DISCONNECT,
 			NET_CON_FAILED,
 			NET_SERVER_FULL,
+			NET_STAY_ON_SERVER,
 			
 			// options 
 			OP_INPUT_OP,
