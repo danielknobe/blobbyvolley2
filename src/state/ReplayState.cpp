@@ -37,15 +37,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 extern const std::string DUMMY_RULES_NAME;
 
-ReplayState::ReplayState() :
-	mLeftPlayer(LEFT_PLAYER),
-	mRightPlayer(RIGHT_PLAYER)
+ReplayState::ReplayState()
 {
 	IMGUI::getSingleton().resetSelection();
 
-	mLeftPlayer.loadFromConfig("left");
-	mRightPlayer.loadFromConfig("right");
-	
 	mPositionJump = -1;
 	mPaused = false;
 	
@@ -65,14 +60,16 @@ void ReplayState::loadReplay(const std::string& file)
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mReplayMatch.reset(new DuelMatch(0, 0, true, false, DUMMY_RULES_NAME));
+		mReplayMatch.reset(new DuelMatch(false, DUMMY_RULES_NAME));
 		RenderManager::getSingleton().setPlayernames(
 			mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 		
-		mLeftPlayer.setColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
-		mRightPlayer.setColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
+		mReplayMatch->setPlayers(mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
+		
+		mReplayMatch->getPlayer(LEFT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
+		mReplayMatch->getPlayer(RIGHT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
 		
 		SpeedController::getMainInstance()->setGameSpeed(
 				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
@@ -135,9 +132,6 @@ void ReplayState::step()
 	
 	mReplayMatch->getClock().setTime( mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed() );
 
-	rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
-	rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
-	
 	// draw the progress bar
 	Vector2 prog_pos = Vector2(50, 600-22);
 	imgui.doOverlay(GEN_ID, prog_pos, Vector2(750, 600-3), Color(0,0,0));

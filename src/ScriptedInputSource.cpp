@@ -41,7 +41,7 @@ extern "C"
 #include "FileRead.h"
 
 /* implementation */
-DuelMatch* ScriptedInputSource::mMatch = 0;
+const DuelMatch* ScriptedInputSource::mMatch = 0;
 ScriptedInputSource* ScriptedInputSource::mCurrentSource = 0;
 
 struct pos_x;
@@ -233,7 +233,7 @@ PlayerInput ScriptedInputSource::getNextInput()
 	mJump = false;
 
 	mCurrentSource = this;
-	mMatch = DuelMatch::getMainGame();
+	mMatch = getMatch();
 	if (mMatch == 0)
 	{
 		return PlayerInput();
@@ -255,8 +255,8 @@ PlayerInput ScriptedInputSource::getNextInput()
 			mCurDelay++;
 	}
 	
-	if ( mLastBallSpeed != DuelMatch::getMainGame()->getBallVelocity().x ) {
-		mLastBallSpeed = DuelMatch::getMainGame()->getBallVelocity().x;
+	if ( mLastBallSpeed != getMatch()->getBallVelocity().x ) {
+		mLastBallSpeed = getMatch()->getBallVelocity().x;
 		// reaction time after bounce
 		mCurDelay += rand() % (mMaxDelay+1);
 	}

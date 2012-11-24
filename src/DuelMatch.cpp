@@ -24,16 +24,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <cassert>
 
+#include <boost/make_shared.hpp>
+
 #include "DuelMatchState.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
 #include "GenericIO.h"
+#include "GameConstants.h"
 
 /* implementation */
 
-DuelMatch* DuelMatch::mMainGame = 0;
-
-DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote, std::string rules) :
+DuelMatch::DuelMatch(bool remote, std::string rules) :
 		// we send a pointer to an unconstructed object here!
 		mLogic(createGameLogic(rules, this)),
 		mPaused(false), 
@@ -42,15 +43,26 @@ DuelMatch::DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool
 		mRemote(remote)
 {
 	mPhysicWorld.reset( new PhysicWorld() );
-	mGlobal = global;
-	if (mGlobal)
-	{
-		assert(mMainGame == 0);
-		mMainGame = this;
-	}
 
-	mLeftInput = linput ? linput : new InputSource();
-	mRightInput = rinput ? rinput : new InputSource();
+	setInputSources(boost::make_shared<InputSource>(), boost::make_shared<InputSource>());
+}
+
+void DuelMatch::setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer)
+{
+	mPlayers[LEFT_PLAYER] = lplayer;
+	mPlayers[RIGHT_PLAYER] = rplayer;
+}
+
+void DuelMatch::setInputSources(boost::shared_ptr<InputSource> linput, boost::shared_ptr<InputSource> rinput )
+{
+	if(linput)
+		mInputSources[LEFT_PLAYER] = linput;
+	
+	if(rinput)
+		mInputSources[RIGHT_PLAYER] = rinput;
+		
+	mInputSources[LEFT_PLAYER]->setMatch(this);
+	mInputSources[RIGHT_PLAYER]->setMatch(this);
 }
 
 void DuelMatch::reset()
@@ -61,15 +73,6 @@ void DuelMatch::reset()
 
 DuelMatch::~DuelMatch()
 {
-	if (mGlobal)
-	{
-		mMainGame = 0;
-	}
-}
-
-DuelMatch* DuelMatch::getMainGame()
-{
-	return mMainGame;
 }
 
 void DuelMatch::setRules(std::string rulesFile)
@@ -86,8 +89,8 @@ void DuelMatch::step()
 	if(mPaused)
 		return;
 		
-	mTransformedInput[LEFT_PLAYER] = mLeftInput->updateInput();
-	mTransformedInput[RIGHT_PLAYER] = mRightInput->updateInput();
+	mTransformedInput[LEFT_PLAYER] = mInputSources[LEFT_PLAYER]->updateInput();
+	mTransformedInput[RIGHT_PLAYER] = mInputSources[RIGHT_PLAYER]->updateInput();
 	
 	int leftScore = mLogic->getScore(LEFT_PLAYER);
 	int rightScore = mLogic->getScore(RIGHT_PLAYER);
@@ -158,9 +161,9 @@ void DuelMatch::step()
 	// reset BallDown, reset the World
 	// to let the player serve
 	// and trigger the EVENT_RESET
-	if (!mLogic->isBallValid() && mPhysicWorld->canStartRound(mLogic->getServingPlayer()))
+	if (!mLogic->isBallValid() && canStartRound(mLogic->getServingPlayer()))
 	{
-		mPhysicWorld->reset(mLogic->getServingPlayer());
+		resetBall( mLogic->getServingPlayer() );
 		mLogic->onServe();
 		events |= EVENT_RESET;
 	}
@@ -245,7 +248,7 @@ bool DuelMatch::getBallActive() const
 
 bool DuelMatch::getBlobJump(PlayerSide player) const
 {
-	return mPhysicWorld->getBlobJump(player);
+	return !mPhysicWorld->blobHitGround(player);
 }
 
 Vector2 DuelMatch::getBlobPosition(PlayerSide player) const
@@ -287,8 +290,8 @@ void DuelMatch::setState(const DuelMatchState& state)
 	mTransformedInput[LEFT_PLAYER] = state.playerInput[LEFT_PLAYER];
 	mTransformedInput[RIGHT_PLAYER] = state.playerInput[RIGHT_PLAYER];
 	
-	mLeftInput->setInput(mTransformedInput[LEFT_PLAYER]);
-	mRightInput->setInput(mTransformedInput[RIGHT_PLAYER]);
+	mInputSources[LEFT_PLAYER]->setInput( mTransformedInput[LEFT_PLAYER] );
+	mInputSources[RIGHT_PLAYER]->setInput( mTransformedInput[RIGHT_PLAYER] );
 	
 	events &= ~EVENT_ERROR;
 	switch (state.errorSide)
@@ -317,9 +320,9 @@ DuelMatchState DuelMatch::getState() const
 
 void DuelMatch::setServingPlayer(PlayerSide side)
 {
-	mLogic->setServingPlayer(side);
-	mLogic->onServe();
-	mPhysicWorld->reset(side);
+	mLogic->setServingPlayer( side );
+	resetBall( side );
+	mLogic->onServe( );
 }
 
 const Clock& DuelMatch::getClock() const
@@ -332,16 +335,38 @@ Clock& DuelMatch::getClock()
 	return mLogic->getClock();
 }
 
-InputSource* DuelMatch::getInputSource(PlayerSide player) const
+boost::shared_ptr<InputSource> DuelMatch::getInputSource(PlayerSide player) const
 {
-	if(player == LEFT_PLAYER)
-	{
-		return mLeftInput;
-	} 
-	 else if (player == RIGHT_PLAYER)
-	{
-		return mRightInput;
-	}
-	
-	return 0;
+	return mInputSources[player];
+}
+
+void DuelMatch::resetBall( PlayerSide side ) 
+{
+	if (side == LEFT_PLAYER)
+		mPhysicWorld->setBallPosition( Vector2(200, STANDARD_BALL_HEIGHT) );
+	else if (side == RIGHT_PLAYER)
+		mPhysicWorld->setBallPosition( Vector2(600, STANDARD_BALL_HEIGHT) );
+	else
+		mPhysicWorld->setBallPosition( Vector2(400, 450) );
+
+	mPhysicWorld->setBallVelocity( Vector2(0, 0) ); 
+	mPhysicWorld->setBallAngularVelocity( (side == RIGHT_PLAYER ? -1 : 1) * STANDARD_BALL_ANGULAR_VELOCITY );
+	mPhysicWorld->setLastHitIntensity(0.0);
+}
+
+bool DuelMatch::canStartRound(PlayerSide servingPlayer) const
+{
+	Vector2 ballVelocity = mPhysicWorld->getBallVelocity();
+	return (mPhysicWorld->blobHitGround(servingPlayer) && ballVelocity.y < 1.5 &&
+				ballVelocity.y > -1.5 && mPhysicWorld->getBallPosition().y > 430);
+}
+
+PlayerIdentity DuelMatch::getPlayer(PlayerSide player) const
+{
+	return mPlayers[player];
+}
+
+PlayerIdentity& DuelMatch::getPlayer(PlayerSide player)
+{
+	return mPlayers[player];
 }

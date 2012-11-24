@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/NetworkTypes.h"
 #include "Global.h"
+#include "PlayerIdentity.h"
 
 class NetworkGame;
 
@@ -46,15 +47,16 @@ class NetworkPlayer
 		bool valid() const;
 		const PlayerID& getID() const;
 		const std::string& getName() const;
-		const Color& getColor() const;
+		Color getColor() const;
 		PlayerSide getDesiredSide() const;
 		const boost::shared_ptr<NetworkGame>& getGame() const;
 		
 	private:
+		/* Network ID */
 		PlayerID mID;
 		/* Identity */
-		std::string mName;
-		Color mColor;
+		PlayerIdentity mIdentity;
+		/* Perferences */
 		PlayerSide mDesiredSide;
 		
 		/* Game Data */

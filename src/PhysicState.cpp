@@ -52,7 +52,10 @@ void PhysicState::swapSides()
 {
 	blobPosition[LEFT_PLAYER].x = RIGHT_PLANE - blobPosition[LEFT_PLAYER].x;
 	blobPosition[RIGHT_PLAYER].x = RIGHT_PLANE - blobPosition[RIGHT_PLAYER].x;
+	blobVelocity[LEFT_PLAYER].x = -blobVelocity[LEFT_PLAYER].x;
+	blobVelocity[RIGHT_PLAYER].x = -blobVelocity[RIGHT_PLAYER].x;
 	std::swap(blobPosition[LEFT_PLAYER], blobPosition[RIGHT_PLAYER]);
+	std::swap(blobVelocity[LEFT_PLAYER], blobVelocity[RIGHT_PLAYER]);
 	
 	ballPosition.x = RIGHT_PLANE - ballPosition.x;
 	ballVelocity.x = -ballVelocity.x;

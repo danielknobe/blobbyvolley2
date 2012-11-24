@@ -50,6 +50,7 @@ set (blobby_SRC ${common_SRC}
 	ReplayRecorder.cpp ReplayRecorder.h
 	ReplayPlayer.cpp ReplayPlayer.h
 	ReplayLoader.cpp
+	InputSourceFactory.cpp InputSourceFactory.h
 	state/State.cpp state/State.h
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h

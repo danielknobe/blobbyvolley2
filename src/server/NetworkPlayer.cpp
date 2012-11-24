@@ -27,14 +27,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // initialise NetworkPlayer. Set NetworkID to 0.0.0.0:0, so we are sure no player
 // will ever have this.
-NetworkPlayer::NetworkPlayer() : mID(), mName(), mColor(), mDesiredSide(NO_PLAYER)
+NetworkPlayer::NetworkPlayer() : mID(), mIdentity(), mDesiredSide(NO_PLAYER)
 {
 	mID.binaryAddress = 0;
 	mID.port = 0;
 }
 
 NetworkPlayer::NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side)
-:mID(id), mName(name), mColor(color), mDesiredSide(side)
+:mID(id), mIdentity(name, color, false), mDesiredSide(side)
 {
 	
 }
@@ -52,12 +52,11 @@ NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
 	// ensures that charName is null terminated
 	charName[sizeof(charName)-1] = '\0';
 	
-	mName = charName;
-	
 	// read colour data
 	int color;
 	stream.Read(color);
-	mColor = color;
+	
+	mIdentity = PlayerIdentity(charName, color, false); 
 }
 
 bool NetworkPlayer::valid() const
@@ -72,11 +71,11 @@ const PlayerID& NetworkPlayer::getID() const
 
 const std::string& NetworkPlayer::getName() const
 {
-	return mName;
+	return mIdentity.getName();
 }
-const Color& NetworkPlayer::getColor() const
+Color NetworkPlayer::getColor() const
 {
-	return mColor;
+	return mIdentity.getStaticColor();
 }
 
 PlayerSide NetworkPlayer::getDesiredSide() const

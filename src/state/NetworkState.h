@@ -29,6 +29,7 @@ class RakClient;
 class RakServer;
 class DuelMatch;
 class NetworkGame;
+class PlayerIdentity;
 
 /*! \class NetworkGameState
 	\brief State for Network Game
@@ -64,19 +65,15 @@ private:
 	// server info
 	std::string mServerAddress;
 	uint16_t mPort;
-
-	Player mLeftPlayer;
-	Player mRightPlayer;
 	
 	// these are pointers to mLeftPlayer or mRightPlayer respectively, so we don't need a smart pointer here
-	Player* mLocalPlayer;
-	Player* mRemotePlayer;
+	PlayerIdentity* mLocalPlayer;
+	PlayerIdentity* mRemotePlayer;
 	
 	bool mUseRemoteColor;
 
 	boost::scoped_ptr<InputSource> mLocalInput;
-	PlayerSide mServingPlayer;
-
+	
 	bool mSaveReplay;
 	bool mWaitingForReplay;
 	std::string mFilename;

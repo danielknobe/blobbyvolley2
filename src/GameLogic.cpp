@@ -485,6 +485,9 @@ class LuaGameLogic : public FallbackGameLogic
 		
 		// helper functions
 		void setLuaGlobalVariable(const char* name, double value);
+		bool luaCheckFunc(const char* fname) const;
+		
+		static LuaGameLogic* getGameLogic(lua_State* state);
 		
 	private:
 		
@@ -608,13 +611,23 @@ void LuaGameLogic::setLuaGlobalVariable(const char* name, double value)
 	lua_setglobal(mState, name);
 }
 
-PlayerSide LuaGameLogic::checkWin() const
+bool LuaGameLogic::luaCheckFunc(const char* fname) const
 {
-	bool won = false;
-	lua_getglobal(mState, "IsWinning");
+	lua_getglobal(mState, fname);
 	if (!lua_isfunction(mState, -1))
 	{
 		lua_pop(mState, 1);
+		return false;
+	}
+	
+	return true;
+}
+
+PlayerSide LuaGameLogic::checkWin() const
+{
+	bool won = false;
+	if (!luaCheckFunc("IsWinning"))
+	{
 		return FallbackGameLogic::checkWin();
 	}
 	
@@ -643,10 +656,8 @@ PlayerSide LuaGameLogic::checkWin() const
 
 PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 {
-	lua_getglobal(mState, "HandleInput");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc( "HandleInput" ))
 	{
-		lua_pop(mState, 1);
 		return FallbackGameLogic::handleInput(ip, player);
 	}
 	lua_pushnumber(mState, player);
@@ -668,10 +679,8 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 
 void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 {
-	lua_getglobal(mState, "OnBallHitsPlayer");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc("OnBallHitsPlayer"))
 	{
-		lua_pop(mState, 1);
 		FallbackGameLogic::OnBallHitsPlayerHandler(side);
 		return;
 	}
@@ -685,10 +694,8 @@ void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
-	lua_getglobal(mState, "OnBallHitsWall");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc("OnBallHitsWall"))
 	{
-		lua_pop(mState, 1);
 		FallbackGameLogic::OnBallHitsWallHandler(side);
 		return;
 	}
@@ -703,10 +710,8 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 {
-	lua_getglobal(mState, "OnBallHitsNet");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc( "OnBallHitsNet" ))
 	{
-		lua_pop(mState, 1);
 		FallbackGameLogic::OnBallHitsNetHandler(side);
 		return;
 	}
@@ -722,10 +727,8 @@ void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 {
-	lua_getglobal(mState, "OnBallHitsGround");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc( "OnBallHitsGround" ))
 	{
-		lua_pop(mState, 1);
 		FallbackGameLogic::OnBallHitsGroundHandler(side);
 		return;
 	}
@@ -741,10 +744,8 @@ void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 
 void LuaGameLogic::OnGameHandler()
 {
-	lua_getglobal(mState, "OnGame");
-	if (!lua_isfunction(mState, -1))
+	if (!luaCheckFunc( "OnGame" ))
 	{
-		lua_pop(mState, 1);
 		FallbackGameLogic::OnGameHandler();
 		return;
 	}
@@ -755,11 +756,17 @@ void LuaGameLogic::OnGameHandler()
 	};
 }
 
-int LuaGameLogic::luaTouches(lua_State* state)
+LuaGameLogic* LuaGameLogic::getGameLogic(lua_State* state)
 {
 	lua_getglobal(state, "__GAME_LOGIC_POINTER");
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
+	return gl;
+}
+
+int LuaGameLogic::luaTouches(lua_State* state)
+{
+	LuaGameLogic* gl = getGameLogic(state);
 	
 	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
@@ -879,9 +886,7 @@ int LuaGameLogic::luaGetScore(lua_State* state)
 {
 	int pl = lua_toint(state, -1);
 	lua_pop(state, 1);
-	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
+	LuaGameLogic* gl = getGameLogic(state);
 	
 	lua_pushnumber(state, gl->getScore((PlayerSide)pl));
 	return 1;
@@ -895,9 +900,7 @@ int LuaGameLogic::luaMistake(lua_State* state)
 	lua_pop(state, 1);
 	PlayerSide mistakeSide = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
-	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
+	LuaGameLogic* gl = getGameLogic(state);
 	
 	gl->score(other_side(mistakeSide), amount);
 	gl->onError(mistakeSide, serveSide);
@@ -910,9 +913,7 @@ int LuaGameLogic::luaScore(lua_State* state)
 	lua_pop(state, 1);
 	int player = lua_toint(state, -1);
 	lua_pop(state, 1);
-	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
+	LuaGameLogic* gl = getGameLogic(state);
 	
 	gl->score((PlayerSide)player, amount);
 	return 0;
@@ -928,20 +929,14 @@ int LuaGameLogic::luaGetOpponent(lua_State* state)
 
 int LuaGameLogic::luaGetServingPlayer(lua_State* state) 
 {
-	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
+	LuaGameLogic* gl = getGameLogic(state);
 	lua_pushnumber(state, gl->getServingPlayer());
 	return 1;
 }
 
 int LuaGameLogic::luaGetGameTime(lua_State* state) 
 {
-	lua_getglobal(state, "__GAME_LOGIC_POINTER");
-	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-	
+	LuaGameLogic* gl = getGameLogic(state);
 	lua_pushnumber(state, gl->getClock().getTime());
 	return 1;
 }

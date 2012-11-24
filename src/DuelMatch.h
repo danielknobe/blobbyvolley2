@@ -21,16 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "GameLogic.h"
 #include "Vector.h"
 #include "InputSource.h"
-
-namespace RakNet
-{
-	class BitStream;
-}
-
+#include "PlayerIdentity.h"
 
 class InputSource;
 class DuelMatchState;
@@ -47,28 +43,17 @@ class PhysicWorld;
 */
 class DuelMatch
 {
-	public:
-		// This constructor takes the input sources used to get player input
-		// The parameter output tells DuelMatch if it should report its
-		// results to the user through RenderManager and SoundManager.
-		// A deacivation of the output is useful on dedicated servers
-
-		// If global is true, the instance registered as the main
-		// game and can be accessed from everywhere. There can only
-		// be one global game at a time, otherwise an assertion fails.
-		
+	public:	
 		// If remote is true, only physical responses will be calculated
 		// but hit events and score events are received from network
 
-		DuelMatch(InputSource* linput, InputSource* rinput, bool global, bool remote, std::string rules);
+		DuelMatch(bool remote, std::string rules);
+		
+		void setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer);
+		void setInputSources(boost::shared_ptr<InputSource> linput, boost::shared_ptr<InputSource> rinput );
 
 		~DuelMatch();
 
-		// Allthough DuelMatch can be instantiated multiple times, a
-		// singleton may be registered for the purpose of scripted or
-		// interactive input. Note this can return 0.
-		static DuelMatch* getMainGame();
-		
 		void setRules(std::string rulesFile);
 		
 		void reset();
@@ -79,6 +64,7 @@ class DuelMatch
 		// this methods allow external input 
 		// events triggered by the network
 		void setScore(int left, int right);
+		void resetBall(PlayerSide side);
 		
 		void trigger(int event);
 		void resetTriggeredEvents();
@@ -111,6 +97,7 @@ class DuelMatch
 
 		bool getBallDown() const;
 		bool getBallActive() const;
+		bool canStartRound(PlayerSide servingPlayer) const;
 		
 		void pause();
 		void unpause();
@@ -128,22 +115,23 @@ class DuelMatch
 		DuelMatchState getState() const;
 
 		//Input stuff for recording and playing replays
-		InputSource* getInputSource(PlayerSide player) const;
+		boost::shared_ptr<InputSource> getInputSource(PlayerSide player) const;
+	
+		PlayerIdentity getPlayer(PlayerSide player) const;
+		PlayerIdentity& getPlayer(PlayerSide player);
 	
 		void setServingPlayer(PlayerSide side);
 	
 		int getEvents() const { return events; }
 
 	private:
-		static DuelMatch* mMainGame;
-		bool mGlobal;
 
 		boost::scoped_ptr<PhysicWorld> mPhysicWorld;
 
-		InputSource* mLeftInput;
-		InputSource* mRightInput;
-		
+		boost::shared_ptr<InputSource> mInputSources[MAX_PLAYERS];
 		PlayerInput mTransformedInput[MAX_PLAYERS];
+		
+		PlayerIdentity mPlayers[MAX_PLAYERS];		
 
 		GameLogic mLogic;
 

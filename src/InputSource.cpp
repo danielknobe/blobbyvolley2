@@ -23,9 +23,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <ostream>
+#include <cassert>
 
 /* implementation */
 
+InputSource::InputSource() : mInput(), mMatch(0)
+{
+	
+}
 
 PlayerInput InputSource::getInput() const
 {
@@ -45,6 +50,17 @@ void InputSource::setInput(PlayerInput ip)
 PlayerInput InputSource::getNextInput()
 {
 	return mInput;
+}
+
+const DuelMatch* InputSource::getMatch() const
+{
+	return mMatch;
+}
+
+void InputSource::setMatch(const DuelMatch* match)
+{
+	assert(mMatch == 0);
+	mMatch = match;
 }
 
 std::ostream& operator<< (std::ostream& out, const PlayerInput& input)

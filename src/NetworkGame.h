@@ -72,16 +72,12 @@ class NetworkGame
 		PlayerID mLeftPlayer;
 		PlayerID mRightPlayer;
 		PlayerSide mSwitchedSide;
-		std::string mLeftPlayerName;
-		std::string mRightPlayerName;
-		Color mLeftPlayerColor;
-		Color mRightPlayerColor;
 
 		PacketQueue mPacketQueue;
 
 		DuelMatch* mMatch;
-		boost::scoped_ptr<InputSource> mLeftInput;
-		boost::scoped_ptr<InputSource> mRightInput;
+		boost::shared_ptr<InputSource> mLeftInput;
+		boost::shared_ptr<InputSource> mRightInput;
 		PlayerSide mWinningPlayer;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
