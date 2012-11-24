@@ -37,15 +37,14 @@ const float TIMEOUT_MAX = 2.5;
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
 
-const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;
-
 // helper function for setting FPU precision
 
 inline void set_fpu_single_precision();
 
-PhysicWorld::PhysicWorld()
+PhysicWorld::PhysicWorld() : mLastHitIntensity(0), mBallRotation(0), 
+								mBallPosition( Vector2(200, STANDARD_BALL_HEIGHT) ) ,
+								mBallAngularVelocity(STANDARD_BALL_ANGULAR_VELOCITY)
 {
-	reset(LEFT_PLAYER);
 	mCurrentBlobbyAnimationSpeed[LEFT_PLAYER] = 0.0;
 	mCurrentBlobbyAnimationSpeed[RIGHT_PLAYER] = 0.0;
 	mBlobState[LEFT_PLAYER] = 0.0;
@@ -53,30 +52,13 @@ PhysicWorld::PhysicWorld()
 	
 	mBlobPosition[LEFT_PLAYER] = Vector2( 200, GROUND_PLANE_HEIGHT);
 	mBlobPosition[RIGHT_PLAYER] = Vector2(600, GROUND_PLANE_HEIGHT);
-	mBallRotation = 0.0;
 }
 
 PhysicWorld::~PhysicWorld()
 {
 }
 
-void PhysicWorld::reset(PlayerSide player)
-{
-	if (player == LEFT_PLAYER)
-		mBallPosition = Vector2(200, STANDARD_BALL_HEIGHT);
-	else if (player == RIGHT_PLAYER)
-		mBallPosition = Vector2(600, STANDARD_BALL_HEIGHT);
-	else
-		mBallPosition = Vector2(400, 450);
-
-	mBallVelocity.clear();
-
-	mBallAngularVelocity = player == RIGHT_PLAYER ? -STANDARD_BALL_ANGULAR_VELOCITY : STANDARD_BALL_ANGULAR_VELOCITY;
-
-	mLastHitIntensity = 0.0;
-}
-
-bool PhysicWorld::blobbyHitGround(PlayerSide player) const
+bool PhysicWorld::blobHitGround(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER || player == RIGHT_PLAYER)
 	{
@@ -84,12 +66,6 @@ bool PhysicWorld::blobbyHitGround(PlayerSide player) const
 	}
 	else
 		return false;
-}
-
-bool PhysicWorld::canStartRound(PlayerSide servingPlayer) const
-{
-	return (blobbyHitGround(servingPlayer) && mBallVelocity.y < 1.5 &&
-		mBallVelocity.y > -1.5 && mBallPosition.y > 430);
 }
 
 void PhysicWorld::setLastHitIntensity(float intensity)
@@ -176,7 +152,7 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 
 	if (input.up)
 	{
-		if (blobbyHitGround(player))
+		if (blobHitGround(player))
 		{
 			mBlobVelocity[player].y = -BLOBBY_JUMP_ACCELERATION;
 			blobbyStartAnimation( player );
@@ -185,7 +161,7 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 		currentBlobbyGravity -= BLOBBY_JUMP_BUFFER;
 	}
 
-	if ((input.left || input.right) && blobbyHitGround(player))
+	if ((input.left || input.right) && blobHitGround(player))
 	{
 		blobbyStartAnimation(player);
 	}
@@ -401,9 +377,9 @@ void PhysicWorld::setBallVelocity( Vector2 newVelocity )
 	mBallVelocity = newVelocity;
 }
 
-bool PhysicWorld::getBlobJump(PlayerSide player) const
+void PhysicWorld::setBallAngularVelocity( float angvel )
 {
-	return !blobbyHitGround(player);
+	mBallAngularVelocity = angvel;
 }
 
 PhysicState PhysicWorld::getState() const
@@ -431,36 +407,6 @@ void PhysicWorld::setState(const PhysicState& ps)
 	mBallVelocity = ps.ballVelocity;
 	mBallAngularVelocity = ps.ballAngularVelocity;
 }
-
-
-// debugging:
-#ifdef DEBUG
-
-#include <iostream>
-
-bool PhysicWorld::checkPhysicStateValidity() const
-{
-	// check for blobby ball collisions
-	if(playerTopBallCollision(LEFT_PLAYER) || playerBottomBallCollision(LEFT_PLAYER))
-	{
-		std::cout << mBallPosition.x << " " << mBallPosition.y << "\n";
-		std::cout << mBlobPosition[LEFT_PLAYER].x << " " << mBlobPosition[LEFT_PLAYER].y << "\n";
-		return false;
-	}
-
-	if(playerTopBallCollision(RIGHT_PLAYER) || playerBottomBallCollision(RIGHT_PLAYER))
-	{
-		std::cout << mBallPosition.x << " " << mBallPosition.y << "\n";
-		std::cout << mBlobPosition[RIGHT_PLAYER].x << " " << mBlobPosition[RIGHT_PLAYER].y << "\n";
-
-		return false;
-	}
-
-	return true;
-}
-
-#endif
-
 
 inline void set_fpu_single_precision()
 {

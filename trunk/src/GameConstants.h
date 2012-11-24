@@ -67,3 +67,4 @@ const float NET_SPHERE_POSITION = 284;
 const float STANDARD_BALL_HEIGHT = 269 + BALL_RADIUS;
 
 const float BLOBBY_SPEED = 4.5; // BLOBBY_SPEED is necessary to determine the size of the input buffer
+const float STANDARD_BALL_ANGULAR_VELOCITY = 0.1;

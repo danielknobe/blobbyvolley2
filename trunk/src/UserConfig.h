@@ -52,15 +52,16 @@ class UserConfig: public IUserConfigReader
 		std::string getString(const std::string& name) const;
 		bool getBool(const std::string& name) const;
 		int getInteger(const std::string& name) const;
+		
+		PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human);
 
 		void setFloat(const std::string& name, float value);
 		void setString(const std::string& name, const std::string& value);
 		void setBool(const std::string& name, bool value);
 		void setInteger(const std::string& name, int value);
-		
 	private:
 		std::vector<UserConfigVar*> mVars;
 		bool mChangeFlag;
-		UserConfigVar *findVarByName(const std::string& Name) const;
+		UserConfigVar* findVarByName(const std::string& Name) const;
 		UserConfigVar* createVar(const std::string& name, const std::string& defaultValue);
 };

@@ -112,6 +112,8 @@ class RenderManager
 		{
 			return *mSingleton;
 		}
+		
+		Color getOscillationColor() const;
 
 		// Draws the stuff
 		virtual void draw() = 0;
@@ -214,7 +216,6 @@ class RenderManager
 
 		float mMouseMarkerPosition;
 		bool mNeedRedraw;
-		
 	
 	private:
 		static RenderManager *mSingleton;

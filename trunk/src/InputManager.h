@@ -42,11 +42,9 @@ class InputManager
 		static InputManager* getSingleton();
 		~InputManager();
 
-		void beginGame(PlayerSide side);
-		void endGame();
+		InputDevice* beginGame(PlayerSide side) const;
 
 		bool running() const;
-		PlayerInput getGameInput(int player);
 		void updateInput();
 
 		// For GUI navigation (Gamepad, Joystick or Keyboard)
@@ -71,8 +69,8 @@ class InputManager
 		bool unclick() const;
 		
 		// config conversion methods
-		std::string keyToString(const SDL_keysym& key);
-		SDLKey stringToKey(const std::string& keyname);
+		std::string keyToString(const SDL_keysym& key) const;
+		SDLKey stringToKey(const std::string& keyname) const;
 	
 	private:
 		static InputManager* mSingleton;
@@ -101,8 +99,6 @@ class InputManager
 		int mLastMouseButton; 
 		std::string mLastJoyAction;
 
-		PlayerInput mInput[MAX_PLAYERS];	
-		InputDevice *mInputDevice[MAX_PLAYERS];	
 		bool mRunning;
 		
 		InputManager();

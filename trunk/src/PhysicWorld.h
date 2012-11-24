@@ -24,15 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputSource.h"
 #include "PhysicState.h"
 
-namespace RakNet
-{
-	class BitStream;
-}
-
 /*! \brief blobby world
 	\details This class encapuslates the physical world where blobby happens. It manages the two blobs,
 			the ball and collisions between them and the environment, it calculates object movements etc.
-	\todo remove all game logic related stuff!
 */
 class PhysicWorld
 {
@@ -46,27 +40,18 @@ class PhysicWorld
 		Vector2 getBallVelocity() const;
 		void setBallVelocity( Vector2 newVelocity );
 		float getBallRotation() const;
+		void setBallAngularVelocity( float angvel );
 		
 		// blobby information queries
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
-		bool getBlobJump(PlayerSide player) const;
+		bool blobHitGround(PlayerSide player) const;
 		float getBlobState(PlayerSide player) const;
-
-		// Blobby animation methods
-		void blobbyStartAnimation(PlayerSide player);
 
 		// Methods to set/get the intensity of the collision
 		// which was detected and also queried last.
 		void setLastHitIntensity(float intensity);
 		float getLastHitIntensity() const;
-
-		// This returns true if reset area is clear and the ball is steady
-		bool canStartRound(PlayerSide servingPlayer) const;
-
-		// This resets everything to the starting situation and
-		// wants to know, which player begins.
-		void reset(PlayerSide player);
 
 		// Important: This assumes a fixed framerate of 60 FPS!
 		int step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning);
@@ -77,14 +62,10 @@ class PhysicWorld
 		// sets a new physic state
 		void setState(const PhysicState& state);
 
-		#ifdef DEBUG
-		bool checkPhysicStateValidity() const;
-		#endif
-
 	private:
+		// Blobby animation methods
+		void blobbyStartAnimation(PlayerSide player);
 		void blobbyAnimationStep(PlayerSide player);
-	
-		bool blobbyHitGround(PlayerSide player) const;
 	
 		inline bool playerTopBallCollision(int player) const;
 		inline bool playerBottomBallCollision(int player) const;

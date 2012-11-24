@@ -98,6 +98,24 @@ void State::presentGame(const DuelMatch& match)
 	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),
 							match.getWorld().getBlobState(RIGHT_PLAYER));
 	
+	if(match.getPlayer(LEFT_PLAYER).getOscillating())
+	{
+		rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
+	} 
+	 else
+	{
+		rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
+	}
+	
+	if(match.getPlayer(RIGHT_PLAYER).getOscillating())
+	{
+		rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
+	} 
+	 else
+	{
+		rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
+	}
+	
 	rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
 			
 	rmanager.setTime(match.getClock().getTimeString());

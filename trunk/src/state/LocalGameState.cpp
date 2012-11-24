@@ -39,50 +39,57 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileSystem.h"
 #include "FileWrite.h"
 #include "GenericIO.h"
+#include "InputSourceFactory.h"
 
 /* implementation */
 LocalGameState::~LocalGameState()
 {
-	InputManager::getSingleton()->endGame();
 }
 
 LocalGameState::LocalGameState()
 	: State(),
-	mLeftPlayer(LEFT_PLAYER),
-	mRightPlayer(RIGHT_PLAYER),
 	mRecorder(new ReplayRecorder())
 {
 	mSaveReplay = false;
 	mWinner = false;
 	mErrorMessage = "";
 	
-	mLeftPlayer.loadFromConfig("left");
-	mRightPlayer.loadFromConfig("right");
+	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
+	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
+	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
+	
+	boost::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
+	boost::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER); 
+	
+//	mLeftPlayer.loadFromConfig("left");
+//	mRightPlayer.loadFromConfig("right");
 	
 	// create default replay name
-	mFilename = mLeftPlayer.getName();
+	mFilename = leftPlayer.getName();
 	if(mFilename.size() > 7)
 		mFilename.resize(7);
 	mFilename += " vs ";
-	std::string oppname = mRightPlayer.getName();
+	std::string oppname = rightPlayer.getName();
 	if(oppname.size() > 7)
 		oppname.resize(7);
 	mFilename += oppname;
 	
+	
 	// set speed
-	SpeedController::getMainInstance()->setGameSpeed(
-			(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
-		);
+	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
+	
 	
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
-	mRecorder->setPlayerNames(mLeftPlayer.getName(), mRightPlayer.getName());
-	mRecorder->setPlayerColors( mLeftPlayer.getColor(), mRightPlayer.getColor() );
-	mRecorder->setGameSpeed((float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps"));
+	mMatch.reset(new DuelMatch( false, "rules.lua"));
+	mMatch->setPlayers(leftPlayer, rightPlayer);
+	mMatch->setInputSources(leftInput, rightInput);
 
-	mMatch.reset(new DuelMatch(mLeftPlayer.getInputSource(), mRightPlayer.getInputSource(), true, false, "rules.lua"));
-
-	RenderManager::getSingleton().setPlayernames(mLeftPlayer.getName(), mRightPlayer.getName());
+	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
+	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
+	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
+	
+	RenderManager::getSingleton().setPlayernames(leftPlayer.getName(), rightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();
 }
 
@@ -171,11 +178,7 @@ void LocalGameState::step()
 	}
 	else if (mWinner)
 	{
-		std::string tmp;
-		if(mMatch->winningPlayer() == LEFT_PLAYER)
-			tmp = mLeftPlayer.getName();
-		else
-			tmp = mRightPlayer.getName();
+		std::string tmp = mMatch->getPlayer(mMatch->winningPlayer()).getName();
 		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 		imgui.doText(GEN_ID, Vector2(274, 250), tmp);
@@ -228,8 +231,6 @@ void LocalGameState::step()
 		}
 			
 		presentGame(*mMatch);
-		rmanager->setBlobColor(LEFT_PLAYER, mLeftPlayer.getColor());
-		rmanager->setBlobColor(RIGHT_PLAYER, mRightPlayer.getColor());
 	}
 }
 

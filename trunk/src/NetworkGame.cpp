@@ -53,22 +53,22 @@ NetworkGame::NetworkGame(RakServer& server,
 		mRightInput(new InputSource())
 
 {
-	mMatch = new DuelMatch(mLeftInput.get(), mRightInput.get(), false, false, rules);
+	mMatch = new DuelMatch(false, rules);
+	mMatch->setPlayers( PlayerIdentity(leftPlayerName), PlayerIdentity(rightPlayerName) );
+	mMatch->getPlayer(LEFT_PLAYER).setStaticColor(leftColor);
+	mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(rightColor);
+	mMatch->setInputSources(mLeftInput, mRightInput);
 
 	mLeftPlayer = leftPlayer;
 	mRightPlayer = rightPlayer;
 	mSwitchedSide = switchedSide;
-	mLeftPlayerName = leftPlayerName;
-	mRightPlayerName = rightPlayerName;
-	mLeftPlayerColor = leftColor;
-	mRightPlayerColor = rightColor;
-
+	
 	mWinningPlayer = NO_PLAYER;
 
 	mPausing = false;
 
 	mRecorder.reset(new ReplayRecorder());
-	mRecorder->setPlayerNames(mLeftPlayerName.c_str(), mRightPlayerName.c_str());
+	mRecorder->setPlayerNames(leftPlayerName.c_str(), rightPlayerName.c_str());
 	mRecorder->setPlayerColors(leftColor, rightColor);
 	mRecorder->setGameSpeed(SpeedController::getMainInstance()->getGameSpeed());
 
@@ -281,17 +281,17 @@ bool NetworkGame::step()
 					RakNet::BitStream leftStream;
 					leftStream.Write((unsigned char)ID_GAME_READY);
 					leftStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
-					strncpy(name, mRightPlayerName.c_str(), sizeof(name));
+					strncpy(name, mMatch->getPlayer(LEFT_PLAYER).getName().c_str(), sizeof(name));
 					leftStream.Write(name, sizeof(name));
-					leftStream.Write(mRightPlayerColor.toInt());
+					leftStream.Write(mMatch->getPlayer(RIGHT_PLAYER).getStaticColor().toInt());
 					
 					// writing data into rightStream
 					RakNet::BitStream rightStream;
 					rightStream.Write((unsigned char)ID_GAME_READY);
 					rightStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
-					strncpy(name, mLeftPlayerName.c_str(), sizeof(name));
+					strncpy(name, mMatch->getPlayer(LEFT_PLAYER).getName().c_str(), sizeof(name));
 					rightStream.Write(name, sizeof(name));
-					rightStream.Write(mLeftPlayerColor.toInt());
+					rightStream.Write(mMatch->getPlayer(LEFT_PLAYER).getStaticColor().toInt());
 					
 					mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
 						     mLeftPlayer, false);

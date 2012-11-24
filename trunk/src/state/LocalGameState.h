@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "Player.h"
 #include "State.h"
 
 #include <boost/scoped_ptr.hpp>
@@ -29,23 +28,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class LocalGameState : public State
 {
-private:
-	Player mLeftPlayer;
-	Player mRightPlayer;
+	public:
+		LocalGameState();
+		virtual ~LocalGameState();
+		virtual void step();
+		
+		virtual const char* getStateName() const;
 	
-	std::string mErrorMessage;
-	bool mSaveReplay;
-	bool mWinner;
-	std::string mFilename;
-	
-	boost::scoped_ptr<DuelMatch> mMatch;
-	boost::scoped_ptr<ReplayRecorder> mRecorder;
-public:
-	LocalGameState();
-	virtual ~LocalGameState();
-	virtual void step();
-	
-	virtual const char* getStateName() const;
-	
+	private:
+		std::string mErrorMessage;
+		bool mSaveReplay;
+		bool mWinner;
+		std::string mFilename;
+		
+		boost::scoped_ptr<DuelMatch> mMatch;
+		boost::scoped_ptr<ReplayRecorder> mRecorder;	
 };
 

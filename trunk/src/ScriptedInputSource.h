@@ -58,7 +58,7 @@ class ScriptedInputSource : public InputSource
 		/// it would even be enough to set it once, but we may change this
 		/// for making bot tournaments^^, so the idea of setting it for each 
 		/// bot seems better to me
-		static DuelMatch* mMatch;
+		static const DuelMatch* mMatch;
 		static ScriptedInputSource* mCurrentSource;
 
 		// helpers

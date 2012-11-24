@@ -49,9 +49,6 @@ private:
 	
 	Vector2 mLastMousePosition;
 	int mMouseShowTimer;
-
-	Player mLeftPlayer;
-	Player mRightPlayer;
 	
 	// controls
 	int mPositionJump;

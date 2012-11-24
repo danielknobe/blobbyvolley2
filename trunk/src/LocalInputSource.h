@@ -19,30 +19,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "InputManager.h"
-#include "RenderManager.h"
+#include "InputSource.h"
+#include "Global.h"
+
+class InputDevice;
 
 class LocalInputSource : public InputSource
 {
 	public:
-		LocalInputSource(PlayerSide player)
-			: mPlayer(player)
-		{
-			 InputManager::getSingleton()->beginGame(player);
-		}
+		LocalInputSource(PlayerSide player);
+		~LocalInputSource();
 		
-		virtual PlayerInput getNextInput()
-		{
-			return InputManager::getSingleton()->getGameInput(mPlayer);
-		}
-
-		~LocalInputSource()
-		{
-			RenderManager::getSingleton().setMouseMarker(-6);
-			InputManager::getSingleton()->endGame();
-		}
+		virtual PlayerInput getNextInput();
 		
 	private:
-		int mPlayer;
+		PlayerSide mPlayer;
+		InputDevice* mInputDevice;
 };
 

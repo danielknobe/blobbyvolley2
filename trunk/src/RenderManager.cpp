@@ -250,3 +250,14 @@ void RenderManager::setTitle(const std::string& title)
 {
 	SDL_WM_SetCaption(title.c_str(), "");
 }
+
+Color RenderManager::getOscillationColor() const
+{
+	float time = float(SDL_GetTicks()) / 1000.0;
+	
+	return Color(	
+					int((std::sin(time*1.5) + 1.0) * 128),
+					int((std::sin(time*2.5) + 1.0) * 128),
+					int((std::sin(time*3.5) + 1.0) * 128)
+				);
+}

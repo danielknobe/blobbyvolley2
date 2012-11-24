@@ -47,8 +47,6 @@ InputManager::InputManager()
 	mSingleton = this;
 	mRunning = true;
 
-	mInputDevice[LEFT_PLAYER] = 0;
-	mInputDevice[RIGHT_PLAYER] = 0;
 	/// \todo init properly?
 	mLastInputKey.sym = SDLK_UNKNOWN;
 	mLastClickTime = 0;
@@ -59,7 +57,7 @@ InputManager::~InputManager()
 	JoystickPool::getSingleton().closeJoysticks();
 }
 
-void InputManager::beginGame(PlayerSide side)
+InputDevice* InputManager::beginGame(PlayerSide side) const
 {
 	// Move Mouse to default position
 	SDL_WarpMouse(400, 300);
@@ -81,7 +79,7 @@ void InputManager::beginGame(PlayerSide side)
 	if (device == "mouse")
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
-		mInputDevice[side] = new MouseInputDevice(side, jumpbutton);
+		return new MouseInputDevice(side, jumpbutton);
 	}
 	// load config for keyboard
 	else if (device == "keyboard")
@@ -89,7 +87,7 @@ void InputManager::beginGame(PlayerSide side)
 		SDLKey lkey = stringToKey(config.getString(prefix + "keyboard_left"));
 		SDLKey rkey = stringToKey(config.getString(prefix + "keyboard_right"));
 		SDLKey jkey = stringToKey(config.getString(prefix + "keyboard_jump"));
-		mInputDevice[side] = new KeyboardInputDevice(lkey, rkey, jkey);
+		return new KeyboardInputDevice(lkey, rkey, jkey);
 	}
 	// load config for joystick
 	else if (device == "joystick")
@@ -97,27 +95,13 @@ void InputManager::beginGame(PlayerSide side)
 		JoystickAction laction(config.getString(prefix + "joystick_left"));
 		JoystickAction raction(config.getString(prefix + "joystick_right"));
 		JoystickAction jaction(config.getString(prefix + "joystick_jump"));
-		mInputDevice[side] = new JoystickInputDevice(laction, raction,
+		return new JoystickInputDevice(laction, raction,
 								jaction);
 	}
 	else 
 		std::cerr << "Error: unknown input device: " << device << std::endl;
-}
-
-void InputManager::endGame()
-{
-	if (mInputDevice[LEFT_PLAYER])
-	{
-		delete mInputDevice[LEFT_PLAYER];
-		mInputDevice[LEFT_PLAYER] = NULL;
-	}
-	
-	if (mInputDevice[RIGHT_PLAYER])
-	{
-		delete mInputDevice[RIGHT_PLAYER];
-		mInputDevice[RIGHT_PLAYER] = NULL;
-	}
-
+		
+	return 0;
 }
 
 InputManager* InputManager::getSingleton()
@@ -125,13 +109,6 @@ InputManager* InputManager::getSingleton()
 	assert(mSingleton);
 	return mSingleton;
 }
-
-PlayerInput InputManager::getGameInput(int player)
-{
-	assert (player >= 0 && player < 2);
-	return mInput[player];
-}
-
 
 InputManager* InputManager::createInputManager()
 {
@@ -280,13 +257,6 @@ void InputManager::updateInput()
 	*/
 		}
 	}
-
-	// Device gives status to the playerinput
-	if (mInputDevice[LEFT_PLAYER] && !IMGUI::getSingleton().usingCursor())
-		mInputDevice[LEFT_PLAYER]->transferInput(mInput[0]);
-
-	if (mInputDevice[RIGHT_PLAYER] && !IMGUI::getSingleton().usingCursor())
-		mInputDevice[RIGHT_PLAYER]->transferInput(mInput[1]);
 }
 
 
@@ -614,7 +584,7 @@ InputKeyMap InputManager::mKeyMap[] = {
 };
 
 
-std::string InputManager::keyToString (const SDL_keysym& key)
+std::string InputManager::keyToString (const SDL_keysym& key) const
 {
 	// use direct unicode translation when we did not
 	// get a control key
@@ -670,7 +640,7 @@ std::string InputManager::keyToString (const SDL_keysym& key)
 	return "";
 }
 
-SDLKey InputManager::stringToKey (const std::string& keyname)
+SDLKey InputManager::stringToKey (const std::string& keyname) const
 {
 	int i = 0;
 	while (mKeyMap[i].keyname != NULL)

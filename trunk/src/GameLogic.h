@@ -126,7 +126,7 @@ class IGameLogic
 		bool isBallValid() const;
 		/// returns whether game is running
 		bool isGameRunning() const;
-		/// returns whether the collision was valid (max. 3 hits)
+		/// returns whether the collision was valid (not squished)
 		bool isCollisionValid(PlayerSide side) const;
 		bool isWallCollisionValid() const;
 		bool isGroundCollisionValid() const;
