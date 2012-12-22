@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <exception>
+#include <string>
 
 /*! \class FileSystemException
 	\brief common base class of all file system related errors
@@ -29,7 +30,7 @@ class FileSystemException : public std::exception
 	public:
 		FileSystemException() { };
 		~FileSystemException() throw() { };
-		
+
 		virtual const char* what() const throw()
 		{
 			return "a file system related exception occured!";
@@ -45,20 +46,20 @@ class PhysfsException : public virtual FileSystemException
 	public:
 		// implementation in FileSystem.cpp
 		PhysfsException();
-		
+
 		~PhysfsException() throw() { };
-		
+
 		virtual const char* what() const throw()
 		{
 			return ("physfs reported an error: " + getPhysfsMessage()).c_str();
 		}
-		
+
 		std::string getPhysfsMessage() const
 		{
 			return mPhysfsErrorMsg;
 		}
 	private:
-	
+
 		/// this string saves the error message
 		std::string mPhysfsErrorMsg;
 };
@@ -71,24 +72,24 @@ class PhysfsInitException : public PhysfsException
 	public:
 		PhysfsInitException(const std::string& path) : mPath(path)
 		{
-			
+
 		}
-		
+
 		~PhysfsInitException() throw()
 		{
-			
+
 		}
-		
+
 		virtual const char* what() const throw()
 		{
 			return ("could not initialise physfs to path " + getPath() + ": " + getPhysfsMessage()).c_str();
 		}
-		
+
 		std::string getPath() const
 		{
 			return mPath;
 		}
-		
+
 	private:
 		std::string mPath;
 };
@@ -100,25 +101,25 @@ class PhysfsInitException : public PhysfsException
 */
 class FileException: public virtual FileSystemException {
 	public:
-		FileException(const std::string& f) : filename(f) 
+		FileException(const std::string& f) : filename(f)
 		{
 		}
-		
+
 		virtual ~FileException() throw() {	}
-		
+
 		/// get the name of the file of the exception
-		const std::string& getFileName() const 
+		const std::string& getFileName() const
 		{
 			return filename;
-		} 
-		
+		}
+
 	private:
 		std::string filename;	///!< name of the file which caused the exception
 };
 
 /*! \class FileLoadException
 	\brief error thrown when a file could not be opened or created.
-	\todo use a better name as FileLoadException does only fit for 
+	\todo use a better name as FileLoadException does only fit for
 			the open for reading case.
 */
 class FileLoadException : public FileException, public PhysfsException
@@ -130,14 +131,14 @@ class FileLoadException : public FileException, public PhysfsException
 			/// provides the functionality for setting exception messages, i think.
 			error = "Couldn't load " + name + ": " + getPhysfsMessage();
 		}
-		
+
 		virtual ~FileLoadException() throw() {}
 
 		virtual const char* what() const throw()
 		{
 			return error.c_str();
 		}
-		
+
 	private:
 		std::string error;	///< saves the error message
 };
@@ -151,7 +152,7 @@ class FileAlreadyExistsException : public FileException
 		FileAlreadyExistsException(std::string name) : FileException(name)
 		{
 		}
-		
+
 		virtual ~FileAlreadyExistsException() throw() { }
 
 		virtual const char* what() const throw()
@@ -171,9 +172,9 @@ class PhysfsFileException : public FileException, public PhysfsException
 		PhysfsFileException(const std::string& filename) : FileException(filename)
 		{
 		};
-		
+
 		~PhysfsFileException() throw() { };
-		
+
 		virtual const char* what() const throw()
 		{
 			return (getFileName() + ": " + getPhysfsMessage()).c_str();
@@ -184,7 +185,7 @@ class PhysfsFileException : public FileException, public PhysfsException
 	\brief signals operations on closed files
 	\details Exceptions of this type are thrown when any file modifying or information querying
 				functions are called without a file beeing opened. These are serious errors
-				and generally, exceptions of this type should not occur, as it indicates logical 
+				and generally, exceptions of this type should not occur, as it indicates logical
 				errors in the code. Still, this allows us to handle this situation without having
 				to crash or exit.
 	\sa File::check_file_open()
@@ -193,9 +194,9 @@ class NoFileOpenedException : public FileException
 {
 	public:
 		NoFileOpenedException() : FileException("") { };
-		
+
 		~NoFileOpenedException() throw() { };
-		
+
 		virtual const char* what() const throw()
 		{
 			// default error message for now
@@ -212,9 +213,9 @@ class EOFException : public FileException
 {
 	public:
 		EOFException(const std::string& file) : FileException( file ) { };
-		
+
 		~EOFException() throw() { };
-		
+
 		virtual const char* what() const throw()
 		{
 			// default error message for now
