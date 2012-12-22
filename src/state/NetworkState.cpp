@@ -579,22 +579,22 @@ void NetworkGameState::step()
 		case OPPONENT_DISCONNECTED:
 		{
 			imgui.doCursor();
-			imgui.doOverlay(GEN_ID, Vector2(100.0, 205.0), Vector2(700.0, 380.0));
-			imgui.doText(GEN_ID, Vector2(140.0, 245.0),	TextManager::GAME_OPP_LEFT);
+			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0), Vector2(700.0, 390.0));
+			imgui.doText(GEN_ID, Vector2(140.0, 240.0),	TextManager::GAME_OPP_LEFT);
 			
-			if (imgui.doButton(GEN_ID, Vector2(230.0, 295.0), TextManager::LBL_OK))
+			if (imgui.doButton(GEN_ID, Vector2(230.0, 290.0), TextManager::LBL_OK))
 			{
 				deleteCurrentState();
 				setCurrentState(new MainMenuState);
 			}
 			
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 295.0), TextManager::RP_SAVE))
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 290.0), TextManager::RP_SAVE))
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
 			}
 			
-			if (imgui.doButton(GEN_ID, Vector2(250.0, 330.0), TextManager::NET_STAY_ON_SERVER))
+			if (imgui.doButton(GEN_ID, Vector2(250.0, 340.0), TextManager::NET_STAY_ON_SERVER))
 			{
 				// we need to make a copy here because this variables get deleted in destrutor
 				// when deleteCurrentState runs
