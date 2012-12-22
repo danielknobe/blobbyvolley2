@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Blobby Volley" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Blobby Volley" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Blobby Volley" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-DWIN32" />
+			<Add option="-DHAVE_LIBGL" />
+			<Add directory="./src" />
+		</Compiler>
+		<Linker>
+			<Add library="SDL" />
+			<Add library="wsock32" />
+			<Add library="physfs" />
+		</Linker>
+		<Unit filename="src/BlobbyDebug.cpp" />
+		<Unit filename="src/BlobbyDebug.h" />
+		<Unit filename="src/Blood.cpp" />
+		<Unit filename="src/Blood.h" />
+		<Unit filename="src/BotAPICalculations.cpp" />
+		<Unit filename="src/BotAPICalculations.h" />
+		<Unit filename="src/CMakeLists.txt" />
+		<Unit filename="src/Clock.cpp" />
+		<Unit filename="src/Clock.h" />
+		<Unit filename="src/CrossCorrelation.h" />
+		<Unit filename="src/DuelMatch.cpp" />
+		<Unit filename="src/DuelMatch.h" />
+		<Unit filename="src/DuelMatchState.cpp" />
+		<Unit filename="src/DuelMatchState.h" />
+		<Unit filename="src/File.cpp" />
+		<Unit filename="src/File.h" />
+		<Unit filename="src/FileExceptions.h" />
+		<Unit filename="src/FileRead.cpp" />
+		<Unit filename="src/FileRead.h" />
+		<Unit filename="src/FileSystem.cpp" />
+		<Unit filename="src/FileSystem.h" />
+		<Unit filename="src/FileWrite.cpp" />
+		<Unit filename="src/FileWrite.h" />
+		<Unit filename="src/GameConstants.h" />
+		<Unit filename="src/GameLogic.cpp" />
+		<Unit filename="src/GameLogic.h" />
+		<Unit filename="src/GameLogicState.cpp" />
+		<Unit filename="src/GameLogicState.h" />
+		<Unit filename="src/GenericIO.cpp" />
+		<Unit filename="src/GenericIO.h" />
+		<Unit filename="src/GenericIODetail.h" />
+		<Unit filename="src/GenericIOFwd.h" />
+		<Unit filename="src/Global.h" />
+		<Unit filename="src/IMGUI.cpp" />
+		<Unit filename="src/IMGUI.h" />
+		<Unit filename="src/IReplayLoader.h" />
+		<Unit filename="src/IUserConfigReader.h" />
+		<Unit filename="src/InputDevice.cpp" />
+		<Unit filename="src/InputDevice.h" />
+		<Unit filename="src/InputManager.cpp" />
+		<Unit filename="src/InputManager.h" />
+		<Unit filename="src/InputSource.cpp" />
+		<Unit filename="src/InputSource.h" />
+		<Unit filename="src/InputSourceFactory.cpp" />
+		<Unit filename="src/InputSourceFactory.h" />
+		<Unit filename="src/LagDetectionSystem.cpp" />
+		<Unit filename="src/LagDetectionSystem.h" />
+		<Unit filename="src/LocalInputSource.cpp" />
+		<Unit filename="src/LocalInputSource.h" />
+		<Unit filename="src/MatchEvents.h" />
+		<Unit filename="src/NetworkGame.cpp" />
+		<Unit filename="src/NetworkGame.h" />
+		<Unit filename="src/NetworkMessage.cpp" />
+		<Unit filename="src/NetworkMessage.h" />
+		<Unit filename="src/PhysicState.cpp" />
+		<Unit filename="src/PhysicState.h" />
+		<Unit filename="src/PhysicWorld.cpp" />
+		<Unit filename="src/PhysicWorld.h" />
+		<Unit filename="src/PlayerIdentity.cpp" />
+		<Unit filename="src/PlayerIdentity.h" />
+		<Unit filename="src/RakNetPacket.h" />
+		<Unit filename="src/RenderManager.cpp" />
+		<Unit filename="src/RenderManager.h" />
+		<Unit filename="src/RenderManagerGL2D.cpp" />
+		<Unit filename="src/RenderManagerGL2D.h" />
+		<Unit filename="src/RenderManagerGP2X.cpp" />
+		<Unit filename="src/RenderManagerGP2X.h" />
+		<Unit filename="src/RenderManagerNull.cpp" />
+		<Unit filename="src/RenderManagerNull.h" />
+		<Unit filename="src/RenderManagerSDL.cpp" />
+		<Unit filename="src/RenderManagerSDL.h" />
+		<Unit filename="src/ReplayDefs.h" />
+		<Unit filename="src/ReplayLoader.cpp" />
+		<Unit filename="src/ReplayPlayer.cpp" />
+		<Unit filename="src/ReplayPlayer.h" />
+		<Unit filename="src/ReplayRecorder.cpp" />
+		<Unit filename="src/ReplayRecorder.h" />
+		<Unit filename="src/ReplaySavePoint.cpp" />
+		<Unit filename="src/ReplaySavePoint.h" />
+		<Unit filename="src/ScriptedInputSource.cpp" />
+		<Unit filename="src/ScriptedInputSource.h" />
+		<Unit filename="src/SoundManager.cpp" />
+		<Unit filename="src/SoundManager.h" />
+		<Unit filename="src/SpeedController.cpp" />
+		<Unit filename="src/SpeedController.h" />
+		<Unit filename="src/TextManager.cpp" />
+		<Unit filename="src/TextManager.h" />
+		<Unit filename="src/UserConfig.cpp" />
+		<Unit filename="src/UserConfig.h" />
+		<Unit filename="src/Vector.h" />
+		<Unit filename="src/blobnet/Logger.hpp" />
+		<Unit filename="src/blobnet/adt/Queue.hpp" />
+		<Unit filename="src/blobnet/exception/HttpException.hpp" />
+		<Unit filename="src/blobnet/layer/Http.cpp" />
+		<Unit filename="src/blobnet/layer/Http.hpp" />
+		<Unit filename="src/doxyfile" />
+		<Unit filename="src/lua/lapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lapi.h" />
+		<Unit filename="src/lua/lauxlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lauxlib.h" />
+		<Unit filename="src/lua/lbaselib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lcode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lcode.h" />
+		<Unit filename="src/lua/ldblib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ldebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ldebug.h" />
+		<Unit filename="src/lua/ldo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ldo.h" />
+		<Unit filename="src/lua/ldump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lfunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lfunc.h" />
+		<Unit filename="src/lua/lgc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lgc.h" />
+		<Unit filename="src/lua/linit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/liolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/llex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/llex.h" />
+		<Unit filename="src/lua/llimits.h" />
+		<Unit filename="src/lua/lmathlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lmem.h" />
+		<Unit filename="src/lua/loadlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lobject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lobject.h" />
+		<Unit filename="src/lua/lopcodes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lopcodes.h" />
+		<Unit filename="src/lua/loslib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lparser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lparser.h" />
+		<Unit filename="src/lua/lstate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lstate.h" />
+		<Unit filename="src/lua/lstring.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lstring.h" />
+		<Unit filename="src/lua/lstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ltable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ltable.h" />
+		<Unit filename="src/lua/ltablib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ltm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/ltm.h" />
+		<Unit filename="src/lua/lua.h" />
+		<Unit filename="src/lua/luaconf.h" />
+		<Unit filename="src/lua/lualib.h" />
+		<Unit filename="src/lua/lundump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lundump.h" />
+		<Unit filename="src/lua/lvm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lvm.h" />
+		<Unit filename="src/lua/lzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lzio.h" />
+		<Unit filename="src/lua/print.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua_api_doc.dox" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/raknet/ArrayList.h" />
+		<Unit filename="src/raknet/AsynchronousFileIO.cpp" />
+		<Unit filename="src/raknet/AsynchronousFileIO.h" />
+		<Unit filename="src/raknet/BigTypes.h" />
+		<Unit filename="src/raknet/BinarySearchTree.h" />
+		<Unit filename="src/raknet/BitStream.cpp" />
+		<Unit filename="src/raknet/BitStream.h" />
+		<Unit filename="src/raknet/CMakeLists.txt" />
+		<Unit filename="src/raknet/CheckSum.cpp" />
+		<Unit filename="src/raknet/CheckSum.h" />
+		<Unit filename="src/raknet/ClientContextStruct.h" />
+		<Unit filename="src/raknet/DataBlockEncryptor.cpp" />
+		<Unit filename="src/raknet/DataBlockEncryptor.h" />
+		<Unit filename="src/raknet/ExtendedOverlappedPool.cpp" />
+		<Unit filename="src/raknet/ExtendedOverlappedPool.h" />
+		<Unit filename="src/raknet/GetTime.cpp" />
+		<Unit filename="src/raknet/GetTime.h" />
+		<Unit filename="src/raknet/HuffmanEncodingTree.cpp" />
+		<Unit filename="src/raknet/HuffmanEncodingTree.h" />
+		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.cpp" />
+		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.h" />
+		<Unit filename="src/raknet/HuffmanEncodingTreeNode.h" />
+		<Unit filename="src/raknet/InternalPacket.h" />
+		<Unit filename="src/raknet/InternalPacketPool.cpp" />
+		<Unit filename="src/raknet/InternalPacketPool.h" />
+		<Unit filename="src/raknet/LICENSE" />
+		<Unit filename="src/raknet/LinkedList.h" />
+		<Unit filename="src/raknet/MTUSize.h" />
+		<Unit filename="src/raknet/MessageHandlerInterface.cpp" />
+		<Unit filename="src/raknet/MessageHandlerInterface.h" />
+		<Unit filename="src/raknet/NetworkTypes.cpp" />
+		<Unit filename="src/raknet/NetworkTypes.h" />
+		<Unit filename="src/raknet/OrderedList.h" />
+		<Unit filename="src/raknet/PacketEnumerations.h" />
+		<Unit filename="src/raknet/PacketPool.cpp" />
+		<Unit filename="src/raknet/PacketPool.h" />
+		<Unit filename="src/raknet/PacketPriority.h" />
+		<Unit filename="src/raknet/QueueLinkedList.h" />
+		<Unit filename="src/raknet/RSACrypt.h" />
+		<Unit filename="src/raknet/RakClient.cpp" />
+		<Unit filename="src/raknet/RakClient.h" />
+		<Unit filename="src/raknet/RakClientInterface.h" />
+		<Unit filename="src/raknet/RakNetStatistics.cpp" />
+		<Unit filename="src/raknet/RakNetStatistics.h" />
+		<Unit filename="src/raknet/RakNetworkFactory.cpp" />
+		<Unit filename="src/raknet/RakNetworkFactory.h" />
+		<Unit filename="src/raknet/RakPeer.cpp" />
+		<Unit filename="src/raknet/RakPeer.h" />
+		<Unit filename="src/raknet/RakPeerInterface.h" />
+		<Unit filename="src/raknet/RakServer.cpp" />
+		<Unit filename="src/raknet/RakServer.h" />
+		<Unit filename="src/raknet/RakServerInterface.h" />
+		<Unit filename="src/raknet/Rand.cpp" />
+		<Unit filename="src/raknet/Rand.h" />
+		<Unit filename="src/raknet/ReliabilityLayer.cpp" />
+		<Unit filename="src/raknet/ReliabilityLayer.h" />
+		<Unit filename="src/raknet/SHA1.cpp" />
+		<Unit filename="src/raknet/SHA1.h" />
+		<Unit filename="src/raknet/SimpleMutex.cpp" />
+		<Unit filename="src/raknet/SimpleMutex.h" />
+		<Unit filename="src/raknet/SingleProducerConsumer.h" />
+		<Unit filename="src/raknet/SocketLayer.cpp" />
+		<Unit filename="src/raknet/SocketLayer.h" />
+		<Unit filename="src/raknet/Types.h" />
+		<Unit filename="src/raknet/rijndael-boxes.h" />
+		<Unit filename="src/raknet/rijndael.cpp" />
+		<Unit filename="src/raknet/rijndael.h" />
+		<Unit filename="src/server/DedicatedServer.h" />
+		<Unit filename="src/server/NetworkPlayer.h" />
+		<Unit filename="src/state/LocalGameState.cpp" />
+		<Unit filename="src/state/LocalGameState.h" />
+		<Unit filename="src/state/NetworkSearchState.cpp" />
+		<Unit filename="src/state/NetworkSearchState.h" />
+		<Unit filename="src/state/NetworkState.cpp" />
+		<Unit filename="src/state/NetworkState.h" />
+		<Unit filename="src/state/OptionsState.cpp" />
+		<Unit filename="src/state/OptionsState.h" />
+		<Unit filename="src/state/ReplaySelectionState.cpp" />
+		<Unit filename="src/state/ReplaySelectionState.h" />
+		<Unit filename="src/state/ReplayState.cpp" />
+		<Unit filename="src/state/ReplayState.h" />
+		<Unit filename="src/state/State.cpp" />
+		<Unit filename="src/state/State.h" />
+		<Unit filename="src/tinyxml/tinystr.cpp" />
+		<Unit filename="src/tinyxml/tinystr.h" />
+		<Unit filename="src/tinyxml/tinyxml.cpp" />
+		<Unit filename="src/tinyxml/tinyxml.h" />
+		<Unit filename="src/tinyxml/tinyxmlerror.cpp" />
+		<Unit filename="src/tinyxml/tinyxmlparser.cpp" />
+		<Unit filename="src/utf8.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
