@@ -74,6 +74,8 @@ void syslog(int pri, const char* format, ...);
 static bool g_run_in_foreground = false;
 static bool g_print_syslog_to_stderr = false;
 static bool g_workaround_memleaks = false;
+static std::string g_config_file = "server/server.xml";
+static std::string g_rules_file = "";
 
 // ...
 void printHelp();
@@ -131,10 +133,10 @@ int main(int argc, char** argv)
 	std::string rulesFile = "rules.lua";
 	try
 	{
-		config.loadFile("server.xml");
+		config.loadFile(g_config_file);
 		port = config.getInteger("port");
 		maxClients = config.getInteger("maximum_clients");
-		rulesFile = config.getString("rules");
+		rulesFile = g_rules_file == "" ? config.getString("rules") : g_rules_file;
 
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 1000)
@@ -438,6 +440,8 @@ void printHelp()
 	std::cout << "  -m, --memleak-hack        Workaround memory leaks by restarting regularly" << std::endl;
 	std::cout << "  -n, --no-daemon           Don´t run as background process" << std::endl;
 	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
+	std::cout << "  -c, --config-file <path>  Use custom config file instead of server.xml" << std::endl;
+	std::cout << "  -r, --rules-file <path>   Use custom rules file" << std::endl;
 	std::cout << "  -h, --help                This message" << std::endl;
 }
 
@@ -461,6 +465,30 @@ void process_arguments(int argc, char** argv)
 			if (strcmp(argv[i], "--print-msgs") == 0 || strcmp(argv[i], "-p") == 0)
 			{
 				g_print_syslog_to_stderr = true;
+				continue;
+			}
+			if (strcmp(argv[i], "--config-file") == 0 || strcmp(argv[i], "-c") == 0)
+			{
+				++i;
+				if (i >= argc)
+				{
+					std::cout << "\"config-file\" option needs an argument" << std::endl;
+					printHelp();
+					exit(1);
+				}
+				g_config_file = std::string("server/") + argv[i];
+				continue;
+			}
+			if (strcmp(argv[i], "--rules-file") == 0 || strcmp(argv[i], "-r") == 0)
+			{
+				++i;
+				if (i >= argc)
+				{
+					std::cout << "\"rules-file\" option needs an argument" << std::endl;
+					printHelp();
+					exit(1);
+				}
+				g_rules_file = argv[i];
 				continue;
 			}
 			if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)

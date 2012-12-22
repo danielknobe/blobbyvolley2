@@ -144,6 +144,7 @@ class TextManager
 			OP_WEAK,
 			OP_MEDIUM,
 			OP_STRONG,
+			OP_RULES,
 			
 			UPDATE_NOTIFICATION,
 			

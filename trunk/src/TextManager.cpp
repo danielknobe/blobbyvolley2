@@ -246,6 +246,7 @@ void TextManager::setDefault()
 	mStrings[OP_WEAK] = "weak";
 	mStrings[OP_MEDIUM] = "medium";
 	mStrings[OP_STRONG] = "strong";
+	mStrings[OP_RULES] = "rules:";
 	
 	mStrings[UPDATE_NOTIFICATION] = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley";
 }

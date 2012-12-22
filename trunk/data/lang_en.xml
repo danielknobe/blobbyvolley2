@@ -103,6 +103,7 @@
 	<string english = "weak" translation = "weak" />
 	<string english = "medium" translation = "medium" />
 	<string english = "strong" translation = "strong" />
+	<string english = "rules:" translation = "rules:" />
 	
 	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" />
 </language>
