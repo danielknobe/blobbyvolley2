@@ -76,7 +76,7 @@ IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 	
 	if(refchecksum != checksum && major > 0 && minor > 0)
 	{
-		throw(ChecksumException(file->getFileName(), checksum, refchecksum));
+		BOOST_THROW_EXCEPTION (ChecksumException(file->getFileName(), checksum, refchecksum));
 	}
 	
 	IReplayLoader* loader = createReplayLoader(major);

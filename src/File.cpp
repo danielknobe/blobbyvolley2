@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 File::File() : mHandle(0)
 {
-	
+
 }
 
 File::File(const std::string& filename, OpenMode mode, bool no_override) : mHandle(0), mFileName("")
@@ -43,7 +43,7 @@ File::File(const std::string& filename, OpenMode mode, bool no_override) : mHand
 	open(filename, mode, no_override);
 }
 
-File::~File() 
+File::~File()
 {
 	// make sure we close this!
 	close();
@@ -55,36 +55,36 @@ void File::open(const std::string& filename, OpenMode mode, bool no_override)
 	/// \todo maybe we could just close the old file here... but
 	///		  then, this could also lead to errors...
 	assert(mHandle == 0);
-	
+
 	// open depending on mode
-	if( mode == OPEN_WRITE ) 
+	if( mode == OPEN_WRITE )
 	{
 		if(no_override && FileSystem::getSingleton().exists(filename))
 		{
-			throw FileAlreadyExistsException(filename);
+			BOOST_THROW_EXCEPTION(FileAlreadyExistsException(filename));
 		}
-		
+
 		mHandle = PHYSFS_openWrite(filename.c_str());
-	} 
-	 else  
+	}
+	 else
 	{
 		mHandle = PHYSFS_openRead(filename.c_str());
 	}
-	
+
 	if (!mHandle)
 	{
-		throw FileLoadException(filename);
+		BOOST_THROW_EXCEPTION(FileLoadException(filename));
 	}
-	
+
 	mFileName = filename;
 }
 
-void File::close() 
+void File::close()
 {
 	// if handle is 0, no file is currently opened, so close does not do anything
 	// maybe we could assert this, but i'm not sure that that is necessary.
 	// we cannot assert this, because this function is run in the destrucor!
-	if(mHandle) 
+	if(mHandle)
 	{
 		if (PHYSFS_close( reinterpret_cast<PHYSFS_file*> (mHandle) ) )
 		{
@@ -110,25 +110,25 @@ bool File::is_open() const
 uint32_t File::length() const
 {
 	check_file_open();
-	
+
 	PHYSFS_sint64 len = PHYSFS_fileLength( reinterpret_cast<PHYSFS_file*> (mHandle) );
 	if( len == -1 )
 	{
-		throw( PhysfsFileException(mFileName) );
+		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}
-	
+
 	return len;
 }
 
 uint32_t File::tell() const
 {
 	check_file_open();
-	
+
 	PHYSFS_sint64 tp = PHYSFS_tell( reinterpret_cast<PHYSFS_file*> (mHandle) );
-	
-	if(tp == -1) 
-		throw( PhysfsFileException(mFileName) );
-	
+
+	if(tp == -1)
+		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
+
 	return tp;
 }
 
@@ -140,10 +140,10 @@ std::string File::getFileName() const
 void File::seek(uint32_t target)
 {
 	check_file_open();
-	
-	if(!PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(mHandle), target)) 
+
+	if(!PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(mHandle), target))
 	{
-		throw( PhysfsFileException(mFileName) );
+		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}
 }
 
@@ -151,10 +151,10 @@ void File::seek(uint32_t target)
 void  File::check_file_open() const
 {
 	// check that we have a handle
-	if( !mHandle ) 
+	if( !mHandle )
 	{
-		throw( NoFileOpenedException() );
-	}		
+		BOOST_THROW_EXCEPTION( NoFileOpenedException() );
+	}
 }
 
 

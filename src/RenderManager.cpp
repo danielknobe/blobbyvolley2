@@ -87,7 +87,7 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 	SDL_Surface* newSurface = SDL_LoadBMP_RW(rwops , 1);
 	
 	if (!newSurface)
-		throw FileLoadException(filename);
+		BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
 	
 	return newSurface;
 }

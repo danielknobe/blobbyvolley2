@@ -44,7 +44,7 @@ extern "C"
 
 /* implementation */
 
-FileRead::FileRead() 
+FileRead::FileRead()
 {
 }
 
@@ -65,20 +65,20 @@ void FileRead::open(const std::string& filename)
 uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 {
 	check_file_open();
-	
+
 	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (mHandle), target, 1, num_of_bytes);
-	
+
 	// -1 indicates that reading was not possible
-	if( num_read == -1) 
+	if( num_read == -1)
 	{
-		throw( PhysfsFileException(mFileName) );
+		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}
-	
+
 	if( num_read != num_of_bytes )
 	{
-		throw ( EOFException(mFileName) );
+		BOOST_THROW_EXCEPTION ( EOFException(mFileName) );
 	}
-	
+
 	return num_read;
 }
 
@@ -86,7 +86,7 @@ boost::shared_array<char> FileRead::readRawBytes( std::size_t num_of_bytes )
 {
 	// creates the buffer
 	boost::shared_array<char> buffer ( new char[num_of_bytes] );
-	
+
 	readRawBytes( buffer.get(), num_of_bytes );
 	return buffer;
 }
@@ -94,38 +94,38 @@ boost::shared_array<char> FileRead::readRawBytes( std::size_t num_of_bytes )
 char FileRead::readByte()
 {
 	check_file_open();
-	
+
 	char ret;
 	readRawBytes(reinterpret_cast<char*>(&ret), sizeof(ret));
-	
+
 	return ret;
 }
 
 uint32_t FileRead::readUInt32()
 {
 	check_file_open();
-	
+
 	if ( length() - tell() < 4)
 	{
-		throw( EOFException(mFileName) );
+		BOOST_THROW_EXCEPTION( EOFException(mFileName) );
 	}
-	
+
 	PHYSFS_uint32 ret;
 	if(!PHYSFS_readULE32( reinterpret_cast<PHYSFS_file*>(mHandle),	&ret))
 	{
-		throw( PhysfsFileException(mFileName) );
+		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}
-	
+
 	return ret;
 }
 
 float FileRead::readFloat()
 {
 	check_file_open();
-	
+
 	float ret;
 	readRawBytes(reinterpret_cast<char*>(&ret), sizeof(ret));
-	
+
 	return ret;
 }
 
@@ -135,31 +135,31 @@ std::string FileRead::readString()
 	char buffer[32]; 		// thats our read buffer
 	std::string read = "";	// thats what we read so far
 	size_t len = length();
-	
+
 	while(true)	// check that we can read as much as want
 	{
 		int maxread = std::min(sizeof(buffer), len - tell());
 		readRawBytes( buffer, maxread );	// read into buffer
-		
+
 		for(int i = 0; i < maxread; ++i)
 		{
-			if(buffer[i] == 0) 
+			if(buffer[i] == 0)
 			{
 				seek( tell() - maxread + i + 1);
 				return read;
-			} 
-			 else 
+			}
+			 else
 			{
 				read += buffer[i];	// this might not be the most efficient way...
 			}
 		}
-		
+
 		// when we reached the end of file
 		if(maxread < 32)
 			break;
 	}
-	
-	throw(EOFException(mFileName));
+
+	BOOST_THROW_EXCEPTION(EOFException(mFileName));
 }
 
 
@@ -167,30 +167,30 @@ uint32_t FileRead::calcChecksum(uint32_t start)
 {
 	uint32_t oldpos = tell();
 	seek(start);
-	
+
 	// buffered reading
 	char buffer[128];
 	size_t len = length();
-	
+
 	boost::crc_32_type crc;
-	
+
 	while(true)
 	{
 		int maxread = std::min(sizeof(buffer), len - tell());
 		readRawBytes( buffer, maxread );	// read into buffer
-		
+
 		for(int i = 0; i < maxread; ++i)
 		{
 			crc.process_bytes(buffer, maxread);
 		}
-		
+
 		if(maxread < 32)
 			break;
 	}
-	
+
 	// return read pointer back to old position
 	seek(oldpos);
-	
+
 	return crc();
 }
 
@@ -208,16 +208,16 @@ struct ReaderInfo
 static const char* chunkReader(lua_State* state, void* data, size_t *size)
 {
 	ReaderInfo* info = (ReaderInfo*) data;
-	
+
 	int bytesRead = 2048;
 	if(info->file.length() - info->file.tell() < 2048)
 	{
 		bytesRead = info->file.length() - info->file.tell();
 	}
-	
+
 	info->file.readRawBytes(info->buffer, bytesRead);
 	// if this doesn't throw, bytesRead is the actual number of bytes read
-	/// \todo we must do sth about this code, its just plains awful. 
+	/// \todo we must do sth about this code, its just plains awful.
 	/// 		File interface has to be improved to support such buffered reading.
 	*size = bytesRead;
 	if (bytesRead == 0)
@@ -236,7 +236,7 @@ int FileRead::readLuaScript(std::string filename, lua_State* mState)
 	{
 		filename += ".lua";
 	}
-	
+
 	ReaderInfo info;
 	info.file.open(filename);
 	return lua_load(mState, chunkReader, &info, filename.c_str());
@@ -253,12 +253,12 @@ boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& fi
 	file.readRawBytes( fileBuffer.get(), fileLength );
 	// null-terminate
 	fileBuffer[fileLength] = 0;
-	
+
 	// parse file
 	boost::shared_ptr<TiXmlDocument> xml = boost::shared_ptr<TiXmlDocument> (new TiXmlDocument());
 	xml->Parse(fileBuffer.get());
-	
+
 	/// \todo do error handling here?
-	
+
 	return xml;
 }
