@@ -124,6 +124,8 @@ private:
 	UserConfig mOptionConfig;
 	std::vector<std::string> mBackgrounds;
 	int mBackground;
+	std::vector<std::string> mRules;
+	int mRule;
 	float mVolume;
 	bool mMute;
 	int mGameFPS;

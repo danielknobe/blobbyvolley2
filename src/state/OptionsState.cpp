@@ -831,6 +831,7 @@ MiscOptionsState::MiscOptionsState()
 	IMGUI::getSingleton().resetSelection();
 	
 	mOptionConfig.loadFile("config.xml");
+
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
 	
@@ -844,6 +845,22 @@ MiscOptionsState::MiscOptionsState()
 			break;
 		}
 	}
+
+	std::string currentRules = mOptionConfig.getString("rules");
+	currentRules = currentRules.substr(0, currentRules.length() - 4);
+	mRule = -1;
+	
+	mRules = FileSystem::getSingleton().enumerateFiles("rules", ".lua", false);
+	
+	for(int i = 0; i < mRules.size(); ++i)
+	{
+		if (mRules[i] == currentRules)
+		{
+			mRule = i;
+			break;
+		}
+	}
+
 	mShowFPS = mOptionConfig.getBool("showfps");
 	mShowBlood = mOptionConfig.getBool("blood");
 	mVolume = mOptionConfig.getFloat("global_volume");
@@ -868,6 +885,8 @@ void MiscOptionsState::save()
 	mOptionConfig.setString("language", mLanguage);
 	if (mBackground > -1)
 		mOptionConfig.setString("background", mBackgrounds[mBackground]);
+	if (mRule > -1)
+		mOptionConfig.setString("rules", mRules[mRule] + ".lua");
 	mOptionConfig.saveFile("config.xml");
 	
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
@@ -887,13 +906,16 @@ void MiscOptionsState::step()
 
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_BACKGROUND);
 	int tmp = mBackground;
-	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(400.0, 280.0), mBackgrounds, tmp);
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(400.0, 175.0), mBackgrounds, tmp);
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
 		if (mBackground > -1)
 			RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
+
+	imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RULES);
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 220.0), Vector2(400.0, 354.0), mRules, mRule);
 
 	imgui.doText(GEN_ID, Vector2(484.0, 10.0), TextManager::OP_VOLUME);
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
@@ -942,11 +964,11 @@ void MiscOptionsState::step()
 	else
 		imgui.doImage(GEN_ID, Vector2(612.0, 252.0), "gfx/pfeil_rechts.bmp");
 
-	imgui.doText(GEN_ID, Vector2(292.0, 290.0), TextManager::OP_SPEED);
+	imgui.doText(GEN_ID, Vector2(484.0, 290.0), TextManager::OP_SPEED);
 	float gamefps = (mGameFPS - 30) / 90.0;
 	if (gamefps < 0.0)
 		gamefps = 0.0;
-	imgui.doScrollbar(GEN_ID, Vector2(295.0, 330.0), gamefps);
+	imgui.doScrollbar(GEN_ID, Vector2(440.0, 330.0), gamefps);
 		mGameFPS = (int)(gamefps*90.0+30);
 	if (imgui.doButton(GEN_ID, Vector2(155.0, 380.0), TextManager::OP_VSLOW))
 		mGameFPS = 30;
@@ -962,7 +984,7 @@ void MiscOptionsState::step()
 	std::stringstream FPSInPercent;
 	FPSInPercent << int((float)mGameFPS/75*100);
 	FPSInPercent << "%";
-	imgui.doText(GEN_ID, Vector2(515.0, 330.0), FPSInPercent.str());
+	imgui.doText(GEN_ID, Vector2(660.0, 330.0), FPSInPercent.str());
 
 	//! \todo this must be reworket
 	std::map<std::string, std::string>::iterator olang = TextManager::language_names.find(TextManager::getSingleton()->getLang());

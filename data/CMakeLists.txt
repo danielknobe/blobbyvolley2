@@ -16,19 +16,20 @@ add_zip_archive(gfx bmp)
 add_zip_archive(sounds wav)
 add_zip_archive(scripts lua)
 add_zip_archive(backgrounds bmp)
+add_zip_archive(rules lua)
 
 set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/gfx.zip
 	${CMAKE_CURRENT_BINARY_DIR}/sounds.zip
 	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
+	${CMAKE_CURRENT_BINARY_DIR}/rules.zip
 	config.xml
 	inputconfig.xml
-	server.xml
+	server/server.xml
 	lang_de.xml
 	lang_en.xml
-	lang_fr.xml
-	rules.lua)
+	lang_fr.xml)
 
 if (WIN32)
 	install(FILES ${install_files} DESTINATION data)

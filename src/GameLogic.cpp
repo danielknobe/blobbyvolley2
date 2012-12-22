@@ -567,7 +567,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	setLuaGlobalVariable("RIGHT_PLAYER", RIGHT_PLAYER);
 	
 	// now load script file
-	int error = FileRead::readLuaScript(filename, mState);
+	int error = FileRead::readLuaScript(std::string("rules/") + filename, mState);
 	
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);

@@ -74,6 +74,7 @@ void setupPHYSFS()
 	fs.addToSearchPath("data/sounds.zip");
 	fs.addToSearchPath("data/scripts.zip");
 	fs.addToSearchPath("data/backgrounds.zip");
+	fs.addToSearchPath("data/rules.zip");
 
 	#if defined(WIN32)
 		// Just write in installation directory
@@ -85,6 +86,7 @@ void setupPHYSFS()
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 
 		// Create a search path in the home directory and ensure that
 		// all paths exist and are actually directories
@@ -101,6 +103,7 @@ void setupPHYSFS()
 		fs.probeDir(userAppend + separator + "sounds");
 		fs.probeDir(userAppend + separator + "scripts");
 		fs.probeDir(userAppend + separator + "backgrounds");
+		fs.probeDir(userAppend + separator + "rules");
 		fs.removeFromSearchPath(userdir);
 		// here we set the write dir anew!
 		fs.setWriteDir(homedir);
@@ -114,6 +117,7 @@ void setupPHYSFS()
 			fs.addToSearchPath(basedir + separator + "sounds.zip");
 			fs.addToSearchPath(basedir + separator + "scripts.zip");
 			fs.addToSearchPath(basedir + separator + "backgrounds.zip");
+			fs.addToSearchPath(basedir + separator + "rules.zip");
 		}
 		#endif
 	#endif
