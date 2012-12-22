@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <unistd.h>
 
+#include <boost/exception/all.hpp>
+
 #include <iostream>
 #include <sstream>
 #include <typeinfo>
@@ -54,7 +56,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 	SOCKET inOutSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(inOutSocket == INVALID_SOCKET)
 	{
-		throw Exception::HttpException("Can't create HTTP-Socket.");
+		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't create HTTP-Socket.") );
 	}
 
 	// Connect to the host
@@ -62,13 +64,13 @@ void Http::request(const std::string& path, std::stringstream& response)
 
 	if(ipAddress == NULL)
 	{
-		throw Exception::HttpException("Can't resolve IP Address.");
+		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't resolve IP Address.") );
 	}
 
 	if(mSocketLayer.Connect(inOutSocket, inet_addr(ipAddress), mPort) == -1)
 	{
 
-		throw Exception::HttpException("Can't connect to host.");
+		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't connect to host.") );
 	};
 
 	// Message for a simple request
@@ -81,7 +83,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 		bytesSend += mSocketLayer.Write(inOutSocket, request.c_str(), request.size());
 		if(bytesSend == -1)
 		{
-			throw Exception::HttpException("Can't send the request to host.");
+			BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't send the request to host.") );
 		}
 	} while(bytesSend < request.size());
 
@@ -143,7 +145,7 @@ void Http::readHeader(int inOutSocket, std::stringstream& response)
 			break;
 		}
 	}
-	throw Exception::HttpException("Can't read response.");
+	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't read response.") );
 }
 
 void Http::readBody(int inOutSocket, std::stringstream& response, int contentSize)
@@ -161,7 +163,7 @@ void Http::readBody(int inOutSocket, std::stringstream& response, int contentSiz
 			return;
 		}
 	}
-	throw Exception::HttpException("Can't read response.");
+	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't read response.") );
 }
 
 int Http::getContentSize(std::stringstream& response)
@@ -189,7 +191,7 @@ int Http::getContentSize(std::stringstream& response)
 			return atoi(token.c_str());
 		}
 	}
-	throw Exception::HttpException("Can't get contentsize of http response.");
+	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't get contentsize of http response.") );
 }
 
 }

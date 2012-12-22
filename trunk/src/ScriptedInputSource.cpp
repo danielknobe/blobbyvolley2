@@ -171,7 +171,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 		except.luaerror = lua_tostring(mState, -1);
 		lua_pop(mState, 1);
 		lua_close(mState);
-		throw except;
+		BOOST_THROW_EXCEPTION(except);
 	}
 	
 	
@@ -195,7 +195,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename,
 		except.luaerror = error_message;
 		lua_pop(mState, 1);
 		lua_close(mState);
-		throw except;
+		BOOST_THROW_EXCEPTION(except);
 	}
 	
 	// record which of the optional functions are available

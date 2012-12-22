@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <exception>
 #include <string>
 
+#include <boost/exception/all.hpp>
+
 /*! \class FileSystemException
 	\brief common base class of all file system related errors
 */

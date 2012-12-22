@@ -50,7 +50,7 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	Uint32 newSoundLength;
 	if (!SDL_LoadWAV_RW(rwops , 1,
 			&newSoundSpec, &newSoundBuffer, &newSoundLength))
-		throw FileLoadException(filename);
+		BOOST_THROW_EXCEPTION(FileLoadException(filename));
 
 
 	// check if current audio format is target format
@@ -72,14 +72,14 @@ Sound* SoundManager::loadSound(const std::string& filename)
 		if (!SDL_BuildAudioCVT(&conversionStructure,
 			newSoundSpec.format, newSoundSpec.channels, newSoundSpec.freq,
 			mAudioSpec.format, mAudioSpec.channels, mAudioSpec.freq))
-				throw FileLoadException(filename);
+				BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
 		conversionStructure.buf = 
 			new Uint8[newSoundLength * conversionStructure.len_mult];
 		memcpy(conversionStructure.buf, newSoundBuffer, newSoundLength);
 		conversionStructure.len = newSoundLength;
 
 		if (SDL_ConvertAudio(&conversionStructure))
-			throw FileLoadException(filename);
+			BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
 		SDL_FreeWAV(newSoundBuffer);
 
 		Sound *newSound = new Sound;
