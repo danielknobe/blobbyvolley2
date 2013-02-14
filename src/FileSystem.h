@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileSystem : public boost::noncopyable
 {
 	public:
-		
 		FileSystem(const std::string& path);
 		~FileSystem();
 
@@ -39,7 +38,7 @@ class FileSystem : public boost::noncopyable
 		/// \details throws an error when file system has
 		/// not been initialised.
 		static FileSystem& getSingleton();
-		
+
 		/// \brief enumerates files
 		/// \details searches for all files in a certain directory with a given extension. The found files
 		///			are returned as a vector containing the filenames. The extension is cuttet from the filenames.
@@ -51,7 +50,7 @@ class FileSystem : public boost::noncopyable
 
 		/// \brief deletes a file
 		bool deleteFile(const std::string& filename);
-		
+
 		/// \brief tests whether a file exists
 		bool exists(const std::string& filename) const;
 
@@ -68,14 +67,14 @@ class FileSystem : public boost::noncopyable
 		void removeFromSearchPath(const std::string& dirname);
 		/// \details automatically registers this directory as primary read directory!
 		void setWriteDir(const std::string& dirname);
-		
+
 		/// \todo this method is currently only copied code. it needs some review and a spec what it really should 
 		/// do. also, its uses should be looked at again.
 		void probeDir(const std::string& dir);
-		
+
 		/// \todo ideally, this method would never be needed by client code!!
 		std::string getDirSeparator();
-		
+
 		/// \todo ideally, this method would never be needed by client code!!
 		std::string getUserDir();
 };
