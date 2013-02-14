@@ -55,9 +55,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 void deinit()
 {
 	RenderManager::getSingleton().deinit();
-	SoundManager::getSingleton().deinit();	
+	SoundManager::getSingleton().deinit();
 	/// \todo this is more a hack than a real solution
-	/// 		how do we make sure our current state 
+	/// 		how do we make sure our current state
 	///			is certainly destructed properly?
 	delete State::getCurrentState();
 	SDL_Quit();
@@ -67,7 +67,7 @@ void setupPHYSFS()
 {
 	FileSystem& fs = FileSystem::getSingleton();
 	std::string separator = fs.getDirSeparator();
-	// Game should be playable out of the source package on all 
+	// Game should be playable out of the source package on all
 	// platforms
 	fs.addToSearchPath("data");
 	fs.addToSearchPath("data/gfx.zip");
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 {
 	FileSystem filesys(argv[0]);
 	setupPHYSFS();
-	
+
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
 	SDL_EnableUNICODE(1);
 	atexit(SDL_Quit);
@@ -137,14 +137,14 @@ int main(int argc, char* argv[])
 	// choose renderer
 	RenderManager *rmanager = 0;
 	SoundManager *smanager = 0;
-	
-	
+
+
 	// Test Version Startup Warning
 	#ifdef TEST_VERSION
 	struct tm* ptm;
 	time_t time = std::time(0);
 	ptm = gmtime ( &time );
-	
+
 	if( ptm->tm_year > (2012-1900) || ptm->tm_mon >= 4 ) {
 		#ifdef WIN32
 		MessageBox(0, (std::string("This is a test version of ") + AppTitle + " which expired on "
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 		#endif
 		return -1;
 	}
-	
+
 	#ifdef WIN32
 	MessageBox(0, (std::string("This is a test version of ") + AppTitle + " for testing only.\n"
 								"It might be unstable and/or incompatible to the current release. "
@@ -165,14 +165,14 @@ int main(int argc, char* argv[])
 				MB_OK);
 	#endif
 	#endif
-					
+
 	try
 	{
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
-		
+
 		TextManager::createTextManager(gameConfig.getString("language"));
-		
+
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
 		else if (gameConfig.getString("device") == "GP2X")
@@ -274,5 +274,3 @@ int main(int argc, char* argv[])
 	deinit();
 	exit(EXIT_SUCCESS);
 }
-
-
