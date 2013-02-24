@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputManager.h"
 #include "RenderManager.h"
 #include "TextManager.h" /// needed because we can't forward declare that enum
+#include "BlobbyDebug.h"
 
 // Warning: This may explode if we use the GUI from several files
 
@@ -56,7 +57,7 @@ enum SelectBoxAction
 			It is poorly designed, does not use OOP and makes extension difficult, so 
 			it needs a complete rewrite.
 */
-class IMGUI
+class IMGUI : public ObjectCounter<IMGUI>
 {
 	public:
 		static IMGUI& getSingleton();

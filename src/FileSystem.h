@@ -25,10 +25,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/noncopyable.hpp>
 
 #include "FileExceptions.h"
+#include "BlobbyDebug.h"
 
 // some convenience wrappers around physfs
 
-class FileSystem : public boost::noncopyable
+class FileSystem : public boost::noncopyable, public ObjectCounter<FileSystem>
 {
 	public:
 		FileSystem(const std::string& path);

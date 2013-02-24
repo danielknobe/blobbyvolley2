@@ -25,8 +25,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputSource.h"
 #include <boost/circular_buffer.hpp>
 #include "LagDetectionSystem.h"
+#include "BlobbyDebug.h"
 
-class JoystickPool
+class JoystickPool : public ObjectCounter<JoystickPool>
 {
 	public:
 		static JoystickPool& getSingleton();
@@ -42,7 +43,7 @@ class JoystickPool
 		static JoystickPool* mSingleton;
 };
 
-struct JoystickAction
+struct JoystickAction : public ObjectCounter<JoystickAction>
 {
 	enum Type
 	{
@@ -75,7 +76,7 @@ struct JoystickAction
 /*! \class InputDevice
 	\brief Abstract base class for game input methods
 */
-class InputDevice
+class InputDevice : public ObjectCounter<InputDevice>
 {
 	public:
 		InputDevice() {}

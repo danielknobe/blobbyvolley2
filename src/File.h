@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #include "FileExceptions.h"
+#include "BlobbyDebug.h"
 
 /**
 	\class File
@@ -43,7 +44,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 							message physfs created.
 	\todo 	write tests for this class.
 */
-class File : boost::noncopyable 
+class File : boost::noncopyable, public ObjectCounter<File>
 {
 	public:
 		/// \brief closes the file

@@ -20,11 +20,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once 
 
 #include "IUserConfigReader.h"
+#include "BlobbyDebug.h"
 
 #include <string>
 #include <vector>
 
-struct UserConfigVar
+struct UserConfigVar : public ObjectCounter<UserConfigVar>
 {
 	std::string Name;
 	std::string Value;
@@ -37,7 +38,7 @@ struct UserConfigVar
 			It allows saving/loading from disk and getting/setting floats, booleans, 
 				strings and integers by name
 */
-class UserConfig: public IUserConfigReader
+class UserConfig: public IUserConfigReader, public ObjectCounter<UserConfig>
 {
 	public:
 		~UserConfig();

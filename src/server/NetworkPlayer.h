@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/NetworkTypes.h"
 #include "Global.h"
+#include "../BlobbyDebug.h"
 #include "PlayerIdentity.h"
 
 class NetworkGame;
@@ -34,7 +35,7 @@ class NetworkGame;
 		his network address and associated game
 */
 /// \todo add data to log when last packet arrived
-class NetworkPlayer
+class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 {
 	public:
 		NetworkPlayer();

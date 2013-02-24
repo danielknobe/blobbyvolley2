@@ -22,13 +22,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "Vector.h"
 #include "InputSource.h"
+#include "BlobbyDebug.h"
 #include "PhysicState.h"
 
 /*! \brief blobby world
 	\details This class encapuslates the physical world where blobby happens. It manages the two blobs,
 			the ball and collisions between them and the environment, it calculates object movements etc.
 */
-class PhysicWorld
+class PhysicWorld : public ObjectCounter<PhysicWorld>
 {
 	public:
 		PhysicWorld();

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <iosfwd>
+#include "BlobbyDebug.h"
 
 /*! \struct PlayerInput
 	\brief struct for easy exchange of a single player input frame
@@ -96,7 +97,7 @@ class DuelMatch;
 		The updateInput method has to be called (and is called)
 		once per frame in DuelMatch in local mode, so input written with 
 		setInput will be overwritten in these cases.*/
-class InputSource
+class InputSource : public ObjectCounter<InputSource>
 {
 	public:
 		InputSource();

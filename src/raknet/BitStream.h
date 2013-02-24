@@ -32,6 +32,7 @@
 #ifndef  __BITSTREAM_H
 #define __BITSTREAM_H
 
+#include "../BlobbyDebug.h"
 // Arbitrary size, just picking something likely to be larger than most packets
 #define BITSTREAM_STACK_ALLOCATION_SIZE 256
 
@@ -65,7 +66,7 @@ namespace RakNet
 	 * 
 	 */
 	
-	class BitStream
+	class BitStream : public ObjectCounter<BitStream>
 	{
 	
 	public:

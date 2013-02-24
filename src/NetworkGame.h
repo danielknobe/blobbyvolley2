@@ -30,13 +30,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputSource.h"
 #include "RakNetPacket.h"
 #include "DuelMatch.h"
+#include "BlobbyDebug.h"
 
 class RakServer;
 class ReplayRecorder;
 
 typedef std::list<packet_ptr> PacketQueue;
 
-class NetworkGame
+class NetworkGame : public ObjectCounter<NetworkGame>
 {
 	public:
 		// The given server is used to send messages to the client, received

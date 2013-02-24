@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include "BlobbyDebug.h"
+
 /// \brief class controlling game speed
 /// \details This class can control the game speed and the displayed FPS.
 /// It is updated once a frame and waits the necessary time.
@@ -30,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// is close to zero, the real speed can be altered.
 
 
-class SpeedController
+class SpeedController : public ObjectCounter<SpeedController>
 {
 	public:
 		SpeedController(float gameFPS);
