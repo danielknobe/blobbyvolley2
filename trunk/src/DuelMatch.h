@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 #include "InputSource.h"
 #include "PlayerIdentity.h"
+#include "BlobbyDebug.h"
 
 class InputSource;
 class DuelMatchState;
@@ -41,7 +42,7 @@ class PhysicWorld;
 	similar to a singleton, but it can be instantiated
 	multiple times on a server or be completely unavailable
 */
-class DuelMatch
+class DuelMatch : public ObjectCounter<DuelMatch>
 {
 	public:	
 		// If remote is true, only physical responses will be calculated

@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "ReplayDefs.h"
+#include "BlobbyDebug.h"
 #include "GenericIOFwd.h"
 
 class PlayerInput;
@@ -32,7 +33,7 @@ class PlayerInput;
 /// \class IReplayLoader
 /// \brief Base class for replay loaders.
 /// \details \todo add detailed description.
-class IReplayLoader
+class IReplayLoader : public ObjectCounter<IReplayLoader>
 {
 	public:
 		

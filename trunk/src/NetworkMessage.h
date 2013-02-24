@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/PacketEnumerations.h"
 #include "raknet/NetworkTypes.h"
+#include "BlobbyDebug.h"
 
 enum MessageType
 {
@@ -231,7 +232,7 @@ enum MessageType
 
 class UserConfig;
 
-struct ServerInfo
+struct ServerInfo : public ObjectCounter<ServerInfo>
 {
 	ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t port);
 	ServerInfo(const UserConfig& config);

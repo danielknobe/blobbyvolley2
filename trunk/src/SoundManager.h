@@ -23,9 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <map>
 #include <list>
+#include "BlobbyDebug.h"
 
 /// \brief struct for holding sound data
-struct Sound
+struct Sound : public ObjectCounter<Sound>
 {
 	Sound()
 	{
@@ -43,7 +44,7 @@ struct Sound
 	\details Managing loading, converting to target format, muting, setting volume
 			and, of couse, playing of sounds.
 */
-class SoundManager
+class SoundManager : public ObjectCounter<SoundManager>
 {
 	public:
 		static SoundManager* createSoundManager();

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/circular_buffer.hpp>
 #include <string>
+#include "BlobbyDebug.h"
 
 class CC_Result;
 
@@ -53,7 +54,7 @@ class CC_Result;
 			as we agreed not to change any network packets till this release).
 				
 */
-class LagDetector
+class LagDetector : public ObjectCounter<LagDetector>
 {
 	public:
 		/// \brief constructor

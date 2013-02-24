@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Vector.h"
 #include "Global.h"
+#include "BlobbyDebug.h"
 
 
 // Text definitions
@@ -56,7 +57,7 @@ struct SDL_Surface;
 	\details couples the raw image data with its size in a way that is
 			independend of the used renderer.
 */
-struct BufferedImage
+struct BufferedImage : public ObjectCounter<BufferedImage>
 {
 	int w;
 	int h;
@@ -98,7 +99,7 @@ struct BufferedImage
 
 	\todo This classes need a complete rework! They include far too much information about the actual game.
 */
-class RenderManager
+class RenderManager : public ObjectCounter<RenderManager>
 {
 	public:
 		virtual ~RenderManager(){};

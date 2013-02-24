@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayDefs.h"
 #include "InputSource.h"
 #include "DuelMatchState.h"
+#include "BlobbyDebug.h"
 #include "GenericIOFwd.h"
 
 namespace RakNet
@@ -43,7 +44,7 @@ class FileWrite;
 /*! \class VersionMismatchException
 	\brief thrown when replays of incompatible version are loaded.
 */
-struct VersionMismatchException : public std::exception
+struct VersionMismatchException : public std::exception, public ObjectCounter<VersionMismatchException>
 {
 	VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor);
 	~VersionMismatchException() throw();
@@ -59,7 +60,7 @@ struct VersionMismatchException : public std::exception
 /// \brief recording game
 /// \todo we safe replays in continuous storeage (array or std::vector)
 ///			which might be ineffective for huge replays (1h ~ 270kb) 
-class ReplayRecorder
+class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 {
 	public:
 		ReplayRecorder();
