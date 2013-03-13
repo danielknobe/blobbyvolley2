@@ -8,6 +8,7 @@ include_directories(.)
 
 set(common_SRC	
 	Global.h
+	BlobbyDebug.cpp BlobbyDebug.h
 	Clock.cpp Clock.h
 	DuelMatch.cpp DuelMatch.h
 	ReplayRecorder.cpp ReplayRecorder.h
@@ -27,6 +28,7 @@ set(common_SRC
 	GenericIO.cpp GenericIO.h
 	ReplaySavePoint.cpp ReplaySavePoint.h
 	InputSource.cpp InputSource.h
+	PlayerIdentity.cpp PlayerIdentity.h
 	)
 	
 set (blobby_SRC ${common_SRC}
