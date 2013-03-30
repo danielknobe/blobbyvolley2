@@ -39,7 +39,7 @@ set (blobby_SRC ${common_SRC}
 	LagDetectionSystem.cpp LagDetectionSystem.h
 	InputDevice.cpp InputDevice.h
 	InputManager.cpp InputManager.h
-	LocalInputSource.h
+	LocalInputSource.cpp LocalInputSource.h
 	RenderManager.cpp RenderManager.h
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
 	RenderManagerGP2X.cpp RenderManagerGP2X.h
