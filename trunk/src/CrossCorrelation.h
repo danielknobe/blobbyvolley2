@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <cassert>
+#include <iterator>
+
 typedef float(*timeWeightFunction)(float pdt);
 inline float constantWeightFunction(float )
 {
@@ -30,9 +33,9 @@ struct CC_Result
 {
 	CC_Result(int o) : offset(o)
 	{
-		
+
 	}
-	
+
 	int offset;		//!< determined time shift
 };
 
@@ -61,7 +64,7 @@ float crossCorrelationTest(const T& signal, const T& search_pattern, int offset,
 		if((*signal_read) == (*comp))
 			rel += twf( (float)pos / len );
 	};
-	
+
 	return rel / search_pattern.size();
 }
 
@@ -71,11 +74,11 @@ template<class T>
 CC_Result crossCorrelation(const T& A, const T& B, timeWeightFunction f = constantWeightFunction)
 {
 	assert(A.size() >= B.size());
-	
+
 	float best = 0;
 	int boffset = 0;
 	int samevals = 0;
-	
+
 	for(unsigned int offset = 0; offset <= A.size() - B.size(); ++offset)
 	{
 		float val = crossCorrelationTest(A, B, offset, f);
@@ -84,14 +87,14 @@ CC_Result crossCorrelation(const T& A, const T& B, timeWeightFunction f = consta
 			best = val;
 			boffset = offset;
 			samevals = 1;
-		} 
+		}
 		 else if ( val == best)
 		{
 			samevals++;
 		}
-		
+
 	}
-	
+
 	return CC_Result(boffset);
 }
 
