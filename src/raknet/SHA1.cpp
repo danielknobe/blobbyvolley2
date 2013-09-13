@@ -1,6 +1,6 @@
  /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
  /**
- * @file 
+ * @file
  * @brief SHA-1 Hash key computation implementation
  *
  * 100% free public domain implementation of the SHA-1
@@ -241,7 +241,7 @@ bool CSHA1::HashFile( char *szFileName )
 
 void CSHA1::Final()
 {
-	unsigned int i = 0, j = 0;
+	unsigned int i = 0;
 	unsigned char finalcount[ 8 ] =
 	{
 		0, 0, 0, 0, 0, 0, 0, 0
@@ -265,8 +265,6 @@ void CSHA1::Final()
 
 		// Wipe variables for security reasons
 		i = 0;
-
-		j = 0;
 
 		memset( m_buffer, 0, 64 );
 

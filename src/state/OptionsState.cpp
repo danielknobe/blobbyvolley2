@@ -44,31 +44,31 @@ OptionState::OptionState()
 	mPlayerOptions[RIGHT_PLAYER] = 0;
 	std::string leftScript = mOptionConfig.getString("left_script_name");
 	std::string rightScript = mOptionConfig.getString("right_script_name");
-	
+
 	mScriptNames = FileSystem::getSingleton().enumerateFiles("scripts", ".lua");
-	
+
 	// hack. we cant use something like push_front, though
 	mScriptNames.push_back("Human");
 	std::swap(mScriptNames[0], mScriptNames[mScriptNames.size() - 1]);
-	
-	for(int i = 0; i < mScriptNames.size(); ++i)
+
+	for(unsigned int i = 0; i < mScriptNames.size(); ++i)
 	{
 		if (mScriptNames[i] == leftScript)
 			mPlayerOptions[LEFT_PLAYER] = i;
 		if (mScriptNames[i] == rightScript)
 			mPlayerOptions[RIGHT_PLAYER] = i;
 	}
-	
+
 	if (mOptionConfig.getBool("left_player_human"))
 		mPlayerOptions[LEFT_PLAYER] = 0;
 	if (mOptionConfig.getBool("right_player_human"))
 		mPlayerOptions[RIGHT_PLAYER] = 0;
-	
+
 	mPlayerName[LEFT_PLAYER] = mOptionConfig.getString("left_player_name");
 	mPlayerName[RIGHT_PLAYER] = mOptionConfig.getString("right_player_name");
 	mPlayerNamePosition[RIGHT_PLAYER] = 0;
 	mPlayerNamePosition[LEFT_PLAYER] = 0;
-	
+
 	mBotStrength[LEFT_PLAYER] = mOptionConfig.getInteger("left_script_strength");
 	mBotStrength[RIGHT_PLAYER] = mOptionConfig.getInteger("right_script_strength");
 }
@@ -108,7 +108,7 @@ void OptionState::save()
 void OptionState::step()
 {
 	const int MAX_BOT_DELAY = 25;		// 25 frames = 0.33s (gamespeed: normal)
-	
+
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -119,21 +119,21 @@ void OptionState::step()
 
 	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
-	
+
 	imgui.doText(GEN_ID, Vector2(270.0, 310.0), TextManager::OP_DIFFICULTY );
-	
+
 	float f = 1.f - (float)mBotStrength[0] / MAX_BOT_DELAY;
 	imgui.doScrollbar(GEN_ID, Vector2(15.0, 350.0), f);
 	mBotStrength[0] = static_cast<unsigned int> ((1.f-f) * MAX_BOT_DELAY + 0.5f);
 	imgui.doText(GEN_ID, Vector2(235.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
-											 	(f > 0.33 ? TextManager::OP_MEDIUM: 
+											 	(f > 0.33 ? TextManager::OP_MEDIUM:
 												TextManager::OP_WEAK));
-	
+
 	f = 1.f - (float)mBotStrength[1] / MAX_BOT_DELAY;
 	imgui.doScrollbar(GEN_ID, Vector2(440.0, 350.0), f);
 	mBotStrength[1] = static_cast<unsigned int> ((1.f - f) * MAX_BOT_DELAY + 0.5f);
 	imgui.doText(GEN_ID, Vector2(660.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
-											 	(f > 0.33 ? TextManager::OP_MEDIUM: 
+											 	(f > 0.33 ? TextManager::OP_MEDIUM:
 												TextManager::OP_WEAK));
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
@@ -829,15 +829,15 @@ const char* InputOptionsState::getStateName() const
 MiscOptionsState::MiscOptionsState()
 {
 	IMGUI::getSingleton().resetSelection();
-	
+
 	mOptionConfig.loadFile("config.xml");
 
 	std::string currentBackground = mOptionConfig.getString("background");
 	mBackground = -1;
-	
+
 	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp", true);
-	
-	for(int i = 0; i < mBackgrounds.size(); ++i)
+
+	for(unsigned int i = 0; i < mBackgrounds.size(); ++i)
 	{
 		if (mBackgrounds[i] == currentBackground)
 		{
@@ -849,10 +849,10 @@ MiscOptionsState::MiscOptionsState()
 	std::string currentRules = mOptionConfig.getString("rules");
 	currentRules = currentRules.substr(0, currentRules.length() - 4);
 	mRule = -1;
-	
+
 	mRules = FileSystem::getSingleton().enumerateFiles("rules", ".lua", false);
-	
-	for(int i = 0; i < mRules.size(); ++i)
+
+	for(unsigned int i = 0; i < mRules.size(); ++i)
 	{
 		if (mRules[i] == currentRules)
 		{
@@ -888,7 +888,7 @@ void MiscOptionsState::save()
 	if (mRule > -1)
 		mOptionConfig.setString("rules", mRules[mRule] + ".lua");
 	mOptionConfig.saveFile("config.xml");
-	
+
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
@@ -995,7 +995,7 @@ void MiscOptionsState::step()
 		//! \todo autogenerierte liste mit allen lang_ dateien, namen auslesen
 		mLanguage = (*olang).first;
 		TextManager::switchLanguage(mLanguage);
-		
+
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))

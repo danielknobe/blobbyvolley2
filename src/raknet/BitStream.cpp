@@ -1,8 +1,8 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * 
- * @brief Implementation of BitStream class 
+ *
+ * @brief Implementation of BitStream class
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -32,7 +32,7 @@
 /*
  * Uncomment this to check that read and writes match with the same
  * type and in the case of streams, size.  Useful during debugging
- */ 
+ */
 //#define TYPE_CHECKING
 
 #ifdef TYPE_CHECKING
@@ -135,7 +135,7 @@ BitStream::BitStream( char* _data, unsigned int lengthInBytes, bool _copyData )
 	readOffset = 0;
 	copyData = _copyData;
 	numberOfBitsAllocated = lengthInBytes << 3;
-	
+
 	if ( copyData )
 	{
 		if ( lengthInBytes > 0 )
@@ -166,7 +166,7 @@ void BitStream::SetNumberOfBitsAllocated( const unsigned int lengthInBits )
 {
 #ifdef _DEBUG
 	assert( lengthInBits >= ( unsigned int ) numberOfBitsAllocated );
-#endif	
+#endif
 	numberOfBitsAllocated = lengthInBits;
 }
 
@@ -181,19 +181,19 @@ void BitStream::Reset( void )
 	// Note:  Do NOT reallocate memory because BitStream is used
 	// in places to serialize/deserialize a buffer. Reallocation
 	// is a dangerous operation (may result in leaks).
-	
+
 	if ( numberOfBitsUsed > 0 )
 	{
 		//  memset(data, 0, BITS_TO_BYTES(numberOfBitsUsed));
 	}
-	
+
 	// Don't free memory here for speed efficiency
 	//free(data);  // Use realloc and free so we are more efficient than delete and new for resizing
 	numberOfBitsUsed = 0;
-	
+
 	//numberOfBitsAllocated=8;
 	readOffset = 0;
-	
+
 	//data=(unsigned char*)malloc(1);
 	// if (numberOfBitsAllocated>0)
 	//  memset(data, 0, BITS_TO_BYTES(numberOfBitsAllocated));
@@ -206,7 +206,7 @@ void BitStream::Write( const bool input )
 	unsigned char ID = 0;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 	if ( input )
 		Write1();
 	else
@@ -219,7 +219,7 @@ void BitStream::Write( const unsigned char input )
 	unsigned char ID = 1;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 }
 
@@ -229,7 +229,7 @@ void BitStream::Write( const char input )
 	unsigned char ID = 2;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 }
 
@@ -242,7 +242,7 @@ void BitStream::Write( const unsigned short input )
 
 #ifdef __BITSTREAM_NATIVE_END
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
-#else	
+#else
 	static unsigned char uint16w[2];
 	uint16w[B16_1] =  (input >> 8)&(0xff);
 	uint16w[B16_0] = input&(0xff);
@@ -257,14 +257,14 @@ void BitStream::Write( const short input )
 	unsigned char ID = 4;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
 	static unsigned char int16w[2];
 	int16w[B16_1] =  (input >> 8)&(0xff);
 	int16w[B16_0] = input&(0xff);
-	
+
 	WriteBits( int16w, sizeof( input ) * 8, true );
 #endif
 }
@@ -275,7 +275,7 @@ void BitStream::Write( const unsigned int input )
 	unsigned char ID = 5;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
@@ -284,7 +284,7 @@ void BitStream::Write( const unsigned int input )
 	uint32w[B32_2] = (input >> 16)&(0x000000ff);
 	uint32w[B32_1] = (input >> 8)&(0x000000ff);
 	uint32w[B32_0] = (input)&(0x000000ff);
-	
+
 	WriteBits( uint32w, sizeof( input ) * 8, true );
 #endif
 }
@@ -295,7 +295,7 @@ void BitStream::Write( const int input )
 	unsigned char ID = 6;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteBits( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
@@ -304,7 +304,7 @@ void BitStream::Write( const int input )
 	int32w[B32_2] = (input >> 16)&(0x000000ff);
 	int32w[B32_1] = (input >> 8)&(0x000000ff);
 	int32w[B32_0] = (input)&(0x000000ff);
-	
+
 	WriteBits( int32w, sizeof( input ) * 8, true );
 #endif
 }
@@ -342,7 +342,7 @@ void BitStream::Write( const char* input, const int numberOfBytes )
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 	WriteBits( ( unsigned char* ) & numberOfBytes, sizeof( int ) * 8, true );
 #endif
-	
+
 	WriteBits( ( unsigned char* ) input, numberOfBytes * 8, true );
 }
 
@@ -354,7 +354,7 @@ void BitStream::WriteCompressed( const unsigned char input )
 	unsigned char ID = 12;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 }
 
@@ -364,7 +364,7 @@ void BitStream::WriteCompressed( const char input )
 	unsigned char ID = 13;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, false );
 }
 
@@ -374,14 +374,14 @@ void BitStream::WriteCompressed( const unsigned short input )
 	unsigned char ID = 14;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
 	static unsigned char uint16wc[2];
 	uint16wc[B16_1] =  (input >> 8)&(0xff);
 	uint16wc[B16_0] = input&(0xff);
-	
+
 	WriteCompressed( uint16wc, sizeof( input ) * 8, true );
 #endif
 }
@@ -392,14 +392,14 @@ void BitStream::WriteCompressed( const short input )
 	unsigned char ID = 15;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
 	static unsigned char int16wc[2];
 	int16wc[B16_1] =  (input >> 8)&(0xff);
 	int16wc[B16_0] = input&(0xff);
-	
+
 	WriteCompressed( int16wc, sizeof( input ) * 8, false );
 #endif
 }
@@ -410,7 +410,7 @@ void BitStream::WriteCompressed( const unsigned int input )
 	unsigned char ID = 16;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
@@ -419,7 +419,7 @@ void BitStream::WriteCompressed( const unsigned int input )
 	uint32wc[B32_2] = (input >> 16)&(0x000000ff);
 	uint32wc[B32_1] = (input >> 8)&(0x000000ff);
 	uint32wc[B32_0] = (input)&(0x000000ff);
-	
+
 	WriteCompressed( uint32wc, sizeof( input ) * 8, true );
 #endif
 }
@@ -430,7 +430,7 @@ void BitStream::WriteCompressed( const int input )
 	unsigned char ID = 17;
 	WriteBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8, true );
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	WriteCompressed( ( unsigned char* ) & input, sizeof( input ) * 8, true );
 #else
@@ -439,7 +439,7 @@ void BitStream::WriteCompressed( const int input )
 	int32wc[B32_2] = (input >> 16)&(0x000000ff);
 	int32wc[B32_1] = (input >> 8)&(0x000000ff);
 	int32wc[B32_0] = (input)&(0x000000ff);
-	
+
 	WriteCompressed( int32wc, sizeof( input ) * 8, false );
 #endif
 }
@@ -450,21 +450,21 @@ bool BitStream::Read( bool& output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 #ifdef _DEBUG
-		
+
 	assert( ID == 0 );
-	
+
 #endif
 #endif
-	
+
 	//assert(readOffset+1 <=numberOfBitsUsed); // If this assert is hit the stream wasn't long enough to read from
 	if ( readOffset + 1 > numberOfBitsUsed )
 		return false;
-	
+
 	//if (ReadBit()) // Check that bit
 	if ( data[ readOffset >> 3 ] & ( 0x80 >> ( readOffset % 8 ) ) )   // Is it faster to just write it out here?
 		output = true;
@@ -479,14 +479,14 @@ bool BitStream::Read( unsigned char &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 1 );
-	
+
 #endif
-	
+
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 }
 
@@ -494,14 +494,14 @@ bool BitStream::Read( char &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 2 );
-	
+
 #endif
-	
+
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 }
 
@@ -509,14 +509,14 @@ bool BitStream::Read( unsigned short &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 3 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 #else
@@ -531,14 +531,14 @@ bool BitStream::Read( short &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 4 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 #else
@@ -553,14 +553,14 @@ bool BitStream::Read( unsigned int &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 5 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 #else
@@ -579,14 +579,14 @@ bool BitStream::Read( int &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 6 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 #else
@@ -605,12 +605,12 @@ bool BitStream::Read( float &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 9 );
-	
+
 #endif
 
 #ifdef __BITSTREAM_NATIVE_END
@@ -627,14 +627,14 @@ bool BitStream::Read( double &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 10 );
-	
+
 #endif
-	
+
 	return ReadBits( ( unsigned char* ) & output, sizeof( output ) * 8 );
 
 }
@@ -644,20 +644,20 @@ bool BitStream::Read( char* output, const int numberOfBytes )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 11 );
-	
+
 	int NOB;
-	
+
 	ReadBits( ( unsigned char* ) & NOB, sizeof( int ) * 8 );
-	
+
 	assert( NOB == numberOfBytes );
-	
+
 #endif
-	
+
 	return ReadBits( ( unsigned char* ) output, numberOfBytes * 8 );
 }
 
@@ -666,14 +666,14 @@ bool BitStream::ReadCompressed( unsigned char & output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 12 );
-	
+
 #endif
-	
+
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
 }
 
@@ -681,14 +681,14 @@ bool BitStream::ReadCompressed( char &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 13 );
-	
+
 #endif
-	
+
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, false );
 }
 
@@ -696,14 +696,14 @@ bool BitStream::ReadCompressed( unsigned short &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 14 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
 #else
@@ -719,14 +719,14 @@ bool BitStream::ReadCompressed( short &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 15 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
 #else
@@ -741,14 +741,14 @@ bool BitStream::ReadCompressed( unsigned int &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 16 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
 #else
@@ -767,14 +767,14 @@ bool BitStream::ReadCompressed( int &output )
 {
 #ifdef TYPE_CHECKING
 	unsigned char ID;
-	
+
 	if ( ReadBits( ( unsigned char* ) & ID, sizeof(unsigned char) * 8 ) == false )
 		return false;
-		
+
 	assert( ID == 17 );
-	
+
 #endif
-	
+
 #ifdef __BITSTREAM_NATIVE_END
 	return ReadCompressed( ( unsigned char* ) & output, sizeof( output ) * 8, true );
 #else
@@ -805,12 +805,12 @@ void BitStream::ResetWritePointer( void )
 void BitStream::Write0( void )
 {
 	AddBitsAndReallocate( 1 );
-	
+
 	// New bytes need to be zeroed
-	
+
 	if ( ( numberOfBitsUsed % 8 ) == 0 )
 		data[ numberOfBitsUsed >> 3 ] = 0;
-		
+
 	numberOfBitsUsed++; // This ++ was in the line above - but boundschecker didn't like that for some reason.
 }
 
@@ -818,14 +818,14 @@ void BitStream::Write0( void )
 void BitStream::Write1( void )
 {
 	AddBitsAndReallocate( 1 );
-	
+
 	int numberOfBitsMod8 = numberOfBitsUsed % 8;
-	
+
 	if ( numberOfBitsMod8 == 0 )
 		data[ numberOfBitsUsed >> 3 ] = 0x80;
 	else
 		data[ numberOfBitsUsed >> 3 ] |= 0x80 >> ( numberOfBitsMod8 ); // Set the bit to 1
-		
+
 	numberOfBitsUsed++; // This ++ was in the line above - but boundschecker didn't like that for some reason.
 }
 
@@ -834,7 +834,7 @@ bool BitStream::ReadBit( void )
 {
 #pragma warning( disable : 4800 )
 	readOffset++;
-	return ( bool ) ( data[ readOffset-1 >> 3 ] & ( 0x80 >> ( readOffset-1 % 8 ) ) );
+	return ( bool ) ( data[ readOffset-1 >> 3 ] & ( 0x80 >> ( (readOffset-1) % 8 ) ) );
 #pragma warning( default : 4800 )
 }
 
@@ -847,14 +847,14 @@ void BitStream::WriteAlignedBytes( const unsigned char* input,
 #ifdef _DEBUG
 	assert( numberOfBytesToWrite > 0 );
 #endif
-	
+
 	AlignWriteToByteBoundary();
 	// Allocate enough memory to hold everything
 	AddBitsAndReallocate( numberOfBytesToWrite << 3 );
-	
+
 	// Write the data
 	memcpy( data + ( numberOfBitsUsed >> 3 ), input, numberOfBytesToWrite );
-	
+
 	numberOfBitsUsed += numberOfBytesToWrite << 3;
 }
 
@@ -867,21 +867,21 @@ bool BitStream::ReadAlignedBytes( unsigned char* output,
 #ifdef _DEBUG
 	assert( numberOfBytesToRead > 0 );
 #endif
-	
+
 	if ( numberOfBytesToRead <= 0 )
 		return false;
-		
+
 	// Byte align
 	AlignReadToByteBoundary();
-	
+
 	if ( readOffset + ( numberOfBytesToRead << 3 ) > numberOfBitsUsed )
 		return false;
-		
+
 	// Write the data
 	memcpy( output, data + ( readOffset >> 3 ), numberOfBytesToRead );
-	
+
 	readOffset += numberOfBytesToRead << 3;
-	
+
 	return true;
 }
 
@@ -905,23 +905,23 @@ void BitStream::WriteBits( const unsigned char *input,
 {
 	// if (numberOfBitsToWrite<=0)
 	//  return;
-	
+
 	AddBitsAndReallocate( numberOfBitsToWrite );
 	int offset = 0;
 	unsigned char dataByte;
 	int numberOfBitsUsedMod8;
-	
+
 	numberOfBitsUsedMod8 = numberOfBitsUsed % 8;
-	
+
 	// Faster to put the while at the top surprisingly enough
 	while ( numberOfBitsToWrite > 0 )
 		//do
 	{
 		dataByte = *( input + offset );
-		
+
 		if ( numberOfBitsToWrite < 8 && rightAlignedBits )   // rightAlignedBits means in the case of a partial byte, the bits are aligned from the right (bit 0) rather than the left (as in the normal internal representation)
 			dataByte <<= 8 - numberOfBitsToWrite;  // shift left to get the bits on the left, as in our internal representation
-			
+
 		// Writing to a new byte each time
 		if ( numberOfBitsUsedMod8 == 0 )
 			* ( data + ( numberOfBitsUsed >> 3 ) ) = dataByte;
@@ -929,20 +929,20 @@ void BitStream::WriteBits( const unsigned char *input,
 		{
 			// Copy over the new data.
 			*( data + ( numberOfBitsUsed >> 3 ) ) |= dataByte >> ( numberOfBitsUsedMod8 ); // First half
-			
+
 			if ( 8 - ( numberOfBitsUsedMod8 ) < 8 && 8 - ( numberOfBitsUsedMod8 ) < numberOfBitsToWrite )   // If we didn't write it all out in the first half (8 - (numberOfBitsUsed%8) is the number we wrote in the first half)
 			{
 				*( data + ( numberOfBitsUsed >> 3 ) + 1 ) = (unsigned char) ( dataByte << ( 8 - ( numberOfBitsUsedMod8 ) ) ); // Second half (overlaps byte boundary)
 			}
 		}
-		
+
 		if ( numberOfBitsToWrite >= 8 )
 			numberOfBitsUsed += 8;
 		else
 			numberOfBitsUsed += numberOfBitsToWrite;
-		
+
 		numberOfBitsToWrite -= 8;
-		
+
 		offset++;
 	}
 	// } while(numberOfBitsToWrite>0);
@@ -954,14 +954,14 @@ void BitStream::SetData( const unsigned char* input, const int numberOfBits )
 #ifdef _DEBUG
 	assert( numberOfBitsUsed == 0 ); // Make sure the stream is clear
 #endif
-	
+
 	if ( numberOfBits <= 0 )
 		return ;
-		
+
 	AddBitsAndReallocate( numberOfBits );
-	
+
 	memcpy( data, input, BITS_TO_BYTES( numberOfBits ) );
-	
+
 	numberOfBitsUsed = numberOfBits;
 }
 
@@ -970,19 +970,19 @@ void BitStream::WriteCompressed( const unsigned char* input,
 	const int size, const bool unsignedData )
 {
 	int currentByte = ( size >> 3 ) - 1; // PCs
-	
+
 	unsigned char byteMatch;
-	
+
 	if ( unsignedData )
 	{
 		byteMatch = 0;
 	}
-	
+
 	else
 	{
 		byteMatch = 0xFF;
 	}
-	
+
 	// Write upper bytes with a single 1
 	// From high byte to low byte, if high byte is a byteMatch then write a 1 bit. Otherwise write a 0 bit and then write the remaining bytes
 	while ( currentByte > 0 )
@@ -997,17 +997,17 @@ void BitStream::WriteCompressed( const unsigned char* input,
 			// Write the remainder of the data after writing 0
 			bool b = false;
 			Write( b );
-			
+
 			WriteBits( input, ( currentByte + 1 ) << 3, true );
 			//  currentByte--;
-			
-			
+
+
 			return ;
 		}
-		
+
 		currentByte--;
 	}
-	
+
 	// If the upper half of the last byte is a 0 (positive) or 16 (negative) then write a 1 and the remaining 4 bits.  Otherwise write a 0 and the 8 bites.
 	if ( ( unsignedData && ( ( *( input + currentByte ) ) & 0xF0 ) == 0x00 ) ||
 		( unsignedData == false && ( ( *( input + currentByte ) ) & 0xF0 ) == 0xF0 ) )
@@ -1016,7 +1016,7 @@ void BitStream::WriteCompressed( const unsigned char* input,
 		Write( b );
 		WriteBits( input + currentByte, 4, true );
 	}
-	
+
 	else
 	{
 		bool b = false;
@@ -1036,46 +1036,46 @@ bool BitStream::ReadBits( unsigned char* output,
 #endif
 	// if (numberOfBitsToRead<=0)
 	//  return false;
-	
+
 	if ( readOffset + numberOfBitsToRead > numberOfBitsUsed )
 		return false;
-		
+
 	int readOffsetMod8;
-	
+
 	int offset = 0;
-	
+
 	memset( output, 0, BITS_TO_BYTES( numberOfBitsToRead ) );
-	
+
 	readOffsetMod8 = readOffset % 8;
-	
+
 	// do
 	// Faster to put the while at the top surprisingly enough
 	while ( numberOfBitsToRead > 0 )
 	{
 		*( output + offset ) |= *( data + ( readOffset >> 3 ) ) << ( readOffsetMod8 ); // First half
-		
+
 		if ( readOffsetMod8 > 0 && numberOfBitsToRead > 8 - ( readOffsetMod8 ) )   // If we have a second half, we didn't read enough bytes in the first half
 			*( output + offset ) |= *( data + ( readOffset >> 3 ) + 1 ) >> ( 8 - ( readOffsetMod8 ) ); // Second half (overlaps byte boundary)
-			
+
 		numberOfBitsToRead -= 8;
-		
+
 		if ( numberOfBitsToRead < 0 )   // Reading a partial byte for the last byte, shift right so the data is aligned on the right
 		{
-		
+
 			if ( alignBitsToRight )
 				* ( output + offset ) >>= -numberOfBitsToRead;
-				
+
 			readOffset += 8 + numberOfBitsToRead;
 		}
 		else
 			readOffset += 8;
-			
+
 		offset++;
-		
+
 	}
-	
+
 	//} while(numberOfBitsToRead>0);
-	
+
 	return true;
 }
 
@@ -1084,33 +1084,33 @@ bool BitStream::ReadCompressed( unsigned char* output,
 	const int size, const bool unsignedData )
 {
 	int currentByte = ( size >> 3 ) - 1;
-	
-	
+
+
 	unsigned char byteMatch, halfByteMatch;
-	
+
 	if ( unsignedData )
 	{
 		byteMatch = 0;
 		halfByteMatch = 0;
 	}
-	
+
 	else
 	{
 		byteMatch = 0xFF;
 		halfByteMatch = 0xF0;
 	}
-	
+
 	// Upper bytes are specified with a single 1 if they match byteMatch
 	// From high byte to low byte, if high byte is a byteMatch then write a 1 bit. Otherwise write a 0 bit and then write the remaining bytes
 	while ( currentByte > 0 )
 	{
 		// If we read a 1 then the data is byteMatch.
-		
+
 		bool b;
-		
+
 		if ( Read( b ) == false )
 			return false;
-			
+
 		if ( b )   // Check that bit
 		{
 			output[ currentByte ] = byteMatch;
@@ -1119,31 +1119,31 @@ bool BitStream::ReadCompressed( unsigned char* output,
 		else
 		{
 			// Read the rest of the bytes
-			
+
 			if ( ReadBits( output, ( currentByte + 1 ) << 3 ) == false )
 				return false;
-				
+
 			return true;
 		}
 	}
-	
+
 	// All but the first bytes are byteMatch.  If the upper half of the last byte is a 0 (positive) or 16 (negative) then what we read will be a 1 and the remaining 4 bits.
 	// Otherwise we read a 0 and the 8 bytes
 	//assert(readOffset+1 <=numberOfBitsUsed); // If this assert is hit the stream wasn't long enough to read from
 	if ( readOffset + 1 > numberOfBitsUsed )
 		return false;
-		
+
 	bool b;
-	
+
 	if ( Read( b ) == false )
 		return false;
-		
+
 	if ( b )   // Check that bit
 	{
-	
+
 		if ( ReadBits( output + currentByte, 4 ) == false )
 			return false;
-			
+
 		output[ currentByte ] |= halfByteMatch; // We have to set the high 4 bits since these are set to 0 by ReadBits
 	}
 	else
@@ -1151,7 +1151,7 @@ bool BitStream::ReadCompressed( unsigned char* output,
 		if ( ReadBits( output + currentByte, 8 ) == false )
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -1162,7 +1162,7 @@ void BitStream::AddBitsAndReallocate( const int numberOfBitsToWrite )
 		return;
 
 	int newNumberOfBitsAllocated = numberOfBitsToWrite + numberOfBitsUsed;
-	
+
 	if ( numberOfBitsToWrite + numberOfBitsUsed > 0 && ( ( numberOfBitsAllocated - 1 ) >> 3 ) < ( ( newNumberOfBitsAllocated - 1 ) >> 3 ) )   // If we need to allocate 1 or more new bytes
 	{
 #ifdef _DEBUG
@@ -1183,7 +1183,7 @@ void BitStream::AddBitsAndReallocate( const int numberOfBitsToWrite )
 				 data = ( unsigned char* ) malloc( amountToAllocate );
 
 				 // need to copy the stack data over to our new memory area too
-				 memcpy ((void *)data, (void *)stackData, BITS_TO_BYTES( numberOfBitsAllocated )); 
+				 memcpy ((void *)data, (void *)stackData, BITS_TO_BYTES( numberOfBitsAllocated ));
 			 }
 		}
 		else
@@ -1196,7 +1196,7 @@ void BitStream::AddBitsAndReallocate( const int numberOfBitsToWrite )
 #endif
 		//  memset(data+newByteOffset, 0,  ((newNumberOfBitsAllocated-1)>>3) - ((numberOfBitsAllocated-1)>>3)); // Set the new data block to 0
 	}
-	
+
 	if ( newNumberOfBitsAllocated > numberOfBitsAllocated )
 		numberOfBitsAllocated = newNumberOfBitsAllocated;
 }
@@ -1214,16 +1214,16 @@ void BitStream::PrintBits( void ) const
 		printf( "No bits\n" );
 		return ;
 	}
-	
+
 	for ( int counter = 0; counter < BITS_TO_BYTES( numberOfBitsUsed ); counter++ )
 	{
 		int stop;
-		
+
 		if ( counter == ( numberOfBitsUsed - 1 ) >> 3 )
 			stop = 8 - ( ( ( numberOfBitsUsed - 1 ) % 8 ) + 1 );
 		else
 			stop = 0;
-			
+
 		for ( int counter2 = 7; counter2 >= stop; counter2-- )
 		{
 			if ( ( data[ counter ] >> counter2 ) & 1 )
@@ -1231,10 +1231,10 @@ void BitStream::PrintBits( void ) const
 			else
 				putchar( '0' );
 		}
-		
+
 		putchar( ' ' );
 	}
-	
+
 	putchar( '\n' );
 }
 
@@ -1246,7 +1246,7 @@ int BitStream::CopyData( unsigned char** _data ) const
 #ifdef _DEBUG
 	assert( numberOfBitsUsed > 0 );
 #endif
-	
+
 	*_data = new unsigned char [ BITS_TO_BYTES( numberOfBitsUsed ) ];
 	memcpy( *_data, data, sizeof(unsigned char) * ( BITS_TO_BYTES( numberOfBitsUsed ) ) );
 	return numberOfBitsUsed;
@@ -1306,19 +1306,19 @@ void BitStream::AssertCopyData( void )
 	if ( copyData == false )
 	{
 		copyData = true;
-		
+
 		if ( numberOfBitsAllocated > 0 )
 		{
 			unsigned char * newdata = ( unsigned char* ) malloc( BITS_TO_BYTES( numberOfBitsAllocated ) );
 #ifdef _DEBUG
-			
+
 			assert( data );
 #endif
-			
+
 			memcpy( newdata, data, BITS_TO_BYTES( numberOfBitsAllocated ) );
 			data = newdata;
 		}
-		
+
 		else
 			data = 0;
 	}
