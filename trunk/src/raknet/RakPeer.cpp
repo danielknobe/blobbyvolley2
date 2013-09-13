@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief RakPeer Implementation 
+ * @file
+ * @brief RakPeer Implementation
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -35,7 +35,7 @@
 #include "AsynchronousFileIO.h"
 #endif
 
-#ifdef _WIN32 
+#ifdef _WIN32
 //#include <Shlwapi.h>
 #include <process.h>
 #else
@@ -478,10 +478,6 @@ bool RakPeer::Connect( const char* host, unsigned short remotePort, char* passwo
 	if ( host == 0 || endThreads || connectionSocket == INVALID_SOCKET )
 		return false;
 
-	unsigned numberOfFreeSlots;
-
-	numberOfFreeSlots = 0;
-
 	/*
 	for ( i = 0; i < maximumNumberOfPeers; i++ )
 	{
@@ -529,7 +525,7 @@ bool RakPeer::Connect( const char* host, unsigned short remotePort, char* passwo
 			p->bitSize = 8;
 
 #ifdef _DEBUG
-	
+
 			assert( p->data );
 #endif
 
@@ -996,7 +992,7 @@ void RakPeer::AddToBanList( const char *IP, unsigned int milliseconds )
 	banListMutex.Unlock();
 
 	BanStruct *banStruct = new BanStruct;
-	
+
 	if (milliseconds==0)
 		banStruct->timeout=0; // Infinite
 	else
@@ -1045,7 +1041,7 @@ void RakPeer::RemoveFromBanList( const char *IP )
 	{
 		delete temp;
 	}
-	
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1330,7 +1326,7 @@ void RakPeer::SetOccasionalPing( bool doPing )
 {
 	occasionalPing = doPing;
 }
- 
+
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
 // All systems have a block of data associated with them, for user use.  This block of data can be used to easily
@@ -1612,7 +1608,7 @@ void RakPeer::AdvertiseSystem( char *host, unsigned short remotePort, const char
 	{
 		rcs->data=0;
 		rcs->dataLength=0;
-	}	
+	}
 	rcs->actionToTake=RequestedConnectionStruct::ADVERTISE_SYSTEM;
 	requestedConnectionList.WriteUnlock();
 
@@ -1776,7 +1772,7 @@ float RakPeer::GetDecompressionRatio( void ) const
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Attatches a message handler interface to run code automatically on message receipt in the Receive call
-// 
+//
 // @param messageHandler Pointer to a message handler to attach
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RakPeer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
@@ -1790,7 +1786,7 @@ void RakPeer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Detatches a message handler interface to run code automatically on message receipt
-// 
+//
 // @param messageHandler Pointer to a message handler to detatch
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RakPeer::DetachMessageHandler( MessageHandlerInterface *messageHandler )
@@ -1883,7 +1879,7 @@ bool RakPeer::SendConnectionRequest( const char* host, unsigned short remotePort
 
 	//char c = ID_OPEN_CONNECTION_REQUEST;
 	//SocketLayer::Instance()->SendTo( connectionSocket, (char*)&c, 1, ( char* ) host, remotePort );
-	
+
 
 	/*
 	RakNet::BitStream temp( sizeof(unsigned char) + outgoingPasswordBitStream.GetNumberOfBytesUsed() );
@@ -2276,7 +2272,7 @@ void RakPeer::SecuredConnectionConfirmation( RakPeer::RemoteSystemStruct * remot
 /*
 	// Make sure that we still want to connect
 	bool requestedConnection = false;
-	
+
 	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Lock();
 
 	for ( i = 0; i < ( int ) requestedConnectionsList.size();i++ )
@@ -2293,7 +2289,7 @@ void RakPeer::SecuredConnectionConfirmation( RakPeer::RemoteSystemStruct * remot
 
 	if ( requestedConnection == false )
 		return ; // Don't want to connect
-		
+
 
 	doSend = false;
 */
@@ -2450,7 +2446,7 @@ void RakPeer::PingInternal( PlayerID target, bool performImmediate )
 	unsigned int currentTime = RakNet::GetTime();
 	bitStream.Write(currentTime);
 	if (performImmediate)
-		SendImmediate( (char*)bitStream.GetData(), bitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, UNRELIABLE, 0, target, false, false, currentTime );		
+		SendImmediate( (char*)bitStream.GetData(), bitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, UNRELIABLE, 0, target, false, false, currentTime );
 	else
 		Send( &bitStream, SYSTEM_PRIORITY, UNRELIABLE, 0, target, false );
 }
@@ -2494,7 +2490,7 @@ void RakPeer::CloseConnectionInternalImmediate( PlayerID target)
 			break;
 		}
 	}
-	
+
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 bool RakPeer::ValidSendTarget(PlayerID playerId, bool broadcast)
@@ -2907,9 +2903,9 @@ bool RakPeer::RunUpdateCycle( void )
 	while ( gotData>0 ); // Read until there is nothing left
 
 	time=0;
-	
+
 	// Process all the deferred user thread Send and connect calls
-	
+
 	while ( ( bcs = bufferedCommands.ReadLock() ) != 0 ) // Don't immediately check mutex since it's so slow to activate it
 	{
 		if (bcs->command==BufferedCommandStruct::BCS_SEND)
@@ -3008,13 +3004,13 @@ bool RakPeer::RunUpdateCycle( void )
 			rcs->requestsMade++;
 			rcs->nextRequestTime=time+1000;
 			char c = ID_OPEN_CONNECTION_REQUEST;
-			
+
 			SocketLayer::Instance()->SendTo( connectionSocket, (char*)&c, 1, ( char* ) PlayerIDToDottedIP(rcs->playerId), rcs->playerId.port );
 		}
-		
+
 		rcs=requestedConnectionList.ReadLock();
 	}
-	
+
 	if (rcsFirst)
 		requestedConnectionList.CancelReadLock(rcsFirst);
 
@@ -3211,7 +3207,7 @@ bool RakPeer::RunUpdateCycle( void )
 							SendImmediate( (char*)outBitStream.GetData(), outBitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, UNRELIABLE, 0, playerId, false, false, time );
 						}
 						// else ID_UNCONNECTED_PING_OPEN_CONNECTIONS and we are full so don't send anything
-					
+
 						delete [] data;
 
 						// Disconnect them after replying to their offline ping
@@ -3420,7 +3416,7 @@ bool RakPeer::RunUpdateCycle( void )
 						byteSize == 1 + 20 + sizeof( RSA_BIT_SIZE ) )
 					{
 						CSHA1 sha1;
-						bool confirmedHash, newRandNumber;
+						bool confirmedHash;
 
 						confirmedHash = false;
 
@@ -3432,7 +3428,6 @@ bool RakPeer::RunUpdateCycle( void )
 						sha1.Update( ( unsigned char* ) & ( newRandomNumber ), 20 );
 						sha1.Final();
 
-						newRandNumber = false;
 
 						// Confirm if
 						//syn-cookie ?= HASH(source ip address + source port + last random number)
@@ -3440,7 +3435,6 @@ bool RakPeer::RunUpdateCycle( void )
 						if ( memcmp( sha1.GetHash(), data + 1, 20 ) == 0 )
 						{
 							confirmedHash = true;
-							newRandNumber = true;
 						}
 						else if ( randomNumberExpirationTime < RakNet::GetTime() )
 						{
@@ -3467,7 +3461,7 @@ bool RakPeer::RunUpdateCycle( void )
 								memcpy( encryptedMessage, data + 1 + 20, sizeof( RSA_BIT_SIZE ) );
 							#endif
 							rsacrypt.decrypt( encryptedMessage, message );
-							#ifdef HOST_ENDIAN_IS_BIG 
+							#ifdef HOST_ENDIAN_IS_BIG
 								BSWAPSELF( (unsigned char *) message, sizeof( RSA_BIT_SIZE ) );
 							#endif
 
@@ -3617,7 +3611,7 @@ bool RakPeer::RunUpdateCycle( void )
 						incomingQueueMutex.Unlock();
 					}
 				}
-				
+
 				// Does the reliability layer have any more packets waiting for us?
 				// To be thread safe, this has to be called in the same thread as HandleSocketReceiveFromConnectedPlayer
 				bitSize = remoteSystem->reliabilityLayer.Receive( &data );
@@ -3712,7 +3706,7 @@ void* UpdateNetworkLoop( void* arguments )
 		if ( WaitForSingleObject( timerHandle, INFINITE ) != WAIT_OBJECT_0 )
 		{
 #ifdef _DEBUG
-	
+
 			assert( 0 );
 	#ifdef _DO_PRINTF
 			printf( "WaitForSingleObject failed (%d)\n", GetLastError() );

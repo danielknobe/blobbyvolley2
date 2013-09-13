@@ -53,17 +53,17 @@ LocalGameState::LocalGameState()
 	mSaveReplay = false;
 	mWinner = false;
 	mErrorMessage = "";
-	
+
 	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
-	
+
 	boost::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
-	boost::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER); 
-	
+	boost::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER);
+
 //	mLeftPlayer.loadFromConfig("left");
 //	mRightPlayer.loadFromConfig("right");
-	
+
 	// create default replay name
 	mFilename = leftPlayer.getName();
 	if(mFilename.size() > 7)
@@ -73,12 +73,12 @@ LocalGameState::LocalGameState()
 	if(oppname.size() > 7)
 		oppname.resize(7);
 	mFilename += oppname;
-	
-	
+
+
 	// set speed
 	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
-	
-	
+
+
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
 	mMatch.reset(new DuelMatch( false, config->getString("rules")));
@@ -88,15 +88,13 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
-	
+
 	RenderManager::getSingleton().setPlayernames(leftPlayer.getName(), rightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();
 }
 
 void LocalGameState::step()
 {
-	RenderManager* rmanager = &RenderManager::getSingleton();
-
 	IMGUI& imgui = IMGUI::getSingleton();
 	if(mErrorMessage != "")
 	{
@@ -111,7 +109,7 @@ void LocalGameState::step()
 			mErrorMessage = "";
 		}
 		imgui.doCursor();
-	} 
+	}
 	else if (mSaveReplay)
 	{
 		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
@@ -131,20 +129,20 @@ void LocalGameState::step()
 					savetarget->close();
 					mSaveReplay = false;
 				}
-				
+
 				imgui.resetSelection();
-			} 
-			catch( FileLoadException& ex) 
+			}
+			catch( FileLoadException& ex)
 			{
 				mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
 				imgui.resetSelection();
 			}
-			catch( FileAlreadyExistsException& ex) 
+			catch( FileAlreadyExistsException& ex)
 			{
 				mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
 				imgui.resetSelection();
 			}
-			 catch( std::exception& ex) 
+			 catch( std::exception& ex)
 			{
 				mErrorMessage = std::string("Could not save replay: ");
 				imgui.resetSelection();
@@ -229,7 +227,7 @@ void LocalGameState::step()
 			mRecorder->record(mMatch->getState());
 			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 		}
-			
+
 		presentGame(*mMatch);
 	}
 }

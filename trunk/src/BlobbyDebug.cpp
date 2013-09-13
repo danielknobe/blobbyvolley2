@@ -49,14 +49,14 @@ int count(const std::type_info& type)
 	{
 		GetCounterMap()[type.name()] = CountingReport();
 	}
-	
+
 	GetCounterMap()[type.name()].created++;
-	GetCounterMap()[type.name()].alive++;
+	return ++GetCounterMap()[type.name()].alive;
 }
 
 int uncount(const std::type_info& type)
 {
-	GetCounterMap()[type.name()].alive--;
+	return GetCounterMap()[type.name()].alive;
 }
 
 int getObjectCount(const std::type_info& type)
@@ -72,12 +72,12 @@ int count(const std::type_info& type, std::string tag, int n)
 		GetCounterMap()[name] = CountingReport();
 	}
 	GetCounterMap()[name].created += n;
-	GetCounterMap()[name].alive += n;
+	return GetCounterMap()[name].alive += n;
 }
 
 int uncount(const std::type_info& type, std::string tag, int n)
 {
-	GetCounterMap()[std::string(type.name()) + " - " + tag].alive -= n;
+	return GetCounterMap()[std::string(type.name()) + " - " + tag].alive -= n;
 }
 
 int count(const std::type_info& type, std::string tag, void* address, int num)
@@ -85,6 +85,7 @@ int count(const std::type_info& type, std::string tag, void* address, int num)
 	std::cout << "MALLOC " << num << "\n";
 	count(type, tag, num);
 	GetAddressMap()[address] = num;
+	return 0;
 }
 
 int uncount(const std::type_info& type, std::string tag, void* address)
@@ -92,6 +93,7 @@ int uncount(const std::type_info& type, std::string tag, void* address)
 	int num = GetAddressMap()[address];
 	std::cout << "FREE " << num << "\n";
 	uncount(type, tag, num);
+	return 0;
 }
 
 void debug_count_execution_fkt(std::string file, int line)
@@ -117,14 +119,14 @@ void report(std::ostream& stream)
 		stream << " created: " << i->second.created << "\n\n";
 		sum += i->second.alive;
 	}
-	
+
 	stream << "\n\nPROFILE REPORT\n";
 	for(std::map<std::string, int>::iterator i = GetProfMap().begin(); i != GetProfMap().end(); ++i)
 	{
 		stream << i->first << ": ";
 		stream << i->second << "\n";
 	}
-	
-	
+
+
 	total_plot << sum << std::endl;
 }

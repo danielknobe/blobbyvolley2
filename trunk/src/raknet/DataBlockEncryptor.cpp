@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief DataBlockEncryptor Class Implementation  
+ * @file
+ * @brief DataBlockEncryptor Class Implementation
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -150,7 +150,7 @@ void DataBlockEncryptor::Encrypt( unsigned char *input, int inputLength, unsigne
 
 bool DataBlockEncryptor::Decrypt( unsigned char *input, int inputLength, unsigned char *output, int *outputLength )
 {
-	unsigned index, byteIndex, lastBlock;
+	unsigned index, byteIndex;
 	unsigned int checkSum;
 	unsigned char paddingBytes;
 	unsigned char encodedPad;
@@ -180,7 +180,6 @@ bool DataBlockEncryptor::Decrypt( unsigned char *input, int inputLength, unsigne
 				input[ index + byteIndex ] ^= input[ index + 16 + byteIndex ];
 		}
 
-		lastBlock = index;
 	};
 
 	// Decrypt the first block

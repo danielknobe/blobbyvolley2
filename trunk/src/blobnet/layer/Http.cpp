@@ -93,7 +93,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 	readHeader(inOutSocket, header);
 	int contentSize = getContentSize(header);
 
-	// Read the body	
+	// Read the body
 	readBody(inOutSocket, response, contentSize);
 
 	close(inOutSocket);
@@ -120,7 +120,7 @@ void Http::readHeader(int inOutSocket, std::stringstream& response)
 			{
 				state = crlfcr;
 				break;
-			}								
+			}
 			state = error;
 			done = true;
 			break;

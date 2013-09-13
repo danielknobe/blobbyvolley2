@@ -40,52 +40,52 @@ class FileOut : public GenericOut
 	public:
 		FileOut(boost::shared_ptr<FileWrite> file) : mFile(file)
 		{
-			
+
 		}
-		
+
 	private:
-		virtual void byte(const unsigned char& data) 
+		virtual void byte(const unsigned char& data)
 		{
 			mFile->writeByte(data);
 		}
-		
-		virtual void boolean(const bool& data) 
+
+		virtual void boolean(const bool& data)
 		{
 			mFile->writeByte(data);
 		}
-		
-		virtual void uint32(const unsigned int& data) 
+
+		virtual void uint32(const unsigned int& data)
 		{
 			mFile->writeUInt32(data);
 		}
-		
+
 		virtual void number(const float& data)
 		{
 			mFile->writeFloat(data);
 		}
-		
-		virtual void string(const std::string& string) 
+
+		virtual void string(const std::string& string)
 		{
 			uint32(string.size());
 			mFile->write(string.data(), string.size());
 		}
-		
-		
-		virtual unsigned int tell() const 
+
+
+		virtual unsigned int tell() const
 		{
 			return mFile->tell();
 		}
-		
-		virtual void seek(unsigned int pos) const 
+
+		virtual void seek(unsigned int pos) const
 		{
 			mFile->seek(pos);
 		}
-		
+
 		virtual void array(const char* data, unsigned int length)
 		{
-			mFile->write(data, length);	
+			mFile->write(data, length);
 		}
-		
+
 		boost::shared_ptr<FileWrite> mFile;
 };
 
@@ -98,61 +98,61 @@ class FileIn : public GenericIn
 	public:
 		FileIn(boost::shared_ptr<FileRead> file) : mFile(file)
 		{
-			
+
 		}
-		
+
 	private:
-		virtual void byte(unsigned char& data) 
+		virtual void byte(unsigned char& data)
 		{
 			data = mFile->readByte();
 		}
-		
-		virtual void boolean(bool& data) 
+
+		virtual void boolean(bool& data)
 		{
 			data = mFile->readByte();
 		}
-		
-		virtual void uint32(unsigned int& data) 
+
+		virtual void uint32(unsigned int& data)
 		{
 			data = mFile->readUInt32();
 		}
-		
+
 		virtual void number(float& data)
 		{
 			data = mFile->readFloat();
 		}
-		
-		virtual void string(std::string& string) 
+
+		virtual void string(std::string& string)
 		{
 			/// \todo this might be bad performance wise
 			unsigned int ts;
 			uint32(ts);
-			
+
 			string.resize(ts);
-			for(int i = 0; i < ts; ++i)
+			for(unsigned int i = 0; i < ts; ++i)
 			{
 				unsigned char nc;
 				byte(nc);
 				string[i] = nc;
 			}
 		}
-		
-		
-		virtual unsigned int tell() const 
+
+
+		virtual unsigned int tell() const
 		{
 			return mFile->tell();
 		}
-		
-		virtual void seek(unsigned int pos) const 
+
+		virtual void seek(unsigned int pos) const
 		{
 			mFile->seek(pos);
 		}
-		
+
 		virtual void array(char* data, unsigned int length)
 		{
-			mFile->readRawBytes(data, length);	
+			mFile->readRawBytes(data, length);
 		}
-		
+
 		boost::shared_ptr<FileRead> mFile;
 };
 
@@ -166,52 +166,52 @@ class NetworkOut : public GenericOut
 	public:
 		NetworkOut(RakNet::BitStream* stream) : mStream(stream)
 		{
-			
+
 		}
-		
+
 	private:
-		virtual void byte(const unsigned char& data) 
+		virtual void byte(const unsigned char& data)
 		{
 			mStream->Write(data);
 		}
-		
-		virtual void boolean(const bool& data) 
+
+		virtual void boolean(const bool& data)
 		{
 			mStream->Write(data);
 		}
-		
-		virtual void uint32(const unsigned int& data) 
+
+		virtual void uint32(const unsigned int& data)
 		{
 			mStream->Write(data);
 		}
-		
+
 		virtual void number(const float& data)
 		{
 			mStream->Write(data);
 		}
-		
-		virtual void string(const std::string& string) 
+
+		virtual void string(const std::string& string)
 		{
 			uint32(string.size());
 			mStream->Write(string.c_str(), string.size());
 		}
-		
-		
-		virtual unsigned int tell() const 
+
+
+		virtual unsigned int tell() const
 		{
 			return mStream->GetNumberOfBitsUsed();
 		}
-		
-		virtual void seek(unsigned int pos) const 
+
+		virtual void seek(unsigned int pos) const
 		{
 			mStream->SetWriteOffset(pos);
 		}
-		
+
 		virtual void array(const char* data, unsigned int length)
 		{
-			mStream->Write(data, length);	
+			mStream->Write(data, length);
 		}
-		
+
 		RakNet::BitStream* mStream;
 };
 
@@ -224,36 +224,36 @@ class NetworkIn : public GenericIn
 	public:
 		NetworkIn(RakNet::BitStream* stream) : mStream(stream)
 		{
-			
+
 		}
-		
+
 	private:
-		virtual void byte(unsigned char& data) 
+		virtual void byte(unsigned char& data)
 		{
 			mStream->Read(data);
 		}
-		
-		virtual void boolean(bool& data) 
+
+		virtual void boolean(bool& data)
 		{
 			mStream->Read(data);
 		}
-		
-		virtual void uint32( unsigned int& data) 
+
+		virtual void uint32( unsigned int& data)
 		{
 			mStream->Read(data);
 		}
-		
+
 		virtual void number( float& data)
 		{
 			mStream->Read(data);
 		}
-		
-		virtual void string( std::string& string) 
+
+		virtual void string( std::string& string)
 		{
 			/// \todo this might be bad performance wise
 			unsigned int ts;
 			uint32(ts);
-			
+
 			string.resize(ts);
 			for(unsigned int i = 0; i < ts; ++i)
 			{
@@ -262,24 +262,24 @@ class NetworkIn : public GenericIn
 				string[i] = nc;
 			}
 		}
-		
-		
-		virtual unsigned int tell() const 
+
+
+		virtual unsigned int tell() const
 		{
 			return mStream->GetReadOffset();
 		}
-		
-		virtual void seek(unsigned int pos) const 
+
+		virtual void seek(unsigned int pos) const
 		{
 			mStream->ResetReadPointer();
 			mStream->IgnoreBits(pos);
 		}
-		
+
 		virtual void array( char* data, unsigned int length)
 		{
-			mStream->Read(data, length);	
+			mStream->Read(data, length);
 		}
-		
+
 		RakNet::BitStream* mStream;
 };
 
@@ -292,51 +292,51 @@ class StreamOut : public GenericOut
 	public:
 		StreamOut(std::ostream& stream) : mStream(stream)
 		{
-			
+
 		}
-		
+
 	private:
-		virtual void byte(const unsigned char& data) 
+		virtual void byte(const unsigned char& data)
 		{
 			mStream << data << "\n";
 		}
-		
-		virtual void boolean(const bool& data) 
+
+		virtual void boolean(const bool& data)
 		{
 			mStream << data << "\n";
 		}
-		
-		virtual void uint32(const unsigned int& data) 
+
+		virtual void uint32(const unsigned int& data)
 		{
 			mStream << data << "\n";
 		}
-		
+
 		virtual void number(const float& data)
 		{
 			mStream << data << "\n";
 		}
-		
-		virtual void string(const std::string& string) 
+
+		virtual void string(const std::string& string)
 		{
 			mStream << string << "\n";
 		}
-		
+
 		/// currently not supported by StreamOut
-		virtual unsigned int tell() const 
+		virtual unsigned int tell() const
 		{
 			return -1;
 		}
-		
-		virtual void seek(unsigned int pos) const 
+
+		virtual void seek(unsigned int pos) const
 		{
 		}
-		
+
 		virtual void array(const char* data, unsigned int length)
 		{
 			std::string stringed(data, length);
 			mStream << stringed << "\n";
 		}
-		
+
 		std::ostream& mStream;
 };
 
@@ -375,8 +375,8 @@ boost::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream)
 //			Default generic implementations
 // -------------------------------------------------------------------------------------------------
 
-/*	Several instantiations of serializer functions are made so these can be used without 
-	further user actions. These are the instantiations for the standard types 
+/*	Several instantiations of serializer functions are made so these can be used without
+	further user actions. These are the instantiations for the standard types
 		* unsigned char
 		* bool
 		* unsigned int
@@ -415,12 +415,12 @@ namespace detail
 	// Blobby types
 
 
-	GENERATE_STD_SERIALIZER_OUT(Color) 
+	GENERATE_STD_SERIALIZER_OUT(Color)
 	{
 		io.uint32(value.toInt());
 	}
 
-	GENERATE_STD_SERIALIZER_IN(Color) 
+	GENERATE_STD_SERIALIZER_IN(Color)
 	{
 		unsigned int target;
 		io.uint32(target);
@@ -431,7 +431,7 @@ namespace detail
 	{
 		io.uint32(value.getAll());
 	}
-		
+
 	GENERATE_STD_SERIALIZER_IN(PlayerInput)
 	{
 		unsigned int target;
