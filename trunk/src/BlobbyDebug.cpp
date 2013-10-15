@@ -56,7 +56,7 @@ int count(const std::type_info& type)
 
 int uncount(const std::type_info& type)
 {
-	return GetCounterMap()[type.name()].alive;
+	return --GetCounterMap()[type.name()].alive;
 }
 
 int getObjectCount(const std::type_info& type)
