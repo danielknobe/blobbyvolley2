@@ -766,13 +766,6 @@ protected:
 	BasicDataStructures::List<MessageHandlerInterface*> messageHandlerList;
 	BasicDataStructures::SingleProducerConsumer<RequestedConnectionStruct> requestedConnectionList;
 
-	/*
-	* Compression stuff
-	*/
-	unsigned int frequencyTable[ 256 ];
-	unsigned int rawBytesSent, rawBytesReceived, compressedBytesSent, compressedBytesReceived;
-	// void DecompressInput(RakNet::BitStream *bitStream);
-	// void UpdateOutgoingFrequencyTable(RakNet::BitStream * bitStream);
 	void GenerateSYNCookieRandomNumber( void );
 	void SecuredConnectionResponse( PlayerID playerId );
 	void SecuredConnectionConfirmation( RakPeer::RemoteSystemStruct * remoteSystem, char* data );
@@ -813,7 +806,6 @@ protected:
 	void ClearRequestedConnectionList(void);
 
 	int MTUSize;
-	bool trackFrequencyTable;
 	int threadSleepTimer;
 
 	SOCKET connectionSocket;

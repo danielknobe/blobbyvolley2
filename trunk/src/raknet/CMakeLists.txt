@@ -8,9 +8,6 @@ set (raknet_SRC
 	DataBlockEncryptor.cpp DataBlockEncryptor.h
 	ExtendedOverlappedPool.cpp ExtendedOverlappedPool.h
 	GetTime.cpp GetTime.h
-	HuffmanEncodingTree.cpp HuffmanEncodingTree.h
-	HuffmanEncodingTreeFactory.cpp HuffmanEncodingTreeFactory.h
-	HuffmanEncodingTreeNode.h
 	InternalPacket.h
 	InternalPacketPool.cpp InternalPacketPool.h
 	LinkedList.h
