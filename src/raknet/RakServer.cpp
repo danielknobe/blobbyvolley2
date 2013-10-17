@@ -90,55 +90,47 @@ Packet* RakServer::Receive( void )
 
 	if ( packet )
 	{
-		// Intercept specific client / server feature packets. This will do an extra send and still pass on the data to the user
-
-		if ( packet->data[ 0 ] == ID_RECEIVED_STATIC_DATA )
+		if ( packet->data[ 0 ] == ID_DISCONNECTION_NOTIFICATION || packet->data[ 0 ] == ID_CONNECTION_LOST || packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )
 		{
-			assert( 0 );
-		}
+			// Relay the disconnection
+			RakNet::BitStream bitStream( packet->length + PlayerID_Size );
+			unsigned char typeId;
 
-		else
-			if ( packet->data[ 0 ] == ID_DISCONNECTION_NOTIFICATION || packet->data[ 0 ] == ID_CONNECTION_LOST || packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )
-			{
-				// Relay the disconnection
-				RakNet::BitStream bitStream( packet->length + PlayerID_Size );
-				unsigned char typeId;
-
-				if ( packet->data[ 0 ] == ID_DISCONNECTION_NOTIFICATION )
-					typeId = ID_REMOTE_DISCONNECTION_NOTIFICATION;
+			if ( packet->data[ 0 ] == ID_DISCONNECTION_NOTIFICATION )
+				typeId = ID_REMOTE_DISCONNECTION_NOTIFICATION;
+			else
+				if ( packet->data[ 0 ] == ID_CONNECTION_LOST )
+					typeId = ID_REMOTE_CONNECTION_LOST;
 				else
-					if ( packet->data[ 0 ] == ID_CONNECTION_LOST )
-						typeId = ID_REMOTE_CONNECTION_LOST;
-					else
-						typeId = ID_REMOTE_NEW_INCOMING_CONNECTION;
+					typeId = ID_REMOTE_NEW_INCOMING_CONNECTION;
 
-				bitStream.Write( typeId );
-				bitStream.Write( packet->playerId.binaryAddress );
-				bitStream.Write( packet->playerId.port );
-				bitStream.Write( ( unsigned short& ) packet->playerIndex );
+			bitStream.Write( typeId );
+			bitStream.Write( packet->playerId.binaryAddress );
+			bitStream.Write( packet->playerId.port );
+			bitStream.Write( ( unsigned short& ) packet->playerIndex );
 
-				Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, true );
+			Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, true );
 
-				if ( packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )
+			if ( packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )
+			{
+				unsigned i;
+
+				for ( i = 0; i < remoteSystemListSize; i++ )
 				{
-					unsigned i;
-
-					for ( i = 0; i < remoteSystemListSize; i++ )
+					if ( remoteSystemList[ i ].playerId != UNASSIGNED_PLAYER_ID && packet->playerId != remoteSystemList[ i ].playerId )
 					{
-						if ( remoteSystemList[ i ].playerId != UNASSIGNED_PLAYER_ID && packet->playerId != remoteSystemList[ i ].playerId )
-						{
-							bitStream.Reset();
-							typeId = ID_REMOTE_EXISTING_CONNECTION;
-							bitStream.Write( typeId );
-							bitStream.Write( remoteSystemList[ i ].playerId.binaryAddress );
-							bitStream.Write( remoteSystemList[ i ].playerId.port );
-							bitStream.Write( ( unsigned short ) i );
-							// One send to tell them of the connection
-							Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false );
-						}
+						bitStream.Reset();
+						typeId = ID_REMOTE_EXISTING_CONNECTION;
+						bitStream.Write( typeId );
+						bitStream.Write( remoteSystemList[ i ].playerId.binaryAddress );
+						bitStream.Write( remoteSystemList[ i ].playerId.port );
+						bitStream.Write( ( unsigned short ) i );
+						// One send to tell them of the connection
+						Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false );
 					}
 				}
 			}
+		}
 	}
 
 	return packet;

@@ -1,6 +1,5 @@
 set (raknet_SRC
 	ArrayList.h
-	BinarySearchTree.h
 	BitStream.cpp BitStream.h
 	ClientContextStruct.h
 	GetTime.cpp GetTime.h
@@ -10,11 +9,9 @@ set (raknet_SRC
 	MessageHandlerInterface.cpp MessageHandlerInterface.h
 	MTUSize.h
 	NetworkTypes.cpp NetworkTypes.h
-	OrderedList.h
 	PacketEnumerations.h
 	PacketPool.cpp PacketPool.h
 	PacketPriority.h
-	QueueLinkedList.h
 	RakClient.cpp RakClient.h
 	RakClientInterface.h
 	RakNetStatistics.cpp RakNetStatistics.h

@@ -722,15 +722,6 @@ Packet* RakPeer::Receive( void )
 		else
 			return 0;
 
-		// Do RPC calls from the user thread, not the network update thread
-		if ( val->data[ 0 ] == ID_RPC )
-		{
-			// RPC_ASSERT
-			assert(0);
-			DeallocatePacket( val );
-			continue;
-		}
-
 		if ( ( val->length >= sizeof(unsigned char) + sizeof( int ) ) &&
 			( (unsigned char) val->data[ 0 ] == ID_TIMESTAMP ) )
 		{
@@ -2639,29 +2630,6 @@ bool RakPeer::RunUpdateCycle( void )
 						incomingPacketQueue.push( packet );
 						incomingQueueMutex.Unlock();
 
-					}
-					else if ( (unsigned char) data[ 0 ] == ID_RPC_MAPPING )
-					{
-						/// RPC ASSERT
-						assert( 0 );
-						delete [] data;
-					}
-					else if ( (unsigned char) data[ 0 ] == ID_REQUEST_STATIC_DATA )
-					{
-						assert(0);
-						delete [] data;
-					}
-					else if ( (unsigned char) data[ 0 ] == ID_RECEIVED_STATIC_DATA )
-					{
-						assert(0);
-					}
-					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_RESPONSE)
-					{
-						assert(0);
-					}
-					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_CONFIRMATION )
-					{
-						assert(0);
 					}
 					else if ( (unsigned char)(data)[0] == ID_KEEPALIVE && byteSize == sizeof(unsigned char) )
 					{

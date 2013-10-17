@@ -119,10 +119,6 @@ Packet* RakClient::Receive( void )
 
 		if ( packet->data[ 0 ] == ID_CONNECTION_REQUEST_ACCEPTED )
 		{
-//			ConnectionAcceptStruct cas;
-//			cas.Deserialize(bitStream);
-		//	unsigned short remotePort;
-		//	PlayerID externalID;
 			PlayerIndex playerIndex;
 
 			RakNet::BitStream inBitStream((char*)packet->data, packet->length, false);
@@ -161,10 +157,6 @@ Packet* RakClient::Receive( void )
 					otherClients[ i ].isActive = false;
 			}
 		}
-		else if ( packet->data[ 0 ] == ID_REMOTE_STATIC_DATA )
-		{
-			assert(0);
-		}
 		else if ( packet->data[ 0 ] == ID_BROADCAST_PINGS )
 		{
 			PlayerID playerId;
@@ -198,28 +190,6 @@ Packet* RakClient::Receive( void )
 						bitStream.IgnoreBits( sizeof( short ) * 8 );
 				}
 			}
-
-			DeallocatePacket( packet );
-			return 0;
-		}
-        else
-		if ( packet->data[ 0 ] == ID_TIMESTAMP &&
-			packet->length == sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned int) )
-		{
-
-
-			RakNet::BitStream inBitStream((char *)packet->data, packet->length, false);
-
-			unsigned int timeStamp;
-			unsigned char typeId;
-			inBitStream.IgnoreBits(8); // ID_TIMESTAMP
-			inBitStream.Read(timeStamp);
-			inBitStream.Read(typeId); // ID_SET_RANDOM_NUMBER_SEED ?
-
-			// Check to see if this is a user TIMESTAMP message which
-			// accidentally has length SetRandomNumberSeedStruct_Size
-			if ( typeId != ID_SET_RANDOM_NUMBER_SEED )
-				return packet;
 
 			DeallocatePacket( packet );
 			return 0;
