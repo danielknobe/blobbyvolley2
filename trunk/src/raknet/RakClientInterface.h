@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief User view of a RakClient object. 
+ * @file
+ * @brief User view of a RakClient object.
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -36,10 +36,10 @@
 #include "PacketPriority.h"
 #include "RakPeerInterface.h"
 #include "BitStream.h"
-#include "RakNetStatistics.h" 
+#include "RakNetStatistics.h"
 /**
 * @brief Define user point of vue of a RakClient communication end point.
-* 
+*
 * This class define the user view of a RakClient communication
 * end-point. All accessible operation are available in this class.
 * You should only deal with RakClient object throught instance of
@@ -60,20 +60,20 @@ public:
 	* Call this to connect the client to the specified host (ip or domain name) and server port.
 	* This is a non-blocking connection.  You know the connection is successful when IsConnected() returns true
 	* or receive gets a packet with the type identifier ID_CONNECTION_REQUEST_ACCEPTED.
-	* serverPort is which port to connect to on the remote machine. clientPort is the port you want the 
+	* serverPort is which port to connect to on the remote machine. clientPort is the port you want the
 	* client to use. Both ports must be open for UDP
 	*
-	* @param host a hostname 
-	* @param serverPort The port on which to contact @em host 
-	* @param clientPort The port to use localy 
+	* @param host a hostname
+	* @param serverPort The port on which to contact @em host
+	* @param clientPort The port to use localy
 	* @param depreciated is legacy and unused
-	* @param threadSleepTimer >=0 for how many ms to Sleep each internal update cycle 
+	* @param threadSleepTimer >=0 for how many ms to Sleep each internal update cycle
 	* (recommended 30 for low performance, 0 for regular)
 	* @return true on successful initiation, false otherwise
 	*/
 	virtual bool Connect( const char* host, unsigned short serverPort, unsigned short clientPort, unsigned int depreciated, int threadSleepTimer ) = 0;
 	/**
-	* Stops the client, stops synchronized data, and resets all internal data. 
+	* Stops the client, stops synchronized data, and resets all internal data.
 	* Does nothing if the client is not connected to begin with
 	* blockDuration is how long you should wait for all remaining packets to go out
 	* If you set it to 0 then the disconnection notification probably won't arrive
@@ -86,14 +86,14 @@ public:
 	* If a key has been altered.
 	*
 	* @param privKeyP Private keys generated from the RSACrypt class. Can be 0
-	* @param privKeyQ Private keys generated from the RSACrypt class. Can be 0 
-	* @see   Encryption sample. 
+	* @param privKeyQ Private keys generated from the RSACrypt class. Can be 0
+	* @see   Encryption sample.
 	*/
 	virtual void InitializeSecurity( const char *privKeyP, const char *privKeyQ ) = 0;
 	/**
 	* Set the password to use when connecting to a server.  The password persists between connections.
 	* Pass 0 for no password.
-	* @param _password The password to use to connect to a server 
+	* @param _password The password to use to connect to a server
 	*/
 	virtual void SetPassword( const char *_password ) = 0;
 	/**
@@ -107,11 +107,11 @@ public:
 	* Sends the data stream of length length If you aren't sure what to
 	* specify for priority and reliability, use HIGH_PRIORITY and
 	* RELIABLE, 0 for ordering channel
-	* @param data a byte buffer 
-	* @param length the size of the byte buffer 
-	* @param priority the priority of the message 
-	* @param reliability the reliability policy required 
-	* @param orderingChannel the channel to send the message to. 
+	* @param data a byte buffer
+	* @param length the size of the byte buffer
+	* @param priority the priority of the message
+	* @param reliability the reliability policy required
+	* @param orderingChannel the channel to send the message to.
 	*/
 	virtual bool Send( const char *data, const long length, PacketPriority priority, PacketReliability reliability, char orderingChannel ) = 0;
 	/**
@@ -120,10 +120,10 @@ public:
 	* Sends the BitStream If you aren't sure what to specify for
 	* priority and reliability, use HIGH_PRIORITY and RELIABLE, 0 for
 	* ordering channel
-	* @param bitstream the data to send. 
-	* @param priority the priority of the message 
-	* @param reliability the reliability policy required 
-	* @param orderingChannel the channel to send the message to. 
+	* @param bitstream the data to send.
+	* @param priority the priority of the message
+	* @param reliability the reliability policy required
+	* @param orderingChannel the channel to send the message to.
 	*/
 	virtual bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel ) = 0;
 	/**
@@ -135,14 +135,14 @@ public:
 	* this will also return 0, as all waiting packets are flushed when
 	* the client is Disconnected This also updates all memory blocks
 	* associated with synchronized memory
-	* @return the last receive packet 
+	* @return the last receive packet
 	*/
 	virtual Packet* Receive( void ) = 0;
 	/**
 	* Call this to deallocate a packet returned by Receive when you are done handling it.
-	* Free the memory associated to a packet. It is not the same as using delete operator because 
-	* RakNet might decide not to delete right now the packet in order to use it later. 
-	* @param packet the packet to deallocate. 
+	* Free the memory associated to a packet. It is not the same as using delete operator because
+	* RakNet might decide not to delete right now the packet in order to use it later.
+	* @param packet the packet to deallocate.
 	*/
 	virtual void DeallocatePacket( Packet *packet ) = 0;
 	/**
@@ -162,15 +162,15 @@ public:
 	* This must be true for LAN broadcast server discovery on "255.255.255.255"
 	* or you will get replies from clients as well.  A broadcast will always have 0 for the ping time as only single
 	* byte packets are allowed from unconnected systems.
-	* @param host The host to contact 
+	* @param host The host to contact
 	* @param ServerPort the port used by the server
-	* @param clientPort the port used to receive the answer 
-	* @param onlyReplyOnAcceptingConnections if true the server must be ready to accept incomming connection. 
+	* @param clientPort the port used to receive the answer
+	* @param onlyReplyOnAcceptingConnections if true the server must be ready to accept incomming connection.
 	*/
 	virtual void PingServer( const char* host, unsigned short serverPort, unsigned short clientPort, bool onlyReplyOnAcceptingConnections ) = 0;
 	/**
 	* Returns the average of all ping times read
-	* @return the average ping value to the server 
+	* @return the average ping value to the server
 	*/
 	virtual int GetAveragePing( void ) = 0;
 	/**
@@ -180,16 +180,16 @@ public:
 	virtual int GetLastPing( void ) const = 0;
 	/**
 	* Returns the lowest ping time read or -1 if none read yet
-	* @return lowest ping value 
+	* @return lowest ping value
 	*/
 	virtual int GetLowestPing( void ) const = 0;
 	/**
 	* Returns the last ping for the specified player. This information
 	* is broadcast by the server automatically In order to save
 	* bandwidth this information is updated only infrequently and only
-	* for the first 32 players 
-	* @param playerId The id of the player you want to have the ping (it might be your id) 
-	* @return the last ping for this player 
+	* for the first 32 players
+	* @param playerId The id of the player you want to have the ping (it might be your id)
+	* @return the last ping for this player
 	* @note You can read your own ping with
 	* this method by passing your own playerId, however for more
 	* up-to-date readings you should use one of the three functions
@@ -211,7 +211,7 @@ public:
 	virtual void StopOccasionalPing( void ) = 0;
 	/**
 	* Returns true if the client is connected to a responsive server
-	* @return true if connected to a server 
+	* @return true if connected to a server
 	*/
 	virtual bool IsConnected( void ) const = 0;
 	/**
@@ -226,72 +226,10 @@ public:
 	* maintain synchronization.  If you don't need this functionality
 	* and want to save the bandwidth call StopSynchronizedRandomInteger
 	* after starting the server
-	* @return A random int common to all client and to the server. 
+	* @return A random int common to all client and to the server.
 	*/
 	virtual unsigned int GetSynchronizedRandomInteger( void ) const = 0;
 
-	/**
-	* This is an optional function to generate the compression layer
-	* from the input frequency table. You should call this twice -
-	* once with inputLayer as true and once as false. The frequency
-	* table passed here with inputLayer=true should match the frequency
-	* table on the recipient with inputLayer=false.  Likewise, the
-	* frequency table passed here with inputLayer=false should match
-	* the frequency table on the recipient with inputLayer=true Calling
-	* this function when there is an existing layer will overwrite the
-	* old layer You should only call this when disconnected 
-	* 
-	* @param inputFrenquencyTable the table to used for compression 
-	* @param inputLayer says if the @em inputFrequencyTable should be used for
-	* sending or receiveing.
-	* @return false (failure) if connected.  Otherwise true (success)
-	* 
-	* @note The server Sends should share the same inputFrequencyTable
-	* as the client for receiving. It's also true for the client sending and the server receiving. 
-	*/
-	virtual bool GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer ) = 0;
-	/**
-	* Delete the output or input layer as specified.  This is not necessary to call and is only valuable for freeing memory
-	* You should only call this when disconnected
-	* @param inputLayer Delete the compression layer for sending or for receiving ? 
-	* @return false (failure) if connected.  Otherwise true (success)
-	*/
-	virtual bool DeleteCompressionLayer( bool inputLayer ) = 0;
-	
-	/**
-	* Enables or disables frequency table tracking.  This is required
-	* to get a frequency table, which is used to generate A new
-	* compression layer.  You can call this at any time - however you
-	* SHOULD only call it when disconnected.  Otherwise you will only
-	* track part of the values sent over the network. This value
-	* persists between connect calls and defaults to false (no
-	* frequency tracking)
-	* @param b true to unable tracking. 
-	*/
-	virtual void SetTrackFrequencyTable( bool b ) = 0;
-
-	/**
-	* Returns the frequency of outgoing bytes into outputFrequencyTable
-	* The purpose is to save to file as either a master frequency table
-	* from a sample game session for passing to
-	* GenerateCompressionLayer.  You should only call this when
-	* disconnected.  Requires that you first enable data frequency
-	* tracking by calling SetTrackFrequencyTable(true) 
-	* @param outputFrequencyTable The frequency table produce during the tracking time. 
-	* @return false (failure) if connected or if frequency table tracking is
-	* not enabled.  Otherwise true (success)
-	*/
-	virtual bool GetSendFrequencyTable( unsigned int outputFrequencyTable[ 256 ] ) = 0;
-	/**
-	* Returns the compression ratio.  A low compression ratio is good.  Compression is for outgoing data
-	* @return the current compression ratio 
-	*/
-	virtual float GetCompressionRatio( void ) const = 0;
-	/**
-	* Returns the decompression ratio.  A high decompression ratio is good.  Decompression is for incoming data
-	* @return the current decompression ratio 
-	*/
-	virtual float GetDecompressionRatio( void ) const = 0;
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
 	*
@@ -319,7 +257,7 @@ public:
 	* of the bitstream for the 2nd and 3rd parameters
 	* Note that the server may change at any time the
 	* data contents and/or its length!
-	* @return a bitstream containing statistics. 
+	* @return a bitstream containing statistics.
 	*/
 	virtual RakNet::BitStream * GetStaticServerData( void ) = 0;
 	/**
@@ -335,8 +273,8 @@ public:
 	* of the bitstream for the 2nd and 3rd parameters
 	* Note that the server may change at any time the
 	* data contents and/or its length!
-	* @param data a byte buffer containing statistical information. 
-	* @param length the size of @em data 
+	* @param data a byte buffer containing statistical information.
+	* @param length the size of @em data
 	*/
 	virtual void SetStaticServerData( const char *data, const long length ) = 0;
 	/**
@@ -359,9 +297,9 @@ public:
 	* function when you receive statistical information from a
 	* client.
 	*
-	* @param playerId the player ID 
-	* @param data the packet data 
-	* @param length the size of the data 
+	* @param playerId the player ID
+	* @param data the packet data
+	* @param length the size of the data
 	*/
 	virtual void SetStaticClientData( PlayerID playerId, const char *data, const long length ) = 0;
 	/**
@@ -376,15 +314,15 @@ public:
 	virtual void SendStaticClientDataToServer( void ) = 0;
 	/**
 	* Return the player number of the server.
-	* @return the server playerID 
+	* @return the server playerID
 	*/
 	virtual PlayerID GetServerID( void ) const = 0;
 	/**
 	* Return the player number the server has assigned to you.
-	* 
-	* @return our player ID 
+	*
+	* @return our player ID
 	* @note that unlike in previous versions, this is a struct and is not sequential
-	* 
+	*
 	*/
 	virtual PlayerID GetPlayerID( void ) const = 0;
 	/**
@@ -392,12 +330,12 @@ public:
 	*
 	* @param playerId Any player ID other than UNASSIGNED_PLAYER_ID,
 	* even if that player is not currently connected
-	* @return a dotted notation string representation of the address of playerId. 
+	* @return a dotted notation string representation of the address of playerId.
 	*/
 	virtual const char* PlayerIDToDottedIP( PlayerID playerId ) const = 0;
 	/**
 	* Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
-	* @param packet the packet to delayed 
+	* @param packet the packet to delayed
 	*/
 	virtual void PushBackPacket( Packet *packet ) = 0;
 	/**
@@ -408,13 +346,13 @@ public:
 	* A too low of value will split packets unnecessarily.
 	* Set according to the following table:
 	* 1500. The largest Ethernet packet size; it is also the default value.
-	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches. 
-	* 1492. The size PPPoE prefers. 
-	* 1472. Maximum size to use for pinging. (Bigger packets are fragmented.) 
-	* 1468. The size DHCP prefers. 
-	* 1460. Usable by AOL if you don't have large email attachments, etc. 
-	* 1430. The size VPN and PPTP prefer. 
-	* 1400. Maximum size for AOL DSL. 
+	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches.
+	* 1492. The size PPPoE prefers.
+	* 1472. Maximum size to use for pinging. (Bigger packets are fragmented.)
+	* 1468. The size DHCP prefers.
+	* 1460. Usable by AOL if you don't have large email attachments, etc.
+	* 1430. The size VPN and PPTP prefer.
+	* 1400. Maximum size for AOL DSL.
 	* 576. Typical value to connect to dial-up ISPs. (Default)
 	*/
 	virtual bool SetMTUSize( int size ) = 0;
@@ -449,8 +387,8 @@ public:
 	*/
 	virtual RakNetStatisticsStruct * const GetStatistics( void ) = 0;
 	/**
-	* @internal 
-	* Retrieve the player index corresponding to this client. 
+	* @internal
+	* Retrieve the player index corresponding to this client.
 	*/
 	virtual PlayerIndex GetPlayerIndex( void ) = 0;
 };

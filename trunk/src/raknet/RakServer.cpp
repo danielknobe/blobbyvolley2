@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief RakServer Implementation 
+ * @brief RakServer Implementation
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -368,36 +368,6 @@ void RakServer::StartSynchronizedRandomInteger( void )
 void RakServer::StopSynchronizedRandomInteger( void )
 {
 	synchronizedRandomInteger = false;
-}
-
-bool RakServer::GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer )
-{
-	return RakPeer::GenerateCompressionLayer( inputFrequencyTable, inputLayer );
-}
-
-bool RakServer::DeleteCompressionLayer( bool inputLayer )
-{
-	return RakPeer::DeleteCompressionLayer( inputLayer );
-}
-
-void RakServer::SetTrackFrequencyTable( bool b )
-{
-	RakPeer::SetCompileFrequencyTable( b );
-}
-
-bool RakServer::GetSendFrequencyTable( unsigned int outputFrequencyTable[ 256 ] )
-{
-	return RakPeer::GetOutgoingFrequencyTable( outputFrequencyTable );
-}
-
-float RakServer::GetCompressionRatio( void ) const
-{
-	return RakPeer::GetCompressionRatio();
-}
-
-float RakServer::GetDecompressionRatio( void ) const
-{
-	return RakPeer::GetDecompressionRatio();
 }
 
 void RakServer::AttachMessageHandler( MessageHandlerInterface *messageHandler )

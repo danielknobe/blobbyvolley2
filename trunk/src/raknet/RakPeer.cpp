@@ -47,7 +47,6 @@
 
 #include "GetTime.h"
 #include "PacketEnumerations.h"
-#include "HuffmanEncodingTree.h"
 #include "PacketPool.h"
 #include "Rand.h"
 #include "MessageHandlerInterface.h"
@@ -119,7 +118,6 @@ RakPeer::RakPeer()
 	usingSecurity = false;
 	memset( frequencyTable, 0, sizeof( unsigned int ) * 256 );
 	rawBytesSent = rawBytesReceived = compressedBytesSent = compressedBytesReceived = 0;
-	outputTree = inputTree = 0;
 	connectionSocket = INVALID_SOCKET;
 	MTUSize = DEFAULT_MTU_SIZE;
 	trackFrequencyTable = false;
@@ -1623,154 +1621,6 @@ void RakPeer::AdvertiseSystem( char *host, unsigned short remotePort, const char
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Enables or disables our tracking of bytes input to and output from the network.
-// This is required to get a frequency table, which is used to generate a new compression layer.
-// You can call this at any time - however you SHOULD only call it when disconnected.  Otherwise you will only track
-// part of the values sent over the network.
-// This value persists between connect calls and defaults to false (no frequency tracking)
-//
-// Parameters:
-// doCompile - true to track bytes.  Defaults to false
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SetCompileFrequencyTable( bool doCompile )
-{
-	trackFrequencyTable = doCompile;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Returns the frequency of outgoing bytes into outputFrequencyTable
-// The purpose is to save to file as either a master frequency table from a sample game session for passing to
-// GenerateCompressionLayer(false)
-// You should only call this when disconnected.
-// Requires that you first enable data frequency tracking by calling SetCompileFrequencyTable(true)
-//
-// Parameters:
-// outputFrequencyTable (out): The frequency of each corresponding byte
-//
-// Returns:
-// Ffalse (failure) if connected or if frequency table tracking is not enabled.  Otherwise true (success)
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool RakPeer::GetOutgoingFrequencyTable( unsigned int outputFrequencyTable[ 256 ] )
-{
-	if ( IsActive() )
-		return false;
-
-	if ( trackFrequencyTable == false )
-		return false;
-
-	memcpy( outputFrequencyTable, frequencyTable, sizeof( unsigned int ) * 256 );
-
-	return true;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Generates the compression layer from the input frequency table.
-// You should call this twice - once with inputLayer as true and once as false.
-// The frequency table passed here with inputLayer=true should match the frequency table on the recipient with inputLayer=false.
-// Likewise, the frequency table passed here with inputLayer=false should match the frequency table on the recipient with inputLayer=true
-// Calling this function when there is an existing layer will overwrite the old layer
-// You should only call this when disconnected
-//
-// Parameters:
-// inputFrequencyTable: The frequency table returned from GetSendFrequencyTable(...)
-// inputLayer - Whether inputFrequencyTable represents incoming data from other systems (true) or outgoing data from this system (false)
-//
-// Returns:
-// False on failure (we are connected).  True otherwise
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool RakPeer::GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer )
-{
-	if ( IsActive() )
-		return false;
-
-	DeleteCompressionLayer( inputLayer );
-
-	if ( inputLayer )
-	{
-		inputTree = new HuffmanEncodingTree;
-		inputTree->GenerateFromFrequencyTable( inputFrequencyTable );
-	}
-
-	else
-	{
-		outputTree = new HuffmanEncodingTree;
-		outputTree->GenerateFromFrequencyTable( inputFrequencyTable );
-	}
-
-	return true;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Deletes the output or input layer as specified.  This is not necessary to call and is only valuable for freeing memory
-// You should only call this when disconnected
-//
-// Parameters:
-// inputLayer - Specifies the corresponding compression layer generated by GenerateCompressionLayer.
-//
-// Returns:
-// False on failure (we are connected).  True otherwise
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool RakPeer::DeleteCompressionLayer( bool inputLayer )
-{
-	if ( IsActive() )
-		return false;
-
-	if ( inputLayer )
-	{
-		if ( inputTree )
-		{
-			delete inputTree;
-			inputTree = 0;
-		}
-	}
-
-	else
-	{
-		if ( outputTree )
-		{
-			delete outputTree;
-			outputTree = 0;
-		}
-	}
-
-	return true;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Returns:
-// The compression ratio.  A low compression ratio is good.  Compression is for outgoing data
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-float RakPeer::GetCompressionRatio( void ) const
-{
-	if ( rawBytesSent > 0 )
-	{
-		return ( float ) compressedBytesSent / ( float ) rawBytesSent;
-	}
-
-	else
-		return 0.0f;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Returns:
-// The decompression ratio.  A high decompression ratio is good.  Decompression is for incoming data
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-float RakPeer::GetDecompressionRatio( void ) const
-{
-	if ( rawBytesReceived > 0 )
-	{
-		return ( float ) compressedBytesReceived / ( float ) rawBytesReceived;
-	}
-
-	else
-		return 0.0f;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Attatches a message handler interface to run code automatically on message receipt in the Receive call
 //
 // @param messageHandler Pointer to a message handler to attach
@@ -2561,21 +2411,12 @@ bool RakPeer::SendImmediate( char *data, int numberOfBitsToSend, PacketPriority 
 			rawBytesSent += numberOfBytesUsed;
 		}
 
-		if ( outputTree )
-		{
-			RakNet::BitStream bitStreamCopy( numberOfBytesUsed );
-			outputTree->EncodeArray( (unsigned char*) data, numberOfBytesUsed, &bitStreamCopy );
-			compressedBytesSent += bitStreamCopy.GetNumberOfBytesUsed();
-			remoteSystemList[sendList[sendListIndex]].reliabilityLayer.Send( (char*) bitStreamCopy.GetData(), bitStreamCopy.GetNumberOfBitsUsed(), priority, reliability, orderingChannel, true, MTUSize, currentTime );
-		}
-		else
-		{
-			// Send may split the packet and thus deallocate data.  Don't assume data is valid if we use the callerAllocationData
-			bool useData = useCallerDataAllocation && callerDataAllocationUsed==false && sendListIndex+1==sendListSize;
-			remoteSystemList[sendList[sendListIndex]].reliabilityLayer.Send( data, numberOfBitsToSend, priority, reliability, orderingChannel, useData==false, MTUSize, currentTime );
-			if (useData)
-				callerDataAllocationUsed=true;
-		}
+		// Send may split the packet and thus deallocate data.  Don't assume data is valid if we use the callerAllocationData
+		bool useData = useCallerDataAllocation && callerDataAllocationUsed==false && sendListIndex+1==sendListSize;
+		remoteSystemList[sendList[sendListIndex]].reliabilityLayer.Send( data, numberOfBitsToSend, priority, reliability, orderingChannel, useData==false, MTUSize, currentTime );
+		if (useData)
+			callerDataAllocationUsed=true;
+
 
 		if (reliability==RELIABLE || reliability==RELIABLE_ORDERED || reliability==RELIABLE_SEQUENCED)
 			remoteSystemList[sendList[sendListIndex]].lastReliableSend=currentTime;
@@ -3117,45 +2958,8 @@ bool RakPeer::RunUpdateCycle( void )
 
 			while ( bitSize > 0 )
 			{
-				// Put the input through compression if necessary
-				if ( inputTree )
-				{
-					RakNet::BitStream dataBitStream( MAXIMUM_MTU_SIZE );
-					// Since we are decompressing input, we need to copy to a bitstream, decompress, then copy back to a probably
-					// larger data block.  It's slow, but the user should have known that anyway
-					dataBitStream.Reset();
-					dataBitStream.WriteAlignedBytes( ( unsigned char* ) data, BITS_TO_BYTES( bitSize ) );
-					rawBytesReceived += dataBitStream.GetNumberOfBytesUsed();
-
-//					numberOfBytesUsed = dataBitStream.GetNumberOfBytesUsed();
-					numberOfBitsUsed = dataBitStream.GetNumberOfBitsUsed();
-					//rawBytesReceived += numberOfBytesUsed;
-					// Decompress the input data.
-
-					if (numberOfBitsUsed>0)
-					{
-						unsigned char *dataCopy = new unsigned char[ dataBitStream.GetNumberOfBytesUsed() ];
-						memcpy( dataCopy, dataBitStream.GetData(), dataBitStream.GetNumberOfBytesUsed() );
-						dataBitStream.Reset();
-						inputTree->DecodeArray( dataCopy, numberOfBitsUsed, &dataBitStream );
-						compressedBytesReceived += dataBitStream.GetNumberOfBytesUsed();
-						delete [] dataCopy;
-
-						byteSize = dataBitStream.GetNumberOfBytesUsed();
-
-						if ( byteSize > BITS_TO_BYTES( bitSize ) )   // Probably the case - otherwise why decompress?
-						{
-							delete [] data;
-							data = new char [ byteSize ];
-						}
-						memcpy( data, dataBitStream.GetData(), byteSize );
-					}
-					else
-						byteSize=0;
-				}
-				else
-					// Fast and easy - just use the data that was returned
-					byteSize = BITS_TO_BYTES( bitSize );
+				// Fast and easy - just use the data that was returned
+				byteSize = BITS_TO_BYTES( bitSize );
 
 				// For unknown senders we only accept a few specific packets
 				if (remoteSystem->connectMode==RemoteSystemStruct::UNVERIFIED_SENDER)

@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief A RakServer provide Server facilities 
+ * @brief A RakServer provide Server facilities
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -40,10 +40,10 @@
 *
 * This class provide an increase level of services on top of
 * RakPeer. The communication end point can now only accept connexion
-* and exchange message with peer connected to him 
+* and exchange message with peer connected to him
 *
 *@see RakClient
-* 
+*
 */
 
 class RakServer : public RakServerInterface, public RakPeer
@@ -81,9 +81,9 @@ public:
 	* for incoming connections. If the private keys are 0, then a new key will be generated when this function is called
 	*
 	* @see the Encryption sample
-	* @param privateKeyE A pointer to the public keys from the RSACrypt class.  
-	* @param  privateKeyN A pointer to the public keys from the RSACrypt class.  
-	* 
+	* @param privateKeyE A pointer to the public keys from the RSACrypt class.
+	* @param  privateKeyN A pointer to the public keys from the RSACrypt class.
+	*
 	*/
 	void InitializeSecurity( const char *privateKeyE, const char *privateKeyN );
 
@@ -96,7 +96,7 @@ public:
 	* Set the password clients have to use to connect to this server. The password persists between connections.
 	* Pass 0 for no password.
 	* You can call this anytime
-	* @param _password The password name. 
+	* @param _password The password name.
 	*/
 	void SetPassword( const char *_password );
 	/**
@@ -253,50 +253,7 @@ public:
 	* Call this to Desynchronize all synchronized memory
 	void DesynchronizeAllMemory(void);
 	*/
-	/**
-	* This is an optional function to generate the compression layer from the input frequency table.
-	* You should call this twice - once with inputLayer as true and once as false.
-	* The frequency table passed here with inputLayer=true should match the frequency table on the recipient with inputLayer=false.
-	* Likewise, the frequency table passed here with inputLayer=false should match the frequency table on the recipient with inputLayer=true
-	* Calling this function when there is an existing layer will overwrite the old layer
-	* You should only call this when disconnected
-	* @return false (failure) if connected.  Otherwise true (success)
-	*/
-	bool GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer );
-	/**
-	* Delete the output or input layer as specified.  This is not necessary to call and is only valuable for freeing memory
-	* You should only call this when disconnected
-	* @return false (failure) if connected.  Otherwise true (success)
-	*/
-	bool DeleteCompressionLayer( bool inputLayer );
-	
-	/**
-	* Enables or disables frequency table tracking.  This is required to get a frequency table, which is used to generate
-	* A new compression layer.
-	* You can call this at any time - however you SHOULD only call it when disconnected.  Otherwise you will only track
-	* part of the values sent over the network.
-	* This value persists between connect calls and defaults to false (no frequency tracking)
-	* @param b True to enable tracking 
-	*/
-	void SetTrackFrequencyTable( bool b );
-	/**
-	* Returns the frequency of outgoing bytes into outputFrequencyTable
-	* The purpose is to save to file as either a master frequency table from a sample game session for passing to
-	* GenerateCompressionLayer.
-	* You should only call this when disconnected
-	* Requires that you first enable data frequency tracking by calling SetTrackFrequencyTable(true)
-	* @param[out] outputFrequencyTable The Frequency Table used in the compression layer 
-	* @return false (failure) if connected or if frequency table tracking is not enabled.  Otherwise true (success)
-	*/
-	bool GetSendFrequencyTable( unsigned int outputFrequencyTable[ 256 ] );
-	/**
-	* Returns the compression ratio. A low compression ratio is good.  Compression is for outgoing data
-	*/
-	float GetCompressionRatio( void ) const;
-	/**
-	* Returns the decompression ratio.  A high decompression ratio is good.  Decompression is for incoming data
-	*/
-	float GetDecompressionRatio( void ) const;
+
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
 	*
@@ -314,7 +271,7 @@ public:
 	* The server internally maintains a data struct that is automatically sent to clients when the connect.
 	* This is useful to contain data such as the server name or message of the day.  Access that struct with this
 	* function.
-	* @note 
+	* @note
 	* If you change any data in the struct remote clients won't reflect this change unless you manually update them
 	* Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
 	* The data is entered as an array and stored and returned as a BitStream.
@@ -326,7 +283,7 @@ public:
 	* The server internally maintains a data struct that is automatically sent to clients when the connect.
 	* This is useful to contain data such as the server name or message of the day.  Access that struct with this
 	* function.
-	* @note 
+	* @note
 	* If you change any data in the struct remote clients won't reflect this change unless you manually update them
 	* Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
 	* The data is entered as an array and stored and returned as a BitStream.
@@ -366,7 +323,7 @@ public:
 	* Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
 	* update by calling ChangeStaticClientData
 	* The server must be active for this to have meaning
-	* The data is entered as an array and stored and returned as a BitStream. 
+	* The data is entered as an array and stored and returned as a BitStream.
 	* Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
 	* Maintain a pointer copy to the bitstream as in
 	* RakNet::BitStream *copy = ...->GetStaticServerData(...);
@@ -374,8 +331,8 @@ public:
 	* of the bitstream for the 2nd and 3rd parameters
 	* Note that the client may change at any time the
 	* data contents and/or its length!
-	* @param playerId The ID of the client 
-	* @return Statistical information of this client 
+	* @param playerId The ID of the client
+	* @return Statistical information of this client
 	*/
 	RakNet::BitStream * GetStaticClientData( PlayerID playerId );
 	/**
@@ -384,7 +341,7 @@ public:
 	* Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
 	* update by calling ChangeStaticClientData
 	* The server must be active for this to have meaning
-	* The data is entered as an array and stored and returned as a BitStream. 
+	* The data is entered as an array and stored and returned as a BitStream.
 	* Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
 	* Maintain a pointer copy to the bitstream as in
 	* RakNet::BitStream *copy = ...->GetStaticServerData(...);
@@ -392,9 +349,9 @@ public:
 	* of the bitstream for the 2nd and 3rd parameters
 	* Note that the client may change at any time the
 	* data contents and/or its length!
-	* @param playerId The ID of the client 
-	* @param data A buffer containing statistics 
-	* @param length The size of the buffer 
+	* @param playerId The ID of the client
+	* @param data A buffer containing statistics
+	* @param length The size of the buffer
 	*/
 	void SetStaticClientData( PlayerID playerId, const char *data, const long length );
 	/**
@@ -484,13 +441,13 @@ public:
 	* A too low of value will split packets unnecessarily.
 	* Set according to the following table:
 	* 1500. The largest Ethernet packet size; it is also the default value.
-	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches. 
-	* 1492. The size PPPoE prefers. 
-	* 1472. Maximum size to use for pinging. (Bigger packets are fragmented.) 
-	* 1468. The size DHCP prefers. 
-	* 1460. Usable by AOL if you don't have large email attachments, etc. 
-	* 1430. The size VPN and PPTP prefer. 
-	* 1400. Maximum size for AOL DSL. 
+	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches.
+	* 1492. The size PPPoE prefers.
+	* 1472. Maximum size to use for pinging. (Bigger packets are fragmented.)
+	* 1468. The size DHCP prefers.
+	* 1460. Usable by AOL if you don't have large email attachments, etc.
+	* 1430. The size VPN and PPTP prefer.
+	* 1400. Maximum size for AOL DSL.
 	* 576. Typical value to connect to dial-up ISPs. (Default)
 	*/
 	bool SetMTUSize( int size );
