@@ -1,6 +1,5 @@
 set (raknet_SRC
 	ArrayList.h
-	AsynchronousFileIO.cpp AsynchronousFileIO.h
 	BigTypes.h
 	BinarySearchTree.h
 	BitStream.cpp BitStream.h
