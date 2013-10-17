@@ -31,12 +31,7 @@
 #include "RakPeer.h"
 #include "NetworkTypes.h"
 
-#ifdef __USE_IO_COMPLETION_PORTS
-#include "AsynchronousFileIO.h"
-#endif
-
 #ifdef _WIN32
-//#include <Shlwapi.h>
 #include <process.h>
 #else
 #define closesocket close
@@ -107,8 +102,6 @@ static const int MAX_OFFLINE_DATA_LENGTH=400; // I set this because I limit ID_C
 //static const unsigned int UPDATE_THREAD_UPDATE_TIME=30;
 //static const unsigned int UPDATE_THREAD_POLL_TIME=30;
 
-//#define _TEST_AES
-
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Constructor
@@ -124,7 +117,6 @@ RakPeer::RakPeer()
 	bytesSentPerSecond = bytesReceivedPerSecond = 0;
 	endThreads = true;
 	isMainLoopThreadActive = false;
-	// isRecvfromThreadActive=false;
 	occasionalPing = false;
 	connectionSocket = INVALID_SOCKET;
 	myPlayerId = UNASSIGNED_PLAYER_ID;
@@ -1699,7 +1691,7 @@ void RakPeer::ParseConnectionRequestPacket( RakPeer::RemoteSystemStruct *remoteS
 			remoteSystem->connectMode=RemoteSystemStruct::HANDLING_CONNECTION_REQUEST;
 
 			// Connect this player assuming we have open slots
-			OnConnectionRequest( remoteSystem, 0, false );
+			OnConnectionRequest( remoteSystem );
 		}
 		else
 		{
@@ -1712,70 +1704,25 @@ void RakPeer::ParseConnectionRequestPacket( RakPeer::RemoteSystemStruct *remoteS
 	}
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::OnConnectionRequest( RakPeer::RemoteSystemStruct *remoteSystem, unsigned char *AESKey, bool setAESKey )
+void RakPeer::OnConnectionRequest( RakPeer::RemoteSystemStruct *remoteSystem )
 {
 	if ( AllowIncomingConnections() )
 	{
-#ifdef __USE_IO_COMPLETION_PORTS
-		unsigned index;
 
-		for ( index = 0; index < remoteSystemListSize; index++ )
-			if ( remoteSystemList + index == remoteSystem )
-				break;
-
-		if ( SetupIOCompletionPortSocket( index ) == false )
-		{
-			// Socket error
-			assert( 0 );
-			return ;
-		}
-#endif
 
 		RakNet::BitStream bitStream(sizeof(unsigned char)+sizeof(unsigned short)+sizeof(unsigned int)+sizeof(unsigned short)+sizeof(PlayerIndex));
 		bitStream.Write((unsigned char)ID_CONNECTION_REQUEST_ACCEPTED);
-#ifdef __USE_IO_COMPLETION_PORTS
-		bitStream.Write((unsigned short)myPlayerId.port + ( unsigned short ) index + ( unsigned short ) 1);
-#else
 		bitStream.Write((unsigned short)myPlayerId.port);
-#endif
+
 		bitStream.Write(remoteSystem->playerId.binaryAddress);
 		bitStream.Write(remoteSystem->playerId.port);
 		bitStream.Write(( PlayerIndex ) GetIndexFromPlayerID( remoteSystem->playerId ));
 
-
-/*
-		ConnectionAcceptStruct ds;
-		ds.typeId = ID_CONNECTION_REQUEST_ACCEPTED;
-
-#ifdef __USE_IO_COMPLETION_PORTS
-		ds.remotePort = myPlayerId.port + ( unsigned short ) index + ( unsigned short ) 1;
-#else
-		ds.remotePort = myPlayerId.port;
-#endif
-
-		ds.externalID = remoteSystem->playerId;
-		ds.playerIndex = ( PlayerIndex ) GetIndexFromPlayerID( remoteSystem->playerId );
-
-		RakNet::BitStream dsBitS( ConnectionAcceptStruct_Size );
-		ds.Serialize( dsBitS );
-		*/
-
 		SendImmediate((char*)bitStream.GetData(), bitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, remoteSystem->playerId, false, false, RakNet::GetTime());
-
-		// Don't set secure connections immediately because we need the ack from the remote system to know ID_CONNECTION_REQUEST_ACCEPTED
-		// As soon as a 16 byte packet arrives, we will turn on AES.  This works because all encrypted packets are multiples of 16 and the
-		// packets I happen to be sending are less than 16 bytes
-		remoteSystem->setAESKey=setAESKey;
-		if ( setAESKey )
-		{
-			memcpy(remoteSystem->AESKey, AESKey, 16);
-			remoteSystem->connectMode=RemoteSystemStruct::SET_ENCRYPTION_ON_MULTIPLE_16_BYTE_PACKET;
-		}
 	}
 	else
 	{
 		unsigned char c = ID_NO_FREE_INCOMING_CONNECTIONS;
-		//SocketLayer::Instance()->SendTo( connectionSocket, ( char* ) & c, sizeof( char ), playerId.binaryAddress, playerId.port );
 
 		SendImmediate((char*)&c, sizeof(c)*8, SYSTEM_PRIORITY, RELIABLE, 0, remoteSystem->playerId, false, false, RakNet::GetTime());
 		remoteSystem->connectMode=RemoteSystemStruct::DISCONNECT_ASAP;
@@ -1842,7 +1789,6 @@ RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerI
 		{
 			remoteSystem=remoteSystemList+i;
 			remoteSystem->playerId = playerId; // This one line causes future incoming packets to go through the reliability layer
-			remoteSystem->reliabilityLayer.SetEncryptionKey( 0 );
 
 			for ( j = 0; j < PING_TIMES_ARRAY_SIZE; j++ )
 			{
@@ -1858,7 +1804,6 @@ RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerI
 			remoteSystem->staticData.Reset();
 			remoteSystem->connectionTime = time;
 			remoteSystem->myExternalPlayerId = UNASSIGNED_PLAYER_ID;
-			remoteSystem->setAESKey=false;
 			remoteSystem->lastReliableSend=time;
 
 			// Reserve this reliability layer for ourselves.
@@ -2293,9 +2238,6 @@ void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, cons
 	remoteSystem = rakPeer->GetRemoteSystemFromPlayerID( playerId );
 	if ( remoteSystem )
 	{
-		if (remoteSystem->connectMode==RakPeer::RemoteSystemStruct::SET_ENCRYPTION_ON_MULTIPLE_16_BYTE_PACKET && (length%16)==0)
-			remoteSystem->reliabilityLayer.SetEncryptionKey( remoteSystem->AESKey );
-
 		// Handle regular incoming data
 		// HandleSocketReceiveFromConnectedPlayer is only safe to be called from the same thread as Update, which is this thread
 		if ( remoteSystem->reliabilityLayer.HandleSocketReceiveFromConnectedPlayer( data, length ) == false )
@@ -2719,7 +2661,6 @@ bool RakPeer::RunUpdateCycle( void )
 //						assert(remoteSystem->connectMode==RemoteSystemStruct::HANDLING_CONNECTION_REQUEST);
 #endif
 						if (remoteSystem->connectMode==RemoteSystemStruct::HANDLING_CONNECTION_REQUEST ||
-							remoteSystem->connectMode==RemoteSystemStruct::SET_ENCRYPTION_ON_MULTIPLE_16_BYTE_PACKET ||
 							playerId==myPlayerId) // local system connect
 						{
 							remoteSystem->connectMode=RemoteSystemStruct::CONNECTED;
@@ -2934,31 +2875,6 @@ bool RakPeer::RunUpdateCycle( void )
 
 								// The remote system told us our external IP, so save it
 								remoteSystem->myExternalPlayerId = externalID;
-
-#ifdef __USE_IO_COMPLETION_PORTS
-								bool b;
-								// Create a new nonblocking socket
-								remoteSystem->reliabilityLayer.SetSocket( SocketLayer::Instance()->CreateBoundSocket( myPlayerId.port, false ) );
-
-								SocketLayer::Instance()->Connect( remoteSystem->reliabilityLayer.GetSocket(), playerId.binaryAddress, playerId.port );
-								// Associate our new socket with a completion port and do the first read
-								b = SocketLayer::Instance()->AssociateSocketWithCompletionPortAndRead( remoteSystem->reliabilityLayer.GetSocket(), playerId.binaryAddress, playerId.port, rakPeer );
-								//client->//reliabilityLayerMutex.Unlock();
-
-								if ( b == false )   // Some damn completion port error... windows is so unreliable
-								{
-#ifdef _DO_PRINTF
-									printf( "RakClient - AssociateSocketWithCompletionPortAndRead failed" );
-#endif
-									return ;
-								}
-#endif
-
-								// Use the stored encryption key
-								if (remoteSystem->setAESKey)
-									remoteSystem->reliabilityLayer.SetEncryptionKey( remoteSystem->AESKey );
-								else
-									remoteSystem->reliabilityLayer.SetEncryptionKey( 0 );
 							}
 
 							// Send the connection request complete to the game

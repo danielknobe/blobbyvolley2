@@ -41,21 +41,20 @@
 #include "SimpleMutex.h"
 #include "InternalPacket.h"
 #include "InternalPacketPool.h"
-#include "DataBlockEncryptor.h"
 #include "RakNetStatistics.h"
 #include "SHA1.h"
 
 #include "../blobnet/adt/Queue.hpp"
 
 /**
-* Sizeof an UDP header in byte 
+* Sizeof an UDP header in byte
 */
-#define UDP_HEADER_SIZE 28 
+#define UDP_HEADER_SIZE 28
 /**
-* Number of ordered streams available. 
-* You can use up to 32 ordered streams 
+* Number of ordered streams available.
+* You can use up to 32 ordered streams
 */
-#define NUMBER_OF_ORDERED_STREAMS 32 // 2^5 
+#define NUMBER_OF_ORDERED_STREAMS 32 // 2^5
 /**
 * Timeout before killing a connection. If no response to a reliable
 * packet for this long kill the connection
@@ -70,23 +69,23 @@ const unsigned int TIMEOUT_TIME = 10000; // In release timeout after the normal 
 * must make sure RECEIVED_PACKET_LOG_LENGTH < the range of
 * PacketNumberType (held in InternalPacket.h)
 * 6553.5 is the maximum for an unsigned short
-* @attention 
-* take in account the value of RECEIVED_PACKET_LOG_LENGTH when changing this! 
+* @attention
+* take in account the value of RECEIVED_PACKET_LOG_LENGTH when changing this!
 *
 */
 //const int MAX_AVERAGE_PACKETS_PER_SECOND = 6553;
 
 /**
-* This value must be less than the range of PacketNumberType. 
+* This value must be less than the range of PacketNumberType.
 * PacketNumberType is in InternalPacket.h
 */
 //const int RECEIVED_PACKET_LOG_LENGTH = ( TIMEOUT_TIME / 1000 ) * MAX_AVERAGE_PACKETS_PER_SECOND;
 
 
-#include "BitStream.h" 
+#include "BitStream.h"
 /**
-* This class provide reliable communication services. 
-* 
+* This class provide reliable communication services.
+*
 */
 
 class ReliabilityLayer
@@ -109,22 +108,16 @@ public:
 	*/
 	void Reset( void );
 	/**
-	* Sets up encryption
-	* Callable from multiple threads
-	* @param key the key used for encryption 
-	*/
-	void SetEncryptionKey( const unsigned char *key );
-	/**
 	* Assign a socket for the reliability layer to use for writing
 	* Callable from multiple threads
-	* @param s The socket to use for communication 
+	* @param s The socket to use for communication
 	*/
 	void SetSocket( SOCKET s );
 
 	/**
 	* Get the socket held by the reliability layer
 	* Callable from multiple threads
-	* @return Retrieve the socket so that every body can used it 
+	* @return Retrieve the socket so that every body can used it
 	*/
 	SOCKET GetSocket( void );
 	/**
@@ -134,22 +127,22 @@ public:
 	* function takes packet data after a player has been confirmed as
 	* connected. The game should not use that data directly because
 	* some data is used internally, such as packet acknowledgement and
-	* split packets 
-	* 
-	* @param buffer Store up to @em length byte from the incoming data 
-	* @param length The size of buffer 
+	* split packets
+	*
+	* @param buffer Store up to @em length byte from the incoming data
+	* @param length The size of buffer
 	* @param restrictToFirstPacket Set to true if this is a connection request.  It will only allow packets with a packetNumber of 0
 	* @param firstPacketDataID If restrictToFirstPacket is true, then this is packetID type that is allowed.  Other types are ignored
-	* @param length The size of buffer 
+	* @param length The size of buffer
 	* @return false on modified packets
 	*/
 	bool HandleSocketReceiveFromConnectedPlayer( const char *buffer, int length );
 
 	/**
-	* This gets an end-user packet already parsed out. 
+	* This gets an end-user packet already parsed out.
 	*
-	* @param data The game data 
-	* @return Returns number of BITS put into the buffer 
+	* @param data The game data
+	* @return Returns number of BITS put into the buffer
 	* @note Callable from multiple threads
 	*
 	*/
@@ -161,39 +154,39 @@ public:
 	* @param priority is what priority to send the data at
 	* @param reliability is what reliability to use
 	* @param orderingChannel is from 0 to 31 and specifies what stream to use
-	* @param makeDataCopy if true @em bitStream will keep an internal copy of 
-	* the packet. 
+	* @param makeDataCopy if true @em bitStream will keep an internal copy of
+	* the packet.
 	* @param MTUSize
 	* @note Callable from multiple threads
-	* 
-	* @todo Document MTUSize parameter 
+	*
+	* @todo Document MTUSize parameter
 	*/
 	bool Send( char *data, int numberOfBitsToSend, PacketPriority priority, PacketReliability reliability, unsigned char orderingChannel, bool makeDataCopy, int MTUSize, unsigned int currentTime );
 
 	/**
 	* Run this once per game cycle.  Handles internal lists and
 	* actually does the send Must be called by the same thread as
-	* HandleSocketReceiveFromConnectedPlayer 
-	* 
-	* @param s the communication  end point 
+	* HandleSocketReceiveFromConnectedPlayer
+	*
+	* @param s the communication  end point
 	* @param playerId The Unique Player Identifier who should
 	* have sent some packets
-	* @param MTUSize 
-	* @param time 
+	* @param MTUSize
+	* @param time
 	* @todo
-	* Document MTUSize and time parameter 
+	* Document MTUSize and time parameter
 	*/
 	void Update( SOCKET s, PlayerID playerId, int MTUSize, unsigned int time );
 
 	/**
 	* If Read returns -1 and this returns true then a modified packet
 	* was detected
-	* @return true when a modified packet is detected 
+	* @return true when a modified packet is detected
 	*/
 	bool IsCheater( void ) const;
 	/**
 	* Were you ever unable to deliver a packet despite retries?
-	* @return true if the connection no more responds 
+	* @return true if the connection no more responds
 	*/
 	bool IsDeadConnection( void ) const;
 
@@ -204,7 +197,7 @@ public:
 
 	/**
 	* How long to wait between packet resends
-	* @param i time to wait before resending a packet 
+	* @param i time to wait before resending a packet
 	*/
 	void SetLostPacketResendDelay( unsigned int i );
 
@@ -222,28 +215,28 @@ public:
 private:
 	/**
 	* Returns true if we can or should send a frame.  False if we should not
-	* @param time The time to wait before sending a frame 
-	* @return true if we can or should send a frame. 
+	* @param time The time to wait before sending a frame
+	* @return true if we can or should send a frame.
 	*/
 	bool IsFrameReady( unsigned int time );
 
 	/**
 	* Generates a frame (coalesced packets)
-	* @param output The resulting BitStream 
-	* @param MTUSize 
-	* @param reliableDataSent True if we have to sent a reliable data 
-	* @param time Delay to send the packet or deadline 
+	* @param output The resulting BitStream
+	* @param MTUSize
+	* @param reliableDataSent True if we have to sent a reliable data
+	* @param time Delay to send the packet or deadline
 	* @todo
-	* Check for time paramter 
-	* 
+	* Check for time paramter
+	*
 	*/
 	void GenerateFrame( RakNet::BitStream *output, int MTUSize, bool *reliableDataSent, unsigned int time );
 
 	/**
 	* Writes a bitstream to the socket
-	* @param s The socket used for sending data 
-	* @param playerId The target of the communication 
-	* @param bitStream The data to send. 
+	* @param s The socket used for sending data
+	* @param playerId The target of the communication
+	* @param bitStream The data to send.
 	*/
 	void SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitStream *bitStream );
 	/**
@@ -325,31 +318,6 @@ private:
 	unsigned int GetResendQueueDataSize(void) const;
 	void UpdateThreadedMemory(void);
 
-	// 10/17/05 - Don't need any of this now that all interactions are from the main network thread
-	/*
-	// STUFF TO MUTEX HERE
-	enum
-	{
-		// splitPacketList_MUTEX, // We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		//sendQueueSystemPriority_MUTEX, // Replaced with producer / consumer
-		//sendQueueHighPriority_MUTEX, // Replaced with producer / consumer
-		//sendQueueMediumPriority_MUTEX, // Replaced with producer / consumer
-		//sendQueueLowPriority_MUTEX, // Replaced with producer / consumer
-		//resendQueue_MUTEX,// We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		//orderingList_MUTEX,// We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		//acknowledgementQueue_MUTEX,// We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		// outputQueue_MUTEX,// We don't have to mutex this as long as Recieve and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		packetNumber_MUTEX,
-		// windowSize_MUTEX, // Causes long delays for some reason
-		//lastAckTime_MUTEX,// We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		//updateBitStream_MUTEX,// We don't have to mutex this as long as Update and HandleSocketReceiveFromConnectedPlayer are called by the same thread
-		waitingForOrderedPacketWriteIndex_MUTEX,
-		waitingForSequencedPacketWriteIndex_MUTEX,
-		NUMBER_OF_RELIABILITY_LAYER_MUTEXES
-	};
-	SimpleMutex reliabilityLayerMutexes[ NUMBER_OF_RELIABILITY_LAYER_MUTEXES ];
-	*/
-
 	BasicDataStructures::List<InternalPacket*> splitPacketList;
 	BasicDataStructures::List<BasicDataStructures::LinkedList<InternalPacket*>*> orderingList;
 	BlobNet::ADT::Queue<InternalPacket*> acknowledgementQueue, outputQueue;
@@ -360,20 +328,12 @@ private:
 	unsigned int lastAckTime;
 	RakNet::BitStream updateBitStream;
 	OrderingIndexType waitingForOrderedPacketWriteIndex[ NUMBER_OF_ORDERED_STREAMS ], waitingForSequencedPacketWriteIndex[ NUMBER_OF_ORDERED_STREAMS ];
-	// Used for flow control (changed to regular TCP sliding window)
-	// unsigned int maximumWindowSize, bytesSentSinceAck;
-	// unsigned int outputWindowFullTime; // under linux if this last variable is on the line above it the delete operator crashes deleting this class!
 
 	// STUFF TO NOT MUTEX HERE (called from non-conflicting threads, or value is not important)
 	OrderingIndexType waitingForOrderedPacketReadIndex[ NUMBER_OF_ORDERED_STREAMS ], waitingForSequencedPacketReadIndex[ NUMBER_OF_ORDERED_STREAMS ];
 	bool deadConnection, cheater;
-	// unsigned int lastPacketSendTime,retransmittedFrames, sentPackets, sentFrames, receivedPacketsCount, bytesSent, bytesReceived,lastPacketReceivedTime;
 	unsigned int lostPacketResendDelay;
 	unsigned int splitPacketId;
-//	int TIMEOUT_TIME; // How long to wait in MS before timing someone out
-	//int MAX_AVERAGE_PACKETS_PER_SECOND; // Name says it all
-//	int RECEIVED_PACKET_LOG_LENGTH, requestedReceivedPacketLogLength; // How big the receivedPackets array is
-//	unsigned int *receivedPackets;
 	unsigned int blockWindowIncreaseUntilTime;
 	RakNetStatisticsStruct statistics;
 
@@ -399,23 +359,14 @@ private:
 	int windowSize;
 	int lossyWindowSize;
 	unsigned int lastWindowIncreaseSizeTime;
-	DataBlockEncryptor encryptor;
 
-
-#ifdef __USE_IO_COMPLETION_PORTS
-	/**
-	* @note Windows Port only 
-	*
-	*/
-	SOCKET readWriteSocket;
-#endif
 	/**
 	* This variable is so that free memory can be called by only the
-	* update thread so we don't have to mutex things so much 
+	* update thread so we don't have to mutex things so much
 	*/
 	bool freeThreadedMemoryOnNextUpdate;
 
-#ifdef _INTERNET_SIMULATOR 
+#ifdef _INTERNET_SIMULATOR
 	struct DataAndTime
 	{
 		char data[ 2000 ];

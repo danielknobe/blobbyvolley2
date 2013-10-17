@@ -86,17 +86,6 @@ void ReliabilityLayer::Reset( void )
 }
 
 //-------------------------------------------------------------------------------------------------------
-// Sets up encryption
-//-------------------------------------------------------------------------------------------------------
-void ReliabilityLayer::SetEncryptionKey( const unsigned char* key )
-{
-	if ( key )
-		encryptor.SetKey( key );
-	else
-		encryptor.UnsetKey();
-}
-
-//-------------------------------------------------------------------------------------------------------
 // Assign a socket for the reliability layer to use for writing
 //-------------------------------------------------------------------------------------------------------
 #pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
@@ -337,17 +326,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 	// bytesReceived+=length + UDP_HEADER_SIZE;
 
 	UpdateThreadedMemory();
-
-	// decode this whole chunk if the decoder is defined.
-	if ( encryptor.IsKeySet() )
-	{
-		if ( encryptor.Decrypt( ( unsigned char* ) buffer, length, ( unsigned char* ) buffer, &length ) == false )
-		{
-			statistics.bitsWithBadCRCReceived += length * 8;
-			statistics.packetsWithBadCRCReceived++;
-			return false;
-		}
-	}
 
 	statistics.bitsReceived += length * 8;
 	statistics.packetsReceived++;
@@ -949,9 +927,6 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 
 	int maxDataSize = MTUSize - UDP_HEADER_SIZE - headerLength;
 
-	if ( encryptor.IsKeySet() )
-		maxDataSize -= 16; // Extra data for the encryptor
-
 	bool splitPacket = numberOfBytesToSend > maxDataSize;
 
 	// If a split packet, we might have to upgrade the reliability
@@ -1160,43 +1135,13 @@ void ReliabilityLayer::SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitSt
 	}
 #endif
 
-
-	// Encode the whole bitstream if the encoder is defined.
-
-	if ( encryptor.IsKeySet() )
-	{
-		length = bitStream->GetNumberOfBytesUsed();
-		oldLength = length;
-
-		encryptor.Encrypt( ( unsigned char* ) bitStream->GetData(), length, ( unsigned char* ) bitStream->GetData(), &length );
-		statistics.encryptionBitsSent = ( length - oldLength ) * 8;
-
-		assert( ( length % 16 ) == 0 );
-	}
-
-	else
-	{
-		length = bitStream->GetNumberOfBytesUsed();
-	}
-
-#ifdef __USE_IO_COMPLETION_PORTS
-	if ( readWriteSocket == INVALID_SOCKET )
-	{
-		assert( 0 );
-		return ;
-	}
-
-	statistics.packetsSent++;
-	statistics.totalBitsSent += length * 8;
-	SocketLayer::Instance()->Write( readWriteSocket, ( const char* ) bitStream->GetData(), length );
-#else
+	length = bitStream->GetNumberOfBytesUsed();
 
 	statistics.packetsSent++;
 	statistics.totalBitsSent += length * 8;
 	//printf("total bits=%i length=%i\n", BITS_TO_BYTES(statistics.totalBitsSent), length);
 
 	SocketLayer::Instance()->SendTo( s, ( char* ) bitStream->GetData(), length, playerId.binaryAddress, playerId.port );
-#endif // __USE_IO_COMPLETION_PORTS
 
 	// lastPacketSendTime=time;
 }
@@ -1258,9 +1203,6 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 	bool anyPacketsLost = false;
 
 	maxDataBitSize = MTUSize - UDP_HEADER_SIZE;
-
-	if ( encryptor.IsKeySet() )
-		maxDataBitSize -= 16; // Extra data for the encryptor
 
 	maxDataBitSize <<= 3;
 
@@ -2208,9 +2150,6 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 	InternalPacket **internalPacketArray;
 
 	maxDataSize = MTUSize - UDP_HEADER_SIZE;
-
-	if ( encryptor.IsKeySet() )
-		maxDataSize -= 16; // Extra data for the encryptor
 
 #ifdef _DEBUG
 	// Make sure we need to split the packet to begin with
