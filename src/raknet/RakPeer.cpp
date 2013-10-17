@@ -1623,26 +1623,6 @@ void RakPeer::ClearRequestedConnectionList(void)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
-#ifdef _WIN32
-void __stdcall ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer )
-#else
-void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer )
-#endif
-{
-	// TODO - figure out how the hell to get the values for binaryAddress and port
-
-	/*
-	RakPeer::RemoteSystemStruct *remoteSystem;
-	PlayerID playerId;
-	playerId.binaryAddress = binaryAddress;
-	playerId.port = port;
-	remoteSystem = rakPeer->GetRemoteSystemFromPlayerID( playerId );
-	if (remoteSystem)
-		remoteSystem->reliabilityLayer.KillConnection();
-		*/
-}
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef _WIN32
 void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer )
 #else
@@ -2078,23 +2058,6 @@ bool RakPeer::RunUpdateCycle( void )
 				continue;
 			}
 
-			// Did the reliability layer detect a modified packet?
-			if ( remoteSystem->reliabilityLayer.IsCheater() )
-			{
-				packet = packetPool.GetPointer();
-				packet->length = 1;
-				packet->data = new unsigned char [ 1 ];
-				packet->data[ 0 ] = (unsigned char) ID_MODIFIED_PACKET;
-				packet->playerId = playerId;
-				packet->playerIndex = ( PlayerIndex ) remoteSystemIndex;
-
-				incomingQueueMutex.Lock();
-				( incomingPacketQueue ).push( packet );
-				incomingQueueMutex.Unlock();
-
-				continue;
-			}
-
 			// Ping this guy if it is time to do so
 			if ( remoteSystem->connectMode==RemoteSystemStruct::CONNECTED && time > remoteSystem->nextPingTime && ( remoteSystem->lowestPing == -1 ) )
 			{
@@ -2432,96 +2395,14 @@ void* UpdateNetworkLoop( void* arguments )
 #endif
 {
 	RakPeer * rakPeer = ( RakPeer * ) arguments;
-	// unsigned int time;
-
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	AsynchronousFileIO::Instance()->IncreaseUserCount();
-#endif
-
-	// 11/15/05 - this is slower than Sleep()
-	/*
-#ifdef _WIN32
-#if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
-	// Lets see if these timers give better performance than Sleep
-	HANDLE timerHandle;
-	LARGE_INTEGER dueTime;
-
-	if ( rakPeer->threadSleepTimer == 0 )
-		rakPeer->threadSleepTimer = 1;
-
-	// 2nd parameter of false means synchronization timer instead of manual-reset timer
-	timerHandle = CreateWaitableTimer( NULL, FALSE, 0 );
-
-	assert( timerHandle );
-
-	dueTime.QuadPart = -10000 * rakPeer->threadSleepTimer; // 10000 is 1 ms?
-
-	BOOL success = SetWaitableTimer( timerHandle, &dueTime, rakPeer->threadSleepTimer, NULL, NULL, FALSE );
-
-	assert( success );
-
-#endif
-#endif
-	*/
 
 	rakPeer->isMainLoopThreadActive = true;
 
 	while ( rakPeer->endThreads == false )
 	{
-		/*
-		time=RakNet::GetTime();
-
-		// Dynamic threading - how long we sleep and if we update
-		// depends on whether or not the user thread is updating
-		if (time > rakPeer->lastUserUpdateCycle && time - rakPeer->lastUserUpdateCycle > UPDATE_THREAD_UPDATE_TIME)
-		{
-		// Only one thread should call RunUpdateCycle at a time.  We don't need to delay calls so
-		// a mutex on the function is not necessary - only on the variable that indicates if the function is
-		// running
-		rakPeer->RunMutexedUpdateCycle();
-
-
-		// User is not updating the network. Sleep a short time
-		#ifdef _WIN32
-		Sleep(rakPeer->threadSleepTimer);
-		#else
-		usleep(rakPeer->threadSleepTimer * 1000);
-		#endif
-		}
-		else
-		{
-		// User is actively updating the network.  Only occasionally poll
-		#ifdef _WIN32
-		Sleep(UPDATE_THREAD_POLL_TIME);
-		#else
-		usleep(UPDATE_THREAD_POLL_TIME * 1000);
-		#endif
-		}
-		*/
 		rakPeer->RunUpdateCycle();
 #ifdef _WIN32
-		//#if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
-#if (0) // 08/05/05 This doesn't seem to work well at all!
-		//#pragma message("-- RakNet:Using WaitForSingleObject --")
-
-		if ( WaitForSingleObject( timerHandle, INFINITE ) != WAIT_OBJECT_0 )
-		{
-#ifdef _DEBUG
-
-			assert( 0 );
-	#ifdef _DO_PRINTF
-			printf( "WaitForSingleObject failed (%d)\n", GetLastError() );
-	#endif
-#endif
-		}
-
-#else
-		//#pragma message("-- RakNet:Using Sleep --")
-		//#pragma message("-- Define _WIN32_WINNT as 0x0400 or higher to use WaitForSingleObject --")
 		Sleep( rakPeer->threadSleepTimer );
-
-#endif
 #else
 		usleep( rakPeer->threadSleepTimer * 1000 );
 #endif
@@ -2529,20 +2410,6 @@ void* UpdateNetworkLoop( void* arguments )
 	}
 
 	rakPeer->isMainLoopThreadActive = false;
-
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	AsynchronousFileIO::Instance()->DecreaseUserCount();
-#endif
-
-/*
-#ifdef _WIN32
-#if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
-
-	CloseHandle( timerHandle );
-#endif
-#endif
-*/
 
 	return 0;
 }

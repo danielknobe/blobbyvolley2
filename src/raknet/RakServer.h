@@ -33,7 +33,6 @@
 #define __RAK_SERVER_H
 
 #include "RakPeer.h"
-#include "RakServerInterface.h"
 
 /**
 * @brief Server Facilities on top of RakPeer
@@ -46,7 +45,7 @@
 *
 */
 
-class RakServer : public RakServerInterface, public RakPeer
+class RakServer : public RakPeer
 {
 
 public:

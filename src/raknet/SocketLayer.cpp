@@ -51,12 +51,6 @@ extern void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned
 extern void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 #endif
 
-#ifdef _WIN32
-extern void __stdcall ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
-#else
-extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
-#endif
-
 #ifdef _DEBUG
 #include <cstdio>
 #endif
@@ -264,7 +258,7 @@ bool SocketLayer::AssociateSocketWithCompletionPortAndRead( SOCKET readSocket, u
 
 	BOOL success = ReadAsynch( ( HANDLE ) readSocket, eos );
 
-	if ( success == FALSE )
+	if ( success == false )
 		return false;
 
 #endif
@@ -336,7 +330,8 @@ int SocketLayer::RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode )
 		}
 		if ( dwIOError == WSAECONNRESET )
 		{
-			ProcessPortUnreachable(sa.sin_addr.s_addr, portnum, rakPeer);
+			// ProcessPortUnreachable(sa.sin_addr.s_addr, portnum, rakPeer);
+			// this function no longer exists, as the old implementation did nothing
 			// *errorCode = dwIOError;
 			return SOCKET_ERROR;
 		}

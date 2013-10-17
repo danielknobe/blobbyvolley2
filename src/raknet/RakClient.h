@@ -33,7 +33,7 @@
 #define __RAK_CLIENT_H
 
 #include "RakPeer.h"
-#include "RakClientInterface.h"
+
 /**
  * @brief Client Peer A client peer is used to contact a server. It
  * can connect to one server a a time. If you need to connect to
@@ -43,7 +43,7 @@
  * @see RakServer
  */
 
-class RakClient : public RakPeer, public RakClientInterface
+class RakClient : public RakPeer
 {
 
 public:

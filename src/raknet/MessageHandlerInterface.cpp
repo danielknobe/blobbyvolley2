@@ -34,7 +34,7 @@ bool MessageHandlerInterface::PropagateToGame(Packet *packet) const
 }
 
 #pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
-void MessageHandlerInterface::OnAttach(RakPeerInterface *peer)
+void MessageHandlerInterface::OnAttach(RakPeer *peer)
 {
 }
 

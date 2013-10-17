@@ -126,7 +126,7 @@ void ReliabilityLayer::InitializeVariables( void )
 	packetNumber = 0;
 	// lastPacketSendTime=retransmittedFrames=sentPackets=sentFrames=receivedPacketsCount=bytesSent=bytesReceived=0;
 	SetLostPacketResendDelay( 1000 );
-	deadConnection = cheater = false;
+	deadConnection = false;
 	lastAckTime = 0;
 	blockWindowIncreaseUntilTime = 0;
 	// Windowing
@@ -2571,14 +2571,6 @@ void ReliabilityLayer::InsertPacketIntoResendQueue( InternalPacket *internalPack
 	}
 
 	//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
-}
-
-//-------------------------------------------------------------------------------------------------------
-// If Read returns -1 and this returns true then a modified packet was detected
-//-------------------------------------------------------------------------------------------------------
-bool ReliabilityLayer::IsCheater( void ) const
-{
-	return cheater;
 }
 
 //-------------------------------------------------------------------------------------------------------
