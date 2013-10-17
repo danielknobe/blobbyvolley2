@@ -36,12 +36,9 @@
 // Constructor
 RakClient::RakClient()
 {
-	unsigned i;
 
-	for ( i = 0; i < 32; i++ )
+	for (unsigned i = 0; i < 32; i++ )
 		otherClients[ i ].isActive = false;
-
-	nextSeedUpdate = 0;
 }
 
 // Destructor
@@ -66,7 +63,6 @@ bool RakClient::Connect( const char* host, unsigned short serverPort, unsigned s
 	{
 		otherClients[ i ].isActive = false;
 		otherClients[ i ].playerId = UNASSIGNED_PLAYER_ID;
-		otherClients[ i ].staticData.Reset();
 	}
 
 	// ignore depreciated. A pointless variable
@@ -167,24 +163,7 @@ Packet* RakClient::Receive( void )
 		}
 		else if ( packet->data[ 0 ] == ID_REMOTE_STATIC_DATA )
 		{
-			bitStream.IgnoreBits( 8 ); // Ignore identifier
-			bitStream.Read( packet->playerId.binaryAddress );
-			bitStream.Read( packet->playerId.port );
-			bitStream.Read( packet->playerIndex ); // ADDED BY KURI
-
-			i = GetOtherClientIndexByPlayerID( packet->playerId );
-
-			if ( i < 0 )
-				i = GetFreeOtherClientIndex();
-
-			if ( i >= 0 )
-			{
-				otherClients[ i ].playerId = packet->playerId;
-				otherClients[ i ].isActive = true;
-				otherClients[ i ].staticData.Reset();
-				// The static data is what is left over in the stream
-				otherClients[ i ].staticData.Write( ( char* ) bitStream.GetData() + BITS_TO_BYTES( bitStream.GetReadOffset() ), bitStream.GetNumberOfBytesUsed() - BITS_TO_BYTES( bitStream.GetReadOffset() ) );
-			}
+			assert(0);
 		}
 		else if ( packet->data[ 0 ] == ID_BROADCAST_PINGS )
 		{
@@ -213,7 +192,6 @@ Packet* RakClient::Receive( void )
 						otherClients[ index ].isActive = true;
 						bitStream.Read( otherClients[ index ].ping );
 						otherClients[ index ].playerId = playerId;
-						otherClients[ index ].staticData.Reset();
 					}
 
 					else
@@ -228,25 +206,12 @@ Packet* RakClient::Receive( void )
 		if ( packet->data[ 0 ] == ID_TIMESTAMP &&
 			packet->length == sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned int) )
 		{
-			/*
-			RakNet::BitStream s_BitS( (char *)packet->data, SetRandomNumberSeedStruct_Size, false );
-			SetRandomNumberSeedStruct s;
-			s.Deserialize( s_BitS );
-			*/
+
 
 			RakNet::BitStream inBitStream((char *)packet->data, packet->length, false);
-			/*
-			unsigned char ts;
-			unsigned int timeStamp;
-			unsigned char typeId;
-			unsigned int seed;
-			unsigned int nextSeed;
-			*/
 
 			unsigned int timeStamp;
 			unsigned char typeId;
-			unsigned int in_seed;
-			unsigned int in_nextSeed;
 			inBitStream.IgnoreBits(8); // ID_TIMESTAMP
 			inBitStream.Read(timeStamp);
 			inBitStream.Read(typeId); // ID_SET_RANDOM_NUMBER_SEED ?
@@ -255,13 +220,6 @@ Packet* RakClient::Receive( void )
 			// accidentally has length SetRandomNumberSeedStruct_Size
 			if ( typeId != ID_SET_RANDOM_NUMBER_SEED )
 				return packet;
-
-			inBitStream.Read(in_seed);
-			inBitStream.Read(in_nextSeed);
-
-			seed = in_seed;
-			nextSeed = in_nextSeed;
-			nextSeedUpdate = timeStamp + 9000; // Seeds are updated every 9 seconds
 
 			DeallocatePacket( packet );
 			return 0;
@@ -326,30 +284,12 @@ int RakClient::GetPlayerPing( PlayerID playerId )
 	return -1;
 }
 
-void RakClient::StartOccasionalPing( void )
-{
-	RakPeer::SetOccasionalPing( true );
-}
-
-void RakClient::StopOccasionalPing( void )
-{
-	RakPeer::SetOccasionalPing( false );
-}
-
 bool RakClient::IsConnected( void ) const
 {
 	unsigned short numberOfSystems;
 
 	RakPeer::GetConnectionList( 0, &numberOfSystems );
 	return numberOfSystems == 1;
-}
-
-unsigned int RakClient::GetSynchronizedRandomInteger( void ) const
-{
-	if ( RakNet::GetTime() > nextSeedUpdate )
-		return nextSeed;
-	else
-		return seed;
 }
 
 void RakClient::AttachMessageHandler( MessageHandlerInterface *messageHandler )
@@ -360,88 +300,6 @@ void RakClient::AttachMessageHandler( MessageHandlerInterface *messageHandler )
 void RakClient::DetachMessageHandler( MessageHandlerInterface *messageHandler )
 {
 	RakPeer::DetachMessageHandler(messageHandler);
-}
-
-RakNet::BitStream * RakClient::GetStaticServerData( void )
-{
-	if ( remoteSystemList == 0 )
-		return 0;
-
-	return RakPeer::GetRemoteStaticData( remoteSystemList[ 0 ].playerId );
-}
-
-void RakClient::SetStaticServerData( const char *data, const long length )
-{
-	if ( remoteSystemList == 0 )
-		return ;
-
-	RakPeer::SetRemoteStaticData( remoteSystemList[ 0 ].playerId, data, length );
-}
-
-RakNet::BitStream * RakClient::GetStaticClientData( PlayerID playerId )
-{
-	int i;
-
-	if ( playerId == UNASSIGNED_PLAYER_ID )
-	{
-		return & localStaticData;
-	}
-
-	else
-	{
-		// KevinJ - No this is not correct.  The client does not know about any system other than the server.
-		// The caller needs to check for a NULL return value
-
-		/// \todo Cirilo: Check that this is the CORRECT implementation
-		/// An alternative is to fall through and return this expression
-		/// rather than directly returning '0'.
-	//	return RakPeer::GetRemoteStaticData( playerId );
-
-		i = GetOtherClientIndexByPlayerID( playerId );
-//		printf("OtherClientIndexByPlayerID: %d\n", i);
-
-		if ( i >= 0 )
-		{
-			return & ( otherClients[ i ].staticData );
-		}
-
-	}
-
-	return 0;
-}
-
-void RakClient::SetStaticClientData( PlayerID playerId, const char *data, const long length )
-{
-	int i;
-
-	if ( playerId == UNASSIGNED_PLAYER_ID )
-	{
-		localStaticData.Reset();
-		localStaticData.Write( data, length );
-	}
-
-	else
-	{
-		i = GetOtherClientIndexByPlayerID( playerId );
-
-		if ( i >= 0 )
-		{
-			otherClients[ i ].staticData.Reset();
-			otherClients[ i ].staticData.Write( data, length );
-		}
-
-		else
-			RakPeer::SetRemoteStaticData( playerId, data, length );
-	}
-
-}
-
-void RakClient::SendStaticClientDataToServer( void )
-{
-	if ( remoteSystemList == 0 )
-		return ;
-
-	RakPeer::SendStaticData( remoteSystemList[ 0 ].playerId );
 }
 
 PlayerID RakClient::GetServerID( void ) const

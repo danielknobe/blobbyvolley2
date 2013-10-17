@@ -361,13 +361,10 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/raknet/ArrayList.h" />
-		<Unit filename="src/raknet/BigTypes.h" />
 		<Unit filename="src/raknet/BinarySearchTree.h" />
 		<Unit filename="src/raknet/BitStream.cpp" />
 		<Unit filename="src/raknet/BitStream.h" />
 		<Unit filename="src/raknet/CMakeLists.txt" />
-		<Unit filename="src/raknet/CheckSum.cpp" />
-		<Unit filename="src/raknet/CheckSum.h" />
 		<Unit filename="src/raknet/ClientContextStruct.h" />
 		<Unit filename="src/raknet/GetTime.cpp" />
 		<Unit filename="src/raknet/GetTime.h" />
@@ -400,8 +397,6 @@
 		<Unit filename="src/raknet/RakServer.cpp" />
 		<Unit filename="src/raknet/RakServer.h" />
 		<Unit filename="src/raknet/RakServerInterface.h" />
-		<Unit filename="src/raknet/Rand.cpp" />
-		<Unit filename="src/raknet/Rand.h" />
 		<Unit filename="src/raknet/ReliabilityLayer.cpp" />
 		<Unit filename="src/raknet/ReliabilityLayer.h" />
 		<Unit filename="src/raknet/SimpleMutex.cpp" />

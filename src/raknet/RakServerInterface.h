@@ -178,45 +178,9 @@ public:
 	virtual int GetLowestPing( PlayerID playerId ) = 0;
 
 	/**
-	 * Ping all players every so often.  This is on by default.  In games where you don't care about ping you can call
-	 * StopOccasionalPing to save the bandwidth
-	 * This will work anytime
-	 */
-	virtual void StartOccasionalPing( void ) = 0;
-
-	/**
-	 * Stop pinging players every so often.  Players are pinged by default.  In games where you don't care about ping
-	 * you can call this to save the bandwidth
-	 * This will work anytime
-	 */
-	virtual void StopOccasionalPing( void ) = 0;
-
-	/**
 	 * Returns true if the server is currently active
 	 */
 	virtual bool IsActive( void ) const = 0;
-
-	/**
-	 * Returns a number automatically synchronized between the server and client which randomly changes every
-	 * 9 seconds. The time it changes is accurate to within a few ms and is best used to seed
-	 * random number generators that you want to usually return the same output on all systems.  Keep in mind this
-	 * isn't perfectly accurate as there is always a very small chance the numbers will by out of synch during
-	 * changes so you should confine its use to visual effects or functionality that has a backup method to
-	 * maintain synchronization.  If you don't need this functionality and want to save the bandwidth call
-	 * StopSynchronizedRandomInteger after starting the server
-	 */
-	virtual unsigned int GetSynchronizedRandomInteger( void ) const = 0;
-
-	/**
-	 * Start or restart the synchronized random integer.  This is on by default.  Call StopSynchronizedRandomInteger
-	 * to stop it keeping the number in synch
-	 */
-	virtual void StartSynchronizedRandomInteger( void ) = 0;
-
-	/**
-	 * Stop the synchronized random integer.  Call StartSynchronizedRandomInteger to start it again
-	 */
-	virtual void StopSynchronizedRandomInteger( void ) = 0;
 
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
@@ -231,113 +195,6 @@ public:
 	* @param messageHandler Pointer to a message handler to detatch
 	*/
 	virtual void DetachMessageHandler( MessageHandlerInterface *messageHandler )=0;
-
-	/**
-	 * The server internally maintains a data struct that is automatically sent to clients when the connect.
-	 * This is useful to contain data such as the server name or message of the day.  Access that struct with this
-	 * function.
-	 * @note
-	 * If you change any data in the struct remote clients won't reflect this change unless you manually update them
-	 * Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
-	 * The data is entered as an array and stored and returned as a BitStream.
-	 * To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	 * of the bitstream for the 2nd and 3rd parameters
-	 */
-	virtual RakNet::BitStream * GetStaticServerData( void ) = 0;
-
-	/**
-	 * The server internally maintains a data struct that is automatically sent to clients when the connect.
-	 * This is useful to contain data such as the server name or message of the day.  Access that struct with this
-	 * function.
-	 * @note
-	 * If you change any data in the struct remote clients won't reflect this change unless you manually update them
-	 * Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
-	 * The data is entered as an array and stored and returned as a BitStream.
-	 * To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	 * of the bitstream for the 2nd and 3rd parameters
-	 */
-	virtual void SetStaticServerData( const char *data, const long length ) = 0;
-
-	/**
-	 * This sets to true or false whether we want to support relaying of static client data to other connected clients.
-	 * If set to false it saves some bandwdith, however other clients won't know the static client data and attempting
-	 * to read that data will return garbage.  Default is true.  This also only works for up to 32 players.  Games
-	 * supporting more than 32 players will have this shut off automatically upon server start and must have it forced
-	 * back on with this function if you do indeed want it
-	 * This should be called after the server is started in case you want to override when it shuts off at 32 players
-	 */
-	virtual void SetRelayStaticClientData( bool b ) = 0;
-
-	/**
-	 * Send the static server data to the specified player.  Pass UNASSIGNED_PLAYER_ID to broadcast to all players
-	 * The only time you need to call this function is to update clients that are already connected when you change the static
-	 * server data by calling GetStaticServerData and directly modifying the object pointed to.  Obviously if the
-	 * connected clients don't need to know the new data you don't need to update them, so it's up to you
-	 * The server must be active for this to have meaning
-	 */
-	virtual void SendStaticServerDataToClient( PlayerID playerId ) = 0;
-
-	/**
-	 * Sets the data to send with an (LAN server discovery) /(offline ping) response
-	 * Length should be under 400 bytes, as a security measure against flood attacks
-	 * @see the Ping sample project for how this is used.
-	 * @param data a block of data to store, or 0 for none
-	 * @param length The length of data in bytes, or 0 for none
-	 */
-	virtual void SetOfflinePingResponse( const char *data, const unsigned int length ) = 0;
-
-	/**
-	 * Returns a pointer to an attached client's character name specified by the playerId
-	 * Returns 0 if no such player is connected
-	 * Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
-	 * update by calling ChangeStaticClientData
-	 * The server must be active for this to have meaning
-	 * The data is entered as an array and stored and returned as a BitStream.
-	 * Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
-	 * Maintain a pointer copy to the bitstream as in
-	 * RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	 * To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	 * of the bitstream for the 2nd and 3rd parameters
-	 * Note that the client may change at any time the
-	 * data contents and/or its length!
-	 * @param playerId The ID of the client
-	 * @return Statistical information of this client
-	 */
-	virtual RakNet::BitStream * GetStaticClientData( PlayerID playerId ) = 0;
-
-	/**
-	 * Returns a pointer to an attached client's character name specified by the playerId
-	 * Returns 0 if no such player is connected
-	 * Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
-	 * update by calling ChangeStaticClientData
-	 * The server must be active for this to have meaning
-	 * The data is entered as an array and stored and returned as a BitStream.
-	 * Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
-	 * Maintain a pointer copy to the bitstream as in
-	 * RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	 * To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	 * of the bitstream for the 2nd and 3rd parameters
-	 * Note that the client may change at any time the
-	 * data contents and/or its length!
-	 * @param playerId The ID of the client
-	 * @param data A buffer containing statistics
-	 * @param length The size of the buffer
-	 */
-	virtual void SetStaticClientData( PlayerID playerId, const char *data, const long length ) = 0;
-
-	/**
-	 * This function is used to update the information on connected clients when the server effects a change
-	 * of static client data
-	 * playerChangedId should be the playerId of the player whose data was changed.  This is the parameter passed to
-	 * GetStaticClientData to get a pointer to that player's information
-	 * Note that a client that gets this new information for himself will update the data for his playerID but not his local data (which is the user's copy)
-	 * i.e. player 5 would have the data returned by GetStaticClientData(5) changed but his local information returned by
-	 * GetStaticClientData(UNASSIGNED_PLAYER_ID) would remain the same as it was previously.
-	 * playerToSendToId should be the player you want to update with the new information.  This will almost always
-	 * be everybody, in which case you should pass UNASSIGNED_PLAYER_ID.
-	 * The server must be active for this to have meaning
-	 */
-	virtual void ChangeStaticClientData( PlayerID playerChangedId, PlayerID playerToSendToId ) = 0;
 
 	/**
 	 * Internally store the IP address(es) for the server and return how many it has.

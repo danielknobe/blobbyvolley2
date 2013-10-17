@@ -43,7 +43,6 @@
 #include "GetTime.h"
 #include "PacketEnumerations.h"
 #include "PacketPool.h"
-#include "Rand.h"
 #include "MessageHandlerInterface.h"
 
 // alloca
@@ -117,7 +116,6 @@ RakPeer::RakPeer()
 	bytesSentPerSecond = bytesReceivedPerSecond = 0;
 	endThreads = true;
 	isMainLoopThreadActive = false;
-	occasionalPing = false;
 	connectionSocket = INVALID_SOCKET;
 	myPlayerId = UNASSIGNED_PLAYER_ID;
 	allowConnectionResponseIPMigration = false;
@@ -1212,112 +1210,6 @@ int RakPeer::GetLowestPing( PlayerID playerId ) const
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
-// Ping the remote systems every so often.  This is off by default
-// This will work anytime
-//
-// Parameters:
-// doPing - True to start occasional pings.  False to stop them.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SetOccasionalPing( bool doPing )
-{
-	occasionalPing = doPing;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-// specify typical system data that you want to know on connection, such as the player's name.
-//
-// Parameters:
-// playerId: Which system you are referring to.  Pass the value returned by GetInternalID to refer to yourself
-//
-// Returns:
-// The data passed to SetRemoteStaticData stored as a bitstream
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RakNet::BitStream * RakPeer::GetRemoteStaticData( PlayerID playerId )
-{
-	if ( playerId == myPlayerId )
-		return & localStaticData;
-
-	RemoteSystemStruct *remoteSystem = GetRemoteSystemFromPlayerID( playerId );
-
-	if ( remoteSystem )
-		return & ( remoteSystem->staticData );
-	else
-		return 0;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-// specify typical system data that you want to know on connection, such as the player's name.
-//
-// Parameters:
-// playerId: Whose static data to change.  Use your own playerId to change your own static data
-// data: a block of data to store
-// length: The length of data in bytes
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SetRemoteStaticData( PlayerID playerId, const char *data, const long length )
-{
-	if ( playerId == myPlayerId )
-	{
-		localStaticData.Reset();
-
-		if ( data && length > 0 )
-			localStaticData.Write( data, length );
-	}
-
-	else
-	{
-		RemoteSystemStruct *remoteSystem = GetRemoteSystemFromPlayerID( playerId );
-
-		if ( remoteSystem == 0 )
-			return ;
-
-		remoteSystem->staticData.Reset();
-
-		if ( data && length > 0 )
-			remoteSystem->staticData.Write( data, length );
-	}
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Sends your static data to the specified system.  This is automatically done on connection.
-// You should call this when you change your static data.
-// To send the static data of another system (such as relaying their data) you should do this normally with Send
-//
-// Parameters:
-// target: Who to send your static data to.  Specify UNASSIGNED_PLAYER_ID to broadcast to all
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SendStaticData( PlayerID target )
-{
-	SendStaticDataInternal(target, false);
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Length should be under 400 bytes, as a security measure against flood attacks
-// Sets the data to send with an  (LAN server discovery) /(offline ping) response
-// See the Ping sample project for how this is used.
-// data: a block of data to store, or 0 for none
-// length: The length of data in bytes, or 0 for none
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SetOfflinePingResponse( const char *data, const unsigned int length )
-{
-	assert(length < 400);
-
-	rakPeerMutexes[ offlinePingResponse_Mutex ].Lock();
-	offlinePingResponse.Reset();
-
-	if ( data && length > 0 )
-		offlinePingResponse.Write( data, length );
-
-	rakPeerMutexes[ offlinePingResponse_Mutex ].Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
 // Return the unique PlayerID that represents you on the the network
 // Note that unlike in previous versions, this is a struct and is not sequential
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1801,7 +1693,6 @@ RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerI
 			remoteSystem->lowestPing = -1;
 			remoteSystem->nextPingTime = 0; // Ping immediately
 			remoteSystem->weInitiatedTheConnection = false;
-			remoteSystem->staticData.Reset();
 			remoteSystem->connectionTime = time;
 			remoteSystem->myExternalPlayerId = UNASSIGNED_PLAYER_ID;
 			remoteSystem->lastReliableSend=time;
@@ -1889,28 +1780,6 @@ void RakPeer::PushPortRefused( PlayerID target )
 bool RakPeer::AllowIncomingConnections(void) const
 {
 	return GetNumberOfRemoteInitiatedConnections() < GetMaximumIncomingConnections();
-}
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SendStaticDataInternal( PlayerID target, bool performImmediate )
-{
-	RakNet::BitStream reply( sizeof(unsigned char) + localStaticData.GetNumberOfBytesUsed() );
-	reply.Write( (unsigned char) ID_RECEIVED_STATIC_DATA );
-	reply.Write( ( char* ) localStaticData.GetData(), localStaticData.GetNumberOfBytesUsed() );
-
-	if (performImmediate)
-	{
-		if ( target == UNASSIGNED_PLAYER_ID )
-			SendImmediate( (char*)reply.GetData(), reply.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, target, true, false, RakNet::GetTime() );
-		else
-			SendImmediate( (char*)reply.GetData(), reply.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, target, false, false, RakNet::GetTime() );
-	}
-	else
-	{
-		if ( target == UNASSIGNED_PLAYER_ID )
-			Send( &reply, SYSTEM_PRIORITY, RELIABLE, 0, target, true );
-		else
-			Send( &reply, SYSTEM_PRIORITY, RELIABLE, 0, target, false );
-	}
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RakPeer::PingInternal( PlayerID target, bool performImmediate )
@@ -2514,15 +2383,14 @@ bool RakPeer::RunUpdateCycle( void )
 					// Inform the user of the connection failure.
 					packet = packetPool.GetPointer();
 
-					packet->data = new unsigned char [ sizeof( char ) + remoteSystem->staticData.GetNumberOfBytesUsed() ];
+					packet->data = new unsigned char [ sizeof( char ) ];
 					if (remoteSystem->connectMode==RemoteSystemStruct::REQUESTED_CONNECTION)
 						packet->data[ 0 ] = ID_CONNECTION_ATTEMPT_FAILED; // Attempted a connection and couldn't
 					else
 						packet->data[ 0 ] = ID_CONNECTION_LOST; // DeadConnection
-					memcpy( packet->data + sizeof( char ), remoteSystem->staticData.GetData(), remoteSystem->staticData.GetNumberOfBytesUsed() );
 
-					packet->length = sizeof( char ) + remoteSystem->staticData.GetNumberOfBytesUsed();
-					packet->bitSize = ( sizeof( char ) + remoteSystem->staticData.GetNumberOfBytesUsed() ) * 8;
+					packet->length = sizeof( char );
+					packet->bitSize = sizeof( char ) * 8;
 					packet->playerId = playerId;
 					packet->playerIndex = ( PlayerIndex ) remoteSystemIndex;
 
@@ -2557,7 +2425,7 @@ bool RakPeer::RunUpdateCycle( void )
 			}
 
 			// Ping this guy if it is time to do so
-			if ( remoteSystem->connectMode==RemoteSystemStruct::CONNECTED && time > remoteSystem->nextPingTime && ( occasionalPing || remoteSystem->lowestPing == -1 ) )
+			if ( remoteSystem->connectMode==RemoteSystemStruct::CONNECTED && time > remoteSystem->nextPingTime && ( remoteSystem->lowestPing == -1 ) )
 			{
 				remoteSystem->nextPingTime = time + 5000;
 				PingInternal( playerId, true );
@@ -2618,11 +2486,6 @@ bool RakPeer::RunUpdateCycle( void )
 							RakNet::BitStream outBitStream;
 							outBitStream.Write((unsigned char)ID_PONG); // Should be named ID_UNCONNECTED_PONG eventually
 							outBitStream.Write(sendPingTime);
-							//tempBitStream.Write( data, UnconnectedPingStruct_Size );
-							rakPeerMutexes[ RakPeer::offlinePingResponse_Mutex ].Lock();
-							outBitStream.Write( ( char* ) offlinePingResponse.GetData(), offlinePingResponse.GetNumberOfBytesUsed() );
-							rakPeerMutexes[ RakPeer::offlinePingResponse_Mutex ].Unlock();
-							//SocketLayer::Instance()->SendTo( connectionSocket, ( char* ) outBitStream.GetData(), outBitStream.GetNumberOfBytesUsed(), playerId.binaryAddress, playerId.port );
 							SendImmediate( (char*)outBitStream.GetData(), outBitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, UNRELIABLE, 0, playerId, false, false, time );
 						}
 						// else ID_UNCONNECTED_PING_OPEN_CONNECTIONS and we are full so don't send anything
@@ -2665,7 +2528,6 @@ bool RakPeer::RunUpdateCycle( void )
 						{
 							remoteSystem->connectMode=RemoteSystemStruct::CONNECTED;
 							PingInternal( playerId, true );
-							SendStaticDataInternal( playerId, true );
 
 							RakNet::BitStream inBitStream(data, byteSize, false);
 							PlayerID bsPlayerId;
@@ -2758,23 +2620,9 @@ bool RakPeer::RunUpdateCycle( void )
 					{
 						packet = packetPool.GetPointer();
 
-						if ( remoteSystem->staticData.GetNumberOfBytesUsed() > 0 )
-						{
-							packet->data = new unsigned char [ sizeof( char ) + remoteSystem->staticData.GetNumberOfBytesUsed() ];
-							packet->data[ 0 ] = ID_DISCONNECTION_NOTIFICATION;
-							memcpy( packet->data + sizeof( char ), remoteSystem->staticData.GetData(), remoteSystem->staticData.GetNumberOfBytesUsed() );
-
-							packet->length = sizeof( char ) + remoteSystem->staticData.GetNumberOfBytesUsed();
-							packet->bitSize = sizeof( char ) * 8 + remoteSystem->staticData.GetNumberOfBitsUsed();
-
-							delete [] data;
-						}
-						else
-						{
-							packet->data = ( unsigned char* ) data;
-							packet->bitSize = 8;
-							packet->length = 1;
-						}
+						packet->data = ( unsigned char* ) data;
+						packet->bitSize = 8;
+						packet->length = 1;
 
 						packet->playerId = playerId;
 						packet->playerIndex = ( PlayerIndex ) remoteSystemIndex;
@@ -2800,29 +2648,12 @@ bool RakPeer::RunUpdateCycle( void )
 					}
 					else if ( (unsigned char) data[ 0 ] == ID_REQUEST_STATIC_DATA )
 					{
-						SendStaticDataInternal( playerId, true );
+						assert(0);
 						delete [] data;
 					}
 					else if ( (unsigned char) data[ 0 ] == ID_RECEIVED_STATIC_DATA )
 					{
-						remoteSystem->staticData.Reset();
-						remoteSystem->staticData.Write( ( char* ) data + sizeof(unsigned char), byteSize - 1 );
-
-						// Inform game server code that we got static data
-						packet = packetPool.GetPointer();
-						packet->data = ( unsigned char* ) data;
-						packet->length = byteSize;
-						packet->bitSize = bitSize;
-						packet->playerId = playerId;
-						packet->playerIndex = ( PlayerIndex ) remoteSystemIndex;
-
-#ifdef _DEBUG
-						assert( packet->data );
-#endif
-
-						incomingQueueMutex.Lock();
-						incomingPacketQueue.push( packet );
-						incomingQueueMutex.Unlock();
+						assert(0);
 					}
 					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_RESPONSE)
 					{
@@ -2906,7 +2737,6 @@ bool RakPeer::RunUpdateCycle( void )
 							if (alreadyConnected==false)
 							{
 								PingInternal( playerId, true );
-								SendStaticDataInternal( playerId, true );
 							}
 						}
 						else

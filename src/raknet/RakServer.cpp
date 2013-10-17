@@ -31,18 +31,9 @@
 #include "RakServer.h"
 #include "PacketEnumerations.h"
 #include "GetTime.h"
-#include "Rand.h"
-
-// Defined in rand.cpp
-//extern void seedMT(unsigned int seed);//exported in Rand.h
-//extern unsigned int randomMT(void); //exported in Rand.h
 
 RakServer::RakServer()
 {
-	nextSeedUpdate = 0;
-	synchronizedRandomInteger = false;
-	relayStaticClientData = false;
-	broadcastPingsTime = 0;
 }
 
 RakServer::~RakServer()
@@ -56,19 +47,6 @@ bool RakServer::Start( unsigned short AllowedPlayers, int threadSleepTimer, unsi
 
 	init = RakPeer::Initialize( AllowedPlayers, port, threadSleepTimer, forceHostAddress );
 	RakPeer::SetMaximumIncomingConnections( AllowedPlayers );
-
-	// Random number seed
-	long time = RakNet::GetTime();
-	seedMT( time );
-	seed = randomMT();
-
-	if ( seed % 2 == 0 )   // Even
-		seed--; // make odd
-
-	nextSeed = randomMT();
-
-	if ( nextSeed % 2 == 0 )   // Even
-		nextSeed--; // make odd
 
 	return init;
 }
@@ -110,110 +88,13 @@ Packet* RakServer::Receive( void )
 {
 	Packet * packet = RakPeer::Receive();
 
-	// This is just a regular time based update.  Nowhere else good to put it
-
-	if ( RakPeer::IsActive() && occasionalPing )
-	{
-		unsigned int time = RakNet::GetTime();
-
-		if ( time > broadcastPingsTime || ( packet && packet->data[ 0 ] == ID_RECEIVED_STATIC_DATA ) )
-		{
-			if ( time > broadcastPingsTime )
-				broadcastPingsTime = time + 30000; // Broadcast pings every 30 seconds
-
-			unsigned i, count;
-
-			RemoteSystemStruct *remoteSystem;
-			RakNet::BitStream bitStream( ( PlayerID_Size + sizeof( short ) ) * 32 + sizeof(unsigned char) );
-			unsigned char typeId = ID_BROADCAST_PINGS;
-
-			bitStream.Write( typeId );
-
-			for ( i = 0, count = 0; count < 32 && i < remoteSystemListSize; i++ )
-			{
-				remoteSystem = remoteSystemList + i;
-
-				if ( remoteSystem->playerId != UNASSIGNED_PLAYER_ID )
-				{
-					bitStream.Write( remoteSystem->playerId.binaryAddress );
-					bitStream.Write( remoteSystem->playerId.port );
-					bitStream.Write( remoteSystem->pingAndClockDifferential[ remoteSystem->pingAndClockDifferentialWriteIndex ].pingTime );
-					count++;
-				}
-			}
-
-			if ( count > 0 )   // If we wrote anything
-			{
-
-				if ( packet && packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )   // If this was a new connection
-					Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false ); // Send to the new connection
-				else
-					Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, UNASSIGNED_PLAYER_ID, true ); // Send to everyone
-			}
-		}
-	}
-
-	// This is just a regular time based update.  Nowhere else good to put it
-	if ( RakPeer::IsActive() && synchronizedRandomInteger )
-	{
-		unsigned int time = RakNet::GetTime();
-
-		if ( time > nextSeedUpdate || ( packet && packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION ) )
-		{
-			if ( time > nextSeedUpdate )
-				nextSeedUpdate = time + 9000; // Seeds are updated every 9 seconds
-
-			seed = nextSeed;
-
-			nextSeed = randomMT();
-
-			if ( nextSeed % 2 == 0 )   // Even
-				nextSeed--; // make odd
-
-			/*
-			SetRandomNumberSeedStruct s;
-
-			s.ts = ID_TIMESTAMP;
-			s.timeStamp = RakNet::GetTime();
-			s.typeId = ID_SET_RANDOM_NUMBER_SEED;
-			s.seed = seed;
-			s.nextSeed = nextSeed;
-			RakNet::BitStream s_BitS( SetRandomNumberSeedStruct_Size );
-			s.Serialize( s_BitS );
-			*/
-
-			RakNet::BitStream outBitStream(sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned char)+sizeof(unsigned int)+sizeof(unsigned int));
-			outBitStream.Write((unsigned char) ID_TIMESTAMP);
-			outBitStream.Write((unsigned int) RakNet::GetTime());
-			outBitStream.Write((unsigned char) ID_SET_RANDOM_NUMBER_SEED);
-			outBitStream.Write(seed);
-			outBitStream.Write(nextSeed);
-
-			if ( packet && packet->data[ 0 ] == ID_NEW_INCOMING_CONNECTION )
-				Send( &outBitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false );
-			else
-				Send( &outBitStream, SYSTEM_PRIORITY, RELIABLE, 0, UNASSIGNED_PLAYER_ID, true );
-		}
-	}
-
 	if ( packet )
 	{
 		// Intercept specific client / server feature packets. This will do an extra send and still pass on the data to the user
 
 		if ( packet->data[ 0 ] == ID_RECEIVED_STATIC_DATA )
 		{
-			if ( relayStaticClientData )
-			{
-				// Relay static data to the other systems but the sender
-				RakNet::BitStream bitStream( packet->length + PlayerID_Size );
-				unsigned char typeId = ID_REMOTE_STATIC_DATA;
-				bitStream.Write( typeId );
-				bitStream.Write( packet->playerId.binaryAddress );
-				bitStream.Write( packet->playerId.port );
-				bitStream.Write( packet->playerIndex );
-				bitStream.Write( ( char* ) packet->data + sizeof(unsigned char), packet->length - sizeof(unsigned char) );
-				Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, true );
-			}
+			assert( 0 );
 		}
 
 		else
@@ -254,19 +135,6 @@ Packet* RakServer::Receive( void )
 							bitStream.Write( ( unsigned short ) i );
 							// One send to tell them of the connection
 							Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false );
-
-							if ( relayStaticClientData )
-							{
-								bitStream.Reset();
-								typeId = ID_REMOTE_STATIC_DATA;
-								bitStream.Write( typeId );
-								bitStream.Write( remoteSystemList[ i ].playerId.binaryAddress );
-								bitStream.Write( remoteSystemList[ i ].playerId.port );
-								bitStream.Write( (unsigned short) i );
-								bitStream.Write( ( char* ) remoteSystemList[ i ].staticData.GetData(), remoteSystemList[ i ].staticData.GetNumberOfBytesUsed() );
-								// Another send to tell them of the static data
-								Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, packet->playerId, false );
-							}
 						}
 					}
 				}
@@ -330,34 +198,9 @@ int RakServer::GetLowestPing( PlayerID playerId )
 	return RakPeer::GetLowestPing( playerId );
 }
 
-void RakServer::StartOccasionalPing( void )
-{
-	RakPeer::SetOccasionalPing( true );
-}
-
-void RakServer::StopOccasionalPing( void )
-{
-	RakPeer::SetOccasionalPing( false );
-}
-
 bool RakServer::IsActive( void ) const
 {
 	return RakPeer::IsActive();
-}
-
-unsigned int RakServer::GetSynchronizedRandomInteger( void ) const
-{
-	return seed;
-}
-
-void RakServer::StartSynchronizedRandomInteger( void )
-{
-	synchronizedRandomInteger = true;
-}
-
-void RakServer::StopSynchronizedRandomInteger( void )
-{
-	synchronizedRandomInteger = false;
 }
 
 void RakServer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
@@ -368,65 +211,6 @@ void RakServer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
 void RakServer::DetachMessageHandler( MessageHandlerInterface *messageHandler )
 {
 	RakPeer::DetachMessageHandler(messageHandler);
-}
-
-RakNet::BitStream * RakServer::GetStaticServerData( void )
-{
-	return RakPeer::GetRemoteStaticData( myPlayerId );
-}
-
-void RakServer::SetStaticServerData( const char *data, const long length )
-{
-	RakPeer::SetRemoteStaticData( myPlayerId, data, length );
-}
-
-void RakServer::SetRelayStaticClientData( bool b )
-{
-	relayStaticClientData = b;
-}
-
-void RakServer::SendStaticServerDataToClient( PlayerID playerId )
-{
-	RakPeer::SendStaticData( playerId );
-}
-
-void RakServer::SetOfflinePingResponse( const char *data, const unsigned int length )
-{
-	RakPeer::SetOfflinePingResponse( data, length );
-}
-
-RakNet::BitStream * RakServer::GetStaticClientData( PlayerID playerId )
-{
-	return RakPeer::GetRemoteStaticData( playerId );
-}
-
-void RakServer::SetStaticClientData( PlayerID playerId, const char *data, const long length )
-{
-	RakPeer::SetRemoteStaticData( playerId, data, length );
-}
-
-// This will read the data from playerChangedId and send it to playerToSendToId
-void RakServer::ChangeStaticClientData( PlayerID playerChangedId, PlayerID playerToSendToId )
-{
-	RemoteSystemStruct * remoteSystem = GetRemoteSystemFromPlayerID( playerChangedId );
-
-	if ( remoteSystem == 0 )
-		return ; // No such playerChangedId
-
-	// Relay static data to the other systems but the sender
-	RakNet::BitStream bitStream( remoteSystem->staticData.GetNumberOfBytesUsed() + PlayerID_Size + sizeof(unsigned char) );
-
-	unsigned char typeId = ID_REMOTE_STATIC_DATA;
-
-	bitStream.Write( typeId );
-
-	bitStream.Write( playerChangedId.binaryAddress );
-
-	bitStream.Write( playerChangedId.port );
-
-	bitStream.Write( ( char* ) remoteSystem->staticData.GetData(), remoteSystem->staticData.GetNumberOfBytesUsed() );
-
-	Send( &bitStream, SYSTEM_PRIORITY, RELIABLE, 0, playerToSendToId, true );
 }
 
 unsigned int RakServer::GetNumberOfAddresses( void )

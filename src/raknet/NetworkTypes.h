@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file NetworkTypes.h
- * @brief Define Network Common Class and Types. 
+ * @brief Define Network Common Class and Types.
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -30,28 +30,28 @@
  */
 
 #ifndef __NETWORK_TYPES_H
-#define __NETWORK_TYPES_H 
+#define __NETWORK_TYPES_H
 
 // Needed for Serialize/Deserialize functions
 #include "BitStream.h"
 
 /**
-* Typename for Network Object Identifier 
+* Typename for Network Object Identifier
 */
 typedef unsigned short ObjectID;
 /**
-* Typename for Unique Id 
+* Typename for Unique Id
 */
 typedef unsigned char UniqueIDType;
 /**
-* Typename for player index 
+* Typename for player index
 */
 typedef unsigned short PlayerIndex;
 /**
-* @brief Player Identifier 
+* @brief Player Identifier
 *
 * This define a Player Unique Identifier.
-* In fact, it corresponds to the peer address. 
+* In fact, it corresponds to the peer address.
 */
 struct PlayerID
 {
@@ -65,8 +65,8 @@ struct PlayerID
 	unsigned short port;
 	/**
 	* Copy operator
-	* @param input a player ID 
-	* @return a reference to the current object 
+	* @param input a player ID
+	* @return a reference to the current object
 	*/
 	PlayerID& operator = ( const PlayerID& input )
 	{
@@ -76,78 +76,42 @@ struct PlayerID
 	}
 
 	/**
-	* Test if two Player Unique Identifier are the same 
-	* @param left a Player Unique Identifier 
+	* Test if two Player Unique Identifier are the same
+	* @param left a Player Unique Identifier
 	* @param right a Player Unique Identifier
-	* @return 1 if left and right corresponds to the same player 0 otherwise  
+	* @return 1 if left and right corresponds to the same player 0 otherwise
 	*/
 	friend int operator==( const PlayerID& left, const PlayerID& right );
 	/**
-	* Test if two Player Unique Identifier differs 
-	* @param left a Player Unique Identifier 
+	* Test if two Player Unique Identifier differs
+	* @param left a Player Unique Identifier
 	* @param right a Player Unique Identifier
-	* @return 0 if left and right corresponds to the same player 1 otherwise  
+	* @return 0 if left and right corresponds to the same player 1 otherwise
 	*/
 	friend int operator!=( const PlayerID& left, const PlayerID& right );
 	/**
 	* Test if left is greater than right
-	* @param left a Player Unique Identifier 
+	* @param left a Player Unique Identifier
 	* @param right a Player Unique Identifier
-	* @return 1 if left is greater than right, 0 otherwise  
+	* @return 1 if left is greater than right, 0 otherwise
 	*/
 	friend int operator > ( const PlayerID& left, const PlayerID& right );
 	/**
 	* Test if left is lesser than right
-	* @param left a Player Unique Identifier 
+	* @param left a Player Unique Identifier
 	* @param right a Player Unique Identifier
-	* @return 1 if left is lesser than right, 0 otherwise 
+	* @return 1 if left is lesser than right, 0 otherwise
 	*/
 	friend int operator < ( const PlayerID& left, const PlayerID& right );
 };
 /// Size of PlayerID data
 #define PlayerID_Size 6
 
-
 /**
-* @brief Connection request handling 
-* 
-* This structure is used internally to store the connection request 
-* @internal
-*/
-
-//struct RequestedConnectionStruct
-//{
-	/**
-	* Who we wanted to connect to.
-	*/
-//	PlayerID playerId;
-	/**
-	* When will we requested this connection. 
-	*/
-//	unsigned int time;
-	/**
-	* Security key 
-	*/
-//	unsigned char AESKey[ 16 ];
-	/**
-	* true if security policy are enabled 
-	*/
-//	bool setAESKey;
-	/**
-	* Next time we will try to connect 
-	*/
-//	unsigned int nextRequestTime;
-	/**
-	* How important this request is.  This is used two systems try to connect to each other at the same time - so only one request goes through
-	*/
-//	unsigned int priority;
-//};
-
-/**
-* @brief Network Packet 
-* 
-* This structure store information concerning 
-* a packet going throught the network 
+* @brief Network Packet
+*
+* This structure store information concerning
+* a packet going throught the network
 */
 
 struct Packet
@@ -157,13 +121,13 @@ struct Packet
 	*/
 	PlayerIndex playerIndex;
 	/**
-	* The Player Unique Identifier that send this packet. 
+	* The Player Unique Identifier that send this packet.
 	*/
 	PlayerID playerId;
 	/**
 	* The length of the data.
 	* @deprecated You should use bitSize inplace.
-	* 
+	*
 	*/
 	unsigned int length;
 	/**
@@ -172,181 +136,22 @@ struct Packet
 	*/
 	unsigned int bitSize;
 	/**
-	* The byte array. 
-	* The standard behaviour in RakNet define the first byte of the data array as the packet class. 
-	* @see PacketEnumerations.h  
+	* The byte array.
+	* The standard behaviour in RakNet define the first byte of the data array as the packet class.
+	* @see PacketEnumerations.h
 	*/
 	unsigned char* data;
 };
 
 class RakPeerInterface;
 
-//#pragma pack(push,1)
-
-//#pragma pack(1) 
 /**
-* @brief Store Accepted Connection 
-*  
-* Handle active connection. 
-* @internal 
-*/
-
-/*
-struct ConnectionAcceptStruct
-{
-	unsigned char typeId;
-	unsigned short remotePort;
-	PlayerID externalID;
-	PlayerIndex playerIndex;
-	void Serialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(typeId);
-		bstream.Write(remotePort);
-		bstream.Write(externalID.binaryAddress);
-		bstream.Write(externalID.port);
-		bstream.Write(playerIndex);
-	}
-	void Deserialize(RakNet::BitStream &bstream)
-	{
-		bstream.Read(typeId);
-		bstream.Read(remotePort);
-		bstream.Read(externalID.binaryAddress);
-		bstream.Read(externalID.port);
-		bstream.Read(playerIndex);
-	}
-};
-*/
-/** Size of ConnectionAcceptStruct data.
-1:  unsigned char typeId;
-2:  unsigned short remotePort;
-PlayerID externalID
-4:  unsigned int binaryAddress
-2:  unsigned short port
-2:  PlayerIndex playerIndex
-Total: 11
-*/
-//#define ConnectionAcceptStruct_Size 11
-
-/*
-#pragma pack(1)
-
-struct PingStruct
-{
-	unsigned char typeId;
-	unsigned int sendPingTime;
-	unsigned int sendPongTime;
-	void Serialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(typeId);
-		bstream.Write(sendPingTime);
-		bstream.Write(sendPongTime);
-	}
-	void Deserialize(RakNet::BitStream &bstream)
-	{
-		bstream.Read(typeId);
-		bstream.Read(sendPingTime);
-		bstream.Read(sendPongTime);
-	}
-};
-*/
-/**
-Size of PingStruct data
-1:  unsigned char typeId;
-4:  unsigned int sendPingTime;
-4:  unsigned int sendPongTime;
-Total: 9
-*/
-//#define PingStruct_Size 9
-
-//#pragma pack(1) 
-/**
-* @brief Store Unconnected ping informations 
-* 
-* @internal 
-*/
-/*
-struct UnconnectedPingStruct
-{
-	unsigned char typeId;
-	unsigned int sendPingTime;
-	void Serialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(typeId);
-		bstream.Write(sendPingTime);
-	}
-	void Deserialize(RakNet::BitStream &bstream)
-	{
-		bstream.Read(typeId);
-		bstream.Read(sendPingTime);
-	}
-};
-*/
-/// Size of UnconnectedPingStruct data
-//#define UnconnectedPingStruct_Size 5
-
-//#pragma pack(1) 
-/*
-struct SetRandomNumberSeedStruct
-{
-	unsigned char ts;
-	unsigned int timeStamp;
-	unsigned char typeId;
-	unsigned int seed;
-	unsigned int nextSeed;
-	void Serialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(ts);
-		bstream.Write(timeStamp);
-		bstream.Write(typeId);
-		bstream.Write(seed);
-		bstream.Write(nextSeed);
-	}
-	void Deserialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(ts);
-		bstream.Write(timeStamp);
-		bstream.Write(typeId);
-		bstream.Write(seed);
-		bstream.Write(nextSeed);
-	}
-};
-*/
-//#define SetRandomNumberSeedStruct_Size 14
-
-//#pragma pack(1) 
-/*
-struct NewIncomingConnectionStruct
-{
-	unsigned char typeId;
-	PlayerID externalID;
-	void Serialize(RakNet::BitStream &bstream)
-	{
-		bstream.Write(typeId);
-		bstream.Write(externalID.binaryAddress);
-		bstream.Write(externalID.port);
-	}
-	void Deserialize(RakNet::BitStream &bstream)
-	{
-		bstream.Read(typeId);
-		bstream.Read(externalID.binaryAddress);
-		bstream.Read(externalID.port);
-	}
-};
-
-*/
-/*
-#define NewIncomingConnectionStruct_Size 7
-
-#pragma pack(pop)
-*/
-
-/**
-*  Index of an unassigned player 
+*  Index of an unassigned player
 */
 const PlayerIndex UNASSIGNED_PLAYER_INDEX = 65535;
 
 /**
-* Index of an invalid Player Unique Id 
+* Index of an invalid Player Unique Id
 */
 const PlayerID UNASSIGNED_PLAYER_ID =
 {
@@ -354,11 +159,11 @@ const PlayerID UNASSIGNED_PLAYER_ID =
 };
 
 /**
-* Invalid Object Unique Id 
+* Invalid Object Unique Id
 */
 const ObjectID UNASSIGNED_OBJECT_ID = 65535;
 /**
-* Sizeof the Ping Array 
+* Sizeof the Ping Array
 */
 const int PING_TIMES_ARRAY_SIZE = 5;
 
