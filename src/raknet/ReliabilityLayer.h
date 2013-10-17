@@ -42,7 +42,6 @@
 #include "InternalPacket.h"
 #include "InternalPacketPool.h"
 #include "RakNetStatistics.h"
-#include "SHA1.h"
 
 #include "../blobnet/adt/Queue.hpp"
 
@@ -262,12 +261,6 @@ private:
 
 	// Parse an internalPacket and figure out how many header bits would be written.  Returns that number
 	int GetBitStreamHeaderLength( const InternalPacket *const internalPacket );
-
-	// Get the SHA1 code
-	void GetSHA1( unsigned char * const buffer, unsigned int nbytes, char code[ SHA1_LENGTH ] );
-
-	// Check the SHA1 code
-	bool CheckSHA1( char code[ SHA1_LENGTH ], unsigned char * const buffer, unsigned int nbytes );
 
 	// Search the specified list for sequenced packets on the specified ordering channel, optionally skipping those with splitPacketId, and delete them
 	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::List<InternalPacket*>&theList, int splitPacketId = -1 );

@@ -778,12 +778,6 @@ protected:
 
 	SOCKET connectionSocket;
 
-	// Histogram statistics
-	//unsigned int nextReadBytesTime;
-	//int lastSentBytes,lastReceivedBytes;
-	/*
-	* Encryption and security
-	*/
 	unsigned int randomNumberExpirationTime;
 	unsigned char newRandomNumber[ 20 ], oldRandomNumber[ 20 ];
 	/**

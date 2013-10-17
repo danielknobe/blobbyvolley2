@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief Statistical Information Formatting Implementation 
+ * @brief Statistical Information Formatting Implementation
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -118,7 +118,6 @@ void StatisticsToString( RakNetStatisticsStruct *s, char *buffer, int verbosityL
 			"Number of messages split:\t\t%u\n"
 			"Number of messages unsplit:\t\t%u\n"
 			"Message splits performed:\t\t%u\n"
-			"Additional encryption bytes:\t\t%u\n"
 			"Sequenced messages out of order:\t%u\n"
 			"Sequenced messages in order:\t\t%u\n"
 			"Ordered messages out of order:\t\t%u\n"
@@ -153,7 +152,6 @@ void StatisticsToString( RakNetStatisticsStruct *s, char *buffer, int verbosityL
 			s->numberOfSplitMessages,
 			s->numberOfUnsplitMessages,
 			s->totalSplits,
-			BITS_TO_BYTES( s->encryptionBitsSent ),
 			s->sequencedMessagesOutOfOrder,
 			s->sequencedMessagesInOrder,
 			s->orderedMessagesOutOfOrder,
