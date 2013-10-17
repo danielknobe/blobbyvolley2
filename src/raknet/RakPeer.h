@@ -110,20 +110,6 @@ public:
 	*/
 	unsigned short GetMaximumIncomingConnections( void ) const;
 	/**
-	* Sets the password incoming connections must match in the call to Connect (defaults to none)
-	* Pass 0 to passwordData to specify no password
-	*
-	* @param passwordData A data block that incoming connections must match.  This can be just a password, or can be a stream of data.
-	* Specify 0 for no password data
-	* @param passwordDataLength The length in bytes of passwordData
-	*/
-	void SetIncomingPassword( const char* passwordData, int passwordDataLength );
-	/**
-	* Get the password set by SetIncomingPassword in a BitStream
-	* @return The password in a BitStream.
-	*/
-	RakNet::BitStream *GetIncomingPassword( void );
-	/**
 	* Call this to connect to the specified host (ip or domain name) and server port.
 	* Calling Connect and not calling SetMaximumIncomingConnections acts as a dedicated client.  Calling both acts as a true peer.
 	* This is a non-blocking connection.  You know the connection is successful when IsConnected() returns true
@@ -133,12 +119,10 @@ public:
 	*
 	* @param host Either a dotted IP address or a domain name
 	* @param remotePort Which port to connect to on the remote machine.
-	* @param passwordData A data block that must match the data block on the server.  This can be just a password, or can be a stream of data
-	* @param passwordDataLength The length in bytes of passwordData
 	*
 	* @return True on successful initiation. False on incorrect parameters, internal error, or too many existing peers
 	*/
-	bool Connect( const char* host, unsigned short remotePort, char* passwordData, int passwordDataLength );
+	bool Connect( const char* host, unsigned short remotePort );
 	/**
 	* Stops the network threads and close all connections.  Multiple calls are ok.
 	*
@@ -247,38 +231,6 @@ public:
 	*/
 	PlayerID GetPlayerIDFromIndex( int index );
 
-	/**
-	* Bans an IP from connecting. Banned IPs persist between connections.
-	*
-	* @param IP Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will ban
-	* All IP addresses starting with 128.0.0
-	* @param milliseconds - how many ms for a temporary ban.  Use 0 for a permanent ban
-	*/
-	void AddToBanList( const char *IP, unsigned int milliseconds=0 );
-
-	/**
-	* Allows a previously banned IP to connect.
-	*
-	* @param IP Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will unban
-	* All IP addresses starting with 128.0.0
-	*/
-	void RemoveFromBanList( const char *IP );
-
-	/**
-	* Allows all previously banned IPs to connect.
-	*/
-	void ClearBanList( void );
-
-	/**
-	* Determines if a particular IP is banned.
-	*
-	* @param IP Complete dotted IP address
-	*
-	* @return
-	* - True if IP matches any IPs in the ban list, accounting for any wildcards.
-	* - False otherwise.
-	*/
-	bool IsBanned( const char *IP );
 	/*
 	* --------------------------------------------------------------------------------------------
 	* Pinging Functions - Functions dealing with the automatic ping mechanism
@@ -456,13 +408,6 @@ public:
 	* Micellaneous Functions
 	* --------------------------------------------------------------------------------------------
 	*/
-	/**
-	* Retrieves the data you passed to the passwordData parameter in Connect
-	*
-	* @param[out] passwordData  Should point to a block large enough to hold the password data you passed to Connect
-	* @param passwordDataLength Maximum size of the array passwordData.  Modified to hold the number of bytes actually written
-	*/
-	void GetPasswordData( char *passwordData, int *passwordDataLength );
 
 	/**
 	* Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
@@ -584,10 +529,6 @@ protected:
 	*/
 	void PushPortRefused( PlayerID target );
 
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	bool SetupIOCompletionPortSocket( int index );
-#endif
 	/**
 	* Set this to true to terminate the Peer thread execution
 	*/
@@ -609,10 +550,6 @@ protected:
 	*/
 	unsigned short maximumIncomingConnections;
 	/**
-	* localStaticData necessary because we may not have a RemoteSystemStruct representing ourselves in the list
-	*/
-	RakNet::BitStream incomingPasswordBitStream, outgoingPasswordBitStream;
-	/**
 	* Local Player ID
 	*/
 	PlayerID myPlayerId;
@@ -625,30 +562,14 @@ protected:
 	*/
 	RemoteSystemStruct* remoteSystemList;
 
-	enum
-	{
-//		requestedConnections_MUTEX,
-		incomingPasswordBitStream_Mutex,
-		outgoingPasswordBitStream_Mutex,
-		//bufferedCommandQueue_Mutex, /**< This mutex is to buffer all send calls to run from the update thread.  This is to get around the problem of the update thread changing playerIDs in the remoteSystemList while in the send call and thus having the sends go to the wrong player */
-		//bufferedCommandPool_Mutex, /**< This mutex is to buffer all send calls to run from the update thread.  This is to get around the problem of the update thread changing playerIDs in the remoteSystemList while in the send call and thus having the sends go to the wrong player */
-		NUMBER_OF_RAKPEER_MUTEXES
-	};
-	SimpleMutex rakPeerMutexes[ NUMBER_OF_RAKPEER_MUTEXES ];
 	/**
 	* RunUpdateCycle is not thread safe but we don't need to mutex calls. Just skip calls if it is running already
 	*/
 	bool updateCycleIsRunning;
 	/**
-	* The list of people we have tried to connect to recently
-	*/
-	//BlobNet::ADT::Queue<RequestedConnectionStruct*> requestedConnectionsList;
-	/**
 	* Data that both the client and the server needs
 	*/
 	unsigned int bytesSentPerSecond, bytesReceivedPerSecond;
-	// bool isSocketLayerBlocking;
-	// bool continualPing,isRecvfromThreadActive,isMainLoopThreadActive, endThreads, isSocketLayerBlocking;
 	unsigned int validationInteger;
 #ifdef _WIN32
 
@@ -657,15 +578,9 @@ protected:
 	pthread_t
 #endif
 		processPacketsThreadHandle, recvfromThreadHandle;
-	SimpleMutex incomingQueueMutex, banListMutex; //,synchronizedMemoryQueueMutex, automaticVariableSynchronizationMutex;
-	BlobNet::ADT::Queue<Packet *> incomingPacketQueue; //, synchronizedMemoryPacketQueue;
+	SimpleMutex incomingQueueMutex;
+	BlobNet::ADT::Queue<Packet *> incomingPacketQueue;
 	// BitStream enumerationData;
-
-	struct BanStruct
-	{
-		char IP[16];
-		unsigned int timeout; // 0 for none
-	};
 
 	struct RequestedConnectionStruct
 	{
@@ -677,7 +592,6 @@ protected:
 		enum {CONNECT=1, PING=2, PING_OPEN_CONNECTIONS=4, ADVERTISE_SYSTEM=8} actionToTake;
 	};
 
-	BasicDataStructures::List<BanStruct*> banList;
 	BasicDataStructures::List<MessageHandlerInterface*> messageHandlerList;
 	BasicDataStructures::SingleProducerConsumer<RequestedConnectionStruct> requestedConnectionList;
 
@@ -719,8 +633,6 @@ protected:
 
 	SOCKET connectionSocket;
 
-	unsigned int randomNumberExpirationTime;
-	unsigned char newRandomNumber[ 20 ], oldRandomNumber[ 20 ];
 	/**
 	* How long it has been since things were updated by a call to receive
 	* Update thread uses this to determine how long to sleep for

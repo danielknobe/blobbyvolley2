@@ -66,28 +66,12 @@ bool RakClient::Connect( const char* host, unsigned short serverPort, unsigned s
 	}
 
 	// ignore depreciated. A pointless variable
-	return RakPeer::Connect( host, serverPort, ( char* ) password.GetData(), password.GetNumberOfBytesUsed() );
+	return RakPeer::Connect( host, serverPort );
 }
 
 void RakClient::Disconnect( unsigned int blockDuration )
 {
 	RakPeer::Disconnect( blockDuration );
-}
-
-void RakClient::SetPassword( const char *_password )
-{
-	if ( _password == 0 || _password[ 0 ] == 0 )
-		password.Reset();
-	else
-	{
-		password.Reset();
-		password.Write( _password, ( int ) strlen( _password ) + 1 );
-	}
-}
-
-bool RakClient::HasPassword( void ) const
-{
-	return password.GetNumberOfBytesUsed() > 0;
 }
 
 bool RakClient::Send( const char *data, const long length, PacketPriority priority, PacketReliability reliability, char orderingChannel )

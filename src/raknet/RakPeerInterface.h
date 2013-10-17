@@ -94,22 +94,6 @@ public:
 	virtual unsigned short GetMaximumIncomingConnections( void ) const = 0;
 
 	/**
-	 * Sets the password incoming connections must match in the call to Connect (defaults to none)
-	 * Pass 0 to passwordData to specify no password
-	 *
-	 * @param passwordData A data block that incoming connections must match.  This can be just a password, or can be a stream of data.
-	 * Specify 0 for no password data
-	 * @param passwordDataLength The length in bytes of passwordData
-	 */
-	virtual void SetIncomingPassword( const char* passwordData, int passwordDataLength ) = 0;
-
-	/**
-	 * Get the password set by SetIncomingPassword in a BitStream
-	 * @return The password in a BitStream.
-	 */
-	RakNet::BitStream *GetIncomingPassword( void );
-
-	/**
 	 * Call this to connect to the specified host (ip or domain name) and server port.
 	 * Calling Connect and not calling SetMaximumIncomingConnections acts as a dedicated client.  Calling both acts as a true peer.
 	 * This is a non-blocking connection.  You know the connection is successful when IsConnected() returns true
@@ -119,12 +103,10 @@ public:
 	 *
 	 * @param host Either a dotted IP address or a domain name
 	 * @param remotePort Which port to connect to on the remote machine.
-	 * @param passwordData A data block that must match the data block on the server.  This can be just a password, or can be a stream of data
-	 * @param passwordDataLength The length in bytes of passwordData
 	 *
 	 * @return True on successful initiation. False on incorrect parameters, internal error, or too many existing peers
 	 */
-	virtual bool Connect( const char* host, unsigned short remotePort, char* passwordData, int passwordDataLength ) = 0;
+	virtual bool Connect( const char* host, unsigned short remotePort ) = 0;
 
 	/**
 	 * Stops the network threads and close all connections.  Multiple calls are ok.
@@ -234,39 +216,6 @@ public:
 	 * @return A valid playerID or UNASSIGNED_PLAYER_ID if no such player at that index
 	 */
 	virtual PlayerID GetPlayerIDFromIndex( int index ) = 0;
-
-	/**
-	 * Bans an IP from connecting.  Banned IPs persist between connections.
-	 *
-	 * @param IP Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will ban
-	 * All IP addresses starting with 128.0.0
-	 * @param milliseconds - how many ms for a temporary ban.  Use 0 for a permanent ban
-	 */
-	virtual void AddToBanList( const char *IP, unsigned int milliseconds=0 ) = 0;
-
-	/**
-	 * Bans an IP from connecting.  Banned IPs persist between connections.
-	 *
-	 * @param IP Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will ban
-	 * All IP addresses starting with 128.0.0
-	 */
-	virtual void RemoveFromBanList( const char *IP ) = 0;
-
-	/**
-	 * Allows all previously banned IPs to connect.
-	 */
-	virtual void ClearBanList( void ) = 0;
-
-	/**
-	 * Determines if a particular IP is banned.
-	 *
-	 * @param IP Complete dotted IP address
-	 *
-	 * @return
-	 * - True if IP matches any IPs in the ban list, accounting for any wildcards.
-	 * - False otherwise.
-	 */
-	virtual bool IsBanned( const char *IP ) = 0;
 
 	// --------------------------------------------------------------------------------------------
 	// Pinging Functions - Functions dealing with the automatic ping mechanism
@@ -435,15 +384,6 @@ public:
 	// --------------------------------------------------------------------------------------------
 	// Micellaneous Functions
 	// --------------------------------------------------------------------------------------------
-
-	/**
-	 * Retrieves the data you passed to the passwordData parameter in Connect
-	 *
-	 * @param[out] passwordData  Should point to a block large enough to hold the password data you passed to Connect
-	 * @param passwordDataLength Maximum size of the array passwordData.  Modified to hold the number of bytes actually written
-	 */
-	virtual void GetPasswordData( char *passwordData, int *passwordDataLength ) = 0;
-
 	/**
 	 * Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
 	 *

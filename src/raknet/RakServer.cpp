@@ -51,24 +51,6 @@ bool RakServer::Start( unsigned short AllowedPlayers, int threadSleepTimer, unsi
 	return init;
 }
 
-void RakServer::SetPassword( const char *_password )
-{
-	if ( _password )
-	{
-		RakPeer::SetIncomingPassword( _password, ( int ) strlen( _password ) + 1 );
-	}
-
-	else
-	{
-		RakPeer::SetIncomingPassword( 0, 0 );
-	}
-}
-
-bool RakServer::HasPassword( void )
-{
-	return GetIncomingPassword()->GetNumberOfBytesUsed() > 0;
-}
-
 void RakServer::Disconnect( unsigned int blockDuration )
 {
 	RakPeer::Disconnect( blockDuration );
@@ -228,26 +210,6 @@ int RakServer::GetIndexFromPlayerID( PlayerID playerId )
 PlayerID RakServer::GetPlayerIDFromIndex( int index )
 {
 	return RakPeer::GetPlayerIDFromIndex( index );
-}
-
-void RakServer::AddToBanList( const char *IP )
-{
-	RakPeer::AddToBanList( IP );
-}
-
-void RakServer::RemoveFromBanList( const char *IP )
-{
-	RakPeer::RemoveFromBanList( IP );
-}
-
-void RakServer::ClearBanList( void )
-{
-	RakPeer::ClearBanList();
-}
-
-bool RakServer::IsBanned( const char *IP )
-{
-	return RakPeer::IsBanned( IP );
 }
 
 bool RakServer::IsActivePlayerID( PlayerID playerId )

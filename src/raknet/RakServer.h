@@ -71,17 +71,6 @@ public:
 	*/
 	bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 );
 	/**
-	* Set the password clients have to use to connect to this server. The password persists between connections.
-	* Pass 0 for no password.
-	* You can call this anytime
-	* @param _password The password name.
-	*/
-	void SetPassword( const char *_password );
-	/**
-	* Returns true if a password was set, false otherwise
-	*/
-	bool HasPassword( void );
-	/**
 	* Stops the server, stops synchronized data, and resets all internal data.  This will drop all players currently connected, however
 	* since the server is stopped packet reliability is not enforced so the Kick network message may not actually
 	* arrive. Those players will disconnect due to timeout. If you want to end the server more gracefully, you
@@ -214,40 +203,6 @@ public:
 	*/
 	PlayerID GetPlayerIDFromIndex( int index );
 
-	/**
-	* Bans an IP from connecting.  Banned IPs persist between connections.
-	*
-	* Parameters
-	* IP - Dotted IP address. Can use * as a wildcard, such as 128.0.0.* will ban
-	* All IP addresses starting with 128.0.0
-	*/
-	void AddToBanList( const char *IP );
-
-	/**
-	* Allows a previously banned IP to connect.
-	*
-	* Parameters
-	* IP - Dotted IP address. Can use * as a wildcard, such as 128.0.0.* will ban
-	* All IP addresses starting with 128.0.0
-	*/
-	void RemoveFromBanList( const char *IP );
-
-	/**
-	* Allows all previously banned IPs to connect.
-	*/
-	void ClearBanList( void );
-
-	/**
-	* Determines if a particular IP is banned.
-	*
-	* Parameters
-	* IP - Complete dotted IP address
-	*
-	* Returns
-	* True if IP matches any IPs in the ban list, accounting for any wildcards.
-	* False otherwise.
-	*/
-	bool IsBanned( const char *IP );
 	/**
 	* Returns true if that player ID is currently used
 	*/

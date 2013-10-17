@@ -82,17 +82,6 @@ public:
 	void Disconnect( unsigned int blockDuration );
 
 	/**
-	 * Set the password to use when connecting to a server.  The password persists between connections.
-	 * Pass 0 for no password.
-	 * @param _password The password to use to connect to a server
-	 */
-	void SetPassword( const char *_password );
-	/**
-	 * Returns true if a password was set, false otherwise
-	 * @return true if a password has previously been set using SetPassword
-	 */
-	bool HasPassword( void ) const;
-	/**
 	 * This function only works while the client is connected (Use the
 	 * Connect function).  Returns false on failure, true on success
 	 * Sends the data stream of length length If you aren't sure what to
@@ -306,10 +295,6 @@ private:
 	 * @return an unsued yet index
 	 */
 	int GetFreeOtherClientIndex( void );
-	/**
-	 * Store the password for this client
-	 */
-	RakNet::BitStream password;
 	/**
 	 * Store other client information
 	 */
