@@ -360,8 +360,6 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/raknet/ArrayList.h" />
-		<Unit filename="src/raknet/AsynchronousFileIO.cpp" />
-		<Unit filename="src/raknet/AsynchronousFileIO.h" />
 		<Unit filename="src/raknet/BigTypes.h" />
 		<Unit filename="src/raknet/BinarySearchTree.h" />
 		<Unit filename="src/raknet/BitStream.cpp" />
@@ -376,11 +374,8 @@
 		<Unit filename="src/raknet/ExtendedOverlappedPool.h" />
 		<Unit filename="src/raknet/GetTime.cpp" />
 		<Unit filename="src/raknet/GetTime.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTree.cpp" />
 		<Unit filename="src/raknet/HuffmanEncodingTree.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.cpp" />
 		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTreeNode.h" />
 		<Unit filename="src/raknet/InternalPacket.h" />
 		<Unit filename="src/raknet/InternalPacketPool.cpp" />
 		<Unit filename="src/raknet/InternalPacketPool.h" />
@@ -397,7 +392,6 @@
 		<Unit filename="src/raknet/PacketPool.h" />
 		<Unit filename="src/raknet/PacketPriority.h" />
 		<Unit filename="src/raknet/QueueLinkedList.h" />
-		<Unit filename="src/raknet/RSACrypt.h" />
 		<Unit filename="src/raknet/RakClient.cpp" />
 		<Unit filename="src/raknet/RakClient.h" />
 		<Unit filename="src/raknet/RakClientInterface.h" />

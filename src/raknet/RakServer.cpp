@@ -48,16 +48,6 @@ RakServer::RakServer()
 RakServer::~RakServer()
 {}
 
-void RakServer::InitializeSecurity( const char *pubKeyE, const char *pubKeyN )
-{
-	RakPeer::InitializeSecurity( 0, 0, pubKeyE, pubKeyN );
-}
-
-void RakServer::DisableSecurity( void )
-{
-	RakPeer::DisableSecurity();
-}
-
 bool RakServer::Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress )
 {
 	bool init;

@@ -82,16 +82,6 @@ public:
 	void Disconnect( unsigned int blockDuration );
 
 	/**
-	 * Can be called to use specific public RSA keys. (e and n)
-	 * In order to prevent altered keys.  Will return ID_RSA_PUBLIC_KEY_MISMATCH in a packet
-	 * If a key has been altered.
-	 *
-	 * @param privKeyP Private keys generated from the RSACrypt class. Can be 0
-	 * @param privKeyQ Private keys generated from the RSACrypt class. Can be 0
-	 * @see   Encryption sample.
-	 */
-	void InitializeSecurity( const char *privKeyP, const char *privKeyQ );
-	/**
 	 * Set the password to use when connecting to a server.  The password persists between connections.
 	 * Pass 0 for no password.
 	 * @param _password The password to use to connect to a server
