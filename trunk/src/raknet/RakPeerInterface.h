@@ -318,55 +318,6 @@ public:
 	 */
 	virtual int GetLowestPing( PlayerID playerId ) const = 0;
 
-	/**
-	 * Ping the remote systems every so often. This is off by default
-	 * This will work anytime
-	 *
-	 * @param doPing True to start occasional pings.  False to stop them.
-	 */
-	virtual void SetOccasionalPing( bool doPing ) = 0;
-
-	// --------------------------------------------------------------------------------------------
-	// Static Data Functions - Functions dealing with API defined synchronized memory
-	// --------------------------------------------------------------------------------------------
-	/**
-	 * All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-	 * specify typical system data that you want to know on connection, such as the player's name.
-	 *
-	 * @param playerId Which system you are referring to.  Pass the value returned by GetInternalID to refer to yourself
-	 *
-	 * @return The data passed to SetRemoteStaticData stored as a bitstream
-	 */
-	virtual RakNet::BitStream * GetRemoteStaticData( PlayerID playerId ) = 0;
-
-	/**
-	 * All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-	 * specify typical system data that you want to know on connection, such as the player's name.
-	 *
-	 * @param playerId Whose static data to change.  Use your own playerId to change your own static data
-	 * @param data a block of data to store
-	 * @param length The length of data in bytes
-	 */
-	virtual void SetRemoteStaticData( PlayerID playerId, const char *data, const long length ) = 0;
-
-	/**
-	 * Sends your static data to the specified system. This is automatically done on connection.
-	 * You should call this when you change your static data.
-	 * To send the static data of another system (such as relaying their data) you should do this normally with Send
-	 *
-	 * @param target Who to send your static data to.  Specify UNASSIGNED_PLAYER_ID to broadcast to all
-	 */
-	virtual void SendStaticData( PlayerID target ) = 0;
-
-	/**
-	 * Sets the data to send with an  (LAN server discovery) /(offline ping) response
-	 * Length should be under 400 bytes, as a security measure against flood attacks
-	 * See the Ping sample project for how this is used.
-	 * @param data a block of data to store, or 0 for none
-	 * @param length The length of data in bytes, or 0 for none
-	 */
-	virtual void SetOfflinePingResponse( const char *data, const unsigned int length ) = 0;
-
 	// --------------------------------------------------------------------------------------------
 	// Network Functions - Functions dealing with the network in general
 	// --------------------------------------------------------------------------------------------

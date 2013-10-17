@@ -168,69 +168,9 @@ public:
 	*/
 	int GetLowestPing( PlayerID playerId );
 	/**
-	* Ping all players every so often.  This is on by default.  In games where you don't care about ping you can call
-	* StopOccasionalPing to save the bandwidth
-	* This will work anytime
-	*/
-	void StartOccasionalPing( void );
-	/**
-	* Stop pinging players every so often.  Players are pinged by default.  In games where you don't care about ping
-	* you can call this to save the bandwidth
-	* This will work anytime
-	*/
-	void StopOccasionalPing( void );
-	/**
 	* Returns true if the server is currently active
 	*/
 	bool IsActive( void ) const;
-	/**
-	* Returns a number automatically synchronized between the server and client which randomly changes every
-	* 9 seconds. The time it changes is accurate to within a few ms and is best used to seed
-	* random number generators that you want to usually return the same output on all systems.  Keep in mind this
-	* isn't perfectly accurate as there is always a very small chance the numbers will by out of synch during
-	* changes so you should confine its use to visual effects or functionality that has a backup method to
-	* maintain synchronization.  If you don't need this functionality and want to save the bandwidth call
-	* StopSynchronizedRandomInteger after starting the server
-	*/
-	unsigned int GetSynchronizedRandomInteger( void ) const;
-	/**
-	* Start or restart the synchronized random integer.  This is on by default.  Call StopSynchronizedRandomInteger
-	* to stop it keeping the number in synch
-	*/
-	void StartSynchronizedRandomInteger( void );
-	/**
-	* Stop the synchronized random integer.  Call StartSynchronizedRandomInteger to start it again
-	*/
-	void StopSynchronizedRandomInteger( void );
-
-	/*
-	* Call this to automatically synchronize a block of memory.
-	* Unique identifier should be an integer corresponding to the same variable between clients and the server.  This integer
-	* should start at 0 and not surpass the range of UniqueIDType.  It is recommended you set this from an enum
-	* memoryBlock should point to the data you want to read from or write to with size of size in bytes
-	* isAuthority should be true if all other computers should match their data in memory block to yours.  This is triggered by
-	* when the variable changes.  So setting it to true on both the server and one client would make it so if the synchronized
-	* variable on that client changed, the server would then relay it to all clients.
-	* In the current implementation, setting isAuthority to true on the server will cause changes to that variable to be broadcast to
-	* all connected clients.
-	* synchronizationRules is an optional function pointer defined by you.  It should
-	* return true if the two passed memory blocks are sufficiently different to synchronize them.  This is an optimization so
-	* data that changes rapidly, such as per-frame, can be made to not update every frame
-	* The first parameter to synchronizationRules is the new data, the second is the internal copy of the old data
-	* secondaryUniqueIdentifier is optional and used when you have the same unique identifier and is intended for multiple instances of a class
-	* that derives from NetworkObject.
-	* You can call this anytime - however if you call it before the connection is complete initial data will not by synchronized
-	void SynchronizeMemory(UniqueIDType uniqueIdentifier, char *memoryBlock, unsigned short size, bool isAuthority, bool (*synchronizationRules) (char*,char*)=0,ObjectID secondaryUniqueIdentifier=UNASSIGNED_OBJECT_ID);
-
-	* Call this to stop synchronization of a block of memory previously defined by uniqueIdentifier and secondaryUniqueIdentifier
-	* by the call to SynchronizeMemory
-	* CALL THIS BEFORE SYNCHRONIZED MEMORY IS DEALLOCATED!
-	* It is not necessary to call this before disconnecting, as all synchronized states will be released then.
-	void DesynchronizeMemory(UniqueIDType uniqueIdentifier, ObjectID secondaryUniqueIdentifier=UNASSIGNED_OBJECT_ID);
-
-	* Call this to Desynchronize all synchronized memory
-	void DesynchronizeAllMemory(void);
-	*/
 
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
@@ -245,106 +185,7 @@ public:
 	* @param messageHandler Pointer to a message handler to detatch
 	*/
 	void DetachMessageHandler( MessageHandlerInterface *messageHandler );
-	/**
-	* The server internally maintains a data struct that is automatically sent to clients when the connect.
-	* This is useful to contain data such as the server name or message of the day.  Access that struct with this
-	* function.
-	* @note
-	* If you change any data in the struct remote clients won't reflect this change unless you manually update them
-	* Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
-	* The data is entered as an array and stored and returned as a BitStream.
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	*/
-	RakNet::BitStream * GetStaticServerData( void );
-	/**
-	* The server internally maintains a data struct that is automatically sent to clients when the connect.
-	* This is useful to contain data such as the server name or message of the day.  Access that struct with this
-	* function.
-	* @note
-	* If you change any data in the struct remote clients won't reflect this change unless you manually update them
-	* Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
-	* The data is entered as an array and stored and returned as a BitStream.
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	*/
-	void SetStaticServerData( const char *data, const long length );
-	/**
-	* This sets to true or false whether we want to support relaying of static client data to other connected clients.
-	* If set to false it saves some bandwdith, however other clients won't know the static client data and attempting
-	* to read that data will return garbage.  Default is true.  This also only works for up to 32 players.  Games
-	* supporting more than 32 players will have this shut off automatically upon server start and must have it forced
-	* back on with this function if you do indeed want it
-	* This should be called after the server is started in case you want to override when it shuts off at 32 players
-	*/
-	void SetRelayStaticClientData( bool b );
-	/**
-	* Send the static server data to the specified player.  Pass UNASSIGNED_PLAYER_ID to broadcast to all players
-	* The only time you need to call this function is to update clients that are already connected when you change the static
-	* server data by calling GetStaticServerData and directly modifying the object pointed to.  Obviously if the
-	* connected clients don't need to know the new data you don't need to update them, so it's up to you
-	* The server must be active for this to have meaning
-	*/
-	void SendStaticServerDataToClient( PlayerID playerId );
 
-	/**
-	* Sets the data to send with an (LAN server discovery) /(offline ping) response
-	* Length should be under 400 bytes, as a security measure against flood attacks
-	* @see the Ping sample project for how this is used.
-	* @param data a block of data to store, or 0 for none
-	* @param length The length of data in bytes, or 0 for none
-	*/
-	void SetOfflinePingResponse( const char *data, const unsigned int length );
-	/**
-	* Returns a pointer to an attached client's character name specified by the playerId
-	* Returns 0 if no such player is connected
-	* Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
-	* update by calling ChangeStaticClientData
-	* The server must be active for this to have meaning
-	* The data is entered as an array and stored and returned as a BitStream.
-	* Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
-	* Maintain a pointer copy to the bitstream as in
-	* RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	* Note that the client may change at any time the
-	* data contents and/or its length!
-	* @param playerId The ID of the client
-	* @return Statistical information of this client
-	*/
-	RakNet::BitStream * GetStaticClientData( PlayerID playerId );
-	/**
-	* Returns a pointer to an attached client's character name specified by the playerId
-	* Returns 0 if no such player is connected
-	* Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
-	* update by calling ChangeStaticClientData
-	* The server must be active for this to have meaning
-	* The data is entered as an array and stored and returned as a BitStream.
-	* Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
-	* Maintain a pointer copy to the bitstream as in
-	* RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	* Note that the client may change at any time the
-	* data contents and/or its length!
-	* @param playerId The ID of the client
-	* @param data A buffer containing statistics
-	* @param length The size of the buffer
-	*/
-	void SetStaticClientData( PlayerID playerId, const char *data, const long length );
-	/**
-	* This function is used to update the information on connected clients when the server effects a change
-	* of static client data
-	* playerChangedId should be the playerId of the player whose data was changed.  This is the parameter passed to
-	* GetStaticClientData to get a pointer to that player's information
-	* Note that a client that gets this new information for himself will update the data for his playerID but not his local data (which is the user's copy)
-	* i.e. player 5 would have the data returned by GetStaticClientData(5) changed but his local information returned by
-	* GetStaticClientData(UNASSIGNED_PLAYER_ID) would remain the same as it was previously.
-	* playerToSendToId should be the player you want to update with the new information.  This will almost always
-	* be everybody, in which case you should pass UNASSIGNED_PLAYER_ID.
-	* The server must be active for this to have meaning
-	*/
-	void ChangeStaticClientData( PlayerID playerChangedId, PlayerID playerToSendToId );
 	/**
 	* Internally store the IP address(es) for the server and return how many it has.
 	* This can easily be more than one, for example a system on both a LAN and with a net connection.
@@ -453,13 +294,6 @@ public:
 	* 0 on can't find the specified system.  A pointer to a set of data otherwise.
 	*/
 	RakNetStatisticsStruct * const GetStatistics( PlayerID playerId );
-
-private:
-	/**
-	* Synchronized random integer
-	*/
-	unsigned int seed, nextSeed, nextSeedUpdate, broadcastPingsTime;
-	bool synchronizedRandomInteger, relayStaticClientData;
 };
 
 #endif

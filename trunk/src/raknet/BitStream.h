@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief RakNet::BitStream: packet encoding and decoding 
+ * @file
+ * @brief RakNet::BitStream: packet encoding and decoding
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -37,10 +37,10 @@
 #define BITSTREAM_STACK_ALLOCATION_SIZE 256
 
 /**
- * @brief This namespace only contains a  few utility class used in 
- * RakNet. 
- * 
- * RakNet namespace is the not really in use currently. 
+ * @brief This namespace only contains a  few utility class used in
+ * RakNet.
+ *
+ * RakNet namespace is the not really in use currently.
  */
 
 /** \note  If you want the default network byte stream to be
@@ -54,34 +54,34 @@
 namespace RakNet
 {
 	/**
-	 * This macro transform a bit in byte 
-	 * @param x Transform a bit to a byte 
+	 * This macro transform a bit in byte
+	 * @param x Transform a bit to a byte
 	 */
 #define BITS_TO_BYTES(x) (((x)+7)>>3)
-	
+
 	/**
-	 * @brief Packets encoding and decoding facilities 
-	 * 
-	 * Helper class to encode and decode packets. 
-	 * 
+	 * @brief Packets encoding and decoding facilities
+	 *
+	 * Helper class to encode and decode packets.
+	 *
 	 */
-	
+
 	class BitStream : public ObjectCounter<BitStream>
 	{
-	
+
 	public:
 		/**
-		 * Default Constructor 
+		 * Default Constructor
 		 */
 		BitStream();
 		/**
-		 * Preallocate some memory for the construction of the packet 
-		 * @param initialBytesToAllocate the amount of byte to pre-allocate. 
+		 * Preallocate some memory for the construction of the packet
+		 * @param initialBytesToAllocate the amount of byte to pre-allocate.
 		 */
 		BitStream( int initialBytesToAllocate );
-		
+
 		/**
-		 * Initialize the BitStream object using data from the network. 
+		 * Initialize the BitStream object using data from the network.
 		 * Set _copyData to true if you want to make an internal copy of
 		 * the data you are passing. You can then Write and do all other
 		 * operations Set it to false if you want to just use a pointer to
@@ -89,11 +89,11 @@ namespace RakNet
 		 * You should only then do read operations.
 		 * @param _data An array of bytes.
 		 * @param lengthInBytes Size of the @em _data.
-		 * @param _copyData Does a copy of the input data.  
+		 * @param _copyData Does a copy of the input data.
 		 */
 		BitStream( char* _data, unsigned int lengthInBytes, bool _copyData );
 		/**
-		 * Destructor 
+		 * Destructor
 		 */
 		~BitStream();
 		/**
@@ -102,64 +102,64 @@ namespace RakNet
 		void Reset( void );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const bool input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const unsigned char input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const char input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const unsigned short input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const short input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const unsigned int input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const int input );
-		
+
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const float input );
 		/**
 		 * Write the native types to the end of the buffer
-		 * without any compression mecanism. 
-		 * @param input The data 
+		 * without any compression mecanism.
+		 * @param input The data
 		 */
 		void Write( const double input );
 		/**
 		 * Write an array or casted stream. It is supossed to
-		 * be raw data. It is also not possible to deal with endian problem 
-		 * @param input a byte buffer 
-		 * @param numberOfBytes the size of the byte buffer 
+		 * be raw data. It is also not possible to deal with endian problem
+		 * @param input a byte buffer
+		 * @param numberOfBytes the size of the byte buffer
 		 */
 		void Write( const char* input, const int numberOfBytes );
 		/**
@@ -198,87 +198,87 @@ namespace RakNet
 		 * @param input The data.
 		 */
 		void WriteCompressed( const int input );
-		
+
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( bool &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( unsigned char &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( char &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( unsigned short &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( short &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( unsigned int &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( int &output );
-		
+
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( float &output );
 		/**
 		 * Read the native types from the front of the buffer
-		 * @param output The readed value. 
-		 * @return true on success false otherwise. The result of a reading 
-		 * can only be wrong in the case we reach the end of the BitStream 
-		 * with some missing bits. 
+		 * @param output The readed value.
+		 * @return true on success false otherwise. The result of a reading
+		 * can only be wrong in the case we reach the end of the BitStream
+		 * with some missing bits.
 		 */
 		bool Read( double &output );
 		/**
 		 * Read an array or casted stream of byte. The array
 		 * is raw data. There is no automatic conversion on
 		 * big endian arch
-		 * @param output The result byte array. It should be larger than @em numberOfBytes. 
+		 * @param output The result byte array. It should be larger than @em numberOfBytes.
 		 * @param numberOfBytes The number of byte to read
-		 * @return true on success false if there is some missing bytes. 
+		 * @return true on success false if there is some missing bytes.
 		 */
 		bool Read( char* output, const int numberOfBytes );
 		/**
@@ -332,26 +332,26 @@ namespace RakNet
 		 */
 		void AssertStreamEmpty( void );
 		/**
-		 * print to the standard output the state of the stream bit by bit 
+		 * print to the standard output the state of the stream bit by bit
 		 */
 		void PrintBits( void ) const;
-		
+
 		/**
 		 * Ignore data we don't intend to read
 		 * @param numberOfBits The number of bits to ignore
 		 */
 		void IgnoreBits( const int numberOfBits );
-		
+
 		/**
 		 * Ignore data we don't intend to read
 		 * @param numberOfBytes The number of bytes to ignore
 		 */
 		void IgnoreBytes( const int numberOfBytes );
-		
+
 		/**
-		 * Move the write pointer to a position on the array.  
-		 * @param offset the offset from the start of the array. 
-		 * @attention 
+		 * Move the write pointer to a position on the array.
+		 * @param offset the offset from the start of the array.
+		 * @attention
 		 * Dangerous if you don't know what you are doing!
 		 *
 		 */
@@ -375,21 +375,21 @@ namespace RakNet
 		/**
 		 * Makes a copy of the internal data for you Data will point to
 		 * the stream. Returns the length in bits of the stream. Partial
-		 * bytes are left aligned 
-		 * @param _data the resulting byte copy of the internal state. 
+		 * bytes are left aligned
+		 * @param _data the resulting byte copy of the internal state.
 		 */
 		int CopyData( unsigned char** _data ) const;
 		/**
 		 * Set the stream to some initial data.  For internal use
 		 * Partial bytes are left aligned
 		 * @param input The data
-		 * @param numberOfBits the number of bits set in the data buffer 
+		 * @param numberOfBits the number of bits set in the data buffer
 		 */
 		void SetData( const unsigned char* input, const int numberOfBits );
 		/**
 		 * Exposes the internal data.
 		 * Partial bytes are left aligned.
-		 * @return A pointer to the internal state 
+		 * @return A pointer to the internal state
 		 */
 		unsigned char* GetData( void ) const;
 		/**
@@ -399,9 +399,9 @@ namespace RakNet
 		 * internal representation) You would set this to true when
 		 * writing user data, and false when copying bitstream data, such
 		 * as writing one bitstream to another
-		 * @param input The data 
-		 * @param numberOfBitsToWrite The number of bits to write 
-		 * @param rightAlignedBits if true data will be right aligned 
+		 * @param input The data
+		 * @param numberOfBitsToWrite The number of bits to write
+		 * @param rightAlignedBits if true data will be right aligned
 		 */
 		void WriteBits( const unsigned char* input,
 			int numberOfBitsToWrite, const bool rightAlignedBits = true );
@@ -411,7 +411,7 @@ namespace RakNet
 		 * wastes the bits to do the alignment and requires you to call
 		 * ReadAlignedBits at the corresponding read position.
 		 * @param input The data
-		 * @param numberOfBytesToWrite The size of data. 
+		 * @param numberOfBytesToWrite The size of data.
 		 */
 		void WriteAlignedBytes( const unsigned char* input,
 			const int numberOfBytesToWrite );
@@ -421,8 +421,8 @@ namespace RakNet
 		 * was used with WriteBits. This will be a problem with packet
 		 * coalescence unless you byte align the coalesced packets.
 		 * @param output The byte array larger than @em numberOfBytesToRead
-		 * @param numberOfBytesToRead The number of byte to read from the internal state 
-		 * @return true if there is enough byte. 
+		 * @param numberOfBytesToRead The number of byte to read from the internal state
+		 * @return true if there is enough byte.
 		 */
 		bool ReadAlignedBytes( unsigned char* output,
 			const int numberOfBytesToRead );
@@ -442,38 +442,38 @@ namespace RakNet
 		 * calculate the same offset when aligning.
 		 */
 		void AlignReadToByteBoundary( void );
-		
+
 		/**
 		 * Read numberOfBitsToRead bits to the output source
 		 * alignBitsToRight should be set to true to convert internal
 		 * bitstream data to userdata It should be false if you used
 		 * WriteBits with rightAlignedBits false
-		 * @param output The resulting bits array 
-		 * @param numberOfBitsToRead The number of bits to read 
-		 * @param alignsBitsToRight if true bits will be right aligned. 
-		 * @return true if there is enough bits to read 
+		 * @param output The resulting bits array
+		 * @param numberOfBitsToRead The number of bits to read
+		 * @param alignsBitsToRight if true bits will be right aligned.
+		 * @return true if there is enough bits to read
 		 */
 		bool ReadBits( unsigned char* output, int numberOfBitsToRead,
 			const bool alignBitsToRight = true );
-		
+
 		/**
-		 * --- Low level functions --- 
+		 * --- Low level functions ---
 		 * These are for when you want to deal
-		 * with bits and don't care about type checking 
-		 * Write a 0  
+		 * with bits and don't care about type checking
+		 * Write a 0
 		 */
 		void Write0( void );
 		/**
-		 * --- Low level functions --- 
+		 * --- Low level functions ---
 		 * These are for when you want to deal
-		 * with bits and don't care about type checking 
-		 * Write a 1 
+		 * with bits and don't care about type checking
+		 * Write a 1
 		 */
 		void Write1( void );
 		/**
-		 * --- Low level functions --- 
+		 * --- Low level functions ---
 		 * These are for when you want to deal
-		 * with bits and don't care about type checking 
+		 * with bits and don't care about type checking
 		 * Reads 1 bit and returns true if that bit is 1 and false if it is 0
 		 */
 		bool ReadBit( void );
@@ -488,37 +488,37 @@ namespace RakNet
 		 * reallocation
 		 */
 		void SetNumberOfBitsAllocated( const unsigned int lengthInBits );
-		
+
 	private:
 		/**
 		 * Assume the input source points to a native type, compress and write it.
 		 */
 		void WriteCompressed( const unsigned char* input,
 			const int size, const bool unsignedData );
-		
+
 		/**
 		 * Assume the input source points to a compressed native type.
 		 * Decompress and read it.
 		 */
 		bool ReadCompressed( unsigned char* output,
 			const int size, const bool unsignedData );
-		
+
 		/**
 		 * Reallocates (if necessary) in preparation of writing
-		 * numberOfBitsToWrite 
+		 * numberOfBitsToWrite
 		 */
 		void AddBitsAndReallocate( const int numberOfBitsToWrite );
-		
+
 		/**
-		 * Number of bits currently used 
+		 * Number of bits currently used
 		 */
 		int numberOfBitsUsed;
 		/**
-		 * Number of bits currently allocated 
+		 * Number of bits currently allocated
 		 */
 		int numberOfBitsAllocated;
 		/**
-		 * Current readOffset 
+		 * Current readOffset
 		 */
 		int readOffset;
 		/**
@@ -532,7 +532,7 @@ namespace RakNet
 		bool copyData;
 
 		unsigned char stackData[BITSTREAM_STACK_ALLOCATION_SIZE];
-	};	
+	};
 }
 
 #endif

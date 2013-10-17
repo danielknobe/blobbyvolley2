@@ -1,9 +1,7 @@
 set (raknet_SRC
 	ArrayList.h
-	BigTypes.h
 	BinarySearchTree.h
 	BitStream.cpp BitStream.h
-	CheckSum.cpp CheckSum.h
 	ClientContextStruct.h
 	GetTime.cpp GetTime.h
 	InternalPacket.h
@@ -25,7 +23,6 @@ set (raknet_SRC
 	RakPeerInterface.h
 	RakServer.cpp RakServer.h
 	RakServerInterface.h
-	Rand.cpp Rand.h
 	ReliabilityLayer.cpp ReliabilityLayer.h
 	SimpleMutex.cpp SimpleMutex.h
 	SingleProducerConsumer.h

@@ -334,56 +334,6 @@ public:
 	*/
 	int GetLowestPing( PlayerID playerId ) const;
 
-	/**
-	* Ping the remote systems every so often. This is off by default
-	* This will work anytime
-	*
-	* @param doPing True to start occasional pings.  False to stop them.
-	*/
-	void SetOccasionalPing( bool doPing );
-
-	/*
-	* --------------------------------------------------------------------------------------------
-	* Static Data Functions - Functions dealing with API defined synchronized memory
-	* --------------------------------------------------------------------------------------------
-	*/
-	/**
-	* All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-	* specify typical system data that you want to know on connection, such as the player's name.
-	*
-	* @param playerId Which system you are referring to.  Pass the value returned by GetInternalID to refer to yourself
-	*
-	* @return The data passed to SetRemoteStaticData stored as a bitstream
-	*/
-	RakNet::BitStream * GetRemoteStaticData( PlayerID playerId );
-
-	/**
-	* All systems have a block of data associated with them, for user use.  This block of data can be used to easily
-	* specify typical system data that you want to know on connection, such as the player's name.
-	*
-	* @param playerId Whose static data to change.  Use your own playerId to change your own static data
-	* @param data a block of data to store
-	* @param length The length of data in bytes
-	*/
-	void SetRemoteStaticData( PlayerID playerId, const char *data, const long length );
-
-	/**
-	* Sends your static data to the specified system. This is automatically done on connection.
-	* You should call this when you change your static data.
-	* To send the static data of another system (such as relaying their data) you should do this normally with Send
-	*
-	* @param target Who to send your static data to.  Specify UNASSIGNED_PLAYER_ID to broadcast to all
-	*/
-	void SendStaticData( PlayerID target );
-
-	/**
-	* Sets the data to send with an  (LAN server discovery) /(offline ping) response
-	* Length should be under 400 bytes, as a security measure against flood attacks
-	* See the Ping sample project for how this is used.
-	* @param data a block of data to store, or 0 for none
-	* @param length The length of data in bytes, or 0 for none
-	*/
-	void SetOfflinePingResponse( const char *data, const unsigned int length );
 	/*
 	* --------------------------------------------------------------------------------------------
 	* Network Functions - Functions dealing with the network in general
@@ -574,7 +524,6 @@ public:
 		int lowestPing; /**<The lowest ping value encounter */
 		unsigned int nextPingTime;  /**< When to next ping this player */
 		unsigned int lastReliableSend; /**< When did the last reliable send occur.  Reliable sends must occur at least once every TIMEOUT_TIME/2 units to notice disconnects */
-		RakNet::BitStream staticData; /**< static data */
 		unsigned int connectionTime; /**< connection time, if active. */
 		enum ConnectMode {NO_ACTION, DISCONNECT_ASAP, REQUESTED_CONNECTION, HANDLING_CONNECTION_REQUEST, UNVERIFIED_SENDER, CONNECTED} connectMode;
 	};
@@ -647,8 +596,6 @@ protected:
 	* true if the peer thread is active.
 	*/
 	bool isMainLoopThreadActive;
-	// bool isRecvfromThreadActive;  /**< Tracks thread states */
-	bool occasionalPing;  /**< Do we occasionally ping the other systems?*/
 	/**
 	* Store the maximum number of peers allowed to connect
 	*/
@@ -664,7 +611,7 @@ protected:
 	/**
 	* localStaticData necessary because we may not have a RemoteSystemStruct representing ourselves in the list
 	*/
-	RakNet::BitStream incomingPasswordBitStream, outgoingPasswordBitStream, localStaticData, offlinePingResponse;
+	RakNet::BitStream incomingPasswordBitStream, outgoingPasswordBitStream;
 	/**
 	* Local Player ID
 	*/
@@ -683,9 +630,6 @@ protected:
 //		requestedConnections_MUTEX,
 		incomingPasswordBitStream_Mutex,
 		outgoingPasswordBitStream_Mutex,
-	//	remoteSystemList_Mutex,    /**< This mutex is to lock remoteSystemList::PlayerID and only used for critical cases */
-		//  updateCycleIsRunning_Mutex,
-		offlinePingResponse_Mutex,
 		//bufferedCommandQueue_Mutex, /**< This mutex is to buffer all send calls to run from the update thread.  This is to get around the problem of the update thread changing playerIDs in the remoteSystemList while in the send call and thus having the sends go to the wrong player */
 		//bufferedCommandPool_Mutex, /**< This mutex is to buffer all send calls to run from the update thread.  This is to get around the problem of the update thread changing playerIDs in the remoteSystemList while in the send call and thus having the sends go to the wrong player */
 		NUMBER_OF_RAKPEER_MUTEXES
@@ -759,9 +703,6 @@ protected:
 
 	bool AllowIncomingConnections(void) const;
 
-	// Sends static data using immediate send mode or not (if called from user thread, put false for performImmediate.  If called from update thread, put true).
-	// This is done for efficiency, so we don't buffer send calls that are from the network thread anyway
-	void SendStaticDataInternal( PlayerID target, bool performImmediate );
 	void PingInternal( PlayerID target, bool performImmediate );
 	bool ValidSendTarget(PlayerID playerId, bool broadcast);
 	// This stores the user send calls to be handled by the update thread.  This way we don't have thread contention over playerIDs

@@ -188,37 +188,10 @@ public:
 	*/
 	virtual int GetPlayerPing( PlayerID playerId ) = 0;
 	/**
-	* Ping the server every so often. This is on by default. In games
-	* where you don't care about ping you can call StopOccasionalPing
-	* to save the bandwidth This will work anytime
-	*/
-	virtual void StartOccasionalPing( void ) = 0;
-	/**
-	* Stop pinging the server every so often. The server is pinged by
-	* default.  In games where you don't care about ping you can call
-	* this to save the bandwidth This will work anytime
-	*/
-	virtual void StopOccasionalPing( void ) = 0;
-	/**
 	* Returns true if the client is connected to a responsive server
 	* @return true if connected to a server
 	*/
 	virtual bool IsConnected( void ) const = 0;
-	/**
-	* Returns a number automatically synchronized between the server
-	* and client which randomly changes every 9 seconds. The time it
-	* changes is accurate to within a few ms and is best used to seed
-	* random number generators that you want to usually return the same
-	* output on all systems.  Keep in mind this isn't perfectly
-	* accurate as there is always a very small chance the numbers will
-	* by out of synch during changes so you should confine its use to
-	* visual effects or functionality that has a backup method to
-	* maintain synchronization.  If you don't need this functionality
-	* and want to save the bandwidth call StopSynchronizedRandomInteger
-	* after starting the server
-	* @return A random int common to all client and to the server.
-	*/
-	virtual unsigned int GetSynchronizedRandomInteger( void ) const = 0;
 
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
@@ -234,74 +207,6 @@ public:
 	*/
 	virtual void DetachMessageHandler( MessageHandlerInterface *messageHandler )=0;
 
-	/**
-	* The server internally maintains a data struct that is
-	* automatically sent to clients when the connect. This is useful
-	* to contain data such as the server name or message of the day.
-	* Access that struct with this function.  The data is entered as an
-	* array and stored and returned as a BitStream.  Everytime you call
-	* GetStaticServerData it resets the read pointer to the start of
-	* the bitstream.  To do multiple reads without reseting the pointer
-	* Maintain a pointer copy to the bitstream as in RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	* Note that the server may change at any time the
-	* data contents and/or its length!
-	* @return a bitstream containing statistics.
-	*/
-	virtual RakNet::BitStream * GetStaticServerData( void ) = 0;
-	/**
-	* The server internally maintains a data struct that is
-	* automatically sent to clients when the connect. This is useful
-	* to contain data such as the server name or message of the day.
-	* Access that struct with this function.  The data is entered as an
-	* array and stored and returned as a BitStream.  Everytime you call
-	* GetStaticServerData it resets the read pointer to the start of
-	* the bitstream.  To do multiple reads without reseting the pointer
-	* Maintain a pointer copy to the bitstream as in RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	* Note that the server may change at any time the
-	* data contents and/or its length!
-	* @param data a byte buffer containing statistical information.
-	* @param length the size of @em data
-	*/
-	virtual void SetStaticServerData( const char *data, const long length ) = 0;
-	/**
-	* The client internally maintains a data struct that is automatically sent to the server on connection
-	* This is useful to contain data such as the player name. Access that struct with this
-	* function. Pass UNASSIGNED_PLAYER_ID for playerId to reference your internal data.  A playerId value to access the data of another player.
-	* *** NOTE ***
-	* If you change any data in the struct the server won't reflect this change unless you manually update it
-	* Do so by calling SendStaticClientDataToServer
-	* The data is entered as an array and stored and returned as a BitStream.
-	* Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
-	* Maintain a pointer copy to the bitstream as in
-	* RakNet::BitStream *copy = ...->GetStaticServerData(...);
-	* To store a bitstream, use the GetData() and GetNumberOfBytesUsed() methods
-	* of the bitstream for the 2nd and 3rd parameters
-	*/
-	virtual RakNet::BitStream * GetStaticClientData( PlayerID playerId ) = 0;
-	/**
-	* Set Local statistical information for playId. Call this
-	* function when you receive statistical information from a
-	* client.
-	*
-	* @param playerId the player ID
-	* @param data the packet data
-	* @param length the size of the data
-	*/
-	virtual void SetStaticClientData( PlayerID playerId, const char *data, const long length ) = 0;
-	/**
-	* Send the static server data to the server The only time you need
-	* to call this function is to update clients that are already
-	* connected when you change the static server data by calling
-	* GetStaticServerData and directly modifying the object pointed to.
-	* Obviously if the connected clients don't need to know the new
-	* data you don't need to update them, so it's up to you The server
-	* must be active for this to have meaning
-	*/
-	virtual void SendStaticClientDataToServer( void ) = 0;
 	/**
 	* Return the player number of the server.
 	* @return the server playerID
