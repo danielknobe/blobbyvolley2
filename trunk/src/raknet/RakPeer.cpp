@@ -127,20 +127,7 @@ RakPeer::RakPeer()
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RakPeer::~RakPeer()
 {
-//	unsigned i;
-
-	// Free the ban list.
-	ClearBanList();
-
 	Disconnect( 0 );
-
-	/*
-	// Clear out the lists:
-	for ( i = 0; i < requestedConnectionsList.size(); i++ )
-		delete requestedConnectionsList[ i ];
-	requestedConnectionsList.clear();
-	*/
-
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -316,40 +303,6 @@ unsigned short RakPeer::GetMaximumIncomingConnections( void ) const
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
-// Sets the password incoming connections must match in the call to Connect (defaults to none)
-// Pass 0 to passwordData to specify no password
-//
-// Parameters:
-// passwordData: A data block that incoming connections must match.  This can be just a password, or can be a stream of data.
-// - Specify 0 for no password data
-// passwordDataLength: The length in bytes of passwordData
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SetIncomingPassword( const char* passwordData, int passwordDataLength )
-{
-	if (passwordDataLength > MAX_OFFLINE_DATA_LENGTH)
-		passwordDataLength=MAX_OFFLINE_DATA_LENGTH;
-
-	// Set the incoming password data
-	rakPeerMutexes[ incomingPasswordBitStream_Mutex ].Lock();
-	incomingPasswordBitStream.Reset();
-
-	if ( passwordData && passwordDataLength > 0 )
-		incomingPasswordBitStream.Write( passwordData, passwordDataLength );
-
-	rakPeerMutexes[ incomingPasswordBitStream_Mutex ].Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Returns the password set by SetIncomingPassword in a BitStream
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-RakNet::BitStream *RakPeer::GetIncomingPassword( void )
-{
-	return & incomingPasswordBitStream;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
 // Call this to connect to the specified host (ip or domain name) and server port.
 // Calling Connect and not calling SetMaximumIncomingConnections acts as a dedicated client.  Calling both acts as a true peer.
 // This is a non-blocking connection.  You know the connection is successful when IsConnected() returns true
@@ -366,31 +319,11 @@ RakNet::BitStream *RakPeer::GetIncomingPassword( void )
 // Returns:
 // True on successful initiation. False on incorrect parameters, internal error, or too many existing peers
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool RakPeer::Connect( const char* host, unsigned short remotePort, char* passwordData, int passwordDataLength )
+bool RakPeer::Connect( const char* host, unsigned short remotePort )
 {
 	// If endThreads is true here you didn't call Initialize() first.
 	if ( host == 0 || endThreads || connectionSocket == INVALID_SOCKET )
 		return false;
-
-	/*
-	for ( i = 0; i < maximumNumberOfPeers; i++ )
-	{
-		if ( remoteSystemList[ i ].playerId == UNASSIGNED_PLAYER_ID )
-			numberOfFreeSlots++;
-	}
-
-	if ( numberOfFreeSlots < (unsigned short)(remoteSystemListSize-maximumNumberOfPeers))
-		return false;
-		*/
-
-	if (passwordDataLength>MAX_OFFLINE_DATA_LENGTH)
-		passwordDataLength=MAX_OFFLINE_DATA_LENGTH;
-	// Set the incoming password data
-	rakPeerMutexes[ outgoingPasswordBitStream_Mutex ].Lock();
-	outgoingPasswordBitStream.Reset();
-	if ( passwordData && passwordDataLength > 0 )
-		outgoingPasswordBitStream.Write( passwordData, passwordDataLength );
-	rakPeerMutexes[ outgoingPasswordBitStream_Mutex ].Unlock();
 
 	// If the host starts with something other than 0, 1, or 2 it's (probably) a domain name.
 	if ( host[ 0 ] < '0' || host[ 0 ] > '2' )
@@ -840,211 +773,6 @@ PlayerID RakPeer::GetPlayerIDFromIndex( int index )
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
-// Bans an IP from connecting. Banned IPs persist between connections.
-//
-// Parameters
-// IP - Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will ban
-// All IP addresses starting with 128.0.0
-// milliseconds - how many ms for a temporary ban.  Use 0 for a permanent ban
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::AddToBanList( const char *IP, unsigned int milliseconds )
-{
-	unsigned index;
-	unsigned int time = RakNet::GetTime();
-
-	if ( IP == 0 || IP[ 0 ] == 0 || strlen( IP ) > 15 )
-		return ;
-
-	// If this guy is already in the ban list, do nothing
-	index = 0;
-
-	banListMutex.Lock();
-
-	for ( ; index < banList.size(); index++ )
-	{
-		if ( strcmp( IP, banList[ index ]->IP ) == 0 )
-		{
-			// Already in the ban list.  Just update the time
-			if (milliseconds==0)
-				banList[ index ]->timeout=0; // Infinite
-			else
-				banList[ index ]->timeout=time+milliseconds;
-			banListMutex.Unlock();
-			return;
-		}
-	}
-
-	banListMutex.Unlock();
-
-	BanStruct *banStruct = new BanStruct;
-
-	if (milliseconds==0)
-		banStruct->timeout=0; // Infinite
-	else
-		banStruct->timeout=time+milliseconds;
-	strcpy( banStruct->IP, IP );
-	banListMutex.Lock();
-	banList.insert( banStruct );
-	banListMutex.Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Allows a previously banned IP to connect.
-//
-// Parameters
-// IP - Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will ban
-// All IP addresses starting with 128.0.0
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::RemoveFromBanList( const char *IP )
-{
-	unsigned index;
-	BanStruct *temp;
-
-	if ( IP == 0 || IP[ 0 ] == 0 || strlen( IP ) > 15 )
-		return ;
-
-	index = 0;
-	temp=0;
-
-	banListMutex.Lock();
-
-	for ( ; index < banList.size(); index++ )
-	{
-		if ( strcmp( IP, banList[ index ]->IP ) == 0 )
-		{
-			temp = banList[ index ];
-			banList[ index ] = banList[ banList.size() - 1 ];
-			banList.del( banList.size() - 1 );
-			break;
-		}
-	}
-
-	banListMutex.Unlock();
-
-	if (temp)
-	{
-		delete temp;
-	}
-
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Allows all previously banned IPs to connect.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::ClearBanList( void )
-{
-	unsigned index;
-	index = 0;
-	banListMutex.Lock();
-
-	for ( ; index < banList.size(); index++ )
-	{
-		delete [] banList[ index ]->IP;
-		delete [] banList[ index ];
-	}
-
-	banList.clear();
-
-	banListMutex.Unlock();
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Determines if a particular IP is banned.
-//
-// Parameters
-// IP - Complete dotted IP address
-//
-// Returns
-// True if IP matches any IPs in the ban list, accounting for any wildcards.
-// False otherwise.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool RakPeer::IsBanned( const char *IP )
-{
-	unsigned banListIndex, characterIndex;
-	unsigned int time;
-	BanStruct *temp;
-
-	if ( IP == 0 || IP[ 0 ] == 0 || strlen( IP ) > 15 )
-		return false;
-
-	banListIndex = 0;
-
-	if ( banList.size() == 0 )
-		return false; // Skip the mutex if possible
-
-	time = RakNet::GetTime();
-
-	banListMutex.Lock();
-
-	while ( banListIndex < banList.size() )
-	{
-		if (banList[ banListIndex ]->timeout>0 && banList[ banListIndex ]->timeout<time)
-		{
-			// Delete expired ban
-			temp = banList[ banListIndex ];
-			banList[ banListIndex ] = banList[ banList.size() - 1 ];
-			banList.del( banList.size() - 1 );
-			delete temp;
-		}
-		else
-		{
-			characterIndex = 0;
-
-#pragma warning( disable : 4127 ) // warning C4127: conditional expression is constant
-			while ( true )
-			{
-				if ( banList[ banListIndex ]->IP[ characterIndex ] == IP[ characterIndex ] )
-				{
-					// Equal characters
-
-					if ( IP[ characterIndex ] == 0 )
-					{
-						banListMutex.Unlock();
-						// End of the string and the strings match
-
-						return true;
-					}
-
-					characterIndex++;
-				}
-
-				else
-				{
-					if ( banList[ banListIndex ]->IP[ characterIndex ] == 0 || IP[ characterIndex ] == 0 )
-					{
-						// End of one of the strings
-						break;
-					}
-
-					// Characters do not match
-					if ( banList[ banListIndex ]->IP[ characterIndex ] == '*' )
-					{
-						banListMutex.Unlock();
-
-						// Domain is banned.
-						return true;
-					}
-
-					// Characters do not match and it is not a *
-					break;
-				}
-			}
-
-			banListIndex++;
-		}
-	}
-
-	banListMutex.Unlock();
-
-	// No match found.
-	return false;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
 // Send a ping to the specified connected system.
 //
 // Parameters:
@@ -1434,26 +1162,6 @@ void RakPeer::DetachMessageHandler( MessageHandlerInterface *messageHandler )
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
-// Returns the data you passed to the passwordData parameter in Connect
-//
-// Parameters
-// passwordData (out): Should point to a block large enough to hold the password data you passed to Connect
-// passwordDataLength (in, out): Maximum size of the array passwordData.  Modified to hold the number of bytes actually written
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::GetPasswordData( char *passwordData, int *passwordDataLength )
-{
-	int length;
-
-	if ( incomingPasswordBitStream.GetNumberOfBytesUsed() < *passwordDataLength )
-		length = incomingPasswordBitStream.GetNumberOfBytesUsed();
-	else
-		length = *passwordDataLength;
-
-	memcpy( passwordData, incomingPasswordBitStream.GetData(), length );
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
 // Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
 //
 // Parameters
@@ -1565,25 +1273,10 @@ void RakPeer::ParseConnectionRequestPacket( RakPeer::RemoteSystemStruct *remoteS
 	}
 	else
 	{
-		const char *password = data + sizeof(unsigned char);
-		int passwordLength = byteSize - sizeof(unsigned char);
+		remoteSystem->connectMode=RemoteSystemStruct::HANDLING_CONNECTION_REQUEST;
 
-		if ( incomingPasswordBitStream.GetNumberOfBytesUsed() == passwordLength &&
-			memcmp( password, incomingPasswordBitStream.GetData(), passwordLength ) == 0 )
-		{
-			remoteSystem->connectMode=RemoteSystemStruct::HANDLING_CONNECTION_REQUEST;
-
-			// Connect this player assuming we have open slots
-			OnConnectionRequest( remoteSystem );
-		}
-		else
-		{
-			// This one we only send once since we don't care if it arrives.
-			unsigned char c = ID_INVALID_PASSWORD;
-			// SocketLayer::Instance()->SendTo( rakPeer->connectionSocket, ( char* ) & c, sizeof( char ), playerId.binaryAddress, playerId.port );
-			SendImmediate(( char* ) & c, sizeof( char )*8, SYSTEM_PRIORITY, RELIABLE, 0, playerId, false, false, RakNet::GetTime());
-			remoteSystem->connectMode=RemoteSystemStruct::DISCONNECT_ASAP;
-		}
+		// Connect this player assuming we have open slots
+		OnConnectionRequest( remoteSystem );
 	}
 }
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1615,10 +1308,8 @@ void RakPeer::OnConnectionRequest( RakPeer::RemoteSystemStruct *remoteSystem )
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RakPeer::NotifyAndFlagForDisconnect( PlayerID playerId, bool performImmediate )
 {
-	RakNet::BitStream temp( sizeof(unsigned char) + outgoingPasswordBitStream.GetNumberOfBytesUsed() );
+	RakNet::BitStream temp( sizeof(unsigned char) );
 	temp.Write( (unsigned char) ID_DISCONNECTION_NOTIFICATION );
-	if ( outgoingPasswordBitStream.GetNumberOfBytesUsed() > 0 )
-		temp.Write( ( char* ) outgoingPasswordBitStream.GetData(), outgoingPasswordBitStream.GetNumberOfBytesUsed() );
 	if (performImmediate)
 	{
 		SendImmediate((char*)temp.GetData(), temp.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, playerId, false, false, RakNet::GetTime());
@@ -1964,9 +1655,6 @@ void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, cons
 	playerId.binaryAddress = binaryAddress;
 	playerId.port = port;
 
-	if (rakPeer->IsBanned( rakPeer->PlayerIDToDottedIP( playerId ) ))
-		return;
-
 	// UNCONNECTED MESSAGE to establish a connection
 	if ((unsigned char)(data)[0] == ID_OPEN_CONNECTION_REPLY && length == sizeof(unsigned char))
 	{
@@ -2029,10 +1717,8 @@ void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, cons
 					remoteSystem->connectMode=RakPeer::RemoteSystemStruct::REQUESTED_CONNECTION;
 					remoteSystem->weInitiatedTheConnection=true;
 
-					RakNet::BitStream temp( sizeof(unsigned char) + rakPeer->outgoingPasswordBitStream.GetNumberOfBytesUsed() );
+					RakNet::BitStream temp( sizeof(unsigned char) );
 					temp.Write( (unsigned char) ID_CONNECTION_REQUEST );
-					if ( rakPeer->outgoingPasswordBitStream.GetNumberOfBytesUsed() > 0 )
-						temp.Write( ( char* ) rakPeer->outgoingPasswordBitStream.GetData(), rakPeer->outgoingPasswordBitStream.GetNumberOfBytesUsed() );
 					rakPeer->SendImmediate((char*)temp.GetData(), temp.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, playerId, false, false, time );
 				}
 
@@ -2128,12 +1814,6 @@ void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, cons
 	}
 	else
 	{
-		if (length > 512)
-		{
-			// Flood attack?  Unknown systems should never send more than a small amount of data
-			rakPeer->AddToBanList(rakPeer->PlayerIDToDottedIP(playerId), TIMEOUT_TIME);
-			return;
-		}
 
 		// The reason for ID_OPEN_CONNECTION_REQUEST and ID_OPEN_CONNECTION_REPLY is that they are only one byte so I can be sure
 		// that they are offline messages and I know to reset the connections.  This is because the smallest possible connected packet is 17 bits.
@@ -2493,7 +2173,6 @@ bool RakPeer::RunUpdateCycle( void )
 #ifdef _DO_PRINTF
 						printf("Temporarily banning %i:%i for sending nonsense data\n", playerId.binaryAddress, playerId.port);
 #endif
-						AddToBanList(PlayerIDToDottedIP(playerId), TIMEOUT_TIME);
 						delete [] data;
 					}
 				}

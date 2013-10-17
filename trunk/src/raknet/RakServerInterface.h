@@ -65,19 +65,6 @@ public:
 	virtual bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 ) = 0;
 
 	/**
-	 * Set the password clients have to use to connect to this server. The password persists between connections.
-	 * Pass 0 for no password.
-	 * You can call this anytime
-	 * @param _password The password name.
-	 */
-	virtual void SetPassword( const char *_password ) = 0;
-
-	/**
-	 * Returns true if a password was set, false otherwise
-	 */
-	virtual bool HasPassword( void ) = 0;
-
-	/**
 	 * Stops the server, stops synchronized data, and resets all internal data.  This will drop all players currently connected, however
 	 * since the server is stopped packet reliability is not enforced so the Kick network message may not actually
 	 * arrive. Those players will disconnect due to timeout. If you want to end the server more gracefully, you
@@ -227,41 +214,6 @@ public:
 	 * Index should range between 0 and the maximum number of players allowed - 1.
 	 */
 	virtual PlayerID GetPlayerIDFromIndex( int index ) = 0;
-
-	/**
-	 * Bans an IP from connecting.  Banned IPs persist between connections.
-	 *
-	 * Parameters
-	 * IP - Dotted IP address. Can use * as a wildcard, such as 128.0.0.* will ban
-	 * All IP addresses starting with 128.0.0
-	 */
-	virtual void AddToBanList( const char *IP ) = 0;
-
-	/**
-	 * Allows a previously banned IP to connect.
-	 *
-	 * Parameters
-	 * IP - Dotted IP address. Can use * as a wildcard, such as 128.0.0.* will ban
-	 * All IP addresses starting with 128.0.0
-	 */
-	virtual void RemoveFromBanList( const char *IP ) = 0;
-
-	/**
-	 * Allows all previously banned IPs to connect.
-	 */
-	virtual void ClearBanList( void ) = 0;
-
-	/**
-	 * Determines if a particular IP is banned.
-	 *
-	 * Parameters
-	 * IP - Complete dotted IP address
-	 *
-	 * Returns
-	 * True if IP matches any IPs in the ban list, accounting for any wildcards.
-	 * False otherwise.
-	 */
-	virtual bool IsBanned( const char *IP ) = 0;
 
 	/**
 	 * Returns true if that player ID is currently used

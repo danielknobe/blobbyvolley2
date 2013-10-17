@@ -81,17 +81,6 @@ public:
 	*/
 	virtual void Disconnect( unsigned int blockDuration ) = 0;
 	/**
-	* Set the password to use when connecting to a server.  The password persists between connections.
-	* Pass 0 for no password.
-	* @param _password The password to use to connect to a server
-	*/
-	virtual void SetPassword( const char *_password ) = 0;
-	/**
-	* Returns true if a password was set, false otherwise
-	* @return true if a password has previously been set using SetPassword
-	*/
-	virtual bool HasPassword( void ) const = 0;
-	/**
 	* This function only works while the client is connected (Use the
 	* Connect function).  Returns false on failure, true on success
 	* Sends the data stream of length length If you aren't sure what to
