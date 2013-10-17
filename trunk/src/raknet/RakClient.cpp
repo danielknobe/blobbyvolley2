@@ -78,11 +78,6 @@ void RakClient::Disconnect( unsigned int blockDuration )
 	RakPeer::Disconnect( blockDuration );
 }
 
-void RakClient::InitializeSecurity( const char *privKeyP, const char *privKeyQ )
-{
-	RakPeer::InitializeSecurity( privKeyP, privKeyQ, 0, 0 );
-}
-
 void RakClient::SetPassword( const char *_password )
 {
 	if ( _password == 0 || _password[ 0 ] == 0 )

@@ -65,29 +65,6 @@ public:
 	virtual bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 ) = 0;
 
 	/**
-	 * Must be called while offline
-	 * Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
-	 * connection spoofing, replay attacks, data eavesdropping, packet tampering, and MitM attacks.
-	 * There is a significant amount of processing and a slight amount of bandwidth
-	 * overhead for this feature.
-	 *
-	 * If you accept connections, you must call this or else secure connections will not be enabled
-	 * for incoming connections. If the private keys are 0, then a new key will be generated when this function is called
-	 *
-	 * @param pubKeyE A pointer to the public keys from the RSACrypt class.
-	 * @param  pubKeyN A pointer to the public keys from the RSACrypt class.
-	 * @see the Encryption sample
-	 *
-	 */
-	virtual void InitializeSecurity( const char *pubKeyE, const char *pubKeyN ) = 0;
-
-	/**
-	 * Must be called while offline
-	 * Disables all security.
-	 */
-	virtual void DisableSecurity( void ) = 0;
-
-	/**
 	 * Set the password clients have to use to connect to this server. The password persists between connections.
 	 * Pass 0 for no password.
 	 * You can call this anytime

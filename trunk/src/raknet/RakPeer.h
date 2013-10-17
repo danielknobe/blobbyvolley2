@@ -33,7 +33,6 @@
 
 #include "ReliabilityLayer.h"
 #include "RakPeerInterface.h"
-#include "RSACrypt.h"
 #include "BitStream.h"
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
@@ -96,33 +95,7 @@ public:
 	* @return False on failure (can't create socket or thread), true on success.
 	*/
 	bool Initialize( unsigned short MaximumNumberOfPeers, unsigned short localPort, int _threadSleepTimer, const char *forceHostAddress=0 );
-	/**
-	* Must be called while offline
-	* Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
-	* connection spoofing, replay attacks, data eavesdropping, packet tampering, and MitM attacks.
-	* There is a significant amount of processing and a slight amount of bandwidth
-	* overhead for this feature.
-	*
-	* If you accept connections, you must call this or else secure connections will not be enabled
-	* for incoming connections.
-	* If you are connecting to another system, you can call this with values for the
-	* (e and p,q) public keys before connecting to prevent MitM
-	*
-	* @param pubKeyE A pointer to the public keys from the RSACrypt class.
-	* @param pubKeyN A pointer to the public keys from the RSACrypt class.
-	* @param privKeyP Public key generated from the RSACrypt class.
-	* @param privKeyQ Public key generated from the RSACrypt class.
-	* If the private keys are 0, then a new key will be generated when this function is called
-	*
-	* @see the Encryption sample
-	*/
-	void InitializeSecurity(const char *pubKeyE, const char *pubKeyN, const char *privKeyP, const char *privKeyQ );
-	/**
-	* Disables all security.
-	* @note Must be called while offline
-	*
-	*/
-	virtual void DisableSecurity( void );
+
 	/**
 	* Sets how many incoming connections are allowed. If this is less than the number of players currently connected, no
 	* more players will be allowed to connect.  If this is greater than the maximum number of peers allowed, it will be reduced
@@ -766,9 +739,6 @@ protected:
 	BasicDataStructures::List<MessageHandlerInterface*> messageHandlerList;
 	BasicDataStructures::SingleProducerConsumer<RequestedConnectionStruct> requestedConnectionList;
 
-	void GenerateSYNCookieRandomNumber( void );
-	void SecuredConnectionResponse( PlayerID playerId );
-	void SecuredConnectionConfirmation( RakPeer::RemoteSystemStruct * remoteSystem, char* data );
 	bool RunUpdateCycle( void );
 	// void RunMutexedUpdateCycle(void);
 
@@ -816,10 +786,6 @@ protected:
 	/*
 	* Encryption and security
 	*/
-	big::RSACrypt<RSA_BIT_SIZE> rsacrypt;
-	big::u32 publicKeyE;
-	RSA_BIT_SIZE publicKeyN;
-	bool keysLocallyGenerated, usingSecurity;
 	unsigned int randomNumberExpirationTime;
 	unsigned char newRandomNumber[ 20 ], oldRandomNumber[ 20 ];
 	/**

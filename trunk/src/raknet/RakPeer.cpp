@@ -115,7 +115,6 @@ static const int MAX_OFFLINE_DATA_LENGTH=400; // I set this because I limit ID_C
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 RakPeer::RakPeer()
 {
-	usingSecurity = false;
 	connectionSocket = INVALID_SOCKET;
 	MTUSize = DEFAULT_MTU_SIZE;
 	maximumIncomingConnections = 0;
@@ -300,90 +299,6 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 	}
 
 	return true;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Must be called while offline
-// Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
-// connection spoofing, replay attacks, data eavesdropping, packet tampering, and MitM attacks.
-// There is a significant amount of processing and a slight amount of bandwidth
-// overhead for this feature.
-//
-// If you accept connections, you must call this or else secure connections will not be enabled
-// for incoming connections.
-// If you are connecting to another system, you can call this with values for the
-// (e and p,q) public keys before connecting to prevent MitM
-//
-// Parameters:
-// pubKeyE, pubKeyN - A pointer to the public keys from the RSACrypt class. See the Encryption sample
-// privKeyP, privKeyQ - Private keys generated from the RSACrypt class.  See the Encryption sample
-// If the private keys are 0, then a new key will be generated when this function is called
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::InitializeSecurity(const char *pubKeyE, const char *pubKeyN, const char *privKeyP, const char *privKeyQ )
-{
-	if ( endThreads == false )
-		return ;
-
-	// Setting the client key is e,n,
-	// Setting the server key is p,q
-	if ( //( privKeyP && privKeyQ && ( pubKeyE || pubKeyN ) ) ||
-		//( pubKeyE && pubKeyN && ( privKeyP || privKeyQ ) ) ||
-		( privKeyP && privKeyQ == 0 ) ||
-		( privKeyQ && privKeyP == 0 ) ||
-		( pubKeyE && pubKeyN == 0 ) ||
-		( pubKeyN && pubKeyE == 0 ) )
-	{
-		// Invalid parameters
-		assert( 0 );
-	}
-
-	seedMT( RakNet::GetTime() );
-
-	GenerateSYNCookieRandomNumber();
-
-	usingSecurity = true;
-
-	if ( privKeyP == 0 && privKeyQ == 0 && pubKeyE == 0 && pubKeyN == 0 )
-	{
-		keysLocallyGenerated = true;
-		rsacrypt.generateKeys();
-	}
-
-	else
-	{
-		if ( pubKeyE && pubKeyN )
-		{
-			// Save public keys
-			memcpy( ( char* ) & publicKeyE, pubKeyE, sizeof( publicKeyE ) );
-			memcpy( publicKeyN, pubKeyN, sizeof( publicKeyN ) );
-		}
-
-		if ( privKeyP && privKeyQ )
-		{
-			BIGHALFSIZE( RSA_BIT_SIZE, p );
-			BIGHALFSIZE( RSA_BIT_SIZE, q );
-			memcpy( p, privKeyP, sizeof( p ) );
-			memcpy( q, privKeyQ, sizeof( q ) );
-			// Save private keys
-			rsacrypt.setPrivateKey( p, q );
-		}
-
-		keysLocallyGenerated = false;
-	}
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description
-// Must be called while offline
-// Disables all security.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::DisableSecurity( void )
-{
-	if ( endThreads == false )
-		return ;
-
-	usingSecurity = false;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1783,22 +1698,8 @@ void RakPeer::ParseConnectionRequestPacket( RakPeer::RemoteSystemStruct *remoteS
 		{
 			remoteSystem->connectMode=RemoteSystemStruct::HANDLING_CONNECTION_REQUEST;
 
-			if ( usingSecurity == false )
-			{
-#ifdef _TEST_AES
-				unsigned char AESKey[ 16 ];
-				// Save the AES key
-				for ( i = 0; i < 16; i++ )
-					AESKey[ i ] = i;
-
-				OnConnectionRequest( remoteSystem, AESKey, true );
-#else
-				// Connect this player assuming we have open slots
-				OnConnectionRequest( remoteSystem, 0, false );
-#endif
-			}
-			else
-				SecuredConnectionResponse( playerId );
+			// Connect this player assuming we have open slots
+			OnConnectionRequest( remoteSystem, 0, false );
 		}
 		else
 		{
@@ -2016,216 +1917,6 @@ unsigned int RakPeer::GetBestClockDifferential( PlayerID playerId ) const
 	}
 
 	return clockDifferential;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#ifdef __USE_IO_COMPLETION_PORTS
-bool RakPeer::SetupIOCompletionPortSocket( int index )
-{
-	SOCKET newSocket;
-
-	if ( remoteSystemList[ index ].reliabilityLayer.GetSocket() != INVALID_SOCKET )
-		closesocket( remoteSystemList[ index ].reliabilityLayer.GetSocket() );
-
-	newSocket = SocketLayer::Instance()->CreateBoundSocket( myPlayerId.port + index + 1, false );
-
-	SocketLayer::Instance()->Connect( newSocket, remoteSystemList[ index ].playerId.binaryAddress, remoteSystemList[ index ].playerId.port ); // port is the port of the client
-
-	remoteSystemList[ index ].reliabilityLayer.SetSocket( newSocket );
-
-	// Associate our new socket with a completion port and do the first read
-	return SocketLayer::Instance()->AssociateSocketWithCompletionPortAndRead( newSocket, remoteSystemList[ index ].playerId.binaryAddress, remoteSystemList[ index ].playerId.port, this );
-}
-
-#endif
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::GenerateSYNCookieRandomNumber( void )
-{
-	unsigned int number;
-	int i;
-	memcpy( oldRandomNumber, newRandomNumber, sizeof( newRandomNumber ) );
-
-	for ( i = 0; i < sizeof( newRandomNumber ); i += sizeof( number ) )
-	{
-		number = randomMT();
-		memcpy( newRandomNumber + i, ( char* ) & number, sizeof( number ) );
-	}
-
-	randomNumberExpirationTime = RakNet::GetTime() + SYN_COOKIE_OLD_RANDOM_NUMBER_DURATION;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::SecuredConnectionResponse( PlayerID playerId )
-{
-	CSHA1 sha1;
-	RSA_BIT_SIZE n;
-	big::u32 e;
-	unsigned char connectionRequestResponse[ 1 + sizeof( big::u32 ) + sizeof( RSA_BIT_SIZE ) + 20 ];
-	connectionRequestResponse[ 0 ] = ID_SECURED_CONNECTION_RESPONSE;
-
-	// Hash the SYN-Cookie
-	// s2c syn-cookie = SHA1_HASH(source ip address + source port + random number)
-	sha1.Reset();
-	sha1.Update( ( unsigned char* ) & playerId.binaryAddress, sizeof( playerId.binaryAddress ) );
-	sha1.Update( ( unsigned char* ) & playerId.port, sizeof( playerId.port ) );
-	sha1.Update( ( unsigned char* ) & ( newRandomNumber ), 20 );
-	sha1.Final();
-
-	// Write the cookie
-	memcpy( connectionRequestResponse + 1, sha1.GetHash(), 20 );
-
-	// Write the public keys
-	rsacrypt.getPublicKey( e, n );
-#ifdef HOST_ENDIAN_IS_BIG
-	// Mangle the keys on a Big-endian machine before sending
-	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20),
-		(unsigned char *)&e, sizeof( big::u32 ) );
-	BSWAPCPY( (unsigned char *)(connectionRequestResponse + 1 + 20 + sizeof( big::u32 ) ),
-		(unsigned char *)n, sizeof( RSA_BIT_SIZE ) );
-#else
-	memcpy( connectionRequestResponse + 1 + 20, ( char* ) & e, sizeof( big::u32 ) );
-	memcpy( connectionRequestResponse + 1 + 20 + sizeof( big::u32 ), n, sizeof( RSA_BIT_SIZE ) );
-#endif
-
-	// s2c public key, syn-cookie
-	//SocketLayer::Instance()->SendTo( connectionSocket, ( char* ) connectionRequestResponse, 1 + sizeof( big::u32 ) + sizeof( RSA_BIT_SIZE ) + 20, playerId.binaryAddress, playerId.port );
-	// All secure connection requests are unreliable because the entire process needs to be restarted if any part fails.
-	// Connection requests are resent periodically
-	SendImmediate(( char* ) connectionRequestResponse, (1 + sizeof( big::u32 ) + sizeof( RSA_BIT_SIZE ) + 20) *8, SYSTEM_PRIORITY, UNRELIABLE, 0, playerId, false, false, RakNet::GetTime());
-}
-
-void RakPeer::SecuredConnectionConfirmation( RakPeer::RemoteSystemStruct * remoteSystem, char* data )
-{
-	int i, j;
-	unsigned char randomNumber[ 20 ];
-	unsigned int number;
-	//bool doSend;
-	Packet *packet;
-	big::u32 e;
-	RSA_BIT_SIZE n, message, encryptedMessage;
-	big::RSACrypt<RSA_BIT_SIZE> privKeyPncrypt;
-
-	// Make sure that we still want to connect
-	if (remoteSystem->connectMode!=RemoteSystemStruct::REQUESTED_CONNECTION)
-		return;
-
-/*
-	// Make sure that we still want to connect
-	bool requestedConnection = false;
-
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Lock();
-
-	for ( i = 0; i < ( int ) requestedConnectionsList.size();i++ )
-	{
-		if ( requestedConnectionsList[ i ]->playerId == playerId )
-		{
-			// We did request this connection
-			requestedConnection = true;
-			break;
-		}
-	}
-
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Unlock();
-
-	if ( requestedConnection == false )
-		return ; // Don't want to connect
-
-
-	doSend = false;
-*/
-
-	// Copy out e and n
-#ifdef HOST_ENDIAN_IS_BIG
-	BSWAPCPY( (unsigned char *)&e, (unsigned char *)(data + 1 + 20), sizeof( big::u32 ) );
-	BSWAPCPY( (unsigned char *)n, (unsigned char *)(data + 1 + 20 + sizeof( big::u32 )), sizeof( RSA_BIT_SIZE ) );
-#else
-	memcpy( ( char* ) & e, data + 1 + 20, sizeof( big::u32 ) );
-	memcpy( n, data + 1 + 20 + sizeof( big::u32 ), sizeof( RSA_BIT_SIZE ) );
-#endif
-
-	// If we preset a size and it doesn't match, or the keys do not match, then tell the user
-	if ( usingSecurity == true && keysLocallyGenerated == false )
-	{
-		if ( memcmp( ( char* ) & e, ( char* ) & publicKeyE, sizeof( big::u32 ) ) != 0 ||
-			memcmp( n, publicKeyN, sizeof( RSA_BIT_SIZE ) ) != 0 )
-		{
-			packet = packetPool.GetPointer();
-			packet->data = new unsigned char[ 1 ];
-			packet->data[ 0 ] = ID_RSA_PUBLIC_KEY_MISMATCH;
-			packet->length = sizeof( char );
-			packet->bitSize = sizeof( char ) * 8;
-			packet->playerId = remoteSystem->playerId;
-			packet->playerIndex = ( PlayerIndex ) GetIndexFromPlayerID( packet->playerId );
-			incomingQueueMutex.Lock();
-			incomingPacketQueue.push( packet );
-			incomingQueueMutex.Unlock();
-			remoteSystem->connectMode=RemoteSystemStruct::DISCONNECT_ASAP;
-			return;
-		}
-	}
-
-	// Create a random number
-	for ( i = 0; i < sizeof( randomNumber ); i += sizeof( number ) )
-	{
-		number = randomMT();
-		memcpy( randomNumber + i, ( char* ) & number, sizeof( number ) );
-	}
-
-	memset( message, 0, sizeof( message ) );
-	assert( sizeof( message ) >= sizeof( randomNumber ) );
-
-#ifdef HOST_ENDIAN_IS_BIG
-	// Scramble the plaintext message
-	BSWAPCPY( (unsigned char *)message, randomNumber, sizeof(randomNumber) );
-#else
-	memcpy( message, randomNumber, sizeof( randomNumber ) );
-#endif
-	privKeyPncrypt.setPublicKey( e, n );
-	privKeyPncrypt.encrypt( message, encryptedMessage );
-#ifdef HOST_ENDIAN_IS_BIG
-	// A big-endian machine needs to scramble the byte order of an outgoing (encrypted) message
-	BSWAPSELF( (unsigned char *)encryptedMessage, sizeof( RSA_BIT_SIZE ) );
-#endif
-
-	/*
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Lock();
-	for ( i = 0; i < ( int ) requestedConnectionsList.size(); i++ )
-	{
-		if ( requestedConnectionsList[ i ]->playerId == playerId )
-		{
-			doSend = true;
-			// Generate the AES key
-
-			for ( j = 0; j < 16; j++ )
-				requestedConnectionsList[ i ]->AESKey[ j ] = data[ 1 + j ] ^ randomNumber[ j ];
-
-			requestedConnectionsList[ i ]->setAESKey = true;
-
-			break;
-		}
-	}
-	rakPeerMutexes[ RakPeer::requestedConnections_MUTEX ].Unlock();
-	*/
-
-	// Take the remote system's AESKey and XOR with our random number.
-		for ( j = 0; j < 16; j++ )
-			remoteSystem->AESKey[ j ] = data[ 1 + j ] ^ randomNumber[ j ];
-	remoteSystem->setAESKey = true;
-
-//	if ( doSend )
-//	{
-		char reply[ 1 + 20 + sizeof( RSA_BIT_SIZE ) ];
-		// c2s RSA(random number), same syn-cookie
-		reply[ 0 ] = ID_SECURED_CONNECTION_CONFIRMATION;
-		memcpy( reply + 1, data + 1, 20 );  // Copy the syn-cookie
-		memcpy( reply + 1 + 20, encryptedMessage, sizeof( RSA_BIT_SIZE ) ); // Copy the encoded random number
-
-		//SocketLayer::Instance()->SendTo( connectionSocket, reply, 1 + 20 + sizeof( RSA_BIT_SIZE ), playerId.binaryAddress, playerId.port );
-		// All secure connection requests are unreliable because the entire process needs to be restarted if any part fails.
-		// Connection requests are resent periodically
-		SendImmediate((char*)reply, (1 + 20 + sizeof( RSA_BIT_SIZE )) * 8, SYSTEM_PRIORITY, UNRELIABLE, 0, remoteSystem->playerId, false, false, RakNet::GetTime());
-//	}
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3192,77 +2883,13 @@ bool RakPeer::RunUpdateCycle( void )
 						incomingPacketQueue.push( packet );
 						incomingQueueMutex.Unlock();
 					}
-					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_RESPONSE &&
-						byteSize == 1 + sizeof( big::u32 ) + sizeof( RSA_BIT_SIZE ) + 20 )
+					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_RESPONSE)
 					{
-						SecuredConnectionConfirmation( remoteSystem, data );
-						delete [] data;
+						assert(0);
 					}
-					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_CONFIRMATION &&
-						byteSize == 1 + 20 + sizeof( RSA_BIT_SIZE ) )
+					else if ( (unsigned char)(data)[0] == ID_SECURED_CONNECTION_CONFIRMATION )
 					{
-						CSHA1 sha1;
-						bool confirmedHash;
-
-						confirmedHash = false;
-
-						// Hash the SYN-Cookie
-						// s2c syn-cookie = SHA1_HASH(source ip address + source port + random number)
-						sha1.Reset();
-						sha1.Update( ( unsigned char* ) & playerId.binaryAddress, sizeof( playerId.binaryAddress ) );
-						sha1.Update( ( unsigned char* ) & playerId.port, sizeof( playerId.port ) );
-						sha1.Update( ( unsigned char* ) & ( newRandomNumber ), 20 );
-						sha1.Final();
-
-
-						// Confirm if
-						//syn-cookie ?= HASH(source ip address + source port + last random number)
-						//syn-cookie ?= HASH(source ip address + source port + current random number)
-						if ( memcmp( sha1.GetHash(), data + 1, 20 ) == 0 )
-						{
-							confirmedHash = true;
-						}
-						else if ( randomNumberExpirationTime < RakNet::GetTime() )
-						{
-							sha1.Reset();
-							sha1.Update( ( unsigned char* ) & playerId.binaryAddress, sizeof( playerId.binaryAddress ) );
-							sha1.Update( ( unsigned char* ) & playerId.port, sizeof( playerId.port ) );
-							sha1.Update( ( unsigned char* ) & ( oldRandomNumber ), 20 );
-							sha1.Final();
-
-							if ( memcmp( sha1.GetHash(), data + 1, 20 ) == 0 )
-								confirmedHash = true;
-						}
-						if ( confirmedHash )
-						{
-							int i;
-							unsigned char AESKey[ 16 ];
-							RSA_BIT_SIZE message, encryptedMessage;
-
-							// On connection accept, AES key is c2s RSA_Decrypt(random number) XOR s2c syn-cookie
-							// Get the random number first
-							#ifdef HOST_ENDIAN_IS_BIG
-								BSWAPCPY( (unsigned char *) encryptedMessage, (unsigned char *)(data + 1 + 20), sizeof( RSA_BIT_SIZE ) );
-							#else
-								memcpy( encryptedMessage, data + 1 + 20, sizeof( RSA_BIT_SIZE ) );
-							#endif
-							rsacrypt.decrypt( encryptedMessage, message );
-							#ifdef HOST_ENDIAN_IS_BIG
-								BSWAPSELF( (unsigned char *) message, sizeof( RSA_BIT_SIZE ) );
-							#endif
-
-							// Save the AES key
-							for ( i = 0; i < 16; i++ )
-								AESKey[ i ] = data[ 1 + i ] ^ ( ( unsigned char* ) ( message ) ) [ i ];
-
-							// Connect this player assuming we have open slots
-							OnConnectionRequest( remoteSystem, AESKey, true );
-
-							// Invalidate the new random number
-							if ( newRandomNumber )
-								GenerateSYNCookieRandomNumber();
-						}
-						delete [] data;
+						assert(0);
 					}
 					else if ( (unsigned char)(data)[0] == ID_KEEPALIVE && byteSize == sizeof(unsigned char) )
 					{
