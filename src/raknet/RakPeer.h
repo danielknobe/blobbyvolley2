@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief A RakPeer is the lower level Communication End Point. 
+ * @brief A RakPeer is the lower level Communication End Point.
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -38,7 +38,6 @@
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
 
-class HuffmanEncodingTree;
 class MessageHandlerInterface;
 
 #ifdef _WIN32
@@ -109,12 +108,12 @@ public:
 	* If you are connecting to another system, you can call this with values for the
 	* (e and p,q) public keys before connecting to prevent MitM
 	*
-	* @param pubKeyE A pointer to the public keys from the RSACrypt class.  
-	* @param pubKeyN A pointer to the public keys from the RSACrypt class. 
-	* @param privKeyP Public key generated from the RSACrypt class.  
-	* @param privKeyQ Public key generated from the RSACrypt class.  
+	* @param pubKeyE A pointer to the public keys from the RSACrypt class.
+	* @param pubKeyN A pointer to the public keys from the RSACrypt class.
+	* @param privKeyP Public key generated from the RSACrypt class.
+	* @param privKeyQ Public key generated from the RSACrypt class.
 	* If the private keys are 0, then a new key will be generated when this function is called
-	* 
+	*
 	* @see the Encryption sample
 	*/
 	void InitializeSecurity(const char *pubKeyE, const char *pubKeyN, const char *privKeyP, const char *privKeyQ );
@@ -133,7 +132,7 @@ public:
 	*/
 	void SetMaximumIncomingConnections( unsigned short numberAllowed );
 	/**
-	* Get the number of maximum incoming connection. 
+	* Get the number of maximum incoming connection.
 	* @return the maximum number of incoming connections, which is always <= MaximumNumberOfPeers
 	*/
 	unsigned short GetMaximumIncomingConnections( void ) const;
@@ -148,7 +147,7 @@ public:
 	void SetIncomingPassword( const char* passwordData, int passwordDataLength );
 	/**
 	* Get the password set by SetIncomingPassword in a BitStream
-	* @return The password in a BitStream. 
+	* @return The password in a BitStream.
 	*/
 	RakNet::BitStream *GetIncomingPassword( void );
 	/**
@@ -185,7 +184,7 @@ public:
 	*
 	* @param[out] remoteSystems  An array of PlayerID structures to be filled with the PlayerIDs of the systems we are connected to
 	* - pass 0 to remoteSystems to only get the number of systems we are connected to
-	* @param numberOfSystems As input, the size of remoteSystems array.  As output, the number of elements put into the array 
+	* @param numberOfSystems As input, the size of remoteSystems array.  As output, the number of elements put into the array
 	*/
 	bool GetConnectionList( PlayerID *remoteSystems, unsigned short *numberOfSystems ) const;
 
@@ -201,7 +200,7 @@ public:
 	* - Packets are only ordered relative to other packets on the same stream
 	* @param playerId Who to send this packet to, or in the case of broadcasting who not to send it to.  Use UNASSIGNED_PLAYER_ID to specify none
 	* @param broadcast True to send this packet to all connected systems. If true, then playerId specifies who not to send the packet to.
-	* @return 
+	* @return
 	* False if we are not connected to the specified recipient.  True otherwise
 	*/
 	bool Send( const char *data, const long length, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast );
@@ -216,7 +215,7 @@ public:
 	* - Packets are only ordered relative to other packets on the same stream
 	* @param playerId Who to send this packet to, or in the case of broadcasting who not to send it to.  Use UNASSIGNED_PLAYER_ID to specify none
 	* @param broadcast True to send this packet to all connected systems. If true, then playerId specifies who not to send the packet to.
-	* @return 
+	* @return
 	* False if we are not connected to the specified recipient.  True otherwise
 	*/
 	bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast );
@@ -242,7 +241,7 @@ public:
 	* Return the total number of connections we are allowed
 	*/
 	unsigned short GetMaximumNumberOfPeers( void ) const;
-	
+
 	/*
 	* --------------------------------------------------------------------------------------------
 	* Player Management Functions
@@ -288,7 +287,7 @@ public:
 	* Allows a previously banned IP to connect.
 	*
 	* @param IP Dotted IP address.  Can use * as a wildcard, such as 128.0.0.* will unban
-	* All IP addresses starting with 128.0.0 
+	* All IP addresses starting with 128.0.0
 	*/
 	void RemoveFromBanList( const char *IP );
 
@@ -331,7 +330,7 @@ public:
 	* Requires:
 	* The sender and recipient must already be started via a successful call to Initialize
 	*
-	* 
+	*
 	* @param host Either a dotted IP address or a domain name.  Can be 255.255.255.255 for LAN broadcast.
 	* @param remotePort Which port to connect to on the remote machine.
 	* @param onlyReplyOnAcceptingConnections Only request a reply if the remote system is accepting connections
@@ -342,7 +341,7 @@ public:
 	* Gets the average of all ping times read for a specified target
 	*
 	* @param target whose time to read
-	* @return The average of all ping times read for a specified target. 
+	* @return The average of all ping times read for a specified target.
 	*/
 	int GetAveragePing( PlayerID playerId );
 
@@ -350,7 +349,7 @@ public:
 	* Gets the last ping time read for the specific player or -1 if none read yet
 	*
 	* @param target whose time to read
-	* @return Just the last ping 
+	* @return Just the last ping
 	*/
 	int GetLastPing( PlayerID playerId ) const;
 
@@ -358,7 +357,7 @@ public:
 	* Gets the lowest ping time read or -1 if none read yet
 	*
 	* @param target  whose time to read
-	* @return the lowest ping time 
+	* @return the lowest ping time
 	*/
 	int GetLowestPing( PlayerID playerId ) const;
 
@@ -369,7 +368,7 @@ public:
 	* @param doPing True to start occasional pings.  False to stop them.
 	*/
 	void SetOccasionalPing( bool doPing );
-	
+
 	/*
 	* --------------------------------------------------------------------------------------------
 	* Static Data Functions - Functions dealing with API defined synchronized memory
@@ -391,7 +390,7 @@ public:
 	*
 	* @param playerId Whose static data to change.  Use your own playerId to change your own static data
 	* @param data a block of data to store
-	* @param length The length of data in bytes 
+	* @param length The length of data in bytes
 	*/
 	void SetRemoteStaticData( PlayerID playerId, const char *data, const long length );
 
@@ -442,13 +441,13 @@ public:
 	* Parameters:
 	* @param size: Set according to the following table:
 	* - 1500. The largest Ethernet packet size; it is also the default value.
-	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches. 
-	* - 1492. The size PPPoE prefers. 
-	* - 1472. Maximum size to use for pinging. (Bigger packets are fragmented.) 
-	* - 1468. The size DHCP prefers. 
-	* - 1460. Usable by AOL if you don't have large email attachments, etc. 
-	* - 1430. The size VPN and PPTP prefer. 
-	* - 1400. Maximum size for AOL DSL. 
+	* This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches.
+	* - 1492. The size PPPoE prefers.
+	* - 1472. Maximum size to use for pinging. (Bigger packets are fragmented.)
+	* - 1468. The size DHCP prefers.
+	* - 1460. Usable by AOL if you don't have large email attachments, etc.
+	* - 1430. The size VPN and PPTP prefer.
+	* - 1400. Maximum size for AOL DSL.
 	* - 576. Typical value to connect to dial-up ISPs. (Default)
 	*
 	* @return False on failure (we are connected).  True on success.  Maximum allowed size is MAXIMUM_MTU_SIZE
@@ -509,72 +508,6 @@ public:
 	* @param dataLength length of data in bytes.  Use 0 if no data.
 	*/
 	void AdvertiseSystem( char *host, unsigned short remotePort, const char *data, int dataLength );
-	/*
-	* --------------------------------------------------------------------------------------------
-	* Compression Functions - Functions related to the compression layer
-	* --------------------------------------------------------------------------------------------
-	*/
-
-	/**
-	* Enables or disables our tracking of bytes input to and output from the network.
-	* This is required to get a frequency table, which is used to generate a new compression layer.
-	* You can call this at any time - however you SHOULD only call it when disconnected.  Otherwise you will only track
-	* part of the values sent over the network.
-	* This value persists between connect calls and defaults to false (no frequency tracking)
-	* 
-	* @param doCompile - true to track bytes. Defaults to false
-	*/
-	void SetCompileFrequencyTable( bool doCompile );
-
-	/**
-	* Returns the frequency of outgoing bytes into outputFrequencyTable
-	* The purpose is to save to file as either a master frequency table from a sample game session for passing to
-	* GenerateCompressionLayer(false);
-	* You should only call this when disconnected.
-	* Requires that you first enable data frequency tracking by calling SetCompileFrequencyTable(true)
-	*
-	* @param[out] outputFrequencyTable  The frequency of each corresponding byte
-	* 
-	* @return False (failure) if connected or if frequency table tracking is not enabled. Otherwise true (success)
-	*/
-	bool GetOutgoingFrequencyTable( unsigned int outputFrequencyTable[ 256 ] );
-
-	/**
-	* Generates the compression layer from the input frequency table.
-	* You should call this twice - once with inputLayer as true and once as false.
-	* The frequency table passed here with inputLayer=true should match the frequency table on the recipient with inputLayer=false.
-	* Likewise, the frequency table passed here with inputLayer=false should match the frequency table on the recipient with inputLayer=true
-	* Calling this function when there is an existing layer will overwrite the old layer
-	* You should only call this when disconnected
-	*
-	* @param inputFrequencyTable The frequency table returned from GetSendFrequencyTable(...);
-	* @param inputLayer Whether inputFrequencyTable represents incoming data from other systems (true) or outgoing data from this system (false)
-	*
-	* @return False on failure (we are connected).  True otherwise
-	*/
-	bool GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer );
-
-	/**
-	* Deletes the output or input layer as specified. This is not necessary to call and is only valuable for freeing memory
-	* You should only call this when disconnected
-	*
-	* @param inputLayer Specifies the corresponding compression layer generated by GenerateCompressionLayer.
-	*
-	* @return False on failure (we are connected).  True otherwise
-	*/
-	bool DeleteCompressionLayer( bool inputLayer );
-
-	/**
-	* Get the compression ratio. A low compression ratio is good. Compression is for outgoing data 
-	* @return The compression ratio. 
-	*/
-	float GetCompressionRatio( void ) const;
-
-	/**
-	* Get the decompression ratio. A high decompression ratio is good.  Decompression is for incoming data
-	* @return The decompression ratio. 
-	*/
-	float GetDecompressionRatio( void ) const;
 
 	/*
 	* --------------------------------------------------------------------------------------------
@@ -626,7 +559,7 @@ public:
 	* You can map this data to a string using the C style StatisticsToString function
 	*
 	* @param playerId Which connected system to get statistics for
-	* 
+	*
 	* @return 0 on can't find the specified system.  A pointer to a set of data otherwise.
 	*/
 	RakNetStatisticsStruct * const GetStatistics( PlayerID playerId );
@@ -636,17 +569,17 @@ public:
 	* @brief Used to unify time
 	*
 	*
-	* This structure agregate the ping time and the clock differential. 
-	* both are used to synchronized time between peers 
+	* This structure agregate the ping time and the clock differential.
+	* both are used to synchronized time between peers
 	*/
 	struct PingAndClockDifferential
 	{
 		/**
-		* ping time 
+		* ping time
 		*/
 		short pingTime;
 		/**
-		* clock differential 
+		* clock differential
 		*/
 		unsigned int clockDifferential;
 	};
@@ -654,8 +587,8 @@ public:
 	/**
 	* @brief Store Remote System Description.
 	*
-	* RakPeer need to maintain a set of information concerning all remote peer 
-	* This is the goal of this structure. 
+	* RakPeer need to maintain a set of information concerning all remote peer
+	* This is the goal of this structure.
 	*/
 	struct RemoteSystemStruct
 	{
@@ -692,8 +625,8 @@ protected:
 	//void RemoveFromRequestedConnectionsList( PlayerID playerId );
 	bool SendConnectionRequest( const char* host, unsigned short remotePort );
 	/**
-	* Get the reliability layer associated with a playerID.  
-	* @param playerID The player identifier 
+	* Get the reliability layer associated with a playerID.
+	* @param playerID The player identifier
 	* @return 0 if none
 	*/
 	RemoteSystemStruct *GetRemoteSystemFromPlayerID( PlayerID playerID ) const;
@@ -726,21 +659,21 @@ protected:
 	*/
 	unsigned int GetBestClockDifferential( PlayerID playerId ) const;
 	/**
-	* @todo Document this 
-	* 
+	* @todo Document this
+	*
 	*/
 	void PushPortRefused( PlayerID target );
-	
+
 #ifdef __USE_IO_COMPLETION_PORTS
 
 	bool SetupIOCompletionPortSocket( int index );
 #endif
 	/**
-	* Set this to true to terminate the Peer thread execution 
+	* Set this to true to terminate the Peer thread execution
 	*/
 	bool endThreads;
 	/**
-	* true if the peer thread is active. 
+	* true if the peer thread is active.
 	*/
 	bool isMainLoopThreadActive;
 	// bool isRecvfromThreadActive;  /**< Tracks thread states */
@@ -754,7 +687,7 @@ protected:
 	*/
 	unsigned short remoteSystemListSize;
 	/**
-	* Store the maximum incoming connection allowed 
+	* Store the maximum incoming connection allowed
 	*/
 	unsigned short maximumIncomingConnections;
 	/**
@@ -762,7 +695,7 @@ protected:
 	*/
 	RakNet::BitStream incomingPasswordBitStream, outgoingPasswordBitStream, localStaticData, offlinePingResponse;
 	/**
-	* Local Player ID 
+	* Local Player ID
 	*/
 	PlayerID myPlayerId;
 	/**
@@ -837,7 +770,6 @@ protected:
 	* Compression stuff
 	*/
 	unsigned int frequencyTable[ 256 ];
-	HuffmanEncodingTree *inputTree, *outputTree;
 	unsigned int rawBytesSent, rawBytesReceived, compressedBytesSent, compressedBytesReceived;
 	// void DecompressInput(RakNet::BitStream *bitStream);
 	// void UpdateOutgoingFrequencyTable(RakNet::BitStream * bitStream);
@@ -876,7 +808,7 @@ protected:
 	void CloseConnectionInternalImmediate( PlayerID target );
 	void SendBuffered( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, RemoteSystemStruct::ConnectMode connectionMode );
 	bool SendImmediate( char *data, int numberOfBitsToSend, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast, bool useCallerDataAllocation, unsigned int currentTime );
-	
+
 	void ClearBufferedCommands(void);
 	void ClearRequestedConnectionList(void);
 

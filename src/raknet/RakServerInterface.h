@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief User visible interface of RakServer 
+ * @brief User visible interface of RakServer
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
  *
@@ -35,10 +35,10 @@
 #include "PacketPriority.h"
 #include "RakPeerInterface.h"
 #include "BitStream.h"
-#include "RakNetStatistics.h" 
+#include "RakNetStatistics.h"
 /**
  * @brief Visible Interface of RakServer
- * 
+ *
  * This class define the features available to the user when he want
  * to use server interface.
  */
@@ -50,9 +50,9 @@ public:
 	/**
 	 * Destructor
 	 */
-	
+
 	virtual ~RakServerInterface()	{}
-	
+
 	/**
 	 * Call this to initiate the server with the number of players you want to be allowed connected at once
 	 * @param AllowedPlayers Current maximum number of allowed players is 65535
@@ -63,7 +63,7 @@ public:
 	 * @return true on successful initiation, false otherwise
 	 */
 	virtual bool Start( unsigned short AllowedPlayers, int threadSleepTimer, unsigned short port, const char *forceHostAddress=0 ) = 0;
-	
+
 	/**
 	 * Must be called while offline
 	 * Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
@@ -74,13 +74,13 @@ public:
 	 * If you accept connections, you must call this or else secure connections will not be enabled
 	 * for incoming connections. If the private keys are 0, then a new key will be generated when this function is called
 	 *
-	 * @param pubKeyE A pointer to the public keys from the RSACrypt class.  
-	 * @param  pubKeyN A pointer to the public keys from the RSACrypt class. 
+	 * @param pubKeyE A pointer to the public keys from the RSACrypt class.
+	 * @param  pubKeyN A pointer to the public keys from the RSACrypt class.
 	 * @see the Encryption sample
-	 * 
+	 *
 	 */
 	virtual void InitializeSecurity( const char *pubKeyE, const char *pubKeyN ) = 0;
-	
+
 	/**
 	 * Must be called while offline
 	 * Disables all security.
@@ -91,15 +91,15 @@ public:
 	 * Set the password clients have to use to connect to this server. The password persists between connections.
 	 * Pass 0 for no password.
 	 * You can call this anytime
-	 * @param _password The password name. 
+	 * @param _password The password name.
 	 */
 	virtual void SetPassword( const char *_password ) = 0;
-	
+
 	/**
 	 * Returns true if a password was set, false otherwise
 	 */
 	virtual bool HasPassword( void ) = 0;
-	
+
 	/**
 	 * Stops the server, stops synchronized data, and resets all internal data.  This will drop all players currently connected, however
 	 * since the server is stopped packet reliability is not enforced so the Kick network message may not actually
@@ -110,7 +110,7 @@ public:
 	 * If you set it to 0 then the disconnection notifications probably won't arrive
 	 */
 	virtual void Disconnect( unsigned int blockDuration ) = 0;
-	
+
 	/**
 	 * This function only works while the server is active (Use the Start function).  Returns false on failure, true on success
 	 * Send the data stream of length length to whichever playerId you specify.  Specify UNASSIGNED_PLAYER_ID for all players connected
@@ -119,7 +119,7 @@ public:
 	 * To broadcast to everyone specify UNASSIGNED_PLAYER_ID for the playerId field.
 	 */
 	virtual bool Send( const char *data, const long length, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
-	
+
 	/**
 	 * This function only works while the server is active (Use the Start function).  Returns false on failure, true on success
 	 * Send the bitstream to whichever playerId you specify.
@@ -131,7 +131,7 @@ public:
 	 * To broadcast to everyone specify UNASSIGNED_PLAYER_ID for the playerId field.
 	 */
 	virtual bool Send( const RakNet::BitStream *bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
-	
+
 	/**
 	 * Call this to get a packet from the incoming packet queue.  Use DeallocatePacket to deallocate the packet after you are done with it.
 	 * Check the Packet struct at the top of CoreNetworkStructures.h for the format of the struct
@@ -140,30 +140,30 @@ public:
 	 * This also updates all memory blocks associated with synchronized memory
 	 */
 	virtual Packet* Receive( void ) = 0;
-	
+
 	/**
 	 * Kick out the specified player.
 	 */
 	virtual void Kick( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Call this to deallocate a packet returned by Receive when you are done handling it.
 	 */
 	virtual void DeallocatePacket( Packet *packet ) = 0;
-	
+
 	/**
 	 * Set how many players are allowed on the server. If more players are currently connected then are allowed then
 	 * No more players will be allowed to join until the number of players is less than the number of allowed players
 	 * The server must be active for this to have meaning
 	 */
 	virtual void SetAllowedPlayers( unsigned short AllowedPlayers ) = 0;
-	
+
 	/**
 	 * Return how many players are allowed to connect. This value was set either from Start or from SetAllowedPlayers
 	 * The server must be active for this to have meaning
 	 */
 	virtual unsigned short GetAllowedPlayers( void ) const = 0;
-	
+
 	/**
 	 * Return how many players are currently connected to the server.
 	 * The server must be active for this to have meaning
@@ -179,46 +179,46 @@ public:
 	 * If the specified id does not represent an active player the results are undefined (most likely returns 0)
 	 */
 	virtual void GetPlayerIPFromID( PlayerID playerId, char returnValue[ 22 ], unsigned short *port ) = 0;
-	
+
 	/**
 	 * Send a ping request to the specified player
 	 */
 	virtual void PingPlayer( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Returns the average of all ping times read for the specific player or -1 if none read yet
 	 */
 	virtual int GetAveragePing( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Returns the last ping time read for the specific player or -1 if none read yet
 	 */
 	virtual int GetLastPing( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Returns the lowest ping time read or -1 if none read yet
 	 */
 	virtual int GetLowestPing( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Ping all players every so often.  This is on by default.  In games where you don't care about ping you can call
 	 * StopOccasionalPing to save the bandwidth
 	 * This will work anytime
 	 */
 	virtual void StartOccasionalPing( void ) = 0;
-	
+
 	/**
 	 * Stop pinging players every so often.  Players are pinged by default.  In games where you don't care about ping
 	 * you can call this to save the bandwidth
 	 * This will work anytime
 	 */
 	virtual void StopOccasionalPing( void ) = 0;
-	
+
 	/**
 	 * Returns true if the server is currently active
 	 */
 	virtual bool IsActive( void ) const = 0;
-	
+
 	/**
 	 * Returns a number automatically synchronized between the server and client which randomly changes every
 	 * 9 seconds. The time it changes is accurate to within a few ms and is best used to seed
@@ -229,66 +229,17 @@ public:
 	 * StopSynchronizedRandomInteger after starting the server
 	 */
 	virtual unsigned int GetSynchronizedRandomInteger( void ) const = 0;
-	
+
 	/**
 	 * Start or restart the synchronized random integer.  This is on by default.  Call StopSynchronizedRandomInteger
 	 * to stop it keeping the number in synch
 	 */
 	virtual void StartSynchronizedRandomInteger( void ) = 0;
-	
+
 	/**
 	 * Stop the synchronized random integer.  Call StartSynchronizedRandomInteger to start it again
 	 */
 	virtual void StopSynchronizedRandomInteger( void ) = 0;
-	
-	/**
-	 * This is an optional function to generate the compression layer from the input frequency table.
-	 * You should call this twice - once with inputLayer as true and once as false.
-	 * The frequency table passed here with inputLayer=true should match the frequency table on the recipient with inputLayer=false.
-	 * Likewise, the frequency table passed here with inputLayer=false should match the frequency table on the recipient with inputLayer=true
-	 * Calling this function when there is an existing layer will overwrite the old layer
-	 * You should only call this when disconnected
-	 * @return false (failure) if connected.  Otherwise true (success)
-	 */
-	virtual bool GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer ) = 0;
-	
-	/**
-	 * Delete the output or input layer as specified.  This is not necessary to call and is only valuable for freeing memory
-	 * You should only call this when disconnected
-	 * @return false (failure) if connected.  Otherwise true (success)
-	 */
-	virtual bool DeleteCompressionLayer( bool inputLayer ) = 0;
-	
-	/**
-	 * Enables or disables frequency table tracking.  This is required to get a frequency table, which is used to generate
-	 * A new compression layer.
-	 * You can call this at any time - however you SHOULD only call it when disconnected.  Otherwise you will only track
-	 * part of the values sent over the network.
-	 * This value persists between connect calls and defaults to false (no frequency tracking)
-	 * @param b True to enable tracking 
-	 */
-	virtual void SetTrackFrequencyTable( bool b ) = 0;
-	
-	/**
-	 * Returns the frequency of outgoing bytes into outputFrequencyTable
-	 * The purpose is to save to file as either a master frequency table from a sample game session for passing to
-	 * GenerateCompressionLayer.
-	 * You should only call this when disconnected
-	 * Requires that you first enable data frequency tracking by calling SetTrackFrequencyTable(true)
-	 * @param[out] outputFrequencyTable The Frequency Table used in the compression layer 
-	 * @return false (failure) if connected or if frequency table tracking is not enabled.  Otherwise true (success)
-	 */
-	virtual bool GetSendFrequencyTable( unsigned int outputFrequencyTable[ 256 ] ) = 0;
-	
-	/**
-	 * Returns the compression ratio. A low compression ratio is good.  Compression is for outgoing data
-	 */
-	virtual float GetCompressionRatio( void ) const = 0;
-	
-	/**
-	 * Returns the decompression ratio.  A high decompression ratio is good.  Decompression is for incoming data
-	 */
-	virtual float GetDecompressionRatio( void ) const = 0;
 
 	/**
 	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
@@ -303,12 +254,12 @@ public:
 	* @param messageHandler Pointer to a message handler to detatch
 	*/
 	virtual void DetachMessageHandler( MessageHandlerInterface *messageHandler )=0;
-	
+
 	/**
 	 * The server internally maintains a data struct that is automatically sent to clients when the connect.
 	 * This is useful to contain data such as the server name or message of the day.  Access that struct with this
 	 * function.
-	 * @note 
+	 * @note
 	 * If you change any data in the struct remote clients won't reflect this change unless you manually update them
 	 * Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
 	 * The data is entered as an array and stored and returned as a BitStream.
@@ -316,12 +267,12 @@ public:
 	 * of the bitstream for the 2nd and 3rd parameters
 	 */
 	virtual RakNet::BitStream * GetStaticServerData( void ) = 0;
-	
+
 	/**
 	 * The server internally maintains a data struct that is automatically sent to clients when the connect.
 	 * This is useful to contain data such as the server name or message of the day.  Access that struct with this
 	 * function.
-	 * @note 
+	 * @note
 	 * If you change any data in the struct remote clients won't reflect this change unless you manually update them
 	 * Do so by calling SendStaticServerDataToClient(UNASSIGNED_PLAYER_ID) (broadcast to all)
 	 * The data is entered as an array and stored and returned as a BitStream.
@@ -329,7 +280,7 @@ public:
 	 * of the bitstream for the 2nd and 3rd parameters
 	 */
 	virtual void SetStaticServerData( const char *data, const long length ) = 0;
-	
+
 	/**
 	 * This sets to true or false whether we want to support relaying of static client data to other connected clients.
 	 * If set to false it saves some bandwdith, however other clients won't know the static client data and attempting
@@ -339,7 +290,7 @@ public:
 	 * This should be called after the server is started in case you want to override when it shuts off at 32 players
 	 */
 	virtual void SetRelayStaticClientData( bool b ) = 0;
-	
+
 	/**
 	 * Send the static server data to the specified player.  Pass UNASSIGNED_PLAYER_ID to broadcast to all players
 	 * The only time you need to call this function is to update clients that are already connected when you change the static
@@ -348,7 +299,7 @@ public:
 	 * The server must be active for this to have meaning
 	 */
 	virtual void SendStaticServerDataToClient( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Sets the data to send with an (LAN server discovery) /(offline ping) response
 	 * Length should be under 400 bytes, as a security measure against flood attacks
@@ -357,14 +308,14 @@ public:
 	 * @param length The length of data in bytes, or 0 for none
 	 */
 	virtual void SetOfflinePingResponse( const char *data, const unsigned int length ) = 0;
-	
+
 	/**
 	 * Returns a pointer to an attached client's character name specified by the playerId
 	 * Returns 0 if no such player is connected
 	 * Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
 	 * update by calling ChangeStaticClientData
 	 * The server must be active for this to have meaning
-	 * The data is entered as an array and stored and returned as a BitStream. 
+	 * The data is entered as an array and stored and returned as a BitStream.
 	 * Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
 	 * Maintain a pointer copy to the bitstream as in
 	 * RakNet::BitStream *copy = ...->GetStaticServerData(...);
@@ -372,18 +323,18 @@ public:
 	 * of the bitstream for the 2nd and 3rd parameters
 	 * Note that the client may change at any time the
 	 * data contents and/or its length!
-	 * @param playerId The ID of the client 
-	 * @return Statistical information of this client 
+	 * @param playerId The ID of the client
+	 * @return Statistical information of this client
 	 */
 	virtual RakNet::BitStream * GetStaticClientData( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Returns a pointer to an attached client's character name specified by the playerId
 	 * Returns 0 if no such player is connected
 	 * Note that you can modify the client data here.  Changes won't be reflected on clients unless you force them to
 	 * update by calling ChangeStaticClientData
 	 * The server must be active for this to have meaning
-	 * The data is entered as an array and stored and returned as a BitStream. 
+	 * The data is entered as an array and stored and returned as a BitStream.
 	 * Everytime you call GetStaticServerData it resets the read pointer to the start of the bitstream.  To do multiple reads without reseting the pointer
 	 * Maintain a pointer copy to the bitstream as in
 	 * RakNet::BitStream *copy = ...->GetStaticServerData(...);
@@ -391,12 +342,12 @@ public:
 	 * of the bitstream for the 2nd and 3rd parameters
 	 * Note that the client may change at any time the
 	 * data contents and/or its length!
-	 * @param playerId The ID of the client 
-	 * @param data A buffer containing statistics 
-	 * @param length The size of the buffer 
+	 * @param playerId The ID of the client
+	 * @param data A buffer containing statistics
+	 * @param length The size of the buffer
 	 */
 	virtual void SetStaticClientData( PlayerID playerId, const char *data, const long length ) = 0;
-	
+
 	/**
 	 * This function is used to update the information on connected clients when the server effects a change
 	 * of static client data
@@ -410,14 +361,14 @@ public:
 	 * The server must be active for this to have meaning
 	 */
 	virtual void ChangeStaticClientData( PlayerID playerChangedId, PlayerID playerToSendToId ) = 0;
-	
+
 	/**
 	 * Internally store the IP address(es) for the server and return how many it has.
 	 * This can easily be more than one, for example a system on both a LAN and with a net connection.
 	 * The server does not have to be active for this to work
 	 */
 	virtual unsigned int GetNumberOfAddresses( void ) = 0;
-	
+
 	/**
 	 * Call this function where 0 <= index < x where x is the value returned by GetNumberOfAddresses
 	 * Returns a static string filled with the server IP of the specified index
@@ -426,23 +377,23 @@ public:
 	 * The server does not have to be active for this to work
 	 */
 	virtual const char* GetLocalIP( unsigned int index ) = 0;
-	
+
 	/**
 	 * Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
 	 */
 	virtual void PushBackPacket( Packet *packet ) = 0;
-	
+
 	/**
 	 * Given a playerID, returns an index from 0 to the maximum number of players allowed - 1.
 	 */
 	virtual int GetIndexFromPlayerID( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * This function is only useful for looping through all players.
 	 * Index should range between 0 and the maximum number of players allowed - 1.
 	 */
 	virtual PlayerID GetPlayerIDFromIndex( int index ) = 0;
-	
+
 	/**
 	 * Bans an IP from connecting.  Banned IPs persist between connections.
 	 *
@@ -451,7 +402,7 @@ public:
 	 * All IP addresses starting with 128.0.0
 	 */
 	virtual void AddToBanList( const char *IP ) = 0;
-	
+
 	/**
 	 * Allows a previously banned IP to connect.
 	 *
@@ -460,12 +411,12 @@ public:
 	 * All IP addresses starting with 128.0.0
 	 */
 	virtual void RemoveFromBanList( const char *IP ) = 0;
-	
+
 	/**
 	 * Allows all previously banned IPs to connect.
 	 */
 	virtual void ClearBanList( void ) = 0;
-	
+
 	/**
 	 * Determines if a particular IP is banned.
 	 *
@@ -477,12 +428,12 @@ public:
 	 * False otherwise.
 	 */
 	virtual bool IsBanned( const char *IP ) = 0;
-	
+
 	/**
 	 * Returns true if that player ID is currently used
 	 */
 	virtual bool IsActivePlayerID( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * Change the MTU size in order to improve performance when sending large packets
 	 * This can only be called when not connected.
@@ -491,17 +442,17 @@ public:
 	 * A too low of value will split packets unnecessarily.
 	 * Set according to the following table:
 	 * 1500. The largest Ethernet packet size; it is also the default value.
-	 * This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches. 
-	 * 1492. The size PPPoE prefers. 
-	 * 1472. Maximum size to use for pinging. (Bigger packets are fragmented.) 
-	 * 1468. The size DHCP prefers. 
-	 * 1460. Usable by AOL if you don't have large email attachments, etc. 
-	 * 1430. The size VPN and PPTP prefer. 
-	 * 1400. Maximum size for AOL DSL. 
+	 * This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches.
+	 * 1492. The size PPPoE prefers.
+	 * 1472. Maximum size to use for pinging. (Bigger packets are fragmented.)
+	 * 1468. The size DHCP prefers.
+	 * 1460. Usable by AOL if you don't have large email attachments, etc.
+	 * 1430. The size VPN and PPTP prefer.
+	 * 1400. Maximum size for AOL DSL.
 	 * 576. Typical value to connect to dial-up ISPs. (Default)
 	 */
 	virtual bool SetMTUSize( int size ) = 0;
-	
+
 	/**
 	 * Returns the current MTU size
 	 */
@@ -515,7 +466,7 @@ public:
 	 * remotePort: Which port to connect to on the remote machine.
 	 */
 	virtual void AdvertiseSystem( char *host, unsigned short remotePort, const char *data, int dataLength ) = 0;
-	
+
 	/**
 	 * Returns a structure containing a large set of network statistics for the specified system
 	 * You can map this data to a string using the C style StatisticsToString function

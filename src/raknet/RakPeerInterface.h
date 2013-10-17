@@ -1,8 +1,8 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
+ * @file
  * @brief User interface of RakPeer.
- * 
+ *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
  *
@@ -40,7 +40,7 @@
 /**
  * @brief Define the user view of a RakPeer instance.
  *
- * This class define the user point of view of a RakPeer instance. 
+ * This class define the user point of view of a RakPeer instance.
  *
  */
 
@@ -54,11 +54,11 @@ public:
 	 * Destructor
 	 */
 	virtual ~RakPeerInterface()	{}
-	
+
 	// --------------------------------------------------------------------------------------------
 	// Major Low Level Functions - Functions needed by most users
 	// --------------------------------------------------------------------------------------------
-	
+
 	/**
 	 * Starts the network threads, opens the listen port
 	 * You must call this before calling SetMaximumIncomingConnections or Connect
@@ -76,7 +76,7 @@ public:
 	 * @return False on failure (can't create socket or thread), true on success.
 	 */
 	virtual bool Initialize( unsigned short MaximumNumberOfPeers, unsigned short localPort, int _threadSleepTimer, const char *forceHostAddress=0 ) = 0;
-	
+
 	/**
 	 * Must be called while offline
 	 * Secures connections though a combination of SHA1, AES128, SYN Cookies, and RSA to prevent
@@ -89,23 +89,23 @@ public:
 	 * If you are connecting to another system, you can call this with values for the
 	 * (e and p,q) public keys before connecting to prevent MitM
 	 *
-	 * @param pubKeyE A pointer to the public keys from the RSACrypt class.  
-	 * @param pubKeyN A pointer to the public keys from the RSACrypt class. 
-	 * @param privKeyP Public key generated from the RSACrypt class.  
-	 * @param privKeyQ Public key generated from the RSACrypt class.  
+	 * @param pubKeyE A pointer to the public keys from the RSACrypt class.
+	 * @param pubKeyN A pointer to the public keys from the RSACrypt class.
+	 * @param privKeyP Public key generated from the RSACrypt class.
+	 * @param privKeyQ Public key generated from the RSACrypt class.
 	 * If the private keys are 0, then a new key will be generated when this function is called
-	 * 
+	 *
 	 * @see the Encryption sample
 	 */
 	virtual void InitializeSecurity(const char *pubKeyE, const char *pubKeyN, const char *privKeyP, const char *privKeyQ ) = 0;
-	
+
 	/**
 	 * Disables all security.
 	 * @note Must be called while offline
 	 *
 	 */
 	virtual void DisableSecurity( void ) = 0;
-	
+
 	/**
 	 * Sets how many incoming connections are allowed. If this is less than the number of players currently connected, no
 	 * more players will be allowed to connect.  If this is greater than the maximum number of peers allowed, it will be reduced
@@ -116,12 +116,12 @@ public:
 	virtual void SetMaximumIncomingConnections( unsigned short numberAllowed ) = 0;
 
 	/**
-	 * Get the number of maximum incomming connection. 
+	 * Get the number of maximum incomming connection.
 	 * @return the maximum number of incoming connections, which is always <= MaximumNumberOfPeers
 	 */
-	
+
 	virtual unsigned short GetMaximumIncomingConnections( void ) const = 0;
-	
+
 	/**
 	 * Sets the password incoming connections must match in the call to Connect (defaults to none)
 	 * Pass 0 to passwordData to specify no password
@@ -131,10 +131,10 @@ public:
 	 * @param passwordDataLength The length in bytes of passwordData
 	 */
 	virtual void SetIncomingPassword( const char* passwordData, int passwordDataLength ) = 0;
-	
+
 	/**
 	 * Get the password set by SetIncomingPassword in a BitStream
-	 * @return The password in a BitStream. 
+	 * @return The password in a BitStream.
 	 */
 	RakNet::BitStream *GetIncomingPassword( void );
 
@@ -174,7 +174,7 @@ public:
 	 *
 	 * @param[out] remoteSystems  An array of PlayerID structures to be filled with the PlayerIDs of the systems we are connected to
 	 * - pass 0 to remoteSystems to only get the number of systems we are connected to
-	 * @param numberOfSystems As input, the size of remoteSystems array.  As output, the number of elements put into the array 
+	 * @param numberOfSystems As input, the size of remoteSystems array.  As output, the number of elements put into the array
 	 */
 	virtual bool GetConnectionList( PlayerID *remoteSystems, unsigned short *numberOfSystems ) const = 0;
 
@@ -190,7 +190,7 @@ public:
 	 * - Packets are only ordered relative to other packets on the same stream
 	 * @param playerId Who to send this packet to, or in the case of broadcasting who not to send it to.  Use UNASSIGNED_PLAYER_ID to specify none
 	 * @param broadcast True to send this packet to all connected systems.  If true, then playerId specifies who not to send the packet to.
-	 * @return 
+	 * @return
 	 * False if we are not connected to the specified recipient.  True otherwise
 	 */
 	virtual bool Send( const char *data, const long length, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
@@ -206,7 +206,7 @@ public:
 	 * - Packets are only ordered relative to other packets on the same stream
 	 * @param playerId Who to send this packet to, or in the case of broadcasting who not to send it to.  Use UNASSIGNED_PLAYER_ID to specify none
 	 * @param broadcast True to send this packet to all connected systems.  If true, then playerId specifies who not to send the packet to.
-	 * @return 
+	 * @return
 	 * False if we are not connected to the specified recipient.  True otherwise
 	 */
 	virtual bool Send( const RakNet::BitStream * bitStream, PacketPriority priority, PacketReliability reliability, char orderingChannel, PlayerID playerId, bool broadcast ) = 0;
@@ -226,14 +226,14 @@ public:
 	 * Call this to deallocate a packet returned by Receive when you are done handling it.
 	 * @param packet A packet to free
 	 */
-	
+
 	virtual void DeallocatePacket( Packet *packet ) = 0;
 
 	/**
 	 * Return the total number of connections we are allowed
 	 */
 	virtual unsigned short GetMaximumNumberOfPeers( void ) const = 0;
-	
+
 	// --------------------------------------------------------------------------------------------
 	// Player Management Functions
 	// --------------------------------------------------------------------------------------------
@@ -254,7 +254,7 @@ public:
 	 * @return An integer from 0 to the maximum number of peers -1, or -1 if that player is not found
 	 */
 	virtual int GetIndexFromPlayerID( PlayerID playerId ) = 0;
-	
+
 	/**
 	 * This function is only useful for looping through all players.
 	 *
@@ -263,7 +263,7 @@ public:
 	 * @return A valid playerID or UNASSIGNED_PLAYER_ID if no such player at that index
 	 */
 	virtual PlayerID GetPlayerIDFromIndex( int index ) = 0;
-	
+
 	/**
 	 * Bans an IP from connecting.  Banned IPs persist between connections.
 	 *
@@ -296,11 +296,11 @@ public:
 	 * - False otherwise.
 	 */
 	virtual bool IsBanned( const char *IP ) = 0;
-	
+
 	// --------------------------------------------------------------------------------------------
 	// Pinging Functions - Functions dealing with the automatic ping mechanism
 	// --------------------------------------------------------------------------------------------
-	
+
 	/**
 	 * Send a ping to the specified connected system.
 	 *
@@ -316,7 +316,7 @@ public:
 	 * Requires:
 	 * The sender and recipient must already be started via a successful call to Initialize
 	 *
-	 * 
+	 *
 	 * @param host Either a dotted IP address or a domain name.  Can be 255.255.255.255 for LAN broadcast.
 	 * @param remotePort Which port to connect to on the remote machine.
 	 * @param onlyReplyOnAcceptingConnections Only request a reply if the remote system is accepting connections
@@ -327,7 +327,7 @@ public:
 	 * Gets the average of all ping times read for a specified target
 	 *
 	 * @param target whose time to read
-	 * @return The average of all ping times read for a specified target. 
+	 * @return The average of all ping times read for a specified target.
 	 */
 	virtual int GetAveragePing( PlayerID playerId ) = 0;
 
@@ -335,7 +335,7 @@ public:
 	 * Gets the last ping time read for the specific player or -1 if none read yet
 	 *
 	 * @param target whose time to read
-	 * @return Just the last ping 
+	 * @return Just the last ping
 	 */
 	virtual int GetLastPing( PlayerID playerId ) const = 0;
 
@@ -343,7 +343,7 @@ public:
 	 * Gets the lowest ping time read or -1 if none read yet
 	 *
 	 * @param target  whose time to read
-	 * @return the lowest ping time 
+	 * @return the lowest ping time
 	 */
 	virtual int GetLowestPing( PlayerID playerId ) const = 0;
 
@@ -354,7 +354,7 @@ public:
 	 * @param doPing True to start occasional pings.  False to stop them.
 	 */
 	virtual void SetOccasionalPing( bool doPing ) = 0;
-	
+
 	// --------------------------------------------------------------------------------------------
 	// Static Data Functions - Functions dealing with API defined synchronized memory
 	// --------------------------------------------------------------------------------------------
@@ -374,7 +374,7 @@ public:
 	 *
 	 * @param playerId Whose static data to change.  Use your own playerId to change your own static data
 	 * @param data a block of data to store
-	 * @param length The length of data in bytes 
+	 * @param length The length of data in bytes
 	 */
 	virtual void SetRemoteStaticData( PlayerID playerId, const char *data, const long length ) = 0;
 
@@ -395,7 +395,7 @@ public:
 	 * @param length The length of data in bytes, or 0 for none
 	 */
 	virtual void SetOfflinePingResponse( const char *data, const unsigned int length ) = 0;
-	
+
 	// --------------------------------------------------------------------------------------------
 	// Network Functions - Functions dealing with the network in general
 	// --------------------------------------------------------------------------------------------
@@ -413,7 +413,7 @@ public:
 	 * @param target Which remote system you are referring to for your external ID
 	 */
 	virtual PlayerID GetExternalID( PlayerID target ) const = 0;
-	
+
 	/**
 	 * Change the MTU size in order to improve performance when sending large packets
 	 * This can only be called when not connected.
@@ -423,19 +423,19 @@ public:
 	 * Parameters:
 	 * @param size: Set according to the following table:
 	 * - 1500. The largest Ethernet packet size; it is also the default value.
-	 * This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches. 
-	 * - 1492. The size PPPoE prefers. 
-	 * - 1472. Maximum size to use for pinging. (Bigger packets are fragmented.) 
-	 * - 1468. The size DHCP prefers. 
-	 * - 1460. Usable by AOL if you don't have large email attachments, etc. 
-	 * - 1430. The size VPN and PPTP prefer. 
-	 * - 1400. Maximum size for AOL DSL. 
+	 * This is the typical setting for non-PPPoE, non-VPN connections. The default value for NETGEAR routers, adapters and switches.
+	 * - 1492. The size PPPoE prefers.
+	 * - 1472. Maximum size to use for pinging. (Bigger packets are fragmented.)
+	 * - 1468. The size DHCP prefers.
+	 * - 1460. Usable by AOL if you don't have large email attachments, etc.
+	 * - 1430. The size VPN and PPTP prefer.
+	 * - 1400. Maximum size for AOL DSL.
 	 * - 576. Typical value to connect to dial-up ISPs. (Default)
 	 *
 	 * @return False on failure (we are connected).  True on success.  Maximum allowed size is MAXIMUM_MTU_SIZE
 	 */
 	virtual bool SetMTUSize( int size ) = 0;
-	
+
 	/**
 	 * Returns the current MTU size
 	 *
@@ -490,72 +490,7 @@ public:
 	 * @param dataLength length of data in bytes.  Use 0 if no data.
 	 */
 	virtual void AdvertiseSystem( char *host, unsigned short remotePort, const char *data, int dataLength ) = 0;
-	
-	// --------------------------------------------------------------------------------------------
-	// Compression Functions - Functions related to the compression layer
-	// --------------------------------------------------------------------------------------------
-	
-	/**
-	 * Enables or disables our tracking of bytes input to and output from the network.
-	 * This is required to get a frequency table, which is used to generate a new compression layer.
-	 * You can call this at any time - however you SHOULD only call it when disconnected.  Otherwise you will only track
-	 * part of the values sent over the network.
-	 * This value persists between connect calls and defaults to false (no frequency tracking)
-	 * 
-	 * @param doCompile - true to track bytes. Defaults to false
-	 */
-	virtual void SetCompileFrequencyTable( bool doCompile ) = 0;
-	
-	/**
-	 * Returns the frequency of outgoing bytes into outputFrequencyTable
-	 * The purpose is to save to file as either a master frequency table from a sample game session for passing to
-	 * GenerateCompressionLayer(false);
-	 * You should only call this when disconnected.
-	 * Requires that you first enable data frequency tracking by calling SetCompileFrequencyTable(true)
-	 *
-	 * @param[out] outputFrequencyTable  The frequency of each corresponding byte
-	 * 
-	 * @return False (failure) if connected or if frequency table tracking is not enabled.  Otherwise true (success)
-	 */
-	virtual bool GetOutgoingFrequencyTable( unsigned int outputFrequencyTable[ 256 ] ) = 0;
-	
-	/**
-	 * Generates the compression layer from the input frequency table.
-	 * You should call this twice - once with inputLayer as true and once as false.
-	 * The frequency table passed here with inputLayer=true should match the frequency table on the recipient with inputLayer=false.
-	 * Likewise, the frequency table passed here with inputLayer=false should match the frequency table on the recipient with inputLayer=true
-	 * Calling this function when there is an existing layer will overwrite the old layer
-	 * You should only call this when disconnected
-	 *
-	 * @param inputFrequencyTable The frequency table returned from GetSendFrequencyTable(...);
-	 * @param inputLayer Whether inputFrequencyTable represents incoming data from other systems (true) or outgoing data from this system (false)
-	 *
-	 * @return False on failure (we are connected).  True otherwise
-	 */
-	virtual bool GenerateCompressionLayer( unsigned int inputFrequencyTable[ 256 ], bool inputLayer ) = 0;
-	
-	/**
-	 * Deletes the output or input layer as specified. This is not necessary to call and is only valuable for freeing memory
-	 * You should only call this when disconnected
-	 *
-	 * @param inputLayer Specifies the corresponding compression layer generated by GenerateCompressionLayer.
-	 *
-	 * @return False on failure (we are connected).  True otherwise
-	 */
-	virtual bool DeleteCompressionLayer( bool inputLayer ) = 0;
-	
-	/**
-	 * Get the compression ratio. A low compression ratio is good.  Compression is for outgoing data 
-	 * @return The compression ratio. 
-	 */
-	virtual float GetCompressionRatio( void ) const = 0;
-	
-	/**
-	 * Get the decompression ratio. A high decompression ratio is good.  Decompression is for incoming data
-	 * @return The decompression ratio.  
-	 */
-	virtual float GetDecompressionRatio( void ) const = 0;
-	
+
 	/*
 	* --------------------------------------------------------------------------------------------
 	* Message Handler Functions
@@ -578,7 +513,7 @@ public:
 	// --------------------------------------------------------------------------------------------
 	// Micellaneous Functions
 	// --------------------------------------------------------------------------------------------
-	
+
 	/**
 	 * Retrieves the data you passed to the passwordData parameter in Connect
 	 *
@@ -593,8 +528,8 @@ public:
 	 * @param packet The packet you want to push back.
 	 */
 	virtual void PushBackPacket( Packet *packet ) = 0;
-	
-	
+
+
 	// --------------------------------------------------------------------------------------------
 	// Statistical Functions - Functions dealing with API performance
 	// --------------------------------------------------------------------------------------------
@@ -604,7 +539,7 @@ public:
 	 * You can map this data to a string using the C style StatisticsToString function
 	 *
 	 * @param playerId Which connected system to get statistics for
-	 * 
+	 *
 	 * @return 0 on can't find the specified system.  A pointer to a set of data otherwise.
 	 */
 	virtual RakNetStatisticsStruct * const GetStatistics( PlayerID playerId ) = 0;
