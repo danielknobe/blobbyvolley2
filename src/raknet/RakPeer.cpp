@@ -116,11 +116,8 @@ static const int MAX_OFFLINE_DATA_LENGTH=400; // I set this because I limit ID_C
 RakPeer::RakPeer()
 {
 	usingSecurity = false;
-	memset( frequencyTable, 0, sizeof( unsigned int ) * 256 );
-	rawBytesSent = rawBytesReceived = compressedBytesSent = compressedBytesReceived = 0;
 	connectionSocket = INVALID_SOCKET;
 	MTUSize = DEFAULT_MTU_SIZE;
-	trackFrequencyTable = false;
 	maximumIncomingConnections = 0;
 	maximumNumberOfPeers = 0;
 	remoteSystemListSize=0;
@@ -223,12 +220,6 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 	if ( endThreads )
 	{
 		lastUserUpdateCycle = 0;
-
-		// Reset the frequency table that we use to save outgoing data
-		memset( frequencyTable, 0, sizeof( unsigned int ) * 256 );
-
-		// Reset the statistical data
-		rawBytesSent = rawBytesReceived = compressedBytesSent = compressedBytesReceived = 0;
 
 		updateCycleIsRunning = false;
 		endThreads = false;
@@ -2402,15 +2393,6 @@ bool RakPeer::SendImmediate( char *data, int numberOfBitsToSend, PacketPriority 
 
 	for (sendListIndex=0; sendListIndex < sendListSize; sendListIndex++)
 	{
-		if ( trackFrequencyTable )
-		{
-			unsigned i;
-			// Store output frequency
-			for (i=0 ; i < numberOfBytesUsed; i++ )
-				frequencyTable[ (unsigned char)(data[i]) ]++;
-			rawBytesSent += numberOfBytesUsed;
-		}
-
 		// Send may split the packet and thus deallocate data.  Don't assume data is valid if we use the callerAllocationData
 		bool useData = useCallerDataAllocation && callerDataAllocationUsed==false && sendListIndex+1==sendListSize;
 		remoteSystemList[sendList[sendListIndex]].reliabilityLayer.Send( data, numberOfBitsToSend, priority, reliability, orderingChannel, useData==false, MTUSize, currentTime );
