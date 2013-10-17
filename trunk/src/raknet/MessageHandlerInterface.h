@@ -1,6 +1,6 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
+ * @file
  * @brief Message handler interface
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
@@ -32,8 +32,8 @@
 #ifndef __MESSAGE_HANDLER_INTERFACE_H
 #define __MESSAGE_HANDLER_INTERFACE_H
 
-class RakPeerInterface;
 struct Packet;
+class RakPeer;
 #include "NetworkTypes.h"
 
 // MessageHandlers should derive from MessageHandlerInterface and be attached to RakPeer using the function AttachMessageHandler
@@ -46,42 +46,42 @@ public:
 	* OnUpdate is called everytime a packet is checked for .
 	*
 	* @param peer - the instance of RakPeer that is calling Receive
-	* 
+	*
 	*/
-	virtual void OnAttach(RakPeerInterface *peer);
+	virtual void OnAttach(RakPeer *peer);
 
 	/**
 	* OnUpdate is called everytime a packet is checked for .
 	*
 	* @param peer - the instance of RakPeer that is calling Receive
-	* 
+	*
 	*/
-	virtual void OnUpdate(RakPeerInterface *peer)=0;
+	virtual void OnUpdate(RakPeer *peer)=0;
 
 	/**
 	* OnReceive is called for every packet.
 	*
 	* @param peer - the instance of RakPeer that is calling Receive
 	* @param packet - the packet that is being returned to the user
-	* 
+	*
 	* @return true to absorb the packet, false to allow the packet to propagate to another handler, or to the game
 	*/
-	virtual bool OnReceive(RakPeerInterface *peer, Packet *packet)=0;
+	virtual bool OnReceive(RakPeer *peer, Packet *packet)=0;
 
 	/**
 	* Called when RakPeer is shutdown
 	*
 	* @param playerId - the instance of RakPeer that is calling Receive
-	* 
+	*
 	*/
-	virtual void OnDisconnect(RakPeerInterface *peer)=0;
+	virtual void OnDisconnect(RakPeer *peer)=0;
 
 	/**
 	* PropagateToGame tells RakPeer if a particular packet should be sent to the game or not
 	* If you create a custom packet ID just for this handler you would not want to propagate it to the game, for example
 	*
 	* @param id - The first byte of the packet in question
-	* 
+	*
 	* @return true (default) to allow a packet to propagate to the game.  False to only let the packet be sent to message handlers
 	*/
 	virtual bool PropagateToGame(Packet *packet) const;

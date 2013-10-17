@@ -1,8 +1,8 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief Socket Layer Abstraction 
- * 
+ * @brief Socket Layer Abstraction
+ *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
  *
@@ -44,7 +44,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <unistd.h> 
+#include <unistd.h>
 /**
 * typename for communication endpoint
 */
@@ -75,42 +75,42 @@ public:
 	 */
 	SocketLayer();
 	/**
-	 * Destructor 
+	 * Destructor
 	 */
 	~SocketLayer();
 	/**
-	 * Get Singleton Instance of the Socket Layer unique object. 
-	 * @return unique instance 
+	 * Get Singleton Instance of the Socket Layer unique object.
+	 * @return unique instance
 	 */
 	static inline SocketLayer* Instance()
 	{
 		return & I;
 	}
-	
+
 	/**
-	 * Create a socket connected to a remote host 
-	 * @param writeSocket The local socket 
-	 * @param binaryAddress The address of the remote host 
-	 * @param port the remote port 
-	 * @return A new socket used for communication 
+	 * Create a socket connected to a remote host
+	 * @param writeSocket The local socket
+	 * @param binaryAddress The address of the remote host
+	 * @param port the remote port
+	 * @return A new socket used for communication
 	 * @todo
-	 * Check for the binary address byte order 
-	 * 
+	 * Check for the binary address byte order
+	 *
 	 */
 	SOCKET Connect( SOCKET writeSocket, unsigned int binaryAddress, unsigned short port );
 	/**
 	 * Creates a socket to listen for incoming connections on the specified port
-	 * @param port the port number 
-	 * @param blockingSocket 
-	 * @return A new socket used for accepting clients 
+	 * @param port the port number
+	 * @param blockingSocket
+	 * @return A new socket used for accepting clients
 	 */
 	SOCKET CreateBoundSocket( unsigned short port, bool blockingSocket, const char *forceHostAddress );
 	const char* DomainNameToIP( const char *domainName );
 #ifdef __USE_IO_COMPLETION_PORTS
 	/**
-	 * Associate a socket to the completion port mecanism. 
+	 * Associate a socket to the completion port mecanism.
 	 * @param socket the socket
-	 * @param completionKey the completion port group identifier 
+	 * @param completionKey the completion port group identifier
 	 * @note Windows version only
 	 */
 	void AssociateSocketWithCompletionPort( SOCKET socket, ClientContextStruct* completionKey );
@@ -126,52 +126,52 @@ public:
 	 * Does a writing operation on a socket.
 	 * It Send a packet to a peer throught the network.
 	 * The socket must be connected
-	 * @param writeSocket the socket to use to do the communication 
-	 * @param data a byte buffer containing the data 
-	 * @param length the size of the byte buffer  
+	 * @param writeSocket the socket to use to do the communication
+	 * @param data a byte buffer containing the data
+	 * @param length the size of the byte buffer
 	 * return written bytes
 	 */
 	int Write( SOCKET writeSocket, const char* data, int length );
 	/**
-	 * Read data from a socket 
-	 * @param s the socket 
-	 * @param rakPeer 
-	 * @param errorCode An error code if an error occured 
+	 * Read data from a socket
+	 * @param s the socket
+	 * @param rakPeer
+	 * @param errorCode An error code if an error occured
 	 * @return Returns true if you successfully read data
-	 * @todo check the role of RakPeer 
-	 * 
+	 * @todo check the role of RakPeer
+	 *
 	 */
 	int RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode );
 	/**
-	 * Retrieve all local IP address in a printable format 
+	 * Retrieve all local IP address in a printable format
 	 * @param ipList An array of ip address in dot format.
 	 */
 	void GetMyIP( char ipList[ 10 ][ 16 ] );
 	/**
-	 * Send data to a peer. The socket should not be connected to a remote host. 
-	 * @param s the socket 
-	 * @param data the byte buffer to send 
-	 * @param length The length of the @em data 
-	 * @param ip The address of the remote host in dot format 
-	 * @param port The port number used by the remote host 
-	 * @return 0 on success. 
-	 * 
-	 * @todo check return value 
+	 * Send data to a peer. The socket should not be connected to a remote host.
+	 * @param s the socket
+	 * @param data the byte buffer to send
+	 * @param length The length of the @em data
+	 * @param ip The address of the remote host in dot format
+	 * @param port The port number used by the remote host
+	 * @return 0 on success.
+	 *
+	 * @todo check return value
 	 */
 	int SendTo( SOCKET s, const char *data, int length, char ip[ 16 ], unsigned short port );
 	/**
-	 * Send data to a peer. The socket should not be connected to a remote host. 
-	 * @param s the socket 
-	 * @param data the byte buffer to send 
-	 * @param length The length of the @em data 
-	 * @param binaryAddress The peer address in binary format. 
-	 * @param port The port number used by the remote host 
-	 * @return 0 on success. 
-	 * 
-	 * @todo check return value 
+	 * Send data to a peer. The socket should not be connected to a remote host.
+	 * @param s the socket
+	 * @param data the byte buffer to send
+	 * @param length The length of the @em data
+	 * @param binaryAddress The peer address in binary format.
+	 * @param port The port number used by the remote host
+	 * @return 0 on success.
+	 *
+	 * @todo check return value
 	 */
 	int SendTo( SOCKET s, const char *data, int length, unsigned int binaryAddress, unsigned short port );
-	
+
 
 
 
@@ -204,12 +204,12 @@ public:
 
 private:
 	/**
-	 * Tell whether or not the socket layer is already active 
+	 * Tell whether or not the socket layer is already active
 	 */
 	static int socketLayerInstanceCount;
 
 	/**
-	 * Singleton instance 
+	 * Singleton instance
 	 */
 	static SocketLayer I;
 };

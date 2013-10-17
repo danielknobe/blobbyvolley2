@@ -13,18 +13,14 @@ set (raknet_SRC
 	PacketPool.cpp PacketPool.h
 	PacketPriority.h
 	RakClient.cpp RakClient.h
-	RakClientInterface.h
 	RakNetStatistics.cpp RakNetStatistics.h
 	RakNetworkFactory.cpp RakNetworkFactory.h
 	RakPeer.cpp RakPeer.h
-	RakPeerInterface.h
 	RakServer.cpp RakServer.h
-	RakServerInterface.h
 	ReliabilityLayer.cpp ReliabilityLayer.h
 	SimpleMutex.cpp SimpleMutex.h
 	SingleProducerConsumer.h
 	SocketLayer.cpp SocketLayer.h
-	Types.h
 	)
 
 add_library(raknet STATIC ${raknet_SRC})

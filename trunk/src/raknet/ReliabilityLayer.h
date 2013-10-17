@@ -63,23 +63,6 @@ const unsigned int TIMEOUT_TIME = 30000; // In debug don't timeout for 30 second
 #else
 const unsigned int TIMEOUT_TIME = 10000; // In release timeout after the normal 10 seconds
 #endif
-/**
-* If you change MAX_AVERAGE_PACKETS_PER_SECOND or TIMEOUT_TIME, you
-* must make sure RECEIVED_PACKET_LOG_LENGTH < the range of
-* PacketNumberType (held in InternalPacket.h)
-* 6553.5 is the maximum for an unsigned short
-* @attention
-* take in account the value of RECEIVED_PACKET_LOG_LENGTH when changing this!
-*
-*/
-//const int MAX_AVERAGE_PACKETS_PER_SECOND = 6553;
-
-/**
-* This value must be less than the range of PacketNumberType.
-* PacketNumberType is in InternalPacket.h
-*/
-//const int RECEIVED_PACKET_LOG_LENGTH = ( TIMEOUT_TIME / 1000 ) * MAX_AVERAGE_PACKETS_PER_SECOND;
-
 
 #include "BitStream.h"
 /**
@@ -177,12 +160,6 @@ public:
 	*/
 	void Update( SOCKET s, PlayerID playerId, int MTUSize, unsigned int time );
 
-	/**
-	* If Read returns -1 and this returns true then a modified packet
-	* was detected
-	* @return true when a modified packet is detected
-	*/
-	bool IsCheater( void ) const;
 	/**
 	* Were you ever unable to deliver a packet despite retries?
 	* @return true if the connection no more responds
@@ -324,7 +301,7 @@ private:
 
 	// STUFF TO NOT MUTEX HERE (called from non-conflicting threads, or value is not important)
 	OrderingIndexType waitingForOrderedPacketReadIndex[ NUMBER_OF_ORDERED_STREAMS ], waitingForSequencedPacketReadIndex[ NUMBER_OF_ORDERED_STREAMS ];
-	bool deadConnection, cheater;
+	bool deadConnection;
 	unsigned int lostPacketResendDelay;
 	unsigned int splitPacketId;
 	unsigned int blockWindowIncreaseUntilTime;

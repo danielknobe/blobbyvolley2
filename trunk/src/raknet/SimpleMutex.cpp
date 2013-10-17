@@ -1,6 +1,6 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
+ * @file
  * @brief Simple Mutex
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -35,8 +35,6 @@
 SimpleMutex::SimpleMutex()
 {
 #ifdef _WIN32
-	//	hMutex = CreateMutex(NULL, FALSE, 0);
-	//	assert(hMutex);
 	InitializeCriticalSection(&criticalSection);
 #else
 	int error = pthread_mutex_init(&hMutex, 0);
@@ -69,16 +67,16 @@ void SimpleMutex::Lock(void)
 	if (d==WAIT_FAILED)
 	{
 	LPVOID messageBuffer;
-	FormatMessage( 
-	FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-	FORMAT_MESSAGE_FROM_SYSTEM | 
+	FormatMessage(
+	FORMAT_MESSAGE_ALLOCATE_BUFFER |
+	FORMAT_MESSAGE_FROM_SYSTEM |
 	FORMAT_MESSAGE_IGNORE_INSERTS,
 	NULL,
 	GetLastError(),
 	MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 	(LPTSTR) &messageBuffer,
 	0,
-	NULL 
+	NULL
 	);
 	// Process any inserts in messageBuffer.
 	// ...

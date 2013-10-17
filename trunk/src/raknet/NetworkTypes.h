@@ -32,17 +32,6 @@
 #ifndef __NETWORK_TYPES_H
 #define __NETWORK_TYPES_H
 
-// Needed for Serialize/Deserialize functions
-#include "BitStream.h"
-
-/**
-* Typename for Network Object Identifier
-*/
-typedef unsigned short ObjectID;
-/**
-* Typename for Unique Id
-*/
-typedef unsigned char UniqueIDType;
 /**
 * Typename for player index
 */
@@ -143,7 +132,7 @@ struct Packet
 	unsigned char* data;
 };
 
-class RakPeerInterface;
+class RakPeer;
 
 /**
 *  Index of an unassigned player
@@ -158,10 +147,6 @@ const PlayerID UNASSIGNED_PLAYER_ID =
 	0xFFFFFFFF, 0xFFFF
 };
 
-/**
-* Invalid Object Unique Id
-*/
-const ObjectID UNASSIGNED_OBJECT_ID = 65535;
 /**
 * Sizeof the Ping Array
 */

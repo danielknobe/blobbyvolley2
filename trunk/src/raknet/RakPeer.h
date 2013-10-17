@@ -32,7 +32,6 @@
 #define __RAK_PEER_H
 
 #include "ReliabilityLayer.h"
-#include "RakPeerInterface.h"
 #include "BitStream.h"
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
@@ -40,13 +39,9 @@
 class MessageHandlerInterface;
 
 #ifdef _WIN32
-// unsigned __stdcall RecvFromNetworkLoop(LPVOID arguments);
-void __stdcall ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
 void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 unsigned __stdcall UpdateNetworkLoop( LPVOID arguments );
 #else
-// void*  RecvFromNetworkLoop( void*  arguments );
-void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
 void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 void* UpdateNetworkLoop( void* arguments );
 #endif
@@ -60,7 +55,7 @@ void* UpdateNetworkLoop( void* arguments );
 * same time client and server.
 */
 
-class RakPeer : public RakPeerInterface
+class RakPeer
 {
 
 public:
@@ -476,13 +471,9 @@ public:
 protected:
 
 #ifdef _WIN32
-	// friend unsigned __stdcall RecvFromNetworkLoop(LPVOID arguments);
-	friend void __stdcall ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
 	friend void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 	friend unsigned __stdcall UpdateNetworkLoop( LPVOID arguments );
 #else
-	// friend void*  RecvFromNetworkLoop( void*  arguments );
-	friend void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer );
 	friend void ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 	friend void* UpdateNetworkLoop( void* arguments );
 #endif
@@ -608,7 +599,6 @@ protected:
 		PlayerID playerId;
 		bool broadcast;
 		RemoteSystemStruct::ConnectMode connectionMode;
-		ObjectID objectID;
 		enum {BCS_SEND, BCS_CLOSE_CONNECTION, BCS_DO_NOTHING} command;
 	};
 
