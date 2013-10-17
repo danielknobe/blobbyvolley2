@@ -41,6 +41,7 @@
 			<Add option="-Wall" />
 			<Add option="-DWIN32" />
 			<Add option="-DHAVE_LIBGL" />
+			<Add option="-D_WIN32" />
 			<Add directory="./src" />
 		</Compiler>
 		<Linker>
@@ -368,8 +369,6 @@
 		<Unit filename="src/raknet/CheckSum.cpp" />
 		<Unit filename="src/raknet/CheckSum.h" />
 		<Unit filename="src/raknet/ClientContextStruct.h" />
-		<Unit filename="src/raknet/ExtendedOverlappedPool.cpp" />
-		<Unit filename="src/raknet/ExtendedOverlappedPool.h" />
 		<Unit filename="src/raknet/GetTime.cpp" />
 		<Unit filename="src/raknet/GetTime.h" />
 		<Unit filename="src/raknet/InternalPacket.h" />
@@ -405,17 +404,12 @@
 		<Unit filename="src/raknet/Rand.h" />
 		<Unit filename="src/raknet/ReliabilityLayer.cpp" />
 		<Unit filename="src/raknet/ReliabilityLayer.h" />
-		<Unit filename="src/raknet/SHA1.cpp" />
-		<Unit filename="src/raknet/SHA1.h" />
 		<Unit filename="src/raknet/SimpleMutex.cpp" />
 		<Unit filename="src/raknet/SimpleMutex.h" />
 		<Unit filename="src/raknet/SingleProducerConsumer.h" />
 		<Unit filename="src/raknet/SocketLayer.cpp" />
 		<Unit filename="src/raknet/SocketLayer.h" />
 		<Unit filename="src/raknet/Types.h" />
-		<Unit filename="src/raknet/rijndael-boxes.h" />
-		<Unit filename="src/raknet/rijndael.cpp" />
-		<Unit filename="src/raknet/rijndael.h" />
 		<Unit filename="src/server/DedicatedServer.cpp">
 			<Option target="Server D" />
 		</Unit>

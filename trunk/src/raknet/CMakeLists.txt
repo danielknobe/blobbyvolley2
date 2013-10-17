@@ -5,8 +5,6 @@ set (raknet_SRC
 	BitStream.cpp BitStream.h
 	CheckSum.cpp CheckSum.h
 	ClientContextStruct.h
-	DataBlockEncryptor.cpp DataBlockEncryptor.h
-	ExtendedOverlappedPool.cpp ExtendedOverlappedPool.h
 	GetTime.cpp GetTime.h
 	InternalPacket.h
 	InternalPacketPool.cpp InternalPacketPool.h
@@ -29,14 +27,10 @@ set (raknet_SRC
 	RakServerInterface.h
 	Rand.cpp Rand.h
 	ReliabilityLayer.cpp ReliabilityLayer.h
-	rijndael-boxes.h
-	rijndael.cpp rijndael.h
-	RSACrypt.h
-	SHA1.cpp SHA1.h
 	SimpleMutex.cpp SimpleMutex.h
 	SingleProducerConsumer.h
 	SocketLayer.cpp SocketLayer.h
 	Types.h
 	)
 
-add_library(raknet STATIC ${raknet_SRC})	
+add_library(raknet STATIC ${raknet_SRC})

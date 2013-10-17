@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
 * @file
-* @brief SocketLayer class implementation 
+* @brief SocketLayer class implementation
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
  *
@@ -41,11 +41,6 @@ typedef int socklen_t;
 #include <fcntl.h>
 #endif
 
-#include "ExtendedOverlappedPool.h"
-#ifdef __USE_IO_COMPLETION_PORTS
-#include "AsynchronousFileIO.h"
-#endif
-
 int SocketLayer::socketLayerInstanceCount = 0;
 
 SocketLayer SocketLayer::I;
@@ -66,25 +61,6 @@ extern void ProcessPortUnreachable( unsigned int binaryAddress, unsigned short p
 #include <cstdio>
 #endif
 
-/*
-#ifdef _DEBUG
-void Error(const char* message)
-{
-#ifdef WIN32
-	DWORD dwIOError = GetLastError();
-	LPVOID messageBuffer;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, dwIOError, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
-		( LPTSTR ) &messageBuffer, 0, NULL);
-	printf("%s:Error code - %d\n%s", message, dwIOError, messageBuffer);
-	LocalFree(messageBuffer);
-#else
-	printf("%s", message);
-#endif
-}
-#endif
-*/
-
 SocketLayer::SocketLayer()
 {
 	// Check if the socketlayer is already started
@@ -93,14 +69,14 @@ SocketLayer::SocketLayer()
 #ifdef _WIN32
 		WSADATA winsockInfo;
 
-		// Initiate use of the Winsock DLL (Up to Verion 2.2) 
+		// Initiate use of the Winsock DLL (Up to Verion 2.2)
 		if (WSAStartup(MAKEWORD(2, 2), &winsockInfo ) != 0)
 		{
 			LOG("SocketLayer", "WSAStartup failed")
 		}
 #endif
 	}
-	
+
 	// increase usecount
 	socketLayerInstanceCount++;
 }
@@ -114,7 +90,7 @@ SocketLayer::~SocketLayer()
 		WSACleanup();
 #endif
 	}
-	
+
 	// decrease usecount
 	socketLayerInstanceCount--;
 }
@@ -205,7 +181,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 	else
 	{
 		listenerSocketAddress.sin_addr.s_addr = INADDR_ANY;
-	}	
+	}
 
 	// bind our name to the socket
 	ret = bind( listenSocket, ( struct sockaddr * ) & listenerSocketAddress, sizeof( struct sockaddr ) );

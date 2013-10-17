@@ -2901,10 +2901,6 @@ bool RakPeer::RunUpdateCycle( void )
 							outBitStream.Write((unsigned char)ID_NEW_INCOMING_CONNECTION);
 							outBitStream.Write(playerId.binaryAddress);
 							outBitStream.Write(playerId.port);
-							// We turned on encryption with SetEncryptionKey.  This pads packets to up to 16 bytes.
-							// As soon as a 16 byte packet arrives on the remote system, we will turn on AES.  This works because all encrypted packets are multiples of 16 and the
-							// packets I happen to be sending before this are less than 16 bytes.  Otherwise there is no way to know if a packet that arrived is
-							// encrypted or not so the other side won't know to turn on encryption or not.
 							SendImmediate( (char*)outBitStream.GetData(), outBitStream.GetNumberOfBitsUsed(), SYSTEM_PRIORITY, RELIABLE, 0, playerId, false, false, RakNet::GetTime() );
 
 							if (alreadyConnected==false)
