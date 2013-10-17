@@ -576,9 +576,7 @@ public:
 		unsigned int lastReliableSend; /**< When did the last reliable send occur.  Reliable sends must occur at least once every TIMEOUT_TIME/2 units to notice disconnects */
 		RakNet::BitStream staticData; /**< static data */
 		unsigned int connectionTime; /**< connection time, if active. */
-		unsigned char AESKey[ 16 ]; /**< Security key. */
-		bool setAESKey; /**< true if security is enabled. */
-		enum ConnectMode {NO_ACTION, DISCONNECT_ASAP, REQUESTED_CONNECTION, HANDLING_CONNECTION_REQUEST, UNVERIFIED_SENDER, SET_ENCRYPTION_ON_MULTIPLE_16_BYTE_PACKET, CONNECTED} connectMode;
+		enum ConnectMode {NO_ACTION, DISCONNECT_ASAP, REQUESTED_CONNECTION, HANDLING_CONNECTION_REQUEST, UNVERIFIED_SENDER, CONNECTED} connectMode;
 	};
 
 protected:
@@ -610,7 +608,7 @@ protected:
 	/**
 	* When we get a connection request from an ip / port, accept it unless full
 	*/
-	void OnConnectionRequest( RakPeer::RemoteSystemStruct *remoteSystem, unsigned char *AESKey, bool setAESKey );
+	void OnConnectionRequest( RakPeer::RemoteSystemStruct *remoteSystem );
 	/**
 	* Send a reliable disconnect packet to this player and disconnect them when it is delivered
 	*/
