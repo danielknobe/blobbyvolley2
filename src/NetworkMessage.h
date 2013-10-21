@@ -231,12 +231,14 @@ enum MessageType
 //		data
 //
 
-class UserConfig;
+class IUserConfigReader;
 
 struct ServerInfo : public ObjectCounter<ServerInfo>
 {
+	// read server info from a bit stream, additionally, the server address and port are needed
 	ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t port);
-	ServerInfo(const UserConfig& config);
+	// read server info from a user config object
+	ServerInfo(const IUserConfigReader& config);
 	ServerInfo(const std::string& playername);
 
 	void writeToBitstream(RakNet::BitStream& stream);
