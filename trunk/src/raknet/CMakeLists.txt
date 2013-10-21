@@ -6,7 +6,6 @@ set (raknet_SRC
 	InternalPacket.h
 	InternalPacketPool.cpp InternalPacketPool.h
 	LinkedList.h
-	MessageHandlerInterface.cpp MessageHandlerInterface.h
 	MTUSize.h
 	NetworkTypes.cpp NetworkTypes.h
 	PacketEnumerations.h

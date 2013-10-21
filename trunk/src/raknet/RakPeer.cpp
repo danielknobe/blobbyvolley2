@@ -43,7 +43,6 @@
 #include "GetTime.h"
 #include "PacketEnumerations.h"
 #include "PacketPool.h"
-#include "MessageHandlerInterface.h"
 
 // alloca
 #ifdef _WIN32
@@ -396,11 +395,6 @@ void RakPeer::Disconnect( unsigned int blockDuration )
 	unsigned int time;
 	unsigned short systemListSize = remoteSystemListSize; // This is done for threading reasons
 
-	for (i=0; i < messageHandlerList.size(); i++)
-	{
-		messageHandlerList[i]->OnDisconnect(this);
-	}
-
 	if ( blockDuration > 0 )
 	{
 		for ( i = 0; i < systemListSize; i++ )
@@ -629,11 +623,6 @@ Packet* RakPeer::Receive( void )
 	unsigned int i;
 	bool propagate;
 
-	for (i=0; i < messageHandlerList.size(); i++)
-	{
-		messageHandlerList[i]->OnUpdate(this);
-	}
-
 	#pragma warning( disable : 4127 ) // warning C4127: conditional expression is constant
 	while ( true )
 	{
@@ -654,34 +643,6 @@ Packet* RakPeer::Receive( void )
 		}
 		else
 			return 0;
-
-		if ( ( val->length >= sizeof(unsigned char) + sizeof( int ) ) &&
-			( (unsigned char) val->data[ 0 ] == ID_TIMESTAMP ) )
-		{
-			offset = sizeof(unsigned char);
-			ShiftIncomingTimestamp( ( char* ) val->data + offset, val->playerId );
-		}
-
-		propagate=true;
-		for (i=0; i < messageHandlerList.size(); i++)
-		{
-			if (messageHandlerList[i]->OnReceive(this, val))
-			{
-				// If the message handler returns true, do no further processing
-				propagate=false;
-				break;
-			}
-
-			// Packets that are not propagated to the game are only processed by message handlers
-			if (propagate==true && messageHandlerList[i]->PropagateToGame(val)==false)
-				propagate=false;
-		}
-
-		if (propagate==false)
-		{
-			DeallocatePacket( val );
-			continue;
-		}
 
 		break;
 	}
@@ -844,50 +805,6 @@ void RakPeer::Ping( const char* host, unsigned short remotePort, bool onlyReplyO
 			rcs->actionToTake=RequestedConnectionStruct::PING;
 		requestedConnectionList.WriteUnlock();
 	}
-
-
-
-/*
-	RakNet::BitStream bitStream( sizeof(unsigned char) + sizeof(unsigned int) );
-	if ( onlyReplyOnAcceptingConnections )
-		bitStream.Write((unsigned char)ID_UNCONNECTED_PING_OPEN_CONNECTIONS);
-	else
-		bitStream.Write((unsigned char)ID_UNCONNECTED_PING);
-	bitStream.Write((unsigned int)RakNet::GetTime());
-
-//	SendBuffered(&bitStream, SYSTEM_PRIORITY, UNRELIABLE, 0, playerId, false, RemoteSystemStruct::DISCONNECT_ASAP);
-
-	SocketLayer::Instance()->SendTo( connectionSocket, (const char*)bitStream.GetData(), bitStream.GetNumberOfBytesUsed(), ( char* ) host, remotePort );
-	*/
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Returns the average of all ping times read for a specified target
-//
-// Parameters:
-// target - whose time to read
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-int RakPeer::GetAveragePing( PlayerID playerId )
-{
-	int sum, quantity;
-	RemoteSystemStruct *remoteSystem = GetRemoteSystemFromPlayerID( playerId );
-
-	if ( remoteSystem == 0 )
-		return -1;
-
-	for ( sum = 0, quantity = 0; quantity < PING_TIMES_ARRAY_SIZE; quantity++ )
-	{
-		if ( remoteSystem->pingAndClockDifferential[ quantity ].pingTime == -1 )
-			break;
-		else
-			sum += remoteSystem->pingAndClockDifferential[ quantity ].pingTime;
-	}
-
-	if ( quantity > 0 )
-		return sum / quantity;
-	else
-		return -1;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -904,10 +821,7 @@ int RakPeer::GetLastPing( PlayerID playerId ) const
 	if ( remoteSystem == 0 )
 		return -1;
 
-	if ( remoteSystem->pingAndClockDifferentialWriteIndex == 0 )
-		return remoteSystem->pingAndClockDifferential[ PING_TIMES_ARRAY_SIZE - 1 ].pingTime;
-	else
-		return remoteSystem->pingAndClockDifferential[ remoteSystem->pingAndClockDifferentialWriteIndex - 1 ].pingTime;
+	return remoteSystem->pingTime;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1130,37 +1044,6 @@ void RakPeer::AdvertiseSystem( char *host, unsigned short remotePort, const char
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Attatches a message handler interface to run code automatically on message receipt in the Receive call
-//
-// @param messageHandler Pointer to a message handler to attach
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	if (messageHandlerList.getIndexOf(messageHandler)==MAX_UNSIGNED_LONG)
-	{
-		messageHandlerList.insert(messageHandler);
-		messageHandler->OnAttach(this);
-	}
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Detatches a message handler interface to run code automatically on message receipt
-//
-// @param messageHandler Pointer to a message handler to detatch
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::DetachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	unsigned int index;
-	index = messageHandlerList.getIndexOf(messageHandler);
-	if (index!=MAX_UNSIGNED_LONG)
-	{
-		// Unordered list so delete from end for speed
-		messageHandlerList[index]=messageHandlerList[messageHandlerList.size()-1];
-		messageHandlerList.del();
-	}
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Description:
 // Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
 //
@@ -1364,14 +1247,9 @@ RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerI
 			remoteSystem=remoteSystemList+i;
 			remoteSystem->playerId = playerId; // This one line causes future incoming packets to go through the reliability layer
 
-			for ( j = 0; j < PING_TIMES_ARRAY_SIZE; j++ )
-			{
-				remoteSystem->pingAndClockDifferential[ j ].pingTime = -1;
-				remoteSystem->pingAndClockDifferential[ j ].clockDifferential = 0;
-			}
+			remoteSystem->pingTime = -1;
 
 			remoteSystem->connectMode=connectionMode;
-			remoteSystem->pingAndClockDifferentialWriteIndex = 0;
 			remoteSystem->lowestPing = -1;
 			remoteSystem->nextPingTime = 0; // Ping immediately
 			remoteSystem->weInitiatedTheConnection = false;
@@ -1387,54 +1265,6 @@ RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerI
 	}
 
 	return remoteSystem;
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Adjust the first four bytes (treated as unsigned int) of the pointer
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::ShiftIncomingTimestamp( char *data, PlayerID playerId ) const
-{
-#ifdef _DEBUG
-	assert( IsActive() );
-	assert( data );
-#endif
-
-	RakNet::BitStream timeBS(data, 4, false);
-	unsigned int encodedTimestamp;
-	timeBS.Read(encodedTimestamp);
-
-	encodedTimestamp = encodedTimestamp - GetBestClockDifferential( playerId );
-	timeBS.SetWriteOffset(0);
-	timeBS.Write(encodedTimestamp);
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Thanks to Chris Taylor (cat02e@fsu.edu) for the improved timestamping algorithm
-unsigned int RakPeer::GetBestClockDifferential( PlayerID playerId ) const
-{
-	int counter, clockDifferential, lowestPingSoFar;
-	RemoteSystemStruct *remoteSystem = GetRemoteSystemFromPlayerID( playerId );
-
-	if ( remoteSystem == 0 )
-		return 0;
-
-	lowestPingSoFar = 65535;
-
-	clockDifferential = 0;
-
-	for ( counter = 0; counter < PING_TIMES_ARRAY_SIZE; counter++ )
-	{
-		if ( remoteSystem->pingAndClockDifferential[ counter ].pingTime == -1 )
-			break;
-
-		if ( remoteSystem->pingAndClockDifferential[ counter ].pingTime < lowestPingSoFar )
-		{
-			clockDifferential = remoteSystem->pingAndClockDifferential[ counter ].clockDifferential;
-			lowestPingSoFar = remoteSystem->pingAndClockDifferential[ counter ].pingTime;
-		}
-	}
-
-	return clockDifferential;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2209,23 +2039,18 @@ bool RakPeer::RunUpdateCycle( void )
 
 						time = RakNet::GetTime(); // Update the time value to be accurate
 						ping = time - sendPingTime;
-						lastPing = remoteSystem->pingAndClockDifferential[ remoteSystem->pingAndClockDifferentialWriteIndex ].pingTime;
+						lastPing = remoteSystem->pingTime;
 
 						// Ignore super high spikes in the average
 						if ( lastPing <= 0 || ( ( ( int ) ping < ( lastPing * 3 ) ) && ping < 1200 ) )
 						{
-							remoteSystem->pingAndClockDifferential[ remoteSystem->pingAndClockDifferentialWriteIndex ].pingTime = ( short ) ping;
-							// Thanks to Chris Taylor (cat02e@fsu.edu) for the improved timestamping algorithm
-							remoteSystem->pingAndClockDifferential[ remoteSystem->pingAndClockDifferentialWriteIndex ].clockDifferential = sendPongTime - ( time + sendPingTime ) / 2;
+							remoteSystem->pingTime = ( short ) ping;
 
 							if ( remoteSystem->lowestPing == -1 || remoteSystem->lowestPing > ping )
 								remoteSystem->lowestPing = ping;
 
 							// Most packets should arrive by the ping time.
 							remoteSystem->reliabilityLayer.SetLostPacketResendDelay( ping * 2 );
-
-							if ( ++( remoteSystem->pingAndClockDifferentialWriteIndex ) == PING_TIMES_ARRAY_SIZE )
-								remoteSystem->pingAndClockDifferentialWriteIndex = 0;
 						}
 
 						delete [] data;
