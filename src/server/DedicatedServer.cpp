@@ -271,10 +271,10 @@ void DedicatedServer::updateGames()
 
 bool DedicatedServer::hasActiveGame() const
 {
-
+	return !mGameList.empty();
 }
 
 bool DedicatedServer::hasWaitingPlayer() const
 {
-
+	return mWaitingPlayer.valid();
 }
