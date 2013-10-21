@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/PacketEnumerations.h"
 #include "raknet/NetworkTypes.h"
+#include "raknet/BitStream.h"
 #include "BlobbyDebug.h"
 
 enum MessageType
@@ -239,9 +240,9 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	ServerInfo(const std::string& playername);
 
 	void writeToBitstream(RakNet::BitStream& stream);
-	
+
 	void setWaitingPlayer(const std::string& name);
-	
+
 	/// \todo maybe we should define ServerInfo a little bit more
 	///			as e.g., hostname can be left uninitialised on server
 	/// we combine to functionsalities here: server information and server addresses.
@@ -252,7 +253,7 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	char name[32];
 	char waitingplayer[64];
 	char description[192];
-	
+
 	static const size_t BLOBBY_SERVER_PRESENT_PACKET_SIZE;
 };
 

@@ -36,7 +36,7 @@ NetworkPlayer::NetworkPlayer() : mID(), mIdentity(), mDesiredSide(NO_PLAYER)
 NetworkPlayer::NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side)
 :mID(id), mIdentity(name, color, false), mDesiredSide(side)
 {
-	
+
 }
 
 NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
@@ -51,12 +51,12 @@ NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
 
 	// ensures that charName is null terminated
 	charName[sizeof(charName)-1] = '\0';
-	
+
 	// read colour data
 	int color;
 	stream.Read(color);
-	
-	mIdentity = PlayerIdentity(charName, color, false); 
+
+	mIdentity = PlayerIdentity(charName, color, false);
 }
 
 bool NetworkPlayer::valid() const

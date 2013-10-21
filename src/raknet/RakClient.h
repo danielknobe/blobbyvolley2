@@ -117,14 +117,7 @@ public:
 	 * associated with synchronized memory
 	 * @return the last receive packet
 	 */
-	Packet* Receive( void );
-	/**
-	 * Call this to deallocate a packet returned by Receive when you are done handling it.
-	 * Free the memory associated to a packet. It is not the same as using delete operator because
-	 * RakNet might decide not to delete right now the packet in order to use it later.
-	 * @param packet the packet to deallocate.
-	 */
-	void DeallocatePacket( Packet *packet );
+	packet_ptr Receive( void );
 
 	/**
 	 * Send a ping request to the server.Occasional pings are on by

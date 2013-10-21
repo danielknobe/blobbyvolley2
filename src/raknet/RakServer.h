@@ -105,15 +105,11 @@ public:
 	* If the server is not active this will also return 0, as all waiting packets are flushed when the server is Disconnected
 	* This also updates all memory blocks associated with synchronized memory
 	*/
-	Packet* Receive( void );
+	packet_ptr Receive( void );
 	/**
 	* Kick out the specified player.
 	*/
 	void Kick( PlayerID playerId );
-	/**
-	* Call this to deallocate a packet returned by Receive when you are done handling it.
-	*/
-	void DeallocatePacket( Packet *packet );
 	/**
 	* Set how many players are allowed on the server. If more players are currently connected then are allowed then
 	* No more players will be allowed to join until the number of players is less than the number of allowed players

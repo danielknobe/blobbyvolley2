@@ -612,10 +612,10 @@ bool RakPeer::Send( const RakNet::BitStream * bitStream, PacketPriority priority
 // If the client is not active this will also return 0, as all waiting packets are flushed when the client is Disconnected
 // This also updates all memory blocks associated with synchronized memory and distributed objects
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Packet* RakPeer::Receive( void )
+packet_ptr RakPeer::Receive( void )
 {
 	if ( !( IsActive() ) )
-		return 0;
+		return packet_ptr();
 
 	Packet *val;
 
@@ -637,12 +637,12 @@ Packet* RakPeer::Receive( void )
 			else
 			{
 				incomingQueueMutex.Unlock();
-				return 0;
+				return packet_ptr();
 			}
 			incomingQueueMutex.Unlock();
 		}
 		else
-			return 0;
+			return packet_ptr();
 
 		break;
 	}
@@ -652,19 +652,21 @@ Packet* RakPeer::Receive( void )
 	assert( val->data );
 #endif
 
-	return val;
-}
+	struct deleter
+	{
+		RakPeer* peer;
+		void operator()(Packet* p)
+		{
+			if ( p == 0 )
+				return ;
 
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Description:
-// Call this to deallocate a packet returned by Receive when you are done handling it.
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void RakPeer::DeallocatePacket( Packet *packet )
-{
-	if ( packet == 0 )
-		return ;
+			peer->packetPool.ReleasePointer( p );
+		}
+	};
 
-	packetPool.ReleasePointer( packet );
+	deleter del;
+	del.peer = this;
+	return packet_ptr(val, del);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

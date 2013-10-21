@@ -35,6 +35,8 @@
 #include "BitStream.h"
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
+#include "RakNetPacket.h"
+
 
 #ifdef _WIN32
 void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
@@ -179,13 +181,7 @@ public:
 	* If the client is not active this will also return 0, as all waiting packets are flushed when the client is Disconnected
 	* This also updates all memory blocks associated with synchronized memory and distributed objects
 	*/
-	Packet* Receive( void );
-
-	/**
-	* Call this to deallocate a packet returned by Receive when you are done handling it.
-	* @param packet A packet to free
-	*/
-	void DeallocatePacket( Packet *packet );
+	packet_ptr Receive( void );
 
 	/**
 	* Return the total number of connections we are allowed

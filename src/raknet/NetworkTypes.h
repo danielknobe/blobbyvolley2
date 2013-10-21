@@ -32,6 +32,8 @@
 #ifndef __NETWORK_TYPES_H
 #define __NETWORK_TYPES_H
 
+#include <boost/shared_ptr.hpp>
+
 /**
 * Typename for player index
 */
@@ -132,7 +134,7 @@ struct Packet
 	unsigned char* data;
 };
 
-class RakPeer;
+typedef boost::shared_ptr<Packet> packet_ptr;
 
 /**
 *  Index of an unassigned player
