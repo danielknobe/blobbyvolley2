@@ -32,7 +32,7 @@ ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t p)
 {
 	strncpy(hostname, ip, sizeof(hostname));
 	hostname[sizeof(hostname) - 1] = 0;
-	
+
 	port = p;
 
 	stream.Read(activegames);
@@ -42,30 +42,26 @@ ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t p)
 	stream.Read(description, sizeof(description));
 }
 
-ServerInfo::ServerInfo(const UserConfig& config)
+ServerInfo::ServerInfo(const IUserConfigReader& config)
 {
 	/// \todo we only need a config reader here!
-	
+
 	// default values
 	std::string n = "Blobby Volley 2 Server";
 	std::string d = "no description available";
-	
+
 	memset(this, 0, sizeof(ServerInfo));
 	std::string tmp;
-	tmp = config.getString("name");
-	if( tmp == "" )
-		tmp = n;
-	
+	tmp = config.getString("name", n);
 	strncpy(name, tmp.c_str(), sizeof(name) - 1);
-	tmp = config.getString("description");
-	if( tmp == "" )
-		tmp = d;
-	
+	tmp = config.getString("description", d);
 	strncpy(description, tmp.c_str(), sizeof(description) - 1);
-	gamespeed = config.getInteger("speed");
+	gamespeed = config.getInteger("speed", 75);
 	/// \todo maybe we should check if that's a reasonable value, too.
-	if (gamespeed == 0)
+	if (gamespeed < 20 || gamespeed > 200)
 		gamespeed = 75;
+
+	port = config.getInteger("port", BLOBBY_PORT);
 }
 
 ServerInfo::ServerInfo(const std::string& playername)
@@ -96,7 +92,7 @@ const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned ch
 		+ 64				// waiting player
 		+ 192;				// description
 
-		
+
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval)
 {

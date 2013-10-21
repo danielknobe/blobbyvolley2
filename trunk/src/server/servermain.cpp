@@ -111,8 +111,6 @@ int main(int argc, char** argv)
 
 	setup_physfs(argv[0]);
 
-
-	int port = BLOBBY_PORT;
 	int maxClients = 100;
 	std::string rulesFile = "rules.lua";
 
@@ -120,7 +118,6 @@ int main(int argc, char** argv)
 	try
 	{
 		config.loadFile(g_config_file);
-		port = config.getInteger("port");
 		maxClients = config.getInteger("maximum_clients");
 		rulesFile = g_rules_file == "" ? config.getString("rules") : g_rules_file;
 
@@ -134,7 +131,6 @@ int main(int argc, char** argv)
 	}
 
 	ServerInfo myinfo(config);
-	myinfo.port = port;
 	DedicatedServer server(myinfo, rulesFile, maxClients);
 
 	float speed = myinfo.gamespeed;

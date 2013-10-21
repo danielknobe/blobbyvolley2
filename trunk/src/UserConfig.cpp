@@ -48,15 +48,15 @@ boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(c
 	{
 		return cfg_cached->second;
 	}
-	
+
 	// otherwise, load user config...
 	UserConfig* uc = new UserConfig();
 	uc->loadFile(file);
 	boost::shared_ptr<IUserConfigReader> config(uc);
-	
+
 	// ... and add to cache
 	userConfigCache[file] = config;
-	
+
 	return config;
 }
 
@@ -75,17 +75,17 @@ PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human)
 					getString(prefix + "_player_name") :
 					getString(prefix + "_script_name") + ".lua";
 	}
-	
+
 	PlayerIdentity player = PlayerIdentity(name);
-	
+
 	player.setStaticColor( Color(
 							getInteger(prefix + "_blobby_color_r"),
 							getInteger(prefix + "_blobby_color_g"),
 							getInteger(prefix + "_blobby_color_b")
 						) );
-	
+
 	player.setOscillating(getBool(prefix + "_blobby_oscillate"));
-	
+
 	return player;
 }
 
@@ -117,7 +117,7 @@ bool UserConfig::loadFile(const std::string& filename)
 			value = c;
 		createVar(name, value);
 	}
-	
+
 	return true;
 }
 
@@ -127,9 +127,9 @@ bool UserConfig::saveFile(const std::string& filename) const
 	FileWrite file(filename);
 
 	const std::string xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
-	
+
 	const std::string xmlFooter = "</userconfig>\n\n";
-	
+
 	file.write(xmlHeader);
 
 	for (unsigned int i = 0; i < mVars.size(); ++i)
@@ -138,41 +138,57 @@ bool UserConfig::saveFile(const std::string& filename) const
 		int charsWritten = snprintf(writeBuffer, 256,
 			"\t<var name=\"%s\" value=\"%s\"/>\n",
 			mVars[i]->Name.c_str(), mVars[i]->Value.c_str());
-		
+
 		file.write(writeBuffer, charsWritten);
 	}
 
 	file.write(xmlFooter);
 	file.close();
-	
+
 	// we have to make sure that we don't cache any outdated user configs
-	std::map<std::string, boost::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache.find(filename);
+	auto cfg_cached = userConfigCache.find(filename);
 	if( cfg_cached != userConfigCache.end() )
 	{
 		userConfigCache.erase(cfg_cached);
 	}
-	
+
 	return true;
 }
 
-float UserConfig::getFloat(const std::string& name) const
+float UserConfig::getFloat(const std::string& name, float default_value) const
 {
-	return atof(getValue(name).c_str());
+	auto var = checkVarByName(name);
+	if (var)
+		return std::atof( var->Value.c_str() );
+
+	return default_value;
 }
 
-std::string UserConfig::getString(const std::string& name) const
+std::string UserConfig::getString(const std::string& name, const std::string& default_value) const
 {
-	return getValue(name);
+	auto var = checkVarByName(name);
+	if (var)
+		return var->Value;
+
+	return default_value;
 }
 
-bool UserConfig::getBool(const std::string& name) const
+bool UserConfig::getBool(const std::string& name, bool default_value) const
 {
-	return (getValue(name) == "true") ? true : false;
+	auto var = checkVarByName(name);
+	if (var)
+		return (var->Value == "true") ? true : false;;
+
+	return default_value;
 }
 
-int UserConfig::getInteger(const std::string& name) const
+int UserConfig::getInteger(const std::string& name, int default_value) const
 {
-	return atoi(getValue(name).c_str());
+	auto var = checkVarByName(name);
+	if (var)
+		return std::atoi( var->Value.c_str() );
+
+	return default_value;
 }
 
 void UserConfig::setFloat(const std::string& name, float var)
@@ -199,13 +215,12 @@ void UserConfig::setInteger(const std::string& name, int var)
 	setValue(name, writeBuffer);
 }
 
-UserConfigVar* UserConfig::createVar(const std::string& name,
-		const std::string& defaultValue)
+UserConfigVar* UserConfig::createVar(const std::string& name, const std::string& value)
 {
 	if (findVarByName(name)) return NULL;
 	UserConfigVar *var = new UserConfigVar;
 	var->Name = name;
-	var->DefaultValue = var->Value = defaultValue;
+	var->Value = value;
 	mVars.push_back(var);
 	return var;
 }
@@ -227,28 +242,28 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 	var->Value = value;
 }
 
-std::string UserConfig::getValue(const std::string& name) const
-{
-	UserConfigVar *var = findVarByName(name);
-	if (!var)
-	{
-		std::cerr << "Warning: impossible to get value of " <<
-			"unknown configuration variable " << name << std::endl;
-		return "";
-	}
-	return var->Value;
-}
-
 UserConfig::~UserConfig()
 {
 	for (unsigned int i = 0; i < mVars.size(); ++i)
 		delete mVars[i];
 }
 
+UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
+{
+	auto var = findVarByName(name);
+	if( !var )
+	{
+		std::cerr << "Warning: impossible to get value of " <<
+			"unknown configuration variable " << name << std::endl;
+	}
+	return var;
+}
+
 UserConfigVar* UserConfig::findVarByName(const std::string& name) const
 {
 	for (unsigned int i = 0; i < mVars.size(); ++i)
 		if (mVars[i]->Name == name) return mVars[i];
-	return NULL;
+
+	return nullptr;
 }
 

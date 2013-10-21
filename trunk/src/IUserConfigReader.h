@@ -36,11 +36,10 @@ class IUserConfigReader : public ObjectCounter<IUserConfigReader>
 		static boost::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
 		virtual ~IUserConfigReader() {};
 
-		virtual std::string getValue(const std::string& name) const = 0;
-		virtual float getFloat(const std::string& name) const = 0;
-		virtual std::string getString(const std::string& name) const = 0;
-		virtual bool getBool(const std::string& name) const = 0;
-		virtual int getInteger(const std::string& name) const = 0;
+		virtual float getFloat(const std::string& name, float default_value = 0.f) const = 0;
+		virtual std::string getString(const std::string& name, const std::string& default_value = "") const = 0;
+		virtual bool getBool(const std::string& name, bool default_value = false) const = 0;
+		virtual int getInteger(const std::string& name, int default_value = 0) const = 0;
 
 		virtual PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) = 0;
 };
