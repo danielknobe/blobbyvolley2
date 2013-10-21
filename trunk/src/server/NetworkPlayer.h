@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/shared_ptr.hpp>
 
 #include "raknet/NetworkTypes.h"
+#include "raknet/BitStream.h"
 #include "Global.h"
 #include "../BlobbyDebug.h"
 #include "PlayerIdentity.h"
@@ -39,19 +40,19 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 {
 	public:
 		NetworkPlayer();
-		
+
 		NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side);
 		// i guess we should! not need to make a copy here
 		// but this is saver as this constructor can't mess up other code.
 		NetworkPlayer(PlayerID id, RakNet::BitStream stream);
-	
+
 		bool valid() const;
 		const PlayerID& getID() const;
 		const std::string& getName() const;
 		Color getColor() const;
 		PlayerSide getDesiredSide() const;
 		const boost::shared_ptr<NetworkGame>& getGame() const;
-		
+
 	private:
 		/* Network ID */
 		PlayerID mID;
@@ -59,11 +60,11 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 		PlayerIdentity mIdentity;
 		/* Perferences */
 		PlayerSide mDesiredSide;
-		
+
 		/* Game Data */
 		boost::shared_ptr<NetworkGame> mGame;
-		
-		/* we could add more data such as stats, 
+
+		/* we could add more data such as stats,
 			accoutn info, etc later.
 		*/
 };

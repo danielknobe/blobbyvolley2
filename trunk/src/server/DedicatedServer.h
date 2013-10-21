@@ -19,13 +19,44 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <string>
 #include <map>
 #include <list>
-#include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 
-#include "raknet/NetworkTypes.h"
+#include "NetworkPlayer.h"
+#include "NetworkMessage.h"
 
-class NetworkGame;
+class RakServer;
 
-typedef std::map<PlayerID, boost::shared_ptr<NetworkGame> > PlayerMap;
-typedef std::list< boost::shared_ptr<NetworkGame> > GameList;
+// function for logging to replacing syslog
+enum {
+	LOG_ERR,
+	LOG_NOTICE,
+	LOG_DEBUG
+};
+
+class DedicatedServer
+{
+public:
+	DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
+	~DedicatedServer();
+
+	void processPackets();
+	void updateGames();
+
+	bool hasActiveGame() const;
+	bool hasWaitingPlayer() const;
+
+private:
+	unsigned int mConnectedClients;
+	boost::scoped_ptr<RakServer> mServer;
+
+	NetworkPlayer mWaitingPlayer;
+
+	std::string mRulesFile;
+	ServerInfo mServerInfo;
+
+	std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;
+	std::list< boost::shared_ptr<NetworkGame> > mGameList;
+};

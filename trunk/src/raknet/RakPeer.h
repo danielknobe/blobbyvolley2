@@ -35,7 +35,6 @@
 #include "BitStream.h"
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
-#include "RakNetPacket.h"
 
 
 #ifdef _WIN32

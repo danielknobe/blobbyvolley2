@@ -38,6 +38,7 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-DWIN32" />
 			<Add option="-DHAVE_LIBGL" />
@@ -149,7 +150,6 @@
 		<Unit filename="src/PhysicWorld.h" />
 		<Unit filename="src/PlayerIdentity.cpp" />
 		<Unit filename="src/PlayerIdentity.h" />
-		<Unit filename="src/RakNetPacket.h" />
 		<Unit filename="src/RenderManager.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -361,7 +361,6 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/raknet/ArrayList.h" />
-		<Unit filename="src/raknet/BinarySearchTree.h" />
 		<Unit filename="src/raknet/BitStream.cpp" />
 		<Unit filename="src/raknet/BitStream.h" />
 		<Unit filename="src/raknet/CMakeLists.txt" />
@@ -374,29 +373,20 @@
 		<Unit filename="src/raknet/LICENSE" />
 		<Unit filename="src/raknet/LinkedList.h" />
 		<Unit filename="src/raknet/MTUSize.h" />
-		<Unit filename="src/raknet/MessageHandlerInterface.cpp" />
-		<Unit filename="src/raknet/MessageHandlerInterface.h" />
 		<Unit filename="src/raknet/NetworkTypes.cpp" />
 		<Unit filename="src/raknet/NetworkTypes.h" />
-		<Unit filename="src/raknet/OrderedList.h" />
 		<Unit filename="src/raknet/PacketEnumerations.h" />
 		<Unit filename="src/raknet/PacketPool.cpp" />
 		<Unit filename="src/raknet/PacketPool.h" />
 		<Unit filename="src/raknet/PacketPriority.h" />
-		<Unit filename="src/raknet/QueueLinkedList.h" />
 		<Unit filename="src/raknet/RakClient.cpp" />
 		<Unit filename="src/raknet/RakClient.h" />
-		<Unit filename="src/raknet/RakClientInterface.h" />
 		<Unit filename="src/raknet/RakNetStatistics.cpp" />
 		<Unit filename="src/raknet/RakNetStatistics.h" />
-		<Unit filename="src/raknet/RakNetworkFactory.cpp" />
-		<Unit filename="src/raknet/RakNetworkFactory.h" />
 		<Unit filename="src/raknet/RakPeer.cpp" />
 		<Unit filename="src/raknet/RakPeer.h" />
-		<Unit filename="src/raknet/RakPeerInterface.h" />
 		<Unit filename="src/raknet/RakServer.cpp" />
 		<Unit filename="src/raknet/RakServer.h" />
-		<Unit filename="src/raknet/RakServerInterface.h" />
 		<Unit filename="src/raknet/ReliabilityLayer.cpp" />
 		<Unit filename="src/raknet/ReliabilityLayer.h" />
 		<Unit filename="src/raknet/SimpleMutex.cpp" />
@@ -404,7 +394,6 @@
 		<Unit filename="src/raknet/SingleProducerConsumer.h" />
 		<Unit filename="src/raknet/SocketLayer.cpp" />
 		<Unit filename="src/raknet/SocketLayer.h" />
-		<Unit filename="src/raknet/Types.h" />
 		<Unit filename="src/server/DedicatedServer.cpp">
 			<Option target="Server D" />
 		</Unit>
