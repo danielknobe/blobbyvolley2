@@ -83,7 +83,7 @@ void NetworkSearchState::step()
 		bool skip = false;
 		bool skip_iter = false;
 
-		while ((packet = receivePacket(*iter)) && !skip)
+		while ((packet = (*iter)->Receive()) && !skip)
 		{
 			switch(packet->data[0])
 			{
@@ -170,7 +170,7 @@ void NetworkSearchState::step()
 		if (skip_iter)
 			break;
 	}
-	while (packet = receivePacket(mPingClient.get()))
+	while (packet = mPingClient->Receive())
 	{
 		switch (packet->data[0])
 		{

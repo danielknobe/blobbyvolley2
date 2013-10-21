@@ -66,9 +66,9 @@ bool RakServer::Send( const RakNet::BitStream *bitStream, PacketPriority priorit
 	return RakPeer::Send( bitStream, priority, reliability, orderingChannel, playerId, broadcast );
 }
 
-Packet* RakServer::Receive( void )
+packet_ptr RakServer::Receive( void )
 {
-	Packet * packet = RakPeer::Receive();
+	packet_ptr packet = RakPeer::Receive();
 
 	if ( packet )
 	{
@@ -121,11 +121,6 @@ Packet* RakServer::Receive( void )
 void RakServer::Kick( PlayerID playerId )
 {
 	RakPeer::NotifyAndFlagForDisconnect(playerId, false);
-}
-
-void RakServer::DeallocatePacket( Packet *packet )
-{
-	RakPeer::DeallocatePacket( packet );
 }
 
 void RakServer::SetAllowedPlayers( unsigned short AllowedPlayers )

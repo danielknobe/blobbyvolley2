@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "raknet/NetworkTypes.h"
+#include "raknet/BitStream.h"
 #include "SpeedController.h"
 #include "InputSource.h"
 #include "RakNetPacket.h"
@@ -49,7 +50,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		NetworkGame(RakServer& server,
 				PlayerID leftPlayer, PlayerID rightPlayer,
 				std::string leftPlayerName, std::string rightPlayerName,
-				Color leftColor, Color rightColor, 
+				Color leftColor, Color rightColor,
 				PlayerSide switchedSide,
 				std::string rules);
 

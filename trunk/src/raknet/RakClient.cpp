@@ -90,9 +90,9 @@ bool RakClient::Send( const RakNet::BitStream * bitStream, PacketPriority priori
 	return RakPeer::Send( bitStream, priority, reliability, orderingChannel, remoteSystemList[ 0 ].playerId, false );
 }
 
-Packet* RakClient::Receive( void )
+packet_ptr RakClient::Receive( void )
 {
-	Packet * packet = RakPeer::Receive();
+	packet_ptr packet = RakPeer::Receive();
 
 	// Intercept specific client / server feature packets
 
@@ -127,8 +127,8 @@ Packet* RakClient::Receive( void )
 
 			if ( bitStream.Read( ( unsigned short& ) packet->playerIndex ) == false )
 			{
-				DeallocatePacket( packet );
-				return 0;
+				// no need to deallocate, shared_ptr will do that
+				return packet_ptr();
 			}
 
 
@@ -175,17 +175,12 @@ Packet* RakClient::Receive( void )
 				}
 			}
 
-			DeallocatePacket( packet );
-			return 0;
+			// no need to deallocate, shared_ptr will do that
+			return packet_ptr();
 		}
 	}
 
 	return packet;
-}
-
-void RakClient::DeallocatePacket( Packet *packet )
-{
-	RakPeer::DeallocatePacket( packet );
 }
 
 void RakClient::PingServer( void )
