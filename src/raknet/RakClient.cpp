@@ -203,14 +203,6 @@ void RakClient::PingServer( const char* host, unsigned short serverPort, unsigne
 	RakPeer::Ping( host, serverPort, onlyReplyOnAcceptingConnections );
 }
 
-int RakClient::GetAveragePing( void )
-{
-	if ( remoteSystemList == 0 )
-		return -1;
-
-	return RakPeer::GetAveragePing( remoteSystemList[ 0 ].playerId );
-}
-
 int RakClient::GetLastPing( void ) const
 {
 	if ( remoteSystemList == 0 )
@@ -244,16 +236,6 @@ bool RakClient::IsConnected( void ) const
 
 	RakPeer::GetConnectionList( 0, &numberOfSystems );
 	return numberOfSystems == 1;
-}
-
-void RakClient::AttachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	RakPeer::AttachMessageHandler(messageHandler);
-}
-
-void RakClient::DetachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	RakPeer::DetachMessageHandler(messageHandler);
 }
 
 PlayerID RakClient::GetServerID( void ) const

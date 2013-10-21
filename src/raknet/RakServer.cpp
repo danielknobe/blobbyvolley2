@@ -157,11 +157,6 @@ void RakServer::PingPlayer( PlayerID playerId )
 	RakPeer::Ping( playerId );
 }
 
-int RakServer::GetAveragePing( PlayerID playerId )
-{
-	return RakPeer::GetAveragePing( playerId );
-}
-
 int RakServer::GetLastPing( PlayerID playerId )
 {
 	return RakPeer::GetLastPing( playerId );
@@ -175,16 +170,6 @@ int RakServer::GetLowestPing( PlayerID playerId )
 bool RakServer::IsActive( void ) const
 {
 	return RakPeer::IsActive();
-}
-
-void RakServer::AttachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	RakPeer::AttachMessageHandler(messageHandler);
-}
-
-void RakServer::DetachMessageHandler( MessageHandlerInterface *messageHandler )
-{
-	RakPeer::DetachMessageHandler(messageHandler);
 }
 
 unsigned int RakServer::GetNumberOfAddresses( void )

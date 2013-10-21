@@ -144,10 +144,6 @@ public:
 	*/
 	void PingPlayer( PlayerID playerId );
 	/**
-	* Returns the average of all ping times read for the specific player or -1 if none read yet
-	*/
-	int GetAveragePing( PlayerID playerId );
-	/**
 	* Returns the last ping time read for the specific player or -1 if none read yet
 	*/
 	int GetLastPing( PlayerID playerId );
@@ -159,20 +155,6 @@ public:
 	* Returns true if the server is currently active
 	*/
 	bool IsActive( void ) const;
-
-	/**
-	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
-	*
-	* @param messageHandler Pointer to a message handler to attach
-	*/
-	void AttachMessageHandler( MessageHandlerInterface *messageHandler );
-
-	/**
-	* Detatches a message handler interface to run code automatically on message receipt
-	*
-	* @param messageHandler Pointer to a message handler to detatch
-	*/
-	void DetachMessageHandler( MessageHandlerInterface *messageHandler );
 
 	/**
 	* Internally store the IP address(es) for the server and return how many it has.

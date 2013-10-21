@@ -36,8 +36,6 @@
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
 
-class MessageHandlerInterface;
-
 #ifdef _WIN32
 void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
 unsigned __stdcall UpdateNetworkLoop( LPVOID arguments );
@@ -258,14 +256,6 @@ public:
 	void Ping( const char* host, unsigned short remotePort, bool onlyReplyOnAcceptingConnections );
 
 	/**
-	* Gets the average of all ping times read for a specified target
-	*
-	* @param target whose time to read
-	* @return The average of all ping times read for a specified target.
-	*/
-	int GetAveragePing( PlayerID playerId );
-
-	/**
 	* Gets the last ping time read for the specific player or -1 if none read yet
 	*
 	* @param target whose time to read
@@ -381,25 +371,6 @@ public:
 
 	/*
 	* --------------------------------------------------------------------------------------------
-	* Message Handler Functions
-	* --------------------------------------------------------------------------------------------
-	*/
-	/**
-	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
-	*
-	* @param messageHandler Pointer to a message handler to attach
-	*/
-	void AttachMessageHandler( MessageHandlerInterface *messageHandler );
-
-	/**
-	* Detatches a message handler interface to run code automatically on message receipt
-	*
-	* @param messageHandler Pointer to a message handler to detatch
-	*/
-	void DetachMessageHandler( MessageHandlerInterface *messageHandler );
-
-	/*
-	* --------------------------------------------------------------------------------------------
 	* Micellaneous Functions
 	* --------------------------------------------------------------------------------------------
 	*/
@@ -427,26 +398,6 @@ public:
 	*/
 	RakNetStatisticsStruct * const GetStatistics( PlayerID playerId );
 
-
-	/**
-	* @brief Used to unify time
-	*
-	*
-	* This structure agregate the ping time and the clock differential.
-	* both are used to synchronized time between peers
-	*/
-	struct PingAndClockDifferential
-	{
-		/**
-		* ping time
-		*/
-		short pingTime;
-		/**
-		* clock differential
-		*/
-		unsigned int clockDifferential;
-	};
-
 	/**
 	* @brief Store Remote System Description.
 	*
@@ -459,8 +410,7 @@ public:
 		PlayerID myExternalPlayerId;  /**< Your own IP, as reported by the remote system*/
 		ReliabilityLayer reliabilityLayer;  /**< The reliability layer associated with this player*/
 		bool weInitiatedTheConnection; /**< True if we started this connection via Connect.  False if someone else connected to us.*/
-		PingAndClockDifferential pingAndClockDifferential[ PING_TIMES_ARRAY_SIZE ];  /**< last x ping times and calculated clock differentials with it*/
-		int pingAndClockDifferentialWriteIndex;  /**< The index we are writing into the pingAndClockDifferential circular buffer*/
+		short pingTime;  /**< last ping time */
 		int lowestPing; /**<The lowest ping value encounter */
 		unsigned int nextPingTime;  /**< When to next ping this player */
 		unsigned int lastReliableSend; /**< When did the last reliable send occur.  Reliable sends must occur at least once every TIMEOUT_TIME/2 units to notice disconnects */
@@ -506,14 +456,6 @@ protected:
 	* Get a free remote system from the list and assign our playerID to it.  Should only be called from the update thread - not the user thread
 	*/
 	RemoteSystemStruct * AssignPlayerIDToRemoteSystemList( PlayerID playerId, RemoteSystemStruct::ConnectMode connectionMode );
-	/**
-	* An incoming packet has a timestamp, so adjust it to be relative to this system
-	*/
-	void ShiftIncomingTimestamp( char *data, PlayerID playerId ) const;
-	/**
-	* Get the most probably accurate clock differential for a certain player
-	*/
-	unsigned int GetBestClockDifferential( PlayerID playerId ) const;
 	/**
 	* @todo Document this
 	*
@@ -583,7 +525,6 @@ protected:
 		enum {CONNECT=1, PING=2, PING_OPEN_CONNECTIONS=4, ADVERTISE_SYSTEM=8} actionToTake;
 	};
 
-	BasicDataStructures::List<MessageHandlerInterface*> messageHandlerList;
 	BasicDataStructures::SingleProducerConsumer<RequestedConnectionStruct> requestedConnectionList;
 
 	bool RunUpdateCycle( void );

@@ -149,11 +149,6 @@ public:
 	 */
 	void PingServer( const char* host, unsigned short serverPort, unsigned short clientPort, bool onlyReplyOnAcceptingConnections );
 	/**
-	 * Returns the average of all ping times read
-	 * @return the average ping value to the server
-	 */
-	int GetAveragePing( void );
-	/**
 	 * Returns the last ping time read for the specific player or -1 if none read yet
 	 * @return last ping value
 	 */
@@ -182,20 +177,6 @@ public:
 	 * @return true if connected to a server
 	 */
 	bool IsConnected( void ) const;
-
-	/**
-	* Attatches a message handler interface to run code automatically on message receipt in the Receive call
-	*
-	* @param messageHandler Pointer to a message handler to attach
-	*/
-	void AttachMessageHandler( MessageHandlerInterface *messageHandler );
-
-	/**
-	* Detatches a message handler interface to run code automatically on message receipt
-	*
-	* @param messageHandler Pointer to a message handler to detatch
-	*/
-	void DetachMessageHandler( MessageHandlerInterface *messageHandler );
 
 	/**
 	 * Return the player number of the server.
