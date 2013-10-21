@@ -4,6 +4,7 @@ add_subdirectory(raknet)
 add_subdirectory(blobnet)
 
 add_definitions(-DTIXML_USE_STL)
+set(CMAKE_CXX_FLAGS "-std=c++11")
 include_directories(.)
 
 set(common_SRC	
@@ -64,6 +65,7 @@ set (blobby_SRC ${common_SRC}
 set (blobby-server_SRC ${common_SRC}
 	server/DedicatedServer.cpp server/DedicatedServer.h
 	server/NetworkPlayer.cpp server/NetworkPlayer.h
+	server/servermain.cpp
 	)
 
 find_package(Boost REQUIRED)

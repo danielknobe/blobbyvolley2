@@ -396,12 +396,17 @@
 		<Unit filename="src/raknet/SocketLayer.h" />
 		<Unit filename="src/server/DedicatedServer.cpp">
 			<Option target="Server D" />
+			<Option target="Server Debug" />
 		</Unit>
 		<Unit filename="src/server/DedicatedServer.h" />
 		<Unit filename="src/server/NetworkPlayer.cpp">
 			<Option target="Server D" />
+			<Option target="Server Debug" />
 		</Unit>
 		<Unit filename="src/server/NetworkPlayer.h" />
+		<Unit filename="src/server/servermain.cpp">
+			<Option target="Server Debug" />
+		</Unit>
 		<Unit filename="src/state/LocalGameState.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />

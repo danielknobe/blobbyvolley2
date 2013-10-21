@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkState.h"
 #include "TextManager.h"
 #include "IMGUI.h"
-#include "RakNetPacket.h"
 #include "IUserConfigReader.h"
 #include "FileWrite.h"
 #include "FileRead.h"
