@@ -34,6 +34,11 @@
 
 #include <boost/shared_ptr.hpp>
 
+namespace RakNet
+{
+	class BitStream;
+}
+
 /**
 * Typename for player index
 */
@@ -132,6 +137,13 @@ struct Packet
 	* @see PacketEnumerations.h
 	*/
 	unsigned char* data;
+
+
+	/**
+	* Converts the contents of this packet into a bitstream. Does not perform a deep copy of the packet data!
+	* Use stream only as long as packet exists.
+	*/
+	RakNet::BitStream getStream() const;
 };
 
 typedef boost::shared_ptr<Packet> packet_ptr;

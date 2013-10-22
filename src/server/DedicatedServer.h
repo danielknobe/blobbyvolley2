@@ -38,25 +38,39 @@ enum {
 
 class DedicatedServer
 {
-public:
-	DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
-	~DedicatedServer();
+	public:
+		DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
+		~DedicatedServer();
 
-	void processPackets();
-	void updateGames();
+		void processPackets();
+		void updateGames();
 
-	bool hasActiveGame() const;
-	bool hasWaitingPlayer() const;
+		bool hasActiveGame() const;
+		bool hasWaitingPlayer() const;
 
-private:
-	unsigned int mConnectedClients;
-	boost::scoped_ptr<RakServer> mServer;
+	private:
+		// packet handling functions / utility functions
+		void processBlobbyServerPresent( const packet_ptr& packet );
+		// creates a new game with those players
+		// does not add the game to the active game list
+		boost::shared_ptr<NetworkGame> createGame(NetworkPlayer first, NetworkPlayer second);
 
-	NetworkPlayer mWaitingPlayer;
+		// member variables
+		// number of currently connected clients
+		/// \todo is this already counted by raknet?
+		unsigned int mConnectedClients;
+		// raknet server used
+		boost::scoped_ptr<RakServer> mServer;
 
-	std::string mRulesFile;
-	ServerInfo mServerInfo;
+		// player currently waiting
+		NetworkPlayer mWaitingPlayer;
 
-	std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;
-	std::list< boost::shared_ptr<NetworkGame> > mGameList;
+		// path to rules file
+		std::string mRulesFile;
+		// server info with server config
+		ServerInfo mServerInfo;
+
+		// containers for all games and mapping players to their games
+		std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;
+		std::list< boost::shared_ptr<NetworkGame> > mGameList;
 };

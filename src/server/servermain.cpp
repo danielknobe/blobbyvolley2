@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 	{
 		config.loadFile(g_config_file);
 		maxClients = config.getInteger("maximum_clients");
-		rulesFile = g_rules_file == "" ? config.getString("rules") : g_rules_file;
+		rulesFile = g_rules_file == "" ? config.getString("rules", "rules.lua") : g_rules_file;
 
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 1000)
