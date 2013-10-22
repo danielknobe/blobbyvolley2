@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
  * @file
- * @brief Unique Player Identifier Class implementation 
+ * @brief Unique Player Identifier Class implementation
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -29,6 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "NetworkTypes.h"
+#include "BitStream.h"
 
 int operator==( const PlayerID& left, const PlayerID& right )
 {
@@ -48,4 +49,10 @@ int operator>( const PlayerID& left, const PlayerID& right )
 int operator<( const PlayerID& left, const PlayerID& right )
 {
 	return ( ( left.binaryAddress < right.binaryAddress ) || ( ( left.binaryAddress == right.binaryAddress ) && ( left.port < right.port ) ) );
+}
+
+
+RakNet::BitStream Packet::getStream() const
+{
+	return RakNet::BitStream((char*)data, BITS_TO_BYTES(bitSize), false);
 }

@@ -19,10 +19,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
 #include "DedicatedServer.h"
+
+#include <boost/make_shared.hpp>
+
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
+
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
+
 
 extern int SWLS_PacketCount;
 extern int SWLS_Connections;
@@ -31,7 +36,8 @@ extern int SWLS_GameSteps;
 
 void syslog(int pri, const char* format, ...);
 
-DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients) : mConnectedClients(0), mServerInfo(info), mRulesFile(rulefile), mServer( new RakServer() )
+DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients) : mConnectedClients(0), mServerInfo(info),
+																											mRulesFile(rulefile), mServer( new RakServer() )
 {
 	if (!mServer->Start(max_clients, 1, mServerInfo.port))
 	{
@@ -42,7 +48,7 @@ DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rule
 
 DedicatedServer::~DedicatedServer()
 {
-
+	mServer->Disconnect(50);
 }
 
 void DedicatedServer::processPackets()
@@ -54,6 +60,7 @@ void DedicatedServer::processPackets()
 
 		switch(packet->data[0])
 		{
+			// connection status changes
 			case ID_NEW_INCOMING_CONNECTION:
 				mConnectedClients++;
 				SWLS_Connections++;
@@ -71,23 +78,8 @@ void DedicatedServer::processPackets()
 				// delete the disconnectiong player
 				if ( mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end() )
 				{
-					/// \todo what are we doing here???
-					/// seems not a good idea to let injectPacket remove the game from the game list...
-					/// maybe we should add a centralized way to delete unused games  and players!
-					// inject the packet into the game
-					/// strange, injectPacket just pushes the packet into a queue. That cannot delete
-					/// the game???
+					// inject the packet into the game, so the other player can get a notification
 					mPlayerGameMap[packet->playerId]->injectPacket(packet);
-
-					// if it was the last player, the game is removed from the game list.
-					// thus, give the game a last chance to process the last
-					// input
-
-					// check, wether game was removed from game list (not a good idea!), in that case, process manually
-					if( std::find(mGameList.begin(), mGameList.end(), mPlayerGameMap[packet->playerId]) == mGameList.end())
-					{
-						mPlayerGameMap[packet->playerId]->step();
-					}
 
 					// then delete the player
 					mPlayerGameMap.erase(packet->playerId);
@@ -97,40 +89,29 @@ void DedicatedServer::processPackets()
 				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
 				break;
 			}
+
+			// game progress packets
+
 			case ID_INPUT_UPDATE:
 			case ID_PAUSE:
 			case ID_UNPAUSE:
 			case ID_CHAT_MESSAGE:
 			case ID_REPLAY:
 			case ID_RULES:
-				if (mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end()){
+				if (mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end())
+				{
 					mPlayerGameMap[packet->playerId]->injectPacket(packet);
 
-					// check, wether game was delete from this, in this case, process manually
-					/// \todo here again, injectPacket is not able to delete the game. So, what are we doing here?
-					if( std::find(mGameList.begin(), mGameList.end(), mPlayerGameMap[packet->playerId]) == mGameList.end())
-					{
-						mPlayerGameMap[packet->playerId]->step();
-					}
-
 				} else {
-					syslog(LOG_ERR, "player not found!");
-					#ifdef DEBUG
-					std::cout	<< " received game packet for no longer existing game! "
-								<< (int)packet->data[0] << " - "
-								<< packet->playerId.binaryAddress << " : " << packet->playerId.port
-								<< "\n";
-					// only quit in debug mode as this is not a problem endangering the stability
-					// of the running server, but a situation that should never occur.
-					return 3;
-					#endif
+					syslog(LOG_ERR, "received packet from player not in playerlist!");
 				}
 
 				break;
+
+			// game establish packets
 			case ID_ENTER_GAME:
 			{
-				RakNet::BitStream stream((char*)packet->data,
-						packet->length, false);
+				RakNet::BitStream stream = packet->getStream();
 
 				stream.IgnoreBytes(1);	//ID_ENTER_GAME
 
@@ -145,105 +126,17 @@ void DedicatedServer::processPackets()
 					/// \todo refactor this, this code is awful!
 					///  one swap should be enough
 
-					NetworkPlayer leftPlayer = mWaitingPlayer;
-					NetworkPlayer rightPlayer = secondPlayer;
-					PlayerSide switchSide = NO_PLAYER;
-
-					if(RIGHT_PLAYER == mWaitingPlayer.getDesiredSide())
-					{
-						std::swap(leftPlayer, rightPlayer);
-					}
-					if (secondPlayer.getDesiredSide() == mWaitingPlayer.getDesiredSide())
-					{
-						if (secondPlayer.getDesiredSide() == LEFT_PLAYER)
-							switchSide = RIGHT_PLAYER;
-						if (secondPlayer.getDesiredSide() == RIGHT_PLAYER)
-							switchSide = LEFT_PLAYER;
-					}
-
-					boost::shared_ptr<NetworkGame> newgame (new NetworkGame(
-						*mServer.get(), leftPlayer.getID(), rightPlayer.getID(),
-						leftPlayer.getName(), rightPlayer.getName(),
-						leftPlayer.getColor(), rightPlayer.getColor(),
-						switchSide, mRulesFile) );
-
-					mPlayerGameMap[leftPlayer.getID()] = newgame;
-					mPlayerGameMap[rightPlayer.getID()] = newgame;
+					auto newgame = createGame( mWaitingPlayer, secondPlayer );
+					mPlayerGameMap[mWaitingPlayer.getID()] = newgame;
+					mPlayerGameMap[secondPlayer.getID()] = newgame;
 					mGameList.push_back(newgame);
-					SWLS_Games++;
-
-					#ifdef DEBUG
-					std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
-								<< "\t\t\t" << rightPlayer.getID().binaryAddress << " : " << rightPlayer.getID().port << "\n";
-					#endif
-
 					mWaitingPlayer = NetworkPlayer();
 				}
 				break;
 			}
-			case ID_PONG:
-				break;
 			case ID_BLOBBY_SERVER_PRESENT:
 			{
-				RakNet::BitStream stream((char*)packet->data,
-						packet->length, false);
-
-				// If the client knows nothing about versioning, the version is 0.0
-				int major = 0;
-				int minor = 0;
-				bool wrongPackageSize = true;
-
-				// actuel client has bytesize 72
-
-				if(packet->bitSize == 72)
-				{
-					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
-					stream.Read(major);
-					stream.Read(minor);
-					wrongPackageSize = false;
-				}
-
-				RakNet::BitStream stream2;
-
-				if (wrongPackageSize)
-				{
-					printf("major: %d minor: %d\n", major, minor);
-					stream2.Write((unsigned char)ID_VERSION_MISMATCH);
-					stream2.Write((int)BLOBBY_VERSION_MAJOR);
-					stream2.Write((int)BLOBBY_VERSION_MINOR);
-					mServer->Send(&stream2, LOW_PRIORITY,
-								RELIABLE_ORDERED, 0, packet->playerId,
-								false);
-				}
-				else if (major < BLOBBY_VERSION_MAJOR
-					|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
-				// Check if the packet contains matching version numbers
-				{
-					stream2.Write((unsigned char)ID_VERSION_MISMATCH);
-					stream2.Write((int)BLOBBY_VERSION_MAJOR);
-					stream2.Write((int)BLOBBY_VERSION_MINOR);
-					mServer->Send(&stream2, LOW_PRIORITY,
-						RELIABLE_ORDERED, 0, packet->playerId,
-						false);
-				}
-				else
-				{
-					mServerInfo.activegames = mGameList.size();
-					if (!mWaitingPlayer.valid())
-					{
-						mServerInfo.setWaitingPlayer("none");
-					}
-					else
-					{
-						mServerInfo.setWaitingPlayer(mWaitingPlayer.getName());
-					}
-
-					stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
-					mServerInfo.writeToBitstream(stream2);
-					mServer->Send(&stream2, HIGH_PRIORITY,
-						RELIABLE_ORDERED, 0,
-						packet->playerId, false);
-				}
+				processBlobbyServerPresent( packet );
 				break;
 			}
 			default:
@@ -277,4 +170,97 @@ bool DedicatedServer::hasActiveGame() const
 bool DedicatedServer::hasWaitingPlayer() const
 {
 	return mWaitingPlayer.valid();
+}
+
+// special packet processing
+void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
+{
+	RakNet::BitStream stream = packet->getStream();
+
+	// If the client knows nothing about versioning, the version is 0.0
+	int major = 0;
+	int minor = 0;
+	bool wrongPackageSize = true;
+
+	// current client has bitSize 72
+
+	if( stream.GetNumberOfBitsUsed() == 72)
+	{
+		stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
+		stream.Read(major);
+		stream.Read(minor);
+		wrongPackageSize = false;
+	}
+
+	RakNet::BitStream stream2;
+
+	if (wrongPackageSize)
+	{
+		std::cerr << "outdated client tried to connect! Unable to determine client version due to packet size mismatch.";
+		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
+		stream2.Write((int)BLOBBY_VERSION_MAJOR);
+		stream2.Write((int)BLOBBY_VERSION_MINOR);
+		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+	}
+	else if (major < BLOBBY_VERSION_MAJOR
+		|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
+	// Check if the packet contains matching version numbers
+	{
+		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
+		stream2.Write((int)BLOBBY_VERSION_MAJOR);
+		stream2.Write((int)BLOBBY_VERSION_MINOR);
+		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+	}
+	else
+	{
+		mServerInfo.activegames = mGameList.size();
+		if (!mWaitingPlayer.valid())
+		{
+			mServerInfo.setWaitingPlayer("none");
+		}
+		else
+		{
+			mServerInfo.setWaitingPlayer(mWaitingPlayer.getName());
+		}
+
+		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
+		mServerInfo.writeToBitstream(stream2);
+		mServer->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0,	packet->playerId, false);
+	}
+}
+
+boost::shared_ptr<NetworkGame> DedicatedServer::createGame(NetworkPlayer first, NetworkPlayer second)
+{
+	PlayerSide switchSide = NO_PLAYER;
+
+	auto leftPlayer = first;
+	auto rightPlayer = second;
+
+	// put first player on his desired side in game
+	if(RIGHT_PLAYER == first.getDesiredSide())
+	{
+		std::swap(leftPlayer, rightPlayer);
+	}
+
+	// if both players want the same side, one of them is going to get inverted game data
+	if (first.getDesiredSide() == second.getDesiredSide())
+	{
+		// if both wanted to play on the left, the right player is the inverted one, if both wanted right, the left
+		if (second.getDesiredSide() == LEFT_PLAYER)
+			switchSide = RIGHT_PLAYER;
+		if (second.getDesiredSide() == RIGHT_PLAYER)
+			switchSide = LEFT_PLAYER;
+	}
+
+	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer.getID(), rightPlayer.getID(), leftPlayer.getName(), rightPlayer.getName(),
+													leftPlayer.getColor(), rightPlayer.getColor(), switchSide, mRulesFile);
+
+	SWLS_Games++;
+
+	#ifdef DEBUG
+	std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
+				<< "\t\t\t" << rightPlayer.getID().binaryAddress << " : " << rightPlayer.getID().port << "\n";
+	#endif
+
+	return newgame;
 }
