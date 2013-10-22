@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tinyxml/tinyxml.h"
 
 #include "NetworkState.h"
+#include "LobbyState.h"
 #include "TextManager.h"
 #include "IMGUI.h"
 #include "IUserConfigReader.h"
@@ -318,7 +319,7 @@ void NetworkSearchState::step()
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
 		deleteCurrentState();
-		setCurrentState(new NetworkGameState(server.hostname, server.port));
+		setCurrentState(new LobbyState(server));
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
