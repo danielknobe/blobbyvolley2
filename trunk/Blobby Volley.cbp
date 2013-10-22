@@ -407,6 +407,14 @@
 		<Unit filename="src/server/servermain.cpp">
 			<Option target="Server Debug" />
 		</Unit>
+		<Unit filename="src/state/LobbyState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/state/LobbyState.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/LocalGameState.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
