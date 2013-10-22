@@ -3,19 +3,20 @@
 PlayerIdentity::PlayerIdentity(std::string name) : mName(name),
 																	mOscillating(false)
 {
-	
+
 }
 
-PlayerIdentity::PlayerIdentity(const std::string& name, Color color, bool osci) : mName(name),
+PlayerIdentity::PlayerIdentity(const std::string& name, Color color, bool osci, PlayerSide side) : mName(name),
 																	mStaticColor(color),
-																	mOscillating(osci)
+																	mOscillating(osci),
+																	mPreferredSide(side)
 {
-	
+
 }
 
 PlayerIdentity::~PlayerIdentity()
 {
-	
+
 }
 
 const std::string& PlayerIdentity::getName() const
@@ -33,6 +34,11 @@ bool PlayerIdentity::getOscillating() const
 	return mOscillating;
 }
 
+PlayerSide PlayerIdentity::getPreferredSide() const
+{
+	return mPreferredSide;
+}
+
 void PlayerIdentity::setName(const std::string& nname)
 {
 	mName = nname;
@@ -46,4 +52,9 @@ void PlayerIdentity::setStaticColor(Color c)
 void PlayerIdentity::setOscillating(bool oc)
 {
 	mOscillating = oc;
+}
+
+void PlayerIdentity::setPreferredSide(PlayerSide side)
+{
+	mPreferredSide = side;
 }

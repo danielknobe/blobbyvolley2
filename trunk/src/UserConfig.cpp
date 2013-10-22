@@ -85,6 +85,7 @@ PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human)
 						) );
 
 	player.setOscillating(getBool(prefix + "_blobby_oscillate"));
+	player.setPreferredSide((PlayerSide)getInteger("network_side"));
 
 	return player;
 }

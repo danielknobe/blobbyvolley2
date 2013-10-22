@@ -28,19 +28,22 @@ class PlayerIdentity
 	public:
 		PlayerIdentity() {};
 		PlayerIdentity(std::string name);
-		PlayerIdentity(const std::string& name, Color color, bool osci);
+		PlayerIdentity(const std::string& name, Color color, bool osci, PlayerSide pref);
 		~PlayerIdentity();
 
 		const std::string& getName() const;
 		Color getStaticColor() const;
 		bool getOscillating() const;
-		
+		PlayerSide getPreferredSide() const;
+
 		void setName(const std::string& nname);
 		void setStaticColor(Color ncol);
 		void setOscillating(bool oc);
-	
+		void setPreferredSide(PlayerSide side);
+
 	private:
-		std::string mName;		
+		std::string mName;
 		Color mStaticColor;
 		bool mOscillating;
+		PlayerSide mPreferredSide;
 };
