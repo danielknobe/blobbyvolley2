@@ -13,7 +13,6 @@ set (raknet_SRC
 	PacketPriority.h
 	RakClient.cpp RakClient.h
 	RakNetStatistics.cpp RakNetStatistics.h
-	RakNetworkFactory.cpp RakNetworkFactory.h
 	RakPeer.cpp RakPeer.h
 	RakServer.cpp RakServer.h
 	ReliabilityLayer.cpp ReliabilityLayer.h
