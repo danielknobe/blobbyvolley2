@@ -38,7 +38,7 @@ enum MessageType
 	ID_BALL_GROUND_COLLISION,
 	ID_BALL_PLAYER_COLLISION,
 	ID_GAME_READY,
-	ID_ENTER_GAME,
+	ID_ENTER_SERVER,
 	ID_PAUSE,
 	ID_UNPAUSE,
 	ID_BLOBBY_SERVER_PRESENT,
@@ -48,7 +48,8 @@ enum MessageType
 	ID_CHAT_MESSAGE,
 	ID_UPDATE_SCORE,
 	ID_RULES_CHECKSUM,
-	ID_RULES
+	ID_RULES,
+	ID_SERVER_STATUS
 };
 
 // General Information:
@@ -137,14 +138,14 @@ enum MessageType
 // 		opponent name (char[16])
 //		opponent color (int)
 //
-// ID_ENTER_GAME
+// ID_ENTER_SERVER
 // 	Description:
 // 		Message sent from client to server after connecting to it.
 // 		The side attribute tells the server on which side the client
 // 		wants to play. The name attribute reports to players name,
 // 		truncated to 16 characters.
 // 	Structure:
-// 		ID_ENTER_GAME
+// 		ID_ENTER_SERVER
 // 		side (PlayerSide)
 // 		name (char[16])
 //
@@ -222,13 +223,20 @@ enum MessageType
 // 		Sent from client to server to request a rules file
 // 		Sent from server to client to transmit the rules file
 // 		Game is starting only after transmitting a rules file
-// 	Structure (from client ro server):
+// 	Structure (from client to server):
 // 		ID_RULES
 //		needRules (bool)
-// 	Structure (from server ro client):
+// 	Structure (from server to client):
 // 		ID_RULES
 //		size (int)
 //		data
+//
+// ID_SERVER_STATUS
+// 	Description:
+//		Sent from server to waiting clients with information about the
+//		current server status
+//	Structure:
+//		ID_SERVER_STATUS
 //
 
 class IUserConfigReader;

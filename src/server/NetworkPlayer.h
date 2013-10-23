@@ -58,8 +58,6 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 		PlayerID mID;
 		/* Identity */
 		PlayerIdentity mIdentity;
-		/* Perferences */
-		PlayerSide mDesiredSide;
 
 		/* Game Data */
 		boost::shared_ptr<NetworkGame> mGame;

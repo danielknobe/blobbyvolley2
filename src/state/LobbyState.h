@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/RakClient.h"
 
 #include "NetworkMessage.h"
+#include "PlayerIdentity.h"
 
 class LobbyState : public State
 {
@@ -42,8 +43,15 @@ class LobbyState : public State
 
 	private:
 		boost::scoped_ptr<RakClient> mClient;
+		PlayerIdentity mLocalPlayer;
 		ServerInfo mInfo;
 		int mSelectedPlayer;
 		std::vector<std::string> mConnectedPlayers;
+
+		enum
+		{
+			CONNECTING,
+			CONNECTED
+		} mConnectionState;
 };
 

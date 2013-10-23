@@ -24,11 +24,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "IMGUI.h"
 #include "NetworkState.h"
+#include "UserConfig.h"
+#include "GenericIO.h"
 
 LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient()), mInfo(info), mSelectedPlayer(0)
 {
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
+
+	// send an ENTER_SERVER packet with name and side preference
+	// resert imgui
+	IMGUI::getSingleton().resetSelection();
+	RenderManager::getSingleton().redraw();
+
+	/// \todo we need read-only access here!
+	UserConfig config;
+	config.loadFile("config.xml");
+	PlayerSide side = (PlayerSide)config.getInteger("network_side");
+
+	// load player identity
+	if(side == LEFT_PLAYER)
+	{
+		mLocalPlayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
+	}
+	 else
+	{
+		mLocalPlayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
+	}
+
 }
 
 LobbyState::~LobbyState()
@@ -38,6 +61,53 @@ LobbyState::~LobbyState()
 
 void LobbyState::step()
 {
+	// process packets
+	packet_ptr packet;
+	while (packet = mClient->Receive())
+	{
+		switch(packet->data[0])
+		{
+			case ID_CONNECTION_REQUEST_ACCEPTED:
+			{
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_ENTER_SERVER);
+
+				// Send preferred side
+				stream.Write( mLocalPlayer.getPreferredSide() );
+
+				// Send playername
+				char myname[16];
+				strncpy(myname, mLocalPlayer.getName().c_str(), sizeof(myname));
+				stream.Write(myname, sizeof(myname));
+
+				// send color settings
+				stream.Write(mLocalPlayer.getStaticColor().toInt());
+
+				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+
+				mConnectionState = CONNECTED;
+				break;
+			}
+			case ID_SERVER_STATUS:
+				{
+					RakNet::BitStream stream = packet->getStream();
+					auto in = createGenericReader( &stream );
+					unsigned char t;
+					in->byte(t);
+
+					std::vector<std::string> names;
+					in->generic<std::vector<std::string>>( names );
+					mConnectedPlayers = names;
+					std::cout << packet->data << "\n";
+					std::cout << "receive names: " << names.size() << "\n";
+				}
+				break;
+			default:
+				std::cout << "Unknown packet " << int(packet->data[0]) << " received\n";
+		}
+	}
+
+
 	IMGUI& imgui = IMGUI::getSingleton();
 
 	imgui.doCursor();
@@ -80,8 +150,9 @@ void LobbyState::step()
 	// ok button
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) || doEnterGame)
 	{
-		deleteCurrentState();
+		/*deleteCurrentState();
 		setCurrentState(new NetworkGameState(mInfo.hostname, mInfo.port));
+		*/
 	}
 }
 

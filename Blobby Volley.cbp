@@ -318,9 +318,26 @@
 		<Unit filename="src/raknet/rijndael.h" />
 		<Unit filename="src/server/DedicatedServer.h" />
 		<Unit filename="src/server/NetworkPlayer.h" />
-		<Unit filename="src/state/LocalGameState.cpp" />
-		<Unit filename="src/state/LocalGameState.h" />
-		<Unit filename="src/state/NetworkSearchState.cpp" />
+		<Unit filename="src/server/servermain.cpp">
+			<Option target="Server Debug" />
+		</Unit>
+		<Unit filename="src/state/LobbyState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/state/LobbyState.h" />
+		<Unit filename="src/state/LocalGameState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/state/LocalGameState.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/state/NetworkSearchState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/NetworkSearchState.h" />
 		<Unit filename="src/state/NetworkState.cpp" />
 		<Unit filename="src/state/NetworkState.h" />
