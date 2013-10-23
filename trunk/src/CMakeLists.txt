@@ -1,3 +1,5 @@
+ADD_DEFINITIONS(-std=c++11)
+
 add_subdirectory(lua)
 add_subdirectory(tinyxml)
 add_subdirectory(raknet)

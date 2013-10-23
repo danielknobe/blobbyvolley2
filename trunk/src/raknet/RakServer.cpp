@@ -32,6 +32,8 @@
 #include "PacketEnumerations.h"
 #include "GetTime.h"
 
+#include <cstring>
+
 RakServer::RakServer()
 {
 }
