@@ -29,10 +29,10 @@ class ReplayRecorder;
 	\brief Base class for all programme states.
 	\details A programm state describes which state a programme is in
 			( e.g. MainMenu, OptionsMenu, SingleplayerGame etc. ). It defines
-			an abstract step function which is called each frame for the 
+			an abstract step function which is called each frame for the
 			currently active state.
-			Switching to a new state is a little cumbersome right now, as 
-			it requires deleting the current State (deleteCurrentState()) 
+			Switching to a new state is a little cumbersome right now, as
+			it requires deleting the current State (deleteCurrentState())
 			and setting the new state afterwards. This approach is
 			very error prone and generally not nice, so I hope we can
 			replace it someday with something better ;)
@@ -46,17 +46,17 @@ protected:
 	void deleteCurrentState();
 	void setCurrentState(State* newState);
 	void switchState(State* newState);
-	
-	/// static protected helper function that 
+
+	/// static protected helper function that
 	/// draws the game. It is in State because
-	/// this functionality is shared by 
+	/// this functionality is shared by
 	/// LocalGameState, NetworkGameState and ReplayState
 	static void presentGame(const DuelMatch& match);
 public:
 	virtual ~State() {}
 	virtual void step() = 0;
 	static State* getCurrentState();
-	
+
 	virtual const char* getStateName() const = 0;
 	static const char* getCurrenStateName();
 };

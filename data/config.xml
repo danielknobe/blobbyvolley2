@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <userconfig>
-	<var name="device" value="OpenGL"/>
+	<var name="device" value="SDL"/>
 	<var name="fullscreen" value="false"/>
 	<var name="left_blobby_color_r" value="0"/>
 	<var name="left_blobby_color_g" value="0"/>

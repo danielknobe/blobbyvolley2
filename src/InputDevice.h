@@ -1,6 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <map>
-#include <SDL/SDL_events.h>
+#include <SDL2/SDL_events.h>
 #include "Global.h"
 #include "InputSource.h"
 #include <boost/circular_buffer.hpp>
@@ -31,12 +32,12 @@ class JoystickPool : public ObjectCounter<JoystickPool>
 {
 	public:
 		static JoystickPool& getSingleton();
-		
+
 		SDL_Joystick* getJoystick(int id);
-		
+
 		int probeJoysticks();
 		void closeJoysticks();
-		
+
 	private:
 		typedef std::map<int, SDL_Joystick*> JoyMap;
 		JoyMap mJoyMap;
@@ -62,12 +63,12 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 	JoystickAction(const JoystickAction& action);
 
 	std::string toString();
-	
+
 	Type type;
-	
+
 	SDL_Joystick* joy;
 	int joyid;
-	
+
 	// Note: Axis are stored as the SDL axis +1, so we can used
 	// the signedness as direction indication
 	int number;
@@ -109,14 +110,15 @@ class MouseInputDevice : public InputDevice
 class KeyboardInputDevice : public InputDevice
 {
 	private:
-		SDLKey mLeftKey;
-		SDLKey mRightKey;
-		SDLKey mJumpKey;
+		SDL_Keycode mLeftKey;
+		SDL_Keycode mRightKey;
+		SDL_Keycode mJumpKey;
 	public:
 		virtual ~KeyboardInputDevice(){};
-		KeyboardInputDevice(SDLKey leftKey, SDLKey rightKey, SDLKey jumpKey);
+		KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
 		virtual PlayerInput transferInput(const InputSource* ips);
 };
+
 
 /*! \class JoystickInputDevice
 	\brief Ingame Joystick input

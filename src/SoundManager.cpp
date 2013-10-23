@@ -149,6 +149,7 @@ bool SoundManager::init()
 
 void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 {	
+	SDL_memset(stream, 0, length);
 	std::list<Sound>& playingSound = 
 		((SoundManager*)singleton)->mPlayingSound;
 	int volume = int(SDL_MIX_MAXVOLUME * 

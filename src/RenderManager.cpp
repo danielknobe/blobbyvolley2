@@ -35,7 +35,7 @@ RenderManager::RenderManager() : mDrawGame(false)
 		mSingleton->deinit();
 		delete mSingleton;
 	}
-	
+
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
 	mNeedRedraw = true;
@@ -44,22 +44,26 @@ RenderManager::RenderManager() : mDrawGame(false)
 SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance)
 {
 	SDL_Surface *newSurface = SDL_CreateRGBSurface(
-		SDL_SWSURFACE | SDL_SRCALPHA | SDL_SRCCOLORKEY,
-		surface->w, surface->h, 32,
-		0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
+			0,
+			surface->w, surface->h, 32,
+			0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
 	SDL_BlitSurface(surface, 0, newSurface, 0);
-	SDL_SetAlpha(newSurface, SDL_SRCALPHA, surface->format->alpha);
-	SDL_SetColorKey(newSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL,
-			SDL_MapRGB(newSurface->format, 0, 0, 0));
+
+	Uint8 alpha;
+	SDL_GetSurfaceAlphaMod(surface, &alpha);
+	SDL_SetSurfaceAlphaMod(newSurface, alpha);
+	SDL_SetColorKey(newSurface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
 	
-    SDL_LockSurface(newSurface);
+	SDL_LockSurface(newSurface);
 	for (int y = 0; y < surface->h; ++y)
 	{	
 		for (int x = 0; x < surface->w; ++x)
 		{
 			SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
 				[y * newSurface->w +x]);
-			if (surface->format->colorkey != ((Uint32*)newSurface->pixels)[y * newSurface->w +x])
+			Uint32 colorKey;
+			SDL_GetColorKey(surface, &colorKey);
+			if (colorKey != ((Uint32*)newSurface->pixels)[y * newSurface->w +x])
 			{
 				pixel->r = pixel->r + luminance > 255 ? 255 : pixel->r + luminance;
 				pixel->g = pixel->g + luminance > 255 ? 255 : pixel->g + luminance;
@@ -70,16 +74,14 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 	SDL_UnlockSurface(newSurface);
 	// no DisplayFormatAlpha, because of problems with
 	// OpenGL RenderManager
-	SDL_Surface *convSurface = SDL_DisplayFormat(newSurface);
-	SDL_FreeSurface(newSurface);
-	return convSurface;
+	return newSurface;
 }
 
 SDL_Surface* RenderManager::loadSurface(std::string filename)
 {
 	FileRead file(filename);
 	int fileLength = file.length();
-	
+
 	// just read the whole file
 	boost::shared_array<char> fileContent = file.readRawBytes(fileLength);
 
@@ -96,7 +98,7 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int height)
 {
 	SDL_Surface* newSurface = SDL_CreateRGBSurface(
-		SDL_SWSURFACE | SDL_SRCALPHA | SDL_SRCCOLORKEY,
+		0,
 		width, height, 32,
 		0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
 	
@@ -210,8 +212,8 @@ SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
 	SDL_Rect rect = {
 		short(lround(position.x) - 64),
 		short(lround(position.y) - 16),
-		128,
-		32
+		69,
+		17
 	};
 	
 	return rect;
@@ -248,7 +250,11 @@ void RenderManager::drawGame(bool draw)
 
 void RenderManager::setTitle(const std::string& title)
 {
-	SDL_WM_SetCaption(title.c_str(), "");
+	SDL_SetWindowTitle(mWindow, title.c_str());
+}
+
+SDL_Window* RenderManager::getWindow() {
+	return mWindow;
 }
 
 Color RenderManager::getOscillationColor() const

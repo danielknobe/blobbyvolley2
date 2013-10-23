@@ -34,7 +34,7 @@ NetworkPlayer::NetworkPlayer() : mID(), mIdentity(), mDesiredSide(NO_PLAYER)
 }
 
 NetworkPlayer::NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side)
-:mID(id), mIdentity(name, color, false), mDesiredSide(side)
+:mID(id), mIdentity(name, color, false, side)
 {
 
 }
@@ -43,7 +43,6 @@ NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
 {
 	int playerSide;
 	stream.Read(playerSide);
-	mDesiredSide = (PlayerSide)playerSide;
 
 	// Read the Playername
 	char charName[16];
@@ -56,7 +55,7 @@ NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
 	int color;
 	stream.Read(color);
 
-	mIdentity = PlayerIdentity(charName, color, false);
+	mIdentity = PlayerIdentity(charName, color, false, (PlayerSide)playerSide);
 }
 
 bool NetworkPlayer::valid() const

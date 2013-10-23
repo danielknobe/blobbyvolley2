@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <algorithm>
+#include <cstdio>
 
 #include "LocalGameState.h"
 #include "ReplaySelectionState.h"
@@ -59,18 +60,18 @@ State* State::getCurrentState()
 void State::deleteCurrentState()
 {
 	/// \todo well, the deleteCurrentState/setCurrentState as we have it now
-	///			seems to have several flaws. First, we have to delete our 
+	///			seems to have several flaws. First, we have to delete our
 	///			current state BEFORE we create the next one. If I recall right
-	///			this was because some destructors wrote things too disk which 
-	///			other constructors had to load (?), so they had to be called 
-	///			first. 
-	///			So, if the construction of the new state fails, the old is 
+	///			this was because some destructors wrote things too disk which
+	///			other constructors had to load (?), so they had to be called
+	///			first.
+	///			So, if the construction of the new state fails, the old is
 	///			already deleted and we have now way to roll back.
 	///			Second, we need two methods were one should be sufficient.
 	delete mCurrentState;
 	mCurrentState = 0;
 }
-void State::setCurrentState(State* newState) 
+void State::setCurrentState(State* newState)
 {
 	assert(!mCurrentState);
 	mCurrentState = newState;
@@ -86,40 +87,40 @@ void State::presentGame(const DuelMatch& match)
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
-	
+
 	// enable game drawing
 	rmanager.drawGame(true);
-	
+
 	rmanager.setScore(match.getScore(LEFT_PLAYER), match.getScore(RIGHT_PLAYER),
 		match.getServingPlayer() == LEFT_PLAYER, match.getServingPlayer() == RIGHT_PLAYER);
-		
+
 	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER),
 							match.getWorld().getBlobState(LEFT_PLAYER));
 	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),
 							match.getWorld().getBlobState(RIGHT_PLAYER));
-	
+
 	if(match.getPlayer(LEFT_PLAYER).getOscillating())
 	{
 		rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
-	} 
+	}
 	 else
 	{
 		rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
 	}
-	
+
 	if(match.getPlayer(RIGHT_PLAYER).getOscillating())
 	{
 		rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
-	} 
+	}
 	 else
 	{
 		rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
 	}
-	
+
 	rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
-			
+
 	rmanager.setTime(match.getClock().getTimeString());
-			
+
 	int events = match.getEvents();
 	if(events & EVENT_LEFT_BLOBBY_HIT)
 	{
@@ -128,7 +129,7 @@ void State::presentGame(const DuelMatch& match)
 				(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
 		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 0);
 	}
-	
+
 	if (events & EVENT_RIGHT_BLOBBY_HIT)
 	{
 		smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
@@ -136,7 +137,7 @@ void State::presentGame(const DuelMatch& match)
 				(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
 		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 1);
 	}
-	
+
 	if (events & EVENT_ERROR)
 		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
@@ -150,7 +151,7 @@ const char* State::getCurrenStateName()
 MainMenuState::MainMenuState()
 {
 	IMGUI::getSingleton().resetSelection();
-	
+
 	// set main menu fps
 	SpeedController::getMainInstance()->setGameSpeed(75);
 }
@@ -242,9 +243,9 @@ void CreditsState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	
+
 	const float xPosition = 50;
-	
+
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition), TextManager::CRD_PROGRAMMERS);
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+30), "Daniel Knobe");
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+60), "  (daniel-knobe(at)web.de)", TF_SMALL_FONT);
