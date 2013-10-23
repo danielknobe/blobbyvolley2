@@ -51,6 +51,8 @@
 #include <stdlib.h>
 #endif
 
+#include <cstring>
+
 // On a Little-endian machine the RSA key and message are mangled, but we're
 // trying to be friendly to the little endians, so we do byte order
 // mangling on Big-Endian machines.  Note that this mangling is independent
