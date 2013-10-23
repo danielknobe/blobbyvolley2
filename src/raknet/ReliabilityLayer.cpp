@@ -41,6 +41,8 @@
 #include <stdlib.h>
 #endif
 
+#include <cstring>
+
 // Defined in rand.cpp
 extern void seedMT( unsigned int seed );
 extern inline unsigned int randomMT( void );
