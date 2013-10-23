@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
+#include "GenericIO.h"
 
 
 extern int SWLS_PacketCount;
@@ -85,7 +86,13 @@ void DedicatedServer::processPackets()
 					mPlayerGameMap.erase(packet->playerId);
 				}
 
+				// no longer count this player as connected
+				mPlayerMap.erase(packet->playerId);
+
 				mConnectedClients--;
+
+				updateLobby();
+
 				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
 				break;
 			}
@@ -108,13 +115,19 @@ void DedicatedServer::processPackets()
 
 				break;
 
-			// game establish packets
-			case ID_ENTER_GAME:
+			// player connects to server
+			case ID_ENTER_SERVER:
 			{
 				RakNet::BitStream stream = packet->getStream();
 
-				stream.IgnoreBytes(1);	//ID_ENTER_GAME
+				stream.IgnoreBytes(1);	//ID_ENTER_SERVER
 
+				mPlayerMap[packet->playerId] = NetworkPlayer(packet->playerId, stream);
+
+				// answer by sending the status
+				updateLobby();
+				break;
+/*
 				if (!mWaitingPlayer.valid())
 				{
 					/// \todo does the copy-ctor what i assume it does? deep copy?
@@ -123,8 +136,6 @@ void DedicatedServer::processPackets()
 				else // We have two players now
 				{
 					NetworkPlayer secondPlayer = NetworkPlayer(packet->playerId, stream);
-					/// \todo refactor this, this code is awful!
-					///  one swap should be enough
 
 					auto newgame = createGame( mWaitingPlayer, secondPlayer );
 					mPlayerGameMap[mWaitingPlayer.getID()] = newgame;
@@ -133,6 +144,7 @@ void DedicatedServer::processPackets()
 					mWaitingPlayer = NetworkPlayer();
 				}
 				break;
+*/
 			}
 			case ID_BLOBBY_SERVER_PRESENT:
 			{
@@ -160,6 +172,11 @@ void DedicatedServer::updateGames()
 				break;
 		}
 	}
+}
+
+void DedicatedServer::updateLobby()
+{
+	broadcastServerStatus();
 }
 
 bool DedicatedServer::hasActiveGame() const
@@ -196,7 +213,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 
 	if (wrongPackageSize)
 	{
-		std::cerr << "outdated client tried to connect! Unable to determine client version due to packet size mismatch.";
+		std::cerr << "outdated client tried to connect! Unable to determine client version due to packet size mismatch : " << stream.GetNumberOfBitsUsed() << "\n" ;
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
@@ -263,4 +280,24 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(NetworkPlayer first, 
 	#endif
 
 	return newgame;
+}
+
+void DedicatedServer::broadcastServerStatus()
+{
+	RakNet::BitStream stream;
+
+	auto out = createGenericWriter(&stream);
+	out->byte((unsigned char)ID_SERVER_STATUS);
+
+	std::vector<std::string> playernames;
+	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+	{
+		playernames.push_back( it->second.getName() );
+	}
+	out->generic<std::vector<std::string>>( playernames );
+
+	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+	{
+		mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->first, false);
+	}
 }

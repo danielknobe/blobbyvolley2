@@ -240,7 +240,7 @@ void NetworkSearchState::step()
 		imgui.doEditbox(GEN_ID, Vector2(130.0, 210.0), 20, mEnteredServer, mServerBoxPosition);
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::LBL_OK))
 		{
-			//std::string server = mScannedServers[mSelectedServer].hostname;
+			/// \todo adapt direct connect
 			std::string server = mEnteredServer;
 			int port = BLOBBY_PORT;
 			std::size_t found = mEnteredServer.find(':');

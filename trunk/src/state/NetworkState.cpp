@@ -125,7 +125,7 @@ void NetworkGameState::step()
 		{
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
-				RakNet::BitStream stream;
+				/*RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_ENTER_GAME);
 				stream.Write(mOwnSide);
 
@@ -140,7 +140,7 @@ void NetworkGameState::step()
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
 				mNetworkState = WAITING_FOR_OPPONENT;
-				break;
+				break;*/
 			}
 			case ID_PHYSIC_UPDATE:
 			{
@@ -768,7 +768,7 @@ NetworkHostState::~NetworkHostState()
 
 void NetworkHostState::step()
 {
-	packet_ptr packet;
+	/*packet_ptr packet;
 	while (packet = mServer->Receive())
 	{
 		switch (packet->data[0])
@@ -906,6 +906,7 @@ void NetworkHostState::step()
 				mNetworkGame->step();
 		}
 	}
+	*/
 }
 
 const char* NetworkHostState::getStateName() const
