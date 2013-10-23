@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <algorithm>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 /* implementation */
 /// this is required to reduce rounding errors. now we have a resolution of

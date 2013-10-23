@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <list>
 #include <map>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "Vector.h"
 #include "Global.h"
@@ -47,7 +47,7 @@ static const int TF_OBFUSCATE	= 0x04; // Obfuscate the text with asterisks. (for
 // Text Alignment Flags
 static const int TF_ALIGN_LEFT	= 0x00;	// Text aligned to the left (default)
 static const int TF_ALIGN_CENTER= 0x08;	// Text centered
-static const int TF_ALIGN_RIGHT = 0x10;	// Text aligned right		
+static const int TF_ALIGN_RIGHT = 0x10;	// Text aligned right
 
 
 
@@ -63,7 +63,7 @@ struct BufferedImage : public ObjectCounter<BufferedImage>
 	int h;
 	union
 	{
-		SDL_Surface* sdlImage;
+		SDL_Texture* sdlImage;
 		unsigned glHandle;
 	};
 };
@@ -105,7 +105,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual ~RenderManager(){};
 
 		static RenderManager* createRenderManagerSDL();
-		static RenderManager* createRenderManagerGP2X();
+		//static RenderManager* createRenderManagerGP2X();
 		static RenderManager* createRenderManagerGL2D();
 		static RenderManager* createRenderManagerNull();
 
@@ -193,7 +193,9 @@ class RenderManager : public ObjectCounter<RenderManager>
 		
 		// This function may be useful for displaying framerates
 		void setTitle(const std::string& title);
-	
+
+		// Returns the window
+		SDL_Window* getWindow();
 	protected:
 		RenderManager();
 		// Returns -1 on EOF
@@ -202,6 +204,8 @@ class RenderManager : public ObjectCounter<RenderManager>
 		SDL_Surface* highlightSurface(SDL_Surface* surface, int luminance);
 		SDL_Surface* loadSurface(std::string filename);
 		SDL_Surface* createEmptySurface(unsigned int width, unsigned int height);
+
+		SDL_Window* mWindow;
 		
 		Vector2 blobShadowPosition(const Vector2& position);
 		Vector2 ballShadowPosition(const Vector2& position);

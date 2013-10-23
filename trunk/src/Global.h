@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <exception>
-#include <SDL/SDL_stdinc.h>
+#include <SDL2/SDL_stdinc.h>
+#include <cstring>
 
 // I hope the GP2X is the only combination of these systems
 #if defined(__linux__) && defined(__arm__)
@@ -76,16 +77,16 @@ struct Color
 	, g(green)
 	, b(blue)
 	{}
-	
+
 	/// \sa toInt()
 	Color(unsigned int col)
 	: r(col&0xff)
 	, g((col>>8)&0xff)
-	, b((col>>16)&0xff) 
+	, b((col>>16)&0xff)
 	{
-		
+
 	}
-	
+
 	Color() {}
 
 	union
@@ -98,12 +99,12 @@ struct Color
 		};
 		Uint8 val[3];
 	};
-	
+
 	bool operator == (Color rval) const
 	{
-		return !memcmp(val, rval.val, 3);
+		return !std::memcmp(val, rval.val, 3);
 	}
-	
+
 	bool operator != (Color rval) const
 	{
 		return !(*this == rval);

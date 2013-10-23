@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 InputSource::InputSource() : mInput(), mMatch(0)
 {
-	
 }
 
 PlayerInput InputSource::getInput() const
@@ -68,4 +67,3 @@ std::ostream& operator<< (std::ostream& out, const PlayerInput& input)
 	out << (input.left ? 't' : 'f') << (input.right ? 't' : 'f') << (input.up ? 't' : 'f');
 	return out;
 }
-

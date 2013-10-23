@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 #include <iostream>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "config.h"
 
@@ -122,6 +122,7 @@ void setupPHYSFS()
 		#endif
 	#endif
 }
+
 #undef main
 extern "C"
 int main(int argc, char* argv[])
@@ -130,7 +131,6 @@ int main(int argc, char* argv[])
 	setupPHYSFS();
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
-	SDL_EnableUNICODE(1);
 	atexit(SDL_Quit);
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
@@ -175,8 +175,8 @@ int main(int argc, char* argv[])
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
-		else if (gameConfig.getString("device") == "GP2X")
-			rmanager = RenderManager::createRenderManagerGP2X();
+		/*else if (gameConfig.getString("device") == "GP2X")
+			rmanager = RenderManager::createRenderManagerGP2X();*/
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
@@ -239,7 +239,7 @@ int main(int argc, char* argv[])
 					rmanager->setTitle(tmp.str());
 				}
 				lastfps = newfps;
-			}
+			} 
 			// Dirty workarround for hiding fps in title
 			if (!scontroller.getDrawFPS() && (lastfps != -1))
 			{

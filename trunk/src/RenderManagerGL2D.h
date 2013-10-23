@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #if HAVE_LIBGL
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 
 #if defined(WIN32)
@@ -60,11 +60,11 @@ class RenderManagerGL2D : public RenderManager
 		virtual bool setBackground(const std::string& filename);
 		virtual void setBlobColor(int player, Color color);
 		virtual void showShadow(bool shadow);
-		
+
 		virtual void setBall(const Vector2& position, float rotation);
 		virtual void setBlob(int player, const Vector2& position,
 				float animationState);
-			
+
 		virtual void setScore(int leftScore, int rightScore,
 				   bool leftWarning, bool rightWarning);
 
@@ -78,14 +78,17 @@ class RenderManagerGL2D : public RenderManager
 		virtual void startDrawParticles();
 		virtual void drawParticle(const Vector2& pos, int player);
 		virtual void endDrawParticles();
+
 	private:
-		
+		// Make sure this object is created before any opengl call
+		SDL_GLContext mGlContext;
+
 		struct Texture
 		{
 			float indices[8];
 			float w, h ;
 			GLuint texture;
-			
+
 			Texture( GLuint tex, int x, int y, int w, int h, int tw, int th );
 		};
 
@@ -98,11 +101,9 @@ class RenderManagerGL2D : public RenderManager
 		std::vector<GLuint> mBlobShadow;
 		std::vector<Texture> mFont;
 		std::vector<Texture> mHighlightFont;
-		std::vector<Texture> mSmallFont;
-		std::vector<Texture> mHighlightSmallFont;
 		GLuint mParticle;
 		GLuint mScroll;
-		
+
 		std::list<Vector2> mLastBallStates;
 
 		Vector2 mBallPosition;
@@ -130,11 +131,11 @@ class RenderManagerGL2D : public RenderManager
 		void drawQuad(float x, float y, const Texture& tex);
 		GLuint loadTexture(SDL_Surface* surface, bool specular);
 		int getNextPOT(int npot);
-		
+
 		void glEnable(unsigned int flag);
 		void glDisable(unsigned int flag);
 		void glBindTexture(GLuint texture);
-		
+
 		GLuint mCurrentTexture;
 		std::set<unsigned int> mCurrentFlags;
 };

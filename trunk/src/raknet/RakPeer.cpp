@@ -39,7 +39,6 @@
 #include <pthread.h>
 #endif
 #include <ctype.h> // toupper
-#include <cstring>
 
 #include "GetTime.h"
 #include "PacketEnumerations.h"

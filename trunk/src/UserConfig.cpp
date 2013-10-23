@@ -38,13 +38,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
-std::map<std::string, boost::shared_ptr<IUserConfigReader> > userConfigCache;
+std::map<std::string, boost::shared_ptr<IUserConfigReader> >& userConfigCache() 
+{ 
+     static std::map<std::string, boost::shared_ptr<IUserConfigReader> > cache; 
+     return cache; 
+}; 
 
 boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
 {
 	// if we have this userconfig already cached, just return from cache
-	std::map<std::string, boost::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache.find(file);
-	if( cfg_cached != userConfigCache.end() )
+	std::map<std::string, boost::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache().find(file);
+	if( cfg_cached != userConfigCache().end() )
 	{
 		return cfg_cached->second;
 	}
@@ -55,7 +59,7 @@ boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(c
 	boost::shared_ptr<IUserConfigReader> config(uc);
 
 	// ... and add to cache
-	userConfigCache[file] = config;
+	userConfigCache()[file] = config;
 
 	return config;
 }
@@ -147,10 +151,10 @@ bool UserConfig::saveFile(const std::string& filename) const
 	file.close();
 
 	// we have to make sure that we don't cache any outdated user configs
-	auto cfg_cached = userConfigCache.find(filename);
-	if( cfg_cached != userConfigCache.end() )
+	auto cfg_cached = userConfigCache().find(filename);
+	if( cfg_cached != userConfigCache().end() )
 	{
-		userConfigCache.erase(cfg_cached);
+		userConfigCache().erase(cfg_cached);
 	}
 
 	return true;
