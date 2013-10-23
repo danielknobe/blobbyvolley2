@@ -196,6 +196,7 @@ GraphicOptionsState::~GraphicOptionsState()
 
 void GraphicOptionsState::save()
 {
+#ifndef __ANDROID__
 	if ((mOptionConfig.getBool("fullscreen") != mFullscreen) ||
 			(mOptionConfig.getString("device") != mRenderer))
 	{
@@ -209,6 +210,7 @@ void GraphicOptionsState::save()
 			std::string("backgrounds/") +
 			mOptionConfig.getString("background"));
 	}
+#endif
 
 	if(mOptionConfig.getBool("show_shadow") != mShowShadow)
 	{

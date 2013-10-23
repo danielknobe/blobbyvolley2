@@ -26,7 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL2/SDL.h>
 
+#ifndef __ANDROID__
 #include "config.h"
+#endif
 
 #include "RenderManager.h"
 #include "SoundManager.h"
@@ -69,17 +71,22 @@ void setupPHYSFS()
 	std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all
 	// platforms
-	fs.addToSearchPath("data");
-	fs.addToSearchPath("data/gfx.zip");
-	fs.addToSearchPath("data/sounds.zip");
-	fs.addToSearchPath("data/scripts.zip");
-	fs.addToSearchPath("data/backgrounds.zip");
-	fs.addToSearchPath("data/rules.zip");
+	std::string baseSearchPath("data" + separator);
+	#ifdef __ANDROID__	
+		baseSearchPath = SDL_AndroidGetExternalStoragePath() + separator;
+	#endif
+
+	fs.addToSearchPath(baseSearchPath);
+	fs.addToSearchPath(baseSearchPath + "gfx.zip");
+	fs.addToSearchPath(baseSearchPath + "sounds.zip");
+	fs.addToSearchPath(baseSearchPath + "scripts.zip");
+	fs.addToSearchPath(baseSearchPath + "backgrounds.zip");
+	fs.addToSearchPath(baseSearchPath + "rules.zip");
 
 	#if defined(WIN32)
 		// Just write in installation directory
 		fs.setWriteDir("data");
-	#else
+	
 		// handle the case when it is installed
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
@@ -87,7 +94,7 @@ void setupPHYSFS()
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
-
+	#else
 		// Create a search path in the home directory and ensure that
 		// all paths exist and are actually directories
 		std::string userdir = fs.getUserDir();
@@ -125,7 +132,11 @@ void setupPHYSFS()
 
 #undef main
 extern "C"
+#ifdef __ANDROID__
+int SDL_main(int argc, char* argv[])
+#else
 int main(int argc, char* argv[])
+#endif
 {
 	FileSystem filesys(argv[0]);
 	setupPHYSFS();
@@ -177,6 +188,7 @@ int main(int argc, char* argv[])
 			rmanager = RenderManager::createRenderManagerSDL();
 		/*else if (gameConfig.getString("device") == "GP2X")
 			rmanager = RenderManager::createRenderManagerGP2X();*/
+#ifndef __ANDROID__
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
@@ -185,6 +197,7 @@ int main(int argc, char* argv[])
 			std::cerr << "Falling back to OpenGL" << std::endl;
 			rmanager = RenderManager::createRenderManagerGL2D();
 		}
+#endif
 
 		// fullscreen?
 		if(gameConfig.getString("fullscreen") == "true")

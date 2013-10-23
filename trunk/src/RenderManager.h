@@ -106,7 +106,9 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();
+#ifndef __ANDROID__
 		static RenderManager* createRenderManagerGL2D();
+#endif
 		static RenderManager* createRenderManagerNull();
 
 		static RenderManager& getSingleton()
