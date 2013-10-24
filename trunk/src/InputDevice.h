@@ -104,6 +104,23 @@ class MouseInputDevice : public InputDevice
 		virtual PlayerInput transferInput(const InputSource* ips);
 };
 
+/*! \class TouchInputDevice
+	\brief Ingame touch control
+*/
+class TouchInputDevice : public InputDevice
+{
+	private:
+		PlayerSide mPlayer;
+		int mMarkerX;
+		bool mDelay; // The pressed button of the mainmenu must be ignored
+		boost::circular_buffer<PlayerInput> mInputs;
+		LagDetector mLag;
+	public:
+		virtual ~TouchInputDevice(){};
+		TouchInputDevice(PlayerSide player);
+		virtual PlayerInput transferInput(const InputSource* ips);
+};
+
 /*! \class KeyboardInputDevice
 	\brief Ingame keyboard input
 */
