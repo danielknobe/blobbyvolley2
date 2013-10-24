@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include <string>
 
-#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "raknet/RakClient.h"
 
@@ -42,7 +42,7 @@ class LobbyState : public State
 		virtual const char* getStateName() const;
 
 	private:
-		boost::scoped_ptr<RakClient> mClient;
+		boost::shared_ptr<RakClient> mClient;
 		PlayerIdentity mLocalPlayer;
 		ServerInfo mInfo;
 		int mSelectedPlayer;
@@ -52,6 +52,6 @@ class LobbyState : public State
 		{
 			CONNECTING,
 			CONNECTED
-		} mConnectionState;
+		} mLobbyState;
 };
 

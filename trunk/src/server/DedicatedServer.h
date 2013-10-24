@@ -65,16 +65,14 @@ class DedicatedServer
 		// raknet server used
 		boost::scoped_ptr<RakServer> mServer;
 
-		// player currently waiting
-		NetworkPlayer mWaitingPlayer;
-
 		// path to rules file
 		std::string mRulesFile;
 		// server info with server config
 		ServerInfo mServerInfo;
 
 		// containers for all games and mapping players to their games
-		std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;
+		std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;		// this one is redundant
 		std::list< boost::shared_ptr<NetworkGame> > mGameList;
 		std::map< PlayerID, NetworkPlayer> mPlayerMap;
+		std::map< PlayerID, PlayerID> mGameRequests;
 };

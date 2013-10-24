@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "DedicatedServer.h"
 
+#include <algorithm>
+
 #include <boost/make_shared.hpp>
 
 #include "raknet/RakServer.h"
@@ -70,12 +72,6 @@ void DedicatedServer::processPackets()
 			case ID_CONNECTION_LOST:
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
-				bool cond1 = mWaitingPlayer.valid();
-				bool cond2 = mWaitingPlayer.getID() == packet->playerId;
-				// if first player disconncted, reset
-				if (cond1 && cond2)
-					mWaitingPlayer = NetworkPlayer();
-
 				// delete the disconnectiong player
 				if ( mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end() )
 				{
@@ -127,24 +123,61 @@ void DedicatedServer::processPackets()
 				// answer by sending the status
 				updateLobby();
 				break;
-/*
-				if (!mWaitingPlayer.valid())
-				{
-					/// \todo does the copy-ctor what i assume it does? deep copy?
-					mWaitingPlayer = NetworkPlayer(packet->playerId, stream);
-				}
-				else // We have two players now
-				{
-					NetworkPlayer secondPlayer = NetworkPlayer(packet->playerId, stream);
+			}
+			case ID_ENTER_GAME:
+			{
+				/// \todo assert that the player send an ID_ENTER_SERVER before
 
-					auto newgame = createGame( mWaitingPlayer, secondPlayer );
-					mPlayerGameMap[mWaitingPlayer.getID()] = newgame;
-					mPlayerGameMap[secondPlayer.getID()] = newgame;
-					mGameList.push_back(newgame);
-					mWaitingPlayer = NetworkPlayer();
+				// which player is wanted as opponent
+				char opponent[16];
+				auto stream = packet->getStream();
+				stream.IgnoreBytes(1);
+				stream.Read(opponent, sizeof(opponent));
+
+				PlayerID player = packet->playerId;
+				PlayerID secondPlayer = UNASSIGNED_PLAYER_ID;
+
+				// find desired opponent
+				if( std::strlen(opponent) != 0)
+				{
+					auto opp = std::find_if( mPlayerMap.begin(), mPlayerMap.end(), [opponent]( const decltype(mPlayerMap)::value_type& val ){ return val.second.getName() == opponent; });
+
+					if( opp != mPlayerMap.end() )
+					{
+						/// \todo send some kind of error packet otherwise
+						secondPlayer = opp->second.getID();
+					}
 				}
+
+				// search if there is an open request
+				for(auto it = mGameRequests.begin(); it != mGameRequests.end(); ++it)
+				{
+					// is this a game request of the player we want to play with, or if we want to play with everyone
+					if( it->first == secondPlayer || secondPlayer == UNASSIGNED_PLAYER_ID)
+					{
+						// do they want to play with us or anyone
+						if(it->second == player || it->second == UNASSIGNED_PLAYER_ID)
+						{
+							/// \todo check that these players are not already playing a game
+							// we can create a game now
+							auto newgame = createGame( mPlayerMap[it->first], mPlayerMap[it->second] );
+							mPlayerGameMap[it->first] = newgame;
+							mPlayerGameMap[it->second] = newgame;
+							mGameList.push_back(newgame);
+
+							// remove the game request
+							mGameRequests.erase( it );
+							break;	// we're done
+						}
+					}
+
+				}
+
+
+				// no match could be found -> add to request list
+				mGameRequests[packet->playerId] = secondPlayer;
+
 				break;
-*/
 			}
 			case ID_BLOBBY_SERVER_PRESENT:
 			{
@@ -186,7 +219,7 @@ bool DedicatedServer::hasActiveGame() const
 
 bool DedicatedServer::hasWaitingPlayer() const
 {
-	return mWaitingPlayer.valid();
+	//return mWaitingPlayer.valid();
 }
 
 // special packet processing
@@ -231,7 +264,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 	else
 	{
 		mServerInfo.activegames = mGameList.size();
-		if (!mWaitingPlayer.valid())
+		/*if (!mWaitingPlayer.valid())
 		{
 			mServerInfo.setWaitingPlayer("none");
 		}
@@ -239,6 +272,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 		{
 			mServerInfo.setWaitingPlayer(mWaitingPlayer.getName());
 		}
+		*/
 
 		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 		mServerInfo.writeToBitstream(stream2);
@@ -301,3 +335,8 @@ void DedicatedServer::broadcastServerStatus()
 		mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->first, false);
 	}
 }
+
+/*
+
+
+					*/

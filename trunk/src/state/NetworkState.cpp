@@ -51,10 +51,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
-NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
-	mClient(new RakClient()),
-	mFakeMatch(new DuelMatch(true, "rules.lua")),
-	mServerAddress(servername), mPort(port)
+NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
+	mClient( client ),
+	mFakeMatch(new DuelMatch(true, "rules.lua"))
 {
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
@@ -70,11 +69,7 @@ NetworkGameState::NetworkGameState(const std::string& servername, Uint16 port):
 
 	RenderManager::getSingleton().redraw();
 
-	if (mClient->Connect(servername.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
-		mNetworkState = CONNECTING;
-	else
-		mNetworkState = CONNECTION_FAILED;
-
+	mNetworkState = WAITING_FOR_OPPONENT;
 
 	// game is not started until two players are connected
 	mFakeMatch->pause();
@@ -123,25 +118,6 @@ void NetworkGameState::step()
 	{
 		switch(packet->data[0])
 		{
-			case ID_CONNECTION_REQUEST_ACCEPTED:
-			{
-				/*RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_ENTER_GAME);
-				stream.Write(mOwnSide);
-
-				// Send playername
-				char myname[16];
-				strncpy(myname, mLocalPlayer->getName().c_str(), sizeof(myname));
-				stream.Write(myname, sizeof(myname));
-
-				// send color settings
-				stream.Write(mLocalPlayer->getStaticColor().toInt());
-
-				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-
-				mNetworkState = WAITING_FOR_OPPONENT;
-				break;*/
-			}
 			case ID_PHYSIC_UPDATE:
 			{
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
@@ -397,9 +373,6 @@ void NetworkGameState::step()
 
 				break;
 			}
-			case ID_CONNECTION_ATTEMPT_FAILED:
-				mNetworkState = CONNECTION_FAILED;
-				break;
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
 				break;
@@ -474,6 +447,12 @@ void NetworkGameState::step()
 
 				break;
 			}
+
+			// we never do anything that should cause such a packet to be received!
+			case ID_CONNECTION_REQUEST_ACCEPTED:
+			case ID_CONNECTION_ATTEMPT_FAILED:
+				assert( 0 );
+				break;
 			default:
 				printf("Received unknown Packet %d\n", packet->data[0]);
 				std::cout<<packet->data<<"\n";
@@ -557,14 +536,6 @@ void NetworkGameState::step()
 	}
 	else switch (mNetworkState)
 	{
-		case CONNECTING:
-		{
-			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
-					Vector2(700.0, 310.0));
-			imgui.doText(GEN_ID, Vector2(150.0, 250.0),
-					TextManager::NET_CONNECTING);
-			break;
-		}
 		case WAITING_FOR_OPPONENT:
 		{
 			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
@@ -595,12 +566,13 @@ void NetworkGameState::step()
 			{
 				// we need to make a copy here because this variables get deleted in destrutor
 				// when deleteCurrentState runs
-				std::string server = mServerAddress;
+				/*std::string server = mServerAddress;
 				uint16_t port = mPort;
 
 				deleteCurrentState();
 				setCurrentState(new NetworkGameState(server, port));
-				return;
+				return;*/
+				/// \todo back to lobby
 			}
 			break;
 		}
@@ -621,21 +593,6 @@ void NetworkGameState::step()
 			{
 				mSaveReplay = true;
 				imgui.resetSelection();
-			}
-			break;
-		}
-		case CONNECTION_FAILED:
-		{
-			imgui.doCursor();
-			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
-					Vector2(700.0, 370.0));
-			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					TextManager::NET_CON_FAILED);
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					TextManager::LBL_OK))
-			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
 			}
 			break;
 		}
@@ -754,7 +711,7 @@ NetworkHostState::NetworkHostState()
 	mServer = new RakServer;
 	mServer->Start(2, 0, BLOBBY_PORT);
 	mNetworkGame = 0;
-	mGameState = new NetworkGameState("localhost", BLOBBY_PORT);
+	//mGameState = new NetworkGameState("localhost", BLOBBY_PORT);
 	mLocalPlayerSide = NO_PLAYER;
 }
 

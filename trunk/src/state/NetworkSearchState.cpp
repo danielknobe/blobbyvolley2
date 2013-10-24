@@ -241,7 +241,7 @@ void NetworkSearchState::step()
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::LBL_OK))
 		{
 			/// \todo adapt direct connect
-			std::string server = mEnteredServer;
+			/*std::string server = mEnteredServer;
 			int port = BLOBBY_PORT;
 			std::size_t found = mEnteredServer.find(':');
 			if (found != std::string::npos) {
@@ -262,7 +262,7 @@ void NetworkSearchState::step()
 
 			deleteCurrentState();
 			setCurrentState(new NetworkGameState(server, port));
-			return;
+			return;*/
 		}
 		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::LBL_CANCEL))
 		{

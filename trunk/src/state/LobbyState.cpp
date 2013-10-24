@@ -33,6 +33,8 @@ LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient()), mInfo(info),
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
 
+	mLobbyState = CONNECTING;
+
 	// send an ENTER_SERVER packet with name and side preference
 	// resert imgui
 	IMGUI::getSingleton().resetSelection();
@@ -86,7 +88,7 @@ void LobbyState::step()
 
 				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
-				mConnectionState = CONNECTED;
+				mLobbyState = CONNECTED;
 				break;
 			}
 			case ID_SERVER_STATUS:
@@ -116,16 +118,27 @@ void LobbyState::step()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doInactiveMode(false);
 
+	// server name
 	imgui.doText(GEN_ID, Vector2(400 - 12 * std::strlen(mInfo.name), 20), mInfo.name);
-	std::string description = mInfo.description;
-	for (unsigned int i = 0; i < description.length(); i += 90)
+
+	// server description
+	if (mLobbyState == CONNECTING )
 	{
-		imgui.doText(GEN_ID, Vector2(50, 55 + i / 90 * 15), description.substr(i, 90), TF_SMALL_FONT);
+		imgui.doText(GEN_ID, Vector2( 100, 55 ), TextManager::NET_CONNECTING);
+	}
+	else
+	{
+		std::string description = mInfo.description;
+		for (unsigned int i = 0; i < description.length(); i += 90)
+		{
+			imgui.doText(GEN_ID, Vector2(50, 55 + i / 90 * 15), description.substr(i, 90), TF_SMALL_FONT);
+		}
 	}
 
 	// player list
 
 	std::vector<std::string> playerlist;
+	playerlist.push_back("random");	/// \todo language support
 	for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
 	{
 		playerlist.push_back(mConnectedPlayers[i] );
@@ -151,9 +164,26 @@ void LobbyState::step()
 	// ok button
 	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) || doEnterGame)
 	{
-		/*deleteCurrentState();
-		setCurrentState(new NetworkGameState(mInfo.hostname, mInfo.port));
-		*/
+		RakNet::BitStream stream;
+		stream.Write((char)ID_ENTER_GAME);
+		char name[16];
+		if( mSelectedPlayer != 0 )
+		{
+			std::strncpy(name, playerlist[mSelectedPlayer].c_str(), sizeof(name));
+			name[sizeof(name)-1] = 0;
+		}
+		 else
+		{
+			name[0] = 0;
+		}
+		stream.Write(name, sizeof(name));
+
+		mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+
+		// new state must be created here, so client won't get deleted
+		auto newState = new NetworkGameState(mClient);
+		deleteCurrentState();
+		setCurrentState( newState );
 	}
 }
 
