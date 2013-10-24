@@ -46,7 +46,14 @@ class LobbyState : public State
 		PlayerIdentity mLocalPlayer;
 		ServerInfo mInfo;
 		int mSelectedPlayer;
-		std::vector<std::string> mConnectedPlayers;
+
+		struct WaitingPlayer
+		{
+			std::string displayname;
+			PlayerID id;
+		};
+
+		std::vector<WaitingPlayer> mConnectedPlayers;
 
 		enum
 		{

@@ -323,12 +323,19 @@ void DedicatedServer::broadcastServerStatus()
 	auto out = createGenericWriter(&stream);
 	out->byte((unsigned char)ID_SERVER_STATUS);
 
+
+
+
 	std::vector<std::string> playernames;
+	std::vector<PlayerID> playerIDs;
+	/// \todo don't send players that are already ingame
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
 		playernames.push_back( it->second.getName() );
+		playerIDs.push_back( it->second.getID() );
 	}
 	out->generic<std::vector<std::string>>( playernames );
+	out->generic<std::vector<PlayerID>>( playerIDs );
 
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{

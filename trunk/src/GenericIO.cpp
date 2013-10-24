@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/make_shared.hpp>
 
 #include "raknet/BitStream.h"
+#include "raknet/NetworkTypes.h"
 
 #include "FileWrite.h"
 #include "FileRead.h"
@@ -449,6 +450,20 @@ namespace detail
 		unsigned int target;
 		io.uint32(target);
 		value = (PlayerSide)target;
+	}
+
+	GENERATE_STD_SERIALIZER_OUT(PlayerID)
+	{
+		io.uint32(value.binaryAddress);
+		io.uint32(value.port);
+	}
+
+	GENERATE_STD_SERIALIZER_IN(PlayerID)
+	{
+		io.uint32(value.binaryAddress);
+		unsigned int port;
+		io.uint32(port);
+		value.port = port;
 	}
 
 }
