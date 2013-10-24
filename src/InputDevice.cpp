@@ -180,7 +180,7 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 		{
 			// If finger has a valid blobby position, take it!
 			if (finger->x > 0.4) {
-				mTouchXPos = 200 + finger->x * 800;
+				mTouchXPos = -200 + finger->x * 800;
 			}
 
 			// If finger has a valid jump position
