@@ -99,8 +99,24 @@ void LobbyState::step()
 					in->byte(t);
 
 					std::vector<std::string> names;
+					std::vector<PlayerID> ids;
+
+					PlayerID own_id = mClient->GetPlayerID(  );
+
 					in->generic<std::vector<std::string>>( names );
-					mConnectedPlayers = names;
+					in->generic<std::vector<PlayerID>>( ids );
+
+					// now add every player as possible opponent, except us
+					mConnectedPlayers.clear();
+					for(unsigned int i = 0; i < names.size(); ++i)
+					{
+						if(ids[i] != own_id)
+						{
+							mConnectedPlayers.push_back( {names[i], ids[i]} );
+						}
+					}
+
+
 					std::cout << packet->data << "\n";
 					std::cout << "receive names: " << names.size() << "\n";
 				}
@@ -141,7 +157,7 @@ void LobbyState::step()
 	playerlist.push_back("random");	/// \todo language support
 	for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
 	{
-		playerlist.push_back(mConnectedPlayers[i] );
+		playerlist.push_back(mConnectedPlayers[i].displayname );
 	}
 
 	bool doEnterGame = false;
