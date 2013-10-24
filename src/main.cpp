@@ -95,38 +95,49 @@ void setupPHYSFS()
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 	#else
-		// Create a search path in the home directory and ensure that
-		// all paths exist and are actually directories
-		std::string userdir = fs.getUserDir();
-		std::string userAppend = ".blobby";
-		std::string homedir = userdir + userAppend;
-		/// \todo please review this code and determine if we really need to add userdir to serach path
-		/// only to remove it later
-		fs.setWriteDir(userdir);
-		fs.probeDir(userAppend);
-		/// \todo why do we need separator here?
-		fs.probeDir(userAppend + separator + "replays");
-		fs.probeDir(userAppend + separator + "gfx");
-		fs.probeDir(userAppend + separator + "sounds");
-		fs.probeDir(userAppend + separator + "scripts");
-		fs.probeDir(userAppend + separator + "backgrounds");
-		fs.probeDir(userAppend + separator + "rules");
-		fs.removeFromSearchPath(userdir);
-		// here we set the write dir anew!
-		fs.setWriteDir(homedir);
-		#if defined(GAMEDATADIR)
-		{
-			// A global installation path makes only sense on non-Windows
-			// platforms
-			std::string basedir = GAMEDATADIR;
-			fs.addToSearchPath(basedir);
-			fs.addToSearchPath(basedir + separator + "gfx.zip");
-			fs.addToSearchPath(basedir + separator + "sounds.zip");
-			fs.addToSearchPath(basedir + separator + "scripts.zip");
-			fs.addToSearchPath(basedir + separator + "backgrounds.zip");
-			fs.addToSearchPath(basedir + separator + "rules.zip");
-		}
+		#ifndef __ANDROID__
+			// Create a search path in the home directory and ensure that
+			// all paths exist and are actually directories
+			std::string userdir = fs.getUserDir();
+			std::string userAppend = ".blobby";
+			std::string homedir = userdir + userAppend;
+			/// \todo please review this code and determine if we really need to add userdir to serach path
+			/// only to remove it later
+			fs.setWriteDir(userdir);
+			fs.probeDir(userAppend);
+			/// \todo why do we need separator here?
+			fs.probeDir(userAppend + separator + "replays");
+			fs.probeDir(userAppend + separator + "gfx");
+			fs.probeDir(userAppend + separator + "sounds");
+			fs.probeDir(userAppend + separator + "scripts");
+			fs.probeDir(userAppend + separator + "backgrounds");
+			fs.probeDir(userAppend + separator + "rules");
+			fs.removeFromSearchPath(userdir);
+			// here we set the write dir anew!
+			fs.setWriteDir(homedir);
+			#if defined(GAMEDATADIR)
+			{
+				// A global installation path makes only sense on non-Windows
+				// platforms
+				std::string basedir = GAMEDATADIR;
+				fs.addToSearchPath(basedir);
+				fs.addToSearchPath(basedir + separator + "gfx.zip");
+				fs.addToSearchPath(basedir + separator + "sounds.zip");
+				fs.addToSearchPath(basedir + separator + "scripts.zip");
+				fs.addToSearchPath(basedir + separator + "backgrounds.zip");
+				fs.addToSearchPath(basedir + separator + "rules.zip");
+			}
+			#endif
+		#else
+			fs.setWriteDir(baseSearchPath);
+			fs.probeDir("replays");
+			fs.probeDir("gfx");
+			fs.probeDir("sounds");
+			fs.probeDir("scripts");
+			fs.probeDir("backgrounds");
+			fs.probeDir("rules");
 		#endif
+
 	#endif
 }
 

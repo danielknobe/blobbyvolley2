@@ -102,7 +102,12 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 		return new JoystickInputDevice(laction, raction,
 								jaction);
 	}
-	else
+	// load config for touch
+	else if (device == "touch")
+	{
+		return new TouchInputDevice(side);
+	}
+	else	
 		std::cerr << "Error: unknown input device: " << device << std::endl;
 
 	return 0;
