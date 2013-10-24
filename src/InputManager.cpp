@@ -49,7 +49,7 @@ InputManager::InputManager()
 	mWindowFocus = true;
 
 	/// \todo init properly?
-//	mLastInputKey.sym = SDLK_UNKNOWN;
+	mLastTextKey = "";
 	mLastClickTime = 0;
 }
 
@@ -139,8 +139,9 @@ void InputManager::updateInput()
 	mLastMouseButton = -1;
 
 	mLastActionKey = SDLK_UNKNOWN;
-	mLastTextKey = 0;
+	SDL_StartTextInput();
 
+	mLastTextKey = "";
 	mLastJoyAction = "";
 	// Init GUI Events for buffered Input
 	SDL_PumpEvents();
@@ -182,8 +183,14 @@ void InputManager::updateInput()
 						break;
 
 					case SDLK_ESCAPE:
-					//case SDLK_BACKSPACE:
 						mExit = true;
+						break;
+					//!todo We should sdltextedit here
+					case SDLK_BACKSPACE:
+						mLastTextKey = "backspace";
+						break;
+					case SDLK_DELETE:
+						mLastTextKey = "del";
 						break;
 
 					default:
@@ -192,9 +199,8 @@ void InputManager::updateInput()
 				break;
 
 			case SDL_TEXTINPUT:
-				mLastTextKey = event.text.text;
+				mLastTextKey = std::string(event.text.text);
 				break;
-
 			case SDL_MOUSEBUTTONDOWN:
 				mLastMouseButton = event.button.button;
 				switch (event.button.button)
@@ -251,7 +257,6 @@ void InputManager::updateInput()
 			}
 
 			case SDL_WINDOWEVENT:
-
 				switch (event.window.event)
 				{
 					case SDL_WINDOWEVENT_FOCUS_LOST:
@@ -364,9 +369,9 @@ bool InputManager::running() const
 
 std::string InputManager::getLastTextKey()
 {
-	if (mLastTextKey != 0)
+	if (mLastTextKey != "")
 	{
-		return std::string(mLastTextKey);
+		return mLastTextKey;
 	}
 	else
 		return "";

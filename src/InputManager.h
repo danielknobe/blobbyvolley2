@@ -104,7 +104,7 @@ class InputManager : public ObjectCounter<InputManager>
 		int mLastClickTime;
 
 		SDL_Keycode mLastActionKey;
-		char* mLastTextKey;
+		std::string mLastTextKey;
 
 		int mLastMouseButton;
 		std::string mLastJoyAction;
