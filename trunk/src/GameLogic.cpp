@@ -57,14 +57,15 @@ const std::string FALLBACK_RULES_NAME = "__FALLBACK__";
 const std::string DUMMY_RULES_NAME = "__DUMMY__";
 
 
-IGameLogic::IGameLogic():	mLastError(NO_PLAYER), 
-							mServingPlayer(NO_PLAYER), 
-							mWinningPlayer(NO_PLAYER),
-							mScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin")),
-							mSquishWall(0),
-							mSquishGround(0),
-							mIsBallValid(true),
-							mIsGameRunning(false)
+IGameLogic::IGameLogic()
+: mScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin"))
+, mSquishWall(0)
+, mSquishGround(0)
+, mLastError(NO_PLAYER)
+, mServingPlayer(NO_PLAYER)
+, mIsBallValid(true)
+, mIsGameRunning(false)
+, mWinningPlayer(NO_PLAYER)
 {
 	// init clock
 	clock.reset();
