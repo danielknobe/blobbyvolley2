@@ -40,46 +40,39 @@ class NetworkGameState : public State
 {
 public:
 	/// create a NetworkGameState with connection to a certain server
-	/// \param servername Name of server
-	/// \param port Target port
-	NetworkGameState(const std::string& servername, Uint16 port);
-	
+	/// \param client A client which has an established connection to the server we want to start the game on.
+	NetworkGameState(boost::shared_ptr<RakClient> client);
+
 	virtual ~NetworkGameState();
 	virtual void step();
 	virtual const char* getStateName() const;
-	
+
 private:
 	enum
 	{
-		CONNECTING,
 		WAITING_FOR_OPPONENT,
 		OPPONENT_DISCONNECTED,
 		DISCONNECTED,
-		CONNECTION_FAILED,
 		SERVER_FULL,
 		PLAYING,
 		PLAYER_WON,
 		PAUSING
 	} mNetworkState;
 
-	// server info
-	std::string mServerAddress;
-	uint16_t mPort;
-	
 	// these are pointers to mLeftPlayer or mRightPlayer respectively, so we don't need a smart pointer here
 	PlayerIdentity* mLocalPlayer;
 	PlayerIdentity* mRemotePlayer;
-	
+
 	bool mUseRemoteColor;
 
 	boost::scoped_ptr<InputSource> mLocalInput;
-	
+
 	bool mSaveReplay;
 	bool mWaitingForReplay;
 	std::string mFilename;
 	std::string mErrorMessage;
 
-	boost::scoped_ptr<RakClient> mClient;
+	boost::shared_ptr<RakClient> mClient;
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
 

@@ -49,7 +49,8 @@ enum MessageType
 	ID_UPDATE_SCORE,
 	ID_RULES_CHECKSUM,
 	ID_RULES,
-	ID_SERVER_STATUS
+	ID_SERVER_STATUS,
+	ID_ENTER_GAME
 };
 
 // General Information:
@@ -143,11 +144,12 @@ enum MessageType
 // 		Message sent from client to server after connecting to it.
 // 		The side attribute tells the server on which side the client
 // 		wants to play. The name attribute reports to players name,
-// 		truncated to 16 characters.
+// 		truncated to 16 characters. Color is the network color.
 // 	Structure:
 // 		ID_ENTER_SERVER
 // 		side (PlayerSide)
 // 		name (char[16])
+//		color (int)
 //
 // ID_PAUSE
 // 	Description:
@@ -237,7 +239,16 @@ enum MessageType
 //		current server status
 //	Structure:
 //		ID_SERVER_STATUS
+//		vector<string> playernames
 //
+// ID_ENTER_GAME
+// 	Description:
+//		Sent when the client wants to start a game. If desired opponent is set, the server looks for that
+//		opponent and matches these players.
+//	Structure:
+//		ID_ENTER_GAME
+//		char[16] desired opponent
+
 
 class IUserConfigReader;
 
