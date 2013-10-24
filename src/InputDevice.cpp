@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RenderManager.h"
 #include "GameConstants.h"
 
+#include <android/log.h>
+
 /* implementation */
 
 // -------------------------------------------------------------------------------------------------
@@ -112,6 +114,113 @@ PlayerInput MouseInputDevice::transferInput(const InputSource* source)
 	}
 
 	mMarkerX = mMouseXPos + playerOffset;
+	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
+		input.right = true;
+	else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
+		input.left = true;
+
+	// insert new data for evaluation
+	mLag.insertData(input, match->getInputSource( mPlayer )->getInput() );
+	mInputs.push_back(input);
+	RenderManager::getSingleton().setMouseMarker(mMarkerX);
+
+	return input;
+}
+
+// -------------------------------------------------------------------------------------------------
+// 		TOUCH INPUT
+// -------------------------------------------------------------------------------------------------
+TouchInputDevice::TouchInputDevice(PlayerSide player)
+	: InputDevice()
+{
+	mPlayer = player;
+
+	mInputs.set_capacity(10);
+	for(unsigned int i = 0; i < 10; ++i)
+	{
+		mInputs.push_back( PlayerInput() );
+	}
+}
+
+PlayerInput TouchInputDevice::transferInput(const InputSource* source)
+{
+	// check if we have a running game,
+	// otherwise leave directly
+	const DuelMatch* match = source->getMatch();
+	assert(match);
+
+	PlayerInput input = PlayerInput();
+
+	int mTouchXPos;	
+
+	// Get the primary touch device
+	SDL_TouchID device = SDL_GetTouchDevice(0);
+
+	// Take the data of all fingers and the correct playerside
+	for (int i = 0; i < SDL_GetNumTouchFingers(device); i++) 
+	{
+		SDL_Finger *finger = SDL_GetTouchFinger(device, i);
+
+		if (finger == NULL)
+			continue;
+
+		// Check the playerside
+		
+		if (mPlayer == LEFT_PLAYER)
+		{
+			// If finger has a valid blobby position, take it!
+			if (finger->x < 0.6) {
+				mTouchXPos = 200 + finger->x * 800;
+			}
+
+			// If finger has a valid jump position
+			if (finger->x > 0.7) {
+				input.up = true;
+			}
+		}
+		else
+		{
+			// If finger has a valid blobby position, take it!
+			if (finger->x > 0.4) {
+				mTouchXPos = 200 + finger->x * 800;
+			}
+
+			// If finger has a valid jump position
+			if (finger->x < 0.3) {
+				input.up = true;
+			}
+		}
+	}
+
+	const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
+	mTouchXPos = mTouchXPos < 201 ? 201 : mTouchXPos;
+	mTouchXPos = mTouchXPos > 600 ? 600 : mTouchXPos;
+
+	// here we load the current position of the player.
+	float blobpos = match->getBlobPosition(mPlayer).x;
+
+	// ask our lag detector about estimated current lag
+	int lag = mLag.getLag();
+
+	// adapt this value
+	lag -= 1;
+	if(lag < 0)
+		lag = 0;
+
+	mInputs.set_capacity(lag+1);
+
+	// now, simulate as many steps as we have lag
+	for(boost::circular_buffer<PlayerInput>::iterator i = mInputs.begin(); i != mInputs.end(); ++i)
+	{
+		if(i->right)
+			blobpos += BLOBBY_SPEED;
+
+		if(i->left)
+			blobpos -= BLOBBY_SPEED;
+
+	}
+
+	mMarkerX = mTouchXPos + playerOffset;
 	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
 		input.right = true;
 	else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
