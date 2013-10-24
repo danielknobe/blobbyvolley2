@@ -110,7 +110,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	SDL_FreeSurface(icon);
 
 	// Create renderer to draw in window
-	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED);
+	mRenderer = SDL_CreateRenderer(mWindow, -1, 0);
 
 	// Hide mousecursor
 	SDL_ShowCursor(0);
@@ -121,8 +121,8 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	// Create a 1x1 black surface which will be scaled to draw an overlay
 	tmpSurface = SDL_CreateRGBSurface(0, 1, 1, 32,
 			0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-	SDL_FillRect(tmpSurface, NULL, SDL_MapRGB(tmpSurface->format, 0, 0, 0));
-
+	// Because of SDL bug we can't check at the moment if color mod is available... no risk no fun ;)
+	SDL_FillRect(tmpSurface, NULL, SDL_MapRGB(tmpSurface->format, 255, 255, 255));
 	mOverlayTexture = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
 	SDL_FreeSurface(tmpSurface);
 
@@ -667,6 +667,7 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Co
 	ovRect.w = lround(pos2.x - pos1.x);
 	ovRect.h = lround(pos2.y - pos1.y);
 	SDL_SetTextureAlphaMod(mOverlayTexture, lround(opacity * 255));
+	SDL_SetTextureColorMod(mOverlayTexture, col.r, col.g, col.b);
 	SDL_RenderCopy(mRenderer, mOverlayTexture, NULL, &ovRect);
 }
 
