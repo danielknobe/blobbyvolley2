@@ -168,17 +168,17 @@ void MainMenuState::step()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
-	if (imgui.doButton(GEN_ID, Vector2(434, 350.0), TextManager::MNU_LABEL_ONLINE))
+	if (imgui.doButton(GEN_ID, Vector2(434, 300.0), TextManager::MNU_LABEL_ONLINE))
 	{
 		deleteCurrentState();
 		setCurrentState(new OnlineSearchState());
 	}
-	if (imgui.doButton(GEN_ID, Vector2(434, 380.0), TextManager::MNU_LABEL_LAN))
+	if (imgui.doButton(GEN_ID, Vector2(434, 340.0), TextManager::MNU_LABEL_LAN))
 	{
 		deleteCurrentState();
 		setCurrentState(new LANSearchState());
 	}
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 410.0), TextManager::MNU_LABEL_START))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 380.0), TextManager::MNU_LABEL_START))
 	{
 		try
 		{
@@ -194,13 +194,13 @@ void MainMenuState::step()
 		}
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 440.0), TextManager::MNU_LABEL_OPTIONS))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), TextManager::MNU_LABEL_OPTIONS))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 470.0), TextManager::MNU_LABEL_REPLAY))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), TextManager::MNU_LABEL_REPLAY))
 	{
 		deleteCurrentState();
 		setCurrentState(new ReplaySelectionState());
@@ -212,7 +212,7 @@ void MainMenuState::step()
 		setCurrentState(new CreditsState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 530.0), TextManager::MNU_LABEL_EXIT))
+	if (imgui.doButton(GEN_ID, Vector2(434.0, 540.0), TextManager::MNU_LABEL_EXIT))
 	{
 		/// \todo This is not the right way to end Blobby!
 		///		We have shutdown actions in main.cpp, if we change
