@@ -502,6 +502,9 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				cpos = (int) text.length();
 
 			mActiveButton = id;
+			
+			// Show keyboard
+			SDL_StartTextInput();
 		}
 	}
 
