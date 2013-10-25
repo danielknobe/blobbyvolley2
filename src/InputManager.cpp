@@ -139,8 +139,7 @@ void InputManager::updateInput()
 	mLastMouseButton = -1;
 
 	mLastActionKey = SDLK_UNKNOWN;
-	SDL_StartTextInput();
-
+	
 	mLastTextKey = "";
 	mLastJoyAction = "";
 	// Init GUI Events for buffered Input
@@ -183,9 +182,9 @@ void InputManager::updateInput()
 						break;
 
 					case SDLK_ESCAPE:
+					case SDLK_AC_BACK:
 						mExit = true;
 						break;
-					//!todo We should sdltextedit here
 					case SDLK_BACKSPACE:
 						mLastTextKey = "backspace";
 						break;
