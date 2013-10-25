@@ -115,6 +115,7 @@ class TouchInputDevice : public InputDevice
 		bool mDelay; // The pressed button of the mainmenu must be ignored
 		boost::circular_buffer<PlayerInput> mInputs;
 		LagDetector mLag;
+		int mTouchXPos;	
 	public:
 		virtual ~TouchInputDevice(){};
 		TouchInputDevice(PlayerSide player);
