@@ -112,6 +112,9 @@ void IMGUI::begin()
 
 	if (InputManager::getSingleton()->select())
 		mLastKeyAction = SELECT;
+
+	if (InputManager::getSingleton()->exit())
+		mLastKeyAction = BACK;
 }
 
 void IMGUI::end()
@@ -311,11 +314,25 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 					clicked = true;
 					mLastKeyAction = NONE;
 					break;
-
 				default:
 					break;
 			}
 		}
+
+		// React to back button
+		if (mLastKeyAction == BACK)
+		{
+			if ((text == (TextManager::getSingleton())->getString(TextManager::LBL_CANCEL)) ||
+			    (text == (TextManager::getSingleton())->getString(TextManager::MNU_LABEL_EXIT)))
+			{
+				//todo: Workarround to catch backkey
+				clicked = true;
+				mActiveButton = id;
+			}
+		}
+
+
+
 
 		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();

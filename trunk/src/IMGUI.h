@@ -41,6 +41,7 @@ enum KeyAction
 	LEFT,
 	RIGHT,
 	SELECT,
+	BACK,
 	NONE
 };
 
