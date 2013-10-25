@@ -132,6 +132,7 @@ TouchInputDevice::TouchInputDevice(PlayerSide player)
 	: InputDevice()
 {
 	mPlayer = player;
+	mTouchXPos = 400;	
 
 	mInputs.set_capacity(10);
 	for(unsigned int i = 0; i < 10; ++i)
@@ -149,7 +150,6 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 
 	PlayerInput input = PlayerInput();
 
-	int mTouchXPos;	
 
 	// Get the primary touch device
 	SDL_TouchID device = SDL_GetTouchDevice(0);
