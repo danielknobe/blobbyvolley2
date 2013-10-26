@@ -72,22 +72,20 @@ void DedicatedServer::processPackets()
 			case ID_CONNECTION_LOST:
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
-				// delete the disconnectiong player
-				if ( mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end() )
-				{
-					// inject the packet into the game, so the other player can get a notification
-					mPlayerGameMap[packet->playerId]->injectPacket(packet);
-
-					// then delete the player
-					mPlayerGameMap.erase(packet->playerId);
-				}
-
-				// no longer count this player as connected
-				mPlayerMap.erase(packet->playerId);
-
 				mConnectedClients--;
 
-				updateLobby();
+				auto player = mPlayerMap.find(packet->playerId);
+				// delete the disconnectiong player
+				if( player != mPlayerMap.end() )
+				{
+					if( player->second.getGame() )
+						player->second.getGame()->injectPacket( packet );
+
+					// no longer count this player as connected
+					mPlayerMap.erase( player );
+
+					updateLobby();
+				}
 
 				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
 				break;
@@ -101,15 +99,18 @@ void DedicatedServer::processPackets()
 			case ID_CHAT_MESSAGE:
 			case ID_REPLAY:
 			case ID_RULES:
-				if (mPlayerGameMap.find(packet->playerId) != mPlayerGameMap.end())
+			{
+				auto player = mPlayerMap.find(packet->playerId);
+				// delete the disconnectiong player
+				if( player != mPlayerMap.end() && player->second.getGame() )
 				{
-					mPlayerGameMap[packet->playerId]->injectPacket(packet);
-
+					player->second.getGame() ->injectPacket( packet );
 				} else {
 					syslog(LOG_ERR, "received packet from player not in playerlist!");
 				}
 
 				break;
+			}
 
 			// player connects to server
 			case ID_ENTER_SERVER:
@@ -120,7 +121,7 @@ void DedicatedServer::processPackets()
 
 				mPlayerMap[packet->playerId] = NetworkPlayer(packet->playerId, stream);
 
-				// answer by sending the status
+				// answer by sending the status to all players
 				updateLobby();
 				break;
 			}
@@ -131,33 +132,43 @@ void DedicatedServer::processPackets()
 				// which player is wanted as opponent
 				auto stream = packet->getStream();
 
-				PlayerID player = packet->playerId;
-				PlayerID secondPlayer = UNASSIGNED_PLAYER_ID;
+				PlayerID first = packet->playerId;
+				PlayerID second = UNASSIGNED_PLAYER_ID;
+
+				auto player = mPlayerMap.find(first);
+				if( player == mPlayerMap.end())
+				{
+					// seems like we did not receive a ENTER_SERVER Packet before.
+					syslog( LOG_ERR, "a player tried to enter a game, but has no player info" );
+					break;
+				}
+				NetworkPlayer firstPlayer = player->second;
 
 				auto reader = createGenericReader(&stream);
 				unsigned char temp;
 				reader->byte(temp);
-				reader->generic<PlayerID>(secondPlayer);
+				reader->generic<PlayerID>(second);
 
 				// search if there is an open request
 				for(auto it = mGameRequests.begin(); it != mGameRequests.end(); ++it)
 				{
 					// is this a game request of the player we want to play with, or if we want to play with everyone
-					if( it->first == secondPlayer || secondPlayer == UNASSIGNED_PLAYER_ID)
+					if( it->first == second || second == UNASSIGNED_PLAYER_ID)
 					{
 						// do they want to play with us or anyone
-						if(it->second == player || it->second == UNASSIGNED_PLAYER_ID)
+						if(it->second == first || it->second == UNASSIGNED_PLAYER_ID)
 						{
 							/// \todo check that these players are still connected and not already playing a game
-							// we can create a game now
-							auto newgame = createGame( mPlayerMap[it->first], mPlayerMap[it->second] );
-							mPlayerGameMap[it->first] = newgame;
-							mPlayerGameMap[it->second] = newgame;
-							mGameList.push_back(newgame);
+							if( mPlayerMap.find(it->second) != mPlayerMap.end() && firstPlayer.getGame() == nullptr &&  mPlayerMap[it->second].getGame() == nullptr )
+							{
+								// we can create a game now
+								auto newgame = createGame( firstPlayer, mPlayerMap[it->second] );
+								mGameList.push_back(newgame);
 
-							// remove the game request
-							mGameRequests.erase( it );
-							break;	// we're done
+								// remove the game request
+								mGameRequests.erase( it );
+								break;	// we're done
+							}
 						}
 					}
 
@@ -165,7 +176,7 @@ void DedicatedServer::processPackets()
 
 
 				// no match could be found -> add to request list
-				mGameRequests[player] = secondPlayer;
+				mGameRequests[first] = second;
 
 				break;
 			}
@@ -199,6 +210,35 @@ void DedicatedServer::updateGames()
 
 void DedicatedServer::updateLobby()
 {
+	// remove all invalid game requests
+	for( auto it = mGameRequests.begin(); it != mGameRequests.end(); /* no increment, because we have to do that manually in case we erase*/ )
+	{
+		PlayerID first = it->first;
+		PlayerID second = it->second;
+
+		auto firstPlayer = mPlayerMap.find(first);
+		if( firstPlayer == mPlayerMap.end() || firstPlayer->second.getGame() != nullptr)
+		{
+			// left server or is already playing -> remove game requests
+			it = mGameRequests.erase(it);
+			continue;
+		}
+
+		if( second != UNASSIGNED_PLAYER_ID )
+		{
+			auto secondPlayer = mPlayerMap.find(second);
+			if( secondPlayer == mPlayerMap.end() || secondPlayer->second.getGame() != nullptr)
+			{
+				// left server or is already playing -> remove game requests
+				it = mGameRequests.erase(it);
+				continue;
+			}
+		}
+
+		// if all still valid, increment iterator
+		++it;
+	}
+
 	broadcastServerStatus();
 }
 
@@ -318,11 +358,14 @@ void DedicatedServer::broadcastServerStatus()
 
 	std::vector<std::string> playernames;
 	std::vector<PlayerID> playerIDs;
-	/// \todo don't send players that are already ingame
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
-		playernames.push_back( it->second.getName() );
-		playerIDs.push_back( it->second.getID() );
+		// only send players that are waiting
+		if( it->second.getGame() == nullptr )
+		{
+			playernames.push_back( it->second.getName() );
+			playerIDs.push_back( it->second.getID() );
+		}
 	}
 	out->generic<std::vector<std::string>>( playernames );
 	out->generic<std::vector<PlayerID>>( playerIDs );
