@@ -67,8 +67,12 @@ ServerInfo::ServerInfo(const IUserConfigReader& config)
 ServerInfo::ServerInfo(const std::string& playername)
 {
 	memset(this, 0, sizeof(ServerInfo));
-	strncpy(name, std::string(playername + "'s game").c_str(), sizeof(name) - 1);
-	strncpy(description, "client hosted game", sizeof(description) - 1);
+
+	std::strncpy(hostname, "localhost", sizeof(hostname));
+	port = BLOBBY_PORT;
+
+	std::strncpy(name, std::string(playername + "'s game").c_str(), sizeof(name) - 1);
+	std::strncpy(description, "client hosted game", sizeof(description) - 1);
 	gamespeed = (int)SpeedController::getMainInstance()->getGameSpeed();
 }
 
