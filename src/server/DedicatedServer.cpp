@@ -129,25 +129,15 @@ void DedicatedServer::processPackets()
 				/// \todo assert that the player send an ID_ENTER_SERVER before
 
 				// which player is wanted as opponent
-				char opponent[16];
 				auto stream = packet->getStream();
-				stream.IgnoreBytes(1);
-				stream.Read(opponent, sizeof(opponent));
 
 				PlayerID player = packet->playerId;
 				PlayerID secondPlayer = UNASSIGNED_PLAYER_ID;
 
-				// find desired opponent
-				if( std::strlen(opponent) != 0)
-				{
-					auto opp = std::find_if( mPlayerMap.begin(), mPlayerMap.end(), [opponent]( const decltype(mPlayerMap)::value_type& val ){ return val.second.getName() == opponent; });
-
-					if( opp != mPlayerMap.end() )
-					{
-						/// \todo send some kind of error packet otherwise
-						secondPlayer = opp->second.getID();
-					}
-				}
+				auto reader = createGenericReader(&stream);
+				unsigned char temp;
+				reader->byte(temp);
+				reader->generic<PlayerID>(secondPlayer);
 
 				// search if there is an open request
 				for(auto it = mGameRequests.begin(); it != mGameRequests.end(); ++it)
@@ -158,7 +148,7 @@ void DedicatedServer::processPackets()
 						// do they want to play with us or anyone
 						if(it->second == player || it->second == UNASSIGNED_PLAYER_ID)
 						{
-							/// \todo check that these players are not already playing a game
+							/// \todo check that these players are still connected and not already playing a game
 							// we can create a game now
 							auto newgame = createGame( mPlayerMap[it->first], mPlayerMap[it->second] );
 							mPlayerGameMap[it->first] = newgame;
@@ -175,7 +165,7 @@ void DedicatedServer::processPackets()
 
 
 				// no match could be found -> add to request list
-				mGameRequests[packet->playerId] = secondPlayer;
+				mGameRequests[player] = secondPlayer;
 
 				break;
 			}
