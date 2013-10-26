@@ -33,10 +33,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL/SDL_timer.h>
 
 #include "DedicatedServer.h"
-#include "InputSource.h"
-#include "PhysicWorld.h"
-#include "NetworkGame.h"
-#include "NetworkMessage.h"
 #include "SpeedController.h"
 #include "FileSystem.h"
 #include "UserConfig.h"
