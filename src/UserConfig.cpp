@@ -38,11 +38,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
-std::map<std::string, boost::shared_ptr<IUserConfigReader> >& userConfigCache() 
-{ 
-     static std::map<std::string, boost::shared_ptr<IUserConfigReader> > cache; 
-     return cache; 
-}; 
+std::map<std::string, boost::shared_ptr<IUserConfigReader> >& userConfigCache()
+{
+     static std::map<std::string, boost::shared_ptr<IUserConfigReader> > cache;
+     return cache;
+};
 
 boost::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
 {

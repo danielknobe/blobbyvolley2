@@ -9,13 +9,12 @@ set(CMAKE_CXX_FLAGS "-std=c++11")
 set(CMAKE_CXX_FLAGS "-Wall")
 include_directories(.)
 
-set(common_SRC	
+set(common_SRC
 	Global.h
 	BlobbyDebug.cpp BlobbyDebug.h
 	Clock.cpp Clock.h
 	DuelMatch.cpp DuelMatch.h
 	ReplayRecorder.cpp ReplayRecorder.h
-	NetworkGame.cpp NetworkGame.h
 	NetworkMessage.cpp NetworkMessage.h
 	GameLogic.cpp GameLogic.h
 	PhysicWorld.cpp PhysicWorld.h
@@ -32,8 +31,11 @@ set(common_SRC
 	ReplaySavePoint.cpp ReplaySavePoint.h
 	InputSource.cpp InputSource.h
 	PlayerIdentity.cpp PlayerIdentity.h
+	server/DedicatedServer.cpp server/DedicatedServer.h
+	server/NetworkPlayer.cpp server/NetworkPlayer.h
+	server/NetworkGame.cpp server/NetworkGame.h
 	)
-	
+
 set (blobby_SRC ${common_SRC}
 	Blood.cpp Blood.h
 	TextManager.cpp TextManager.h
@@ -47,7 +49,7 @@ set (blobby_SRC ${common_SRC}
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
 #	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
-	ScriptedInputSource.cpp ScriptedInputSource.h	
+	ScriptedInputSource.cpp ScriptedInputSource.h
 	BotAPICalculations.cpp BotAPICalculations.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
@@ -64,10 +66,8 @@ set (blobby_SRC ${common_SRC}
 	state/ReplaySelectionState.cpp state/ReplaySelectionState.h
 	state/LobbyState.cpp state/LobbyState.h
 	)
-	
+
 set (blobby-server_SRC ${common_SRC}
-	server/DedicatedServer.cpp server/DedicatedServer.h
-	server/NetworkPlayer.cpp server/NetworkPlayer.h
 	server/servermain.cpp
 	)
 
@@ -82,7 +82,7 @@ PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 
 include_directories(
 	${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR}
-	${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} 
+	${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS}
 )
 if (OPENGL_FOUND)
 	add_definitions(-DHAVE_LIBGL)
