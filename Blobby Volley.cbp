@@ -295,33 +295,53 @@
 		<Unit filename="src/raknet/SingleProducerConsumer.h" />
 		<Unit filename="src/raknet/SocketLayer.cpp" />
 		<Unit filename="src/raknet/SocketLayer.h" />
-		<Unit filename="src/server/DedicatedServer.cpp">
-			<Option target="D Server" />
-		</Unit>
+		<Unit filename="src/server/DedicatedServer.cpp" />
 		<Unit filename="src/server/DedicatedServer.h" />
-		<Unit filename="src/server/NetworkPlayer.cpp">
-			<Option target="D Server" />
-		</Unit>
+		<Unit filename="src/server/NetworkPlayer.cpp" />
 		<Unit filename="src/server/NetworkPlayer.h" />
 		<Unit filename="src/server/servermain.cpp">
 			<Option target="Server Debug" />
 			<Option target="D Server" />
 		</Unit>
-		<Unit filename="src/state/LobbyState.cpp" />
+		<Unit filename="src/state/LobbyState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/LobbyState.h" />
-		<Unit filename="src/state/LocalGameState.cpp" />
+		<Unit filename="src/state/LocalGameState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/LocalGameState.h" />
-		<Unit filename="src/state/NetworkSearchState.cpp" />
+		<Unit filename="src/state/NetworkSearchState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/NetworkSearchState.h" />
-		<Unit filename="src/state/NetworkState.cpp" />
+		<Unit filename="src/state/NetworkState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/NetworkState.h" />
-		<Unit filename="src/state/OptionsState.cpp" />
+		<Unit filename="src/state/OptionsState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/OptionsState.h" />
-		<Unit filename="src/state/ReplaySelectionState.cpp" />
+		<Unit filename="src/state/ReplaySelectionState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/ReplaySelectionState.h" />
-		<Unit filename="src/state/ReplayState.cpp" />
+		<Unit filename="src/state/ReplayState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/ReplayState.h" />
-		<Unit filename="src/state/State.cpp" />
+		<Unit filename="src/state/State.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/state/State.h" />
 		<Unit filename="src/tinyxml/tinystr.cpp" />
 		<Unit filename="src/tinyxml/tinystr.h" />

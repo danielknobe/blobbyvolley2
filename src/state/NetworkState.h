@@ -21,15 +21,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "State.h"
 #include "NetworkMessage.h"
+#include "PlayerIdentity.h"
 
 #include <vector>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 class RakClient;
 class RakServer;
 class DuelMatch;
 class NetworkGame;
 class PlayerIdentity;
+class DedicatedServer;
 
 /*! \class NetworkGameState
 	\brief State for Network Game
@@ -105,16 +108,12 @@ public:
 	virtual const char* getStateName() const;
 
 private:
+	boost::scoped_ptr<DedicatedServer> mServer;
+	boost::shared_ptr<RakClient> mClient;
 	NetworkGameState* mGameState;
-	NetworkGame* mNetworkGame;
-	RakServer* mServer;
 
-	PlayerSide mLocalPlayerSide;
-	PlayerID mLocalPlayer;
-	PlayerID mRemotePlayer;
-	Color mLeftColor;
-	Color mRightColor;
-	std::string mLocalPlayerName;
-	std::string mRemotePlayerName;
+	PlayerIdentity mLocalPlayer;
+	unsigned int mLobbyCounter;
+
 };
 
