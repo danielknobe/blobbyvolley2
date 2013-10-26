@@ -71,7 +71,6 @@ class DedicatedServer
 		ServerInfo mServerInfo;
 
 		// containers for all games and mapping players to their games
-		std::map<PlayerID, boost::shared_ptr<NetworkGame> > mPlayerGameMap;		// this one is redundant
 		std::list< boost::shared_ptr<NetworkGame> > mGameList;
 		std::map< PlayerID, NetworkPlayer> mPlayerMap;
 		std::map< PlayerID, PlayerID> mGameRequests;
