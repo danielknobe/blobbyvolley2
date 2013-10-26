@@ -182,17 +182,15 @@ void LobbyState::step()
 	{
 		RakNet::BitStream stream;
 		stream.Write((char)ID_ENTER_GAME);
-		char name[16];
+		auto writer = createGenericWriter(&stream);
 		if( mSelectedPlayer != 0 )
 		{
-			std::strncpy(name, playerlist[mSelectedPlayer].c_str(), sizeof(name));
-			name[sizeof(name)-1] = 0;
+			writer->generic<PlayerID>( mConnectedPlayers[mSelectedPlayer-1].id );
 		}
 		 else
 		{
-			name[0] = 0;
+			writer->generic<PlayerID>( UNASSIGNED_PLAYER_ID );
 		}
-		stream.Write(name, sizeof(name));
 
 		mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 

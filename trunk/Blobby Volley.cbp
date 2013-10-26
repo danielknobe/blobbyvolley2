@@ -27,8 +27,18 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="D Server">
+				<Option output="bin/Debug/Blobby Server" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-DWIN32" />
 			<Add option="-DHAVE_LIBGL" />
@@ -100,7 +110,6 @@
 		<Unit filename="src/PhysicWorld.h" />
 		<Unit filename="src/PlayerIdentity.cpp" />
 		<Unit filename="src/PlayerIdentity.h" />
-		<Unit filename="src/RakNetPacket.h" />
 		<Unit filename="src/RenderManager.cpp" />
 		<Unit filename="src/RenderManager.h" />
 		<Unit filename="src/RenderManagerGL2D.cpp" />
@@ -248,96 +257,61 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/lua_api_doc.dox" />
-		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/raknet/ArrayList.h" />
-		<Unit filename="src/raknet/AsynchronousFileIO.cpp" />
-		<Unit filename="src/raknet/AsynchronousFileIO.h" />
-		<Unit filename="src/raknet/BigTypes.h" />
-		<Unit filename="src/raknet/BinarySearchTree.h" />
 		<Unit filename="src/raknet/BitStream.cpp" />
 		<Unit filename="src/raknet/BitStream.h" />
 		<Unit filename="src/raknet/CMakeLists.txt" />
-		<Unit filename="src/raknet/CheckSum.cpp" />
-		<Unit filename="src/raknet/CheckSum.h" />
 		<Unit filename="src/raknet/ClientContextStruct.h" />
-		<Unit filename="src/raknet/DataBlockEncryptor.cpp" />
-		<Unit filename="src/raknet/DataBlockEncryptor.h" />
-		<Unit filename="src/raknet/ExtendedOverlappedPool.cpp" />
-		<Unit filename="src/raknet/ExtendedOverlappedPool.h" />
 		<Unit filename="src/raknet/GetTime.cpp" />
 		<Unit filename="src/raknet/GetTime.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTree.cpp" />
-		<Unit filename="src/raknet/HuffmanEncodingTree.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.cpp" />
-		<Unit filename="src/raknet/HuffmanEncodingTreeFactory.h" />
-		<Unit filename="src/raknet/HuffmanEncodingTreeNode.h" />
 		<Unit filename="src/raknet/InternalPacket.h" />
 		<Unit filename="src/raknet/InternalPacketPool.cpp" />
 		<Unit filename="src/raknet/InternalPacketPool.h" />
 		<Unit filename="src/raknet/LICENSE" />
 		<Unit filename="src/raknet/LinkedList.h" />
 		<Unit filename="src/raknet/MTUSize.h" />
-		<Unit filename="src/raknet/MessageHandlerInterface.cpp" />
-		<Unit filename="src/raknet/MessageHandlerInterface.h" />
 		<Unit filename="src/raknet/NetworkTypes.cpp" />
 		<Unit filename="src/raknet/NetworkTypes.h" />
-		<Unit filename="src/raknet/OrderedList.h" />
 		<Unit filename="src/raknet/PacketEnumerations.h" />
 		<Unit filename="src/raknet/PacketPool.cpp" />
 		<Unit filename="src/raknet/PacketPool.h" />
 		<Unit filename="src/raknet/PacketPriority.h" />
-		<Unit filename="src/raknet/QueueLinkedList.h" />
-		<Unit filename="src/raknet/RSACrypt.h" />
 		<Unit filename="src/raknet/RakClient.cpp" />
 		<Unit filename="src/raknet/RakClient.h" />
-		<Unit filename="src/raknet/RakClientInterface.h" />
 		<Unit filename="src/raknet/RakNetStatistics.cpp" />
 		<Unit filename="src/raknet/RakNetStatistics.h" />
-		<Unit filename="src/raknet/RakNetworkFactory.cpp" />
-		<Unit filename="src/raknet/RakNetworkFactory.h" />
 		<Unit filename="src/raknet/RakPeer.cpp" />
 		<Unit filename="src/raknet/RakPeer.h" />
-		<Unit filename="src/raknet/RakPeerInterface.h" />
 		<Unit filename="src/raknet/RakServer.cpp" />
 		<Unit filename="src/raknet/RakServer.h" />
-		<Unit filename="src/raknet/RakServerInterface.h" />
-		<Unit filename="src/raknet/Rand.cpp" />
-		<Unit filename="src/raknet/Rand.h" />
 		<Unit filename="src/raknet/ReliabilityLayer.cpp" />
 		<Unit filename="src/raknet/ReliabilityLayer.h" />
-		<Unit filename="src/raknet/SHA1.cpp" />
-		<Unit filename="src/raknet/SHA1.h" />
 		<Unit filename="src/raknet/SimpleMutex.cpp" />
 		<Unit filename="src/raknet/SimpleMutex.h" />
 		<Unit filename="src/raknet/SingleProducerConsumer.h" />
 		<Unit filename="src/raknet/SocketLayer.cpp" />
 		<Unit filename="src/raknet/SocketLayer.h" />
-		<Unit filename="src/raknet/Types.h" />
-		<Unit filename="src/raknet/rijndael-boxes.h" />
-		<Unit filename="src/raknet/rijndael.cpp" />
-		<Unit filename="src/raknet/rijndael.h" />
+		<Unit filename="src/server/DedicatedServer.cpp">
+			<Option target="D Server" />
+		</Unit>
 		<Unit filename="src/server/DedicatedServer.h" />
+		<Unit filename="src/server/NetworkPlayer.cpp">
+			<Option target="D Server" />
+		</Unit>
 		<Unit filename="src/server/NetworkPlayer.h" />
 		<Unit filename="src/server/servermain.cpp">
 			<Option target="Server Debug" />
+			<Option target="D Server" />
 		</Unit>
-		<Unit filename="src/state/LobbyState.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="src/state/LobbyState.cpp" />
 		<Unit filename="src/state/LobbyState.h" />
-		<Unit filename="src/state/LocalGameState.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/state/LocalGameState.h">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/state/NetworkSearchState.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="src/state/LocalGameState.cpp" />
+		<Unit filename="src/state/LocalGameState.h" />
+		<Unit filename="src/state/NetworkSearchState.cpp" />
 		<Unit filename="src/state/NetworkSearchState.h" />
 		<Unit filename="src/state/NetworkState.cpp" />
 		<Unit filename="src/state/NetworkState.h" />
