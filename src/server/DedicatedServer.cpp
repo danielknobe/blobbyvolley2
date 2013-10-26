@@ -40,7 +40,8 @@ extern int SWLS_GameSteps;
 void syslog(int pri, const char* format, ...);
 
 DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients) : mConnectedClients(0), mServerInfo(info),
-																											mRulesFile(rulefile), mServer( new RakServer() )
+																											mRulesFile(rulefile), mServer( new RakServer() ),
+																											mAcceptNewPlayers(true)
 {
 	if (!mServer->Start(max_clients, 1, mServerInfo.port))
 	{
@@ -68,6 +69,15 @@ void DedicatedServer::processPackets()
 				mConnectedClients++;
 				SWLS_Connections++;
 				syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", mConnectedClients);
+
+				if ( !mAcceptNewPlayers )
+				{
+					RakNet::BitStream stream;
+					stream.Write( (char)ID_NO_FREE_INCOMING_CONNECTIONS );
+					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+					mServer->CloseConnection( packet->playerId, true );
+				}
+
 				break;
 			case ID_CONNECTION_LOST:
 			case ID_DISCONNECTION_NOTIFICATION:
@@ -258,9 +268,14 @@ bool DedicatedServer::hasActiveGame() const
 	return !mGameList.empty();
 }
 
-bool DedicatedServer::hasWaitingPlayer() const
+int DedicatedServer::getWaitingPlayers() const
 {
-	//return mWaitingPlayer.valid();
+	return mPlayerMap.size() - 2 * mGameList.size();
+}
+
+void DedicatedServer::allowNewPlayers( bool allow )
+{
+	mAcceptNewPlayers = allow;
 }
 
 // special packet processing
