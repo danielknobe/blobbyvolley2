@@ -78,15 +78,14 @@ void DedicatedServer::processPackets()
 				// delete the disconnectiong player
 				if( player != mPlayerMap.end() )
 				{
-					if( player->second.getGame() )
-						player->second.getGame()->injectPacket( packet );
+					if( player->second->getGame() )
+						player->second->getGame()->injectPacket( packet );
 
 					// no longer count this player as connected
 					mPlayerMap.erase( player );
 
 					updateLobby();
 				}
-
 				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
 				break;
 			}
@@ -102,9 +101,9 @@ void DedicatedServer::processPackets()
 			{
 				auto player = mPlayerMap.find(packet->playerId);
 				// delete the disconnectiong player
-				if( player != mPlayerMap.end() && player->second.getGame() )
+				if( player != mPlayerMap.end() && player->second->getGame() )
 				{
-					player->second.getGame() ->injectPacket( packet );
+					player->second->getGame() ->injectPacket( packet );
 				} else {
 					syslog(LOG_ERR, "received packet from player not in playerlist!");
 				}
@@ -119,7 +118,7 @@ void DedicatedServer::processPackets()
 
 				stream.IgnoreBytes(1);	//ID_ENTER_SERVER
 
-				mPlayerMap[packet->playerId] = NetworkPlayer(packet->playerId, stream);
+				mPlayerMap[packet->playerId] = boost::make_shared<NetworkPlayer>(packet->playerId, stream);
 
 				// answer by sending the status to all players
 				updateLobby();
@@ -132,6 +131,12 @@ void DedicatedServer::processPackets()
 				// which player is wanted as opponent
 				auto stream = packet->getStream();
 
+				// check packet size
+				if( stream.GetNumberOfBytesUsed() != 9 )
+				{
+					syslog(LOG_NOTICE, "faulty ID_ENTER_PACKET received: Expected 9 bytes, got %d", stream.GetNumberOfBytesUsed());
+				}
+
 				PlayerID first = packet->playerId;
 				PlayerID second = UNASSIGNED_PLAYER_ID;
 
@@ -142,12 +147,15 @@ void DedicatedServer::processPackets()
 					syslog( LOG_ERR, "a player tried to enter a game, but has no player info" );
 					break;
 				}
-				NetworkPlayer firstPlayer = player->second;
+
+				auto firstPlayer = player->second;
 
 				auto reader = createGenericReader(&stream);
 				unsigned char temp;
 				reader->byte(temp);
 				reader->generic<PlayerID>(second);
+
+				bool started = false;
 
 				// search if there is an open request
 				for(auto it = mGameRequests.begin(); it != mGameRequests.end(); ++it)
@@ -159,14 +167,15 @@ void DedicatedServer::processPackets()
 						if(it->second == first || it->second == UNASSIGNED_PLAYER_ID)
 						{
 							/// \todo check that these players are still connected and not already playing a game
-							if( mPlayerMap.find(it->second) != mPlayerMap.end() && firstPlayer.getGame() == nullptr &&  mPlayerMap[it->second].getGame() == nullptr )
+							if( mPlayerMap.find(it->first) != mPlayerMap.end() && firstPlayer->getGame() == nullptr &&  mPlayerMap[it->first]->getGame() == nullptr )
 							{
 								// we can create a game now
-								auto newgame = createGame( firstPlayer, mPlayerMap[it->second] );
+								auto newgame = createGame( firstPlayer, mPlayerMap[it->first] );
 								mGameList.push_back(newgame);
 
 								// remove the game request
 								mGameRequests.erase( it );
+								started = true;
 								break;	// we're done
 							}
 						}
@@ -174,9 +183,11 @@ void DedicatedServer::processPackets()
 
 				}
 
-
-				// no match could be found -> add to request list
-				mGameRequests[first] = second;
+				if (!started)
+				{
+					// no match could be found -> add to request list
+					mGameRequests[first] = second;
+				}
 
 				break;
 			}
@@ -217,7 +228,7 @@ void DedicatedServer::updateLobby()
 		PlayerID second = it->second;
 
 		auto firstPlayer = mPlayerMap.find(first);
-		if( firstPlayer == mPlayerMap.end() || firstPlayer->second.getGame() != nullptr)
+		if( firstPlayer == mPlayerMap.end() || firstPlayer->second->getGame() != nullptr)
 		{
 			// left server or is already playing -> remove game requests
 			it = mGameRequests.erase(it);
@@ -227,7 +238,7 @@ void DedicatedServer::updateLobby()
 		if( second != UNASSIGNED_PLAYER_ID )
 		{
 			auto secondPlayer = mPlayerMap.find(second);
-			if( secondPlayer == mPlayerMap.end() || secondPlayer->second.getGame() != nullptr)
+			if( secondPlayer == mPlayerMap.end() || secondPlayer->second->getGame() != nullptr)
 			{
 				// left server or is already playing -> remove game requests
 				it = mGameRequests.erase(it);
@@ -302,7 +313,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 	}
 }
 
-boost::shared_ptr<NetworkGame> DedicatedServer::createGame(NetworkPlayer first, NetworkPlayer second)
+boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<NetworkPlayer> first, boost::shared_ptr<NetworkPlayer> second)
 {
 	PlayerSide switchSide = NO_PLAYER;
 
@@ -310,25 +321,28 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(NetworkPlayer first, 
 	auto rightPlayer = second;
 
 	// put first player on his desired side in game
-	if(RIGHT_PLAYER == first.getDesiredSide())
+	if(RIGHT_PLAYER == first->getDesiredSide())
 	{
 		std::swap(leftPlayer, rightPlayer);
 	}
 
 	// if both players want the same side, one of them is going to get inverted game data
-	if (first.getDesiredSide() == second.getDesiredSide())
+	if (first->getDesiredSide() == second->getDesiredSide())
 	{
 		// if both wanted to play on the left, the right player is the inverted one, if both wanted right, the left
-		if (second.getDesiredSide() == LEFT_PLAYER)
+		if (second->getDesiredSide() == LEFT_PLAYER)
 			switchSide = RIGHT_PLAYER;
-		if (second.getDesiredSide() == RIGHT_PLAYER)
+		if (second->getDesiredSide() == RIGHT_PLAYER)
 			switchSide = LEFT_PLAYER;
 	}
 
-	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer.getID(), rightPlayer.getID(), leftPlayer.getName(), rightPlayer.getName(),
-													leftPlayer.getColor(), rightPlayer.getColor(), switchSide, mRulesFile);
+	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer->getID(), rightPlayer->getID(), leftPlayer->getName(), rightPlayer->getName(),
+													leftPlayer->getColor(), rightPlayer->getColor(), switchSide, mRulesFile);
 
 	SWLS_Games++;
+
+	first->setGame( newgame );
+	second->setGame( newgame );
 
 	#ifdef DEBUG
 	std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
@@ -353,10 +367,10 @@ void DedicatedServer::broadcastServerStatus()
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
 		// only send players that are waiting
-		if( it->second.getGame() == nullptr )
+		if( it->second->getGame() == nullptr )
 		{
-			playernames.push_back( it->second.getName() );
-			playerIDs.push_back( it->second.getID() );
+			playernames.push_back( it->second->getName() );
+			playerIDs.push_back( it->second->getID() );
 		}
 	}
 	out->generic<std::vector<std::string>>( playernames );
@@ -364,11 +378,10 @@ void DedicatedServer::broadcastServerStatus()
 
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
-		mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->first, false);
+		if( it->second->getGame() == nullptr)
+		{
+			mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->first, false);
+		}
 	}
 }
 
-/*
-
-
-					*/
