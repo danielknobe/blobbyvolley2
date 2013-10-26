@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "GenericIO.h"
 
-LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient()), mInfo(info), mSelectedPlayer(0)
+LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient(), [](RakClient* client) { client->Disconnect(25); }), mInfo(info), mSelectedPlayer(0)
 {
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
@@ -59,7 +59,8 @@ LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient()), mInfo(info),
 
 LobbyState::~LobbyState()
 {
-	mClient->Disconnect(50);
+	// we should properly disconnect if we do not connect to server!
+	//mClient->Disconnect(50);
 }
 
 void LobbyState::step()

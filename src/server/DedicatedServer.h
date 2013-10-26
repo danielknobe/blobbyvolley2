@@ -54,7 +54,7 @@ class DedicatedServer
 		void processBlobbyServerPresent( const packet_ptr& packet );
 		// creates a new game with those players
 		// does not add the game to the active game list
-		boost::shared_ptr<NetworkGame> createGame(NetworkPlayer first, NetworkPlayer second);
+		boost::shared_ptr<NetworkGame> createGame(boost::shared_ptr<NetworkPlayer> first, boost::shared_ptr<NetworkPlayer> second);
 		// broadcasts the current server  status to all waiting clients
 		void broadcastServerStatus();
 
@@ -72,6 +72,6 @@ class DedicatedServer
 
 		// containers for all games and mapping players to their games
 		std::list< boost::shared_ptr<NetworkGame> > mGameList;
-		std::map< PlayerID, NetworkPlayer> mPlayerMap;
+		std::map< PlayerID, boost::shared_ptr<NetworkPlayer>> mPlayerMap;
 		std::map< PlayerID, PlayerID> mGameRequests;
 };

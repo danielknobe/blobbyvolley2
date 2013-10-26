@@ -86,3 +86,8 @@ const boost::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
 {
 	return mGame;
 }
+
+void NetworkPlayer::setGame(boost::shared_ptr<NetworkGame> game)
+{
+	mGame = game;
+}

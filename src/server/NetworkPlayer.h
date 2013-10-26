@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "raknet/NetworkTypes.h"
 #include "raknet/BitStream.h"
@@ -36,7 +37,7 @@ class NetworkGame;
 		his network address and associated game
 */
 /// \todo add data to log when last packet arrived
-class NetworkPlayer : public ObjectCounter<NetworkPlayer>
+class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopyable
 {
 	public:
 		NetworkPlayer();
@@ -52,6 +53,8 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 		Color getColor() const;
 		PlayerSide getDesiredSide() const;
 		const boost::shared_ptr<NetworkGame>& getGame() const;
+
+		void setGame(boost::shared_ptr<NetworkGame>);
 
 	private:
 		/* Network ID */
