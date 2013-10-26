@@ -215,7 +215,7 @@ void NetworkSearchState::step()
 	std::vector<std::string> servernames;
 	for (unsigned int i = 0; i < mScannedServers.size(); i++)
 	{
-		servernames.push_back(std::string(mScannedServers[i].name) + " (" + mScannedServers[i].waitingplayer + ")" );
+		servernames.push_back(std::string(mScannedServers[i].name) + " (" + boost::lexical_cast<std::string>(mScannedServers[i].waitingplayers) + ")" );
 	}
 
 	bool doEnterServer = false;
@@ -285,7 +285,7 @@ void NetworkSearchState::step()
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
 		std::stringstream waitingplayer;
 		waitingplayer << TextManager::getSingleton()->getString(TextManager::NET_WAITING_PLAYER)
-					  << mScannedServers[mSelectedServer].waitingplayer;
+					  << mScannedServers[mSelectedServer].waitingplayers;
 		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
 		std::stringstream gamespeed;
 		gamespeed << TextManager::getSingleton()->getString(TextManager::OP_SPEED)<<" "

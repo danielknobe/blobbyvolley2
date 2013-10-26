@@ -59,7 +59,7 @@ LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient()), mInfo(info),
 
 LobbyState::~LobbyState()
 {
-
+	mClient->Disconnect(50);
 }
 
 void LobbyState::step()
