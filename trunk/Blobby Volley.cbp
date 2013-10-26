@@ -52,9 +52,15 @@
 		</Linker>
 		<Unit filename="src/BlobbyDebug.cpp" />
 		<Unit filename="src/BlobbyDebug.h" />
-		<Unit filename="src/Blood.cpp" />
+		<Unit filename="src/Blood.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/Blood.h" />
-		<Unit filename="src/BotAPICalculations.cpp" />
+		<Unit filename="src/BotAPICalculations.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/BotAPICalculations.h" />
 		<Unit filename="src/CMakeLists.txt" />
 		<Unit filename="src/Clock.cpp" />
@@ -83,25 +89,41 @@
 		<Unit filename="src/GenericIODetail.h" />
 		<Unit filename="src/GenericIOFwd.h" />
 		<Unit filename="src/Global.h" />
-		<Unit filename="src/IMGUI.cpp" />
+		<Unit filename="src/IMGUI.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/IMGUI.h" />
 		<Unit filename="src/IReplayLoader.h" />
 		<Unit filename="src/IUserConfigReader.h" />
-		<Unit filename="src/InputDevice.cpp" />
+		<Unit filename="src/InputDevice.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/InputDevice.h" />
-		<Unit filename="src/InputManager.cpp" />
+		<Unit filename="src/InputManager.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/InputManager.h" />
 		<Unit filename="src/InputSource.cpp" />
 		<Unit filename="src/InputSource.h" />
-		<Unit filename="src/InputSourceFactory.cpp" />
+		<Unit filename="src/InputSourceFactory.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/InputSourceFactory.h" />
-		<Unit filename="src/LagDetectionSystem.cpp" />
+		<Unit filename="src/LagDetectionSystem.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/LagDetectionSystem.h" />
-		<Unit filename="src/LocalInputSource.cpp" />
+		<Unit filename="src/LocalInputSource.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/LocalInputSource.h" />
 		<Unit filename="src/MatchEvents.h" />
-		<Unit filename="src/NetworkGame.cpp" />
-		<Unit filename="src/NetworkGame.h" />
 		<Unit filename="src/NetworkMessage.cpp" />
 		<Unit filename="src/NetworkMessage.h" />
 		<Unit filename="src/PhysicState.cpp" />
@@ -110,29 +132,56 @@
 		<Unit filename="src/PhysicWorld.h" />
 		<Unit filename="src/PlayerIdentity.cpp" />
 		<Unit filename="src/PlayerIdentity.h" />
-		<Unit filename="src/RenderManager.cpp" />
+		<Unit filename="src/RenderManager.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/RenderManager.h" />
-		<Unit filename="src/RenderManagerGL2D.cpp" />
+		<Unit filename="src/RenderManagerGL2D.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/RenderManagerGL2D.h" />
-		<Unit filename="src/RenderManagerNull.cpp" />
+		<Unit filename="src/RenderManagerNull.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/RenderManagerNull.h" />
-		<Unit filename="src/RenderManagerSDL.cpp" />
+		<Unit filename="src/RenderManagerSDL.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/RenderManagerSDL.h" />
 		<Unit filename="src/ReplayDefs.h" />
-		<Unit filename="src/ReplayLoader.cpp" />
-		<Unit filename="src/ReplayPlayer.cpp" />
+		<Unit filename="src/ReplayLoader.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/ReplayPlayer.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/ReplayPlayer.h" />
 		<Unit filename="src/ReplayRecorder.cpp" />
 		<Unit filename="src/ReplayRecorder.h" />
 		<Unit filename="src/ReplaySavePoint.cpp" />
 		<Unit filename="src/ReplaySavePoint.h" />
-		<Unit filename="src/ScriptedInputSource.cpp" />
+		<Unit filename="src/ScriptedInputSource.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/ScriptedInputSource.h" />
-		<Unit filename="src/SoundManager.cpp" />
+		<Unit filename="src/SoundManager.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/SoundManager.h" />
 		<Unit filename="src/SpeedController.cpp" />
 		<Unit filename="src/SpeedController.h" />
-		<Unit filename="src/TextManager.cpp" />
+		<Unit filename="src/TextManager.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/TextManager.h" />
 		<Unit filename="src/UserConfig.cpp" />
 		<Unit filename="src/UserConfig.h" />
@@ -297,6 +346,8 @@
 		<Unit filename="src/raknet/SocketLayer.h" />
 		<Unit filename="src/server/DedicatedServer.cpp" />
 		<Unit filename="src/server/DedicatedServer.h" />
+		<Unit filename="src/server/NetworkGame.cpp" />
+		<Unit filename="src/server/NetworkGame.h" />
 		<Unit filename="src/server/NetworkPlayer.cpp" />
 		<Unit filename="src/server/NetworkPlayer.h" />
 		<Unit filename="src/server/servermain.cpp">
