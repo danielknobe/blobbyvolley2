@@ -294,15 +294,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 	else
 	{
 		mServerInfo.activegames = mGameList.size();
-		/*if (!mWaitingPlayer.valid())
-		{
-			mServerInfo.setWaitingPlayer("none");
-		}
-		else
-		{
-			mServerInfo.setWaitingPlayer(mWaitingPlayer.getName());
-		}
-		*/
+		mServerInfo.waitingplayers = mPlayerMap.size() - 2 * mServerInfo.activegames;
 
 		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 		mServerInfo.writeToBitstream(stream2);

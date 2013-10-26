@@ -38,7 +38,7 @@ ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t p)
 	stream.Read(activegames);
 	stream.Read(gamespeed);
 	stream.Read(name, sizeof(name));
-	stream.Read(waitingplayer, sizeof(waitingplayer));
+	stream.Read(waitingplayers);
 	stream.Read(description, sizeof(description));
 }
 
@@ -77,19 +77,14 @@ void ServerInfo::writeToBitstream(RakNet::BitStream& stream)
 	stream.Write(activegames);
 	stream.Write(gamespeed);
 	stream.Write(name, sizeof(name));
-	stream.Write(waitingplayer, sizeof(waitingplayer));
+	stream.Write(waitingplayers);
 	stream.Write(description, sizeof(description));
-}
-
-void ServerInfo::setWaitingPlayer(const std::string& name)
-{
-	strncpy(waitingplayer, name.c_str(), sizeof(waitingplayer) - 1);
 }
 
 const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned char)ID_BLOBBY_SERVER_PRESENT)
 		+ 2 * sizeof(int) 	// activegames & gamespeed
 		+ 32				// name
-		+ 64				// waiting player
+		+ sizeof(int)		// waiting players
 		+ 192;				// description
 
 

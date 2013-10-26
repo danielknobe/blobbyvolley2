@@ -262,8 +262,6 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 
 	void writeToBitstream(RakNet::BitStream& stream);
 
-	void setWaitingPlayer(const std::string& name);
-
 	/// \todo maybe we should define ServerInfo a little bit more
 	///			as e.g., hostname can be left uninitialised on server
 	/// we combine to functionsalities here: server information and server addresses.
@@ -272,7 +270,7 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	uint16_t port;
 	char hostname[64];
 	char name[32];
-	char waitingplayer[64];
+	int waitingplayers;
 	char description[192];
 
 	static const size_t BLOBBY_SERVER_PRESENT_PACKET_SIZE;
