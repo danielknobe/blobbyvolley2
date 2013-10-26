@@ -241,7 +241,7 @@ void NetworkSearchState::step()
 		if (imgui.doButton(GEN_ID, Vector2(270.0, 300.0), TextManager::LBL_OK))
 		{
 			/// \todo adapt direct connect
-			/*std::string server = mEnteredServer;
+			std::string server = mEnteredServer;
 			int port = BLOBBY_PORT;
 			std::size_t found = mEnteredServer.find(':');
 			if (found != std::string::npos) {
@@ -260,9 +260,12 @@ void NetworkSearchState::step()
 					port = BLOBBY_PORT;
 			}
 
-			deleteCurrentState();
-			setCurrentState(new NetworkGameState(server, port));
-			return;*/
+			// add this address / port info as client
+			RakClient* newClient = new RakClient;
+			newClient->Connect(server.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME);
+			mQueryClients.push_back( newClient );
+			mEnteringServer = false;
+			imgui.resetSelection();
 		}
 		if (imgui.doButton(GEN_ID, Vector2(370.0, 300.0), TextManager::LBL_CANCEL))
 		{

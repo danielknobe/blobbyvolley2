@@ -753,6 +753,7 @@ void NetworkHostState::step()
 		{
 			switch(packet->data[0])
 			{
+				// as soon as we are connected to the server
 				case ID_CONNECTION_REQUEST_ACCEPTED:
 				{
 					// ----------------------------------------------------
@@ -797,6 +798,10 @@ void NetworkHostState::step()
 		}
 	}
 
+	if(mServer->hasActiveGame())
+	{
+		mServer->allowNewPlayers(false);
+	}
 
 	mServer->processPackets();
 

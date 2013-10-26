@@ -36,9 +36,16 @@ enum {
 	LOG_DEBUG
 };
 
+/*! \class DedicatedServer
+	\brief manages a blobby server.
+	\details Lets the players connect, matches games and processes them.
+*/
 class DedicatedServer
 {
 	public:
+		/// create a dedicated server with the data specified in info, using the rules from rulesfile, allowing max_clients
+		/// simulatanious connections
+		/// \todo Maybe two classes for server info: lokal server info for an server, and remote for data sent to client
 		DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
 		~DedicatedServer();
 
@@ -47,7 +54,9 @@ class DedicatedServer
 		void updateLobby();
 
 		bool hasActiveGame() const;
-		bool hasWaitingPlayer() const;
+		int getWaitingPlayers() const;
+
+		void allowNewPlayers( bool allow );
 
 	private:
 		// packet handling functions / utility functions
@@ -67,6 +76,8 @@ class DedicatedServer
 
 		// path to rules file
 		std::string mRulesFile;
+		// true, if new players should be accepted
+		bool mAcceptNewPlayers;
 		// server info with server config
 		ServerInfo mServerInfo;
 
