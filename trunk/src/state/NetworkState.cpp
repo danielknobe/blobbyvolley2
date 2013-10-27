@@ -777,7 +777,7 @@ void NetworkHostState::step()
 					// Send ENTER GAME packet
 
 					RakNet::BitStream stream2;
-					stream2.Write((char)ID_ENTER_GAME);
+					stream2.Write((char)ID_CHALLENGE);
 					auto writer = createGenericWriter(&stream2);
 					writer->generic<PlayerID>( UNASSIGNED_PLAYER_ID );
 
@@ -807,7 +807,7 @@ void NetworkHostState::step()
 
 	/// \todo make this gamespeed independent
 	mLobbyCounter++;
-	if(mLobbyCounter % (75 /*1s*/) == 0 )
+	if(mLobbyCounter % (750 /*10s*/) == 0 )
 	{
 		mServer->updateLobby();
 	}

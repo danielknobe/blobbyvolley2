@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 		server.processPackets();
 
 		/// \todo make this gamespeed independent
-		if(SWLS_RunningTime % (75 /*1s*/) == 0 )
+		if(SWLS_RunningTime % (750 /*10s*/) == 0 )
 		{
 			server.updateLobby();
 		}

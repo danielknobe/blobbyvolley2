@@ -107,34 +107,49 @@ void LobbyState::step()
 				break;
 			};
 			case ID_SERVER_STATUS:
+			{
+				RakNet::BitStream stream = packet->getStream();
+				auto in = createGenericReader( &stream );
+				unsigned char t;
+				in->byte(t);
+
+				std::vector<std::string> names;
+				std::vector<PlayerID> ids;
+
+				PlayerID own_id = mClient->GetPlayerID(  );
+
+				in->generic<std::vector<std::string>>( names );
+				in->generic<std::vector<PlayerID>>( ids );
+				unsigned int games;
+				in->uint32( games );
+				mInfo.activegames = games;
+
+				// now add every player as possible opponent, except us
+				mConnectedPlayers.clear();
+				for(unsigned int i = 0; i < names.size(); ++i)
 				{
-					RakNet::BitStream stream = packet->getStream();
-					auto in = createGenericReader( &stream );
-					unsigned char t;
-					in->byte(t);
-
-					std::vector<std::string> names;
-					std::vector<PlayerID> ids;
-
-					PlayerID own_id = mClient->GetPlayerID(  );
-
-					in->generic<std::vector<std::string>>( names );
-					in->generic<std::vector<PlayerID>>( ids );
-					unsigned int games;
-					in->uint32( games );
-					mInfo.activegames = games;
-
-					// now add every player as possible opponent, except us
-					mConnectedPlayers.clear();
-					for(unsigned int i = 0; i < names.size(); ++i)
+					if(ids[i] != own_id)
 					{
-						if(ids[i] != own_id)
-						{
-							mConnectedPlayers.push_back( {names[i], ids[i]} );
-						}
+						mConnectedPlayers.push_back( {names[i], ids[i]} );
 					}
 				}
-				break;
+			}
+			break;
+			case ID_CHALLENGE:
+			{
+				RakNet::BitStream stream = packet->getStream();
+				auto in = createGenericReader( &stream );
+				unsigned char t;
+				in->byte(t);
+
+				PlayerID challenger;
+				in->generic<PlayerID>( challenger );
+
+				// find player with that id
+				auto pl = std::find_if( mConnectedPlayers.begin(), mConnectedPlayers.end(), [challenger](WaitingPlayer& wp) { return wp.id == challenger; } );
+				mChallenge = pl->displayname;
+			}
+			break;
 			default:
 				std::cout << "Unknown packet " << int(packet->data[0]) << " received\n";
 		}
@@ -210,6 +225,12 @@ void LobbyState::step()
 		imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
 	}
 
+	// * last challenge
+	imgui.doText(GEN_ID, Vector2(435, 245), TextManager::getSingleton()->getString(TextManager::NET_CHALLENGE));
+	imgui.doText(GEN_ID, Vector2(435, 280), " " + mChallenge);
+
+
+
 	// back button
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
@@ -221,7 +242,7 @@ void LobbyState::step()
 	if (mLobbyState == CONNECTED && (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) || doEnterGame))
 	{
 		RakNet::BitStream stream;
-		stream.Write((char)ID_ENTER_GAME);
+		stream.Write((char)ID_CHALLENGE);
 		auto writer = createGenericWriter(&stream);
 		if( mSelectedPlayer != 0 )
 		{
