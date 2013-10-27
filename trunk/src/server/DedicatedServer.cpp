@@ -43,11 +43,22 @@ DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rule
 																											mRulesFile(rulefile), mServer( new RakServer() ),
 																											mAcceptNewPlayers(true)
 {
+
 	if (!mServer->Start(max_clients, 1, mServerInfo.port))
 	{
 		syslog(LOG_ERR, "Couldn't bind to port %i, exiting", mServerInfo.port);
 		throw(2);
 	}
+
+	auto gamelogic = createGameLogic(rulefile, nullptr);
+
+	// set rules data in ServerInfo
+	/// \todo this code should be places in ServerInfo
+	std::strncpy(mServerInfo.rulestitle, gamelogic->getTitle().c_str(), sizeof(mServerInfo.rulestitle));
+	mServerInfo.rulesauthor[sizeof(mServerInfo.rulestitle)-1] = 0;
+
+	std::strncpy(mServerInfo.rulesauthor, gamelogic->getAuthor().c_str(), sizeof(mServerInfo.rulesauthor));
+	mServerInfo.rulesauthor[sizeof(mServerInfo.rulesauthor)-1] = 0;
 }
 
 DedicatedServer::~DedicatedServer()
@@ -329,6 +340,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 
 		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 		mServerInfo.writeToBitstream(stream2);
+
 		mServer->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0,	packet->playerId, false);
 	}
 }

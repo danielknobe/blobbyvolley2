@@ -273,6 +273,9 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	int waitingplayers;
 	char description[192];
 
+	char rulestitle[32];
+	char rulesauthor[32];
+
 	static const size_t BLOBBY_SERVER_PRESENT_PACKET_SIZE;
 };
 

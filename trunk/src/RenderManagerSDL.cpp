@@ -601,8 +601,8 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 
 		if (flags & TF_SMALL_FONT)
 		{
-			charRect.w = 8;
-			charRect.h = 8;
+			charRect.w = FONT_WIDTH_SMALL;
+			charRect.h = FONT_WIDTH_SMALL;
 			if (flags & TF_HIGHLIGHT)
 			{
 				SDL_RenderCopy(mRenderer, mHighlightFont[index], NULL, &charRect);
