@@ -60,6 +60,7 @@ private:
 
 
 	ClientList mQueryClients;
+	RakClient* mDirectConnectClient;
 
 	int mSelectedServer;
 	bool mDisplayInfo;

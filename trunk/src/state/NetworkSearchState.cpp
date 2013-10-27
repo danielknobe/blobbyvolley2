@@ -77,6 +77,9 @@ void NetworkSearchState::step()
 {
 	packet_ptr packet;
 
+	// set to true to initiate server connection
+	bool doEnterServer = false;
+
 	for (ClientList::iterator iter = mQueryClients.begin();
 		iter != mQueryClients.end(); ++iter)
 	{
@@ -97,8 +100,7 @@ void NetworkSearchState::step()
 					stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 					stream.Write(BLOBBY_VERSION_MAJOR);
 					stream.Write(BLOBBY_VERSION_MINOR);
-					(*iter)->Send(&stream, LOW_PRIORITY,
-						RELIABLE_ORDERED, 0);
+					(*iter)->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 					break;
 				}
 				case ID_BLOBBY_SERVER_PRESENT:
@@ -113,13 +115,19 @@ void NetworkSearchState::step()
 						(*iter)->PlayerIDToDottedIP(
 							packet->playerId), packet->playerId.port);
 
-					if (std::find(
-							mScannedServers.begin(),
-							mScannedServers.end(),
-							info) == mScannedServers.end()
+					if (std::find( mScannedServers.begin(),	mScannedServers.end(), info) == mScannedServers.end()
 							// check whether the packet sizes match
-							&& packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE ){
+							&& packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
+					{
 						mScannedServers.push_back(info);
+
+						// check whether this was a direct connect server
+						if(*iter == mDirectConnectClient)
+						{
+							mSelectedServer = mScannedServers.size() - 1;
+							doEnterServer = true;
+						}
+
 					}
 					// the RakClient will be deleted, so
 					// we must free the packet here
@@ -136,8 +144,7 @@ void NetworkSearchState::step()
 				{
 					// this packet is send when the client is older than the server!
 					// so
-					RakNet::BitStream stream((char*)packet->data,
-						packet->length, false);
+					RakNet::BitStream stream((char*)packet->data, packet->length, false);
 					stream.IgnoreBytes(1);	// ID_VERSION_MISMATCH
 
 					// default values if server does not send versions.
@@ -218,7 +225,6 @@ void NetworkSearchState::step()
 		servernames.push_back(std::string(mScannedServers[i].name) + " (" + boost::lexical_cast<std::string>(mScannedServers[i].waitingplayers) + ")" );
 	}
 
-	bool doEnterServer = false;
 	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
 			servernames, mSelectedServer) == SBA_DBL_CLICK )
 	{
@@ -261,9 +267,9 @@ void NetworkSearchState::step()
 			}
 
 			// add this address / port info as client
-			RakClient* newClient = new RakClient;
-			newClient->Connect(server.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME);
-			mQueryClients.push_back( newClient );
+			mDirectConnectClient = new RakClient;
+			mDirectConnectClient->Connect(server.c_str(), port, 0, 0, RAKNET_THREAD_SLEEP_TIME);
+			mQueryClients.push_back( mDirectConnectClient );
 			mEnteringServer = false;
 			imgui.resetSelection();
 		}
