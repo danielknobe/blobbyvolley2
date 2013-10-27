@@ -189,7 +189,7 @@ void TextManager::setDefault()
 	mStrings[NET_SERVER_SCAN] = "scan for servers";
 	mStrings[NET_DIRECT_CONNECT] = "direct connect";
 	mStrings[NET_SERVER_INFO] = "server info";
-	mStrings[NET_ACTIVE_GAMES] = "active games: ";
+	mStrings[NET_ACTIVE_GAMES] = "games: ";
 	mStrings[NET_WAITING_PLAYER] = "waiting player: ";
 	mStrings[NET_HOST_GAME] = "host game";
 	mStrings[NET_CONNECTING] = "connecting to server ...";
@@ -197,6 +197,8 @@ void TextManager::setDefault()
 	mStrings[NET_CON_FAILED] = "connection failed";
 	mStrings[NET_SERVER_FULL] = "server full";
 	mStrings[NET_STAY_ON_SERVER] = "stay on server";
+	mStrings[NET_RANDOM_OPPONENT] = "random";
+	mStrings[NET_SPEED] = "speed: ";
 
 	mStrings[OP_INPUT_OP] = "input options";
 	mStrings[OP_GFX_OP] = "graphic options";

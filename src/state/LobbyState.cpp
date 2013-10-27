@@ -156,7 +156,7 @@ void LobbyState::step()
 	// player list
 
 	std::vector<std::string> playerlist;
-	playerlist.push_back("random");	/// \todo language support
+	playerlist.push_back( TextManager::getSingleton()->getString(TextManager::NET_RANDOM_OPPONENT) );
 	for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
 	{
 		playerlist.push_back(mConnectedPlayers[i].displayname );
@@ -174,7 +174,7 @@ void LobbyState::step()
 
 	// info panel contents:
 	//  * gamespeed
-	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::OP_SPEED) +
+	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
 				 boost::lexical_cast<std::string>(int(100.0 / 75.0 * mInfo.gamespeed)) + "%");
 	//  * number of active games
 
