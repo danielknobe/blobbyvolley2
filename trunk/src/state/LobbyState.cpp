@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>
 #include <iostream>
 
+#include <boost/lexical_cast.hpp>
+
 #include "IMGUI.h"
 #include "NetworkState.h"
 #include "UserConfig.h"
@@ -106,6 +108,9 @@ void LobbyState::step()
 
 					in->generic<std::vector<std::string>>( names );
 					in->generic<std::vector<PlayerID>>( ids );
+					unsigned int games;
+					in->uint32( games );
+					mInfo.activegames = games;
 
 					// now add every player as possible opponent, except us
 					mConnectedPlayers.clear();
@@ -116,10 +121,6 @@ void LobbyState::step()
 							mConnectedPlayers.push_back( {names[i], ids[i]} );
 						}
 					}
-
-
-					std::cout << packet->data << "\n";
-					std::cout << "receive names: " << names.size() << "\n";
 				}
 				break;
 			default:
@@ -170,6 +171,16 @@ void LobbyState::step()
 
 	// info panel
 	imgui.doOverlay(GEN_ID, Vector2(425.0, 90.0), Vector2(775.0, 470.0));
+
+	// info panel contents:
+	//  * gamespeed
+	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::OP_SPEED) +
+				 boost::lexical_cast<std::string>(int(100.0 / 75.0 * mInfo.gamespeed)) + "%");
+	//  * number of active games
+
+	imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES) +
+										boost::lexical_cast<std::string>(mInfo.activegames) );
+
 
 	// back button
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))

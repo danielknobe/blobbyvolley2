@@ -284,7 +284,7 @@ void NetworkSearchState::step()
 
 		std::stringstream activegames;
 		activegames << TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES)
-					<< ": " << mScannedServers[mSelectedServer].activegames;
+					<< mScannedServers[mSelectedServer].activegames;
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
 		std::stringstream waitingplayer;
 		waitingplayer << TextManager::getSingleton()->getString(TextManager::NET_WAITING_PLAYER)

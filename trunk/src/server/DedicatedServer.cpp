@@ -391,6 +391,8 @@ void DedicatedServer::broadcastServerStatus()
 	out->generic<std::vector<std::string>>( playernames );
 	out->generic<std::vector<PlayerID>>( playerIDs );
 
+	out->uint32(mGameList.size());
+
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
 		if( it->second->getGame() == nullptr)
