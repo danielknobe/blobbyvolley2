@@ -238,6 +238,7 @@ void DedicatedServer::updateLobby()
 		PlayerID second = it->second;
 
 		auto firstPlayer = mPlayerMap.find(first);
+		// if the first player is no longer available, everything is fine
 		if( firstPlayer == mPlayerMap.end() || firstPlayer->second->getGame() != nullptr)
 		{
 			// left server or is already playing -> remove game requests
@@ -252,6 +253,10 @@ void DedicatedServer::updateLobby()
 			{
 				// left server or is already playing -> remove game requests
 				it = mGameRequests.erase(it);
+
+				// if the second player starts a game, or disconnected, no need to keep the first player waiting
+				/// \todo this could be done a lot more elegant
+				mServer->CloseConnection(firstPlayer->first, true);
 				continue;
 			}
 		}

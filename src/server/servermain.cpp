@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 			// connected
 			if ((SDL_GetTicks() - startTime) > 60 * 60 * 1000)
 			{
-				if (!server.hasActiveGame() && !server.hasWaitingPlayer())
+				if (!server.hasActiveGame() && server.getWaitingPlayers() == 0)
 				{
 					exit(0);
 				}
