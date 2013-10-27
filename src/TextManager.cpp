@@ -199,6 +199,9 @@ void TextManager::setDefault()
 	mStrings[NET_STAY_ON_SERVER] = "stay on server";
 	mStrings[NET_RANDOM_OPPONENT] = "random";
 	mStrings[NET_SPEED] = "speed: ";
+	mStrings[NET_RULES_TITLE] = "rules: ";
+	mStrings[NET_RULES_BY] = " by ";
+
 
 	mStrings[OP_INPUT_OP] = "input options";
 	mStrings[OP_GFX_OP] = "graphic options";

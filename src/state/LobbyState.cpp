@@ -177,10 +177,15 @@ void LobbyState::step()
 	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
 				 boost::lexical_cast<std::string>(int(100.0 / 75.0 * mInfo.gamespeed)) + "%");
 	//  * number of active games
-
 	imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES) +
 										boost::lexical_cast<std::string>(mInfo.activegames) );
-
+	//  * rulesfile
+	imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
+	std::string rulesstring = mInfo.rulestitle + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY) + mInfo.rulesauthor;
+	for (unsigned int i = 0; i < rulesstring.length(); i += 25)
+	{
+		imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
+	}
 
 	// back button
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))

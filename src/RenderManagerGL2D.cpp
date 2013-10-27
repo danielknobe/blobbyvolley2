@@ -590,8 +590,8 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 			{
 				int charWidth = mHighlightFont[index].w;
 				int charHeight = mHighlightFont[index].h;
-				mHighlightFont[index].w = 8;
-				mHighlightFont[index].h = 8;
+				mHighlightFont[index].w = FONT_WIDTH_SMALL;
+				mHighlightFont[index].h = FONT_WIDTH_SMALL;
 				drawQuad(x, y, mHighlightFont[index]);
 				mHighlightFont[index].w = charWidth;
 				mHighlightFont[index].h = charHeight;
@@ -600,8 +600,8 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 			{
 				int charWidth = mFont[index].w;
 				int charHeight = mFont[index].h;
-				mFont[index].w = 8;
-				mFont[index].h = 8;
+				mFont[index].w = FONT_WIDTH_SMALL;
+				mFont[index].h = FONT_WIDTH_SMALL;
 				drawQuad(x, y, mFont[index]);
 				mFont[index].w = charWidth;
 				mFont[index].h = charHeight;
