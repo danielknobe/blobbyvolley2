@@ -94,6 +94,18 @@ void LobbyState::step()
 				mLobbyState = CONNECTED;
 				break;
 			}
+			case ID_CONNECTION_ATTEMPT_FAILED:
+			{
+				mLobbyState = CONNECTION_FAILED;
+				break;
+			}
+
+			case ID_CONNECTION_LOST:
+			case ID_DISCONNECTION_NOTIFICATION:
+			{
+				mLobbyState = DISCONNECTED;
+				break;
+			};
 			case ID_SERVER_STATUS:
 				{
 					RakNet::BitStream stream = packet->getStream();
@@ -144,22 +156,33 @@ void LobbyState::step()
 	{
 		imgui.doText(GEN_ID, Vector2( 100, 55 ), TextManager::NET_CONNECTING);
 	}
+	else if (mLobbyState == DISCONNECTED )
+	{
+		imgui.doText(GEN_ID, Vector2( 100, 55 ), TextManager::NET_DISCONNECT);
+	}
+	else if (mLobbyState == CONNECTION_FAILED )
+	{
+		imgui.doText(GEN_ID, Vector2( 100, 55 ), TextManager::NET_CON_FAILED);
+	}
 	else
 	{
 		std::string description = mInfo.description;
-		for (unsigned int i = 0; i < description.length(); i += 90)
+		for (unsigned int i = 0; i < description.length(); i += 80)
 		{
-			imgui.doText(GEN_ID, Vector2(50, 55 + i / 90 * 15), description.substr(i, 90), TF_SMALL_FONT);
+			imgui.doText(GEN_ID, Vector2(50, 55 + i / 80 * 15), description.substr(i, 80), TF_SMALL_FONT);
 		}
 	}
 
 	// player list
 
 	std::vector<std::string> playerlist;
-	playerlist.push_back( TextManager::getSingleton()->getString(TextManager::NET_RANDOM_OPPONENT) );
-	for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
+	if( mLobbyState == CONNECTED )
 	{
-		playerlist.push_back(mConnectedPlayers[i].displayname );
+		playerlist.push_back( TextManager::getSingleton()->getString(TextManager::NET_RANDOM_OPPONENT) );
+		for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
+		{
+			playerlist.push_back(mConnectedPlayers[i].displayname );
+		}
 	}
 
 	bool doEnterGame = false;
@@ -195,7 +218,7 @@ void LobbyState::step()
 	}
 
 	// ok button
-	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) || doEnterGame)
+	if (mLobbyState == CONNECTED && (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) || doEnterGame))
 	{
 		RakNet::BitStream stream;
 		stream.Write((char)ID_ENTER_GAME);

@@ -58,7 +58,9 @@ class LobbyState : public State
 		enum
 		{
 			CONNECTING,
-			CONNECTED
+			CONNECTED,
+			DISCONNECTED,
+			CONNECTION_FAILED
 		} mLobbyState;
 };
 
