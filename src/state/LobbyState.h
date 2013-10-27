@@ -54,6 +54,7 @@ class LobbyState : public State
 		};
 
 		std::vector<WaitingPlayer> mConnectedPlayers;
+		std::string mChallenge;
 
 		enum
 		{

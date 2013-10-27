@@ -145,7 +145,7 @@ void DedicatedServer::processPackets()
 				updateLobby();
 				break;
 			}
-			case ID_ENTER_GAME:
+			case ID_CHALLENGE:
 			{
 				/// \todo assert that the player send an ID_ENTER_SERVER before
 
@@ -208,6 +208,32 @@ void DedicatedServer::processPackets()
 				{
 					// no match could be found -> add to request list
 					mGameRequests[first] = second;
+
+					// send challenge packets
+					if( second == UNASSIGNED_PLAYER_ID )
+					{
+						// challenge everybody
+						for(auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+						{
+							if( it->second->getGame() == nullptr )
+							{
+								RakNet::BitStream stream;
+								auto writer = createGenericWriter( &stream );
+								writer->byte( ID_CHALLENGE );
+								writer->generic<PlayerID> ( first );
+								mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->second->getID(), false);
+							}
+						}
+					}
+					// challenge only one player
+					else
+					{
+						RakNet::BitStream stream;
+						auto writer = createGenericWriter( &stream );
+						writer->byte( ID_CHALLENGE );
+						writer->generic<PlayerID> ( first );
+						mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, second, false);
+					}
 				}
 
 				break;

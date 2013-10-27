@@ -50,7 +50,7 @@ enum MessageType
 	ID_RULES_CHECKSUM,
 	ID_RULES,
 	ID_SERVER_STATUS,
-	ID_ENTER_GAME
+	ID_CHALLENGE
 };
 
 // General Information:
@@ -241,13 +241,15 @@ enum MessageType
 //		ID_SERVER_STATUS
 //		vector<string> playernames
 //
-// ID_ENTER_GAME
+// ID_CHALLENGE
 // 	Description:
 //		Sent when the client wants to start a game. If desired opponent is set, the server looks for that
 //		opponent and matches these players.
+//		Sent from the server when another player wants to start a game with this client.
 //	Structure:
-//		ID_ENTER_GAME
-//		char[16] desired opponent
+//		ID_CHALLENGE
+//		PlayerID opponent
+//
 
 
 class IUserConfigReader;
