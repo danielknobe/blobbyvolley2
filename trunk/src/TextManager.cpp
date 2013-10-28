@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <iostream>
 #include <algorithm>
+#include <set>
 
 #include "tinyxml/tinyxml.h"
 
@@ -99,6 +100,14 @@ bool TextManager::loadFromXML(std::string filename){
 	int num_strings = mStrings.size();
 	int found_count = 0;
 
+	#ifdef DEBUG
+	std::set<std::string> stringsToTranslate;
+	for(std::string s: mStrings)
+	{
+		stringsToTranslate.insert( s );
+	}
+	#endif // DEBUG
+
 	// this loop assumes that the strings in the xml file are in the correct order
 	//  in each step, it reads the next string element and writes it to the next position in mStrings
 	for (	TiXmlElement* stringel = language->FirstChildElement("string");
@@ -110,7 +119,12 @@ bool TextManager::loadFromXML(std::string filename){
 		/// \todo we don't check for duplicate entries!
 		const char* e = stringel->Attribute("english");
 		const char* t = stringel->Attribute("translation");
-		if (t && e){
+		if (t && e)
+		{
+			#ifdef DEBUG
+			// remove every found element
+			stringsToTranslate.erase( std::string(e) );
+			#endif // DEBUG
 			// search the english string and replace it with the translation
 			std::vector<std::string>::iterator found = std::find(mStrings.begin(), mStrings.end(), e);
 			if(found != mStrings.end())
@@ -138,6 +152,13 @@ bool TextManager::loadFromXML(std::string filename){
 	{
 		std::cerr << "missing translations: got " << found_count <<
 					" out of " << num_strings << " translation entries" << std::endl;
+
+		#ifdef DEBUG
+		for(auto e : stringsToTranslate)
+		{
+			std::cerr << " missing " << e << "\n";
+		}
+		#endif // DEBUG
 	}
 
 	return true;

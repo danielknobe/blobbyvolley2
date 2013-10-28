@@ -182,9 +182,9 @@ void LobbyState::step()
 	else
 	{
 		std::string description = mInfo.description;
-		for (unsigned int i = 0; i < description.length(); i += 80)
+		for (unsigned int i = 0; i < description.length(); i += 70)
 		{
-			imgui.doText(GEN_ID, Vector2(50, 55 + i / 80 * 15), description.substr(i, 80), TF_SMALL_FONT);
+			imgui.doText(GEN_ID, Vector2(25, 55 + i / 70 * 15), description.substr(i, 70), TF_SMALL_FONT);
 		}
 	}
 
