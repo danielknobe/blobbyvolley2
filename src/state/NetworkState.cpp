@@ -50,6 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "MatchEvents.h"
 #include "SpeedController.h"
 #include "server/DedicatedServer.h"
+#include "LobbyState.h"
 
 
 /* implementation */
@@ -456,6 +457,21 @@ void NetworkGameState::step()
 				assert( 0 );
 				break;
 
+			case ID_BLOBBY_SERVER_PRESENT:
+			{
+				// this should only be called if we use the stay on server option
+				RakNet::BitStream stream( packet->getStream() );
+				stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
+				ServerInfo info(stream,	mClient->PlayerIDToDottedIP(packet->playerId), packet->playerId.port);
+
+				if (packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
+				{
+					deleteCurrentState();
+					setCurrentState(new LobbyState(info));
+					return;
+				}
+				break;
+			}
 			default:
 				printf("Received unknown Packet %d\n", packet->data[0]);
 				std::cout<<packet->data<<"\n";
@@ -567,15 +583,12 @@ void NetworkGameState::step()
 
 			if (imgui.doButton(GEN_ID, Vector2(250.0, 340.0), TextManager::NET_STAY_ON_SERVER))
 			{
-				// we need to make a copy here because this variables get deleted in destrutor
-				// when deleteCurrentState runs
-				/*std::string server = mServerAddress;
-				uint16_t port = mPort;
-
-				deleteCurrentState();
-				setCurrentState(new NetworkGameState(server, port));
-				return;*/
-				/// \todo back to lobby
+				// Send a blobby server connection request
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
+				stream.Write(BLOBBY_VERSION_MAJOR);
+				stream.Write(BLOBBY_VERSION_MINOR);
+				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 			}
 			break;
 		}

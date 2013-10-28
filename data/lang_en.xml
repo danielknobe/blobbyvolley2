@@ -44,13 +44,19 @@
 	<string english = "scan for servers" translation = "scan for servers" />
 	<string english = "direct connect" translation = "direct connect" />
 	<string english = "server info" translation = "server info" />
-	<string english = "active games: " translation = "active games: " />
 	<string english = "waiting player: " translation = "waiting player: " />
 	<string english = "host game" translation = "host game" />
 	<string english = "connecting to server ..." translation = "connecting to server ..." />
 	<string english = "disconnected from server" translation = "disconnected from server" />
 	<string english = "connection failed" translation = "connection failed" />
 	<string english = "server full" translation = "server full" />
+	<string english = " by " translation = " by " />
+	<string english = "challenger: " translation = "challenger: " />
+	<string english = "games: " translation = "games: " />
+	<string english = "random" translation = "random" />
+	<string english = "rules: " translation = "rules: " />
+	<string english = "speed: " translation = "speed: " />
+	<string english = "stay on server" translation = "stay on server" />
 
 	<string english = "input options" translation = "input options" />
 	<string english = "graphic options" translation = "graphic options" />
