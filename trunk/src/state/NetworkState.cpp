@@ -376,8 +376,12 @@ void NetworkGameState::step()
 
 				break;
 			}
+			// status messages we don't care about
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
+			case ID_SERVER_STATUS:
+			case ID_REMOTE_NEW_INCOMING_CONNECTION:
+			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
 			case ID_CONNECTION_LOST:
@@ -386,10 +390,6 @@ void NetworkGameState::step()
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				mNetworkState = SERVER_FULL;
-				break;
-			case ID_REMOTE_NEW_INCOMING_CONNECTION:
-				break;
-			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
 			case ID_CHAT_MESSAGE:
 			{

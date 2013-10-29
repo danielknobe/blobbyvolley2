@@ -1,3 +1,9 @@
+New in 1.0 RC 4 (rev. 1345) since RC3:
+- Added Lobby
+- Added lua gamerules
+- Updated to SDL2
+- some more code refactoring
+
 New in 1.0 RC 3 (rev. 1123) since RC 2:
 - Fixed ball rotation in onlinegame
 - Fixed switched player bug

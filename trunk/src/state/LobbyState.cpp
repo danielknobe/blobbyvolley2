@@ -150,6 +150,9 @@ void LobbyState::step()
 				mChallenge = pl->displayname;
 			}
 			break;
+			case ID_REMOTE_EXISTING_CONNECTION:
+				// not surprising, but we are not interested in his packet
+				break;
 			default:
 				std::cout << "Unknown packet " << int(packet->data[0]) << " received\n";
 		}
