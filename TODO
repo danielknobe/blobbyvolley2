@@ -5,11 +5,8 @@ coderework:
 - multithreading
 	fps independent physics
 - new gui system
-- more lua scripting
 
 features:
-- option for 3 types of shadow (off, pixelshadow, alphablendingshadow)
-- lobbysystem
 - full unicode support (e.g. for Russian characters)
 - improve replays (fast forward, rewind, etc)
 - improve bot system (more commands etc)
@@ -24,7 +21,6 @@ bugs:
 - don't close chat if one player leaves the game
 
 data:
-- new smaller font (current one too small?)
 - monochrome font
 - more translation
 
