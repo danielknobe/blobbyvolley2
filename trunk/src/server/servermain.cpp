@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <errno.h>
 #include <unistd.h>
 
-#include <SDL/SDL_timer.h>
+#include <SDL2/SDL_timer.h>
 
 #include "DedicatedServer.h"
 #include "SpeedController.h"
@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // platform specific
 #ifndef WIN32
-#include <syslog.h>
+#include <sys/syslog.h>
 #include <sys/wait.h>
 #else
 #include <cstdarg>

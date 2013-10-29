@@ -31,6 +31,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkGame.h"
 #include "GenericIO.h"
 
+#ifndef WIN32
+#include <sys/syslog.h>
+#endif
 
 extern int SWLS_PacketCount;
 extern int SWLS_Connections;
