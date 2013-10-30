@@ -177,6 +177,7 @@ void InputManager::updateInput()
 						break;
 
 					case SDLK_RETURN:
+						mLastTextKey = "return";
 					case SDLK_SPACE:
 						mSelect = true;
 						break;
