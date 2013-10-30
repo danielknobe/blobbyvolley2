@@ -108,14 +108,14 @@ int main(int argc, char** argv)
 	setup_physfs(argv[0]);
 
 	int maxClients = 100;
-	std::string rulesFile = "rules.lua";
+	std::string rulesFile = DEFAULT_RULES_FILE;
 
 	UserConfig config;
 	try
 	{
 		config.loadFile(g_config_file);
 		maxClients = config.getInteger("maximum_clients");
-		rulesFile = g_rules_file == "" ? config.getString("rules", "rules.lua") : g_rules_file;
+		rulesFile = g_rules_file == "" ? config.getString("rules", DEFAULT_RULES_FILE) : g_rules_file;
 
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 1000)

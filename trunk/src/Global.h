@@ -48,6 +48,8 @@ const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
 // max. 1 ms additional latency, but much improved performance
 const int RAKNET_THREAD_SLEEP_TIME = 1;
 
+const std::string DEFAULT_RULES_FILE = "default.lua";
+
 enum PlayerSide
 {
 	NO_PLAYER = -1,

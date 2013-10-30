@@ -56,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mClient( client ),
-	mFakeMatch(new DuelMatch(true, "rules.lua"))
+	mFakeMatch(new DuelMatch(true, DEFAULT_RULES_FILE))
 {
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
@@ -380,6 +380,7 @@ void NetworkGameState::step()
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
 			case ID_SERVER_STATUS:
+			case ID_CHALLENGE:
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
 			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
