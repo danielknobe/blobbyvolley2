@@ -223,7 +223,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 		mLeftBlob.push_back(DynamicColoredTexture(
 				leftBlobTex,
-				Color(255, 0, 0)));
+				Color(0, 0, 0)));
 
 		SDL_Texture* rightBlobTex = SDL_CreateTexture(mRenderer,
 				SDL_PIXELFORMAT_ABGR8888,
@@ -234,7 +234,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 		mRightBlob.push_back(DynamicColoredTexture(
 				rightBlobTex,
-				Color(0, 255, 0)));
+				Color(0, 0, 0)));
 
 		// Prepare blobby shadow textures
 		SDL_Texture* leftBlobShadowTex = SDL_CreateTexture(mRenderer,
@@ -244,7 +244,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_SetTextureBlendMode(leftBlobShadowTex, SDL_BLENDMODE_BLEND);
 		mLeftBlobShadow.push_back(DynamicColoredTexture(
 				leftBlobShadowTex,
-				Color(255, 0, 0)));
+				Color(0, 0, 0)));
 		SDL_UpdateTexture(leftBlobShadowTex, NULL, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 
 		SDL_Texture* rightBlobShadowTex = SDL_CreateTexture(mRenderer,
@@ -254,7 +254,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_SetTextureBlendMode(rightBlobShadowTex, SDL_BLENDMODE_BLEND);
 		mRightBlobShadow.push_back(DynamicColoredTexture(
 				rightBlobShadowTex,
-				Color(0, 255, 0)));
+				Color(0, 0, 0)));
 		SDL_UpdateTexture(rightBlobShadowTex, NULL, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 	}
 
