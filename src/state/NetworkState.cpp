@@ -685,7 +685,7 @@ void NetworkGameState::step()
 			{
 
 				// GUI-Hack, so that we can send messages
-				if ((InputManager::getSingleton()->getLastActionKey() == "return") && (mChattext != ""))
+				if ((InputManager::getSingleton()->getLastActionKey() == "Return") && (mChattext != ""))
 				{
 					RakNet::BitStream stream;
 					char message[31];
