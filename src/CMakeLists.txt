@@ -69,9 +69,6 @@ set (blobby_SRC ${common_SRC}
 
 set (blobby-server_SRC ${common_SRC}
 	server/servermain.cpp
-	server/DedicatedServer.cpp server/DedicatedServer.h
-	server/NetworkGame.cpp server/NetworkGame.h
-	server/NetworkPlayer.cpp server/NetworkPlayer.h 
 	)
 
 find_package(Boost REQUIRED)
