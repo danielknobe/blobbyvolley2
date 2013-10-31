@@ -323,8 +323,8 @@ void NetworkSearchState::step()
 		return;
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK)
-							&& !mScannedServers.empty() || doEnterServer)
+	if ((imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) && !mScannedServers.empty())
+			|| doEnterServer)
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
 		deleteCurrentState();

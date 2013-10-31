@@ -74,7 +74,7 @@ uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}
 
-	if( num_read != num_of_bytes )
+	if( num_read != (PHYSFS_sint64)num_of_bytes )
 	{
 		BOOST_THROW_EXCEPTION ( EOFException(mFileName) );
 	}
