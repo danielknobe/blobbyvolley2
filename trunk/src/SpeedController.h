@@ -18,6 +18,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/**
+ * @file SpeedController.h
+ * @brief Contains a class which determine the framerate
+ */
+
 #pragma once
 
 #include "BlobbyDebug.h"
@@ -38,7 +43,7 @@ class SpeedController : public ObjectCounter<SpeedController>
 	public:
 		SpeedController(float gameFPS);
 		~SpeedController();
-		
+
 		void setGameSpeed(float fps);
 		float getGameSpeed() const{return mGameFPS;}
 
@@ -50,7 +55,7 @@ class SpeedController : public ObjectCounter<SpeedController>
 		void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
 		bool getDrawFPS() const { return mDrawFPS; }
 
-	/// This updates everything and waits the necessary time	
+	/// This updates everything and waits the necessary time
 		void update();
 
 		static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
