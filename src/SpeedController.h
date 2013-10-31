@@ -62,7 +62,6 @@ class SpeedController : public ObjectCounter<SpeedController>
 		static SpeedController* getMainInstance() { return mMainInstance; }
 	private:
 		float mGameFPS;
-		float mRealFPS;
 		int mFPS;
 		int mFPSCounter;
 		bool mFramedrop;

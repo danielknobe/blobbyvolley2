@@ -39,18 +39,14 @@ public:
 	ReplaySelectionState();
 	virtual void step();
 	virtual const char* getStateName() const;
-	
+
 private:
 
 	std::vector<std::string> mReplayFiles;
 	int mSelectedReplay;
 	bool mShowReplayInfo;
 	boost::scoped_ptr<IReplayLoader> mReplayLoader;
-	
+
 	bool mChecksumError;
 	bool mVersionError;
-	
-	int mPlayButton;
-	int mCancelButton;
-	int mDeleteButton;
 };
