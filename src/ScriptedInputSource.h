@@ -18,6 +18,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
+/**
+ * @file ScriptedInputSource.h
+ * @brief Contains a class which allows using lua scripted bots
+ */
+
 #pragma once
 
 #include "Global.h"
@@ -49,15 +54,15 @@ class ScriptedInputSource : public InputSource
 		/// which side is it on.
 		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
 		~ScriptedInputSource();
-		
+
 		virtual PlayerInput getNextInput();
-		
+
 	private:
 		/// this variable saves the current match
 		/// it is set each step in getInput
 		/// as in current design, only in single match mode bots are allowed
 		/// it would even be enough to set it once, but we may change this
-		/// for making bot tournaments^^, so the idea of setting it for each 
+		/// for making bot tournaments^^, so the idea of setting it for each
 		/// bot seems better to me
 		static const DuelMatch* mMatch;
 		static ScriptedInputSource* mCurrentSource;
@@ -68,13 +73,13 @@ class ScriptedInputSource : public InputSource
 		// coordinate system conversion
 		template<class T>
 		struct coordinate;
-		
+
 		// commands
 		static int jump(lua_State* state);
 		static int left(lua_State* state);
 		static int right(lua_State* state);
 		static int moveto(lua_State* state);
-		
+
 		// ball information
 		// internals
 		static const Vector2& getBallPosition();
@@ -84,55 +89,55 @@ class ScriptedInputSource : public InputSource
 		static int bally(lua_State* state);
 		static int bspeedx(lua_State* state);
 		static int bspeedy(lua_State* state);
-		
+
 		// blob information
 		static int launched(lua_State* state);
 		static int posx(lua_State* state);
 		static int posy(lua_State* state);
 		static int oppx(lua_State* state);
 		static int oppy(lua_State* state);
-		
+
 		// game status
 		static int getScore(lua_State* state);
 		static int getOppScore(lua_State* state);
 		static int getScoreToWin(lua_State* state);
 		static int getGameTime(lua_State* state);
-		
+
 		// predictions
 		static int estimate(lua_State* state);		// deprecated
 		static int estimx(lua_State* state);		// deprecated
 		static int estimy(lua_State* state);		// deprecated
-		
+
 		static int predictx(lua_State* state);
 		static int predicty(lua_State* state);
 		static int timetox(lua_State* state);
 		static int timetoy(lua_State* state);
 		static int xaty(lua_State* state);
 		static int yatx(lua_State* state);
-		
+
 		static int nextevent(lua_State* state);
 		static int predictImpact(lua_State* state);
 
 
 		lua_State* mState;
 		unsigned int mStartTime;
-		
+
 		// ki strength values
 		unsigned int mMaxDelay;
 		unsigned int mCurDelay;
-		
+
 		// which functions are available
 		bool mOnBounce;
-		
+
 		// ball position and velocity in adapted coordinate system
 		boost::circular_buffer<Vector2> mBallPositions;
 		boost::circular_buffer<Vector2> mBallVelocities;
-		
+
 		float mLastBallSpeed;
 		float mLastBallSpeedVirtual;
-		
+
 		PlayerSide mSide;
-		
+
 		// input data
 		bool mLeft, mRight, mJump;
 };
