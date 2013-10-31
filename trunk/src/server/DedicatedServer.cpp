@@ -42,9 +42,12 @@ extern int SWLS_GameSteps;
 
 void syslog(int pri, const char* format, ...);
 
-DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients) : mConnectedClients(0), mServerInfo(info),
-																											mRulesFile(rulefile), mServer( new RakServer() ),
-																											mAcceptNewPlayers(true)
+DedicatedServer::DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients)
+: mConnectedClients(0)
+, mServer(new RakServer())
+, mRulesFile(rulefile)
+, mAcceptNewPlayers(true)
+, mServerInfo(info)
 {
 
 	if (!mServer->Start(max_clients, 1, mServerInfo.port))

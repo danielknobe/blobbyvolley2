@@ -83,7 +83,7 @@ void FileWrite::write(const char* data, std::size_t length)
 {	
 	check_file_open();
 	
-	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(mHandle), data, 1, length) != length ) 
+	if( PHYSFS_write(reinterpret_cast<PHYSFS_file*>(mHandle), data, 1, length) != (PHYSFS_sint64)length ) 
 	{
 		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}

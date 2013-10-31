@@ -41,12 +41,15 @@ const float BLOBBY_ANIMATION_SPEED = 0.5;
 
 inline void set_fpu_single_precision();
 
-PhysicWorld::PhysicWorld() : mLastHitIntensity(0), mBallRotation(0),
-								mBallPosition( Vector2(200, STANDARD_BALL_HEIGHT) ) ,
-								mBallAngularVelocity(STANDARD_BALL_ANGULAR_VELOCITY)
+PhysicWorld::PhysicWorld()
+: mBallPosition(Vector2(200, STANDARD_BALL_HEIGHT))
+, mBallRotation(0)
+, mBallAngularVelocity(STANDARD_BALL_ANGULAR_VELOCITY)
+, mLastHitIntensity(0)
 {
 	mCurrentBlobbyAnimationSpeed[LEFT_PLAYER] = 0.0;
 	mCurrentBlobbyAnimationSpeed[RIGHT_PLAYER] = 0.0;
+
 	mBlobState[LEFT_PLAYER] = 0.0;
 	mBlobState[RIGHT_PLAYER] = 0.0;
 
