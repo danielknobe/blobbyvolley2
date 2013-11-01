@@ -49,10 +49,19 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		NetworkPlayer(PlayerID id, RakNet::BitStream stream);
 
 		bool valid() const;
+
+		// gets network ID of this player
 		const PlayerID& getID() const;
+		// gets name of this player
 		const std::string& getName() const;
+		// gets colour of this player
 		Color getColor() const;
+		// gets side this player wants to play on
 		PlayerSide getDesiredSide() const;
+		// gets the complete player identity
+		PlayerIdentity getIdentity() const;
+
+		// get game the player currently is in
 		const boost::shared_ptr<NetworkGame>& getGame() const;
 
 		void setGame(boost::shared_ptr<NetworkGame>);

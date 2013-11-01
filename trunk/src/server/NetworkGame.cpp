@@ -39,38 +39,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
+#include "NetworkPlayer.h"
 
 
 /* implementation */
 
-NetworkGame::NetworkGame(RakServer& server,
-			PlayerID leftPlayer, PlayerID rightPlayer,
-			std::string leftPlayerName, std::string rightPlayerName,
-			Color leftColor, Color rightColor,
+NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> leftPlayer, boost::shared_ptr<NetworkPlayer> rightPlayer,
 			PlayerSide switchedSide, std::string rules)
 	: 	mServer(server),
 		mLeftInput (new InputSource()),
 		mRightInput(new InputSource()),
-		mGameValid(true)
-
+		mGameValid(true),
+		mMatch(new DuelMatch(false, rules)),
+		mRecorder(new ReplayRecorder()),
+		mWinningPlayer(NO_PLAYER),
+		mPausing(false)
 {
-	mMatch = new DuelMatch(false, rules);
-	mMatch->setPlayers( PlayerIdentity(leftPlayerName), PlayerIdentity(rightPlayerName) );
-	mMatch->getPlayer(LEFT_PLAYER).setStaticColor(leftColor);
-	mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(rightColor);
+
+	mMatch->setPlayers( leftPlayer->getIdentity(), rightPlayer->getIdentity() );
 	mMatch->setInputSources(mLeftInput, mRightInput);
 
-	mLeftPlayer = leftPlayer;
-	mRightPlayer = rightPlayer;
+	mLeftPlayer = leftPlayer->getID();
+	mRightPlayer = rightPlayer->getID();
 	mSwitchedSide = switchedSide;
 
-	mWinningPlayer = NO_PLAYER;
-
-	mPausing = false;
-
-	mRecorder.reset(new ReplayRecorder());
-	mRecorder->setPlayerNames(leftPlayerName.c_str(), rightPlayerName.c_str());
-	mRecorder->setPlayerColors(leftColor, rightColor);
+	mRecorder->setPlayerNames(leftPlayer->getName(), rightPlayer->getName());
+	mRecorder->setPlayerColors(leftPlayer->getColor(), rightPlayer->getColor());
 	mRecorder->setGameSpeed(SpeedController::getMainInstance()->getGameSpeed());
 
 	// read rulesfile into a string
@@ -100,7 +94,6 @@ NetworkGame::NetworkGame(RakServer& server,
 
 NetworkGame::~NetworkGame()
 {
-	delete mMatch;
 }
 
 void NetworkGame::injectPacket(const packet_ptr& packet)
@@ -108,7 +101,7 @@ void NetworkGame::injectPacket(const packet_ptr& packet)
 	mPacketQueue.push_back(packet);
 }
 
-void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream)
+void NetworkGame::broadcastBitstream(const RakNet::BitStream* stream, const RakNet::BitStream* switchedstream)
 {
 	// checks that stream and switchedstream don't have the same content.
 	// this is a common mistake that arises from constructs like:
@@ -126,25 +119,18 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStrea
 
 	assert( stream != switchedstream );
 	assert( stream->GetData() != switchedstream->GetData() );
+	const RakNet::BitStream* leftStream = mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
+	const RakNet::BitStream* rightStream = mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
 
-	RakNet::BitStream* leftStream =
-		mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
-	RakNet::BitStream* rightStream =
-		mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
-
-	mServer.Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mLeftPlayer, false);
-	mServer.Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mRightPlayer, false);
+	mServer.Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+	mServer.Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
 }
 
-void NetworkGame::broadcastBitstream(RakNet::BitStream* stream)
+void NetworkGame::broadcastBitstream(const RakNet::BitStream* stream)
 {
 
-	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mLeftPlayer, false);
-	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-                        mRightPlayer, false);
+	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
 }
 
 void NetworkGame::processPackets()

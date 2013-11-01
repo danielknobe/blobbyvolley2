@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class RakServer;
 class ReplayRecorder;
+class NetworkPlayer;
 
 typedef std::list<packet_ptr> PacketQueue;
 
@@ -47,12 +48,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		// The IDs are assumed to be on the same side as they are named.
 		// If both players want to be on the same side, switchedSide
 		// decides which player is switched.
-		NetworkGame(RakServer& server,
-				PlayerID leftPlayer, PlayerID rightPlayer,
-				std::string leftPlayerName, std::string rightPlayerName,
-				Color leftColor, Color rightColor,
-				PlayerSide switchedSide,
-				std::string rules);
+		NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> leftPlayer, boost::shared_ptr<NetworkPlayer> rightPlayer,
+					PlayerSide switchedSide, std::string rules);
 
 		~NetworkGame();
 
@@ -70,8 +67,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		void processPackets();
 
 	private:
-		void broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream);
-		void broadcastBitstream(RakNet::BitStream* stream);
+		void broadcastBitstream(const RakNet::BitStream* stream, const RakNet::BitStream* switchedstream);
+		void broadcastBitstream(const RakNet::BitStream* stream);
 		void broadcastPhysicState();
 		bool isGameStarted() { return mRulesSent[LEFT_PLAYER] && mRulesSent[RIGHT_PLAYER]; }
 
@@ -82,7 +79,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 
 		PacketQueue mPacketQueue;
 
-		DuelMatch* mMatch;
+		boost::scoped_ptr<DuelMatch> mMatch;
 		boost::shared_ptr<InputSource> mLeftInput;
 		boost::shared_ptr<InputSource> mRightInput;
 		PlayerSide mWinningPlayer;
