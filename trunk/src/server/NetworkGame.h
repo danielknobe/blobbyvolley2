@@ -58,11 +58,16 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 
 		void injectPacket(const packet_ptr& packet);
 
+		/// It returns whether both clients are still connected.
+		bool isGameValid() const;
+
 		// This function processes the queued network packets,
 		// makes a physic step, checks the rules and broadcasts
 		// the current state and outstanding messages to the clients.
-		// It returns whether there are still clients connected.
-		bool step();
+		void step();
+
+		/// This function processes all queued network packets.
+		void processPackets();
 
 	private:
 		void broadcastBitstream(RakNet::BitStream* stream, RakNet::BitStream* switchedstream);
@@ -85,6 +90,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
 
 		bool mPausing;
+		bool mGameValid;
 
 		float mGameSpeed;
 		SpeedController* mGameFPSController;

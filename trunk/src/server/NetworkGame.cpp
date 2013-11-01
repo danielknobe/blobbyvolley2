@@ -50,7 +50,8 @@ NetworkGame::NetworkGame(RakServer& server,
 			PlayerSide switchedSide, std::string rules)
 	: 	mServer(server),
 		mLeftInput (new InputSource()),
-		mRightInput(new InputSource())
+		mRightInput(new InputSource()),
+		mGameValid(true)
 
 {
 	mMatch = new DuelMatch(false, rules);
@@ -146,10 +147,8 @@ void NetworkGame::broadcastBitstream(RakNet::BitStream* stream)
                         mRightPlayer, false);
 }
 
-bool NetworkGame::step()
+void NetworkGame::processPackets()
 {
-	bool active = true;
-
 	while (!mPacketQueue.empty())
 	{
 		packet_ptr packet = mPacketQueue.front();
@@ -165,7 +164,7 @@ bool NetworkGame::step()
 				broadcastBitstream(&stream);
 				mPausing = true;
 				mMatch->pause();
-				active = false;
+				mGameValid = false;
 				break;
 			}
 
@@ -308,9 +307,18 @@ bool NetworkGame::step()
 				break;
 		}
 	}
+}
 
+bool NetworkGame::isGameValid() const
+{
+	return mGameValid;
+}
+
+
+void NetworkGame::step()
+{
 	if (!isGameStarted())
-		return active;
+		return;
 
 	// don't record the pauses
 	if(!mMatch->isPaused())
@@ -412,7 +420,6 @@ bool NetworkGame::step()
 			mMatch->pause();
 			mRecorder->record(mMatch->getState());
 			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
-			return active;
 		}
 	}
 
@@ -440,8 +447,6 @@ bool NetworkGame::step()
 	{
 		broadcastPhysicState();
 	}
-
-	return active;
 }
 
 void NetworkGame::broadcastPhysicState()
