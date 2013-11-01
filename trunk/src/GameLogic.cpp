@@ -509,6 +509,7 @@ class LuaGameLogic : public FallbackGameLogic
 		static int luaGetOpponent(lua_State* state);
 		static int luaGetServingPlayer(lua_State* state);
 		static int luaGetGameTime(lua_State* state);
+		static int luaIsGameRunning(lua_State* state);
 
 		// lua state
 		lua_State* mState;
@@ -550,6 +551,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_register(mState, "opponent", luaGetOpponent);
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
 	lua_register(mState, "time", luaGetGameTime);
+	lua_register(mState, "isgamerunning", luaIsGameRunning);
 
 
 	// set game constants
@@ -676,6 +678,10 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 	ret.up = lua_toboolean(mState, -1);
 	ret.right = lua_toboolean(mState, -2);
 	ret.left = lua_toboolean(mState, -3);
+
+	// cleanup stack
+	lua_pop(mState, lua_gettop(mState));
+
 	return ret;
 }
 
@@ -940,6 +946,13 @@ int LuaGameLogic::luaGetGameTime(lua_State* state)
 {
 	LuaGameLogic* gl = getGameLogic(state);
 	lua_pushnumber(state, gl->getClock().getTime());
+	return 1;
+}
+
+int LuaGameLogic::luaIsGameRunning(lua_State* state)
+{
+	LuaGameLogic* gl = getGameLogic(state);
+	lua_pushboolean(state, gl->isGameRunning());
 	return 1;
 }
 
