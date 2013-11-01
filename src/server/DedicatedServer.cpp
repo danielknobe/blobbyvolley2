@@ -416,8 +416,7 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<Net
 			switchSide = LEFT_PLAYER;
 	}
 
-	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer->getID(), rightPlayer->getID(), leftPlayer->getName(), rightPlayer->getName(),
-													leftPlayer->getColor(), rightPlayer->getColor(), switchSide, mRulesFile);
+	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer, rightPlayer, switchSide, mRulesFile);
 
 	SWLS_Games++;
 

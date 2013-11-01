@@ -82,6 +82,11 @@ PlayerSide NetworkPlayer::getDesiredSide() const
 	return mIdentity.getPreferredSide();
 }
 
+PlayerIdentity NetworkPlayer::getIdentity() const
+{
+	return mIdentity;
+}
+
 const boost::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
 {
 	return mGame;
