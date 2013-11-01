@@ -258,10 +258,24 @@ void DedicatedServer::processPackets()
 
 void DedicatedServer::updateGames()
 {
+	// make sure all ingame packets are processed.
+
+	/// \todo we iterate over all games twice! We should find a way to organize things better.
+	for(auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+	{
+		auto game = it->second->getGame();
+		if(game)
+		{
+			game->processPackets();
+		}
+	}
+
 	for (auto iter = mGameList.begin(); iter != mGameList.end(); ++iter )
 	{
 		SWLS_GameSteps++;
-		if (!(*iter)->step())
+
+		(*iter)->step();
+		if (!(*iter)->isGameValid())
 		{
 			iter = mGameList.erase(iter);
 			// workarround to prevent increment of
@@ -270,6 +284,8 @@ void DedicatedServer::updateGames()
 				break;
 		}
 	}
+
+
 }
 
 void DedicatedServer::updateLobby()
@@ -408,10 +424,7 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<Net
 	first->setGame( newgame );
 	second->setGame( newgame );
 
-	#ifdef DEBUG
-	std::cout 	<< "NEW GAME CREATED:\t"<<leftPlayer.getID().binaryAddress << " : " << leftPlayer.getID().port << "\n"
-				<< "\t\t\t" << rightPlayer.getID().binaryAddress << " : " << rightPlayer.getID().port << "\n";
-	#endif
+	/// \todo add some logging?
 
 	return newgame;
 }
