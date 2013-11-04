@@ -279,17 +279,19 @@ SDL_Joystick* JoystickPool::getJoystick(int id)
 	return joy;
 }
 
-int JoystickPool::probeJoysticks()
+void JoystickPool::probeJoysticks()
 {
-	int id = 0;
+	int numJoysticks = SDL_NumJoysticks();
 	SDL_Joystick* lastjoy;
-	while ((lastjoy = SDL_JoystickOpen(id)))
+	for(int i = 0; i < numJoysticks; i++)
 	{
-		mJoyMap[id] = lastjoy;
-		id++;
-	}
+		lastjoy = SDL_JoystickOpen(i);
+		
+		if (lastjoy == NULL)
+			continue;
 
-	return id;
+		mJoyMap[SDL_JoystickInstanceID(lastjoy)] = lastjoy;
+	}
 }
 
 void JoystickPool::closeJoysticks()
