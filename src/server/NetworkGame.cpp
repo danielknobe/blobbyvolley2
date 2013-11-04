@@ -266,7 +266,7 @@ void NetworkGame::processPackets()
 					RakNet::BitStream leftStream;
 					leftStream.Write((unsigned char)ID_GAME_READY);
 					leftStream.Write((int)SpeedController::getMainInstance()->getGameSpeed());
-					strncpy(name, mMatch->getPlayer(LEFT_PLAYER).getName().c_str(), sizeof(name));
+					strncpy(name, mMatch->getPlayer(RIGHT_PLAYER).getName().c_str(), sizeof(name));
 					leftStream.Write(name, sizeof(name));
 					leftStream.Write(mMatch->getPlayer(RIGHT_PLAYER).getStaticColor().toInt());
 
@@ -278,10 +278,8 @@ void NetworkGame::processPackets()
 					rightStream.Write(name, sizeof(name));
 					rightStream.Write(mMatch->getPlayer(LEFT_PLAYER).getStaticColor().toInt());
 
-					mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-						     mLeftPlayer, false);
-					mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
-						     mRightPlayer, false);
+					mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+					mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
 				}
 
 				break;
