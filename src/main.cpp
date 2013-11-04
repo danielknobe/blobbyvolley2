@@ -72,7 +72,7 @@ void setupPHYSFS()
 	// Game should be playable out of the source package on all
 	// platforms
 	std::string baseSearchPath("data" + separator);
-	#ifdef __ANDROID__	
+	#ifdef __ANDROID__
 		baseSearchPath = SDL_AndroidGetExternalStoragePath() + separator;
 	#endif
 
@@ -86,7 +86,7 @@ void setupPHYSFS()
 	#if defined(WIN32)
 		// Just write in installation directory
 		fs.setWriteDir("data");
-	
+
 		// handle the case when it is installed
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
@@ -149,10 +149,17 @@ int SDL_main(int argc, char* argv[])
 int main(int argc, char* argv[])
 #endif
 {
+	DEBUG_STATUS("started main");
+
 	FileSystem filesys(argv[0]);
 	setupPHYSFS();
 
+	DEBUG_STATUS("physfs initialised");
+
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+
+	DEBUG_STATUS("SDL initialised");
+
 	atexit(SDL_Quit);
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
@@ -167,10 +174,10 @@ int main(int argc, char* argv[])
 	time_t time = std::time(0);
 	ptm = gmtime ( &time );
 
-	if( ptm->tm_year > (2012-1900) || ptm->tm_mon >= 4 ) {
+	if( ptm->tm_year > (2013-1900) || ptm->tm_mon >= 12 ) {
 		#ifdef WIN32
 		MessageBox(0, (std::string("This is a test version of ") + AppTitle + " which expired on "
-									"1.5.2012. Please visit blobby.sourceforge.net for a newer version").c_str(),
+									"1.12.2013. Please visit blobby.sourceforge.net for a newer version").c_str(),
 					"TEST VERISON OUTDATED",
 					MB_OK);
 		#endif
@@ -180,7 +187,7 @@ int main(int argc, char* argv[])
 	#ifdef WIN32
 	MessageBox(0, (std::string("This is a test version of ") + AppTitle + " for testing only.\n"
 								"It might be unstable and/or incompatible to the current release. "
-								"Use of this version is limited to 1.5.2012.\nUntil then, "
+								"Use of this version is limited to 1.12.2013.\nUntil then, "
 								"the final version will most likely be released and you should update to that one.\n"
 								"Visit blobby.sourceforge.net for more information or bug reporting.").c_str(),
 				"TEST VERISON WARNING",
@@ -239,6 +246,9 @@ int main(int argc, char* argv[])
 
 		InputManager* inputmgr = InputManager::createInputManager();
 		int running = 1;
+
+		DEBUG_STATUS("starting mainloop");
+
 		while (running)
 		{
 			inputmgr->updateInput();
@@ -263,7 +273,7 @@ int main(int argc, char* argv[])
 					rmanager->setTitle(tmp.str());
 				}
 				lastfps = newfps;
-			} 
+			}
 			// Dirty workarround for hiding fps in title
 			if (!scontroller.getDrawFPS() && (lastfps != -1))
 			{

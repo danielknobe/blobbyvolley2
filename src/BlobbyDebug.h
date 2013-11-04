@@ -36,7 +36,7 @@ int uncount(const std::type_info& type, std::string tag, int num);
 /*! \class ObjectCounter
 	\brief Logging number of creations and living objects
 	\details To use this class for logging creations of a class TYPE, just derive it
-			from ObjectCounter<TYPE>. A full memory report can be written to a stream 
+			from ObjectCounter<TYPE>. A full memory report can be written to a stream
 			by the record function.
 	\todo more specific reporting, watches, etc.
 */
@@ -44,21 +44,21 @@ template<class Base>
 class ObjectCounter
 {
 	public:
-		ObjectCounter() 
+		ObjectCounter()
 		{
 			count(typeid(Base));
 		};
-		
-		~ObjectCounter() 
+
+		~ObjectCounter()
 		{
 			uncount(typeid(Base));
 		};
-		
+
 		ObjectCounter(const ObjectCounter& other)
 		{
 			count(typeid(Base));
 		}
-		
+
 		ObjectCounter& operator=(const ObjectCounter& other)
 		{
 			return *this;
@@ -73,9 +73,9 @@ struct CountingReport
 {
 	CountingReport() : alive(0), created(0)
 	{
-		
+
 	}
-	
+
 	int alive;
 	int created;
 };
@@ -92,37 +92,37 @@ struct CountingAllocator : private std::allocator<T>
 	typedef const T& const_reference;
 	typedef size_t size_type;
 	typedef ptrdiff_t difference_type ;
-	
+
 	CountingAllocator()
 	{
-		
+
 	}
-	
+
 	template<class V, typename tag2>
 	CountingAllocator(const CountingAllocator<V, tag2>& other)
 	{
 	}
-	
+
 	template<typename _Tp1>
 	struct rebind
-	{ 
-		typedef CountingAllocator<_Tp1, tag_type> other; 
+	{
+		typedef CountingAllocator<_Tp1, tag_type> other;
 	};
-	
-	
-	
+
+
+
 	pointer allocate (size_type n, std::allocator<void>::const_pointer hint = 0)
 	{
 		count(typeid(T), tag_type::tag(), n);
 		return Base::allocate(n, hint);
 	}
-	
+
 	void deallocate (pointer p, size_type n)
 	{
 		uncount(typeid(T), tag_type::tag(), n);
 		Base::deallocate(p, n);
 	}
-	
+
 	using Base::address;
 	using Base::max_size;
 	using Base::construct;
@@ -136,25 +136,25 @@ int uncount(const std::type_info& type, std::string tag, void* address);
 
 template<class T, typename tag_type>
 struct CountingMalloc
-{	
+{
 	typedef T* pointer;
 	typedef T& reference;
 	typedef size_t size_type;
-	
+
 	static pointer malloc (size_type n)
 	{
 		pointer nm = static_cast<pointer> ( ::malloc(n) );
 		count(typeid(T), tag_type::tag(), nm, n);
 		return nm;
 	}
-	
+
 	static void free (pointer& p)
 	{
 		uncount(typeid(T), tag_type::tag(), p);
 		::free(p);
 		p = 0;
 	}
-	
+
 	static pointer realloc ( pointer ptr, size_t size )
 	{
 		uncount(typeid(T), tag_type::tag(), ptr);
@@ -176,3 +176,19 @@ typedef std::basic_string< char, std::char_traits<char>, CountingAllocator<char,
 void debug_count_execution_fkt(std::string file, int line);
 
 #define DEBUG_COUNT_EXECUTION debug_count_execution_fkt(__FILE__, __LINE__);
+
+
+
+#ifdef DEBUG
+
+#define DEBUG_STATUS(x) std::cout << x << std::endl;
+
+#else
+
+#define DEBUG_STATUS(x)
+
+#endif // DEBUG
+
+
+
+
