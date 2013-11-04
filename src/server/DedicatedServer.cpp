@@ -273,7 +273,7 @@ void DedicatedServer::updateGames()
 		}
 	}
 
-	for (auto iter = mGameList.begin(); iter != mGameList.end(); ++iter )
+	for (auto iter = mGameList.begin(); iter != mGameList.end();  )
 	{
 		SWLS_GameSteps++;
 
@@ -281,10 +281,10 @@ void DedicatedServer::updateGames()
 		if (!(*iter)->isGameValid())
 		{
 			iter = mGameList.erase(iter);
-			// workarround to prevent increment of
-			// past-end-iterator
-			if(iter == mGameList.end())
-				break;
+		}
+		 else
+		{
+			++iter;
 		}
 	}
 }
