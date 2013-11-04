@@ -35,7 +35,7 @@ class JoystickPool : public ObjectCounter<JoystickPool>
 
 		SDL_Joystick* getJoystick(int id);
 
-		int probeJoysticks();
+		void probeJoysticks();
 		void closeJoysticks();
 
 	private:
