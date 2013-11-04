@@ -66,6 +66,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mOwnSide = (PlayerSide)config.getInteger("network_side");
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
+	mLocalInput->setMatch(mFakeMatch.get());
 	mSaveReplay = false;
 	mWaitingForReplay = false;
 	mErrorMessage = "";
