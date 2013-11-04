@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DedicatedServer.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include <boost/make_shared.hpp>
 
@@ -32,7 +33,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 
 #ifndef WIN32
+#ifndef __ANDROID__
 #include <sys/syslog.h>
+#endif
 #endif
 
 extern int SWLS_PacketCount;
