@@ -103,7 +103,6 @@ class RenderManagerGL2D : public RenderManager
 		std::vector<Texture> mFont;
 		std::vector<Texture> mHighlightFont;
 		GLuint mParticle;
-		GLuint mScroll;
 
 		std::list<Vector2> mLastBallStates;
 

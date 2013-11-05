@@ -45,8 +45,8 @@ private:
 	boost::scoped_ptr<DuelMatch> mReplayMatch;
 	boost::scoped_ptr<ReplayPlayer> mReplayPlayer;
 
-	bool mChecksumError;
-	bool mVersionError;
+	//bool mChecksumError;
+	//bool mVersionError;
 	
 	Vector2 mLastMousePosition;
 	int mMouseShowTimer;

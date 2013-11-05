@@ -82,15 +82,11 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		boost::scoped_ptr<DuelMatch> mMatch;
 		boost::shared_ptr<InputSource> mLeftInput;
 		boost::shared_ptr<InputSource> mRightInput;
-		PlayerSide mWinningPlayer;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
 
 		bool mPausing;
 		bool mGameValid;
-
-		float mGameSpeed;
-		SpeedController* mGameFPSController;
 
 		bool mRulesSent[MAX_PLAYERS];
 		int mRulesLength;

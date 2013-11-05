@@ -97,7 +97,6 @@ class RenderManagerSDL : public RenderManager
 		std::vector<SDL_Texture*> mHighlightFont;
 
 		SDL_Texture *mOverlayTexture;
-		SDL_Surface *mScreen;
 
 		SDL_Renderer* mRenderer;
 
