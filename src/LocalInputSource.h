@@ -34,7 +34,6 @@ class LocalInputSource : public InputSource
 		virtual PlayerInput getNextInput();
 		
 	private:
-		PlayerSide mPlayer;
 		InputDevice* mInputDevice;
 };
 

@@ -46,14 +46,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> leftPlayer, boost::shared_ptr<NetworkPlayer> rightPlayer,
 			PlayerSide switchedSide, std::string rules)
-	: 	mServer(server),
-		mLeftInput (new InputSource()),
-		mRightInput(new InputSource()),
-		mGameValid(true),
-		mMatch(new DuelMatch(false, rules)),
-		mRecorder(new ReplayRecorder()),
-		mWinningPlayer(NO_PLAYER),
-		mPausing(false)
+: mServer(server)
+, mMatch(new DuelMatch(false, rules))
+, mLeftInput (new InputSource())
+, mRightInput(new InputSource())
+, mRecorder(new ReplayRecorder())
+, mPausing(false)
+, mGameValid(true)
 {
 
 	mMatch->setPlayers( leftPlayer->getIdentity(), rightPlayer->getIdentity() );

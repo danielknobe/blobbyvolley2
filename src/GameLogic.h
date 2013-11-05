@@ -37,7 +37,7 @@ typedef std::auto_ptr<IGameLogic> GameLogic;
 
 class GameLogicState;
 class DuelMatch;
-class PlayerInput;
+struct PlayerInput;
 
 /// \class IGameLogic
 /// \brief Interface for managing game rules, score counting etc.

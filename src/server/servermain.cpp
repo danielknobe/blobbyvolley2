@@ -197,7 +197,7 @@ void printHelp()
 {
 	std::cout << "Usage: blobby-server [OPTION...]" << std::endl;
 	std::cout << "  -m, --memleak-hack        Workaround memory leaks by restarting regularly" << std::endl;
-	std::cout << "  -n, --no-daemon           Don´t run as background process" << std::endl;
+	std::cout << "  -n, --no-daemon           Don't run as background process" << std::endl;
 	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
 	std::cout << "  -c, --config-file <path>  Use custom config file instead of server.xml" << std::endl;
 	std::cout << "  -r, --rules-file <path>   Use custom rules file" << std::endl;
