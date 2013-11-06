@@ -135,13 +135,14 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(660.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
 											 	(f > 0.33 ? TextManager::OP_MEDIUM:
 												TextManager::OP_WEAK));
-
+#ifndef __ANDROID__
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
 	{
 		save();
 		deleteCurrentState();
 		setCurrentState(new InputOptionsState());
 	}
+#endif
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
 	{
 		save();
@@ -236,7 +237,7 @@ void GraphicOptionsState::step()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-
+#ifndef __ANDROID__
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_VIDEO);
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 40.0), TextManager::OP_FULLSCREEN))
@@ -257,37 +258,66 @@ void GraphicOptionsState::step()
 		imgui.doImage(GEN_ID, Vector2(428.0, 52.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(428.0, 82.0), "gfx/pfeil_rechts.bmp");
+#endif
 
-	imgui.doText(GEN_ID, Vector2(34.0, 110.0), TextManager::OP_SHOW_SHADOW);
-	if (imgui.doButton(GEN_ID, Vector2(72.0, 140), TextManager::LBL_YES))
+	float heightOfElement = 110.0;
+
+#ifdef __ANDROID__
+	heightOfElement = 10.0;
+#endif
+
+	imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_SHOW_SHADOW);
+	heightOfElement += 30;
+	if (imgui.doButton(GEN_ID, Vector2(72.0, heightOfElement), TextManager::LBL_YES))
 		mShowShadow = true;
-	if (imgui.doButton(GEN_ID, Vector2(220.0, 140), TextManager::LBL_NO))
+	if (imgui.doButton(GEN_ID, Vector2(220.0, heightOfElement), TextManager::LBL_NO))
 		mShowShadow = false;
 	if (mShowShadow)
-		imgui.doImage(GEN_ID, Vector2(54.0, 152.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(54.0, heightOfElement + 13.0), "gfx/pfeil_rechts.bmp");
 	else
-		imgui.doImage(GEN_ID, Vector2(204.0, 152.0), "gfx/pfeil_rechts.bmp");
+		imgui.doImage(GEN_ID, Vector2(204.0, heightOfElement + 13.0), "gfx/pfeil_rechts.bmp");
 
+#ifdef __ANDROID__
+	heightOfElement = 120.0;
+#else
+	heightOfElement = 190.0;
+#endif
 	//Blob colors:
-	imgui.doText(GEN_ID, Vector2(280.0, 190.0), TextManager::OP_BLOB_COLORS);
+	imgui.doText(GEN_ID, Vector2(280.0, heightOfElement), TextManager::OP_BLOB_COLORS);
+	heightOfElement += 40.0;
 	//left blob:
-	imgui.doText(GEN_ID, Vector2(34.0, 230.0), TextManager::OP_LEFT_PLAYER);
+	imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_LEFT_PLAYER);
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 260), TextManager::OP_RED);
+		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_RED);
 		float r1 = (float)mR1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 260.0), r1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, heightOfElement), r1);
 		mR1 = (int)(r1*255);
 	}
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 290), TextManager::OP_GREEN);
+		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_GREEN);
 		float g1 = (float)mG1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 290.0), g1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, heightOfElement), g1);
 		mG1 = (int)(g1*255);
 	}
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 320), TextManager::OP_BLUE);
+		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_BLUE);
 		float b1 = (float)mB1/255;
-		imgui.doScrollbar(GEN_ID, Vector2(160.0, 320), b1);
+		imgui.doScrollbar(GEN_ID, Vector2(160.0, heightOfElement), b1);
 		mB1 = (int)(b1*255);
 	}
 	imgui.doText(GEN_ID, Vector2(34.0, 360), TextManager::OP_MORPHING);
@@ -311,23 +341,43 @@ void GraphicOptionsState::step()
 	}
 
 	//right blob:
-	imgui.doText(GEN_ID, Vector2(434.0, 230.0), TextManager::OP_RIGHT_PLAYER);
+#ifdef __ANDROID__
+	heightOfElement = 160.0;
+#else
+	heightOfElement = 230.0;
+#endif
+	imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_RIGHT_PLAYER);
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 260), TextManager::OP_RED);
+		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_RED);
 		float r2 = (float)mR2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 260.0), r2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, heightOfElement), r2);
 		mR2 = (int)(r2*255);
 	}
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 290), TextManager::OP_GREEN);
+		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_GREEN);
 		float g2 = (float)mG2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 290.0), g2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, heightOfElement), g2);
 		mG2 = (int)(g2*255);
 	}
+#ifdef __ANDROID__
+	heightOfElement += 50.0;
+#else
+	heightOfElement += 30.0;
+#endif
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 320), TextManager::OP_BLUE);
+		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_BLUE);
 		float b2 = (float)mB2/255;
-		imgui.doScrollbar(GEN_ID, Vector2(560.0, 320), b2);
+		imgui.doScrollbar(GEN_ID, Vector2(560.0, heightOfElement), b2);
 		mB2 = (int)(b2*255);
 	}
 	imgui.doText(GEN_ID, Vector2(434.0, 360), TextManager::OP_MORPHING);
@@ -936,6 +986,7 @@ void MiscOptionsState::step()
 	{
 		imgui.doImage(GEN_ID, Vector2(513.0, 92.0), "gfx/pfeil_rechts.bmp");
 	}
+#ifndef __ANDROID__
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), TextManager::OP_FPS))
 	{
 		mShowFPS = !mShowFPS;
@@ -945,6 +996,7 @@ void MiscOptionsState::step()
 	{
 		imgui.doImage(GEN_ID, Vector2(466.0, 132.0), "gfx/pfeil_rechts.bmp");
 	}
+#endif
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), TextManager::OP_BLOOD))
 	{
 		mShowBlood = !mShowBlood;
