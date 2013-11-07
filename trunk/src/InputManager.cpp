@@ -200,6 +200,9 @@ void InputManager::updateInput()
 			case SDL_TEXTINPUT:
 				mLastTextKey = std::string(event.text.text);
 				break;
+			// Workarround because SDL has a bug in Version 2.0.1,
+			// so that we can't use mouse here
+#ifndef __ANDROID__
 			case SDL_MOUSEBUTTONDOWN:
 				mLastMouseButton = event.button.button;
 				switch (event.button.button)
@@ -216,6 +219,18 @@ void InputManager::updateInput()
 						break;
 				}
 				break;
+#else
+			case SDL_FINGERDOWN:
+				mClick = true;
+
+				if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
+				{
+						mDoubleClick = true;
+				}
+
+				mLastClickTime = SDL_GetTicks();
+				break;
+#endif
 
 			case SDL_MOUSEWHEEL:
 				if (event.wheel.y < 0) {
@@ -326,7 +341,24 @@ bool InputManager::exit() const
 
 Vector2 InputManager::position()
 {
+	// Workarround because SDL has a bug in Version 2.0.1,
+	// so that we can't use mouse here
+#ifndef __ANDROID__
 	SDL_GetMouseState(&mMouseX,&mMouseY);
+#else
+	SDL_TouchID device = SDL_GetTouchDevice(0);
+
+	for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
+	{
+		SDL_Finger *finger = SDL_GetTouchFinger(device, i);
+
+		if (finger == NULL)
+			continue;
+
+		mMouseX = finger->x * 800;
+		mMouseY = finger->y * 600;
+	}
+#endif
 	return Vector2(mMouseX,mMouseY);
 }
 
@@ -379,17 +411,6 @@ std::string InputManager::getLastTextKey()
 std::string InputManager::getLastActionKey()
 {
 	return SDL_GetKeyName(mLastActionKey);
-	/// \todo this is a hack we cannot prevent until SDL 1.3 is out
-	/*int i = 0;
-	while (mKeyMap[i].keyname != NULL)
-	{
-		if (mKeyMap[i].key == mLastInputKey.sym)
-		{
-			return mKeyMap[i].keyname;
-		}
-		++i;
-	}*/
-	//return "";
 }
 
 std::string InputManager::getLastJoyAction() const
