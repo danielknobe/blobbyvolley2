@@ -44,13 +44,19 @@
 	<string english = "scan for servers" translation = "server suchen" />
 	<string english = "direct connect" translation = "direktverbindung" />
 	<string english = "server info" translation = "serverinfo" />
-	<string english = "active games: " translation = "aktive spiele" />
 	<string english = "waiting player: " translation = "wartender spieler: " />
 	<string english = "host game" translation = "spiel hosten" />
 	<string english = "connecting to server ..." translation = "verbindungsaufbau..." />
 	<string english = "disconnected from server" translation = "verbindung unterbrochen" />
 	<string english = "connection failed" translation = "verbindungsfehler" />
 	<string english = "server full" translation = "server voll" />
+	<string english = " by " translation = " von " />
+	<string english = "challenger: " translation = "Forderer: " />
+	<string english = "games: " translation = "Spiele: " />
+	<string english = "random" translation = "beliebig" />
+	<string english = "rules: " translation = "Regeln: " />
+	<string english = "speed: " translation = "Tempo: " />
+	<string english = "stay on server" translation = "auf server bleiben" />
 
 	<string english = "input options" translation = "eingabeoptionen" />
 	<string english = "graphic options" translation = "grafikoptionen" />
@@ -104,6 +110,7 @@
 	<string english = "weak" translation = "einfach" />
 	<string english = "medium" translation = "mittel" />
 	<string english = "strong" translation = "schwer" />
+	<string english = "rules:" translation = "Regeln:" />
 	
 	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" />
 </language>
