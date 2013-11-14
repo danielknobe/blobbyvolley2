@@ -67,6 +67,8 @@ class SoundManager : public ObjectCounter<SoundManager>
 
 		static SoundManager* mSingleton;
 
+		SDL_AudioDeviceID mAudioDevice;
+
 		/// This maps filenames to sound buffers, which are always in
 		/// target format
 		std::map<std::string, Sound*> mSound;
