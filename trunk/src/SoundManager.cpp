@@ -162,21 +162,17 @@ bool SoundManager::init()
 void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 {
 	SDL_memset(stream, 0, length);
-	std::list<Sound>& playingSound =
-		((SoundManager*)singleton)->mPlayingSound;
-	int volume = int(SDL_MIX_MAXVOLUME *
-		((SoundManager*)singleton)->mVolume);
-	for (std::list<Sound>::iterator iter = playingSound.begin();
-		       iter != playingSound.end(); ++iter)
+	std::list<Sound>& playingSound = ((SoundManager*)singleton)->mPlayingSound;
+	int volume = int(SDL_MIX_MAXVOLUME * ((SoundManager*)singleton)->mVolume);
+
+	for (auto iter = playingSound.begin(); iter != playingSound.end(); ++iter)
 	{
-		int bytesLeft = iter->length
-			- iter->position;
+		int bytesLeft = iter->length - iter->position;
 		if (bytesLeft < length)
 		{
-			SDL_MixAudio(stream, iter->data + iter->position,
-				bytesLeft, int(volume * iter->volume));
-			std::list<Sound>::iterator eraseIter = iter;
-			std::list<Sound>::iterator nextIter = ++iter;
+			SDL_MixAudio(stream, iter->data + iter->position, bytesLeft, int(volume * iter->volume));
+			auto eraseIter = iter;
+			auto nextIter = ++iter;
 			playingSound.erase(eraseIter);
 			iter = nextIter;
 			// prevents increment of past-end-interator
@@ -185,8 +181,7 @@ void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 		}
 		else
 		{
-			SDL_MixAudio(stream, iter->data + iter->position,
-				length, int(volume * iter->volume));
+			SDL_MixAudioFormat(stream, iter->data + iter->position, mSingleton->mAudioSpec.format, length, int(volume * iter->volume));
 			iter->position += length;
 		}
 	}
