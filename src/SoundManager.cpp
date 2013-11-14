@@ -58,7 +58,6 @@ Sound* SoundManager::loadSound(const std::string& filename)
 		newSoundSpec.format == mAudioSpec.format &&
 		newSoundSpec.channels == mAudioSpec.channels)
 	{
-		std::cout << "HERE" << std::endl;
 		Sound *newSound = new Sound;
 		newSound->data = new Uint8[newSoundLength];
 		memcpy(newSound->data, newSoundBuffer, newSoundLength);
@@ -69,7 +68,6 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	}
 	else	// otherwise, convert audio
 	{
-		std::cout << "THERE" << std::endl;
 		SDL_AudioCVT conversionStructure;
 		if (!SDL_BuildAudioCVT(&conversionStructure,
 			newSoundSpec.format, newSoundSpec.channels, newSoundSpec.freq,
@@ -92,7 +90,6 @@ Sound* SoundManager::loadSound(const std::string& filename)
 	}
 }
 
-
 bool SoundManager::playSound(const std::string& filename, float volume)
 {
 	if (!mInitialised)
@@ -104,7 +101,6 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 		return true;
 	try
 	{
-		std::cout << "PLAY" << std::endl;
 		Sound* soundBuffer = mSound[filename];
 		if (!soundBuffer)
 		{
@@ -125,7 +121,7 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 	}
 	return true;
 }
-//
+
 bool SoundManager::init()
 {
 	SDL_AudioSpec desiredSpec;
@@ -144,7 +140,6 @@ bool SoundManager::init()
 		std::cerr << "Reason: " << SDL_GetError() << std::endl;
 	}
 
-
 	if (mAudioDevice == 0)
 	{
 		std::cerr << "Warning: Couldn't open audio Device!" << std::endl;
@@ -155,10 +150,9 @@ bool SoundManager::init()
 	SDL_PauseAudioDevice(mAudioDevice, 0);
 	mInitialised = true;
 	mVolume = 1.0;
-	std::cout << "INIT" << std::endl;
 	return true;
 }
-//?
+
 void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 {
 	SDL_memset(stream, 0, length);
@@ -186,7 +180,7 @@ void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 		}
 	}
 }
-//
+
 void SoundManager::deinit()
 {
 	for (std::map<std::string, Sound*>::iterator iter = mSound.begin();
@@ -201,6 +195,7 @@ void SoundManager::deinit()
 			delete iter->second;
 		}
 	}
+	SDL_UnlockAudioDevice(mAudioDevice);
 	SDL_CloseAudioDevice(mAudioDevice);
 	mInitialised = false;
 }
@@ -237,14 +232,14 @@ void SoundManager::setVolume(float volume)
 	volume = volume > 0.0 ? (volume < 1.0 ? volume : 1.0) : 0.0;
 	mVolume = volume;
 }
-//?
+
 void SoundManager::setMute(bool mute)
 {
 	// don't do anything if mute is set.
 	// this prevents the crash under xp when mute is set to false, as the second call to SDL_PauseAudio(false)
 	// never returns in that case.
-	//if( mute == mMute )
-	//	return;
+	if( mute == mMute )
+		return;
 
 	static bool locked = false;
 	if (mute)
