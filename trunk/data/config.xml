@@ -18,7 +18,7 @@
 	<var name="right_player_human" value="true"/>
 	<var name="left_player_name" value="Left Player"/>
 	<var name="right_player_name" value="Right Player"/>
-	<var name="gamefps" value="120"/>
+	<var name="gamefps" value="75"/>
 	<var name="global_volume" value="1.000000"/>
 	<var name="mute" value="false"/>
 	<var name="scoretowin" value="15"/>
