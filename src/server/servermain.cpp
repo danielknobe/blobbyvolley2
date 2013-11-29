@@ -85,6 +85,7 @@ int main(int argc, char** argv)
 	process_arguments(argc, argv);
 
 	FileSystem fileSys(argv[0]);
+	fileSys.addToSearchPath("data" + fileSys.getDirSeparator() + "rules.zip");
 
 	if (!g_run_in_foreground)
 	{
