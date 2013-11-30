@@ -35,7 +35,7 @@ class IGameLogic;
 /// \todo is auto_ptr the best choice here?
 typedef std::auto_ptr<IGameLogic> GameLogic;
 
-class GameLogicState;
+struct GameLogicState;
 class DuelMatch;
 struct PlayerInput;
 

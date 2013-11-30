@@ -131,8 +131,7 @@ void PhysicWorld::blobbyAnimationStep(PlayerSide player)
 
 	if (mBlobState[player] >= 4.5)
 	{
-		mCurrentBlobbyAnimationSpeed[player]
-			=- BLOBBY_ANIMATION_SPEED;
+		mCurrentBlobbyAnimationSpeed[player] = -BLOBBY_ANIMATION_SPEED;
 	}
 
 	mBlobState[player] += mCurrentBlobbyAnimationSpeed[player];
