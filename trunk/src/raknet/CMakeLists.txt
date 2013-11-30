@@ -1,7 +1,6 @@
 set (raknet_SRC
 	ArrayList.h
 	BitStream.cpp BitStream.h
-	ClientContextStruct.h
 	GetTime.cpp GetTime.h
 	InternalPacket.h
 	InternalPacketPool.cpp InternalPacketPool.h

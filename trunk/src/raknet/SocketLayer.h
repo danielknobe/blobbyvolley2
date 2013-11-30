@@ -58,7 +58,6 @@ static const SOCKET INVALID_SOCKET = -1;
 */
 #define SOCKET_ERROR -1
 #endif
-#include "ClientContextStruct.h"
 
 class RakPeer;
 
