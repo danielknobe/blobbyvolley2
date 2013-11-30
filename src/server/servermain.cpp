@@ -137,8 +137,6 @@ int main(int argc, char** argv)
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MAJOR, BLOBBY_VERSION_MINOR);
 
-	packet_ptr packet;
-
 	while (1)
 	{
 		// -------------------------------------------------------------------------------

@@ -297,8 +297,8 @@ void NetworkSearchState::step()
 					  << mScannedServers[mSelectedServer].waitingplayers;
 		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
 		std::stringstream gamespeed;
-		gamespeed << TextManager::getSingleton()->getString(TextManager::OP_SPEED)<<" "
-					  << int(100.0 / 75.0 * mScannedServers[mSelectedServer].gamespeed)<<"%";
+		gamespeed << TextManager::getSingleton()->getString(TextManager::OP_SPEED) << " "
+					  << int(100.0 / 75.0 * mScannedServers[mSelectedServer].gamespeed) << "%";
 		imgui.doText(GEN_ID, Vector2(50, 220), gamespeed.str());
 		std::string description = mScannedServers[mSelectedServer].description;
 		for (unsigned int i = 0; i < description.length(); i += 29)

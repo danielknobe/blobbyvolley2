@@ -1,8 +1,8 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief Client Context Internal Structure 
- * @note Windows Port Only 
+ * @file
+ * @brief Client Context Internal Structure
+ * @note Windows Port Only
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
