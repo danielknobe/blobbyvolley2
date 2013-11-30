@@ -1641,7 +1641,6 @@ bool RakPeer::RunUpdateCycle( void )
 	int ping, lastPing;
 	// int currentSentBytes,currentReceivedBytes;
 //	unsigned numberOfBytesUsed;
-	unsigned numberOfBitsUsed;
 	//PlayerID authoritativeClientPlayerId;
 	int bitSize, byteSize;
 	char *data;
