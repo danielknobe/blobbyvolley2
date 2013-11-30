@@ -42,6 +42,7 @@
 #include "InternalPacket.h"
 #include "InternalPacketPool.h"
 #include "RakNetStatistics.h"
+#include "NetworkTypes.h"
 
 #include "../blobnet/adt/Queue.hpp"
 
