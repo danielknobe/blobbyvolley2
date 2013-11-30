@@ -1,7 +1,7 @@
 /* -*- mode: c++; c-file-style: raknet; tab-always-indent: nil; -*- */
 /**
- * @file 
- * @brief 
+ * @file
+ * @brief
  *
  * Copyright (c) 2003, Rakkarsoft LLC and Kevin Jenkins
  * All rights reserved.
@@ -54,12 +54,11 @@ PacketPool::~PacketPool()
 
 void PacketPool::ClearPool( void )
 {
-	Packet * p;
 	poolMutex.Lock();
 
 	while ( !pool.empty() )
 	{
-		p = pool.top();
+		Packet* p = pool.top();
 		pool.pop();
 		delete [] p->data;
 		delete p;

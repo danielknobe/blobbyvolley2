@@ -43,7 +43,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // The time the bot waits after game start
 const int WAITING_TIME = 1500;
 
-class lua_State;
+struct lua_State;
 class DuelMatch;
 
 class ScriptedInputSource : public InputSource

@@ -152,7 +152,6 @@ void Http::readBody(int inOutSocket, std::stringstream& response, int contentSiz
 {
 	// Parser variables
 	int counter = 0;
-	State state = something;
 
 	// Read body
 	for(char c; recv(inOutSocket, &c, 1, 0) > 0; response << c)
@@ -171,9 +170,6 @@ int Http::getContentSize(std::stringstream& response)
 	// Parser variables
 	std::string token;
 	State state = something;
-
-	// Data variables
-	int contentSize = -1;
 
 	// Parser
 	while(response >> token)

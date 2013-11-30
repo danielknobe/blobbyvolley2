@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 struct PlayerInput;
 struct Color;
 struct DuelMatchState;
-class PlayerID;
+struct PlayerID;
 
 namespace detail
 {

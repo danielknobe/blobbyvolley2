@@ -144,7 +144,6 @@ packet_ptr RakClient::Receive( void )
 		else if ( packet->data[ 0 ] == ID_BROADCAST_PINGS )
 		{
 			PlayerID playerId;
-			int index;
 
 			bitStream.IgnoreBits( 8 ); // Ignore identifier
 
@@ -155,7 +154,7 @@ packet_ptr RakClient::Receive( void )
 
 				bitStream.Read( playerId.port );
 
-				index = GetOtherClientIndexByPlayerID( playerId );
+				int index = GetOtherClientIndexByPlayerID( playerId );
 
 				if ( index >= 0 )
 					bitStream.Read( otherClients[ index ].ping );

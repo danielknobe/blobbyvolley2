@@ -157,8 +157,6 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 		return false;
 	}
 
-	unsigned i;
-
 	if ( connectionSocket == INVALID_SOCKET )
 	{
 		connectionSocket = SocketLayer::Instance()->CreateBoundSocket( localPort, true, forceHostAddress );
@@ -183,7 +181,7 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 	//	rakPeerMutexes[ RakPeer::remoteSystemList_Mutex ].Lock();
 		remoteSystemList = new RemoteSystemStruct[ remoteSystemListSize ];
 	//	rakPeerMutexes[ RakPeer::remoteSystemList_Mutex ].Unlock();
-		for ( i = 0; i < remoteSystemListSize; i++ )
+		for ( unsigned i = 0; i < remoteSystemListSize; i++ )
 		{
 			remoteSystemList[ i ].playerId = UNASSIGNED_PLAYER_ID;
 	//		remoteSystemList[ i ].allowPlayerIdAssigment=true;
@@ -240,11 +238,9 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 			//  sp.sched_priority = sched_get_priority_max(SCHED_OTHER);
 			//  pthread_attr_setschedparam(&attr, &sp);
 
-			int error;
-
 			if ( isMainLoopThreadActive == false )
 			{
-				error = pthread_create( &processPacketsThreadHandle, &attr, &UpdateNetworkLoop, this );
+				int error = pthread_create( &processPacketsThreadHandle, &attr, &UpdateNetworkLoop, this );
 
 				if ( error )
 				{
@@ -390,11 +386,7 @@ bool RakPeer::Connect( const char* host, unsigned short remotePort )
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void RakPeer::Disconnect( unsigned int blockDuration )
 {
-	unsigned i,j;
-	bool anyActive;
-	unsigned stopWaitingTime;
-//	PlayerID playerId;
-	unsigned int time;
+	unsigned i;
 	unsigned short systemListSize = remoteSystemListSize; // This is done for threading reasons
 
 	if ( blockDuration > 0 )
@@ -404,12 +396,12 @@ void RakPeer::Disconnect( unsigned int blockDuration )
 			NotifyAndFlagForDisconnect(remoteSystemList[i].playerId, false);
 		}
 
-		time = RakNet::GetTime();
-		stopWaitingTime = time + blockDuration;
+		unsigned time = RakNet::GetTime();
+		unsigned stopWaitingTime = time + blockDuration;
 		while ( time < stopWaitingTime )
 		{
-			anyActive=false;
-			for (j=0; j < systemListSize; j++)
+			bool anyActive = false;
+			for (unsigned j = 0; j < systemListSize; j++)
 			{
 				if (remoteSystemList[j].playerId!=UNASSIGNED_PLAYER_ID)
 				{
@@ -620,10 +612,6 @@ packet_ptr RakPeer::Receive( void )
 		return packet_ptr();
 
 	Packet *val;
-
-	int offset;
-	unsigned int i;
-	bool propagate;
 
 	#pragma warning( disable : 4127 ) // warning C4127: conditional expression is constant
 	while ( true )
@@ -1231,7 +1219,7 @@ unsigned short RakPeer::GetNumberOfRemoteInitiatedConnections( void ) const
 RakPeer::RemoteSystemStruct * RakPeer::AssignPlayerIDToRemoteSystemList( PlayerID playerId, RemoteSystemStruct::ConnectMode connectionMode )
 {
 	RemoteSystemStruct * remoteSystem = 0;
-	unsigned i,j;
+	unsigned i;
 	unsigned int time = RakNet::GetTime();
 
 	// If this guy is already connected, return 0. This needs to be checked inside the mutex
@@ -1395,7 +1383,6 @@ bool RakPeer::SendImmediate( char *data, int numberOfBitsToSend, PacketPriority 
 	unsigned sendListSize;
 	bool callerDataAllocationUsed;
 	unsigned remoteSystemIndex, sendListIndex; // Iterates into the list of remote systems
-	unsigned numberOfBytesUsed = BITS_TO_BYTES(numberOfBitsToSend);
 	callerDataAllocationUsed=false;
 
 	sendList=(unsigned *)alloca(sizeof(unsigned)*remoteSystemListSize);
