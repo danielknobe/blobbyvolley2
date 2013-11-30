@@ -294,10 +294,6 @@ private:
 	 * Our local index
 	 */
 	PlayerIndex localPlayerIndex;
-	/**
-	 * This is our external ID (and also IP) (returned from the server)
-	 */
-	PlayerID externalPlayerID;
 };
 
 #endif
