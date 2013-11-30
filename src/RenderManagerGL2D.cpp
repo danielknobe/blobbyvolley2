@@ -229,6 +229,8 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Set icon
 	SDL_Surface* icon = SDL_LoadBMP("data/Icon.bmp");
+	SDL_SetColorKey(icon, SDL_TRUE,
+			SDL_MapRGB(icon->format, 0, 0, 0));
 	SDL_SetWindowIcon(mWindow, icon);
 	SDL_FreeSurface(icon);
 
