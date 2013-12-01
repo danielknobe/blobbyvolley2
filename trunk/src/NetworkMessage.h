@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
+#include <iosfwd>
 #include <stdint.h>
 
 #include "raknet/PacketEnumerations.h"
@@ -283,4 +284,4 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 };
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval);
-
+std::ostream& operator<<(std::ostream& stream, const ServerInfo& val);

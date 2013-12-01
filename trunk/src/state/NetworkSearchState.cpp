@@ -107,27 +107,35 @@ void NetworkSearchState::step()
 				{
 					//FIXME: We must copy the needed informations, so that we can call DeallocatePacket(packet)
 					//FIXME: The client finds a server at this point, which is not valid
-					RakNet::BitStream stream((char*)packet->data,
-						packet->length, false);
+					RakNet::BitStream stream((char*)packet->data, packet->length, false);
 					printf("server is a blobby server\n");
 					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
-					ServerInfo info(stream,
-						(*iter)->PlayerIDToDottedIP(
-							packet->playerId), packet->playerId.port);
+					ServerInfo info(stream,	(*iter)->PlayerIDToDottedIP(packet->playerId), packet->playerId.port);
 
-					if (std::find( mScannedServers.begin(),	mScannedServers.end(), info) == mScannedServers.end()
-							// check whether the packet sizes match
-							&& packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
+					// check that the packet sizes match
+					if(packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE)
 					{
-						mScannedServers.push_back(info);
-
-						// check whether this was a direct connect server
-						if(*iter == mDirectConnectClient)
+						if (std::find( mScannedServers.begin(),	mScannedServers.end(), info) == mScannedServers.end() )
 						{
-							mSelectedServer = mScannedServers.size() - 1;
-							doEnterServer = true;
+							mScannedServers.push_back(info);
+
+							// check whether this was a direct connect server
+							if(*iter == mDirectConnectClient)
+							{
+								mSelectedServer = mScannedServers.size() - 1;
+								doEnterServer = true;
+							}
+						}
+						 else
+						{
+							std::cout << "duplicate server entry\n";
+							std::cout << info << "\n";
 						}
 
+					}
+					 else
+					{
+						std::cout << " server invalid " << packet->length << " " << ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE << "\n";
 					}
 					// the RakClient will be deleted, so
 					// we must free the packet here
@@ -358,7 +366,8 @@ OnlineSearchState::OnlineSearchState()
 void OnlineSearchState::searchServers()
 {
 	// Get the serverlist
-	try {
+	try
+	{
 		BlobNet::Layer::Http http("blobby.sourceforge.net", 80);
 
 		std::stringstream serverListXml;
@@ -370,8 +379,10 @@ void OnlineSearchState::searchServers()
 		file.write(serverListXml.str());
 
 		file.close();
+	} catch (std::exception& e) {
+		std::cout << "Can't get onlineserver.xml: " << e.what() << std::endl;
 	} catch (...) {
-		std::cout << "Can't get onlineserver.xml" << std::endl;
+		std::cout << "Can't get onlineserver.xml. Unknown error." << std::endl;
 	}
 
 	std::vector< std::pair<std::string, int> > serverList;
@@ -437,13 +448,13 @@ void OnlineSearchState::searchServers()
 		std::cout << "Can't read onlineserver.xml" << std::endl;
 	}
 
-
 	/// \todo check if we already try to connect to this one!
 	std::string address = IUserConfigReader::createUserConfigReader("config.xml")->getString("additional_network_server");
 	std::string server = address;
 	int port = BLOBBY_PORT;
 	std::size_t found = address.find(':');
-	if (found != std::string::npos) {
+	if (found != std::string::npos)
+	{
 		server = address.substr(0, found);
 
 		try
@@ -461,15 +472,13 @@ void OnlineSearchState::searchServers()
 	std::pair<std::string, int> pairs(server.c_str(), port);
 	serverList.push_back(pairs);
 
-	/// \todo does anyone know how exaclty mPingClient works?
 	mScannedServers.clear();
-
-	for(unsigned int i = 0; i < serverList.size(); i++)
+	mPingClient->Initialize( serverList.size() + 2, 0, 10 );
+	for( auto& server : serverList )
 	{
-		mPingClient->PingServer(serverList[i].first.c_str(), serverList[i].second, 0, true);
+		std::cout << "ping" << server.first << "\n";
+		mPingClient->Ping(server.first.c_str(), server.second, true);
 	}
-
-
 
 }
 
