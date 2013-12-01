@@ -87,6 +87,7 @@ void ServerInfo::writeToBitstream(RakNet::BitStream& stream)
 	stream.Write(description, sizeof(description));
 	stream.Write(rulestitle, sizeof(rulestitle));
 	stream.Write(rulesauthor, sizeof(rulesauthor));
+	assert( stream.GetNumberOfBytesUsed() == BLOBBY_SERVER_PRESENT_PACKET_SIZE);
 }
 
 const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned char)ID_BLOBBY_SERVER_PRESENT)
@@ -106,4 +107,8 @@ bool operator == (const ServerInfo& lval, const ServerInfo& rval)
 			sizeof(lval.hostname));
 }
 
+std::ostream& operator<<(std::ostream& stream, const ServerInfo& val)
+{
+	return stream << val.name << " (" << val.hostname << ":" << val.port << ")";
+}
 
