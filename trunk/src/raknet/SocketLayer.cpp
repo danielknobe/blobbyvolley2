@@ -113,14 +113,7 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 	sockaddr_in listenerSocketAddress;
 	int ret;
 
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	if ( blockingSocket == false )
-		listenSocket = WSASocket( AF_INET, SOCK_DGRAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED );
-	else
-#endif
-
-		listenSocket = socket( AF_INET, SOCK_DGRAM, 0 );
+	listenSocket = socket( AF_INET, SOCK_DGRAM, 0 );
 
 	if ( listenSocket == INVALID_SOCKET )
 	{
@@ -213,57 +206,7 @@ int SocketLayer::Write( SOCKET writeSocket, const char* data, int length )
 #ifdef _DEBUG
 	assert( writeSocket != INVALID_SOCKET );
 #endif
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	ExtendedOverlappedStruct* eos = ExtendedOverlappedPool::Instance()->GetPointer();
-	memset( &( eos->overlapped ), 0, sizeof( OVERLAPPED ) );
-	memcpy( eos->data, data, length );
-	eos->length = length;
-
-	//AsynchronousFileIO::Instance()->PostWriteCompletion(ccs);
-	WriteAsynch( ( HANDLE ) writeSocket, eos );
-
-	return length;
-#else
-
 	return send( writeSocket, data, length, 0 );
-#endif
-}
-
-// Start an asynchronous read using the specified socket.
-#pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
-bool SocketLayer::AssociateSocketWithCompletionPortAndRead( SOCKET readSocket, unsigned int binaryAddress, unsigned short port, RakPeer *rakPeer )
-{
-#ifdef __USE_IO_COMPLETION_PORTS
-	assert( readSocket != INVALID_SOCKET );
-
-	ClientContextStruct* ccs = new ClientContextStruct;
-	ccs->handle = ( HANDLE ) readSocket;
-
-	ExtendedOverlappedStruct* eos = ExtendedOverlappedPool::Instance()->GetPointer();
-	memset( &( eos->overlapped ), 0, sizeof( OVERLAPPED ) );
-	eos->binaryAddress = binaryAddress;
-	eos->port = port;
-	eos->rakPeer = rakPeer;
-	eos->length = MAXIMUM_MTU_SIZE;
-
-	bool b = AsynchronousFileIO::Instance()->AssociateSocketWithCompletionPort( readSocket, ( DWORD ) ccs );
-
-	if ( !b )
-	{
-		ExtendedOverlappedPool::Instance()->ReleasePointer( eos );
-		delete ccs;
-		return false;
-	}
-
-	BOOL success = ReadAsynch( ( HANDLE ) readSocket, eos );
-
-	if ( success == false )
-		return false;
-
-#endif
-
-	return true;
 }
 
 int SocketLayer::RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode )

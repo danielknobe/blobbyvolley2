@@ -33,11 +33,7 @@
 #define __SOCKET_LAYER_H
 
 #ifdef _WIN32
-#ifdef __USE_IO_COMPLETION_PORTS
-#include <winSock2.h> // DON'T FORGET TO INLCLUDE Ws2_32.lib to your project!
-#else
 #include <winsock.h>
-#endif
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -105,22 +101,6 @@ public:
 	 */
 	SOCKET CreateBoundSocket( unsigned short port, bool blockingSocket, const char *forceHostAddress );
 	const char* DomainNameToIP( const char *domainName );
-#ifdef __USE_IO_COMPLETION_PORTS
-	/**
-	 * Associate a socket to the completion port mecanism.
-	 * @param socket the socket
-	 * @param completionKey the completion port group identifier
-	 * @note Windows version only
-	 */
-	void AssociateSocketWithCompletionPort( SOCKET socket, ClientContextStruct* completionKey );
-#endif
-	/**
-	 * Start an asynchronous read using the specified socket.  The
-	 * callback will use the specified PlayerID (associated with this
-	 * socket) and call either the client or the server callback (one or
-	 * the other should be 0)
-	 */
-	bool AssociateSocketWithCompletionPortAndRead( SOCKET readSocket, unsigned int binaryAddress, unsigned short port, RakPeer* rakPeer );
 	/**
 	 * Does a writing operation on a socket.
 	 * It Send a packet to a peer throught the network.

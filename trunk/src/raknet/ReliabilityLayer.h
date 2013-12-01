@@ -91,19 +91,6 @@ public:
 	*/
 	void Reset( void );
 	/**
-	* Assign a socket for the reliability layer to use for writing
-	* Callable from multiple threads
-	* @param s The socket to use for communication
-	*/
-	void SetSocket( SOCKET s );
-
-	/**
-	* Get the socket held by the reliability layer
-	* Callable from multiple threads
-	* @return Retrieve the socket so that every body can used it
-	*/
-	SOCKET GetSocket( void );
-	/**
 	* Must be called by the same thread as update Packets are read
 	* directly from the socket layer and skip the reliability layer
 	* because unconnected players do not use the reliability layer This
@@ -240,11 +227,6 @@ private:
 	// Parse an internalPacket and figure out how many header bits would be written.  Returns that number
 	int GetBitStreamHeaderLength( const InternalPacket *const internalPacket );
 
-	// Search the specified list for sequenced packets on the specified ordering channel, optionally skipping those with splitPacketId, and delete them
-	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::List<InternalPacket*>&theList, int splitPacketId = -1 );
-	// Search the specified list for sequenced packets with a value less than orderingIndex and delete them
-	void DeleteSequencedPacketsInList( unsigned char orderingChannel, BlobNet::ADT::Queue<InternalPacket*>&theList );
-
 	// Returns true if newPacketOrderingIndex is older than the waitingForPacketOrderingIndex
 	bool IsOlderOrderedPacket( OrderingIndexType newPacketOrderingIndex, OrderingIndexType waitingForPacketOrderingIndex );
 
@@ -276,7 +258,6 @@ private:
 
 	// Memory handling
 	void FreeMemory( bool freeAllImmediately );
-	void FreeThreadedMemory( void );
 	void FreeThreadSafeMemory( void );
 
 	// Initialize the variables
