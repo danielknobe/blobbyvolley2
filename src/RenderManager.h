@@ -52,7 +52,6 @@ static const int TF_ALIGN_RIGHT = 0x10;	// Text aligned right
 
 
 
-struct SDL_Surface;
 /*! \struct BufferedImage
 	\brief image data
 	\details couples the raw image data with its size in a way that is

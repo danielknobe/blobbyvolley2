@@ -59,10 +59,6 @@ static const int DEFAULT_RECEIVED_PACKETS_SIZE=128; // Divide by timeout time in
 ReliabilityLayer::ReliabilityLayer() : updateBitStream( MAXIMUM_MTU_SIZE )   // preallocate the update bitstream so we can avoid a lot of reallocs at runtime
 {
 	InitializeVariables();
-#ifdef __USE_IO_COMPLETION_PORTS
-	readWriteSocket = INVALID_SOCKET;
-#endif
-
 	freeThreadedMemoryOnNextUpdate = false;
 }
 
@@ -72,10 +68,6 @@ ReliabilityLayer::ReliabilityLayer() : updateBitStream( MAXIMUM_MTU_SIZE )   // 
 ReliabilityLayer::~ReliabilityLayer()
 {
 	FreeMemory( true ); // Free all memory immediately
-#ifdef __USE_IO_COMPLETION_PORTS
-	if ( readWriteSocket != INVALID_SOCKET )
-		closesocket( readWriteSocket );
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -85,32 +77,6 @@ void ReliabilityLayer::Reset( void )
 {
 	FreeMemory( true ); // true because making a memory reset pending in the update cycle causes resets after reconnects.  Instead, just call Reset from a single thread
 	InitializeVariables();
-}
-
-//-------------------------------------------------------------------------------------------------------
-// Assign a socket for the reliability layer to use for writing
-//-------------------------------------------------------------------------------------------------------
-#pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
-void ReliabilityLayer::SetSocket( SOCKET s )
-{
-#ifdef __USE_IO_COMPLETION_PORTS
-	// If this hits I am probably using sequential ports while doing IO completion ports
-	assert( s != INVALID_SOCKET );
-	readWriteSocket = s;
-#endif
-}
-
-//-------------------------------------------------------------------------------------------------------
-// Get the socket held by the reliability layer
-//-------------------------------------------------------------------------------------------------------
-SOCKET ReliabilityLayer::GetSocket( void )
-{
-#ifdef __USE_IO_COMPLETION_PORTS
-	return readWriteSocket;
-#else
-
-	return INVALID_SOCKET;
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -147,7 +113,6 @@ void ReliabilityLayer::FreeMemory( bool freeAllImmediately )
 {
 	if ( freeAllImmediately )
 	{
-		FreeThreadedMemory();
 		FreeThreadSafeMemory();
 	}
 	else
@@ -157,54 +122,17 @@ void ReliabilityLayer::FreeMemory( bool freeAllImmediately )
 	}
 }
 
-void ReliabilityLayer::FreeThreadedMemory( void )
-{
-}
-
 void ReliabilityLayer::FreeThreadSafeMemory( void )
 {
-//	unsigned i, j;
-	// InternalPacket *internalPacket;
-
-	// if (bytesSent > 0 || bytesReceived > 0)
-	// {
-
-	/*
-	for ( i = 0; i < NUMBER_OF_PRIORITIES; i++ )
-	{
-		j = 0;
-		reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Lock();
-
-		for ( ; j < sendQueue[ i ].size(); j++ )
-		{
-			delete [] ( sendQueue[ i ] ) [ j ]->data;
-			internalPacketPool.ReleasePointer( ( sendQueue[ i ] ) [ j ] );
-		}
-
-		sendQueue[ i ].clearAndForceAllocation( 512 ); // Preallocate the send lists so we don't do a bunch of reallocations unnecessarily
-		reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Unlock();
-	}
-	*/
-
-	// }
-
-	unsigned i;
 	InternalPacket *internalPacket;
 
-	for ( i = 0; i < splitPacketList.size(); i++ )
+	for ( unsigned i = 0; i < splitPacketList.size(); i++ )
 	{
 		delete [] splitPacketList[ i ]->data;
 		internalPacketPool.ReleasePointer( splitPacketList[ i ] );
 	}
 
 	splitPacketList.clear();
-	//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
-	// }
-
-
-	// if (bytesSent > 0 || bytesReceived > 0)
-	// {
-	//reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
 
 	while ( outputQueue.size() > 0 )
 	{
@@ -214,14 +142,9 @@ void ReliabilityLayer::FreeThreadSafeMemory( void )
 	}
 
 	outputQueue.clearAndForceAllocation( 512 );
-	//reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
-	// }
 
-	// if (bytesSent > 0 || bytesReceived > 0)
-	// {
-	//reliabilityLayerMutexes[orderingList_MUTEX].Lock();
 
-	for ( i = 0; i < orderingList.size(); i++ )
+	for ( unsigned i = 0; i < orderingList.size(); i++ )
 	{
 		if ( orderingList[ i ] )
 		{
@@ -242,25 +165,12 @@ void ReliabilityLayer::FreeThreadSafeMemory( void )
 	}
 
 	orderingList.clear();
-	//reliabilityLayerMutexes[orderingList_MUTEX].Unlock();
-	// }
-
-	// if (bytesSent > 0 || bytesReceived > 0)
-	// {
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
 
 	while ( acknowledgementQueue.size() > 0 )
 		internalPacketPool.ReleasePointer( acknowledgementQueue.pop() );
 
 	acknowledgementQueue.clearAndForceAllocation( 64 );
 
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
-	// }
-
-
-	// if (bytesSent > 0 || bytesReceived > 0)
-	// {
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 	while ( resendQueue.size() )
 	{
 		// The resend Queue can have NULL pointer holes.  This is so we can deallocate blocks without having to compress the array
@@ -274,11 +184,9 @@ void ReliabilityLayer::FreeThreadSafeMemory( void )
 	}
 
 	resendQueue.clearAndForceAllocation( DEFAULT_RECEIVED_PACKETS_SIZE );
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
-	// }
 
 	unsigned j;
-	for ( i = 0; i < NUMBER_OF_PRIORITIES; i++ )
+	for ( unsigned i = 0; i < NUMBER_OF_PRIORITIES; i++ )
 	{
 		j = 0;
 		for ( ; j < sendPacketSet[ i ].size(); j++ )
@@ -496,22 +404,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 				{
 					statistics.sequencedMessagesInOrder++;
 
-					// Check for older packets in the output list. Delete any found
-					// UPDATE:
-					// Disabled.  We don't have enough info to consistently do this.  Sometimes newer data does supercede
-					// older data such as with constantly declining health, but not in all cases.
-					// For example, with sequenced unreliable sound packets just because you send a newer one doesn't mean you
-					// don't need the older ones because the odds are they will still arrive in order
-					/*
-					  reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
-					  DeleteSequencedPacketsInList(internalPacket->orderingChannel, outputQueue);
-					  reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
-
-					  // Check for older packets in the split packet list. Delete any found
-					  reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
-					  DeleteSequencedPacketsInList(internalPacket->orderingChannel, splitPacketList, internalPacket->splitPacketId);
-					  reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
-					*/
 					// Is this a split packet?
 
 					if ( internalPacket->splitPacketCount > 0 )
@@ -863,12 +755,6 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 	assert( numberOfBitsToSend > 0 );
 #endif
 
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	if ( readWriteSocket == INVALID_SOCKET )
-		return false;
-
-#endif
 
 	// Fix any bad parameters
 	if ( reliability > RELIABLE_SEQUENCED || reliability < 0 )
@@ -957,22 +843,6 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 		//reliabilityLayerMutexes[ waitingForSequencedPacketWriteIndex_MUTEX ].Lock();
 		internalPacket->orderingIndex = waitingForSequencedPacketWriteIndex[ orderingChannel ] ++;
 		//reliabilityLayerMutexes[ waitingForSequencedPacketWriteIndex_MUTEX ].Unlock();
-
-		// This packet supersedes all other sequenced packets on the same ordering channel
-		// Delete all packets in all send lists that are sequenced and on the same ordering channel
-		// UPDATE:
-		// Disabled.  We don't have enough info to consistently do this.  Sometimes newer data does supercede
-		// older data such as with constantly declining health, but not in all cases.
-		// For example, with sequenced unreliable sound packets just because you send a newer one doesn't mean you
-		// don't need the older ones because the odds are they will still arrive in order
-		/*
-		  for (int i=0; i < NUMBER_OF_PRIORITIES; i++)
-		  {
-		  reliabilityLayerMutexes[sendQueue_MUTEX].Lock();
-		  DeleteSequencedPacketsInList(orderingChannel, sendQueue[i]);
-		  reliabilityLayerMutexes[sendQueue_MUTEX].Unlock();
-		  }
-		*/
 	}
 
 	else
@@ -1011,15 +881,6 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 //-------------------------------------------------------------------------------------------------------
 void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigned int time )
 {
-#ifdef __USE_IO_COMPLETION_PORTS
-
-	if ( readWriteSocket == INVALID_SOCKET )
-		return;
-
-	if (deadConnection)
-		return;
-
-#endif
 	// unsigned resendQueueSize;
 	bool reliableDataSent;
 
@@ -1122,8 +983,6 @@ void ReliabilityLayer::SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitSt
 	// if (bitStream->GetNumberOfBytesUsed()>50)
 	//  printf("Sending %i bytes. sendQueue[0].size()=%i, resendQueue.size()=%i\n", bitStream->GetNumberOfBytesUsed(), sendQueue[0].size(),resendQueue.size());
 
-	int oldLength, length;
-
 	// sentFrames++;
 
 #ifdef _INTERNET_SIMULATOR
@@ -1137,7 +996,7 @@ void ReliabilityLayer::SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitSt
 	}
 #endif
 
-	length = bitStream->GetNumberOfBytesUsed();
+	int length = bitStream->GetNumberOfBytesUsed();
 
 	statistics.packetsSent++;
 	statistics.totalBitsSent += length * 8;
@@ -2029,56 +1888,6 @@ InternalPacket* ReliabilityLayer::CreateInternalPacketFromBitStream( RakNet::Bit
 }
 
 //-------------------------------------------------------------------------------------------------------
-// Search the specified list for sequenced packets on the specified ordering
-// stream, optionally skipping those with splitPacketId, and delete them
-//-------------------------------------------------------------------------------------------------------
-void ReliabilityLayer::DeleteSequencedPacketsInList( unsigned char orderingChannel, BasicDataStructures::List<InternalPacket*>&theList, int splitPacketId )
-{
-	unsigned i = 0;
-
-	while ( i < theList.size() )
-	{
-		if ( ( theList[ i ]->reliability == RELIABLE_SEQUENCED || theList[ i ]->reliability == UNRELIABLE_SEQUENCED ) &&
-			theList[ i ]->orderingChannel == orderingChannel && ( splitPacketId == -1 || theList[ i ]->splitPacketId != (unsigned int) splitPacketId ) )
-		{
-			InternalPacket * internalPacket = theList[ i ];
-			theList.del( i );
-			delete [] internalPacket->data;
-			internalPacketPool.ReleasePointer( internalPacket );
-		}
-
-		else
-			i++;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
-// Search the specified list for sequenced packets with a value less than orderingIndex and delete them
-// Note - I added functionality so you can use the Queue as a list (in this case for searching) but it is less efficient to do so than a regular list
-//-------------------------------------------------------------------------------------------------------
-void ReliabilityLayer::DeleteSequencedPacketsInList( unsigned char orderingChannel, BlobNet::ADT::Queue<InternalPacket*>&theList )
-{
-	InternalPacket * internalPacket;
-	int listSize = theList.size();
-	int i = 0;
-
-	while ( i < listSize )
-	{
-		if ( ( theList[ i ]->reliability == RELIABLE_SEQUENCED || theList[ i ]->reliability == UNRELIABLE_SEQUENCED ) && theList[ i ]->orderingChannel == orderingChannel )
-		{
-			internalPacket = theList[ i ];
-			theList.del( i );
-			delete [] internalPacket->data;
-			internalPacketPool.ReleasePointer( internalPacket );
-			listSize--;
-		}
-
-		else
-			i++;
-	}
-}
-
-//-------------------------------------------------------------------------------------------------------
 // Returns true if newPacketOrderingIndex is older than the waitingForPacketOrderingIndex
 //-------------------------------------------------------------------------------------------------------
 bool ReliabilityLayer::IsOlderOrderedPacket( OrderingIndexType newPacketOrderingIndex, OrderingIndexType waitingForPacketOrderingIndex )
@@ -2683,6 +2492,5 @@ void ReliabilityLayer::UpdateThreadedMemory(void)
 	if ( freeThreadedMemoryOnNextUpdate )
 	{
 		freeThreadedMemoryOnNextUpdate = false;
-		FreeThreadedMemory();
 	}
 }

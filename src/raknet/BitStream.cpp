@@ -908,7 +908,6 @@ void BitStream::WriteBits( const unsigned char *input,
 
 	AddBitsAndReallocate( numberOfBitsToWrite );
 	int offset = 0;
-	unsigned char dataByte;
 	int numberOfBitsUsedMod8;
 
 	numberOfBitsUsedMod8 = numberOfBitsUsed % 8;
@@ -917,7 +916,7 @@ void BitStream::WriteBits( const unsigned char *input,
 	while ( numberOfBitsToWrite > 0 )
 		//do
 	{
-		dataByte = *( input + offset );
+		unsigned char dataByte = *( input + offset );
 
 		if ( numberOfBitsToWrite < 8 && rightAlignedBits )   // rightAlignedBits means in the case of a partial byte, the bits are aligned from the right (bit 0) rather than the left (as in the normal internal representation)
 			dataByte <<= 8 - numberOfBitsToWrite;  // shift left to get the bits on the left, as in our internal representation

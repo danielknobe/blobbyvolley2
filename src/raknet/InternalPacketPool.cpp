@@ -36,9 +36,8 @@ InternalPacketPool::InternalPacketPool()
 #ifdef _DEBUG
 	packetsReleased = 0;
 #endif
-	
-	unsigned i;
-	for (i=0; i < 64; i++)
+
+	for (unsigned i = 0; i < 64; i++)
 		pool.push(new InternalPacket);
 }
 
@@ -48,7 +47,7 @@ InternalPacketPool::~InternalPacketPool()
 	// If this assert hits then not all packets given through GetPointer have been returned to ReleasePointer
 	assert( packetsReleased == 0 );
 #endif
-	
+
 	ClearPool();
 }
 
@@ -96,7 +95,7 @@ void InternalPacketPool::ReleasePointer( InternalPacket *p )
 #endif
 		return ;
 	}
-	
+
 #ifdef _DEBUG
 	packetsReleased--;
 #endif

@@ -264,12 +264,6 @@ bool RakPeer::Initialize( unsigned short MaximumNumberOfPeers, unsigned short lo
 
 		}
 
-		/* else
-		{
-		#ifdef __USE_IO_COMPLETION_PORTS
-		AsynchronousFileIO::Instance()->IncreaseUserCount();
-		#endif
-		}*/
 	}
 
 	return true;
@@ -432,9 +426,6 @@ void RakPeer::Disconnect( unsigned int blockDuration )
 
 		// Normally the thread will call DecreaseUserCount on termination but if we aren't using threads just do it
 		// manually
-#ifdef __USE_IO_COMPLETION_PORTS
-		AsynchronousFileIO::Instance()->DecreaseUserCount();
-#endif
 	}
 
 	while ( isMainLoopThreadActive )

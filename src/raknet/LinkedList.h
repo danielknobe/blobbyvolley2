@@ -272,7 +272,7 @@ namespace BasicDataStructures
 	template <class LinkedListType>
 		bool LinkedList<LinkedListType>::operator= ( const LinkedList<LinkedListType>& original_copy )
 	{
-		typename LinkedList::node * original_copy_pointer, *last, *save_position;
+		typename LinkedList::node * original_copy_pointer, *save_position;
 
 		if ( ( &original_copy ) != this )
 		{
@@ -463,7 +463,6 @@ namespace BasicDataStructures
 		CircularLinkedList<CircularLinkedListType>::CircularLinkedList( const CircularLinkedList& original_copy )
 	{
 		node * original_copy_pointer;
-		node *last;
 		node *save_position;
 
 		if ( original_copy.list_size == 0 )
@@ -546,7 +545,6 @@ namespace BasicDataStructures
 		bool CircularLinkedList<CircularLinkedListType>::operator= ( const CircularLinkedList& original_copy )
 	{
 		node * original_copy_pointer;
-		node *last;
 		node *save_position;
 
 		if ( ( &original_copy ) != this )
@@ -980,13 +978,12 @@ namespace BasicDataStructures
 			else
 			{
 				node* current;
-				node* temp;
 
 				current = this->root;
 
 				do
 				{
-					temp = current;
+					node* temp = current;
 					current = current->next;
 					// delete temp->item;
 					delete temp;
