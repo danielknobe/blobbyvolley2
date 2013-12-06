@@ -73,7 +73,6 @@ set (blobby-server_SRC ${common_SRC}
 
 find_package(Boost REQUIRED)
 find_package(PhysFS REQUIRED)
-find_package(SDL REQUIRED)
 find_package(OpenGL)
 
 
