@@ -50,6 +50,10 @@
 			<Add library="physfs" />
 			<Add library="OpenGL32" />
 		</Linker>
+		<Unit filename="data/Icon.ico" />
+		<Unit filename="res.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="src/BlobbyDebug.cpp" />
 		<Unit filename="src/BlobbyDebug.h" />
 		<Unit filename="src/Blood.cpp">
@@ -314,7 +318,6 @@
 		<Unit filename="src/raknet/BitStream.cpp" />
 		<Unit filename="src/raknet/BitStream.h" />
 		<Unit filename="src/raknet/CMakeLists.txt" />
-		<Unit filename="src/raknet/ClientContextStruct.h" />
 		<Unit filename="src/raknet/GetTime.cpp" />
 		<Unit filename="src/raknet/GetTime.h" />
 		<Unit filename="src/raknet/InternalPacket.h" />
