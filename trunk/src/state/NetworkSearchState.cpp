@@ -292,7 +292,7 @@ void NetworkSearchState::step()
 	if (mDisplayInfo)
 	{
 		imgui.doInactiveMode(false);
-		imgui.doOverlay(GEN_ID, Vector2(40.0, 80.0), Vector2(760.0, 440.0));
+		imgui.doOverlay(GEN_ID, Vector2(40.0, 80.0), Vector2(760.0, 440.0), Color(0,0,0), 1.0);
 		imgui.doText(GEN_ID, Vector2(50, 100), mScannedServers[mSelectedServer].name);
 		imgui.doText(GEN_ID, Vector2(50, 130), mScannedServers[mSelectedServer].hostname);
 

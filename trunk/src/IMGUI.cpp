@@ -52,6 +52,7 @@ struct QueueObject
 	Vector2 pos1;
 	Vector2 pos2;
 	Color col;
+	float alpha;
 	std::string text;
 	std::vector<std::string> entries;
 	int selected;
@@ -132,7 +133,7 @@ void IMGUI::end()
 				break;
 
 			case OVERLAY:
-				rmanager.drawOverlay(0.65, obj.pos1, obj.pos2, obj.col);
+				rmanager.drawOverlay(obj.alpha, obj.pos1, obj.pos2, obj.col);
 				break;
 
 			case TEXT:
@@ -241,7 +242,7 @@ void IMGUI::doText(int id, const Vector2& position, TextManager::STRING text, un
 	doText(id, position, TextManager::getSingleton()->getString(text), flags);
 }
 
-void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col)
+void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col, float alpha)
 {
 	QueueObject obj;
 	obj.type = OVERLAY;
@@ -249,6 +250,7 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 	obj.pos1 = pos1;
 	obj.pos2 = pos2;
 	obj.col = col;
+	obj.alpha = alpha;
 	mQueue->push(obj);
 	RenderManager::getSingleton().redraw();
 }
@@ -502,7 +504,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, int length, std::string& 
 				cpos = (int) text.length();
 
 			mActiveButton = id;
-			
+
 			// Show keyboard
 			SDL_StartTextInput();
 		}
