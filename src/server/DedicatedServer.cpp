@@ -324,7 +324,21 @@ void DedicatedServer::updateLobby()
 
 				// if the second player starts a game, or disconnected, no need to keep the first player waiting
 				/// \todo this could be done a lot more elegant
+				// close connection does not create a disconnect notification...
 				mServer->CloseConnection(firstPlayer->first, true);
+
+				// ... so we have to do the disconnection code manually
+				mConnectedClients--;
+				// delete the disconnectiong player
+				if( firstPlayer != mPlayerMap.end() )
+				{
+					// no longer count this player as connected
+					mPlayerMap.erase( firstPlayer );
+					//updateLobby();
+				}
+				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
+				// done.
+
 				continue;
 			}
 		}
