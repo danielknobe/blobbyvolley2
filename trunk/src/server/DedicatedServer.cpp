@@ -117,6 +117,12 @@ void DedicatedServer::processPackets()
 
 					updateLobby();
 				}
+				 else
+				{
+					std::cout << "disconnect player without player map entry\n";
+				}
+
+
 				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
 				break;
 			}
@@ -200,14 +206,21 @@ void DedicatedServer::processPackets()
 							/// \todo check that these players are still connected and not already playing a game
 							if( mPlayerMap.find(it->first) != mPlayerMap.end() && firstPlayer->getGame() == nullptr &&  mPlayerMap[it->first]->getGame() == nullptr )
 							{
-								// we can create a game now
-								auto newgame = createGame( firstPlayer, mPlayerMap[it->first] );
-								mGameList.push_back(newgame);
+								try
+								{
+									// we can create a game now
+									auto newgame = createGame( firstPlayer, mPlayerMap[it->first] );
+									mGameList.push_back(newgame);
 
-								// remove the game request
-								mGameRequests.erase( it );
-								started = true;
-								break;	// we're done
+									// remove the game request
+									mGameRequests.erase( it );
+									started = true;
+									break;	// we're done
+								}
+								 catch (std::exception& ex)
+								{
+									syslog( LOG_ERR, "error while creating game: %s", ex.what() );
+								}
 							}
 						}
 					}
@@ -376,6 +389,30 @@ void DedicatedServer::allowNewPlayers( bool allow )
 	mAcceptNewPlayers = allow;
 }
 
+// debug
+void DedicatedServer::printAllPlayers(std::ostream& stream) const
+{
+	for(auto it : mPlayerMap)
+	{
+		stream << it.second->getID().binaryAddress << ": " << it.second->getName() << " status: ";
+		if( it.second->getGame() )
+		{
+			stream << "playing\n";
+		} else
+		{
+			stream << "waiting\n";
+		}
+	}
+}
+
+void DedicatedServer::printAllGames(std::ostream& stream) const
+{
+	for(auto it : mGameList)
+	{
+		stream << it->getPlayerID(LEFT_PLAYER).binaryAddress << " vs " << it->getPlayerID(RIGHT_PLAYER).binaryAddress << "\n";
+	}
+}
+
 // special packet processing
 void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 {
@@ -451,11 +488,10 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<Net
 	}
 
 	auto newgame = boost::make_shared<NetworkGame>(*mServer.get(), leftPlayer, rightPlayer, switchSide, mRulesFile);
+	leftPlayer->setGame( newgame );
+	rightPlayer->setGame( newgame );
 
 	SWLS_Games++;
-
-	first->setGame( newgame );
-	second->setGame( newgame );
 
 	/// \todo add some logging?
 
