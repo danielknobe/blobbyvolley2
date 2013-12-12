@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 #include <cassert>
 
 #include <boost/make_shared.hpp>
@@ -55,6 +56,16 @@ NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> lef
 , mPausing(false)
 , mGameValid(true)
 {
+	// check that both players don't have an active game
+	if(leftPlayer->getGame())
+	{
+		BOOST_THROW_EXCEPTION( std::runtime_error("Trying to start a game with player already in another game!") );
+	}
+
+	if(rightPlayer->getGame())
+	{
+		BOOST_THROW_EXCEPTION( std::runtime_error("Trying to start a game with player already in another game!") );
+	}
 
 	mMatch->setPlayers( leftPlayer->getIdentity(), rightPlayer->getIdentity() );
 	mMatch->setInputSources(mLeftInput, mRightInput);
@@ -72,17 +83,11 @@ NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> lef
 	mRulesLength = 0;
 	mRulesSent[0] = false;
 	mRulesSent[1] = false;
-	try
-	{
-		FileRead file(std::string("rules/") + rules);
-		checksum = file.calcChecksum(0);
-		mRulesLength = file.length();
-		mRulesString = file.readRawBytes(mRulesLength);
-	}
-	 catch (FileLoadException& ex)
-	{
-		std::cerr << "could not send rules file to client: " << ex.what() << "\n";
-	}
+
+	FileRead file(std::string("rules/") + rules);
+	checksum = file.calcChecksum(0);
+	mRulesLength = file.length();
+	mRulesString = file.readRawBytes(mRulesLength);
 
 	// writing rules checksum
 	RakNet::BitStream stream;

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <map>
 #include <list>
+#include <iosfwd>
 #include <boost/scoped_ptr.hpp>
 
 #include "NetworkPlayer.h"
@@ -60,6 +61,11 @@ class DedicatedServer
 		int getActiveGamesCount() const;
 		int getWaitingPlayers() const;
 		int getConnectedClients() const;
+
+		// debug functions
+		void printAllPlayers(std::ostream& stream) const;
+		void printAllGames(std::ostream& stream) const;
+
 
 		// server settings
 		void allowNewPlayers( bool allow );

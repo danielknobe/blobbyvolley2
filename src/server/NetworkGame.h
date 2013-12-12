@@ -48,6 +48,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		// The IDs are assumed to be on the same side as they are named.
 		// If both players want to be on the same side, switchedSide
 		// decides which player is switched.
+		/// \exception Throws FileLoadException, if the desired rules file could not be loaded
+		///	\exception Throws std::runtime_error, if \p leftPlayer or \p rightPlayer are already assigned to a game.
 		NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> leftPlayer, boost::shared_ptr<NetworkPlayer> rightPlayer,
 					PlayerSide switchedSide, std::string rules);
 
