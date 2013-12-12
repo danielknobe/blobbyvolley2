@@ -50,13 +50,18 @@ class DedicatedServer
 		DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
 		~DedicatedServer();
 
+		// server processing
 		void processPackets();
 		void updateGames();
 		void updateLobby();
 
+		// status queries
 		bool hasActiveGame() const;
+		int getActiveGamesCount() const;
 		int getWaitingPlayers() const;
+		int getConnectedClients() const;
 
+		// server settings
 		void allowNewPlayers( bool allow );
 
 	private:

@@ -66,6 +66,10 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		/// This function processes all queued network packets.
 		void processPackets();
 
+		// game info
+		/// gets network IDs of players
+		PlayerID getPlayerID( PlayerSide side ) const;
+
 	private:
 		void broadcastBitstream(const RakNet::BitStream* stream, const RakNet::BitStream* switchedstream);
 		void broadcastBitstream(const RakNet::BitStream* stream);
