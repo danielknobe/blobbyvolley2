@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <sstream>
 #include <iostream>
+#include <cassert>
 
 #include <boost/make_shared.hpp>
 
@@ -468,4 +469,18 @@ void NetworkGame::broadcastPhysicState()
 		mRightPlayer, false);
 }
 
+
+PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
+{
+	if( side == LEFT_PLAYER )
+	{
+		return mLeftPlayer;
+	}
+	else if(side == RIGHT_PLAYER)
+	{
+		return mRightPlayer;
+	}
+
+	assert(0);
+}
 

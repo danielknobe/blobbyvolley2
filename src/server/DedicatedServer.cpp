@@ -96,6 +96,7 @@ void DedicatedServer::processPackets()
 					stream.Write( (char)ID_NO_FREE_INCOMING_CONNECTIONS );
 					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 					mServer->CloseConnection( packet->playerId, true );
+					mConnectedClients--;
 				}
 
 				break;
@@ -355,9 +356,19 @@ bool DedicatedServer::hasActiveGame() const
 	return !mGameList.empty();
 }
 
+int DedicatedServer::getActiveGamesCount() const
+{
+	return mGameList.size();
+}
+
 int DedicatedServer::getWaitingPlayers() const
 {
 	return mPlayerMap.size() - 2 * mGameList.size();
+}
+
+int DedicatedServer::getConnectedClients() const
+{
+	return mConnectedClients;
 }
 
 void DedicatedServer::allowNewPlayers( bool allow )
