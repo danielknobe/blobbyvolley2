@@ -150,7 +150,10 @@ void LobbyState::step()
 				mChallenge = pl->displayname;
 			}
 			break;
+			// we ignore these packets. they tell us about remote connections, which we handle manually with ID_SERVER_STATUS packets.
 			case ID_REMOTE_EXISTING_CONNECTION:
+			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+			case ID_REMOTE_NEW_INCOMING_CONNECTION:
 				// not surprising, but we are not interested in his packet
 				break;
 			default:
