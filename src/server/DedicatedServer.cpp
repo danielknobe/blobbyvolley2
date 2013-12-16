@@ -300,6 +300,7 @@ void DedicatedServer::updateGames()
 	{
 		SWLS_GameSteps++;
 
+		(*iter)->processPackets();
 		(*iter)->step();
 		if (!(*iter)->isGameValid())
 		{
