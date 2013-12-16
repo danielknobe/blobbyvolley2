@@ -30,6 +30,7 @@
  */
 #include "NetworkTypes.h"
 #include "BitStream.h"
+#include <boost/lexical_cast.hpp>
 
 int operator==( const PlayerID& left, const PlayerID& right )
 {
@@ -51,6 +52,10 @@ int operator<( const PlayerID& left, const PlayerID& right )
 	return ( ( left.binaryAddress < right.binaryAddress ) || ( ( left.binaryAddress == right.binaryAddress ) && ( left.port < right.port ) ) );
 }
 
+std::string PlayerID::toString() const
+{
+	return boost::lexical_cast<std::string>(binaryAddress) + ":" +  boost::lexical_cast<std::string>(port);
+}
 
 RakNet::BitStream Packet::getStream() const
 {
