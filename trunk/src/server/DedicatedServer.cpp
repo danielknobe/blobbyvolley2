@@ -161,8 +161,6 @@ void DedicatedServer::processPackets()
 				mPlayerMap[packet->playerId] = newplayer;
 				syslog(LOG_DEBUG, "New player \"%s\" connected from %s ", newplayer->getName().c_str(), packet->playerId.toString().c_str());
 
-				SWLS_ServerEntered++;
-
 				// answer by sending the status to all players
 				updateLobby();
 				break;
