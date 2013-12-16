@@ -32,6 +32,7 @@
 #ifndef __NETWORK_TYPES_H
 #define __NETWORK_TYPES_H
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 
 namespace RakNet
@@ -99,6 +100,11 @@ struct PlayerID
 	* @return 1 if left is lesser than right, 0 otherwise
 	*/
 	friend int operator < ( const PlayerID& left, const PlayerID& right );
+
+	/**
+	* Converts the playerID into a readable string representation
+	*/
+	std::string toString() const;
 };
 /// Size of PlayerID data
 #define PlayerID_Size 6

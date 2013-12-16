@@ -88,7 +88,7 @@ void DedicatedServer::processPackets()
 			case ID_NEW_INCOMING_CONNECTION:
 				mConnectedClients++;
 				SWLS_Connections++;
-				syslog(LOG_DEBUG, "New incoming connection, %d clients connected now", mConnectedClients);
+				syslog(LOG_DEBUG, "New incoming connection from %s, %d clients connected now", packet->playerId.toString().c_str(), mConnectedClients);
 
 				if ( !mAcceptNewPlayers )
 				{
@@ -97,6 +97,7 @@ void DedicatedServer::processPackets()
 					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 					mServer->CloseConnection( packet->playerId, true );
 					mConnectedClients--;
+					syslog(LOG_DEBUG, "Connection not accepted, %d clients connected now", mConnectedClients);
 				}
 
 				break;
@@ -109,6 +110,7 @@ void DedicatedServer::processPackets()
 				// delete the disconnectiong player
 				if( player != mPlayerMap.end() )
 				{
+					syslog(LOG_DEBUG, "Disconnected player %s", player->second->getName().c_str());
 					if( player->second->getGame() )
 						player->second->getGame()->injectPacket( packet );
 
@@ -119,11 +121,10 @@ void DedicatedServer::processPackets()
 				}
 				 else
 				{
-					std::cout << "disconnect player without player map entry\n";
 				}
 
-
-				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
+				int pid = packet->data[0];
+				syslog(LOG_DEBUG, "Connection %s closed via %d, %d clients connected now", packet->playerId.toString().c_str(),  pid, mConnectedClients);
 				break;
 			}
 
@@ -155,7 +156,12 @@ void DedicatedServer::processPackets()
 
 				stream.IgnoreBytes(1);	//ID_ENTER_SERVER
 
-				mPlayerMap[packet->playerId] = boost::make_shared<NetworkPlayer>(packet->playerId, stream);
+				auto newplayer = boost::make_shared<NetworkPlayer>(packet->playerId, stream);
+
+				mPlayerMap[packet->playerId] = newplayer;
+				syslog(LOG_DEBUG, "New player \"%s\" connected from %s ", newplayer->getName().c_str(), packet->playerId.toString().c_str());
+
+				SWLS_ServerEntered++;
 
 				// answer by sending the status to all players
 				updateLobby();
@@ -193,6 +199,9 @@ void DedicatedServer::processPackets()
 				reader->generic<PlayerID>(second);
 
 				bool started = false;
+
+				// debug log challenge
+				syslog(LOG_DEBUG, "%s challenged %s", first.toString().c_str(), second.toString().c_str());
 
 				// search if there is an open request
 				for(auto it = mGameRequests.begin(); it != mGameRequests.end(); ++it)
@@ -294,6 +303,7 @@ void DedicatedServer::updateGames()
 		(*iter)->step();
 		if (!(*iter)->isGameValid())
 		{
+			syslog( LOG_DEBUG, "Removed game %s vs %s from gamelist", (*iter)->getPlayerID(LEFT_PLAYER).toString().c_str(), (*iter)->getPlayerID(RIGHT_PLAYER).toString().c_str() );
 			iter = mGameList.erase(iter);
 		}
 		 else
@@ -350,7 +360,7 @@ void DedicatedServer::updateLobby()
 					mPlayerMap.erase( firstPlayer );
 					//updateLobby();
 				}
-				syslog(LOG_DEBUG, "Connection closed, %d clients connected now", mConnectedClients);
+				syslog(LOG_DEBUG, "Connection %s closed, %d clients connected now", first.toString().c_str(), mConnectedClients);
 				// done.
 
 				continue;
@@ -394,7 +404,7 @@ void DedicatedServer::printAllPlayers(std::ostream& stream) const
 {
 	for(auto it : mPlayerMap)
 	{
-		stream << it.second->getID().binaryAddress << ": " << it.second->getName() << " status: ";
+		stream << it.second->getID().toString() << " \"" << it.second->getName() << "\" status: ";
 		if( it.second->getGame() )
 		{
 			stream << "playing\n";
@@ -409,7 +419,7 @@ void DedicatedServer::printAllGames(std::ostream& stream) const
 {
 	for(auto it : mGameList)
 	{
-		stream << it->getPlayerID(LEFT_PLAYER).binaryAddress << " vs " << it->getPlayerID(RIGHT_PLAYER).binaryAddress << "\n";
+		stream << it->getPlayerID(LEFT_PLAYER).toString() << " vs " << it->getPlayerID(RIGHT_PLAYER).toString() << "\n";
 	}
 }
 
@@ -494,6 +504,7 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<Net
 	SWLS_Games++;
 
 	/// \todo add some logging?
+	syslog(LOG_DEBUG, "Created game \"%s\" vs. \"%s\"", leftPlayer->getName().c_str(), rightPlayer->getName().c_str());
 
 	return newgame;
 }
