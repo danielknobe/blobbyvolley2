@@ -937,7 +937,7 @@ void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigne
 			dt = new DataAndTime;
 			memcpy( dt->data, updateBitStream.GetData(), updateBitStream.GetNumberOfBytesUsed() );
 			dt->length = updateBitStream.GetNumberOfBytesUsed();
-			dt->sendTime = time + 1 + ( randomMT() % 100 );
+			dt->sendTime = time + ( rand() % 100 );
 			delayList.insert( dt );
 #endif
 
@@ -988,8 +988,7 @@ void ReliabilityLayer::SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitSt
 #ifdef _INTERNET_SIMULATOR
 
 	// packetloss
-	//if (windowSize>MINIMUM_WINDOW_SIZE && frandomMT() <= (float)(windowSize-MINIMUM_WINDOW_SIZE)/(float)(MAXIMUM_WINDOW_SIZE-MINIMUM_WINDOW_SIZE))
-	if (frandomMT() <= .05f)
+	if ((rand() % 101)/100.0f <= .05f)
 	{
 	// printf("Frame %i lost\n", sentFrames);
 	return;
