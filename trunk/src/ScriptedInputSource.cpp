@@ -99,7 +99,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 , mSide(playerside)
 {
 	mStartTime = SDL_GetTicks();
-	mState = lua_open();
+	mState = luaL_newstate();
 	
 	// set game constants
 	lua_pushnumber(mState, RIGHT_PLANE);
@@ -126,7 +126,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	lua_setglobal(mState, "CONST_NET_RADIUS");
 	
 	
-	luaopen_math(mState);
+	//luaopen_math(mState);
+	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "touches", touches);
 	lua_register(mState, "launched", launched);
 	lua_register(mState, "debug", debug);
