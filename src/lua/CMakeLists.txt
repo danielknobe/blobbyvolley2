@@ -2,7 +2,10 @@ set (lua_SRC
 	lapi.c lapi.h
 	lauxlib.c lauxlib.h
 	lbaselib.c
+	lbitlib.c
 	lcode.c lcode.h
+	lcorolib.c
+	lctype.c lctype.h
 	ldblib.c
 	ldebug.c ldebug.h
 	ldo.c ldo.h
@@ -26,13 +29,13 @@ set (lua_SRC
 	ltable.c ltable.h
 	ltablib.c
 	ltm.c ltm.h
+	lua.c lua.h lua.hpp
+	luac.c	
 	luaconf.h
-	lua.h
 	lualib.h
 	lundump.c lundump.h
 	lvm.c lvm.h
 	lzio.c lzio.h
-	print.c
 	)
 
 add_library(lua STATIC ${lua_SRC})

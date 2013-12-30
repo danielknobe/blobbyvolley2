@@ -521,7 +521,7 @@ class LuaGameLogic : public FallbackGameLogic
 };
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mState( lua_open() ), mSourceFile(filename)
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mState( luaL_newstate() ), mSourceFile(filename)
 {
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
@@ -534,7 +534,8 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 
 
 	// add functions
-	luaopen_math(mState);
+	//luaopen_math(mState);
+	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "touches", luaTouches);
 	lua_register(mState, "launched", luaLaunched);
 	lua_register(mState, "ballx", luaBallX);

@@ -239,7 +239,7 @@ int FileRead::readLuaScript(std::string filename, lua_State* mState)
 
 	ReaderInfo info;
 	info.file.open(filename);
-	return lua_load(mState, chunkReader, &info, filename.c_str());
+	return lua_load(mState, chunkReader, &info, filename.c_str(), NULL);
 }
 
 boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)
