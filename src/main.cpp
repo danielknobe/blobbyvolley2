@@ -26,8 +26,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL2/SDL.h>
 
+#ifndef __APPLE__
 #ifndef __ANDROID__
 #include "config.h"
+#endif
+#endif
+
+#ifdef __APPLE__
+	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+		#include <physfs.h>
+	#else
+		#include "config.h"
+	#endif
 #endif
 
 #include "RenderManager.h"
@@ -70,10 +80,16 @@ void setupPHYSFS()
 	FileSystem& fs = FileSystem::getSingleton();
 	std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all
-	// platforms
+	// relevant platforms.
 	std::string baseSearchPath("data" + separator);
+	// Android and iOS are needing a special path
 	#ifdef __ANDROID__
 		baseSearchPath = SDL_AndroidGetExternalStoragePath() + separator;
+	#endif
+	#ifdef __APPLE__
+		#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+			baseSearchPath = PHYSFS_getBaseDir();
+		#endif
 	#endif
 
 	fs.addToSearchPath(baseSearchPath);
@@ -141,12 +157,22 @@ void setupPHYSFS()
 	#endif
 }
 
-#undef main
-extern "C"
 #ifdef __ANDROID__
-int SDL_main(int argc, char* argv[])
+	#undef main
+	extern "C"
+	int SDL_main(int argc, char* argv[])
+#elif __APPLE__
+	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+		int main(int argc, char* argv[])
+	#else
+		#undef main
+		extern "C"
+		int SDL_main(int argc, char* argv[])
+	#endif
 #else
-int main(int argc, char* argv[])
+	#undef main
+	extern "C"
+	int main(int argc, char* argv[])
 #endif
 {
 	DEBUG_STATUS("started main");
@@ -207,6 +233,7 @@ int main(int argc, char* argv[])
 		/*else if (gameConfig.getString("device") == "GP2X")
 			rmanager = RenderManager::createRenderManagerGP2X();*/
 #ifndef __ANDROID__
+#ifndef __APPLE__
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
@@ -215,6 +242,20 @@ int main(int argc, char* argv[])
 			std::cerr << "Falling back to OpenGL" << std::endl;
 			rmanager = RenderManager::createRenderManagerGL2D();
 		}
+#endif
+#endif
+		
+#ifdef __APPLE__
+#if !TARGET_OS_IPHONE || !TARGET_IPHONE_SIMULATOR
+		else if (gameConfig.getString("device") == "OpenGL")
+			rmanager = RenderManager::createRenderManagerGL2D();
+		else
+		{
+			std::cerr << "Warning: Unknown renderer selected!";
+			std::cerr << "Falling back to OpenGL" << std::endl;
+			rmanager = RenderManager::createRenderManagerGL2D();
+		}
+#endif
 #endif
 
 		// fullscreen?
@@ -269,7 +310,7 @@ int main(int argc, char* argv[])
 				if (newfps != lastfps)
 				{
 					std::stringstream tmp;
-					tmp << AppTitle << "    FPS: " << newfps;
+					tmp << AppTitle << "	FPS: " << newfps;
 					rmanager->setTitle(tmp.str());
 				}
 				lastfps = newfps;
