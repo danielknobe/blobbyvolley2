@@ -114,7 +114,15 @@ void setupPHYSFS()
 		#ifndef __ANDROID__
 			// Create a search path in the home directory and ensure that
 			// all paths exist and are actually directories
-			std::string userdir = fs.getUserDir();
+			#ifdef __APPLE__
+				#if TARGET_OS_IPHONE
+					std::string userdir = baseSearchPath + "../Documents/";
+				#else
+					std::string userdir = fs.getUserDir();
+				#endif
+			#else
+				std::string userdir = fs.getUserDir();
+			#endif
 			std::string userAppend = ".blobby";
 			std::string homedir = userdir + userAppend;
 			/// \todo please review this code and determine if we really need to add userdir to serach path
@@ -233,7 +241,7 @@ void setupPHYSFS()
 		/*else if (gameConfig.getString("device") == "GP2X")
 			rmanager = RenderManager::createRenderManagerGP2X();*/
 #ifndef __ANDROID__
-#ifndef __APPLE__
+	#ifndef __APPLE__
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
@@ -242,20 +250,18 @@ void setupPHYSFS()
 			std::cerr << "Falling back to OpenGL" << std::endl;
 			rmanager = RenderManager::createRenderManagerGL2D();
 		}
-#endif
-#endif
-		
-#ifdef __APPLE__
-#if !TARGET_OS_IPHONE || !TARGET_IPHONE_SIMULATOR
-		else if (gameConfig.getString("device") == "OpenGL")
-			rmanager = RenderManager::createRenderManagerGL2D();
-		else
-		{
-			std::cerr << "Warning: Unknown renderer selected!";
-			std::cerr << "Falling back to OpenGL" << std::endl;
-			rmanager = RenderManager::createRenderManagerGL2D();
-		}
-#endif
+	#else
+		#if MAC_OS_X
+			else if (gameConfig.getString("device") == "OpenGL")
+				rmanager = RenderManager::createRenderManagerGL2D();
+			else
+			{
+				std::cerr << "Warning: Unknown renderer selected!";
+				std::cerr << "Falling back to OpenGL" << std::endl;
+				rmanager = RenderManager::createRenderManagerGL2D();
+			}
+		#endif
+	#endif
 #endif
 
 		// fullscreen?
