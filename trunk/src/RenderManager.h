@@ -107,7 +107,13 @@ class RenderManager : public ObjectCounter<RenderManager>
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();
 #ifndef __ANDROID__
-		static RenderManager* createRenderManagerGL2D();
+#ifdef __APPLE__
+#if MAC_OS_X
+        static RenderManager* createRenderManagerGL2D();
+#endif
+#else
+        static RenderManager* createRenderManagerGL2D();
+#endif
 #endif
 		static RenderManager* createRenderManagerNull();
 
