@@ -258,6 +258,17 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				rightBlobShadowTex,
 				Color(255, 255, 255)));
 		SDL_UpdateTexture(rightBlobShadowTex, NULL, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
+        
+        // Load iOS specific icon (because we have no backbutton)
+#ifdef __APPLE__
+#if !MAC_OS_X
+        tmpSurface = loadSurface("gfx/flag.bmp");
+        SDL_SetColorKey(tmpSurface, SDL_TRUE,
+                        SDL_MapRGB(tmpSurface->format, 0, 0, 0));
+        mBackFlag = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
+        SDL_FreeSurface(tmpSurface);
+#endif
+#endif
 	}
 
 	// Load font
@@ -349,6 +360,12 @@ void RenderManagerSDL::deinit()
 		SDL_DestroyTexture(mFont[i]);
 		SDL_DestroyTexture(mHighlightFont[i]);
 	}
+    
+#ifdef __APPLE__
+#if !MAC_OS_X
+    SDL_DestroyTexture(mBackFlag);
+#endif
+#endif
 
 	SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
@@ -369,14 +386,14 @@ void RenderManagerSDL::draw()
 
 	// Ball marker
 	position.y = 5;
-	position.x = lround(mBallPosition.x - 2.5);
+	position.x = (int)lround(mBallPosition.x - 2.5);
 	position.w = 5;
 	position.h = 5;
 	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], 0, &position);
 
 	// Mouse marker
 	position.y = 590;
-	position.x = lround(mMouseMarkerPosition - 2.5);
+	position.x = (int)lround(mMouseMarkerPosition - 2.5);
 	position.w = 5;
 	position.h = 5;
 	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], 0, &position);
@@ -407,6 +424,12 @@ void RenderManagerSDL::draw()
 	rodPosition.w = 14;
 	rodPosition.h = 300;
 	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
+    
+	position.x = 400 - 35;
+	position.y = 70;
+	position.w = 70;
+	position.h = 82;
+    SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
 
 	// Drawing the Ball
 	position = ballRect(mBallPosition);
@@ -664,10 +687,10 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)
 {
 	SDL_Rect ovRect;
-	ovRect.x = lround(pos1.x);
-	ovRect.y = lround(pos1.y);
-	ovRect.w = lround(pos2.x - pos1.x);
-	ovRect.h = lround(pos2.y - pos1.y);
+	ovRect.x = (int)lround(pos1.x);
+	ovRect.y = (int)lround(pos1.y);
+	ovRect.w = (int)lround(pos2.x - pos1.x);
+	ovRect.h = (int)lround(pos2.y - pos1.y);
 	SDL_SetTextureAlphaMod(mOverlayTexture, lround(opacity * 255));
 	SDL_SetTextureColorMod(mOverlayTexture, col.r, col.g, col.b);
 	SDL_RenderCopy(mRenderer, mOverlayTexture, NULL, &ovRect);
@@ -676,8 +699,8 @@ void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Co
 void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 {
 	SDL_Rect position;
-	position.x = lround(pos.x);
-	position.y = lround(pos.y);
+	position.x = (int)lround(pos.x);
+	position.y = (int)lround(pos.y);
 
 	static int toDraw = 0;
 
