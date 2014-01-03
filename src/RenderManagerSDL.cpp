@@ -105,7 +105,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		screenFlags);
 
 	// Set icon
-	SDL_Surface* icon = SDL_LoadBMP("data/Icon.bmp");
+	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,
 			SDL_MapRGB(icon->format, 0, 0, 0));
 	SDL_SetWindowIcon(mWindow, icon);
