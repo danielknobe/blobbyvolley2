@@ -128,5 +128,11 @@ class RenderManagerSDL : public RenderManager
 
 		void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags);
 		void colorizeBlobs(int player);
+    
+#ifdef __APPLE__
+#if !MAC_OS_X
+        SDL_Texture* mBackFlag;
+#endif
+#endif
 };
 
