@@ -92,7 +92,6 @@ void ReliabilityLayer::InitializeVariables( void )
 	statistics.connectionStartTime = RakNet::GetTime();
 	splitPacketId = 0;
 	packetNumber = 0;
-	// lastPacketSendTime=retransmittedFrames=sentPackets=sentFrames=receivedPacketsCount=bytesSent=bytesReceived=0;
 	SetLostPacketResendDelay( 1000 );
 	deadConnection = false;
 	lastAckTime = 0;
@@ -101,7 +100,6 @@ void ReliabilityLayer::InitializeVariables( void )
 	windowSize = MINIMUM_WINDOW_SIZE;
 	lossyWindowSize = MAXIMUM_WINDOW_SIZE + 1; // Infinite
 	lastWindowIncreaseSizeTime = 0;
-	// lastPacketReceivedTime=0;
 	receivedPacketsBaseIndex=0;
 	resetReceivedPackets=true;
 }
@@ -227,13 +225,9 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 		return true;
 
 	int numberOfAcksInFrame = 0;
-	unsigned int time;
 	bool indexFound;
 	int count, size;
 	PacketNumberType holeCount;
-//	bool duplicatePacket;
-
-	// bytesReceived+=length + UDP_HEADER_SIZE;
 
 	UpdateThreadedMemory();
 
@@ -242,8 +236,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 
 	RakNet::BitStream socketData( (char*)buffer, length, false ); // Convert the incoming data to a bitstream for easy parsing
 
-	// time = lastPacketReceivedTime = RakNet::GetTime();
-	time = RakNet::GetTime();
+	unsigned int time = RakNet::GetTime();
 
 
 	// Parse the bitstream to create an internal packet
@@ -254,23 +247,15 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 		if ( internalPacket->isAcknowledgement )
 		{
 			numberOfAcksInFrame++;
-			//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 
 			if ( resendQueue.size() == 0 )
 			{
-				//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
-				//reliabilityLayerMutexes[lastAckTime_MUTEX].Lock();
 				lastAckTime = 0; // Not resending anything so clear this var so we don't drop the connection on not getting any more acks
-				//reliabilityLayerMutexes[lastAckTime_MUTEX].Unlock();
 			}
 
 			else
 			{
-				//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
-
-				//reliabilityLayerMutexes[lastAckTime_MUTEX].Lock();
 				lastAckTime = time; // Just got an ack.  Record when we got it so we know the connection is alive
-				//reliabilityLayerMutexes[lastAckTime_MUTEX].Unlock();
 			}
 
 			// SHOW - ack received
@@ -281,7 +266,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 		}
 		else
 		{
-			//   receivedPacketsCount++;
 			if ( internalPacket->reliability == RELIABLE_SEQUENCED || internalPacket->reliability == RELIABLE_ORDERED || internalPacket->reliability == RELIABLE )
 			{
 				SendAcknowledgementPacket( internalPacket->packetNumber, time );
@@ -450,26 +434,20 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 						if ( internalPacket )
 						{
 #ifdef _DEBUG
-							//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 							assert( splitPacketList.size() == splitPacketListSize - internalPacket->splitPacketCount );
-							//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 #endif
 							// Update our index to the newest packet
 							waitingForSequencedPacketReadIndex[ internalPacket->orderingChannel ] = internalPacket->orderingIndex + 1;
 
 							// If there is a rebuilt packet, add it to the output queue
-							//       reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
 							outputQueue.push( internalPacket );
-							//       reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 							internalPacket = 0;
 						}
 
 #ifdef _DEBUG
 						else
 						{
-							//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 							assert( splitPacketList.size() == (unsigned int) splitPacketListSize );
-							//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 						}
 
 #endif
@@ -482,9 +460,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 						waitingForSequencedPacketReadIndex[ internalPacket->orderingChannel ] = internalPacket->orderingIndex + 1;
 
 						// Not a split packet. Add the packet to the output queue
-						//      reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
 						outputQueue.push( internalPacket );
-						//      reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 						internalPacket = 0;
 					}
 				}
@@ -537,7 +513,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 
 #ifdef _DEBUG
 				int splitPacketListSize = splitPacketList.size() + 1;
-				//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 #endif
 
 				InsertIntoSplitPacketList( internalPacket );
@@ -547,9 +522,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 				if ( internalPacket == 0 )
 				{
 #ifdef _DEBUG
-					//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 					assert( splitPacketList.size() == (unsigned int) splitPacketListSize );
-					//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 #endif
 					// Don't have all the parts yet
 					goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
@@ -558,9 +531,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 #ifdef _DEBUG
 				else
 				{
-					//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 					assert( splitPacketList.size() == splitPacketListSize - internalPacket->splitPacketCount );
-					//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 				}
 
 #endif
@@ -596,9 +567,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 					//printf("Pushing immediate packet %i with ordering index %i\n", internalPacket->packetNumber, internalPacket->orderingIndex );
 
 					// Push the packet for the user to read
-					//     reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
 					outputQueue.push( internalPacket );
-					//     reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 					internalPacket = 0; // Don't reference this any longer since other threads access it
 
 					// Wait for the next ordered packet in sequence
@@ -650,10 +619,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 			}
 
 			// Nothing special about this packet.  Add it to the output queue
-			//   reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
 			outputQueue.push( internalPacket );
-
-			//   reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 
 			// Output queue fill rate test
 			//   if (outputQueue.size()%50==0)
@@ -673,7 +639,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 	// then the sender is limited by how many resends can fit in one frame
 	if ( numberOfAcksInFrame >= windowSize && ( sendPacketSet[ SYSTEM_PRIORITY ].size() > 0 || sendPacketSet[ HIGH_PRIORITY ].size() > 0 || sendPacketSet[ MEDIUM_PRIORITY ].size() > 0 ) )
 	{
-		// reliabilityLayerMutexes[windowSize_MUTEX].Lock();
 		//printf("windowSize=%i lossyWindowSize=%i\n", windowSize, lossyWindowSize);
 
 		if ( windowSize < lossyWindowSize || (time>lastWindowIncreaseSizeTime && time-lastWindowIncreaseSizeTime>lostPacketResendDelay*2) )   // Increases the window size slowly, testing for packetloss
@@ -697,7 +662,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 			if ( windowSize == MAXIMUM_WINDOW_SIZE || windowSize - lossyWindowSize > 5 )
 				lossyWindowSize++;
 		}
-		// reliabilityLayerMutexes[windowSize_MUTEX].Unlock();
 	}
 
 	return true;
@@ -714,15 +678,12 @@ int ReliabilityLayer::Receive( char **data )
 
 	InternalPacket * internalPacket;
 
-	// reliabilityLayerMutexes[outputQueue_MUTEX].Lock();
-
 	if ( outputQueue.size() > 0 )
 	{
 		//  #ifdef _DEBUG
 		//  assert(bitStream->GetNumberOfBitsUsed()==0);
 		//  #endif
 		internalPacket = outputQueue.pop();
-		//  reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 
 		int bitLength;
 		*data = internalPacket->data;
@@ -733,7 +694,6 @@ int ReliabilityLayer::Receive( char **data )
 
 	else
 	{
-		// reliabilityLayerMutexes[outputQueue_MUTEX].Unlock();
 		return 0;
 	}
 
@@ -777,7 +737,6 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 	}
 
 	InternalPacket * internalPacket = internalPacketPool.GetPointer();
-	//InternalPacket * internalPacket = sendPacketSet[priority].WriteLock();
 #ifdef _DEBUG
 	// Remove accessing undefined memory warning
 	memset( internalPacket, 255, sizeof( InternalPacket ) );
@@ -802,9 +761,7 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 	internalPacket->isAcknowledgement = false;
 	internalPacket->nextActionTime = 0;
 
-	//reliabilityLayerMutexes[ packetNumber_MUTEX ].Lock();
 	internalPacket->packetNumber = packetNumber;
-	//reliabilityLayerMutexes[ packetNumber_MUTEX ].Unlock();
 
 	internalPacket->priority = priority;
 	internalPacket->reliability = reliability;
@@ -827,22 +784,17 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 	// This variable is used as the identifier of the packet on the remote machine.
 	// When it cycles it will reuse older numbers but that is ok because by the time it
 	// cycles those older packets will be pretty much guaranteed to arrive by then
-	//reliabilityLayerMutexes[ packetNumber_MUTEX ].Lock();
 
 //	if ( ++packetNumber == RECEIVED_PACKET_LOG_LENGTH )
 //		packetNumber = 0;
 
 	++packetNumber;
 
-	//reliabilityLayerMutexes[ packetNumber_MUTEX ].Unlock();
-
 	if ( internalPacket->reliability == RELIABLE_SEQUENCED || internalPacket->reliability == UNRELIABLE_SEQUENCED )
 	{
 		// Assign the sequence stream and index
 		internalPacket->orderingChannel = orderingChannel;
-		//reliabilityLayerMutexes[ waitingForSequencedPacketWriteIndex_MUTEX ].Lock();
 		internalPacket->orderingIndex = waitingForSequencedPacketWriteIndex[ orderingChannel ] ++;
-		//reliabilityLayerMutexes[ waitingForSequencedPacketWriteIndex_MUTEX ].Unlock();
 	}
 
 	else
@@ -850,28 +802,17 @@ bool ReliabilityLayer::Send( char *data, int numberOfBitsToSend, PacketPriority 
 		{
 			// Assign the ordering channel and index
 			internalPacket->orderingChannel = orderingChannel;
-			//reliabilityLayerMutexes[ waitingForOrderedPacketWriteIndex_MUTEX ].Lock();
 			internalPacket->orderingIndex = waitingForOrderedPacketWriteIndex[ orderingChannel ] ++;
-			//reliabilityLayerMutexes[ waitingForOrderedPacketWriteIndex_MUTEX ].Unlock();
 		}
 
 	if ( splitPacket )   // If it uses a secure header it will be generated here
 	{
 		// Must split the packet.  This will also generate the SHA1 if it is required. It also adds it to the send list.
-		//InternalPacket packetCopy;
-		//memcpy(&packetCopy, internalPacket, sizeof(InternalPacket));
-		//sendPacketSet[priority].CancelWriteLock(internalPacket);
-		//SplitPacket( &packetCopy, MTUSize );
 		SplitPacket( internalPacket, MTUSize );
-		//delete [] packetCopy.data;
 		return true;
 	}
 
-//	reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + internalPacket->priority ].Lock();
 	sendPacketSet[ internalPacket->priority ].push( internalPacket );
-//	reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + internalPacket->priority ].Unlock();
-
-//	sendPacketSet[priority].WriteUnlock();
 
 	return true;
 }
@@ -890,14 +831,8 @@ void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigne
 
 	// Accuracy isn't important on this value, and since this is called so often the mutex is sometimes causing deadlock problems.
 	// So it is presently disabled
-	// reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
-	// resendQueueSize=resendQueue.size();
-	// reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 
-	// reliabilityLayerMutexes[lastAckTime_MUTEX].Lock();
 	lastAck = lastAckTime;
-
-	// reliabilityLayerMutexes[lastAckTime_MUTEX].Unlock();
 
 	// Due to thread vagarities and the way I store the time to avoid slow calls to RakNet::GetTime
 	// time may be less than lastAck
@@ -919,7 +854,6 @@ void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigne
 
 	// Not a frame but a packet actually.
 	// However, in a sense it is a frame because we are filling multiple logical packets into one datagram
-	//reliabilityLayerMutexes[updateBitStream_MUTEX].Lock();
 
 	// Keep sending to available bandwidth
 	while ( IsFrameReady( time ) )
@@ -937,7 +871,7 @@ void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigne
 			dt = new DataAndTime;
 			memcpy( dt->data, updateBitStream.GetData(), updateBitStream.GetNumberOfBytesUsed() );
 			dt->length = updateBitStream.GetNumberOfBytesUsed();
-			dt->sendTime = time + ( rand() % 100 );
+			dt->sendTime = time + 100 + ( rand() % 100 );
 			delayList.insert( dt );
 #endif
 
@@ -970,8 +904,6 @@ void ReliabilityLayer::Update( SOCKET s, PlayerID playerId, int MTUSize, unsigne
 	}
 
 #endif
-
-	//reliabilityLayerMutexes[updateBitStream_MUTEX].Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1002,8 +934,6 @@ void ReliabilityLayer::SendBitStream( SOCKET s, PlayerID playerId, RakNet::BitSt
 	//printf("total bits=%i length=%i\n", BITS_TO_BYTES(statistics.totalBitsSent), length);
 
 	SocketLayer::Instance()->SendTo( s, ( char* ) bitStream->GetData(), length, playerId.binaryAddress, playerId.port );
-
-	// lastPacketSendTime=time;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1018,8 +948,6 @@ bool ReliabilityLayer::IsFrameReady( unsigned int time )
 		return true;
 	}
 
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
-
 	// Any acknowledgement packets waiting?  We will send these even if the send is throttled.
 	// Otherwise the throttle may never end
 	if ( acknowledgementQueue.size() >= MINIMUM_WINDOW_SIZE
@@ -1027,22 +955,16 @@ bool ReliabilityLayer::IsFrameReady( unsigned int time )
 		// || acknowledgementQueue.peek()->nextActionTime < time
 	   )
 	{
-		//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
 		return true;
 	}
 
-	// reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
-
 	// Does the oldest packet need to be resent?  If so, send it.
 	// Otherwise the throttle may never end
-	// reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 	if ( resendQueue.size() > 0 && resendQueue.peek() && resendQueue.peek()->nextActionTime < time )
 	{
 		//  reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 		return true;
 	}
-
-	// reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 
 	// Send is throttled.  Don't send.
 	return false;
@@ -1072,17 +994,13 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 
 
 	// Packet acknowledgements always go out first if they are overdue or if there are a lot of them
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
-	// reliabilityLayerMutexes[remoteFramesAwaitingAck_MUTEX].Lock();
 	if ( acknowledgementQueue.size() > 0 &&
 		( acknowledgementQueue.size() >= MINIMUM_WINDOW_SIZE ||
 		  acknowledgementQueue.peek()->nextActionTime < time ) )
 	{
 		do
 		{
-			// reliabilityLayerMutexes[remoteFramesAwaitingAck_MUTEX].Unlock();
 			internalPacket = acknowledgementQueue.pop();
-			//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
 
 			// Write the acknowledgement to the output bitstream
 			statistics.acknowlegementsSent++;
@@ -1103,21 +1021,16 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 				goto END_OF_GENERATE_FRAME;
 			}
 
-			//  reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
 		}
 
 		while ( acknowledgementQueue.size() > 0 );
 	}
-
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
 
 
 
 	// SHOW - show ack
 	//if (output->GetNumberOfBitsUsed()>0)
 	// printf("Sending ack (%i) at time %i. acknowledgementQueue.size()=%i\n", output->GetNumberOfBytesUsed(), RakNet::GetTime(),acknowledgementQueue.size());
-
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 
 	// The resend Queue can have NULL pointer holes.  This is so we can deallocate blocks without having to compress the array
 	while ( resendQueue.size() > 0 )
@@ -1131,7 +1044,6 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 		if ( resendQueue.peek()->nextActionTime < time )
 		{
 			internalPacket = resendQueue.pop();
-			//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 			// Testing
 			//printf("Resending %i. queue size = %i\n", internalPacket->packetNumber, resendQueue.size());
 
@@ -1139,9 +1051,7 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 
 			if ( output->GetNumberOfBitsUsed() + nextPacketBitLength > maxDataBitSize )
 			{
-				//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 				resendQueue.pushAtHead( internalPacket ); // Not enough room to use this packet after all!
-				//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 
 				if ( anyPacketsLost )
 				{
@@ -1181,16 +1091,12 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 			// Put the packet back into the resend list at the correct spot
 			// Don't make a copy since I'm reinserting an allocated struct
 			InsertPacketIntoResendQueue( internalPacket, time, false, false );
-
-			//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 		}
 		else
 		{
 			break;
 		}
 	}
-
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 
 	if ( anyPacketsLost )
 	{
@@ -1215,23 +1121,18 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 		//if ( sendQueue[ i ].size() == 0 )
 		//	continue;
 
-//		reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Lock();
-
 
 		while ( sendPacketSet[ i ].size() )
 		//while ( (internalPacket=sendPacketSet[i].ReadLock())!=0 )
 		{
 			internalPacket = sendPacketSet[ i ].pop();
-//			reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Unlock();
 
 			nextPacketBitLength = GetBitStreamHeaderLength( internalPacket ) + internalPacket->dataBitLength;
 
 			if ( output->GetNumberOfBitsUsed() + nextPacketBitLength > maxDataBitSize )
 			{
 				// This output won't fit.
-//				reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Lock();
 				sendPacketSet[ i ].pushAtHead( internalPacket ); // Push this back at the head so it is the next thing to go out
-//				sendPacketSet[i].CancelReadLock(internalPacket);
 				break;
 			}
 
@@ -1272,11 +1173,7 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 				delete [] internalPacket->data;
 				internalPacketPool.ReleasePointer( internalPacket );
 			}
-			//sendPacketSet[i].ReadUnlock();
-
-	//		reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Lock();
 		}
-	//	reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + i ].Unlock();
 	}
 
 	// Optimization - if we sent data but didn't send an acknowledgement packet previously then send them now
@@ -1284,8 +1181,6 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 	{
 		if ( acknowledgementQueue.size() > 0 )
 		{
-			//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
-
 			while ( output->GetNumberOfBitsUsed() + ACK_BIT_LENGTH < maxDataBitSize && acknowledgementQueue.size() > 0 )
 			{
 				internalPacket = acknowledgementQueue.pop();
@@ -1293,8 +1188,6 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 				internalPacket->data=0;
 				assert(internalPacket->isAcknowledgement==true);
 #endif
-				//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
-
 				// Write the acknowledgement to the output bitstream
 				WriteToBitStreamFromInternalPacket( output, internalPacket );
 
@@ -1304,11 +1197,7 @@ void ReliabilityLayer::GenerateFrame( RakNet::BitStream *output, int MTUSize, bo
 
 				// Delete the acknowledgement
 				internalPacketPool.ReleasePointer( internalPacket );
-
-				//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
 			}
-
-			//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
 		}
 	}
 
@@ -1361,19 +1250,13 @@ void ReliabilityLayer::UpdatePacketloss( unsigned int time )
 
 	//printf("Lost packet. resendQueue.size()=%i sendQueue[0].size() = %i\n",resendQueue.size(), sendQueue[0].size());
 
-	// reliabilityLayerMutexes[windowSize_MUTEX].Lock();
-
-
-	// reliabilityLayerMutexes[windowSize_MUTEX].Unlock();
 	// retransmittedFrames++;
 
 	// The window size will decrease everytime we have to retransmit a frame
-	//reliabilityLayerMutexes[windowSize_MUTEX].Lock();
 
 	if ( --windowSize < MINIMUM_WINDOW_SIZE )
 		windowSize = MINIMUM_WINDOW_SIZE;
 
-	//reliabilityLayerMutexes[windowSize_MUTEX].Unlock();
 	lossyWindowSize = windowSize;
 
 	lastWindowIncreaseSizeTime = time; // This will block the window size from increasing immediately
@@ -1392,8 +1275,6 @@ void ReliabilityLayer::RemovePacketFromResendQueueAndDeleteOlderReliableSequence
 	PacketReliability reliability; // What type of reliability algorithm to use with this packet
 	unsigned char orderingChannel; // What ordering channel this packet is on, if the reliability type uses ordering channels
 	OrderingIndexType orderingIndex; // The ID used as identification for ordering channels
-
-	// reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 
 	for ( unsigned i = 0; i < resendQueue.size(); i ++ )
 	{
@@ -1414,8 +1295,6 @@ void ReliabilityLayer::RemovePacketFromResendQueueAndDeleteOlderReliableSequence
 				resendQueue[ i ] = 0;
 			}
 
-			//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
-
 			// Save some of the data of the packet
 			reliability = internalPacket->reliability;
 			orderingChannel = internalPacket->orderingChannel;
@@ -1432,8 +1311,6 @@ void ReliabilityLayer::RemovePacketFromResendQueueAndDeleteOlderReliableSequence
 			{
 				unsigned j = 0;
 
-				//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
-
 				while ( j < resendQueue.size() )
 				{
 					internalPacket = resendQueue[ j ];
@@ -1448,16 +1325,10 @@ void ReliabilityLayer::RemovePacketFromResendQueueAndDeleteOlderReliableSequence
 
 					j++;
 				}
-
-				//    reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 			}
-
-			//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 			return ;
 		}
 	}
-
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 
 	// Didn't find what we wanted to ack
 	statistics.duplicateAcknowlegementsReceived++;
@@ -1468,30 +1339,7 @@ void ReliabilityLayer::RemovePacketFromResendQueueAndDeleteOlderReliableSequence
 //-------------------------------------------------------------------------------------------------------
 void ReliabilityLayer::SendAcknowledgementPacket( PacketNumberType packetNumber, unsigned int time )
 {
-	InternalPacket * internalPacket;
-
-	// Disabled - never gets called anyway so just wastes CPU cycles
-	/*
-	// High load optimization - if there are over 100 acks waiting scan the list to make sure what we are adding isn't already scheduled to go out
-	reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
-	size = acknowledgementQueue.size();
-	if (size>100)
-	{
-	for (i=0; i < size; i++)
-	{
-	internalPacket=acknowledgementQueue[i];
-	if (internalPacket && internalPacket->packetNumber==packetNumber)
-	{
-	reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
-	//printf("Eliminating duplicate ack. acknowledgementQueue.size()=%i\n",acknowledgementQueue.size());
-	return; // No need to add it - it is already here
-	}
-	}
-	}
-	reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
-	*/
-
-	internalPacket = internalPacketPool.GetPointer();
+	InternalPacket* internalPacket = internalPacketPool.GetPointer();
 #ifdef _DEBUG
 	// Remove boundschecker accessing undefined memory error
 	memset( internalPacket, 255, sizeof( InternalPacket ) );
@@ -1506,10 +1354,8 @@ void ReliabilityLayer::SendAcknowledgementPacket( PacketNumberType packetNumber,
 	// DEBUG
 	internalPacket->nextActionTime = internalPacket->creationTime + ( lostPacketResendDelay >> 2 );
 	//internalPacket->nextActionTime = internalPacket->creationTime;
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Lock();
 	acknowledgementQueue.push( internalPacket );
 	// printf("<Server>Adding ack at time %i. acknowledgementQueue.size=%i\n",RakNet::GetTime(), acknowledgementQueue.size());
-	//reliabilityLayerMutexes[acknowledgementQueue_MUTEX].Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -1924,10 +1770,7 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 	int headerLength = BITS_TO_BYTES( GetBitStreamHeaderLength( internalPacket ) );
 	int dataByteLength = BITS_TO_BYTES( internalPacket->dataBitLength );
 	int maxDataSize;
-	int maximumSendBlock, byteOffset, bytesToSend;
-	unsigned short splitPacketIndex;
-	int i;
-	InternalPacket **internalPacketArray;
+	int byteOffset, bytesToSend;
 
 	maxDataSize = MTUSize - UDP_HEADER_SIZE;
 
@@ -1941,7 +1784,7 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 #endif
 
 	// How much to send in the largest block
-	maximumSendBlock = maxDataSize - headerLength;
+	int maximumSendBlock = maxDataSize - headerLength;
 
 	// Calculate how many packets we need to create
 	internalPacket->splitPacketCount = ( unsigned short ) ( ( dataByteLength - 1 ) / ( maximumSendBlock ) + 1 );
@@ -1949,19 +1792,16 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 	statistics.totalSplits += internalPacket->splitPacketCount;
 
 	// Optimization
-	// internalPacketArray = new InternalPacket*[internalPacket->splitPacketCount];
-	internalPacketArray = ( InternalPacket** ) alloca( sizeof( InternalPacket* ) * internalPacket->splitPacketCount );
+	InternalPacket** internalPacketArray = ( InternalPacket** ) alloca( sizeof( InternalPacket* ) * internalPacket->splitPacketCount );
 
-	for ( i = 0; i < ( int ) internalPacket->splitPacketCount; i++ )
+	for ( int i = 0; i < ( int ) internalPacket->splitPacketCount; i++ )
 	{
 		internalPacketArray[ i ] = internalPacketPool.GetPointer();
-		//internalPacketArray[ i ] = (InternalPacket*) alloca( sizeof( InternalPacket ) );
-//		internalPacketArray[ i ] = sendPacketSet[internalPacket->priority].WriteLock();
 		memcpy( internalPacketArray[ i ], internalPacket, sizeof( InternalPacket ) );
 	}
 
 	// This identifies which packet this is in the set
-	splitPacketIndex = 0;
+	unsigned short splitPacketIndex = 0;
 
 	// Do a loop to send out all the packets
 	do
@@ -1990,20 +1830,14 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 		{
 			// For every further packet we use a new packetNumber.
 			// Note that all split packets are reliable
-			//reliabilityLayerMutexes[ packetNumber_MUTEX ].Lock();
 			internalPacketArray[ splitPacketIndex ]->packetNumber = packetNumber;
 
 			//if ( ++packetNumber == RECEIVED_PACKET_LOG_LENGTH )
 			//	packetNumber = 0;
 			++packetNumber;
-
-			//reliabilityLayerMutexes[ packetNumber_MUTEX ].Unlock();
 		}
 
 		// Add the new packet to send list at the correct priority
-		//  reliabilityLayerMutexes[sendQueue_MUTEX].Lock();
-		//  sendQueue[internalPacket->priority].insert(newInternalPacket);
-		//  reliabilityLayerMutexes[sendQueue_MUTEX].Unlock();
 		// SHOW SPLIT PACKET GENERATION
 		// if (splitPacketIndex % 100 == 0)
 		//  printf("splitPacketIndex=%i\n",splitPacketIndex);
@@ -2014,24 +1848,15 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 
 	splitPacketId++; // It's ok if this wraps to 0
 
-//	InternalPacket *workingPacket;
-
 	// Copy all the new packets into the split packet list
-//	reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + internalPacket->priority ].Lock();
-	for ( i = 0; i < ( int ) internalPacket->splitPacketCount; i++ )
+	for ( int i = 0; i < ( int ) internalPacket->splitPacketCount; i++ )
 	{
 		sendPacketSet[ internalPacket->priority ].push( internalPacketArray[ i ] );
-//		workingPacket=sendPacketSet[internalPacket->priority].WriteLock();
-//		memcpy(workingPacket, internalPacketArray[ i ], sizeof(InternalPacket));
-//		sendPacketSet[internalPacket->priority].WriteUnlock();
 	}
-//	reliabilityLayerMutexes[ sendQueueSystemPriority_MUTEX + internalPacket->priority ].Unlock();
 
 	// Delete the original
 	delete [] internalPacket->data;
 	internalPacketPool.ReleasePointer( internalPacket );
-
-	//delete [] internalPacketArray;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -2039,9 +1864,7 @@ void ReliabilityLayer::SplitPacket( InternalPacket *internalPacket, int MTUSize 
 //-------------------------------------------------------------------------------------------------------
 void ReliabilityLayer::InsertIntoSplitPacketList( InternalPacket * internalPacket )
 {
-	//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 	splitPacketList.insert( internalPacket );
-	//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -2059,7 +1882,6 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 	int *indexList;
 	int indexListIndex;
 
-	//reliabilityLayerMutexes[splitPacketList_MUTEX].Lock();
 	size = splitPacketList.size();
 
 	for ( i = 0; i < size; i++ )
@@ -2072,7 +1894,6 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 			{
 				//   if (splitPacketList.size() % 100 == 0 || splitPacketList[i]->splitPacketCount-splitPacketList.size()<100)
 				//    printf("%i out of %i\n", splitPacketList.size(), splitPacketList[i]->splitPacketCount);
-				//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 				return 0;
 			}
 
@@ -2084,7 +1905,6 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 
 			bitlength = splitPacketList[ i ]->dataBitLength;
 
-			// indexList = new int[splitPacketList[i]->splitPacketCount];
 			indexList = ( int* ) alloca( sizeof( int ) * splitPacketList[ i ]->splitPacketCount );
 
 			indexList[ indexListIndex++ ] = i;
@@ -2202,19 +2022,11 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 					else
 						j++;
 
-				//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
-
-				// delete [] indexList;
-
 				return internalPacket;
 			}
-
-			// delete [] indexList;
 			break;
 		}
 	}
-
-	//reliabilityLayerMutexes[splitPacketList_MUTEX].Unlock();
 
 	return 0;
 }
@@ -2361,13 +2173,9 @@ void ReliabilityLayer::AddToOrderingList( InternalPacket * internalPacket )
 //-------------------------------------------------------------------------------------------------------
 void ReliabilityLayer::InsertPacketIntoResendQueue( InternalPacket *internalPacket, unsigned int time, bool makeCopyOfInternalPacket, bool resetAckTimer )
 {
-	//reliabilityLayerMutexes[lastAckTime_MUTEX].Lock();
 	if ( lastAckTime == 0 || resetAckTimer )
 		lastAckTime = time; // Start the timer for the ack of this packet if we aren't already waiting for an ack
 
-	//reliabilityLayerMutexes[lastAckTime_MUTEX].Unlock();
-
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Lock();
 	if (makeCopyOfInternalPacket)
 	{
 		InternalPacket *pool=internalPacketPool.GetPointer();
@@ -2379,8 +2187,6 @@ void ReliabilityLayer::InsertPacketIntoResendQueue( InternalPacket *internalPack
 	{
 		resendQueue.push( internalPacket );
 	}
-
-	//reliabilityLayerMutexes[resendQueue_MUTEX].Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -2471,14 +2277,6 @@ unsigned int ReliabilityLayer::MakeReceivedPacketHole(unsigned int input) const
 //-------------------------------------------------------------------------------------------------------
 unsigned int ReliabilityLayer::GetResendQueueDataSize(void) const
 {
-	/*
-	unsigned int i, count;
-	for (count=0, i=0; i < resendQueue.size(); i++)
-		if (resendQueue[i]!=0)
-			count++;
-	return count;
-	*/
-
 	// Not accurate but thread-safe.  The commented version might crash if the queue is cleared while we loop through it
 	return resendQueue.size();
 }
