@@ -258,7 +258,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				rightBlobShadowTex,
 				Color(255, 255, 255)));
 		SDL_UpdateTexture(rightBlobShadowTex, NULL, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
-        
+
         // Load iOS specific icon (because we have no backbutton)
 #ifdef __APPLE__
 #if !MAC_OS_X
@@ -360,7 +360,7 @@ void RenderManagerSDL::deinit()
 		SDL_DestroyTexture(mFont[i]);
 		SDL_DestroyTexture(mHighlightFont[i]);
 	}
-    
+
 #ifdef __APPLE__
 #if !MAC_OS_X
     SDL_DestroyTexture(mBackFlag);
@@ -424,12 +424,16 @@ void RenderManagerSDL::draw()
 	rodPosition.w = 14;
 	rodPosition.h = 300;
 	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
-    
+
+#ifdef __APPLE__
+#if !MAC_OS_X
 	position.x = 400 - 35;
 	position.y = 70;
 	position.w = 70;
 	position.h = 82;
     SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
+#endif
+#endif
 
 	// Drawing the Ball
 	position = ballRect(mBallPosition);
