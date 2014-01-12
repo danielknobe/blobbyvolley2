@@ -706,8 +706,8 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	if (player > 1)
 		glColor3ubv(Color(255, 0, 0).val);
 
-	float w = 9.0;
-	float h = 9.0;
+	float w = 16.0;
+	float h = 16.0;
 	glTexCoord2f(0.0, 0.0);
 	glVertex2f(pos.x - w / 2.0, pos.y - h / 2.0);
 	glTexCoord2f(1.0, 0.0);
