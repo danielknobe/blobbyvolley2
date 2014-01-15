@@ -58,18 +58,18 @@ struct ScriptedInputSource::coordinate {
 	}
 	coordinate(double f) : value(convert(f)) {
 	}
-	
+
 	operator float() const {
 		return value;
 	}
-	
+
 	float value;
-	
+
 	private:
 		// other constructors ar prohibited !
 		template<class U>
 		coordinate(U u);
-		
+
 		static float convert(float f);
 };
 
@@ -99,33 +99,21 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 , mSide(playerside)
 {
 	mStartTime = SDL_GetTicks();
-	mState = luaL_newstate();
-	
+
 	// set game constants
-	lua_pushnumber(mState, RIGHT_PLANE);
-	lua_setglobal(mState, "CONST_FIELD_WIDTH");
-	lua_pushnumber(mState, 600 - GROUND_PLANE_HEIGHT_MAX);
-	lua_setglobal(mState, "CONST_GROUND_HEIGHT");
-	lua_pushnumber(mState, -BALL_GRAVITATION);
-	lua_setglobal(mState, "CONST_BALL_GRAVITY");
-	lua_pushnumber(mState, BALL_RADIUS);
-	lua_setglobal(mState, "CONST_BALL_RADIUS");
-	lua_pushnumber(mState, BLOBBY_JUMP_ACCELERATION);
-	lua_setglobal(mState, "CONST_BLOBBY_JUMP");
-	lua_pushnumber(mState, BLOBBY_LOWER_RADIUS);
-	lua_setglobal(mState, "CONST_BLOBBY_BODY_RADIUS");
-	lua_pushnumber(mState, BLOBBY_UPPER_RADIUS);
-	lua_setglobal(mState, "CONST_BLOBBY_HEAD_RADIUS");
-	lua_pushnumber(mState, BLOBBY_HEIGHT);
-	lua_setglobal(mState, "CONST_BLOBBY_HEIGHT");
-	lua_pushnumber(mState, -GRAVITATION);
-	lua_setglobal(mState, "CONST_BLOBBY_GRAVITY");
-	lua_pushnumber(mState, 600 - NET_SPHERE_POSITION);
-	lua_setglobal(mState, "CONST_NET_HEIGHT");
-	lua_pushnumber(mState, NET_RADIUS);
-	lua_setglobal(mState, "CONST_NET_RADIUS");
-	
-	
+	setLuaGlobal("CONST_FIELD_WIDTH", RIGHT_PLANE);
+	setLuaGlobal("CONST_GROUND_HEIGHT", 600 - GROUND_PLANE_HEIGHT_MAX);
+	setLuaGlobal("CONST_BALL_GRAVITY", -BALL_GRAVITATION);
+	setLuaGlobal("CONST_BALL_RADIUS", BALL_RADIUS);
+	setLuaGlobal("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
+	setLuaGlobal("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
+	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
+	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
+	setLuaGlobal("CONST_BLOBBY_GRAVITY", -GRAVITATION);
+	setLuaGlobal("CONST_NET_HEIGHT", 600 - NET_SPHERE_POSITION);
+	setLuaGlobal("CONST_NET_RADIUS", NET_RADIUS);
+
+
 	//luaopen_math(mState);
 	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "touches", touches);
@@ -156,36 +144,31 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	lua_register(mState, "predictImpact", predictImpact);
 	lua_register(mState, "getScore", getScore);
 	lua_register(mState, "getOppScore", getOppScore);
-	lua_register(mState, "getScoreToWin", getScoreToWin);	
+	lua_register(mState, "getScoreToWin", getScoreToWin);
 	lua_register(mState, "getGameTime", getGameTime);
-	
+
 	//lua_register(mState, "parabel", parabel);
 
 	int error = FileRead::readLuaScript(filename, mState);
-	
+
 	if (error == 0)
 		error = lua_pcall(mState, 0, 6, 0);
-	
+
 	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
 		ScriptException except;
 		except.luaerror = lua_tostring(mState, -1);
-		lua_pop(mState, 1);
-		lua_close(mState);
 		BOOST_THROW_EXCEPTION(except);
 	}
-	
-	
+
+
 	// check whether all required lua functions are available
 	bool onserve, ongame, onoppserve;
-	lua_getglobal(mState, "OnServe");
-	onserve = lua_isfunction(mState, -1);
-	lua_getglobal(mState, "OnGame");
-	ongame = lua_isfunction(mState, -1);
-	lua_getglobal(mState, "OnOpponentServe");
-	onoppserve = lua_isfunction(mState, -1);
+	onserve = getLuaFunction("OnServe");
+	ongame = getLuaFunction("OnGame");
+	onoppserve = getLuaFunction("OnOpponentServe");
 	if (!onserve || !ongame ||!onoppserve)
 	{
 		std::string error_message = "Missing bot function ";
@@ -193,29 +176,27 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 		error_message += ongame ? "" : "OnGame() ";
 		error_message += onoppserve ? "" : "OnOpponentServe() ";
 		std::cerr << "Lua Error: " << error_message << std::endl;
-		
+
 		ScriptException except;
 		except.luaerror = error_message;
-		lua_pop(mState, 1);
-		lua_close(mState);
 		BOOST_THROW_EXCEPTION(except);
 	}
-	
+
 	// record which of the optional functions are available
-	lua_getglobal(mState, "OnBounce");
-	mOnBounce = lua_isfunction(mState, -1);
-	
+	mOnBounce = getLuaFunction("OnBounce");
+
 	if(!mOnBounce)
 	{
 		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl;
 	}
-	
+
+	// clean up stack
 	lua_pop(mState, lua_gettop(mState));
-	
+
 	// init delay
 	mBallPositions.set_capacity(mMaxDelay + 1);
 	mBallVelocities.set_capacity(mMaxDelay + 1);
-	
+
 	for(unsigned int i = 0; i < mMaxDelay + 1; ++i) {
 		mBallPositions.push_back(Vector2(0,0));
 		mBallVelocities.push_back(Vector2(0,0));
@@ -224,7 +205,6 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 
 ScriptedInputSource::~ScriptedInputSource()
 {
-	lua_close(mState);
 }
 
 PlayerInput ScriptedInputSource::getNextInput()
@@ -241,11 +221,11 @@ PlayerInput ScriptedInputSource::getNextInput()
 	{
 		return PlayerInput();
 	}
-	
+
 	// ball position and velocity update
 	mBallPositions.push_back(mMatch->getBallPosition());
 	mBallVelocities.push_back(mMatch->getBallVelocity());
-	
+
 	// adapt current delay
 	char action = rand() % 8;
 	switch(action) {
@@ -257,21 +237,21 @@ PlayerInput ScriptedInputSource::getNextInput()
 		case 3:
 			mCurDelay++;
 	}
-	
+
 	if ( mLastBallSpeed != getMatch()->getBallVelocity().x ) {
 		mLastBallSpeed = getMatch()->getBallVelocity().x;
 		// reaction time after bounce
 		mCurDelay += rand() % (mMaxDelay+1);
 	}
-	
+
 	if(mCurDelay == -1)
 		mCurDelay = 0;
 	if(mCurDelay > mMaxDelay)
 		mCurDelay = mMaxDelay;
-	
+
 	int error = 0;
-	
-	if (!mMatch->getBallActive() && mSide == 
+
+	if (!mMatch->getBallActive() && mSide ==
 			// if no player is serving player, assume the left one is
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
@@ -280,7 +260,7 @@ PlayerInput ScriptedInputSource::getNextInput()
 		lua_pushboolean(mState, !mMatch->getBallDown());
 		error = lua_pcall(mState, 1, 0, 0);
 	}
-	else if (!mMatch->getBallActive() && mCurrentSource->mSide != 
+	else if (!mMatch->getBallActive() && mCurrentSource->mSide !=
 			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
 		lua_getglobal(mState, "OnOpponentServe");
@@ -302,7 +282,7 @@ PlayerInput ScriptedInputSource::getNextInput()
 		lua_getglobal(mState, "OnGame");
 		error = lua_pcall(mState, 0, 0, 0);
 	}
-	
+
 	if (error)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
@@ -323,7 +303,7 @@ PlayerInput ScriptedInputSource::getNextInput()
 		std::cerr << lua_typename(mState, -1) << std::endl;
 		lua_pop(mState, stacksize);
 	}
-	
+
 	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
 		return PlayerInput();
 	else
@@ -437,7 +417,7 @@ int ScriptedInputSource::posy(lua_State* state)
 
 int ScriptedInputSource::oppx(lua_State* state)
 {
-	PlayerSide invPlayer = 
+	PlayerSide invPlayer =
 		mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER;
 	coordinate<pos_x> pos = mMatch->getBlobPosition(invPlayer).x;
 	lua_pushnumber(state, pos);
@@ -456,19 +436,19 @@ int ScriptedInputSource::oppy(lua_State* state)
 int ScriptedInputSource::estimate(lua_State* state)
 {
 	static bool warning_issued = false;
-	if( !warning_issued ) 
+	if( !warning_issued )
 	{
 		warning_issued = true;
 		std::cerr << "Lua Warning: function estimate() is deprecated!" << std::endl;
 	}
-	
+
 	Vector2 pos = getBallPosition();
 	const Vector2& vel = getBallVelocity();
-	
+
 	float time = (vel.y - std::sqrt((vel.y * vel.y)- (-2 * BALL_GRAVITATION * (-pos.y + GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS)))) / (-BALL_GRAVITATION);
-	
+
 	coordinate<pos_x> estim = pos.x + vel.x * time;
-	
+
 	lua_pushnumber(state, estim);
 	return 1;
 }
@@ -476,7 +456,7 @@ int ScriptedInputSource::estimate(lua_State* state)
 int ScriptedInputSource::estimx(lua_State* state)
 {
 	static bool warning_issued = false;
-	if( !warning_issued ) 
+	if( !warning_issued )
 	{
 		warning_issued = true;
 		std::cerr << "Lua Warning: function estimx() is deprecated!" << std::endl;
@@ -492,7 +472,7 @@ int ScriptedInputSource::estimx(lua_State* state)
 int ScriptedInputSource::estimy(lua_State* state)
 {
 	static bool warning_issued = false;
-	if( !warning_issued ) 
+	if( !warning_issued )
 	{
 		warning_issued = true;
 		std::cerr << "Lua Warning: function estimy() is deprecated!" << std::endl;
@@ -526,9 +506,9 @@ int ScriptedInputSource::timetox(lua_State* state) {
 	reset_flags();
 	coordinate<pos_x> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
+
 	float time = time_to_x(getBallPosition(), getBallVelocity(), destination);
-	
+
 	lua_pushnumber(state, time);
 	setflags(state);
 	return 1;
@@ -537,9 +517,9 @@ int ScriptedInputSource::timetoy(lua_State* state) {
 	reset_flags();
 	coordinate<pos_y> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
+
 	float time = time_to_y(getBallPosition(), getBallVelocity(), destination);
-	
+
 	lua_pushnumber(state, time);
 	setflags(state);
 	return 1;
@@ -548,9 +528,9 @@ int ScriptedInputSource::xaty(lua_State* state) {
 	reset_flags();
 	coordinate<pos_y> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
+
 	coordinate<pos_x> x = x_at_y(getBallPosition(), getBallVelocity(), destination);
-		
+
 	lua_pushnumber(state, x);
 	setflags(state);
 	return 1;
@@ -559,7 +539,7 @@ int ScriptedInputSource::yatx(lua_State* state) {
 	reset_flags();
 	coordinate<pos_x> destination = lua_tonumber(state, -1);
 	lua_pop(state, 1);
-	
+
 	coordinate<pos_y> y = y_at_x(getBallPosition(), getBallVelocity(), destination);
 
 	lua_pushnumber(state, y);
@@ -583,28 +563,28 @@ int ScriptedInputSource::nextevent(lua_State* state) {
 	return 1;
 }
 
-int ScriptedInputSource::getScore(lua_State* state) 
+int ScriptedInputSource::getScore(lua_State* state)
 {
 	float score = mMatch->getScore( mCurrentSource->mSide );
 	lua_pushnumber(state, score);
 	return 1;
 }
 
-int ScriptedInputSource::getOppScore(lua_State* state) 
+int ScriptedInputSource::getOppScore(lua_State* state)
 {
 	float score = mMatch->getScore( mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER: LEFT_PLAYER );
 	lua_pushnumber(state, score);
 	return 1;
 }
 
-int ScriptedInputSource::getScoreToWin(lua_State* state) 
+int ScriptedInputSource::getScoreToWin(lua_State* state)
 {
 	float score = mMatch->getScoreToWin();
 	lua_pushnumber(state, score);
 	return 1;
 }
 
-int ScriptedInputSource::getGameTime(lua_State* state) 
+int ScriptedInputSource::getGameTime(lua_State* state)
 {
 	float time = mMatch->getClock().getTime();
 	lua_pushnumber(state, time);
