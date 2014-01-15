@@ -50,6 +50,7 @@ set (blobby_SRC ${common_SRC}
 #	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
 	ScriptedInputSource.cpp ScriptedInputSource.h
+	IScriptableComponent.cpp IScriptableComponent.h
 	BotAPICalculations.cpp BotAPICalculations.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
@@ -99,7 +100,7 @@ target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PH
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
 	target_link_libraries(blobby-server lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-endif (UNIX) 
+endif (UNIX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
 	set_target_properties(blobby PROPERTIES LINK_FLAGS "-mwindows") # disable the console window

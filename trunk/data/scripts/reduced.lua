@@ -124,7 +124,7 @@ function estimImpactLow()
 end
 
 function estimImpact2(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   bgrav = CONST_BALL_GRAVITY
+   bgrav = -CONST_BALL_GRAVITY
 
    if ((vby^2)-(-2*bgrav*(by-destY))) < 0 then
       target = nil
