@@ -1,34 +1,23 @@
 -- Combot 1.1
 -- by Oreon, Axji & Enormator
 
+-- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+
 -- Flags und runners
 wait = 0
 naechsterBallSchmettern = true -- evtl Variablennamen wechseln
 
 
 -- Weltkonstanten
+CONST_MITTE = CONST_FIELD_WIDTH/2
+CONST_RECHTER_RAND = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
 
-CONST_FELD_LAENGE = 800
-CONST_BALL_RADIUS = 31.5
-CONST_GROUND_PLANE = 100
-
-CONST_BALL_GRAVITY = 0.28
-
-CONST_MITTE = CONST_FELD_LAENGE/2
-CONST_RECHTER_RAND = CONST_FELD_LAENGE - CONST_BALL_RADIUS
-
-CONST_BLOBBY_HOEHE = 89
-CONST_BLOBBY_KOPF_RADIUS = 25
-CONST_BLOBBY_BAUCH_RADIUS = 33
-CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_PLANE + CONST_BLOBBY_HOEHE + CONST_BALL_RADIUS
+CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 CONST_BLOBBY_MAXJUMP = 393.625
 
-CONST_NETZ_RADIUS = 7
-CONST_NETZ_HOEHE = 323
-
 -- Berührungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NETZ_RADIUS - CONST_BALL_RADIUS 
-CONST_NETZ_RECHTS = CONST_MITTE + CONST_NETZ_RADIUS + CONST_BALL_RADIUS 
+CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
+CONST_NETZ_RECHTS = CONST_MITTE + CONST_NET_RADIUS + CONST_BALL_RADIUS 
 
 -- Charakter
 CONST_ANGRIFFSGRUNDWERT_MIN = 30
@@ -59,7 +48,7 @@ end
 function OnGame()
 	target = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,1) --X Ziel in Blobbyhoehe
 	targets = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,2) --X Richtung (-1 oder 1) bei Einschlag
-	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NETZ_HOEHE,1) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT,1) --X Ziel in Netzhoehe (Netzrollerberechnung)
 	targetJump = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,1) --X Ziel in Schmetterhoehe
 	targetJumps = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,2)
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
@@ -133,7 +122,7 @@ function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate
 	estimbspeedx=bspeedx()
 
 	if(resultX > CONST_RECHTER_RAND) then -- Korrigieren der Appraller an der Rechten Ebene
-		resultX = 2 * CONST_FELD_LAENGE - resultX
+		resultX = 2 * CONST_FIELD_WIDTH - resultX
 		estimbspeedx=-estimbspeedx
 	end
 
@@ -142,7 +131,7 @@ function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate
 		estimbspeedx=-estimbspeedx
 	end
 
-	if (resultX > CONST_NETZ_LINKS) and (estimatey(CONST_MITTE) < CONST_NETZ_HOEHE) and (estimbspeedx > 0) then
+	if (resultX > CONST_NETZ_LINKS) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT) and (estimbspeedx > 0) then
 		resultX = 2 * CONST_NETZ_LINKS - resultX
 		estimbspeedx=-estimbspeedx
 	end

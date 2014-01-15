@@ -5,6 +5,8 @@
 -- The terms of the GPLv2 or later apply.
 -- See the Blobby Volley distribution for the license text.
 
+-- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+
 modeLock = 0
 timeto = 0
 target = 0
@@ -13,35 +15,16 @@ estimbspeedx = 0
 direct = true
 servrand = nil
 
--- Knostanten
-CONST_BALL_RADIUS = 31.5
-
-CONST_MITTE = 400
-
-CONST_BLOBBY_HOEHE = 89
-CONST_BLOBBY_KOPF_RADIUS = 25
-CONST_BLOBBY_BAUCH_RADIUS = 33
-
-CONST_NETZ_RADIUS = 7
-CONST_NETZ_HOEHE = 157
-
-CONST_FELD_LAENGE = 800
-CONST_BALL_RADIUS = 31.5
-CONST_GROUND_PLANE = 100
-
-CONST_BALL_GRAVITY = 0.28
-
-CONST_MITTE = CONST_FELD_LAENGE/2
-CONST_RECHTER_RAND = CONST_FELD_LAENGE - CONST_BALL_RADIUS
+-- Konstanten
+CONST_MITTE = CONST_FIELD_WIDTH/2
+CONST_RECHTER_RAND = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
 
 -- Berührungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NETZ_RADIUS - CONST_BALL_RADIUS 
-CONST_NETZ_RECHTS = CONST_MITTE + CONST_NETZ_RADIUS + CONST_BALL_RADIUS 
+CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
+CONST_NETZ_RECHTS = CONST_MITTE + CONST_NET_RADIUS + CONST_BALL_RADIUS 
 
-CONST_BLOBBY_HOEHE = 89
-CONST_BLOBBY_KOPF_RADIUS = 25
-CONST_BLOBBY_BAUCH_RADIUS = 33
-CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_PLANE + CONST_BLOBBY_HOEHE + CONST_BALL_RADIUS
+CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
+-- TODO calculate this from constants
 CONST_BLOBBY_MAXJUMP = 393.625
 
 function OnServe(ballready)
@@ -141,7 +124,7 @@ function estimImpactLow()
 end
 
 function estimImpact2(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   bgrav = 0.28	
+   bgrav = CONST_BALL_GRAVITY
 
    if ((vby^2)-(-2*bgrav*(by-destY))) < 0 then
       target = nil

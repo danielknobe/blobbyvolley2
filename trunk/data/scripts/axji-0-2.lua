@@ -1,3 +1,5 @@
+-- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+
 function OnOpponentServe()
 	moveto(120)
 end
@@ -10,20 +12,11 @@ aggroservice = 50 -- versetzung zum Ball je gr�sser desto tiefer fliegt der Se
 -- Korrekturfaktor f�r die Flugberechnung
 korrekturfaktor = 7
 
--- Knostanten
-CONST_BALL_RADIUS = 31.5
-
-CONST_MITTE = 400
-
-CONST_BLOBBY_HOEHE = 89
-CONST_BLOBBY_KOPF_RADIUS = 25
-CONST_BLOBBY_BAUCH_RADIUS = 33
-
-CONST_NETZ_RADIUS = 7
-CONST_NETZ_HOEHE = 157
+-- Konstanten
+CONST_MITTE = CONST_FIELD_WIDTH/2
 
 -- Linke Ber�hrungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NETZ_RADIUS - CONST_BALL_RADIUS 
+CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
 
 
 function OnServe(ballready)

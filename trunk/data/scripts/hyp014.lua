@@ -1,9 +1,9 @@
-g=0.28
-pg=0.88
+g= CONST_BALL_GRAVITY
+pg= CONST_BLOBBY_GRAVITY
 v0=14.5
 v_p=4.5
-pj=0.44
-r1=31.5
+pj= pg/2
+r1= CONST_BALL_RADIUS 
 h=31.5+19+25
 estt=0
 p=0.654
