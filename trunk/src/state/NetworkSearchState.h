@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include <list>
+#include <future>
 #include <boost/scoped_ptr.hpp>
 
 class RakClient;
@@ -48,7 +49,7 @@ public:
 	virtual void step();
 	// onlinegames connect to the masterserver
 	// LAN games send a broadcast to local network
-	virtual void searchServers() = 0;
+	void searchServers();
 
 	virtual const char* getStateName() const;
 protected:
@@ -56,12 +57,14 @@ protected:
 	boost::scoped_ptr<RakClient> mPingClient;
 
 private:
+	virtual void doSearchServers() = 0;
+
 	typedef std::list<RakClient*> ClientList;
-
-
 
 	ClientList mQueryClients;
 	RakClient* mDirectConnectClient;
+
+	std::future<void> mPingJob;
 
 	int mSelectedServer;
 	bool mDisplayInfo;
@@ -80,7 +83,7 @@ class OnlineSearchState : public NetworkSearchState
 public:
 	OnlineSearchState();
 	virtual ~OnlineSearchState() {};
-	virtual void searchServers();
+	virtual void doSearchServers();
 	virtual const char* getStateName() const;
 };
 
@@ -93,7 +96,7 @@ class LANSearchState : public NetworkSearchState
 public:
 	LANSearchState();
 	virtual ~LANSearchState() {};
-	virtual void searchServers();
+	virtual void doSearchServers();
 	virtual const char* getStateName() const;
 };
 
