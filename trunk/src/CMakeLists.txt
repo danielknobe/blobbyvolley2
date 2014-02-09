@@ -10,26 +10,27 @@ set(CMAKE_CXX_FLAGS "-Wall")
 include_directories(.)
 
 set(common_SRC
-	Global.h
 	BlobbyDebug.cpp BlobbyDebug.h
 	Clock.cpp Clock.h
 	DuelMatch.cpp DuelMatch.h
-	ReplayRecorder.cpp ReplayRecorder.h
-	NetworkMessage.cpp NetworkMessage.h
-	GameLogic.cpp GameLogic.h
-	PhysicWorld.cpp PhysicWorld.h
-	SpeedController.cpp SpeedController.h
-	UserConfig.cpp UserConfig.h
-	File.cpp File.h
-	FileWrite.cpp FileWrite.h
 	FileRead.cpp FileRead.h
 	FileSystem.cpp FileSystem.h
+	FileWrite.cpp FileWrite.h
+	File.cpp File.h
+	GameLogic.cpp GameLogic.h
+	GenericIO.cpp GenericIO.h
+	Global.h
+	NetworkMessage.cpp NetworkMessage.h
+	PhysicWorld.cpp PhysicWorld.h
+	ReplayRecorder.cpp ReplayRecorder.h
+	SpeedController.cpp SpeedController.h
+	UserConfig.cpp UserConfig.h
 	PhysicState.cpp PhysicState.h
 	DuelMatchState.cpp DuelMatchState.h
 	GameLogicState.cpp GameLogicState.h
-	GenericIO.cpp GenericIO.h
 	ReplaySavePoint.cpp ReplaySavePoint.h
 	InputSource.cpp InputSource.h
+	IScriptableComponent.cpp IScriptableComponent.h
 	PlayerIdentity.cpp PlayerIdentity.h
 	server/DedicatedServer.cpp server/DedicatedServer.h
 	server/NetworkPlayer.cpp server/NetworkPlayer.h
@@ -50,7 +51,6 @@ set (blobby_SRC ${common_SRC}
 #	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
 	ScriptedInputSource.cpp ScriptedInputSource.h
-	IScriptableComponent.cpp IScriptableComponent.h
 	BotAPICalculations.cpp BotAPICalculations.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
