@@ -527,9 +527,9 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_pushnumber(mState, getScoreToWin());
 	lua_setglobal(mState, "SCORE_TO_WIN");
 
+	setGameConstants();
 
 	// add functions
-	//luaopen_math(mState);
 	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "touches", luaTouches);
 	lua_register(mState, "launched", luaLaunched);
@@ -548,23 +548,6 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
 	lua_register(mState, "time", luaGetGameTime);
 	lua_register(mState, "isgamerunning", luaIsGameRunning);
-
-
-	// set game constants
-	setLuaGlobal("CONST_FIELD_WIDTH", RIGHT_PLANE);
-	setLuaGlobal("CONST_GROUND_HEIGHT", GROUND_PLANE_HEIGHT_MAX);
-	setLuaGlobal("CONST_BALL_GRAVITY", -BALL_GRAVITATION);
-	setLuaGlobal("CONST_BALL_RADIUS", BALL_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
-	setLuaGlobal("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
-	setLuaGlobal("CONST_BLOBBY_GRAVITY", GRAVITATION);
-	setLuaGlobal("CONST_NET_HEIGHT", NET_SPHERE_POSITION);
-	setLuaGlobal("CONST_NET_RADIUS", NET_RADIUS);
-	setLuaGlobal("NO_PLAYER", NO_PLAYER);
-	setLuaGlobal("LEFT_PLAYER", LEFT_PLAYER);
-	setLuaGlobal("RIGHT_PLAYER", RIGHT_PLAYER);
 
 	// now load script file
 	int error = FileRead::readLuaScript(std::string("rules/") + filename, mState);

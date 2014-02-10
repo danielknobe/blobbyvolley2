@@ -101,17 +101,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	mStartTime = SDL_GetTicks();
 
 	// set game constants
-	setLuaGlobal("CONST_FIELD_WIDTH", RIGHT_PLANE);
-	setLuaGlobal("CONST_GROUND_HEIGHT", 600 - GROUND_PLANE_HEIGHT_MAX);
-	setLuaGlobal("CONST_BALL_GRAVITY", -BALL_GRAVITATION);
-	setLuaGlobal("CONST_BALL_RADIUS", BALL_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
-	setLuaGlobal("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
-	setLuaGlobal("CONST_BLOBBY_GRAVITY", -GRAVITATION);
-	setLuaGlobal("CONST_NET_HEIGHT", 600 - NET_SPHERE_POSITION);
-	setLuaGlobal("CONST_NET_RADIUS", NET_RADIUS);
+	setGameConstants();
 
 
 	//luaopen_math(mState);

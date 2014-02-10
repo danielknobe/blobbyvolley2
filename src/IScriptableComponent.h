@@ -36,6 +36,9 @@ protected:
 	void setLuaGlobal(const char* name, double value);
 	bool getLuaFunction(const char* name) const;
 
+	// load lua functions
+	void setGameConstants();
+
 	lua_State* mState;
 };
 
