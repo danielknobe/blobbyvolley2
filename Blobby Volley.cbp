@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DDEBUG" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -21,7 +22,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -34,7 +35,20 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DDEBUG" />
 				</Compiler>
+			</Target>
+			<Target title="R Server">
+				<Option output="bin/Release/Blobby Server" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
@@ -99,6 +113,8 @@
 		</Unit>
 		<Unit filename="src/IMGUI.h" />
 		<Unit filename="src/IReplayLoader.h" />
+		<Unit filename="src/IScriptableComponent.cpp" />
+		<Unit filename="src/IScriptableComponent.h" />
 		<Unit filename="src/IUserConfigReader.h" />
 		<Unit filename="src/InputDevice.cpp">
 			<Option target="Debug" />
@@ -207,10 +223,20 @@
 		<Unit filename="src/lua/lbaselib.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/lua/lbitlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/lua/lcode.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/lua/lcode.h" />
+		<Unit filename="src/lua/lcorolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lctype.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/lua/lctype.h" />
 		<Unit filename="src/lua/ldblib.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -306,9 +332,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/lua/lzio.h" />
-		<Unit filename="src/lua/print.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="src/lua_api_doc.dox" />
 		<Unit filename="src/main.cpp">
 			<Option target="Debug" />
@@ -356,6 +379,7 @@
 		<Unit filename="src/server/servermain.cpp">
 			<Option target="Server Debug" />
 			<Option target="D Server" />
+			<Option target="R Server" />
 		</Unit>
 		<Unit filename="src/state/LobbyState.cpp">
 			<Option target="Debug" />
