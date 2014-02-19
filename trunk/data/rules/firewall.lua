@@ -11,6 +11,5 @@ end
 function OnBallHitsGround(player)
 	mistake(player, opponent(player), 10)
 end
-if SCORE_TO_WIN < 50 then
-	SCORE_TO_WIN = 50
-end
+
+SCORE_TO_WIN = 10 * SCORE_TO_WIN
