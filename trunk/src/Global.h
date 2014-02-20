@@ -39,9 +39,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 const int BLOBBY_PORT = 1234;
 
 const int BLOBBY_VERSION_MAJOR = 0;
-const int BLOBBY_VERSION_MINOR = 102;
+const int BLOBBY_VERSION_MINOR = 103;
 
-const char AppTitle[] = "Blobby Volley 2 Version 1.0 RC4";
+const char AppTitle[] = "Blobby Volley 2 Version 1.0";
 
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
