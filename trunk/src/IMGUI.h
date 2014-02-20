@@ -77,9 +77,9 @@ class IMGUI : public ObjectCounter<IMGUI>
 		bool doButton(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
 		bool doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
 		bool doScrollbar(int id, const Vector2& position, float& value);
-		bool doEditbox(int id, const Vector2& position, int length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
-		SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, unsigned int flags = TF_NORMAL);
-		void doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, int& selected, const std::vector<bool>& local, unsigned int flags = TF_NORMAL);
+		bool doEditbox(int id, const Vector2& position, unsigned length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
+		SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, unsigned& selected, unsigned int flags = TF_NORMAL);
+		void doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, unsigned& selected, const std::vector<bool>& local, unsigned int flags = TF_NORMAL);
 		bool doBlob(int id, const Vector2& position, const Color& col);
 
 		bool usingCursor() const;

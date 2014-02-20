@@ -35,14 +35,14 @@ public:
 	virtual ~OptionState();
 	virtual void step();
 	virtual const char* getStateName() const;
-	
+
 private:
 	/// writes current settings to disk
 	void save();
 
 	UserConfig mOptionConfig;
 	std::vector<std::string> mScriptNames;
-	int mPlayerOptions[MAX_PLAYERS];
+	unsigned mPlayerOptions[MAX_PLAYERS];
 	std::string mPlayerName[MAX_PLAYERS];
 	unsigned mPlayerNamePosition[MAX_PLAYERS];
 	unsigned mBotStrength[MAX_PLAYERS];
@@ -121,12 +121,12 @@ public:
 private:
 	/// writes current settings to disk
 	void save();
-	
+
 	UserConfig mOptionConfig;
 	std::vector<std::string> mBackgrounds;
-	int mBackground;
+	unsigned mBackground;
 	std::vector<std::string> mRules;
-	int mRule;
+	unsigned mRule;
 	float mVolume;
 	bool mMute;
 	int mGameFPS;

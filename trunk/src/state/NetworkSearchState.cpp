@@ -241,8 +241,7 @@ void NetworkSearchState::step()
 		servernames.push_back(std::string(mScannedServers[i].name) + " (" + boost::lexical_cast<std::string>(mScannedServers[i].waitingplayers) + ")" );
 	}
 
-	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0),
-			servernames, mSelectedServer) == SBA_DBL_CLICK )
+	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0), servernames, mSelectedServer) == SBA_DBL_CLICK )
 	{
 		doEnterServer = true;
 	}
