@@ -43,7 +43,7 @@ public:
 private:
 
 	std::vector<std::string> mReplayFiles;
-	int mSelectedReplay;
+	unsigned mSelectedReplay;
 	bool mShowReplayInfo;
 	boost::scoped_ptr<IReplayLoader> mReplayLoader;
 

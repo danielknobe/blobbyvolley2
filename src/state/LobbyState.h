@@ -45,7 +45,7 @@ class LobbyState : public State
 		boost::shared_ptr<RakClient> mClient;
 		PlayerIdentity mLocalPlayer;
 		ServerInfo mInfo;
-		int mSelectedPlayer;
+		unsigned mSelectedPlayer;
 
 		struct WaitingPlayer
 		{

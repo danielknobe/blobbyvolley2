@@ -66,7 +66,7 @@ private:
 
 	std::future<void> mPingJob;
 
-	int mSelectedServer;
+	unsigned mSelectedServer;
 	bool mDisplayInfo;
 	bool mEnteringServer;
 	bool mDisplayUpdateNotification;

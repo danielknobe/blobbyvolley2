@@ -207,8 +207,7 @@ void LobbyState::step()
 	}
 
 	bool doEnterGame = false;
-	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 90.0), Vector2(375.0, 470.0),
-			playerlist, mSelectedPlayer) == SBA_DBL_CLICK )
+	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 90.0), Vector2(375.0, 470.0), playerlist, mSelectedPlayer) == SBA_DBL_CLICK )
 	{
 		doEnterGame = true;
 	}
