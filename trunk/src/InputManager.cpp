@@ -104,7 +104,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	// load config for touch
 	else if (device == "touch")
 	{
-		return new TouchInputDevice(side);
+		return new TouchInputDevice(side, config.getInteger(prefix + "touch_type"));
 	}
 	else	
 		std::cerr << "Error: unknown input device: " << device << std::endl;
