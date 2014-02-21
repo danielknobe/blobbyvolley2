@@ -115,9 +115,10 @@ class TouchInputDevice : public InputDevice
 		boost::circular_buffer<PlayerInput> mInputs;
 		LagDetector mLag;
 		int mTouchXPos;	
+		int mTouchType;
 	public:
 		virtual ~TouchInputDevice(){};
-		TouchInputDevice(PlayerSide player);
+		TouchInputDevice(PlayerSide player, int type);
 		virtual PlayerInput transferInput(const InputSource* ips);
 };
 
