@@ -559,6 +559,7 @@ InputOptionsState::InputOptionsState()
 	mLeftBlobbyJoystickLeft = mOptionConfig.getString("left_blobby_joystick_left");
 	mLeftBlobbyJoystickRight = mOptionConfig.getString("left_blobby_joystick_right");
 	mLeftBlobbyJoystickJump = mOptionConfig.getString("left_blobby_joystick_jump");
+	mLeftBlobbyTouchType = mOptionConfig.getInteger("left_blobby_touch_type");
 	//right data:
 	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
 	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
@@ -568,6 +569,7 @@ InputOptionsState::InputOptionsState()
 	mRightBlobbyJoystickLeft = mOptionConfig.getString("right_blobby_joystick_left");
 	mRightBlobbyJoystickRight = mOptionConfig.getString("right_blobby_joystick_right");
 	mRightBlobbyJoystickJump = mOptionConfig.getString("right_blobby_joystick_jump");
+	mRightBlobbyTouchType = mOptionConfig.getInteger("right_blobby_touch_type");
 }
 
 InputOptionsState::~InputOptionsState()
@@ -585,6 +587,7 @@ void InputOptionsState::save()
 	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
 	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
 	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
+	mOptionConfig.setInteger("left_blobby_touch_type", mLeftBlobbyTouchType);
 	//right data:
 	mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
 	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
@@ -594,6 +597,7 @@ void InputOptionsState::save()
 	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
 	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
 	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
+	mOptionConfig.setInteger("right_blobby_touch_type", mRightBlobbyTouchType);
 
 	mOptionConfig.saveFile("inputconfig.xml");
 }
