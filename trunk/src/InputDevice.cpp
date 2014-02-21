@@ -143,7 +143,7 @@ TouchInputDevice::TouchInputDevice(PlayerSide player, int type)
 }
 
 PlayerInput TouchInputDevice::transferInput(const InputSource* source)
-{	
+{
 	// check if we have a running game,
 	// otherwise leave directly
 	const DuelMatch* match = source->getMatch();
@@ -156,13 +156,12 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 
 	switch (mTouchType)
 	{
-	// Blobby moves to playerside finger, opponentside is the jumpbutton
+	// ******************************************************************
+	// Blobby moves to playerside finger, opponentside is the jumpbutton*
+	// ******************************************************************
 	case 0:
 	{
-		// *********************************************************
-		// *Take the data of all fingers and the correct playerside*
-		// *********************************************************
-		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++) 
+		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
 		{
 			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
 
@@ -239,11 +238,11 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 
 
 	// *********************************************************************************
-	// *playerside is devided in left/right move button, opponentside is the jumpbutton*	
+	// *playerside is devided in left/right move button, opponentside is the jumpbutton*
 	// *********************************************************************************
 	case 1:
 	{
-		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++) 
+		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
 		{
 			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
 
@@ -296,7 +295,7 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 	}
 	default:
 		// **************************************
-		// *An error happens we do no input here*	
+		// *An error happens we do no input here*
 		// **************************************
 		break;
 	}
@@ -357,7 +356,7 @@ void JoystickPool::probeJoysticks()
 	for(int i = 0; i < numJoysticks; i++)
 	{
 		lastjoy = SDL_JoystickOpen(i);
-		
+
 		if (lastjoy == NULL)
 			continue;
 
