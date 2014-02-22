@@ -1115,10 +1115,8 @@ void MiscOptionsState::save()
 	mOptionConfig.setInteger("gamefps", mGameFPS);
 	mOptionConfig.setInteger("network_side", mNetworkSide);
 	mOptionConfig.setString("language", mLanguage);
-	if (mBackground > -1)
-		mOptionConfig.setString("background", mBackgrounds[mBackground]);
-	if (mRule > -1)
-		mOptionConfig.setString("rules", mRules[mRule] + ".lua");
+	mOptionConfig.setString("background", mBackgrounds[mBackground]);
+	mOptionConfig.setString("rules", mRules[mRule] + ".lua");
 	mOptionConfig.saveFile("config.xml");
 
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
@@ -1142,8 +1140,7 @@ void MiscOptionsState::step()
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
-		if (mBackground > -1)
-			RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
+		RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
 
 	imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RULES);
