@@ -633,7 +633,8 @@ void NetworkGameState::step()
 		{
 			mFakeMatch->step();
 
-			PlayerInput input = mLocalInput->updateInput();
+			mLocalInput->updateInput();
+			PlayerInputAbs input = mLocalInput->getRealInput();
 
 			if (InputManager::getSingleton()->exit())
 			{
@@ -645,9 +646,7 @@ void NetworkGameState::step()
 			stream.Write((unsigned char)ID_INPUT_UPDATE);
 			stream.Write((unsigned char)ID_TIMESTAMP);	///! \todo do we really need this time stamps?
 			stream.Write(RakNet::GetTime());
-			stream.Write(input.left);
-			stream.Write(input.right);
-			stream.Write(input.up);
+			input.writeTo(stream);
 			mClient->Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0);
 			break;
 		}
