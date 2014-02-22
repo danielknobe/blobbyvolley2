@@ -117,20 +117,21 @@ InputSource::InputSource() : mInput(), mMatch(0)
 
 PlayerInput InputSource::getInput() const
 {
-	return mInput;
+	return mInput.toPlayerInput( this->getMatch() );;
 }
 
 PlayerInput InputSource::updateInput()
 {
-	return (mInput = getNextInput());
+	mInput = getNextInput();
+	return getInput();
 }
 
 void InputSource::setInput(PlayerInput ip)
 {
-	mInput = ip;
+	mInput = PlayerInputAbs(ip.left, ip.right, ip.up);
 }
 
-PlayerInput InputSource::getNextInput()
+PlayerInputAbs InputSource::getNextInput()
 {
 	return mInput;
 }

@@ -57,7 +57,7 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
 		~ScriptedInputSource();
 
-		virtual PlayerInput getNextInput();
+		virtual PlayerInputAbs getNextInput();
 
 	private:
 		/// this variable saves the current match

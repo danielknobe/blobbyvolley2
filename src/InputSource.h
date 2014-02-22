@@ -159,10 +159,10 @@ class InputSource : public ObjectCounter<InputSource>
 
 	private:
 		/// method that actually calculates the new input
-		virtual PlayerInput getNextInput();
+		virtual PlayerInputAbs getNextInput();
 
 		/// cached input
-		PlayerInput mInput;
+		PlayerInputAbs mInput;
 
 		/// match connected with this source
 		const DuelMatch* mMatch;
