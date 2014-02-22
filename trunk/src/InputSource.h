@@ -88,6 +88,33 @@ struct PlayerInput
 	bool up;
 };
 
+
+class PlayerInputAbs
+{
+	public:
+		PlayerInputAbs();
+		PlayerInputAbs(bool l, bool r, bool j);
+
+
+		// set input
+		void setLeft( bool v );
+		void setRight( bool v );
+		void setJump( bool v);
+
+		PlayerInput toPlayerInput() const;
+
+	private:
+		enum Flags
+		{
+			F_LEFT = 1,
+			F_RIGHT = 2,
+			F_JUMP = 4,
+			F_RELATIVE = 8
+		};
+		unsigned char mFlags;
+		short mTarget;
+};
+
 class DuelMatch;
 
 /*! \class InputSource

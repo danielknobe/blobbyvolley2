@@ -27,6 +27,54 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
+/* PlayerInputAbs */
+
+PlayerInputAbs::PlayerInputAbs()
+{
+
+}
+
+PlayerInputAbs::PlayerInputAbs(bool l, bool r, bool j)
+{
+	setLeft(l);
+	setRight(r);
+	setJump(j);
+}
+
+
+// set input
+void PlayerInputAbs::setLeft( bool v )
+{
+	if(v)
+		mFlags |= F_LEFT;
+	else
+		mFlags &= ~F_LEFT;
+}
+
+void PlayerInputAbs::setRight( bool v )
+{
+	if(v)
+		mFlags |= F_RIGHT;
+	else
+		mFlags &= ~F_RIGHT;
+}
+
+void PlayerInputAbs::setJump( bool v)
+{
+	if(v)
+		mFlags |= F_JUMP;
+	else
+		mFlags &= ~F_JUMP;
+}
+
+PlayerInput PlayerInputAbs::toPlayerInput() const
+{
+	return PlayerInput( mFlags & F_LEFT, mFlags & F_RIGHT, mFlags & F_JUMP );
+}
+
+
+/* InputSource */
+
 InputSource::InputSource() : mInput(), mMatch(0)
 {
 }

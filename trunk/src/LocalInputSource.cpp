@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "LocalInputSource.h"
 
-/* include  */ 
+/* include  */
 #include "InputManager.h"
 #include "RenderManager.h"
 
@@ -41,5 +41,5 @@ LocalInputSource::~LocalInputSource()
 
 PlayerInput LocalInputSource::getNextInput()
 {
-	return mInputDevice->transferInput( this );
+	return mInputDevice->transferInput( this ).toPlayerInput();
 }
