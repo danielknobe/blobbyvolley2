@@ -38,8 +38,8 @@ const float TIMEOUT_MAX = 2.5;
 const float BLOBBY_ANIMATION_SPEED = 0.5;
 
 // helper function for setting FPU precision
-
-inline void set_fpu_single_precision();
+inline short set_fpu_single_precision();
+void reset_fpu_flags(short flags);
 
 PhysicWorld::PhysicWorld()
 : mBallPosition(Vector2(200, STANDARD_BALL_HEIGHT))
@@ -228,7 +228,7 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 int PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning)
 {
 	// Determistic IEEE 754 floating point computations
-	set_fpu_single_precision();
+	short fpf = set_fpu_single_precision();
 
 	int events = 0;
 
@@ -354,6 +354,8 @@ int PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInpu
 	else if (mBallRotation >= 6.25)
 		mBallRotation = mBallRotation - 6.25;
 
+	reset_fpu_flags(fpf);
+
 	return events;
 }
 
@@ -410,21 +412,38 @@ void PhysicWorld::setState(const PhysicState& ps)
 	mBallAngularVelocity = ps.ballAngularVelocity;
 }
 
-inline void set_fpu_single_precision()
+inline short set_fpu_single_precision()
 {
-#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
+	short fl = 0;
+	#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
 	#if defined(__GNUC__)
 		volatile short cw;
 		asm volatile ("fstcw %0" : "=m"(cw));
+		fl = cw;
 		cw = cw & 0xfcff;
 		asm volatile ("fldcw %0" :: "m"(cw));
 	#elif defined(_MSC_VER)
 		short cw;
 		asm fstcw cw;
+		fl = cw;
 		cw = cw & 0xfcff;
 		asm fldcw cw;
 	#endif
-#else
+	#else
 	#warning FPU precision may not conform to IEEE 754
-#endif
+	#endif
+	return fl;
+}
+
+void reset_fpu_flags(short flags)
+{
+	#if defined(i386) || defined(__x86_64) // We need to set a precision for diverse x86 hardware
+	#if defined(__GNUC__)
+		asm volatile ("fldcw %0" :: "m"(flags));
+	#elif defined(_MSC_VER)
+		asm fldcw flags;
+	#endif
+	#else
+	#warning FPU precision may not conform to IEEE 754
+	#endif
 }
