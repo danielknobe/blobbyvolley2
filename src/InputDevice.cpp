@@ -47,13 +47,8 @@ MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton)
 		mDelay = false;
 }
 
-PlayerInputAbs MouseInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs MouseInputDevice::transferInput()
 {
-	// check if we have a running game,
-	// otherwise leave directly
-	const DuelMatch* match = source->getMatch();
-	assert(match);
-
 	PlayerInputAbs input = PlayerInputAbs();
 
 	int mMouseXPos;
@@ -81,14 +76,8 @@ PlayerInputAbs MouseInputDevice::transferInput(const InputSource* source)
 	if (mMouseXPos >= 600 && warp)
 		SDL_WarpMouseInWindow(window, 600, 310);
 
-	// here we load the current position of the player.
-	float blobpos = match->getBlobPosition(mPlayer).x;
-
 	mMarkerX = mMouseXPos + playerOffset;
-	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
-		input.setRight(true);
-	else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
-		input.setLeft(true);
+	input.setTarget( mMarkerX, mPlayer );
 
 	RenderManager::getSingleton().setMouseMarker(mMarkerX);
 
@@ -106,13 +95,8 @@ TouchInputDevice::TouchInputDevice(PlayerSide player, int type)
 	mTouchType = type;
 }
 
-PlayerInputAbs TouchInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs TouchInputDevice::transferInput()
 {
-	// check if we have a running game,
-	// otherwise leave directly
-	const DuelMatch* match = source->getMatch();
-	assert(match);
-
 	PlayerInputAbs input = PlayerInputAbs();
 
 	// Get the primary touch device
@@ -163,14 +147,8 @@ PlayerInputAbs TouchInputDevice::transferInput(const InputSource* source)
 		mTouchXPos = mTouchXPos < 201 ? 201 : mTouchXPos;
 		mTouchXPos = mTouchXPos > 600 ? 600 : mTouchXPos;
 
-		// here we load the current position of the player.
-		float blobpos = match->getBlobPosition(mPlayer).x;
-
 		mMarkerX = mTouchXPos + playerOffset;
-		if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
-			input.setRight(true);
-		else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
-			input.setLeft(true);
+		input.setTarget( mMarkerX, mPlayer );
 
 		RenderManager::getSingleton().setMouseMarker(mMarkerX);
 		break;
@@ -255,7 +233,7 @@ KeyboardInputDevice::KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightK
 	mJumpKey = jumpKey;
 }
 
-PlayerInputAbs KeyboardInputDevice::transferInput(const InputSource* input)
+PlayerInputAbs KeyboardInputDevice::transferInput()
 {
 	const Uint8* keyState = SDL_GetKeyboardState(0);
 
@@ -378,7 +356,7 @@ JoystickInputDevice::JoystickInputDevice(JoystickAction laction, JoystickAction 
 {
 }
 
-PlayerInputAbs JoystickInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs JoystickInputDevice::transferInput()
 {
 	return PlayerInputAbs( getAction(mLeftAction),
 						getAction(mRightAction),

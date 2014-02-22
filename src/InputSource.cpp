@@ -25,16 +25,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ostream>
 #include <cassert>
 
+#include "DuelMatch.h"
+#include "GameConstants.h"
+
 /* implementation */
 
 /* PlayerInputAbs */
 
-PlayerInputAbs::PlayerInputAbs()
+PlayerInputAbs::PlayerInputAbs() : mFlags( F_RELATIVE ), mTarget(-1)
 {
 
 }
 
-PlayerInputAbs::PlayerInputAbs(bool l, bool r, bool j)
+PlayerInputAbs::PlayerInputAbs(bool l, bool r, bool j) : mFlags( F_RELATIVE ), mTarget(-1)
 {
 	setLeft(l);
 	setRight(r);
@@ -67,9 +70,42 @@ void PlayerInputAbs::setJump( bool v)
 		mFlags &= ~F_JUMP;
 }
 
-PlayerInput PlayerInputAbs::toPlayerInput() const
+void PlayerInputAbs::setTarget( short target, PlayerSide player )
 {
-	return PlayerInput( mFlags & F_LEFT, mFlags & F_RIGHT, mFlags & F_JUMP );
+	mFlags &= F_JUMP;	// reset everything but the jump flag, i.e. no left/right and no relative
+	mTarget = target;
+
+	if(player == LEFT_PLAYER )
+	{
+		setLeft(true);
+	}
+	if(player == RIGHT_PLAYER )
+	{
+		setRight(true);
+	}
+}
+
+PlayerInput PlayerInputAbs::toPlayerInput( const DuelMatch* match ) const
+{
+	if( mFlags & F_RELATIVE)
+		return PlayerInput( mFlags & F_LEFT, mFlags & F_RIGHT, mFlags & F_JUMP );
+	else
+	{
+		bool left = false;
+		bool right = false;
+
+		PlayerSide side = mFlags & F_LEFT ? LEFT_PLAYER : RIGHT_PLAYER;
+
+		// here we load the current position of the player.
+		float blobpos = match->getBlobPosition(side).x;
+
+		if (blobpos + BLOBBY_SPEED * 2 <= mTarget)
+			right = true;
+		else if (blobpos - BLOBBY_SPEED * 2 >= mTarget)
+			left = true;
+		return PlayerInput( left, right, mFlags & F_JUMP );
+	}
+
 }
 
 

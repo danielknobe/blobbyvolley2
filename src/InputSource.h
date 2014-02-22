@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <iosfwd>
 #include "BlobbyDebug.h"
+#include "Global.h"
+
+class DuelMatch;
 
 /*! \struct PlayerInput
 	\brief struct for easy exchange of a single player input frame
@@ -101,7 +104,11 @@ class PlayerInputAbs
 		void setRight( bool v );
 		void setJump( bool v);
 
-		PlayerInput toPlayerInput() const;
+		void setTarget( short target, PlayerSide player );
+
+		// we need some way of getting information about the game, for which we use the match
+		// currently.
+		PlayerInput toPlayerInput( const DuelMatch* match ) const;
 
 	private:
 		enum Flags
