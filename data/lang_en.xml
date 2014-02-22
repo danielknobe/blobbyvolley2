@@ -58,6 +58,9 @@
 	<string english = "speed: " translation = "speed: " />
 	<string english = "stay on server" translation = "stay on server" />
 
+	<string english = "touch input type:" translation = "touch input type:" />
+	<string english = "arrow keys" translation = "arrow keys" />
+	<string english = "blobby follows finger" translation = "blobby follows finger" />
 	<string english = "input options" translation = "input options" />
 	<string english = "graphic options" translation = "graphic options" />
 	<string english = "misc options" translation = "misc options" />
