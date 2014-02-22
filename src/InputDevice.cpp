@@ -45,22 +45,16 @@ MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton)
 		mDelay = true;
 	else
 		mDelay = false;
-
-	mInputs.set_capacity(10);
-	for(unsigned int i = 0; i < 10; ++i)
-	{
-		mInputs.push_back( PlayerInput() );
-	}
 }
 
-PlayerInput MouseInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs MouseInputDevice::transferInput(const InputSource* source)
 {
 	// check if we have a running game,
 	// otherwise leave directly
 	const DuelMatch* match = source->getMatch();
 	assert(match);
 
-	PlayerInput input = PlayerInput();
+	PlayerInputAbs input = PlayerInputAbs();
 
 	int mMouseXPos;
 
@@ -75,7 +69,7 @@ PlayerInput MouseInputDevice::transferInput(const InputSource* source)
 		mDelay = false;
 
 	if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
-		input.up = true;
+		input.setJump( true );
 
 	const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
 	mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
@@ -90,36 +84,12 @@ PlayerInput MouseInputDevice::transferInput(const InputSource* source)
 	// here we load the current position of the player.
 	float blobpos = match->getBlobPosition(mPlayer).x;
 
-	// ask our lag detector about estimated current lag
-	int lag = mLag.getLag();
-
-	// adapt this value
-	lag -= 1;
-	if(lag < 0)
-		lag = 0;
-
-	mInputs.set_capacity(lag+1);
-
-	// now, simulate as many steps as we have lag
-	for(boost::circular_buffer<PlayerInput>::iterator i = mInputs.begin(); i != mInputs.end(); ++i)
-	{
-		if(i->right)
-			blobpos += BLOBBY_SPEED;
-
-		if(i->left)
-			blobpos -= BLOBBY_SPEED;
-
-	}
-
 	mMarkerX = mMouseXPos + playerOffset;
 	if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
-		input.right = true;
+		input.setRight(true);
 	else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
-		input.left = true;
+		input.setLeft(true);
 
-	// insert new data for evaluation
-	mLag.insertData(input, match->getInputSource( mPlayer )->getInput() );
-	mInputs.push_back(input);
 	RenderManager::getSingleton().setMouseMarker(mMarkerX);
 
 	return input;
@@ -134,22 +104,16 @@ TouchInputDevice::TouchInputDevice(PlayerSide player, int type)
 	mPlayer = player;
 	mTouchXPos = 400;
 	mTouchType = type;
-
-	mInputs.set_capacity(10);
-	for(unsigned int i = 0; i < 10; ++i)
-	{
-		mInputs.push_back( PlayerInput() );
-	}
 }
 
-PlayerInput TouchInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs TouchInputDevice::transferInput(const InputSource* source)
 {
 	// check if we have a running game,
 	// otherwise leave directly
 	const DuelMatch* match = source->getMatch();
 	assert(match);
 
-	PlayerInput input = PlayerInput();
+	PlayerInputAbs input = PlayerInputAbs();
 
 	// Get the primary touch device
 	SDL_TouchID device = SDL_GetTouchDevice(0);
@@ -178,7 +142,7 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 
 				// If finger has a valid jump position
 				if (finger->x > 0.7) {
-					input.up = true;
+					input.setJump( true );
 				}
 			}
 			else
@@ -190,7 +154,7 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 
 				// If finger has a valid jump position
 				if (finger->x < 0.3) {
-					input.up = true;
+					input.setJump( true );
 				}
 			}
 		}
@@ -202,36 +166,12 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 		// here we load the current position of the player.
 		float blobpos = match->getBlobPosition(mPlayer).x;
 
-		// ask our lag detector about estimated current lag
-		int lag = mLag.getLag();
-
-		// adapt this value
-		lag -= 1;
-		if(lag < 0)
-			lag = 0;
-
-		mInputs.set_capacity(lag+1);
-
-		// now, simulate as many steps as we have lag
-		for(boost::circular_buffer<PlayerInput>::iterator i = mInputs.begin(); i != mInputs.end(); ++i)
-		{
-			if(i->right)
-				blobpos += BLOBBY_SPEED;
-
-			if(i->left)
-				blobpos -= BLOBBY_SPEED;
-
-		}
-
 		mMarkerX = mTouchXPos + playerOffset;
 		if (blobpos + BLOBBY_SPEED * 2 <= mMarkerX)
-			input.right = true;
+			input.setRight(true);
 		else if (blobpos - BLOBBY_SPEED * 2 >= mMarkerX)
-			input.left = true;
+			input.setLeft(true);
 
-		// insert new data for evaluation
-		mLag.insertData(input, match->getInputSource( mPlayer )->getInput() );
-		mInputs.push_back(input);
 		RenderManager::getSingleton().setMouseMarker(mMarkerX);
 		break;
 	}
@@ -257,17 +197,17 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 					// Left arrow
 					if (finger->x < 0.25)
 					{
-						input.left = true;
+						input.setLeft(true);
 					}
 					else
 					{
-						input.right = true;
+						input.setRight(true);
 					}
 				}
 
 				// If finger has a valid jump position
 				if (finger->x > 0.7) {
-					input.up = true;
+					input.setJump(true);
 				}
 			}
 			else
@@ -277,17 +217,17 @@ PlayerInput TouchInputDevice::transferInput(const InputSource* source)
 					// Left arrow
 					if (finger->x < 0.75)
 					{
-						input.left = true;
+						input.setLeft( true );
 					}
 					else
 					{
-						input.right = true;
+						input.setRight( true );
 					}
 				}
 
 				// If finger has a valid jump position
 				if (finger->x < 0.3) {
-					input.up = true;
+					input.setJump( true );
 				}
 			}
 		}
@@ -315,11 +255,11 @@ KeyboardInputDevice::KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightK
 	mJumpKey = jumpKey;
 }
 
-PlayerInput KeyboardInputDevice::transferInput(const InputSource* input)
+PlayerInputAbs KeyboardInputDevice::transferInput(const InputSource* input)
 {
 	const Uint8* keyState = SDL_GetKeyboardState(0);
 
-	return PlayerInput(keyState[SDL_GetScancodeFromKey(mLeftKey)], keyState[SDL_GetScancodeFromKey(mRightKey)], keyState[SDL_GetScancodeFromKey(mJumpKey)]);
+	return PlayerInputAbs(keyState[SDL_GetScancodeFromKey(mLeftKey)], keyState[SDL_GetScancodeFromKey(mRightKey)], keyState[SDL_GetScancodeFromKey(mJumpKey)]);
 }
 
 
@@ -438,9 +378,9 @@ JoystickInputDevice::JoystickInputDevice(JoystickAction laction, JoystickAction 
 {
 }
 
-PlayerInput JoystickInputDevice::transferInput(const InputSource* source)
+PlayerInputAbs JoystickInputDevice::transferInput(const InputSource* source)
 {
-	return PlayerInput( getAction(mLeftAction),
+	return PlayerInputAbs( getAction(mLeftAction),
 						getAction(mRightAction),
 						getAction(mJumpAction)
 					);

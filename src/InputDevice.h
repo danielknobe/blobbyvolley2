@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL2/SDL_events.h>
 #include "Global.h"
 #include "InputSource.h"
-#include <boost/circular_buffer.hpp>
-#include "LagDetectionSystem.h"
 #include "BlobbyDebug.h"
 
 class JoystickPool : public ObjectCounter<JoystickPool>
@@ -83,7 +81,7 @@ class InputDevice : public ObjectCounter<InputDevice>
 		InputDevice() {}
 		virtual ~InputDevice() {}
 
-		virtual PlayerInput transferInput(const InputSource* ips) = 0;
+		virtual PlayerInputAbs transferInput(const InputSource* ips) = 0;
 };
 
 /*! \class MouseInputDevice
@@ -96,12 +94,11 @@ class MouseInputDevice : public InputDevice
 		int mJumpButton;
 		int mMarkerX;
 		bool mDelay; // The pressed button of the mainmenu must be ignored
-		boost::circular_buffer<PlayerInput> mInputs;
-		LagDetector mLag;
+
 	public:
 		virtual ~MouseInputDevice(){};
 		MouseInputDevice(PlayerSide player, int jumpbutton);
-		virtual PlayerInput transferInput(const InputSource* ips);
+		virtual PlayerInputAbs transferInput(const InputSource* ips);
 };
 
 /*! \class TouchInputDevice
@@ -112,14 +109,12 @@ class TouchInputDevice : public InputDevice
 	private:
 		PlayerSide mPlayer;
 		int mMarkerX;
-		boost::circular_buffer<PlayerInput> mInputs;
-		LagDetector mLag;
-		int mTouchXPos;	
+		int mTouchXPos;
 		int mTouchType;
 	public:
 		virtual ~TouchInputDevice(){};
 		TouchInputDevice(PlayerSide player, int type);
-		virtual PlayerInput transferInput(const InputSource* ips);
+		virtual PlayerInputAbs transferInput(const InputSource* ips);
 };
 
 /*! \class KeyboardInputDevice
@@ -134,7 +129,7 @@ class KeyboardInputDevice : public InputDevice
 	public:
 		virtual ~KeyboardInputDevice(){};
 		KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
-		virtual PlayerInput transferInput(const InputSource* ips);
+		virtual PlayerInputAbs transferInput(const InputSource* ips);
 };
 
 
@@ -154,6 +149,6 @@ class JoystickInputDevice : public InputDevice
 		JoystickInputDevice(JoystickAction laction, JoystickAction raction,
 				JoystickAction jaction);
 
-		virtual PlayerInput transferInput(const InputSource* ips);
+		virtual PlayerInputAbs transferInput(const InputSource* ips);
 };
 
