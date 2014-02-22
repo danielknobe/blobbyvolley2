@@ -620,7 +620,7 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 	}
 }
 
-void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position)
+void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position, Vector2 size)
 {
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);

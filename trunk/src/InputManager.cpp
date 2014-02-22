@@ -104,7 +104,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	// load config for touch
 	else if (device == "touch")
 	{
-		return new TouchInputDevice(side, config.getInteger(prefix + "touch_type"));
+		return new TouchInputDevice(side, config.getInteger("blobby_touch_type"));
 	}
 	else	
 		std::cerr << "Error: unknown input device: " << device << std::endl;
@@ -374,33 +374,8 @@ Vector2 InputManager::position()
 {
 	// Workarround because SDL has a bug in Version 2.0.1,
 	// so that we can't use mouse here
-    
-    
-    
-    
-    
-    // so that we can't use mouse here
-#ifndef __ANDROID__
-#ifdef __APPLE__
-#if MAC_OS_X
+#if !defined(__ANDROID__) && !TARGET_IPHONE_SIMULATOR && !TARGET_OS_IPHONE
 	SDL_GetMouseState(&mMouseX,&mMouseY);
-#else
-	SDL_TouchID device = SDL_GetTouchDevice(0);
-    
-	for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
-	{
-		SDL_Finger *finger = SDL_GetTouchFinger(device, i);
-        
-		if (finger == NULL)
-			continue;
-        
-		mMouseX = finger->x * 800;
-		mMouseY = finger->y * 600;
-	}
-#endif
-#else
-	SDL_GetMouseState(&mMouseX,&mMouseY);
-#endif
 #else
 	SDL_TouchID device = SDL_GetTouchDevice(0);
     

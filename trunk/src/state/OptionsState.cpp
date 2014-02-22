@@ -135,25 +135,13 @@ void OptionState::step()
 	imgui.doText(GEN_ID, Vector2(660.0, 350.0), f > 0.66 ? TextManager::OP_STRONG :
 											 	(f > 0.33 ? TextManager::OP_MEDIUM:
 												TextManager::OP_WEAK));
-#ifndef __ANDROID__
-#ifdef __APPLE__
-#if MAC_OS_X
+
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
 	{
 		save();
 		deleteCurrentState();
 		setCurrentState(new InputOptionsState());
 	}
-#endif
-#else
-	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
-	{
-		save();
-		deleteCurrentState();
-		setCurrentState(new InputOptionsState());
-	}
-#endif
-#endif
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
 	{
@@ -559,7 +547,6 @@ InputOptionsState::InputOptionsState()
 	mLeftBlobbyJoystickLeft = mOptionConfig.getString("left_blobby_joystick_left");
 	mLeftBlobbyJoystickRight = mOptionConfig.getString("left_blobby_joystick_right");
 	mLeftBlobbyJoystickJump = mOptionConfig.getString("left_blobby_joystick_jump");
-	mLeftBlobbyTouchType = mOptionConfig.getInteger("left_blobby_touch_type");
 	//right data:
 	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
 	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
@@ -569,7 +556,8 @@ InputOptionsState::InputOptionsState()
 	mRightBlobbyJoystickLeft = mOptionConfig.getString("right_blobby_joystick_left");
 	mRightBlobbyJoystickRight = mOptionConfig.getString("right_blobby_joystick_right");
 	mRightBlobbyJoystickJump = mOptionConfig.getString("right_blobby_joystick_jump");
-	mRightBlobbyTouchType = mOptionConfig.getInteger("right_blobby_touch_type");
+	//global data:
+	mBlobbyTouchType = mOptionConfig.getInteger("blobby_touch_type");
 }
 
 InputOptionsState::~InputOptionsState()
@@ -587,7 +575,6 @@ void InputOptionsState::save()
 	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
 	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
 	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
-	mOptionConfig.setInteger("left_blobby_touch_type", mLeftBlobbyTouchType);
 	//right data:
 	mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
 	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
@@ -597,11 +584,13 @@ void InputOptionsState::save()
 	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
 	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
 	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
-	mOptionConfig.setInteger("right_blobby_touch_type", mRightBlobbyTouchType);
+	//global data:
+	mOptionConfig.setInteger("blobby_touch_type", mBlobbyTouchType);
 
 	mOptionConfig.saveFile("inputconfig.xml");
 }
 
+#if !defined(__ANDROID__) && !TARGET_IPHONE_SIMULATOR && !TARGET_OS_IPHONE
 void InputOptionsState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
@@ -1003,6 +992,66 @@ void InputOptionsState::step()
 		setCurrentState(new OptionState());
 	}
 }
+#else
+
+void InputOptionsState::step()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
+	imgui.doText(GEN_ID, Vector2(43.0, 10.0), TextManager::OP_TOUCH_TYPE);
+	if (imgui.doButton(GEN_ID, Vector2(70.0, 50.0), TextManager::OP_TOUCH_DIRECT))
+		mBlobbyTouchType = 0;
+	if (imgui.doButton(GEN_ID, Vector2(70.0, 100.0), TextManager::OP_TOUCH_ARROWS))
+		mBlobbyTouchType = 1;
+	if (mBlobbyTouchType == 0)
+		imgui.doImage(GEN_ID, Vector2(52.0, 62.0), "gfx/pfeil_rechts.bmp");
+	else
+		imgui.doImage(GEN_ID, Vector2(52.0, 112.0), "gfx/pfeil_rechts.bmp");
+
+	imgui.doOverlay(GEN_ID, Vector2(180.0, 150.0), Vector2(620.0, 490.0));
+	imgui.doImage(GEN_ID, Vector2(400.0, 320.0), "background", Vector2(400.0, 300.0));
+
+	// We draw the range of the touchsurfaces here
+	if (mBlobbyTouchType == 0)
+	{
+		// Left arrowkey
+		imgui.doOverlay(GEN_ID, Vector2(200.0 + 5.0, 170.0 + 100.0 + 5.0), Vector2(200.0 + 95.0 + 100.0, 170.0 + 295));
+		imgui.doImage(GEN_ID, Vector2(289.0, 440.0), "gfx/pfeil_links.bmp");
+		imgui.doImage(GEN_ID, Vector2(311.0, 440.0), "gfx/pfeil_rechts.bmp");
+	}
+	else
+	{
+		// Background is x: 200, y: 170, w: 400, h: 300
+
+		// Left arrowkey
+		imgui.doOverlay(GEN_ID, Vector2(200.0 + 5.0, 170.0 + 100.0 + 5.0), Vector2(200.0 + 95.0, 170.0 + 295));
+		imgui.doImage(GEN_ID, Vector2(250.0, 440.0), "gfx/pfeil_links.bmp");
+
+		// Right arrowkey
+		imgui.doOverlay(GEN_ID, Vector2(200.0 + 5.0 + 100.0, 170.0 + 100.0 + 5.0), Vector2(200.0 + 95.0 + 100.0, 170.0 + 295));
+		imgui.doImage(GEN_ID, Vector2(350.0, 440.0), "gfx/pfeil_rechts.bmp");
+	}
+
+	imgui.doOverlay(GEN_ID, Vector2(200.0 + 5.0 + 250.0, 170.0 + 100.0 + 5.0), Vector2(200.0 + 95.0 + 300.0, 170.0 + 295));
+	imgui.doImage(GEN_ID, Vector2(525.0, 440.0), "gfx/pfeil_oben.bmp");
+
+
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
+	{
+		save();
+		deleteCurrentState();
+		setCurrentState(new OptionState());
+	}
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
+	{
+		deleteCurrentState();
+		setCurrentState(new OptionState());
+	}
+}
+#endif
 
 const char* InputOptionsState::getStateName() const
 {

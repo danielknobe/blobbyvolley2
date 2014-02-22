@@ -129,7 +129,7 @@ void IMGUI::end()
 		switch (obj.type)
 		{
 			case IMAGE:
-				rmanager.drawImage(obj.text, obj.pos1);
+				rmanager.drawImage(obj.text, obj.pos1, obj.pos2);
 				break;
 
 			case OVERLAY:
@@ -216,12 +216,13 @@ void IMGUI::end()
 	}
 }
 
-void IMGUI::doImage(int id, const Vector2& position, const std::string& name)
+void IMGUI::doImage(int id, const Vector2& position, const std::string& name, const Vector2& size)
 {
 	QueueObject obj;
 	obj.type = IMAGE;
 	obj.id = id;
 	obj.pos1 = position;
+	obj.pos2 = size;
 	obj.text = name;
 	mQueue->push(obj);
 }

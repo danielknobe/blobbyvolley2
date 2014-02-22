@@ -176,7 +176,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		// This loads and draws an image by name
 		// The according Surface is automatically colorkeyed
 		// The image is centered around position
-		virtual void drawImage(const std::string& filename, Vector2 position) {};
+		virtual void drawImage(const std::string& filename, Vector2 position, Vector2 size = Vector2(0,0)) {};
 
 		// This draws a greyed-out area
 		virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
