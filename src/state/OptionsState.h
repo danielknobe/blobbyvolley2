@@ -97,7 +97,6 @@ private:
 	std::string mLeftBlobbyJoystickLeft;
 	std::string mLeftBlobbyJoystickRight;
 	std::string mLeftBlobbyJoystickJump;
-	int mLeftBlobbyTouchType;
 	//right data:
 	std::string mRightBlobbyDevice;
 	int mRightBlobbyMouseJumpbutton;
@@ -107,7 +106,8 @@ private:
 	std::string mRightBlobbyJoystickLeft;
 	std::string mRightBlobbyJoystickRight;
 	std::string mRightBlobbyJoystickJump;
-	int mRightBlobbyTouchType;
+	//global data:
+	int mBlobbyTouchType;
 };
 
 /*! \class MiscOptionsState

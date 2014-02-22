@@ -73,7 +73,7 @@ class RenderManagerGL2D : public RenderManager
 		virtual void setTime(const std::string& t);
 
 		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
-		virtual void drawImage(const std::string& filename, Vector2 position);
+		virtual void drawImage(const std::string& filename, Vector2 position, Vector2 size);
 		virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
 		virtual void drawBlob(const Vector2& pos, const Color& col);
 		virtual void startDrawParticles();

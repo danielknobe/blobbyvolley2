@@ -660,7 +660,7 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 	}
 }
 
-void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
+void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position, Vector2 size)
 {
 	mNeedRedraw = true;
 	BufferedImage* imageBuffer = mImageMap[filename];
@@ -678,14 +678,29 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position)
 		mImageMap[filename] = imageBuffer;
 	}
 
-	const SDL_Rect blitRect = {
-		(short)lround(position.x - float(imageBuffer->w) / 2.0),
-		(short)lround(position.y - float(imageBuffer->h) / 2.0),
-		(short)imageBuffer->w,
-		(short)imageBuffer->h
-	};
+	if (size == Vector2(0,0))
+	{
+		// No scaling
+		const SDL_Rect blitRect = {
+			(short)lround(position.x - float(imageBuffer->w) / 2.0),
+			(short)lround(position.y - float(imageBuffer->h) / 2.0),
+			(short)imageBuffer->w,
+			(short)imageBuffer->h
+		};
+		SDL_RenderCopy(mRenderer, imageBuffer->sdlImage, NULL, &blitRect);
+	}
+	else
+	{
+		// Scaling
+		const SDL_Rect blitRect = {
+			(short)lround(position.x - float(size.x) / 2.0),
+			(short)lround(position.y - float(size.y) / 2.0),
+			(short)size.x,
+			(short)size.y
+		};
+		SDL_RenderCopy(mRenderer, imageBuffer->sdlImage, NULL, &blitRect);
+	}
 
-	SDL_RenderCopy(mRenderer, imageBuffer->sdlImage, NULL, &blitRect);
 }
 
 void RenderManagerSDL::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)

@@ -104,6 +104,9 @@ class TextManager
 			NET_CHALLENGE,
 
 			// options
+			OP_TOUCH_TYPE,
+			OP_TOUCH_ARROWS,
+			OP_TOUCH_DIRECT,
 			OP_INPUT_OP,
 			OP_GFX_OP,
 			OP_MISC,

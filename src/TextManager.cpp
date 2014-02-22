@@ -224,7 +224,9 @@ void TextManager::setDefault()
 	mStrings[NET_RULES_BY] = " by ";
 	mStrings[NET_CHALLENGE] = "challenger: ";
 
-
+	mStrings[OP_TOUCH_TYPE] = "touch input type:";
+	mStrings[OP_TOUCH_ARROWS] = "arrow keys";
+	mStrings[OP_TOUCH_DIRECT] = "blobby follows finger";
 	mStrings[OP_INPUT_OP] = "input options";
 	mStrings[OP_GFX_OP] = "graphic options";
 	mStrings[OP_MISC] = "misc options";
