@@ -27,6 +27,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class DuelMatch;
 
+namespace RakNet
+{
+	class BitStream;
+}
+
 /*! \struct PlayerInput
 	\brief struct for easy exchange of a single player input frame
 */
@@ -96,6 +101,7 @@ class PlayerInputAbs
 {
 	public:
 		PlayerInputAbs();
+		PlayerInputAbs(RakNet::BitStream& stream);
 		PlayerInputAbs(bool l, bool r, bool j);
 
 
@@ -106,9 +112,15 @@ class PlayerInputAbs
 
 		void setTarget( short target, PlayerSide player );
 
+		void swapSides();
+
 		// we need some way of getting information about the game, for which we use the match
 		// currently.
 		PlayerInput toPlayerInput( const DuelMatch* match ) const;
+
+		// send via network
+		void writeTo(RakNet::BitStream& stream);
+
 
 	private:
 		enum Flags
@@ -147,9 +159,16 @@ class InputSource : public ObjectCounter<InputSource>
 		/// gets the current input
 		PlayerInput getInput() const;
 
+		/// get original input data
+		PlayerInputAbs getRealInput() const;
+
 		/// set input which is returned on next call
 		/// of getInput
 		void setInput(PlayerInput ip);
+
+		/// set input which is returned on next call
+		/// of getInput
+		void setInput(PlayerInputAbs ip);
 
 		/// gets  match associated with this InputSource
 		const DuelMatch* getMatch() const;
