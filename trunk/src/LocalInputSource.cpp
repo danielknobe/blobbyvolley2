@@ -39,7 +39,7 @@ LocalInputSource::~LocalInputSource()
 }
 
 
-PlayerInput LocalInputSource::getNextInput()
+PlayerInputAbs LocalInputSource::getNextInput()
 {
-	return mInputDevice->transferInput( ).toPlayerInput( this->getMatch() );
+	return mInputDevice->transferInput( );
 }

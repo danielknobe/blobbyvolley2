@@ -197,7 +197,7 @@ ScriptedInputSource::~ScriptedInputSource()
 {
 }
 
-PlayerInput ScriptedInputSource::getNextInput()
+PlayerInputAbs ScriptedInputSource::getNextInput()
 {
 	bool serving = false;
 	// reset input
@@ -209,7 +209,7 @@ PlayerInput ScriptedInputSource::getNextInput()
 	mMatch = getMatch();
 	if (mMatch == 0)
 	{
-		return PlayerInput();
+		return PlayerInputAbs();
 	}
 
 	// ball position and velocity update
@@ -283,7 +283,6 @@ PlayerInput ScriptedInputSource::getNextInput()
 	// swap left/right if side is swapped
 	if ( mSide == RIGHT_PLAYER )
 		std::swap(mLeft, mRight);
-	PlayerInput currentInput = PlayerInput(mLeft, mRight, mJump);
 
 	int stacksize = lua_gettop(mState);
 	if (stacksize > 0)
@@ -295,9 +294,9 @@ PlayerInput ScriptedInputSource::getNextInput()
 	}
 
 	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
-		return PlayerInput();
+		return PlayerInputAbs();
 	else
-		return currentInput;
+		return PlayerInputAbs(mLeft, mRight, mJump);
 }
 
 void ScriptedInputSource::setflags(lua_State* state) {

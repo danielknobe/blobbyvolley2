@@ -30,9 +30,9 @@ class LocalInputSource : public InputSource
 	public:
 		LocalInputSource(PlayerSide player);
 		~LocalInputSource();
-		
-		virtual PlayerInput getNextInput();
-		
+
+		virtual PlayerInputAbs getNextInput();
+
 	private:
 		InputDevice* mInputDevice;
 };
