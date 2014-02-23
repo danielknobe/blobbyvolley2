@@ -233,6 +233,20 @@ void IMGUI::doText(int id, const Vector2& position, const std::string& text, uns
 	obj.type = TEXT;
 	obj.id = id;
 	obj.pos1 = position;
+
+	int fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
+	// update position depending on alignment
+	if( flags & TF_ALIGN_CENTER )
+	{
+		obj.pos1.x -= text.size() * fontSize / 2;
+	}
+
+	if( flags & TF_ALIGN_RIGHT )
+	{
+		obj.pos1.x -= text.size() * fontSize;
+	}
+
+
 	obj.text = text;
 	obj.flags = flags;
 	mQueue->push(obj);
@@ -270,6 +284,18 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 	obj.text = text;
 	obj.type = TEXT;
 	obj.flags = flags;
+
+	int fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
+	// update position depending on alignment
+	if( flags & TF_ALIGN_CENTER )
+	{
+		obj.pos1.x -= text.size() * fontSize / 2;
+	}
+
+	if( flags & TF_ALIGN_RIGHT )
+	{
+		obj.pos1.x -= text.size() * fontSize;
+	}
 
 	if (!mInactive)
 	{
@@ -339,10 +365,10 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 
 		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
-		if (mousepos.x > position.x &&
-			mousepos.y > position.y &&
-			mousepos.x < position.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
-			mousepos.y < position.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
+		if (mousepos.x > obj.pos1.x &&
+			mousepos.y > obj.pos1.y &&
+			mousepos.x < obj.pos1.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
+			mousepos.y < obj.pos1.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
 		{
 			obj.flags = obj.flags | TF_HIGHLIGHT;
 			if (InputManager::getSingleton()->click())
