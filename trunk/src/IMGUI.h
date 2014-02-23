@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 #include "Global.h"
 
-#include "InputManager.h"
 #include "RenderManager.h"
 #include "TextManager.h" /// needed because we can't forward declare that enum
 #include "BlobbyDebug.h"

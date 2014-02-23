@@ -22,17 +22,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "PhysicState.h"
 #include "GameLogicState.h"
+#include "InputSource.h"
 
 struct DuelMatchState
 {
 	void swapSides();
-	
+
 	bool operator==(const DuelMatchState& other) const;
-	
+
 	PhysicState worldState;
 	GameLogicState logicState;
-	
+
 	PlayerInput playerInput[MAX_PLAYERS];
-	
+
 	unsigned char errorSide;
 };

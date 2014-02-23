@@ -51,6 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "server/DedicatedServer.h"
 #include "LobbyState.h"
+#include "InputManager.h"
 
 
 /* implementation */
