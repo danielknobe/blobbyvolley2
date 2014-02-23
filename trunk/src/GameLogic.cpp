@@ -39,7 +39,7 @@ extern "C"
 #include "GameConstants.h"
 #include "IUserConfigReader.h"
 #include "IScriptableComponent.h"
-#include "InputSource.h"
+#include "PlayerInput.h"
 
 
 int lua_toint(lua_State* state, int index)

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "GameLogic.h"
 #include "Vector.h"
-#include "InputSource.h"
+#include "PlayerInput.h"
 #include "PlayerIdentity.h"
 #include "BlobbyDebug.h"
 
@@ -45,29 +45,29 @@ class PhysicWorld;
 */
 class DuelMatch : public ObjectCounter<DuelMatch>
 {
-	public:	
+	public:
 		// If remote is true, only physical responses will be calculated
 		// but hit events and score events are received from network
 
 		DuelMatch(bool remote, std::string rules);
-		
+
 		void setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer);
 		void setInputSources(boost::shared_ptr<InputSource> linput, boost::shared_ptr<InputSource> rinput );
 
 		~DuelMatch();
 
 		void setRules(std::string rulesFile);
-		
+
 		void reset();
 
 		// This steps through one frame
 		void step();
-		
-		// this methods allow external input 
+
+		// this methods allow external input
 		// events triggered by the network
 		void setScore(int left, int right);
 		void resetBall(PlayerSide side);
-		
+
 		void trigger(int event);
 		void resetTriggeredEvents();
 
@@ -83,7 +83,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		int getScore(PlayerSide player) const;
 		int getScoreToWin() const;
 		PlayerSide getServingPlayer() const;
-		
+
 		void setLastHitIntensity(float intensity);
 
 		int getHitcount(PlayerSide player) const;
@@ -92,7 +92,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		Vector2 getBallVelocity() const;
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
-		
+
 		const PhysicWorld& getWorld() const{ return *mPhysicWorld.get(); };
 		const Clock& getClock() const;
 		Clock& getClock();
@@ -100,10 +100,10 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		bool getBallDown() const;
 		bool getBallActive() const;
 		bool canStartRound(PlayerSide servingPlayer) const;
-		
+
 		void pause();
 		void unpause();
-		
+
 		bool isPaused() const{ return mPaused; }
 
 		// This functions returns true if the player launched
@@ -112,18 +112,18 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		/// Set a new state using a saved DuelMatchState
 		void setState(const DuelMatchState& state);
-	
+
 		/// gets the current state
 		DuelMatchState getState() const;
 
 		//Input stuff for recording and playing replays
 		boost::shared_ptr<InputSource> getInputSource(PlayerSide player) const;
-	
+
 		PlayerIdentity getPlayer(PlayerSide player) const;
 		PlayerIdentity& getPlayer(PlayerSide player);
-	
+
 		void setServingPlayer(PlayerSide side);
-	
+
 		int getEvents() const { return events; }
 
 	private:
@@ -132,8 +132,8 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		boost::shared_ptr<InputSource> mInputSources[MAX_PLAYERS];
 		PlayerInput mTransformedInput[MAX_PLAYERS];
-		
-		PlayerIdentity mPlayers[MAX_PLAYERS];		
+
+		PlayerIdentity mPlayers[MAX_PLAYERS];
 
 		GameLogic mLogic;
 

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL2/SDL.h>
 
-#include "InputSource.h"
+#include "PlayerInput.h"
 #include "InputDevice.h"
 #include "Vector.h"
 #include "BlobbyDebug.h"

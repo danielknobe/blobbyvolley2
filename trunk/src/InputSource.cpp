@@ -139,6 +139,10 @@ InputSource::InputSource() : mInput(), mMatch(0)
 {
 }
 
+InputSource::~InputSource()
+{
+}
+
 PlayerInput InputSource::getInput() const
 {
 	return mInput.toPlayerInput( this->getMatch() );;
