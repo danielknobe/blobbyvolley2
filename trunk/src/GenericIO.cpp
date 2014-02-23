@@ -437,7 +437,7 @@ namespace detail
 	{
 		unsigned int target;
 		io.uint32(target);
-		value.set(target);
+		value.setAll(target);
 	}
 
 	GENERATE_STD_SERIALIZER_OUT(PlayerSide)

@@ -38,60 +38,23 @@ namespace RakNet
 */
 struct PlayerInput
 {
-	PlayerInput()
+	// constructors
+	PlayerInput() : left(false), right(false), up(false)
 	{
-		left = false;
-		right = false;
-		up = false;
 	}
 
-	PlayerInput(const std::string& string);
-
-	PlayerInput(bool l, bool r, bool u)
+	PlayerInput(bool l, bool r, bool u) : left(l), right(r), up(u)
 	{
-		left = l;
-		right = r;
-		up = u;
 	}
 
-	void set(bool l, bool r, bool u)
-	{
-		left = l;
-		right = r;
-		up = u;
-	}
+	// set or get complete input as bits in a byte
 
-	void set( unsigned char all )
-	{
-		left = all & 4;
-		right = all & 2;
-		up =  all & 1;
-	}
+	void setAll( unsigned char all );
+	unsigned char getAll() const;
 
-	void swap()
-	{
-		bool tmp = left;
-		left = right;
-		right = tmp;
-	}
+	bool operator==(const PlayerInput& other) const;
 
-	bool operator==(const PlayerInput& other) const
-	{
-		return left == other.left && right == other.right && up == other.up;
-	}
-
-	bool operator!=(const PlayerInput& other) const
-	{
-		return !(*this == other);
-	}
-
-	unsigned char getAll() const
-	{
-		unsigned char c = 0;
-		c = (left ? 4 : 0) + (right ? 2 : 0) + (up ? 1 : 0);
-		return c;
-	}
-
+	// data
 	bool left;
 	bool right;
 	bool up;
