@@ -115,10 +115,6 @@
 		<Unit filename="src/IScriptableComponent.cpp" />
 		<Unit filename="src/IScriptableComponent.h" />
 		<Unit filename="src/IUserConfigReader.h" />
-		<Unit filename="src/InputDevice.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="src/InputDevice.h" />
 		<Unit filename="src/InputManager.cpp">
 			<Option target="Debug" />
@@ -146,6 +142,7 @@
 		<Unit filename="src/PhysicWorld.h" />
 		<Unit filename="src/PlayerIdentity.cpp" />
 		<Unit filename="src/PlayerIdentity.h" />
+		<Unit filename="src/PlayerInput.h" />
 		<Unit filename="src/RenderManager.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -206,6 +203,30 @@
 		<Unit filename="src/blobnet/layer/Http.cpp" />
 		<Unit filename="src/blobnet/layer/Http.hpp" />
 		<Unit filename="src/doxyfile" />
+		<Unit filename="src/input_device/JoystickInput.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/input_device/JoystickPool.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/input_device/JoystickPool.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/input_device/KeyboardInput.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/input_device/MouseInput.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/input_device/TouchInput.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="src/lua/lapi.c">
 			<Option compilerVar="CC" />
 		</Unit>

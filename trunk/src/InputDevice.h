@@ -20,57 +20,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <map>
 #include <SDL2/SDL_events.h>
-#include "Global.h"
 #include "PlayerInput.h"
 #include "BlobbyDebug.h"
-
-class JoystickPool : public ObjectCounter<JoystickPool>
-{
-	public:
-		static JoystickPool& getSingleton();
-
-		SDL_Joystick* getJoystick(int id);
-
-		void probeJoysticks();
-		void closeJoysticks();
-
-	private:
-		typedef std::map<int, SDL_Joystick*> JoyMap;
-		JoyMap mJoyMap;
-		static JoystickPool* mSingleton;
-};
-
-struct JoystickAction : public ObjectCounter<JoystickAction>
-{
-	enum Type
-	{
-		AXIS,
-		BUTTON,
-// 	We don't implement these exotic input methods here
-//		HAT,
-//		TRACKBALL
-	};
-
-	JoystickAction(std::string string);
-	JoystickAction(int _joyid, Type _type, int _number)
-		: type(_type), joy(0), joyid(_joyid),
-			number(_number) {}
-	~JoystickAction();
-	JoystickAction(const JoystickAction& action);
-
-	std::string toString();
-
-	Type type;
-
-	SDL_Joystick* joy;
-	int joyid;
-
-	// Note: Axis are stored as the SDL axis +1, so we can used
-	// the signedness as direction indication
-	int number;
-};
 
 /*! \class InputDevice
 	\brief Abstract base class for game input methods
@@ -84,71 +36,9 @@ class InputDevice : public ObjectCounter<InputDevice>
 		virtual PlayerInputAbs transferInput() = 0;
 };
 
-/*! \class MouseInputDevice
-	\brief Ingame mouse control
-*/
-class MouseInputDevice : public InputDevice
-{
-	private:
-		PlayerSide mPlayer;
-		int mJumpButton;
-		int mMarkerX;
-		bool mDelay; // The pressed button of the mainmenu must be ignored
+class JoystickAction;
 
-	public:
-		virtual ~MouseInputDevice(){};
-		MouseInputDevice(PlayerSide player, int jumpbutton);
-		virtual PlayerInputAbs transferInput();
-};
-
-/*! \class TouchInputDevice
-	\brief Ingame touch control
-*/
-class TouchInputDevice : public InputDevice
-{
-	private:
-		PlayerSide mPlayer;
-		int mMarkerX;
-		int mTouchXPos;
-		int mTouchType;
-	public:
-		virtual ~TouchInputDevice(){};
-		TouchInputDevice(PlayerSide player, int type);
-		virtual PlayerInputAbs transferInput();
-};
-
-/*! \class KeyboardInputDevice
-	\brief Ingame keyboard input
-*/
-class KeyboardInputDevice : public InputDevice
-{
-	private:
-		SDL_Keycode mLeftKey;
-		SDL_Keycode mRightKey;
-		SDL_Keycode mJumpKey;
-	public:
-		virtual ~KeyboardInputDevice(){};
-		KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
-		virtual PlayerInputAbs transferInput();
-};
-
-
-/*! \class JoystickInputDevice
-	\brief Ingame Joystick input
-*/
-class JoystickInputDevice : public InputDevice
-{
-	private:
-		bool getAction(const JoystickAction& action);
-
-		JoystickAction mLeftAction;
-		JoystickAction mRightAction;
-		JoystickAction mJumpAction;
-	public:
-		~JoystickInputDevice() {};
-		JoystickInputDevice(JoystickAction laction, JoystickAction raction,
-				JoystickAction jaction);
-
-		virtual PlayerInputAbs transferInput();
-};
-
+InputDevice* createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
+InputDevice* createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);
+InputDevice* createTouchInput(PlayerSide side, int type);
+InputDevice* createMouseInput(PlayerSide player, int jumpbutton);
