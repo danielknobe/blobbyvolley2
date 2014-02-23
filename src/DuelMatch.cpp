@@ -31,15 +31,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 #include "GenericIO.h"
 #include "GameConstants.h"
+#include "InputSource.h"
 
 /* implementation */
 
 DuelMatch::DuelMatch(bool remote, std::string rules) :
 		// we send a pointer to an unconstructed object here!
 		mLogic(createGameLogic(rules, this)),
-		mPaused(false), 
-		events(0), 
-		external_events(0), 
+		mPaused(false),
+		events(0),
+		external_events(0),
 		mRemote(remote)
 {
 	mPhysicWorld.reset( new PhysicWorld() );
@@ -57,10 +58,10 @@ void DuelMatch::setInputSources(boost::shared_ptr<InputSource> linput, boost::sh
 {
 	if(linput)
 		mInputSources[LEFT_PLAYER] = linput;
-	
+
 	if(rinput)
 		mInputSources[RIGHT_PLAYER] = rinput;
-		
+
 	mInputSources[LEFT_PLAYER]->setMatch(this);
 	mInputSources[RIGHT_PLAYER]->setMatch(this);
 }
@@ -88,10 +89,10 @@ void DuelMatch::step()
 	// in pause mode, step does nothing
 	if(mPaused)
 		return;
-		
+
 	mTransformedInput[LEFT_PLAYER] = mInputSources[LEFT_PLAYER]->updateInput();
 	mTransformedInput[RIGHT_PLAYER] = mInputSources[RIGHT_PLAYER]->updateInput();
-	
+
 	int leftScore = mLogic->getScore(LEFT_PLAYER);
 	int rightScore = mLogic->getScore(RIGHT_PLAYER);
 
@@ -103,26 +104,26 @@ void DuelMatch::step()
 
 	// do steps in physic an logic
 	mLogic->step();
-	int physicEvents = mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER], 
+	int physicEvents = mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER],
 											mLogic->isBallValid(), mLogic->isGameRunning() );
 
 	// check for all hit events
 	if(!mRemote)
 		events |= physicEvents;
-	
+
 	// process events
 	if(events & EVENT_LEFT_BLOBBY_HIT)
 		mLogic->onBallHitsPlayer(LEFT_PLAYER);
-	
+
 	if(events & EVENT_RIGHT_BLOBBY_HIT)
 		mLogic->onBallHitsPlayer(RIGHT_PLAYER);
-	
+
 	if(events & EVENT_BALL_HIT_LEFT_GROUND)
 		mLogic->onBallHitsGround(LEFT_PLAYER);
-	
+
 	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
 		mLogic->onBallHitsGround(RIGHT_PLAYER);
-	
+
 	if(events & EVENT_BALL_HIT_LEFT_WALL)
 		mLogic->onBallHitsWall(LEFT_PLAYER);
 
@@ -137,7 +138,7 @@ void DuelMatch::step()
 
 	if(events & EVENT_BALL_HIT_NET_TOP)
 		mLogic->onBallHitsNet(NO_PLAYER);
-	
+
 
 	switch(mLogic->getLastErrorSide()){
 		case LEFT_PLAYER:
@@ -157,7 +158,7 @@ void DuelMatch::step()
 			break;
 	}
 
-	// if the round is finished, we 
+	// if the round is finished, we
 	// reset BallDown, reset the World
 	// to let the player serve
 	// and trigger the EVENT_RESET
@@ -167,13 +168,13 @@ void DuelMatch::step()
 		mLogic->onServe();
 		events |= EVENT_RESET;
 	}
-	
+
 	// if score was changed, we send it to clients
 	if (!mRemote && (leftScore != mLogic->getScore(LEFT_PLAYER) || rightScore != mLogic->getScore(RIGHT_PLAYER)))
 	{
 		events |= EVENT_SEND_SCORE;
 	}
-	
+
 	// reset external events
 	external_events = 0;
 }
@@ -231,7 +232,7 @@ int DuelMatch::getScore(PlayerSide player) const
 	return mLogic->getScore(player);
 }
 
-int DuelMatch::getScoreToWin() const 
+int DuelMatch::getScoreToWin() const
 {
 	return mLogic->getScoreToWin();
 }
@@ -241,7 +242,7 @@ bool DuelMatch::getBallDown() const
 	return !mLogic->isBallValid();
 }
 
-bool DuelMatch::getBallActive() const 
+bool DuelMatch::getBallActive() const
 {
 	return mLogic->isGameRunning();
 }
@@ -286,13 +287,13 @@ void DuelMatch::setState(const DuelMatchState& state)
 {
 	mPhysicWorld->setState(state.worldState);
 	mLogic->setState(state.logicState);
-	
+
 	mTransformedInput[LEFT_PLAYER] = state.playerInput[LEFT_PLAYER];
 	mTransformedInput[RIGHT_PLAYER] = state.playerInput[RIGHT_PLAYER];
-	
+
 	mInputSources[LEFT_PLAYER]->setInput( mTransformedInput[LEFT_PLAYER] );
 	mInputSources[RIGHT_PLAYER]->setInput( mTransformedInput[RIGHT_PLAYER] );
-	
+
 	events &= ~EVENT_ERROR;
 	switch (state.errorSide)
 	{
@@ -312,9 +313,9 @@ DuelMatchState DuelMatch::getState() const
 	state.logicState = mLogic->getState();
 	state.playerInput[LEFT_PLAYER] = mTransformedInput[LEFT_PLAYER];
 	state.playerInput[RIGHT_PLAYER] = mTransformedInput[RIGHT_PLAYER];
-	
+
 	state.errorSide = (events & EVENT_ERROR_LEFT) ? LEFT_PLAYER : (events & EVENT_ERROR_RIGHT) ? RIGHT_PLAYER : NO_PLAYER;
-	
+
 	return state;
 }
 
@@ -340,7 +341,7 @@ boost::shared_ptr<InputSource> DuelMatch::getInputSource(PlayerSide player) cons
 	return mInputSources[player];
 }
 
-void DuelMatch::resetBall( PlayerSide side ) 
+void DuelMatch::resetBall( PlayerSide side )
 {
 	if (side == LEFT_PLAYER)
 		mPhysicWorld->setBallPosition( Vector2(200, STANDARD_BALL_HEIGHT) );
@@ -349,7 +350,7 @@ void DuelMatch::resetBall( PlayerSide side )
 	else
 		mPhysicWorld->setBallPosition( Vector2(400, 450) );
 
-	mPhysicWorld->setBallVelocity( Vector2(0, 0) ); 
+	mPhysicWorld->setBallVelocity( Vector2(0, 0) );
 	mPhysicWorld->setBallAngularVelocity( (side == RIGHT_PLAYER ? -1 : 1) * STANDARD_BALL_ANGULAR_VELOCITY );
 	mPhysicWorld->setLastHitIntensity(0.0);
 }

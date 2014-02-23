@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "ReplayDefs.h"
-#include "InputSource.h"
+#include "PlayerInput.h"
 #include "BlobbyDebug.h"
 
 class DuelMatch;
@@ -36,68 +36,68 @@ class IReplayLoader;
 /// \brief Manages playing of replays.
 /// \details This class is responsible for actually replaying the replays.
 ///			It uses the data the IReplayLoader gets from files and uses them to create a full replay.
-/// \todo maybe we should rename this class. It might be confused with Player (a blob) and NetworkPlayer 
+/// \todo maybe we should rename this class. It might be confused with Player (a blob) and NetworkPlayer
 ///			(a network connection on server).
 class ReplayPlayer : public ObjectCounter<ReplayPlayer>
 {
 	public:
 		ReplayPlayer();
 		~ReplayPlayer();
-		
+
 		void load(const std::string& filename);
-		
+
 		// -----------------------------------------------------------------------------------------
 		// 							Replay Attributes
 		// -----------------------------------------------------------------------------------------
-		
+
 		std::string getPlayerName(const PlayerSide side) const;
 		Color getBlobColor(const PlayerSide side) const;
 		int getGameSpeed() const;
-		
+
 		// -----------------------------------------------------------------------------------------
 		// 							Status information
 		// -----------------------------------------------------------------------------------------
-		
+
 		/// \brief Replaying finished
 		/// \details This reports whether the record is played to the end, so the
 		/// blobbys don't have to stand around bored after an incomplete
-		/// input record. 
+		/// input record.
 		bool endOfFile() const;
-		
+
 		/// \brief Replay Progress in precent
 		/// \details returns (an estimate for) the replay progress in percent. Depending on
 		///			replay file version, this is either exact or a guess of the system (when we
 		///				don't know how long the replay is).
 		float getPlayProgress() const;
-		
+
 		/// \brief current replay position
-		/// \details returns the current position in replay in steps. 
+		/// \details returns the current position in replay in steps.
 		int getReplayPosition() const;
-		
+
 		/// \brief length of replay
 		/// \details returns the replay length in steps.
 		int getReplayLength() const;
-		
+
 		// -----------------------------------------------------------------------------------------
 		// 							replaying interface
 		// -----------------------------------------------------------------------------------------
-		
+
 		/// \brief advances the game one step
 		bool play(DuelMatch* virtual_match);
-		
+
 		/// \brief Jumps to a position in replay.
 		/// \details Goes to a certain position in replay. Simulates at most 100 steps per call
 		///			to prevent visual lags, so it is possible that this function has to be called
 		///			several times to reach the target.
 		/// \param rep_position target position in number of physic steps.
-		/// \return True, if desired position could be reached. 
+		/// \return True, if desired position could be reached.
 		bool gotoPlayingPosition(int rep_position, DuelMatch* virtual_match);
-		
+
 	private:
-	
+
 		int mPosition;
 		int mLength;
 		boost::scoped_ptr<IReplayLoader> loader;
-		
+
 		std::string mPlayerNames[MAX_PLAYERS];
 };

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "Vector.h"
-#include "InputSource.h"
+#include "PlayerInput.h"
 #include "BlobbyDebug.h"
 #include "PhysicState.h"
 
@@ -43,7 +43,7 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		void setBallVelocity( Vector2 newVelocity );
 		float getBallRotation() const;
 		void setBallAngularVelocity( float angvel );
-		
+
 		// blobby information queries
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
@@ -57,10 +57,10 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 
 		// Important: This assumes a fixed framerate of 60 FPS!
 		int step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning);
-		
+
 		// gets the physic state
 		PhysicState getState() const;
-	
+
 		// sets a new physic state
 		void setState(const PhysicState& state);
 
@@ -68,7 +68,7 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		// Blobby animation methods
 		void blobbyStartAnimation(PlayerSide player);
 		void blobbyAnimationStep(PlayerSide player);
-	
+
 		inline bool playerTopBallCollision(int player) const;
 		inline bool playerBottomBallCollision(int player) const;
 
