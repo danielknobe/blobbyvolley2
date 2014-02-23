@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "RenderManager.h"
 #include "InputDevice.h"
+#include "input_device/JoystickPool.h"
 
 /* implementation */
 
@@ -81,7 +82,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	if (device == "mouse")
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
-		return new MouseInputDevice(side, jumpbutton);
+		return createMouseInput(side, jumpbutton);
 	}
 	// load config for keyboard
 
@@ -90,7 +91,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 		SDL_Keycode lkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_left")).c_str());
 		SDL_Keycode rkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_right")).c_str());
 		SDL_Keycode jkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_jump")).c_str());
-		return new KeyboardInputDevice(lkey, rkey, jkey);
+		return createKeyboardInput(lkey, rkey, jkey);
 	}
 	// load config for joystick
 	else if (device == "joystick")
@@ -98,13 +99,12 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 		JoystickAction laction(config.getString(prefix + "joystick_left"));
 		JoystickAction raction(config.getString(prefix + "joystick_right"));
 		JoystickAction jaction(config.getString(prefix + "joystick_jump"));
-		return new JoystickInputDevice(laction, raction,
-								jaction);
+		return createJoystrickInput(laction, raction, jaction);
 	}
 	// load config for touch
 	else if (device == "touch")
 	{
-		return new TouchInputDevice(side, config.getInteger("blobby_touch_type"));
+		return createTouchInput(side, config.getInteger("blobby_touch_type"));
 	}
 	else
 		std::cerr << "Error: unknown input device: " << device << std::endl;

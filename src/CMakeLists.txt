@@ -3,6 +3,7 @@ add_subdirectory(tinyxml)
 ADD_DEFINITIONS(-std=c++11)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
+add_subdirectory(input_device)
 
 add_definitions(-DTIXML_USE_STL)
 set(CMAKE_CXX_FLAGS "-std=c++11")
@@ -30,6 +31,7 @@ set(common_SRC
 	GameLogicState.cpp GameLogicState.h
 	ReplaySavePoint.cpp ReplaySavePoint.h
 	InputSource.cpp InputSource.h
+	PlayerInput.h PlayerInput.cpp
 	IScriptableComponent.cpp IScriptableComponent.h
 	PlayerIdentity.cpp PlayerIdentity.h
 	server/DedicatedServer.cpp server/DedicatedServer.h
@@ -37,13 +39,12 @@ set(common_SRC
 	server/NetworkGame.cpp server/NetworkGame.h
 	)
 
-set (blobby_SRC ${common_SRC}
+set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	Blood.cpp Blood.h
 	TextManager.cpp TextManager.h
 	main.cpp
 	IMGUI.cpp IMGUI.h
-	LagDetectionSystem.cpp LagDetectionSystem.h
-	InputDevice.cpp InputDevice.h
+	InputDevice.h
 	InputManager.cpp InputManager.h
 	LocalInputSource.cpp LocalInputSource.h
 	RenderManager.cpp RenderManager.h
