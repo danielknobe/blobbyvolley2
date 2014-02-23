@@ -83,7 +83,6 @@
 		<Unit filename="src/CMakeLists.txt" />
 		<Unit filename="src/Clock.cpp" />
 		<Unit filename="src/Clock.h" />
-		<Unit filename="src/CrossCorrelation.h" />
 		<Unit filename="src/DuelMatch.cpp" />
 		<Unit filename="src/DuelMatch.h" />
 		<Unit filename="src/DuelMatchState.cpp" />
@@ -133,11 +132,6 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/InputSourceFactory.h" />
-		<Unit filename="src/LagDetectionSystem.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/LagDetectionSystem.h" />
 		<Unit filename="src/LocalInputSource.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -427,7 +421,6 @@
 		<Unit filename="src/tinyxml/tinyxml.h" />
 		<Unit filename="src/tinyxml/tinyxmlerror.cpp" />
 		<Unit filename="src/tinyxml/tinyxmlparser.cpp" />
-		<Unit filename="src/utf8.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 #include "Vector.h"
-#include "InputSource.h"
 #include "GenericIOFwd.h"
 
 namespace RakNet
@@ -35,13 +34,13 @@ struct PhysicState
 {
 	Vector2 blobPosition[MAX_PLAYERS];
 	Vector2 blobVelocity[MAX_PLAYERS];
-	
+
 	Vector2 ballPosition;
 	Vector2 ballVelocity;
 	float ballAngularVelocity;
-	
+
 	// equality comparision
 	bool operator==(const PhysicState& other) const;
-	
+
 	void swapSides();
 };
