@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* header include */
 #include "InputManager.h"
-#include "RenderManager.h"
 
 /* includes */
 #include <cassert>
@@ -29,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL2/SDL.h>
 
 #include "UserConfig.h"
-#include "IMGUI.h"
+#include "RenderManager.h"
+#include "InputDevice.h"
 
 /* implementation */
 
@@ -106,7 +106,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	{
 		return new TouchInputDevice(side, config.getInteger("blobby_touch_type"));
 	}
-	else	
+	else
 		std::cerr << "Error: unknown input device: " << device << std::endl;
 
 	return 0;
@@ -138,7 +138,7 @@ void InputManager::updateInput()
 	mLastMouseButton = -1;
 
 	mLastActionKey = SDLK_UNKNOWN;
-	
+
 	mLastTextKey = "";
 	mLastJoyAction = "";
 	// Init GUI Events for buffered Input
@@ -224,12 +224,12 @@ void InputManager::updateInput()
 #else
 			case SDL_FINGERDOWN:
 				mClick = true;
-                
+
 				if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
 				{
                     mDoubleClick = true;
 				}
-                
+
 				mLastClickTime = SDL_GetTicks();
 				break;
 #endif
@@ -240,12 +240,12 @@ void InputManager::updateInput()
             {
                 case SDL_BUTTON_LEFT:
                     mClick = true;
-                    
+
                     if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
                     {
                         mDoubleClick = true;
                     }
-                    
+
                     mLastClickTime = SDL_GetTicks();
                     break;
             }
@@ -378,14 +378,14 @@ Vector2 InputManager::position()
 	SDL_GetMouseState(&mMouseX,&mMouseY);
 #else
 	SDL_TouchID device = SDL_GetTouchDevice(0);
-    
+
 	for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
 	{
 		SDL_Finger *finger = SDL_GetTouchFinger(device, i);
-        
+
 		if (finger == NULL)
 			continue;
-        
+
 		mMouseX = finger->x * 800;
 		mMouseY = finger->y * 600;
 	}
