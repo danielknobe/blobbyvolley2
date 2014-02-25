@@ -3,7 +3,6 @@ add_subdirectory(tinyxml)
 ADD_DEFINITIONS(-std=c++11)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
-add_subdirectory(input_device)
 
 add_definitions(-DTIXML_USE_STL)
 set(CMAKE_CXX_FLAGS "-std=c++11")
@@ -67,6 +66,11 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	state/ReplayState.cpp state/ReplayState.h
 	state/ReplaySelectionState.cpp state/ReplaySelectionState.h
 	state/LobbyState.cpp state/LobbyState.h
+	input_device/JoystickInput.cpp
+	input_device/JoystickPool.cpp input_device/JoystickPool.h
+	input_device/KeyboardInput.cpp
+	input_device/MouseInput.cpp
+	input_device/TouchInput.cpp
 	)
 
 set (blobby-server_SRC ${common_SRC}
