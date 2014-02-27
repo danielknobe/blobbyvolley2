@@ -95,7 +95,7 @@ NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> lef
 	stream.Write((unsigned char)ID_RULES_CHECKSUM);
 	stream.Write(checksum);
 	/// \todo write file author and title, too; maybe add a version number in scripts, too.
-	broadcastBitstream(&stream);
+	broadcastBitstream(stream);
 }
 
 NetworkGame::~NetworkGame()
@@ -107,7 +107,7 @@ void NetworkGame::injectPacket(const packet_ptr& packet)
 	mPacketQueue.push_back(packet);
 }
 
-void NetworkGame::broadcastBitstream(const RakNet::BitStream* stream, const RakNet::BitStream* switchedstream)
+void NetworkGame::broadcastBitstream(const RakNet::BitStream& stream, const RakNet::BitStream& switchedstream)
 {
 	// checks that stream and switchedstream don't have the same content.
 	// this is a common mistake that arises from constructs like:
@@ -123,20 +123,20 @@ void NetworkGame::broadcastBitstream(const RakNet::BitStream* stream, const RakN
 	/// NEVER USE THIS FUNCTION LIKE broadcastBitstream(str, str), use, broadcastBitstream(str) instead
 	/// this function is intended for sending two different streams to the two clients
 
-	assert( stream != switchedstream );
-	assert( stream->GetData() != switchedstream->GetData() );
-	const RakNet::BitStream* leftStream = mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
-	const RakNet::BitStream* rightStream = mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
+	assert( &stream != &switchedstream );
+	assert( stream.GetData() != switchedstream.GetData() );
+	const RakNet::BitStream& leftStream = mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
+	const RakNet::BitStream& rightStream = mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
 
-	mServer.Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
-	mServer.Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+	mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
 }
 
-void NetworkGame::broadcastBitstream(const RakNet::BitStream* stream)
+void NetworkGame::broadcastBitstream(const RakNet::BitStream& stream)
 {
 
-	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
-	mServer.Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+	mServer.Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+	mServer.Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
 }
 
 void NetworkGame::processPackets()
@@ -153,7 +153,7 @@ void NetworkGame::processPackets()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_OPPONENT_DISCONNECTED);
-				broadcastBitstream(&stream);
+				broadcastBitstream(stream);
 				mPausing = true;
 				mMatch->pause();
 				mGameValid = false;
@@ -191,7 +191,7 @@ void NetworkGame::processPackets()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_PAUSE);
-				broadcastBitstream(&stream);
+				broadcastBitstream(stream);
 				mPausing = true;
 				mMatch->pause();
 				break;
@@ -201,7 +201,7 @@ void NetworkGame::processPackets()
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
-				broadcastBitstream(&stream);
+				broadcastBitstream(stream);
 				mPausing = false;
 				mMatch->unpause();
 				break;
@@ -326,7 +326,7 @@ void NetworkGame::step()
 		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
 		switchStream.Write(RIGHT_PLAYER);
 
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(stream, switchStream);
 	}
 
 	if(events & EVENT_RIGHT_BLOBBY_HIT)
@@ -341,7 +341,7 @@ void NetworkGame::step()
 		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
 		switchStream.Write(LEFT_PLAYER);
 
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(stream, switchStream);
 	}
 
 	if(events & EVENT_BALL_HIT_LEFT_GROUND)
@@ -352,7 +352,7 @@ void NetworkGame::step()
 		RakNet::BitStream switchStream;
 		switchStream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
 		switchStream.Write(RIGHT_PLAYER);
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(stream, switchStream);
 	}
 
 	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
@@ -367,7 +367,7 @@ void NetworkGame::step()
 		switchStream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
 		switchStream.Write(LEFT_PLAYER);
 
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(stream, switchStream);
 	}
 
 	if(!mPausing)
@@ -383,7 +383,7 @@ void NetworkGame::step()
 			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
 			switchStream.Write(winning == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 
-			broadcastBitstream(&stream, &switchStream);
+			broadcastBitstream(stream, switchStream);
 
 			// if someone has won, the game is paused
 			mPausing = true;
@@ -404,13 +404,12 @@ void NetworkGame::step()
 
 		RakNet::BitStream switchStream;
 		switchStream.Write((unsigned char)ID_BALL_RESET);
-		switchStream.Write(
-			mMatch->getServingPlayer() == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
+		switchStream.Write(mMatch->getServingPlayer() == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 		switchStream.Write(mMatch->getScore(RIGHT_PLAYER));
 		switchStream.Write(mMatch->getScore(LEFT_PLAYER));
 		switchStream.Write(mMatch->getClock().getTime());
 
-		broadcastBitstream(&stream, &switchStream);
+		broadcastBitstream(stream, switchStream);
 	}
 
 	if (!mPausing)

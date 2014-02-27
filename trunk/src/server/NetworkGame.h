@@ -72,8 +72,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		PlayerID getPlayerID( PlayerSide side ) const;
 
 	private:
-		void broadcastBitstream(const RakNet::BitStream* stream, const RakNet::BitStream* switchedstream);
-		void broadcastBitstream(const RakNet::BitStream* stream);
+		void broadcastBitstream(const RakNet::BitStream& stream, const RakNet::BitStream& switchedstream);
+		void broadcastBitstream(const RakNet::BitStream& stream);
 		void broadcastPhysicState();
 		bool isGameStarted() { return mRulesSent[LEFT_PLAYER] && mRulesSent[RIGHT_PLAYER]; }
 
