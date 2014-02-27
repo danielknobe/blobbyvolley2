@@ -93,9 +93,6 @@ void DuelMatch::step()
 	mTransformedInput[LEFT_PLAYER] = mInputSources[LEFT_PLAYER]->updateInput();
 	mTransformedInput[RIGHT_PLAYER] = mInputSources[RIGHT_PLAYER]->updateInput();
 
-	int leftScore = mLogic->getScore(LEFT_PLAYER);
-	int rightScore = mLogic->getScore(RIGHT_PLAYER);
-
 	if(!mRemote)
 	{
 		mTransformedInput[LEFT_PLAYER] = mLogic->transformInput( mTransformedInput[LEFT_PLAYER], LEFT_PLAYER );
@@ -167,12 +164,6 @@ void DuelMatch::step()
 		resetBall( mLogic->getServingPlayer() );
 		mLogic->onServe();
 		events |= EVENT_RESET;
-	}
-
-	// if score was changed, we send it to clients
-	if (!mRemote && (leftScore != mLogic->getScore(LEFT_PLAYER) || rightScore != mLogic->getScore(RIGHT_PLAYER)))
-	{
-		events |= EVENT_SEND_SCORE;
 	}
 
 	// reset external events

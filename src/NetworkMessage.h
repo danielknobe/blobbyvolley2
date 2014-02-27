@@ -48,7 +48,7 @@ enum MessageType
 	ID_CURRENTLY_UNUSED,	// this value is to ensure network protocol compatibility between 0.9c and 1.0
 	ID_REPLAY,
 	ID_CHAT_MESSAGE,
-	ID_UPDATE_SCORE,
+	ID_UPDATE_SCORE,		// no longer used, as ID_PHYSIC_UPDATE also contains the score information, and ID_BALL_RESET also works as a sync point for clocks
 	ID_RULES_CHECKSUM,
 	ID_RULES,
 	ID_SERVER_STATUS,
@@ -201,17 +201,6 @@ enum MessageType
 // 		ID_REPLAY
 //		size (int)
 //		data
-//
-// ID_UPDATE_SCORE
-// 	Description:
-// 		 Message sent from server to all clients when the score
-// 		 was changed. It includes an informarmation about new score
-// 		 and is used to synchronize the score.
-// 	Structure:
-// 		ID_UPDATE_SCORE
-// 		left score (int)
-// 		right score (int)
-//		time (int)
 //
 // ID_RULES_CHECKSUM
 // 	Description:

@@ -159,23 +159,6 @@ void NetworkGameState::step()
 					mNetworkState = OPPONENT_DISCONNECTED;
 				break;
 			}
-			case ID_UPDATE_SCORE:
-			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-				stream.IgnoreBytes(1);	//ID_UPDATE_SCORE
-
-				// read and set new score
-				int nLeftScore;
-				int nRightScore;
-				int time;
-				stream.Read(nLeftScore);
-				stream.Read(nRightScore);
-				stream.Read(time);
-				mFakeMatch->setScore(nLeftScore, nRightScore);
-				// sync the clocks... normally, they should not differ
-				mFakeMatch->getClock().setTime(time);
-				break;
-			}
 			case ID_BALL_RESET:
 			{
 				PlayerSide servingPlayer;
