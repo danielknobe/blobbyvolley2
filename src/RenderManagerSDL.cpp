@@ -92,6 +92,8 @@ RenderManager* RenderManager::createRenderManagerSDL()
 
 void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 {
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
 	// Set modesetting
 	Uint32 screenFlags = 0;
 	if (fullscreen)
@@ -333,6 +335,8 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 			rightBlobBlood,
 			Color(255, 0, 0));
 	SDL_UpdateTexture(rightBlobBlood, NULL, formatedBlobStandardBlood->pixels, formatedBlobStandardBlood->pitch);
+
+SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); 
 }
 
 void RenderManagerSDL::deinit()
