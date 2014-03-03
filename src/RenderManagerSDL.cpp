@@ -95,8 +95,13 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	// Set modesetting
 	Uint32 screenFlags = 0;
 	if (fullscreen)
+	{
 		screenFlags |= SDL_WINDOW_FULLSCREEN;
-
+	}
+	else
+	{
+		screenFlags |= SDL_WINDOW_RESIZABLE;
+	}
 	// Create window
 	mWindow = SDL_CreateWindow(AppTitle,
 		SDL_WINDOWPOS_UNDEFINED,
@@ -116,6 +121,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Hide mousecursor
 	SDL_ShowCursor(0);
+
+	// Create rendertarget to make window resizeable
+	mRenderTarget = SDL_CreateTexture(mRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, xResolution, yResolution);
 
 	// Load all textures and surfaces to render the game
 	SDL_Surface* tmpSurface;
@@ -330,6 +338,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 void RenderManagerSDL::deinit()
 {
 	SDL_DestroyTexture(mOverlayTexture);
+	SDL_DestroyTexture(mRenderTarget);
 
 	for(unsigned int i = 0; i < 2; i++) {
 		SDL_DestroyTexture(mMarker[i]);
@@ -768,5 +777,24 @@ void RenderManagerSDL::drawParticle(const Vector2& pos, int player)
 
 void RenderManagerSDL::refresh()
 {
+	SDL_SetRenderTarget(mRenderer, NULL);
+
+	// We have a resizeable window
+	// Resize renderer if needed
+	// TODO: We should catch the resize event
+	SDL_Rect renderRect;
+	int windowX;
+	int windowY;
+	SDL_RenderGetViewport(mRenderer, &renderRect);
+	SDL_GetWindowSize(mWindow, &windowX, &windowY);
+	if (renderRect.w != windowX || renderRect.h != windowY)
+	{
+		renderRect.w = windowX;
+		renderRect.h = windowY;
+		SDL_RenderSetViewport(mRenderer, &renderRect);
+	}
+
+	SDL_RenderCopy(mRenderer, mRenderTarget, NULL, NULL);
 	SDL_RenderPresent(mRenderer);
+	SDL_SetRenderTarget(mRenderer, mRenderTarget);
 }

@@ -122,6 +122,9 @@ class RenderManagerSDL : public RenderManager
 		// Store color for caching
 		Color mBlobColor[MAX_PLAYERS];
 
+		// Rendertarget to make windowmode resizeable
+		SDL_Texture* mRenderTarget;
+
 		// colors a surface
 		// the returned SDL_Surface* is already converted into DisplayFormat
 		SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
