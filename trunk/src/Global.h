@@ -42,6 +42,8 @@ const int BLOBBY_VERSION_MAJOR = 0;
 const int BLOBBY_VERSION_MINOR = 103;
 
 const char AppTitle[] = "Blobby Volley 2 Version 1.0";
+const int BASE_RESOLUTION_X = 800;
+const int BASE_RESOLUTION_Y = 600;
 
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;

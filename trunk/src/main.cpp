@@ -261,9 +261,9 @@ void setupPHYSFS()
 
 		// fullscreen?
 		if(gameConfig.getString("fullscreen") == "true")
-			rmanager->init(800, 600, true);
+			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, true);
 		else
-			rmanager->init(800, 600, false);
+			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, false);
 
 		if(gameConfig.getString("show_shadow") == "true")
 			rmanager->showShadow(true);
