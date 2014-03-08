@@ -59,6 +59,7 @@ State* State::getCurrentState()
 
 void State::deleteCurrentState()
 {
+	RenderManager::getSingleton().drawGame(false);
 	/// \todo well, the deleteCurrentState/setCurrentState as we have it now
 	///			seems to have several flaws. First, we have to delete our
 	///			current state BEFORE we create the next one. If I recall right
