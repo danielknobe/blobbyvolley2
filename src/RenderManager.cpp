@@ -105,15 +105,11 @@ SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int 
 	return newSurface;
 }
 
-
-int RenderManager::getNextFontIndex(std::string& string)
+int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 {
-	if (string.empty())
-		return -1;
-	
 	int index = 47;
-	wchar_t testChar = string.at(0);
-	string.erase(string.begin());
+	wchar_t testChar = *iter;
+	++iter;
 	if (testChar >= '0' && testChar <= '9')
 		index = testChar - '0';
 	else if (testChar >= 'a' && testChar <= 'z')
@@ -150,24 +146,24 @@ int RenderManager::getNextFontIndex(std::string& string)
 		index = 53;
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape
 	{
-		testChar = string.at(0);
-			string.erase(string.begin());
+		testChar = *iter;
+		++iter;
 		if (testChar == std::string("ß")[1])
-			index = 40;
+			return 40;
 		else if (testChar == std::string("ä")[1])
-			index = 41;
+			return 41;
 		else if (testChar == std::string("ö")[1])
-			index = 42;
+			return 42;
 		else if (testChar == std::string("ü")[1])
-			index = 43;
+			return 43;
 		else if (testChar == std::string("Ä")[1])
-			index = 41;
+			return 41;
 		else if (testChar == std::string("Ö")[1])
-			index = 42;
+			return 42;
 		else if (testChar == std::string("Ü")[1])
-			index = 43;
+			return 43;
 	}
-	
+
 	return index;
 }
 
