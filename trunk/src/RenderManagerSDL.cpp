@@ -593,10 +593,11 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 {
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
 	int length = 0;
-	std::string string = text;
-	int index = getNextFontIndex(string);
-	while (index != -1)
+
+	for (auto iter = text.cbegin(); iter != text.cend(); )
 	{
+		int index = getNextFontIndex(iter);
+
 		if (flags & TF_OBFUSCATE)
 			index = FONT_INDEX_ASTERISK;
 
@@ -631,7 +632,6 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 			}
 		}
 
-		index = getNextFontIndex(string);
 		length += FontSize;
 	}
 }

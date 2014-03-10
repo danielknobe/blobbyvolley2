@@ -538,13 +538,15 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	int FontSize = (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-	std::string string = text;
-	int index = getNextFontIndex(string);
 
 	float x = position.x - (FontSize / 2);
 	float y = position.y + (FontSize / 2);
-	while (index != -1)
+
+	for (auto iter = text.cbegin(); iter != text.cend(); )
+
 	{
+		int index = getNextFontIndex(iter);
+
 		if (flags & TF_OBFUSCATE)
 			index = FONT_INDEX_ASTERISK;
 
@@ -579,7 +581,6 @@ void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsi
 			else
 				drawQuad(x, y, mFont[index]);
 		}
-		index = getNextFontIndex(string);
 	}
 }
 
