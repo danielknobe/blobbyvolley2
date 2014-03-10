@@ -89,7 +89,6 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
 
-	RenderManager::getSingleton().setPlayernames(leftPlayer.getName(), rightPlayer.getName());
 	IMGUI::getSingleton().resetSelection();
 }
 

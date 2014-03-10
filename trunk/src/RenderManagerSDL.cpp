@@ -466,15 +466,6 @@ void RenderManagerSDL::draw()
 	position = blobRect(mRightBlobPosition);
 	animationState = int(mRightBlobAnimationState) % 5;
 	SDL_RenderCopy(mRenderer, mRightBlob[animationState].mSDLsf, 0, &position);
-
-	// Drawing the score
-	char textBuffer[8];
-	snprintf(textBuffer, sizeof(textBuffer), mLeftPlayerWarning ? "%02d!" : "%02d",
-			mLeftPlayerScore);
-	drawText(textBuffer, Vector2(24, 24), false);
-	snprintf(textBuffer, sizeof(textBuffer), mRightPlayerWarning ? "%02d!" : "%02d",
-			mRightPlayerScore);
-	drawText(textBuffer, Vector2(800 - 96, 24), false);
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)
@@ -592,27 +583,6 @@ void RenderManagerSDL::setBlob(int player,
 		mRightBlobAnimationState = animationState;
 	}
 }
-
-void RenderManagerSDL::setScore(int leftScore, int rightScore,
-	       bool leftWarning, bool rightWarning)
-{
-	mLeftPlayerScore = leftScore;
-	mRightPlayerScore = rightScore;
-	mLeftPlayerWarning = leftWarning;
-	mRightPlayerWarning = rightWarning;
-}
-
-void RenderManagerSDL::setPlayernames(std::string leftName, std::string rightName)
-{
-	mLeftPlayerName = leftName;
-	mRightPlayerName = rightName;
-}
-
-void RenderManagerSDL::setTime(const std::string& t)
-{
-	mTime = t;
-}
-
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {

@@ -48,12 +48,6 @@ class RenderManagerSDL : public RenderManager
 		virtual void setBlob(int player, const Vector2& position,
 				float animationState);
 
-		virtual void setScore(int leftScore, int rightScore,
-				   bool leftWarning, bool rightWarning);
-
-		virtual void setPlayernames(std::string leftName, std::string rightName);
-		virtual void setTime(const std::string& t);
-
 		virtual void setMouseMarker(float position);
 
 		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
@@ -109,16 +103,6 @@ class RenderManagerSDL : public RenderManager
 
 		bool mShowShadow;
 
-		int mLeftPlayerScore;
-		int mRightPlayerScore;
-		bool mLeftPlayerWarning;
-		bool mRightPlayerWarning;
-
-		std::string mLeftPlayerName;
-		std::string mRightPlayerName;
-
-		std::string mTime;
-
 		// Store color for caching
 		Color mBlobColor[MAX_PLAYERS];
 
@@ -131,7 +115,7 @@ class RenderManagerSDL : public RenderManager
 
 		void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags);
 		void colorizeBlobs(int player);
-    
+
 #ifdef __APPLE__
 #if !MAC_OS_X
         SDL_Texture* mBackFlag;
