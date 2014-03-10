@@ -142,6 +142,7 @@
 		<Unit filename="src/PhysicWorld.h" />
 		<Unit filename="src/PlayerIdentity.cpp" />
 		<Unit filename="src/PlayerIdentity.h" />
+		<Unit filename="src/PlayerInput.cpp" />
 		<Unit filename="src/PlayerInput.h" />
 		<Unit filename="src/RenderManager.cpp">
 			<Option target="Debug" />
