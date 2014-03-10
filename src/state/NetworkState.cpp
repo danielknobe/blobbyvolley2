@@ -100,9 +100,6 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 
 	mRemotePlayer->setName("");
 
-	RenderManager::getSingleton().setScore(0, 0, false, false);
-	RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayer(LEFT_PLAYER).getName(), mFakeMatch->getPlayer(RIGHT_PLAYER).getName());
-
 	mSelectedChatmessage = 0;
 	mChatCursorPosition = 0;
 	mChattext = "";
@@ -280,10 +277,6 @@ void NetworkGameState::step()
 				if(oppname.size() > 7)
 					oppname.resize(7);
 				mFilename += oppname;
-
-				// set names in render manager
-				RenderManager::getSingleton().setPlayernames(mFakeMatch->getPlayer(LEFT_PLAYER).getName(),
-															mFakeMatch->getPlayer(RIGHT_PLAYER).getName());
 
 				// check whether to use remote player color
 				if(mUseRemoteColor)
@@ -832,3 +825,4 @@ int SWLS_PacketCount;
 int SWLS_Connections;
 int SWLS_Games;
 int SWLS_GameSteps;
+int SWLS_ServerEntered;

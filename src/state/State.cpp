@@ -92,9 +92,6 @@ void State::presentGame(const DuelMatch& match)
 	// enable game drawing
 	rmanager.drawGame(true);
 
-	rmanager.setScore(match.getScore(LEFT_PLAYER), match.getScore(RIGHT_PLAYER),
-		match.getServingPlayer() == LEFT_PLAYER, match.getServingPlayer() == RIGHT_PLAYER);
-
 	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
 	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
 
@@ -118,8 +115,6 @@ void State::presentGame(const DuelMatch& match)
 
 	rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
 
-	rmanager.setTime(match.getClock().getTimeString());
-
 	int events = match.getEvents();
 	if(events & EVENT_LEFT_BLOBBY_HIT)
 	{
@@ -140,6 +135,12 @@ void State::presentGame(const DuelMatch& match)
 	if (events & EVENT_ERROR)
 		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
+	// Scores
+	char textBuffer[64];
+	snprintf(textBuffer, 8, match.getServingPlayer() == LEFT_PLAYER ? "%02d!" : "%02d ", match.getScore(LEFT_PLAYER));
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(24, 24), textBuffer);
+	snprintf(textBuffer, 8, match.getServingPlayer() == RIGHT_PLAYER ? "%02d!" : "%02d ", match.getScore(RIGHT_PLAYER));
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(800-24, 24), textBuffer, TF_ALIGN_RIGHT);
 
 	// blob name / time textfields
 	IMGUI::getSingleton().doText(GEN_ID, Vector2(12, 550), match.getPlayer(LEFT_PLAYER).getName());

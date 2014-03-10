@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <list>
 #include <map>
 #include <SDL2/SDL.h>
 
@@ -133,8 +132,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 		// Init with the desired Resolution.
 		// Note: It is not guaranteed that this resolution will be selected
-		virtual void init(int xResolution, int yResolution,
-			bool fullscreen) {};
+		virtual void init(int xResolution, int yResolution, bool fullscreen) {};
 
 		// Frees all internal data
 		virtual void deinit() {};
@@ -158,16 +156,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 				float animationState) {};
 
 		virtual void setMouseMarker(float position);
-
-		// Set the displayed score values and the serve notifications
-		virtual void setScore(int leftScore, int rightScore,
-			bool leftWarning, bool rightWarning) {};
-
-		// Set the names
-		virtual void setPlayernames(std::string leftName, std::string rightName) {};
-
-		// Set the time
-		virtual void setTime(const std::string& time) {};
 
 		// This simply draws the given text with its top left corner at the
 		// given position and doesn't care about line feeds.

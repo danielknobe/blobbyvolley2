@@ -24,11 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL2/SDL.h>
 
-
-#if defined(WIN32)
-#include <windows.h>
-#endif
-
 #if __MACOSX__
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
@@ -65,12 +60,6 @@ class RenderManagerGL2D : public RenderManager
 		virtual void setBall(const Vector2& position, float rotation);
 		virtual void setBlob(int player, const Vector2& position,
 				float animationState);
-
-		virtual void setScore(int leftScore, int rightScore,
-				   bool leftWarning, bool rightWarning);
-
-		virtual void setPlayernames(std::string leftName, std::string rightName);
-		virtual void setTime(const std::string& t);
 
 		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
 		virtual void drawImage(const std::string& filename, Vector2 position, Vector2 size);
@@ -114,15 +103,6 @@ class RenderManagerGL2D : public RenderManager
 		float mRightBlobAnimationState;
 
 		bool mShowShadow;
-
-		int mLeftPlayerScore;
-		int mRightPlayerScore;
-		bool mLeftPlayerWarning;
-		bool mRightPlayerWarning;
-
-		std::string mLeftPlayerName;
-		std::string mRightPlayerName;
-		std::string mTime;
 
 		Color mLeftBlobColor;
 		Color mRightBlobColor;

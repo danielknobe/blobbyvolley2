@@ -43,10 +43,7 @@ RenderManager::RenderManager() : mDrawGame(false)
 
 SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance)
 {
-	SDL_Surface *newSurface = SDL_CreateRGBSurface(
-			0,
-			surface->w, surface->h, 32,
-			0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
+	SDL_Surface *newSurface = createEmptySurface(surface->w, surface->h);
 	SDL_SetColorKey(surface, SDL_FALSE, 0);
 	SDL_BlitSurface(surface, 0, newSurface, 0);
 	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
@@ -55,16 +52,20 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 	SDL_GetSurfaceAlphaMod(surface, &alpha);
 	SDL_SetSurfaceAlphaMod(newSurface, alpha);
 	SDL_SetColorKey(newSurface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
-	
+
 	SDL_LockSurface(newSurface);
 	for (int y = 0; y < surface->h; ++y)
-	{	
+	{
 		for (int x = 0; x < surface->w; ++x)
 		{
-			SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)
-				[y * newSurface->w +x]);
+			// this seems overly complicated:
+			// aren't we just calculating newSurface->pixels + (y * newSurface->w + x)
+			SDL_Color* pixel = &( ((SDL_Color*)newSurface->pixels)[y * newSurface->w + x] );
 			Uint32 colorKey;
 			SDL_GetColorKey(surface, &colorKey);
+			// we index newSurface->pixels once as Uint32[] and once as SDL_Color[], so these must have the same size
+			static_assert( sizeof(Uint32) == sizeof(SDL_Color), "Uint32 must have the same size as SDL_Color" );
+
 			if (colorKey != ((Uint32*)newSurface->pixels)[y * newSurface->w +x])
 			{
 				pixel->r = pixel->r + luminance > 255 ? 255 : pixel->r + luminance;
@@ -89,21 +90,18 @@ SDL_Surface* RenderManager::loadSurface(std::string filename)
 
 	SDL_RWops* rwops = SDL_RWFromMem(fileContent.get(), fileLength);
 	SDL_Surface* newSurface = SDL_LoadBMP_RW(rwops , 1);
-	
+
 	if (!newSurface)
 		BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
-	
+
 	return newSurface;
 }
 
 
 SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int height)
 {
-	SDL_Surface* newSurface = SDL_CreateRGBSurface(
-		0,
-		width, height, 32,
-		0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
-	
+	SDL_Surface* newSurface = SDL_CreateRGBSurface(0, width, height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000);
+
 	return newSurface;
 }
 
@@ -186,7 +184,7 @@ SDL_Rect RenderManager::blobRect(const Vector2& position)
 		75,
 		89
 	};
-	
+
 	return rect;
 }
 
@@ -205,7 +203,7 @@ Vector2 RenderManager::ballShadowPosition(const Vector2& position)
 {
 	return Vector2(
 		position.x + (500.0 - position.y) / 4 + 16.0,
-		500.0 - (500.0 - position.y) / 16.0 - 10.0		
+		500.0 - (500.0 - position.y) / 16.0 - 10.0
 	);
 }
 
@@ -217,7 +215,7 @@ SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
 		69,
 		17
 	};
-	
+
 	return rect;
 }
 
@@ -255,15 +253,16 @@ void RenderManager::setTitle(const std::string& title)
 	SDL_SetWindowTitle(mWindow, title.c_str());
 }
 
-SDL_Window* RenderManager::getWindow() {
+SDL_Window* RenderManager::getWindow()
+{
 	return mWindow;
 }
 
 Color RenderManager::getOscillationColor() const
 {
 	float time = float(SDL_GetTicks()) / 1000.0;
-	
-	return Color(	
+
+	return Color(
 					int((std::sin(time*1.5) + 1.0) * 128),
 					int((std::sin(time*2.5) + 1.0) * 128),
 					int((std::sin(time*3.5) + 1.0) * 128)
