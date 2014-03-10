@@ -59,7 +59,6 @@ State* State::getCurrentState()
 
 void State::deleteCurrentState()
 {
-	RenderManager::getSingleton().drawGame(false);
 	/// \todo well, the deleteCurrentState/setCurrentState as we have it now
 	///			seems to have several flaws. First, we have to delete our
 	///			current state BEFORE we create the next one. If I recall right
@@ -92,48 +91,54 @@ void State::presentGame(const DuelMatch& match)
 	// enable game drawing
 	rmanager.drawGame(true);
 
-	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
-	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
-
-	if(match.getPlayer(LEFT_PLAYER).getOscillating())
+	// only need to update match data when not in pause mode
+	// important to prevent sound loops in case we pause exactly when an event happens
+	if( !match.isPaused() )
 	{
-		rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
-	}
-	 else
-	{
-		rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
-	}
 
-	if(match.getPlayer(RIGHT_PLAYER).getOscillating())
-	{
-		rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
-	}
-	 else
-	{
-		rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
-	}
+		rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
+		rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
 
-	rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
+		if(match.getPlayer(LEFT_PLAYER).getOscillating())
+		{
+			rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
+		}
+		 else
+		{
+			rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
+		}
 
-	int events = match.getEvents();
-	if(events & EVENT_LEFT_BLOBBY_HIT)
-	{
-		smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = match.getBallPosition() +
-				(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 0);
+		if(match.getPlayer(RIGHT_PLAYER).getOscillating())
+		{
+			rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
+		}
+		 else
+		{
+			rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
+		}
+
+		rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
+
+		int events = match.getEvents();
+		if(events & EVENT_LEFT_BLOBBY_HIT)
+		{
+			smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = match.getBallPosition() +
+					(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 0);
+		}
+
+		if (events & EVENT_RIGHT_BLOBBY_HIT)
+		{
+			smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+			Vector2 hitPos = match.getBallPosition() +
+					(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 1);
+		}
+
+		if (events & EVENT_ERROR)
+			smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 	}
-
-	if (events & EVENT_RIGHT_BLOBBY_HIT)
-	{
-		smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = match.getBallPosition() +
-				(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 1);
-	}
-
-	if (events & EVENT_ERROR)
-		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
 	// Scores
 	char textBuffer[64];

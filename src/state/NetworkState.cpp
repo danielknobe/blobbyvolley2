@@ -629,6 +629,7 @@ void NetworkGameState::step()
 		}
 		case PLAYER_WON:
 		{
+			mFakeMatch->pause();
 			std::string tmp = mFakeMatch->getPlayer(mWinningPlayer).getName();
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");

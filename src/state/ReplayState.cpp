@@ -122,7 +122,6 @@ void ReplayState::step()
 		{
 			mPaused = !mReplayPlayer->play(mReplayMatch.get());
 			mSpeedTimer -= 8;
-			presentGame(*mReplayMatch);
 		}
 		mSpeedTimer += mSpeedValue;
 
@@ -229,6 +228,8 @@ void ReplayState::step()
 
 	if (side != NO_PLAYER)
 	{
+		mReplayMatch->pause();
+
 		std::stringstream tmp;
 		if(side == LEFT_PLAYER)
 			tmp << mReplayPlayer->getPlayerName(LEFT_PLAYER);
@@ -242,6 +243,7 @@ void ReplayState::step()
 		{
 			deleteCurrentState();
 			setCurrentState(new ReplaySelectionState());
+			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
 		{
@@ -266,6 +268,10 @@ void ReplayState::step()
 		deleteCurrentState();
 		setCurrentState(new ReplaySelectionState());
 	}
+
+
+	// show the game
+	presentGame(*mReplayMatch);
 }
 
 const char* ReplayState::getStateName() const

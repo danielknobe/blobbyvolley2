@@ -154,25 +154,6 @@ void LocalGameState::step()
 		}
 		imgui.doCursor();
 	}
-	else if (mMatch->isPaused())
-	{
-		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(281, 260), TextManager::LBL_CONF_QUIT);
-		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::LBL_NO)){
-			mMatch->unpause();
-		}
-		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::LBL_YES))
-		{
-			deleteCurrentState();
-			setCurrentState(new MainMenuState);
-		}
-		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::RP_SAVE))
-		{
-			mSaveReplay = true;
-			imgui.resetSelection();
-		}
-		imgui.doCursor();
-	}
 	else if (mWinner)
 	{
 		std::string tmp = mMatch->getPlayer(mMatch->winningPlayer()).getName();
@@ -191,6 +172,27 @@ void LocalGameState::step()
 			setCurrentState(new LocalGameState());
 		}
 		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::RP_SAVE))
+		{
+			mSaveReplay = true;
+			imgui.resetSelection();
+		}
+		imgui.doCursor();
+
+		mMatch->pause();
+	}
+	else if (mMatch->isPaused())
+	{
+		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
+		imgui.doText(GEN_ID, Vector2(281, 260), TextManager::LBL_CONF_QUIT);
+		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::LBL_NO)){
+			mMatch->unpause();
+		}
+		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::LBL_YES))
+		{
+			deleteCurrentState();
+			setCurrentState(new MainMenuState);
+		}
+		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::RP_SAVE))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
@@ -226,10 +228,11 @@ void LocalGameState::step()
 			mRecorder->record(mMatch->getState());
 			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 		}
-
-		presentGame(*mMatch);
 	}
+
+	presentGame(*mMatch);
 }
+
 
 const char* LocalGameState::getStateName() const
 {
