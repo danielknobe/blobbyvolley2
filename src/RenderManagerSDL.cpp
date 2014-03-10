@@ -336,7 +336,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 			Color(255, 0, 0));
 	SDL_UpdateTexture(rightBlobBlood, NULL, formatedBlobStandardBlood->pixels, formatedBlobStandardBlood->pitch);
 
-SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); 
+SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
 
 void RenderManagerSDL::deinit()
@@ -475,13 +475,6 @@ void RenderManagerSDL::draw()
 	snprintf(textBuffer, sizeof(textBuffer), mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);
 	drawText(textBuffer, Vector2(800 - 96, 24), false);
-
-	// Drawing the names
-	drawText(mLeftPlayerName, Vector2(12, 550), false);
-	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
-
-	// Drawing the Clock
-	drawText(mTime, Vector2(400 - mTime.length()*12, 24), false);
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)

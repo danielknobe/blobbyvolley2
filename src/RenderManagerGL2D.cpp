@@ -473,14 +473,6 @@ void RenderManagerGL2D::draw()
 	snprintf(textBuffer, 8, mRightPlayerWarning ? "%02d!" : "%02d",
 			mRightPlayerScore);
 	drawText(textBuffer, Vector2(728, 24), false);
-
-	// Drawing the names
-	drawText(mLeftPlayerName, Vector2(12, 550), false);
-
-	drawText(mRightPlayerName, Vector2(788-(24*mRightPlayerName.length()), 550), false);
-
-	// Drawing the clock
-	drawText(mTime, Vector2(400 - mTime.length()*12, 24), false);
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)

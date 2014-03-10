@@ -95,10 +95,8 @@ void State::presentGame(const DuelMatch& match)
 	rmanager.setScore(match.getScore(LEFT_PLAYER), match.getScore(RIGHT_PLAYER),
 		match.getServingPlayer() == LEFT_PLAYER, match.getServingPlayer() == RIGHT_PLAYER);
 
-	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER),
-							match.getWorld().getBlobState(LEFT_PLAYER));
-	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),
-							match.getWorld().getBlobState(RIGHT_PLAYER));
+	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
+	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
 
 	if(match.getPlayer(LEFT_PLAYER).getOscillating())
 	{
@@ -141,6 +139,12 @@ void State::presentGame(const DuelMatch& match)
 
 	if (events & EVENT_ERROR)
 		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+
+
+	// blob name / time textfields
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(12, 550), match.getPlayer(LEFT_PLAYER).getName());
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(788, 550), match.getPlayer(RIGHT_PLAYER).getName(), TF_ALIGN_RIGHT);
+	IMGUI::getSingleton().doText(GEN_ID, Vector2(400, 24), match.getClock().getTimeString(), TF_ALIGN_CENTER);
 
 }
 
