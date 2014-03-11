@@ -122,6 +122,7 @@ void ReplayState::step()
 		{
 			mPaused = !mReplayPlayer->play(mReplayMatch.get());
 			mSpeedTimer -= 8;
+			presentGame(*mReplayMatch);
 		}
 		mSpeedTimer += mSpeedValue;
 
@@ -228,8 +229,6 @@ void ReplayState::step()
 
 	if (side != NO_PLAYER)
 	{
-		mReplayMatch->pause();
-
 		std::stringstream tmp;
 		if(side == LEFT_PLAYER)
 			tmp << mReplayPlayer->getPlayerName(LEFT_PLAYER);
@@ -270,8 +269,8 @@ void ReplayState::step()
 	}
 
 
-	// show the game
-	presentGame(*mReplayMatch);
+	// show the game ui
+	presentGameUI(*mReplayMatch);
 }
 
 const char* ReplayState::getStateName() const
