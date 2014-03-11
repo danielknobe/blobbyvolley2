@@ -266,6 +266,7 @@ void ReplayState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new ReplaySelectionState());
+		return;
 	}
 
 
