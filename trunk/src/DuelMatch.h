@@ -73,7 +73,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		// This reports the index of the winning player and -1 if the
 		// game is still running
-		PlayerSide winningPlayer();
+		PlayerSide winningPlayer() const;
 
 		// This methods report the current game state and a useful for
 		// the input manager, which needs information about the blob
