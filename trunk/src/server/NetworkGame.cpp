@@ -314,58 +314,17 @@ void NetworkGame::step()
 	mMatch->step();
 
 	int events = mMatch->getEvents();
-	if(events & EVENT_LEFT_BLOBBY_HIT)
+	if(events & EVENT_COLLISION)
 	{
 		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		stream.Write(mMatch->getWorld().getLastHitIntensity());
-		stream.Write(LEFT_PLAYER);
+		stream.Write((unsigned char)ID_COLLISION);
+		stream.Write( events & EVENT_COLLISION );
+		stream.Write( mMatch->getWorld().getLastHitIntensity() );
 
 		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
-		switchStream.Write(RIGHT_PLAYER);
-
-		broadcastBitstream(stream, switchStream);
-	}
-
-	if(events & EVENT_RIGHT_BLOBBY_HIT)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		stream.Write(mMatch->getWorld().getLastHitIntensity());
-		stream.Write(RIGHT_PLAYER);
-
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_BALL_PLAYER_COLLISION);
-		switchStream.Write(mMatch->getWorld().getLastHitIntensity());
-		switchStream.Write(LEFT_PLAYER);
-
-		broadcastBitstream(stream, switchStream);
-	}
-
-	if(events & EVENT_BALL_HIT_LEFT_GROUND)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
-		stream.Write(LEFT_PLAYER);
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
-		switchStream.Write(RIGHT_PLAYER);
-		broadcastBitstream(stream, switchStream);
-	}
-
-	if(events & EVENT_BALL_HIT_RIGHT_GROUND)
-	{
-		RakNet::BitStream stream;
-		// is it correct to send ID_BALL_GROUND_COLLISION even if the
-		// error was a forth hit of a player?
-		stream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
-		stream.Write(RIGHT_PLAYER);
-
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_BALL_GROUND_COLLISION);
-		switchStream.Write(LEFT_PLAYER);
+		switchStream.Write((unsigned char)ID_COLLISION);
+		switchStream.Write( switchEventSides( events & EVENT_COLLISION ) );
+		switchStream.Write( mMatch->getWorld().getLastHitIntensity() );
 
 		broadcastBitstream(stream, switchStream);
 	}
@@ -433,8 +392,7 @@ void NetworkGame::broadcastPhysicState()
 
 	out->generic<DuelMatchState> (ms);
 
-	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
-		mLeftPlayer, false);
+	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mLeftPlayer, false);
 
 	// reset state and stream
 	ms = mMatch->getState();
@@ -450,8 +408,7 @@ void NetworkGame::broadcastPhysicState()
 
 	out->generic<DuelMatchState> (ms);
 
-	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0,
-		mRightPlayer, false);
+	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mRightPlayer, false);
 }
 
 
@@ -467,5 +424,36 @@ PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
 	}
 
 	assert(0);
+}
+
+// helper function for NetworkGame::switchEventSides
+void setEventIf(int& events, int trigger, int event)
+{
+	if( trigger )
+		events |= event;
+	else
+		events &= ~trigger;
+}
+
+int NetworkGame::switchEventSides(int events)
+{
+	int new_events = events;
+
+	setEventIf(new_events, EVENT_LEFT_BLOBBY_HIT, EVENT_RIGHT_BLOBBY_HIT);
+	setEventIf(new_events, EVENT_RIGHT_BLOBBY_HIT, EVENT_LEFT_BLOBBY_HIT);
+
+	setEventIf(new_events, EVENT_BALL_HIT_LEFT_GROUND, EVENT_BALL_HIT_RIGHT_GROUND);
+	setEventIf(new_events, EVENT_BALL_HIT_RIGHT_GROUND, EVENT_BALL_HIT_LEFT_GROUND);
+
+	setEventIf(new_events, EVENT_BALL_HIT_LEFT_WALL, EVENT_BALL_HIT_RIGHT_WALL);
+	setEventIf(new_events, EVENT_BALL_HIT_RIGHT_WALL, EVENT_BALL_HIT_LEFT_WALL);
+
+	setEventIf(new_events, EVENT_BALL_HIT_NET_LEFT, EVENT_BALL_HIT_NET_RIGHT);
+	setEventIf(new_events, EVENT_BALL_HIT_NET_RIGHT, EVENT_BALL_HIT_NET_LEFT);
+
+	setEventIf(new_events, EVENT_ERROR_LEFT, EVENT_ERROR_RIGHT);
+	setEventIf(new_events, EVENT_ERROR_RIGHT, EVENT_ERROR_LEFT);
+
+	return new_events;
 }
 

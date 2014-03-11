@@ -37,8 +37,8 @@ enum MessageType
 	ID_WIN_NOTIFICATION,
 	ID_OPPONENT_DISCONNECTED,
 	ID_BALL_RESET,
-	ID_BALL_GROUND_COLLISION,
-	ID_BALL_PLAYER_COLLISION,
+	ID_COLLISION,
+	ID_CURRENTLY_UNUSED_2,	// was ID_BALL_PLAYER_COLLISION, now handled via ID_COLLISION
 	ID_GAME_READY,
 	ID_ENTER_SERVER,
 	ID_PAUSE,
@@ -108,26 +108,16 @@ enum MessageType
 // 		right score (int)
 //		time (int)
 //
-// ID_BALL_GROUND_COLLISION
+// ID_COLLISION
 // 	Description:
 // 		Message sent from server to all clients when the ball
-// 		hits the ground. It is the only valid reason for a whistle
-// 		sound during the game. The side attribute tells on which side
-//		the ball hit the ground.
-// 	Structure:
-// 		ID_BALL_GROUND_COLLISION
-//		side (PlayerSide)
-//
-// ID_BALL_PLAYER_COLLISION
-// 	Description:
-// 		Message sent from server to all clients when the ball
-// 		hits a player.  It is the only valid reason for a player
-// 		collision sound. The player attribute tells which player
-//		hit the ball.
+// 		hits a player or the ground.  It is the only valid reason for a player
+// 		collision sound. The event attribute contains the DuelMatch Event that
+//		caused the packet to be sent, intensity contains the hit intensity (only valid for player collisions)
 // 	Structure:
 // 		ID_BALL_PLAYER_COLLISION
+//		event (int)
 // 		intensity (float)
-//		player (PlayerSide)
 //
 // ID_GAME_READY
 // 	Description:

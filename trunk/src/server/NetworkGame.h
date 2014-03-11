@@ -77,6 +77,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		void broadcastPhysicState();
 		bool isGameStarted() { return mRulesSent[LEFT_PLAYER] && mRulesSent[RIGHT_PLAYER]; }
 
+		static int switchEventSides(int events);
+
 		RakServer& mServer;
 		PlayerID mLeftPlayer;
 		PlayerID mRightPlayer;
