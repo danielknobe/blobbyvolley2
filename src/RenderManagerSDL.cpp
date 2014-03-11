@@ -466,8 +466,6 @@ void RenderManagerSDL::draw()
 	position = blobRect(mRightBlobPosition);
 	animationState = int(mRightBlobAnimationState) % 5;
 	SDL_RenderCopy(mRenderer, mRightBlob[animationState].mSDLsf, 0, &position);
-
-	mDrawGame = false;
 }
 
 bool RenderManagerSDL::setBackground(const std::string& filename)

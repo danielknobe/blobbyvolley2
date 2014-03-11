@@ -53,6 +53,9 @@ protected:
 	/// this functionality is shared by
 	/// LocalGameState, NetworkGameState and ReplayState
 	static void presentGame(const DuelMatch& match);
+
+	/// this draws the ui in the game, i.e. clock, score and player names
+	static void presentGameUI(const DuelMatch& match);
 public:
 	virtual ~State() {}
 	virtual void step() = 0;

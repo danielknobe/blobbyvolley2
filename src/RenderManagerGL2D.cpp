@@ -464,8 +464,6 @@ void RenderManagerGL2D::draw()
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_ALPHA_TEST);
-
-	mDrawGame = false;
 }
 
 bool RenderManagerGL2D::setBackground(const std::string& filename)

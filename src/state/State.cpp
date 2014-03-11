@@ -70,6 +70,8 @@ void State::deleteCurrentState()
 	///			Second, we need two methods were one should be sufficient.
 	delete mCurrentState;
 	mCurrentState = 0;
+
+	RenderManager::getSingleton().drawGame(false);
 }
 void State::setCurrentState(State* newState)
 {
@@ -91,67 +93,66 @@ void State::presentGame(const DuelMatch& match)
 	// enable game drawing
 	rmanager.drawGame(true);
 
-	// only need to update match data when not in pause mode
-	// important to prevent sound loops in case we pause exactly when an event happens
-	if( !match.isPaused() )
+
+	rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
+	rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
+
+	if(match.getPlayer(LEFT_PLAYER).getOscillating())
 	{
-
-		rmanager.setBlob(LEFT_PLAYER, match.getBlobPosition(LEFT_PLAYER), match.getWorld().getBlobState(LEFT_PLAYER));
-		rmanager.setBlob(RIGHT_PLAYER, match.getBlobPosition(RIGHT_PLAYER),	match.getWorld().getBlobState(RIGHT_PLAYER));
-
-		if(match.getPlayer(LEFT_PLAYER).getOscillating())
-		{
-			rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
-		}
-		 else
-		{
-			rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
-		}
-
-		if(match.getPlayer(RIGHT_PLAYER).getOscillating())
-		{
-			rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
-		}
-		 else
-		{
-			rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
-		}
-
-		rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
-
-		int events = match.getEvents();
-		if(events & EVENT_LEFT_BLOBBY_HIT)
-		{
-			smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = match.getBallPosition() +
-					(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 0);
-		}
-
-		if (events & EVENT_RIGHT_BLOBBY_HIT)
-		{
-			smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-			Vector2 hitPos = match.getBallPosition() +
-					(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 1);
-		}
-
-		if (events & EVENT_ERROR)
-			smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
 	}
+	 else
+	{
+		rmanager.setBlobColor(LEFT_PLAYER, match.getPlayer(LEFT_PLAYER).getStaticColor());
+	}
+
+	if(match.getPlayer(RIGHT_PLAYER).getOscillating())
+	{
+		rmanager.setBlobColor(RIGHT_PLAYER, rmanager.getOscillationColor());
+	}
+	 else
+	{
+		rmanager.setBlobColor(RIGHT_PLAYER, match.getPlayer(RIGHT_PLAYER).getStaticColor());
+	}
+
+	rmanager.setBall(match.getBallPosition(), match.getWorld().getBallRotation());
+
+	int events = match.getEvents();
+	if(events & EVENT_LEFT_BLOBBY_HIT)
+	{
+		smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+		Vector2 hitPos = match.getBallPosition() +
+				(match.getBlobPosition(LEFT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 0);
+	}
+
+	if (events & EVENT_RIGHT_BLOBBY_HIT)
+	{
+		smanager.playSound("sounds/bums.wav", match.getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
+		Vector2 hitPos = match.getBallPosition() +
+				(match.getBlobPosition(RIGHT_PLAYER) - match.getBallPosition()).normalise().scale(31.5);
+		BloodManager::getSingleton().spillBlood(hitPos, match.getWorld().getLastHitIntensity(), 1);
+	}
+
+	if (events & EVENT_ERROR)
+		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+}
+
+void State::presentGameUI(const DuelMatch& match)
+{
+	auto& imgui = IMGUI::getSingleton();
 
 	// Scores
 	char textBuffer[64];
 	snprintf(textBuffer, 8, match.getServingPlayer() == LEFT_PLAYER ? "%02d!" : "%02d ", match.getScore(LEFT_PLAYER));
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(24, 24), textBuffer);
+	imgui.doText(GEN_ID, Vector2(24, 24), textBuffer);
 	snprintf(textBuffer, 8, match.getServingPlayer() == RIGHT_PLAYER ? "%02d!" : "%02d ", match.getScore(RIGHT_PLAYER));
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(800-24, 24), textBuffer, TF_ALIGN_RIGHT);
+	imgui.doText(GEN_ID, Vector2(800-24, 24), textBuffer, TF_ALIGN_RIGHT);
 
 	// blob name / time textfields
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(12, 550), match.getPlayer(LEFT_PLAYER).getName());
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(788, 550), match.getPlayer(RIGHT_PLAYER).getName(), TF_ALIGN_RIGHT);
-	IMGUI::getSingleton().doText(GEN_ID, Vector2(400, 24), match.getClock().getTimeString(), TF_ALIGN_CENTER);
-
+	imgui.doText(GEN_ID, Vector2(12, 550), match.getPlayer(LEFT_PLAYER).getName());
+	imgui.doText(GEN_ID, Vector2(788, 550), match.getPlayer(RIGHT_PLAYER).getName(), TF_ALIGN_RIGHT);
+	imgui.doText(GEN_ID, Vector2(400, 24), match.getClock().getTimeString(), TF_ALIGN_CENTER);
 }
 
 const char* State::getCurrenStateName()
