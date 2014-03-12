@@ -344,11 +344,13 @@ void NetworkSearchState::step()
 		ServerInfo server = mScannedServers[mSelectedServer];
 		deleteCurrentState();
 		setCurrentState(new LobbyState(server));
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState);
+		return;
 	}
 
 	if(mDisplayUpdateNotification)

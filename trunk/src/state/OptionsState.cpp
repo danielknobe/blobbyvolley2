@@ -142,6 +142,7 @@ void OptionState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new InputOptionsState());
+		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
@@ -149,12 +150,14 @@ void OptionState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new GraphicOptionsState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 470.0), TextManager::OP_MISC))
 	{
 		save();
 		deleteCurrentState();
 		setCurrentState(new MiscOptionsState());
+		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
@@ -162,11 +165,13 @@ void OptionState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());
+		return;
 	}
 }
 
@@ -521,11 +526,13 @@ void GraphicOptionsState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 }
 
@@ -986,11 +993,13 @@ void InputOptionsState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 }
 #else
@@ -1045,11 +1054,13 @@ void InputOptionsState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 }
 #endif
@@ -1250,11 +1261,13 @@ void MiscOptionsState::step()
 		save();
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 }
 

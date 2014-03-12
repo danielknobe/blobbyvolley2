@@ -165,6 +165,7 @@ void LocalGameState::step()
 		{
 			deleteCurrentState();
 			setCurrentState(new MainMenuState);
+			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::RP_SAVE))
 		{
@@ -184,11 +185,13 @@ void LocalGameState::step()
 		{
 			deleteCurrentState();
 			setCurrentState(new MainMenuState());
+			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::GAME_TRY_AGAIN))
 		{
 			deleteCurrentState();
 			setCurrentState(new LocalGameState());
+			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::RP_SAVE))
 		{
@@ -208,6 +211,7 @@ void LocalGameState::step()
 		{
 			deleteCurrentState();
 			setCurrentState(new MainMenuState);
+			return;
 		}
 		else
 		{
