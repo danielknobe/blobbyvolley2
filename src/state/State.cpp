@@ -184,11 +184,13 @@ void MainMenuState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new OnlineSearchState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434, 340.0), TextManager::MNU_LABEL_LAN))
 	{
 		deleteCurrentState();
 		setCurrentState(new LANSearchState());
+		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 380.0), TextManager::MNU_LABEL_START))
 	{
@@ -196,6 +198,7 @@ void MainMenuState::step()
 		{
 			deleteCurrentState();
 			setCurrentState(new LocalGameState());
+			return;
 		}
 		catch (const ScriptException& except)
 		{
@@ -210,18 +213,21 @@ void MainMenuState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new OptionState());
+		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), TextManager::MNU_LABEL_REPLAY))
 	{
 		deleteCurrentState();
 		setCurrentState(new ReplaySelectionState());
+		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::MNU_LABEL_CREDITS))
 	{
 		deleteCurrentState();
 		setCurrentState(new CreditsState());
+		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 540.0), TextManager::MNU_LABEL_EXIT))

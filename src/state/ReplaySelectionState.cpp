@@ -49,15 +49,15 @@ ReplaySelectionState::ReplaySelectionState()
 	if (mReplayFiles.size() == 0)
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
-	
+
 	SpeedController::getMainInstance()->setGameSpeed(75);
 }
 
 void ReplaySelectionState::step()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
-	
-	
+
+
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -66,23 +66,24 @@ void ReplaySelectionState::step()
 				mSelectedReplay != -1)
 	{
 		std::string loadrep = mReplayFiles[mSelectedReplay];
-		
-		/// \todo we have to do something against this construction! 
+
+		/// \todo we have to do something against this construction!
 		///		this is dangerous. we delete this state before it has done
 		///		all of its work.
-		
+
 		ReplayState* rs = 0;
 		try
 		{
 			rs = new ReplayState();
 			rs->loadReplay(loadrep);
-			
+
 			imgui.resetSelection();
 			// at least make sure we end here!
-			
+
 			deleteCurrentState();
 			setCurrentState(rs);
-		} 
+			return;
+		}
 		 catch (std::exception& exp)
 		{
 			delete rs;
@@ -94,10 +95,11 @@ void ReplaySelectionState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState());
+		return;
 	}
 	else
 		imgui.doSelectbox(GEN_ID, Vector2(34.0, 50.0), Vector2(634.0, 550.0), mReplayFiles, mSelectedReplay);
-	
+
 	if (imgui.doButton(GEN_ID, Vector2(644.0, 60.0), TextManager::RP_INFO))
 	{
 		if (!mReplayFiles.empty())
@@ -106,7 +108,7 @@ void ReplaySelectionState::step()
 			{
 				mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
 				mShowReplayInfo = true;
-			} 
+			}
 			catch (std::exception& e)
 			{
 				std::cerr << e.what() << std::endl;
@@ -123,15 +125,15 @@ void ReplaySelectionState::step()
 				mSelectedReplay = mReplayFiles.size()-1;
 		}
 	}
-	
+
 	if(mShowReplayInfo)
 	{
 		// setup
 		std::string left =  mReplayLoader->getPlayerName(LEFT_PLAYER);
 		std::string right =  mReplayLoader->getPlayerName(RIGHT_PLAYER);
-		
+
 		const int MARGIN = std::min(std::max(int(300 - 24*(std::max(left.size(),right.size()))), 50), 150);
-		
+
 		const int RIGHT = 800 - MARGIN;
 		imgui.doInactiveMode(false);
 		imgui.doOverlay(GEN_ID, Vector2(MARGIN, 180), Vector2(800-MARGIN, 445));
@@ -139,12 +141,12 @@ void ReplaySelectionState::step()
 		imgui.doText(GEN_ID, Vector2(400-repname.size()*12, 190), repname);
 
 		// calculate text positions
-		
-		
+
+
 		imgui.doText(GEN_ID, Vector2(MARGIN + 20, 225), left);
 		imgui.doText(GEN_ID, Vector2(400-24, 225), "vs");
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*right.size(), 225), right);
-		
+
 		time_t rd = mReplayLoader->getDate();
 		struct tm* ptm;
 		ptm = gmtime ( &rd );
@@ -153,11 +155,11 @@ void ReplaySelectionState::step()
 		std::strftime(buffer, sizeof(buffer), "%d.%m.%Y - %H:%M", ptm);
 		std::string date = buffer;
 		imgui.doText(GEN_ID, Vector2(400 - 12*date.size(), 255), date);
-		
+
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 300), TextManager::OP_SPEED);
 		std::string speed = boost::lexical_cast<std::string>(mReplayLoader->getSpeed() *100 / 75) + "%" ;
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*speed.size(), 300), speed);
-		
+
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 335), TextManager::RP_DURATION);
 		std::string dur;
 		if(mReplayLoader->getDuration() > 99)
@@ -169,13 +171,13 @@ void ReplaySelectionState::step()
 			dur = boost::lexical_cast<std::string>(mReplayLoader->getDuration()) + "s";
 		}
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*dur.size(), 335), dur);
-		
+
 		std::string res;
 		res = boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(LEFT_PLAYER)) + " : " +  boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(RIGHT_PLAYER));
-		
+
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 370), TextManager::RP_RESULT);
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*res.size(), 370), res);
-		
+
 		if (imgui.doButton(GEN_ID, Vector2(400-24, 410), TextManager::LBL_OK))
 		{
 			mShowReplayInfo = false;
@@ -202,7 +204,7 @@ void ReplaySelectionState::step()
 			imgui.doInactiveMode(true);
 		}
 	}
-	
+
 	if (mVersionError)
 	{
 		imgui.doInactiveMode(false);

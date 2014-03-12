@@ -241,6 +241,7 @@ void LobbyState::step()
 	{
 		deleteCurrentState();
 		setCurrentState(new MainMenuState);
+		return;
 	}
 
 	// ok button
@@ -264,6 +265,7 @@ void LobbyState::step()
 		auto newState = new NetworkGameState(mClient);
 		deleteCurrentState();
 		setCurrentState( newState );
+		return;
 	}
 }
 
