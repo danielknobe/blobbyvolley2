@@ -50,11 +50,23 @@ boost::scoped_ptr<State> State::mStateToSwitchTo(nullptr);
 
 void State::step()
 {
-	getCurrentState()->step_impl();
+	// check that we are in a valid state
+	if(mCurrentState == nullptr )
+	{
+		// otherwise, create one
+		mCurrentState.reset( new MainMenuState );
+	}
+
+
+	// perform a state step
+	mCurrentState->step_impl();
 
 	// check if we should switch to a new state
 	if( mStateToSwitchTo != nullptr )
 	{
+		// maybe this debug statuses will help pinpointing crashes faster
+		DEBUG_STATUS( std::string("switching to state ") + mStateToSwitchTo->getStateName());
+
 		// if yes, set that new state
 		// use swap so the states do not get destroyed here
 		mCurrentState.swap( mStateToSwitchTo );
@@ -68,25 +80,13 @@ void State::step()
 	}
 }
 
-boost::scoped_ptr<State>& State::getCurrentState()
-{
-	if (mCurrentState == 0) {
-		mCurrentState.reset(new MainMenuState);
-	}
-	return mCurrentState;
-}
-
 const char* State::getCurrenStateName()
 {
-	return getCurrentState()->getStateName();
+	return mCurrentState->getStateName();
 }
-
-
-
 
 State::State()
 {
-
 }
 
 void State::switchState(State* newState)
@@ -94,7 +94,7 @@ void State::switchState(State* newState)
 	mStateToSwitchTo.reset(newState);
 }
 
-void State::presentGame(const DuelMatch& match)
+void GameState::presentGame(const DuelMatch& match)
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
@@ -147,7 +147,7 @@ void State::presentGame(const DuelMatch& match)
 		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 }
 
-void State::presentGameUI(const DuelMatch& match)
+void GameState::presentGameUI(const DuelMatch& match)
 {
 	auto& imgui = IMGUI::getSingleton();
 

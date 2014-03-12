@@ -59,8 +59,28 @@ public:
 
 protected:
 	State();
-	void switchState(State* newState);
+	static void switchState(State* newState);
 
+private:
+	static boost::scoped_ptr<State> mCurrentState;
+	static boost::scoped_ptr<State> mStateToSwitchTo;
+
+};
+
+// state classes
+/*! \class GameState
+	\brief base class for any game related state (Local, Network, Replay)
+*/
+
+class GameState : public State
+{
+public:
+	virtual ~GameState() {}
+
+	// step function defines the steps actual work
+	virtual void step_impl() = 0;
+
+protected:
 
 	/// static protected helper function that
 	/// draws the game. It is in State because
@@ -70,9 +90,6 @@ protected:
 
 	/// this draws the ui in the game, i.e. clock, score and player names
 	static void presentGameUI(const DuelMatch& match);
-private:
-	static boost::scoped_ptr<State> mCurrentState;
-	static boost::scoped_ptr<State> mStateToSwitchTo;
 
 };
 
