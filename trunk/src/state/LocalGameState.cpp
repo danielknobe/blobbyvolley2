@@ -47,8 +47,7 @@ LocalGameState::~LocalGameState()
 }
 
 LocalGameState::LocalGameState()
-	: State(),
-	mRecorder(new ReplayRecorder())
+	: mRecorder(new ReplayRecorder())
 {
 	mSaveReplay = false;
 	mWinner = false;

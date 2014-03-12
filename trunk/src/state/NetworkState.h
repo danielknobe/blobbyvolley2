@@ -40,7 +40,7 @@ class DedicatedServer;
 	\details state which is responsible for presenting a network game, sending player input to the
 				server, managing chat etc.
 */
-class NetworkGameState : public State
+class NetworkGameState : public GameState
 {
 public:
 	/// create a NetworkGameState with connection to a certain server

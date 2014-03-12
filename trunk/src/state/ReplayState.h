@@ -31,7 +31,7 @@ class ReplayPlayer;
 /*! \class ReplayState
 	\brief State playing a replay
 */
-class ReplayState : public State
+class ReplayState : public GameState
 {
 public:
 	ReplayState();
