@@ -32,17 +32,17 @@ class LocalGameState : public State
 	public:
 		LocalGameState();
 		virtual ~LocalGameState();
-		virtual void step();
-		
+		virtual void step_impl();
+
 		virtual const char* getStateName() const;
-	
+
 	private:
 		std::string mErrorMessage;
 		bool mSaveReplay;
 		bool mWinner;
 		std::string mFilename;
-		
+
 		boost::scoped_ptr<DuelMatch> mMatch;
-		boost::scoped_ptr<ReplayRecorder> mRecorder;	
+		boost::scoped_ptr<ReplayRecorder> mRecorder;
 };
 

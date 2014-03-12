@@ -42,11 +42,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
+
+// static state functions
 State* State::mCurrentState = 0;
 
-State::State()
+void State::step()
 {
-
+	getCurrentState()->step_impl();
 }
 
 State* State::getCurrentState()
@@ -55,6 +57,19 @@ State* State::getCurrentState()
 		mCurrentState = new MainMenuState;
 	}
 	return mCurrentState;
+}
+
+const char* State::getCurrenStateName()
+{
+	return getCurrentState()->getStateName();
+}
+
+
+
+
+State::State()
+{
+
 }
 
 void State::deleteCurrentState()
@@ -155,10 +170,9 @@ void State::presentGameUI(const DuelMatch& match)
 	imgui.doText(GEN_ID, Vector2(400, 24), match.getClock().getTimeString(), TF_ALIGN_CENTER);
 }
 
-const char* State::getCurrenStateName()
-{
-	return getCurrentState()->getStateName();
-}
+// --------------------------------------------------------------------------------------------------------------------------------
+//  concrete implementation of MainMenuState and CreditsState
+// -----------------------------------------------------------
 
 MainMenuState::MainMenuState()
 {
@@ -172,7 +186,7 @@ MainMenuState::~MainMenuState()
 {
 }
 
-void MainMenuState::step()
+void MainMenuState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 
@@ -255,7 +269,7 @@ CreditsState::CreditsState()
 	mYPosition = 600;
 }
 
-void CreditsState::step()
+void CreditsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();

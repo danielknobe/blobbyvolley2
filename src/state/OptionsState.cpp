@@ -106,7 +106,7 @@ void OptionState::save()
 	mOptionConfig.saveFile("config.xml");
 }
 
-void OptionState::step()
+void OptionState::step_impl()
 {
 	const int MAX_BOT_DELAY = 25;		// 25 frames = 0.33s (gamespeed: normal)
 
@@ -255,7 +255,7 @@ void GraphicOptionsState::save()
 	mOptionConfig.saveFile("config.xml");
 }
 
-void GraphicOptionsState::step()
+void GraphicOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
@@ -599,7 +599,7 @@ void InputOptionsState::save()
 }
 
 #if !defined(__ANDROID__) && !TARGET_IPHONE_SIMULATOR && !TARGET_OS_IPHONE
-void InputOptionsState::step()
+void InputOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
@@ -1004,7 +1004,7 @@ void InputOptionsState::step()
 }
 #else
 
-void InputOptionsState::step()
+void InputOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();
@@ -1139,7 +1139,7 @@ void MiscOptionsState::save()
 	TextManager::switchLanguage(mOptionConfig.getString("language"));
 }
 
-void MiscOptionsState::step()
+void MiscOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	imgui.doCursor();

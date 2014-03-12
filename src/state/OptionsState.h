@@ -33,7 +33,7 @@ class OptionState : public State
 public:
 	OptionState();
 	virtual ~OptionState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 
 private:
@@ -56,7 +56,7 @@ class GraphicOptionsState : public State
 public:
 	GraphicOptionsState();
 	virtual ~GraphicOptionsState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 private:
 	/// writes current settings to disk
@@ -78,7 +78,7 @@ class InputOptionsState : public State
 public:
 	InputOptionsState();
 	virtual ~InputOptionsState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 private:
 	/// writes current settings to disk
@@ -118,7 +118,7 @@ class MiscOptionsState : public State
 public:
 	MiscOptionsState();
 	virtual ~MiscOptionsState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 private:
 	/// writes current settings to disk

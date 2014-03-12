@@ -91,7 +91,7 @@ void ReplayState::loadReplay(const std::string& file)
 	/// \todo reintroduce error handling
 }
 
-void ReplayState::step()
+void ReplayState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 

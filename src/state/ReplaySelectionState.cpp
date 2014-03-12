@@ -53,7 +53,7 @@ ReplaySelectionState::ReplaySelectionState()
 	SpeedController::getMainInstance()->setGameSpeed(75);
 }
 
-void ReplaySelectionState::step()
+void ReplaySelectionState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 

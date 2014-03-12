@@ -92,7 +92,7 @@ LocalGameState::LocalGameState()
 	IMGUI::getSingleton().resetSelection();
 }
 
-void LocalGameState::step()
+void LocalGameState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	if(mErrorMessage != "")

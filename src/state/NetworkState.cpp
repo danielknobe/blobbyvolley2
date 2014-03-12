@@ -110,7 +110,7 @@ NetworkGameState::~NetworkGameState()
 	mClient->Disconnect(50);
 }
 
-void NetworkGameState::step()
+void NetworkGameState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 	RenderManager* rmanager = &RenderManager::getSingleton();
@@ -718,7 +718,7 @@ NetworkHostState::~NetworkHostState()
 	delete mGameState;
 }
 
-void NetworkHostState::step()
+void NetworkHostState::step_impl()
 {
 	packet_ptr packet;
 	if( mGameState == nullptr )

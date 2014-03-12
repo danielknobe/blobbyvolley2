@@ -48,7 +48,7 @@ public:
 	NetworkGameState(boost::shared_ptr<RakClient> client);
 
 	virtual ~NetworkGameState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 
 private:
@@ -105,7 +105,7 @@ public:
 	NetworkHostState();
 	virtual ~NetworkHostState();
 
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 
 private:
