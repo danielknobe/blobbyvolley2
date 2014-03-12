@@ -419,8 +419,7 @@ void NetworkGameState::step_impl()
 
 				if (packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
 				{
-					deleteCurrentState();
-					setCurrentState(new LobbyState(info));
+					switchState(new LobbyState(info));
 					return;
 				}
 				break;
@@ -448,8 +447,7 @@ void NetworkGameState::step_impl()
 		}
 		else
 		{
-			deleteCurrentState();
-			setCurrentState(new MainMenuState);
+			switchState(new MainMenuState);
 			return;
 		}
 	}
@@ -528,8 +526,7 @@ void NetworkGameState::step_impl()
 
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 290.0), TextManager::LBL_OK))
 			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
+				switchState(new MainMenuState);
 				return;
 			}
 
@@ -560,8 +557,7 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
 					TextManager::LBL_OK))
 			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
+				switchState(new MainMenuState);
 				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::RP_SAVE))
@@ -574,15 +570,11 @@ void NetworkGameState::step_impl()
 		case SERVER_FULL:
 		{
 			imgui.doCursor();
-			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),
-					Vector2(700.0, 370.0));
-			imgui.doText(GEN_ID, Vector2(200.0, 250.0),
-					TextManager::NET_SERVER_FULL);
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0),
-					TextManager::LBL_OK))
+			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0),Vector2(700.0, 370.0));
+			imgui.doText(GEN_ID, Vector2(200.0, 250.0),	TextManager::NET_SERVER_FULL);
+			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::LBL_OK))
 			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
+				switchState(new MainMenuState);
 				return;
 			}
 			break;
@@ -617,8 +609,7 @@ void NetworkGameState::step_impl()
 			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::LBL_OK))
 			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState());
+				switchState(new MainMenuState());
 				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::RP_SAVE))
@@ -664,8 +655,7 @@ void NetworkGameState::step_impl()
 			}
 			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::GAME_QUIT))
 			{
-				deleteCurrentState();
-				setCurrentState(new MainMenuState);
+				switchState(new MainMenuState);
 				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::RP_SAVE))

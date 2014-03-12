@@ -44,17 +44,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 
 // static state functions
-State* State::mCurrentState = 0;
+boost::scoped_ptr<State> State::mCurrentState(nullptr);
+boost::scoped_ptr<State> State::mStateToSwitchTo(nullptr);
+
 
 void State::step()
 {
 	getCurrentState()->step_impl();
+
+	// check if we should switch to a new state
+	if( mStateToSwitchTo != nullptr )
+	{
+		// if yes, set that new state
+		// use swap so the states do not get destroyed here
+		mCurrentState.swap( mStateToSwitchTo );
+
+		// now destroy the old state, which is saved in mStateToSwitchTo at this point
+		mStateToSwitchTo.reset(nullptr);
+
+		// reset game drawing if it was set by the state
+		/// \todo this code should not belong here
+		RenderManager::getSingleton().drawGame(false);
+	}
 }
 
-State* State::getCurrentState()
+boost::scoped_ptr<State>& State::getCurrentState()
 {
 	if (mCurrentState == 0) {
-		mCurrentState = new MainMenuState;
+		mCurrentState.reset(new MainMenuState);
 	}
 	return mCurrentState;
 }
@@ -72,34 +89,11 @@ State::State()
 
 }
 
-void State::deleteCurrentState()
+void State::switchState(State* newState)
 {
-	/// \todo well, the deleteCurrentState/setCurrentState as we have it now
-	///			seems to have several flaws. First, we have to delete our
-	///			current state BEFORE we create the next one. If I recall right
-	///			this was because some destructors wrote things too disk which
-	///			other constructors had to load (?), so they had to be called
-	///			first.
-	///			So, if the construction of the new state fails, the old is
-	///			already deleted and we have now way to roll back.
-	///			Second, we need two methods were one should be sufficient.
-	delete mCurrentState;
-	mCurrentState = 0;
+	mStateToSwitchTo.reset(newState);
+}
 
-	RenderManager::getSingleton().drawGame(false);
-}
-void State::setCurrentState(State* newState)
-{
-	assert(!mCurrentState);
-	mCurrentState = newState;
-}
-/*
-void switchState(State* newState)
-{
-	delete mCurrentState;
-	mCurrentState = newState;
-}
-*/
 void State::presentGame(const DuelMatch& match)
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
@@ -196,23 +190,17 @@ void MainMenuState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
 	if (imgui.doButton(GEN_ID, Vector2(434, 300.0), TextManager::MNU_LABEL_ONLINE))
 	{
-		deleteCurrentState();
-		setCurrentState(new OnlineSearchState());
-		return;
+		switchState( new OnlineSearchState() );
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434, 340.0), TextManager::MNU_LABEL_LAN))
 	{
-		deleteCurrentState();
-		setCurrentState(new LANSearchState());
-		return;
+		switchState( new LANSearchState() );
 	}
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 380.0), TextManager::MNU_LABEL_START))
 	{
 		try
 		{
-			deleteCurrentState();
-			setCurrentState(new LocalGameState());
-			return;
+			switchState(new LocalGameState());
 		}
 		catch (const ScriptException& except)
 		{
@@ -225,23 +213,17 @@ void MainMenuState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), TextManager::MNU_LABEL_OPTIONS))
 	{
-		deleteCurrentState();
-		setCurrentState(new OptionState());
-		return;
+		switchState(new OptionState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), TextManager::MNU_LABEL_REPLAY))
 	{
-		deleteCurrentState();
-		setCurrentState(new ReplaySelectionState());
-		return;
+		switchState(new ReplaySelectionState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::MNU_LABEL_CREDITS))
 	{
-		deleteCurrentState();
-		setCurrentState(new CreditsState());
-		return;
+		switchState(new CreditsState());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 540.0), TextManager::MNU_LABEL_EXIT))
@@ -252,7 +234,6 @@ void MainMenuState::step_impl()
 		///		we should have this at just one place.
 		RenderManager::getSingleton().deinit();
 		SoundManager::getSingleton().deinit();
-		deleteCurrentState();
 		SDL_Quit();
 		exit(0);
 	}
@@ -303,8 +284,7 @@ void CreditsState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::LBL_CANCEL))
 	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState());
+		switchState(new MainMenuState());
 		return;
 	}
 }
