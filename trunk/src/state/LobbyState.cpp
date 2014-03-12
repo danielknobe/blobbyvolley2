@@ -65,7 +65,7 @@ LobbyState::~LobbyState()
 	//mClient->Disconnect(50);
 }
 
-void LobbyState::step()
+void LobbyState::step_impl()
 {
 	// process packets
 	packet_ptr packet;

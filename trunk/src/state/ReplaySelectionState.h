@@ -37,7 +37,7 @@ class ReplaySelectionState : public State
 {
 public:
 	ReplaySelectionState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 
 private:

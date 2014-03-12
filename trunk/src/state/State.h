@@ -40,13 +40,29 @@ class ReplayRecorder;
 */
 class State
 {
-private:
-	static State* mCurrentState;
+public:
+	virtual ~State() {}
+
+	// step function defines the steps actual work
+	virtual void step_impl() = 0;
+	virtual const char* getStateName() const = 0;
+
+	// static functions
+	/// performs a step in the current state
+	static void step();
+
+	/// gets the currently active state
+	static State* getCurrentState();
+	/// gets the name of the currently active state
+	static const char* getCurrenStateName();
+
 protected:
 	State();
 	void deleteCurrentState();
 	void setCurrentState(State* newState);
 	void switchState(State* newState);
+
+
 
 	/// static protected helper function that
 	/// draws the game. It is in State because
@@ -56,13 +72,9 @@ protected:
 
 	/// this draws the ui in the game, i.e. clock, score and player names
 	static void presentGameUI(const DuelMatch& match);
-public:
-	virtual ~State() {}
-	virtual void step() = 0;
-	static State* getCurrentState();
+private:
+	static State* mCurrentState;
 
-	virtual const char* getStateName() const = 0;
-	static const char* getCurrenStateName();
 };
 
 /*! \class MainMenuState
@@ -70,11 +82,10 @@ public:
 */
 class MainMenuState : public State
 {
-private:
 public:
 	MainMenuState();
 	virtual ~MainMenuState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 };
 
@@ -85,7 +96,7 @@ class CreditsState : public State
 {
 public:
 	CreditsState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 private:
 	float mYPosition;

@@ -36,25 +36,25 @@ class ReplayState : public State
 public:
 	ReplayState();
 	~ReplayState();
-	virtual void step();
+	virtual void step_impl();
 	virtual const char* getStateName() const;
 	void loadReplay(const std::string& replay);
-	
+
 private:
-	
+
 	boost::scoped_ptr<DuelMatch> mReplayMatch;
 	boost::scoped_ptr<ReplayPlayer> mReplayPlayer;
 
 	//bool mChecksumError;
 	//bool mVersionError;
-	
+
 	Vector2 mLastMousePosition;
 	int mMouseShowTimer;
-	
+
 	// controls
 	int mPositionJump;
 	bool mPaused;
-	
+
 	// replay speed control
 	int mSpeedValue;
 	int mSpeedTimer;

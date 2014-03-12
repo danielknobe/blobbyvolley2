@@ -297,7 +297,7 @@ void setupPHYSFS()
 			running = inputmgr->running();
 
 			IMGUI::getSingleton().begin();
-			State::getCurrentState()->step();
+			State::step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
 			static int lastfps = 0;

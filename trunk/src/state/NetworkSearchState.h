@@ -46,7 +46,7 @@ public:
 	NetworkSearchState();
 	virtual ~NetworkSearchState();
 
-	virtual void step();
+	virtual void step_impl();
 	// onlinegames connect to the masterserver
 	// LAN games send a broadcast to local network
 	void searchServers();

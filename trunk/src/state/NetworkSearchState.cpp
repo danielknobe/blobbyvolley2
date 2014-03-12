@@ -81,7 +81,7 @@ void NetworkSearchState::searchServers()
 	mPingJob = std::async(std::launch::async, [this](){ doSearchServers();});
 }
 
-void NetworkSearchState::step()
+void NetworkSearchState::step_impl()
 {
 	packet_ptr packet;
 

@@ -38,7 +38,7 @@ class LobbyState : public State
 		LobbyState(ServerInfo info);
 		virtual ~LobbyState();
 
-		virtual void step();
+		virtual void step_impl();
 		virtual const char* getStateName() const;
 
 	private:
