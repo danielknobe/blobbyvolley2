@@ -239,8 +239,7 @@ void LobbyState::step_impl()
 	// back button
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState);
+		switchState( new MainMenuState );
 		return;
 	}
 
@@ -261,10 +260,7 @@ void LobbyState::step_impl()
 
 		mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
-		// new state must be created here, so client won't get deleted
-		auto newState = new NetworkGameState(mClient);
-		deleteCurrentState();
-		setCurrentState( newState );
+		switchState( new NetworkGameState(mClient) );
 		return;
 	}
 }

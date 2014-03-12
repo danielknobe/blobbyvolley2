@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "Global.h"
+#include <boost/scoped_ptr.hpp>
 
 class DuelMatch;
 class InputSource;
@@ -52,16 +53,13 @@ public:
 	static void step();
 
 	/// gets the currently active state
-	static State* getCurrentState();
+	static boost::scoped_ptr<State>& getCurrentState();
 	/// gets the name of the currently active state
 	static const char* getCurrenStateName();
 
 protected:
 	State();
-	void deleteCurrentState();
-	void setCurrentState(State* newState);
 	void switchState(State* newState);
-
 
 
 	/// static protected helper function that
@@ -73,7 +71,8 @@ protected:
 	/// this draws the ui in the game, i.e. clock, score and player names
 	static void presentGameUI(const DuelMatch& match);
 private:
-	static State* mCurrentState;
+	static boost::scoped_ptr<State> mCurrentState;
+	static boost::scoped_ptr<State> mStateToSwitchTo;
 
 };
 

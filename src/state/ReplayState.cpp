@@ -240,8 +240,7 @@ void ReplayState::step_impl()
 		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
-			deleteCurrentState();
-			setCurrentState(new ReplaySelectionState());
+			switchState(new ReplaySelectionState());
 			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
@@ -264,8 +263,7 @@ void ReplayState::step_impl()
 	}
 	else if ((InputManager::getSingleton()->exit()))
 	{
-		deleteCurrentState();
-		setCurrentState(new ReplaySelectionState());
+		switchState(new ReplaySelectionState());
 		return;
 	}
 

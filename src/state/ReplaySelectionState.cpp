@@ -80,8 +80,7 @@ void ReplaySelectionState::step_impl()
 			imgui.resetSelection();
 			// at least make sure we end here!
 
-			deleteCurrentState();
-			setCurrentState(rs);
+			switchState(rs);
 			return;
 		}
 		 catch (std::exception& exp)
@@ -93,8 +92,7 @@ void ReplaySelectionState::step_impl()
 	}
 	else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::LBL_CANCEL))
 	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState());
+		switchState(new MainMenuState());
 		return;
 	}
 	else

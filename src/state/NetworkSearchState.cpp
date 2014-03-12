@@ -333,8 +333,7 @@ void NetworkSearchState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(450, 480), TextManager::NET_HOST_GAME) &&
 			!mDisplayInfo)
 	{
-		deleteCurrentState();
-		setCurrentState(new NetworkHostState());
+		switchState(new NetworkHostState());
 		return;
 	}
 
@@ -342,14 +341,12 @@ void NetworkSearchState::step_impl()
 			|| doEnterServer)
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
-		deleteCurrentState();
-		setCurrentState(new LobbyState(server));
+		switchState(new LobbyState(server));
 		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
-		deleteCurrentState();
-		setCurrentState(new MainMenuState);
+		switchState(new MainMenuState);
 		return;
 	}
 
