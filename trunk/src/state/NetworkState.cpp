@@ -56,8 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
-	mClient( client ),
-	mFakeMatch(new DuelMatch(true, DEFAULT_RULES_FILE))
+	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE)), mClient( client )
 {
 	IMGUI::getSingleton().resetSelection();
 	mWinningPlayer = NO_PLAYER;
@@ -67,7 +66,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mOwnSide = (PlayerSide)config.getInteger("network_side");
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
-	mLocalInput->setMatch(mFakeMatch.get());
+	mLocalInput->setMatch(mMatch.get());
 	mSaveReplay = false;
 	mWaitingForReplay = false;
 	mErrorMessage = "";
@@ -77,7 +76,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mNetworkState = WAITING_FOR_OPPONENT;
 
 	// game is not started until two players are connected
-	mFakeMatch->pause();
+	mMatch->pause();
 
 	// load/init players
 
@@ -85,17 +84,17 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	{
 		PlayerIdentity localplayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
 		PlayerIdentity remoteplayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
-		mLocalPlayer = &mFakeMatch->getPlayer( LEFT_PLAYER );
-		mRemotePlayer = &mFakeMatch->getPlayer( RIGHT_PLAYER );
-		mFakeMatch->setPlayers( localplayer, remoteplayer );
+		mLocalPlayer = &mMatch->getPlayer( LEFT_PLAYER );
+		mRemotePlayer = &mMatch->getPlayer( RIGHT_PLAYER );
+		mMatch->setPlayers( localplayer, remoteplayer );
 	}
 	 else
 	{
 		PlayerIdentity localplayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
 		PlayerIdentity remoteplayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
-		mLocalPlayer = &mFakeMatch->getPlayer( RIGHT_PLAYER );
-		mRemotePlayer = &mFakeMatch->getPlayer( LEFT_PLAYER );
-		mFakeMatch->setPlayers( remoteplayer, localplayer );
+		mLocalPlayer = &mMatch->getPlayer( RIGHT_PLAYER );
+		mRemotePlayer = &mMatch->getPlayer( LEFT_PLAYER );
+		mMatch->setPlayers( remoteplayer, localplayer );
 	}
 
 	mRemotePlayer->setName("");
@@ -131,7 +130,7 @@ void NetworkGameState::step_impl()
 				DuelMatchState ms;
 				boost::shared_ptr<GenericIn> in = createGenericReader(&stream);
 				in->generic<DuelMatchState> (ms);
-				mFakeMatch->setState(ms);
+				mMatch->setState(ms);
 				break;
 			}
 			case ID_WIN_NOTIFICATION:
@@ -170,10 +169,10 @@ void NetworkGameState::step_impl()
 				stream.Read(nLeftScore);
 				stream.Read(nRightScore);
 				stream.Read(time);
-				mFakeMatch->setScore(nLeftScore, nRightScore);
-				mFakeMatch->setServingPlayer(servingPlayer);
+				mMatch->setScore(nLeftScore, nRightScore);
+				mMatch->setServingPlayer(servingPlayer);
 				// sync the clocks... normally, they should not differ
-				mFakeMatch->getClock().setTime(time);
+				mMatch->getClock().setTime(time);
 
 				/// \attention
 				/// we can get a problem here:
@@ -185,7 +184,7 @@ void NetworkGameState::step_impl()
 				///
 				/// i don't have a clean fix for this right now, so we'll have to live with a workaround for now
 				/// we just order the game to reset all triggered events.
-				mFakeMatch->resetTriggeredEvents();
+				mMatch->resetTriggeredEvents();
 				/// \todo a good fix would involve ensuring we process all events in the right order
 
 
@@ -200,22 +199,22 @@ void NetworkGameState::step_impl()
 				stream.Read(event);
 				stream.Read(intensity);
 
-				mFakeMatch->setLastHitIntensity(intensity);
-				mFakeMatch->trigger( event );
+				mMatch->setLastHitIntensity(intensity);
+				mMatch->trigger( event );
 				break;
 			}
 			case ID_PAUSE:
 				if (mNetworkState == PLAYING)
 				{
 					mNetworkState = PAUSING;
-					mFakeMatch->pause();
+					mMatch->pause();
 				}
 				break;
 			case ID_UNPAUSE:
 				if (mNetworkState == PAUSING)
 				{
 					mNetworkState = PLAYING;
-					mFakeMatch->unpause();
+					mMatch->unpause();
 				}
 				break;
 			case ID_GAME_READY:
@@ -265,7 +264,7 @@ void NetworkGameState::step_impl()
 
 				mNetworkState = PLAYING;
 				// start game
-				mFakeMatch->unpause();
+				mMatch->unpause();
 
 				// game ready whistle
 				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
@@ -318,12 +317,12 @@ void NetworkGameState::step_impl()
 					FileWrite rulesFile("server_rules.lua");
 					rulesFile.write(rulesString.get(), rulesLength);
 					rulesFile.close();
-					mFakeMatch->setRules("server_rules.lua");
+					mMatch->setRules("server_rules.lua");
 				}
 				else
 				{
 					// either old server, or we have to use fallback ruleset
-					mFakeMatch->setRules( FALLBACK_RULES_NAME );
+					mMatch->setRules( FALLBACK_RULES_NAME );
 				}
 
 				break;
@@ -433,8 +432,8 @@ void NetworkGameState::step_impl()
 
 	// does this generate any problems if we pause at the exact moment an event is set ( i.e. the ball hit sound
 	// could be played in a loop)?
-	presentGame(*mFakeMatch);
-	presentGameUI(*mFakeMatch);
+	presentGame();
+	presentGameUI();
 
 	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
 	{
@@ -581,7 +580,7 @@ void NetworkGameState::step_impl()
 		}
 		case PLAYING:
 		{
-			mFakeMatch->step();
+			mMatch->step();
 
 			mLocalInput->updateInput();
 			PlayerInputAbs input = mLocalInput->getRealInput();
@@ -602,7 +601,7 @@ void NetworkGameState::step_impl()
 		}
 		case PLAYER_WON:
 		{
-			std::string tmp = mFakeMatch->getPlayer(mWinningPlayer).getName();
+			std::string tmp = mMatch->getPlayer(mWinningPlayer).getName();
 			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
 			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
 			imgui.doText(GEN_ID, Vector2(274, 240), tmp);

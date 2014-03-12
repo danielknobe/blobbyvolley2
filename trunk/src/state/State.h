@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/scoped_ptr.hpp>
 
 class DuelMatch;
-class InputSource;
-class ReplayRecorder;
 
 /*! \class State
 	\brief Base class for all programme states.
@@ -75,7 +73,8 @@ private:
 class GameState : public State
 {
 public:
-	virtual ~GameState() {}
+	GameState(DuelMatch* match = nullptr);
+	virtual ~GameState();
 
 	// step function defines the steps actual work
 	virtual void step_impl() = 0;
@@ -86,11 +85,12 @@ protected:
 	/// draws the game. It is in State because
 	/// this functionality is shared by
 	/// LocalGameState, NetworkGameState and ReplayState
-	static void presentGame(const DuelMatch& match);
+	void presentGame();
 
 	/// this draws the ui in the game, i.e. clock, score and player names
-	static void presentGameUI(const DuelMatch& match);
+	void presentGameUI();
 
+	boost::scoped_ptr<DuelMatch> mMatch;
 };
 
 /*! \class MainMenuState
