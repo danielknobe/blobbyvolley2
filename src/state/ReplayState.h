@@ -41,8 +41,6 @@ public:
 	void loadReplay(const std::string& replay);
 
 private:
-
-	boost::scoped_ptr<DuelMatch> mReplayMatch;
 	boost::scoped_ptr<ReplayPlayer> mReplayPlayer;
 
 	//bool mChecksumError;

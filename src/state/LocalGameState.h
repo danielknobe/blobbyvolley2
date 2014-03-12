@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/scoped_ptr.hpp>
 
+class ReplayRecorder;
+
 /*! \class LocalGameState
 	\brief state for singleplayer game
 */
@@ -42,7 +44,6 @@ class LocalGameState : public GameState
 		bool mWinner;
 		std::string mFilename;
 
-		boost::scoped_ptr<DuelMatch> mMatch;
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
 };
 

@@ -226,10 +226,10 @@ void LocalGameState::step_impl()
 			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 		}
 
-		presentGame(*mMatch);
+		presentGame();
 	}
 
-	presentGameUI(*mMatch);
+	presentGameUI();
 }
 
 const char* LocalGameState::getStateName() const

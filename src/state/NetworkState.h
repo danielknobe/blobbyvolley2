@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class RakClient;
 class RakServer;
 class DuelMatch;
+class InputSource;
 class NetworkGame;
 class PlayerIdentity;
 class DedicatedServer;
@@ -79,9 +80,6 @@ private:
 	boost::shared_ptr<RakClient> mClient;
 	PlayerSide mOwnSide;
 	PlayerSide mWinningPlayer;
-
-	boost::scoped_ptr<DuelMatch> mFakeMatch; 	// This hack is necessary to let MouseInputDevice
-												// access the necessary game variables
 
 	// Chat Vars
 	std::vector<std::string> mChatlog;
