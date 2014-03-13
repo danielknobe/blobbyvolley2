@@ -427,32 +427,32 @@ PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
 }
 
 // helper function for NetworkGame::switchEventSides
-void setEventIf(int& events, int trigger, int event)
+void setEventIf(int& events, int original, int trigger, int event)
 {
-	if( trigger )
+	if( original & trigger )
 		events |= event;
 	else
-		events &= ~trigger;
+		events &= ~event;
 }
 
 int NetworkGame::switchEventSides(int events)
 {
 	int new_events = events;
 
-	setEventIf(new_events, EVENT_LEFT_BLOBBY_HIT, EVENT_RIGHT_BLOBBY_HIT);
-	setEventIf(new_events, EVENT_RIGHT_BLOBBY_HIT, EVENT_LEFT_BLOBBY_HIT);
+	setEventIf(new_events, events, EVENT_LEFT_BLOBBY_HIT, EVENT_RIGHT_BLOBBY_HIT);
+	setEventIf(new_events, events, EVENT_RIGHT_BLOBBY_HIT, EVENT_LEFT_BLOBBY_HIT);
 
-	setEventIf(new_events, EVENT_BALL_HIT_LEFT_GROUND, EVENT_BALL_HIT_RIGHT_GROUND);
-	setEventIf(new_events, EVENT_BALL_HIT_RIGHT_GROUND, EVENT_BALL_HIT_LEFT_GROUND);
+	setEventIf(new_events, events, EVENT_BALL_HIT_LEFT_GROUND, EVENT_BALL_HIT_RIGHT_GROUND);
+	setEventIf(new_events, events, EVENT_BALL_HIT_RIGHT_GROUND, EVENT_BALL_HIT_LEFT_GROUND);
 
-	setEventIf(new_events, EVENT_BALL_HIT_LEFT_WALL, EVENT_BALL_HIT_RIGHT_WALL);
-	setEventIf(new_events, EVENT_BALL_HIT_RIGHT_WALL, EVENT_BALL_HIT_LEFT_WALL);
+	setEventIf(new_events, events, EVENT_BALL_HIT_LEFT_WALL, EVENT_BALL_HIT_RIGHT_WALL);
+	setEventIf(new_events, events, EVENT_BALL_HIT_RIGHT_WALL, EVENT_BALL_HIT_LEFT_WALL);
 
-	setEventIf(new_events, EVENT_BALL_HIT_NET_LEFT, EVENT_BALL_HIT_NET_RIGHT);
-	setEventIf(new_events, EVENT_BALL_HIT_NET_RIGHT, EVENT_BALL_HIT_NET_LEFT);
+	setEventIf(new_events, events, EVENT_BALL_HIT_NET_LEFT, EVENT_BALL_HIT_NET_RIGHT);
+	setEventIf(new_events, events, EVENT_BALL_HIT_NET_RIGHT, EVENT_BALL_HIT_NET_LEFT);
 
-	setEventIf(new_events, EVENT_ERROR_LEFT, EVENT_ERROR_RIGHT);
-	setEventIf(new_events, EVENT_ERROR_RIGHT, EVENT_ERROR_LEFT);
+	setEventIf(new_events, events, EVENT_ERROR_LEFT, EVENT_ERROR_RIGHT);
+	setEventIf(new_events, events, EVENT_ERROR_RIGHT, EVENT_ERROR_LEFT);
 
 	return new_events;
 }
