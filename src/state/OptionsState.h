@@ -88,6 +88,8 @@ private:
 	UserConfig mOptionConfig;
 	std::string oldString;
 	int mOldInteger;
+	std::string mOldString;
+
 	int mSetKeyboard; // 1-10 for LeftKeyboard | 11-20 for RightKeyboard
 	//left data:
 	std::string mLeftBlobbyDevice;
@@ -111,9 +113,10 @@ private:
 	int mBlobbyTouchType;
 
 	// helper function
-	void getMouseInput(int& action, TextManager::STRING input, int oldInt);
-	void getKeyboardInput(std::string& action, TextManager::STRING input, const std::string& oldString, std::string lastActionKey);
-	void getJoystickInput(std::string& action, TextManager::STRING input, const std::string& oldString);
+	void getMouseInput(int& action, TextManager::STRING input);
+	void getKeyboardInput(std::string& action, TextManager::STRING input, std::string lastActionKey);
+	void getJoystickInput(std::string& action, TextManager::STRING input);
+	void getInputPrompt(TextManager::STRING prompt, TextManager::STRING input);
 };
 
 /*! \class MiscOptionsState
