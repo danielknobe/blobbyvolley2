@@ -95,12 +95,22 @@ protected:
 	/// it returns true if the player clicks on the OK button
 	bool displaySaveReplayPrompt();
 
+	/// this function draws the error message box
+	/// it returns true if the player clicks on the OK button
+	bool displayErrorMessageBox();
+
+	/// this function draws the winning player screen
+	/// does not display any buttons because they depend on the game type
+	bool displayWinningPlayerScreen(PlayerSide winner);
+
+
 	boost::scoped_ptr<DuelMatch> mMatch;
 
 	// ui helper variable for storing a filename
-	std::string mFilename;
-
 	bool mSaveReplay;
+
+	std::string mFilename;
+	std::string mErrorMessage;
 };
 
 /*! \class MainMenuState

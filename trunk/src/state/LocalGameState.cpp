@@ -49,9 +49,7 @@ LocalGameState::~LocalGameState()
 LocalGameState::LocalGameState()
 	: mRecorder(new ReplayRecorder())
 {
-	mSaveReplay = false;
 	mWinner = false;
-	mErrorMessage = "";
 
 	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
@@ -96,17 +94,7 @@ void LocalGameState::step_impl()
 	IMGUI& imgui = IMGUI::getSingleton();
 	if(mErrorMessage != "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100, 200), Vector2(700, 360));
-		size_t split = mErrorMessage.find(':');
-		std::string mProblem = mErrorMessage.substr(0, split);
-		std::string mInfo = mErrorMessage.substr(split+1);
-		imgui.doText(GEN_ID, Vector2(120, 220), mProblem);
-		imgui.doText(GEN_ID, Vector2(120, 260), mInfo);
-		if(imgui.doButton(GEN_ID, Vector2(330, 320), TextManager::LBL_OK))
-		{
-			mErrorMessage = "";
-		}
-		imgui.doCursor();
+		displayErrorMessageBox();
 	}
 	else if (mSaveReplay)
 	{
@@ -123,23 +111,18 @@ void LocalGameState::step_impl()
 					savetarget->close();
 					mSaveReplay = false;
 				}
-
-				imgui.resetSelection();
 			}
 			catch( FileLoadException& ex)
 			{
 				mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
-				imgui.resetSelection();
 			}
 			catch( FileAlreadyExistsException& ex)
 			{
 				mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
-				imgui.resetSelection();
 			}
 			 catch( std::exception& ex)
 			{
 				mErrorMessage = std::string("Could not save replay: ");
-				imgui.resetSelection();
 			}
 		}
 	}
@@ -164,11 +147,7 @@ void LocalGameState::step_impl()
 	}
 	else if (mWinner)
 	{
-		std::string tmp = mMatch->getPlayer(mMatch->winningPlayer()).getName();
-		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
-		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-		imgui.doText(GEN_ID, Vector2(274, 250), tmp);
-		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+		displayWinningPlayerScreen( mMatch->winningPlayer() );
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
 			switchState(new MainMenuState());
@@ -184,7 +163,6 @@ void LocalGameState::step_impl()
 			mSaveReplay = true;
 			imgui.resetSelection();
 		}
-		imgui.doCursor();
 	}
 	else if (InputManager::getSingleton()->exit())
 	{

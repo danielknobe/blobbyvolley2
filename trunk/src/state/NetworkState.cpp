@@ -67,9 +67,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
 	mLocalInput->setMatch(mMatch.get());
-	mSaveReplay = false;
 	mWaitingForReplay = false;
-	mErrorMessage = "";
 
 	RenderManager::getSingleton().redraw();
 
@@ -457,17 +455,7 @@ void NetworkGameState::step_impl()
 	}
 	else if (mErrorMessage != "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100, 200), Vector2(700, 360));
-		size_t split = mErrorMessage.find(':');
-		std::string mProblem = mErrorMessage.substr(0, split);
-		std::string mInfo = mErrorMessage.substr(split+1);
-		imgui.doText(GEN_ID, Vector2(120, 220), mProblem);
-		imgui.doText(GEN_ID, Vector2(120, 260), mInfo);
-		if(imgui.doButton(GEN_ID, Vector2(330, 320), TextManager::LBL_OK))
-		{
-			mErrorMessage = "";
-		}
-		imgui.doCursor();
+		displayErrorMessageBox();
 	}
 	else if (mSaveReplay)
 	{
@@ -482,7 +470,6 @@ void NetworkGameState::step_impl()
 			}
 			mSaveReplay = false;
 			mWaitingForReplay = true;
-			imgui.resetSelection();
 		}
 	}
 	else if (mWaitingForReplay)
@@ -591,11 +578,7 @@ void NetworkGameState::step_impl()
 		}
 		case PLAYER_WON:
 		{
-			std::string tmp = mMatch->getPlayer(mWinningPlayer).getName();
-			imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
-			imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-			imgui.doText(GEN_ID, Vector2(274, 240), tmp);
-			imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+			displayWinningPlayerScreen(mWinningPlayer);
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::LBL_OK))
 			{
 				switchState(new MainMenuState());
@@ -606,7 +589,6 @@ void NetworkGameState::step_impl()
 				mSaveReplay = true;
 				imgui.resetSelection();
 			}
-			imgui.doCursor();
 			break;
 		}
 		case PAUSING:
