@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/scoped_ptr.hpp>
 
 class DuelMatch;
+class ReplayRecorder;
 
 /*! \class State
 	\brief Base class for all programme states.
@@ -104,13 +105,21 @@ protected:
 	bool displayWinningPlayerScreen(PlayerSide winner);
 
 
+	/// calculates the default name for a replay file
+	void setDefaultReplayName(const std::string& left, const std::string& right);
+
+	/// saves the replay to the desired file
+	void saveReplay(ReplayRecorder& recorder);
+
+
 	boost::scoped_ptr<DuelMatch> mMatch;
 
 	// ui helper variable for storing a filename
 	bool mSaveReplay;
 
-	std::string mFilename;
 	std::string mErrorMessage;
+private:
+	std::string mFilename;
 };
 
 /*! \class MainMenuState

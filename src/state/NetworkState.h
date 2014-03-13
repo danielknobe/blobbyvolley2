@@ -73,7 +73,6 @@ private:
 	boost::scoped_ptr<InputSource> mLocalInput;
 
 	bool mWaitingForReplay;
-	std::string mErrorMessage;
 
 	boost::shared_ptr<RakClient> mClient;
 	PlayerSide mOwnSide;

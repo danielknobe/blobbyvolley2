@@ -56,10 +56,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
-	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE)), mClient( client )
+	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE)),
+	 mClient( client ),
+	 mWinningPlayer(NO_PLAYER),
+	 mNetworkState(WAITING_FOR_OPPONENT),
+	 mWaitingForReplay(false),
+	 mSelectedChatmessage(0),
+	 mChatCursorPosition(0),
+	 mChattext("")
 {
 	IMGUI::getSingleton().resetSelection();
-	mWinningPlayer = NO_PLAYER;
 	/// \todo we need read-only access here!
 	UserConfig config;
 	config.loadFile("config.xml");
@@ -67,11 +73,9 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	mUseRemoteColor = config.getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
 	mLocalInput->setMatch(mMatch.get());
-	mWaitingForReplay = false;
 
+	/// \todo why do we need this here?
 	RenderManager::getSingleton().redraw();
-
-	mNetworkState = WAITING_FOR_OPPONENT;
 
 	// game is not started until two players are connected
 	mMatch->pause();
@@ -96,10 +100,6 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	}
 
 	mRemotePlayer->setName("");
-
-	mSelectedChatmessage = 0;
-	mChatCursorPosition = 0;
-	mChattext = "";
 }
 
 NetworkGameState::~NetworkGameState()
@@ -240,14 +240,7 @@ void NetworkGameState::step_impl()
 
 				mRemotePlayer->setName(charName);
 
-				mFilename = mLocalPlayer->getName();
-				if(mFilename.size() > 7)
-					mFilename.resize(7);
-				mFilename += " vs ";
-				std::string oppname = mRemotePlayer->getName();
-				if(oppname.size() > 7)
-					oppname.resize(7);
-				mFilename += oppname;
+				setDefaultReplayName(mLocalPlayer->getName(), mRemotePlayer->getName());
 
 				// check whether to use remote player color
 				if(mUseRemoteColor)
@@ -367,32 +360,12 @@ void NetworkGameState::step_impl()
 				RakNet::BitStream stream = RakNet::BitStream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
 
-				try
-				{
-					boost::shared_ptr<GenericIn> reader = createGenericReader( &stream );
-					ReplayRecorder dummyRec;
-					dummyRec.receive( reader );
-
-					boost::shared_ptr<FileWrite> fw = boost::make_shared<FileWrite>((std::string("replays/") + mFilename + std::string(".bvr")));
-					dummyRec.save( fw );
-				}
-				 catch( FileLoadException& ex)
-				{
-					mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
-					mSaveReplay = true;	// try again
-				}
-				 catch( FileAlreadyExistsException& ex)
-				{
-					mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
-					mSaveReplay = true;
-				}
-				 catch( std::exception& ex)
-				{
-					mErrorMessage = std::string("Could not save replay: ");
-					// it is not expected to catch any exception here! save should only
-					// create FileLoad and FileAlreadyExists exceptions
-					mSaveReplay = true;
-				}
+				// read stream into a dummy replay recorder
+				boost::shared_ptr<GenericIn> reader = createGenericReader( &stream );
+				ReplayRecorder dummyRec;
+				dummyRec.receive( reader );
+				// and save that
+				saveReplay(dummyRec);
 
 				// mWaitingForReplay will be set to false even if replay could not be saved because
 				// the server won't send it again.
@@ -461,13 +434,12 @@ void NetworkGameState::step_impl()
 	{
 		if ( displaySaveReplayPrompt() )
 		{
-			if (mFilename != "")
-			{
-				// request replay from server
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_REPLAY);
-				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
-			}
+
+			// request replay from server
+			RakNet::BitStream stream;
+			stream.Write((unsigned char)ID_REPLAY);
+			mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
+
 			mSaveReplay = false;
 			mWaitingForReplay = true;
 		}
@@ -643,6 +615,10 @@ const char* NetworkGameState::getStateName() const
 {
 	return "NetworkGameState";
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+//	implementation of the local host state
+// ----------------------------------------
 
 NetworkHostState::NetworkHostState() : mServer(  ), mClient( new RakClient ), mGameState(nullptr)
 {

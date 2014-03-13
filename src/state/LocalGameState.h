@@ -34,12 +34,13 @@ class LocalGameState : public GameState
 	public:
 		LocalGameState();
 		virtual ~LocalGameState();
-		virtual void step_impl();
 
+		// implementation of the State Interface
+		virtual void step_impl();
 		virtual const char* getStateName() const;
 
 	private:
-		std::string mErrorMessage;
+
 		bool mWinner;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
