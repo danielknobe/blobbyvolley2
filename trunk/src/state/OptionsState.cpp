@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 OptionState::OptionState()
 {
-	IMGUI::getSingleton().resetSelection();
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
 	mPlayerOptions[RIGHT_PLAYER] = 0;
@@ -177,7 +176,6 @@ const char* OptionState::getStateName() const
 
 GraphicOptionsState::GraphicOptionsState()
 {
-	IMGUI::getSingleton().resetSelection();
 	mOptionConfig.loadFile("config.xml");
 	mFullscreen = mOptionConfig.getBool("fullscreen");
 	mRenderer = mOptionConfig.getString("device");
@@ -536,7 +534,6 @@ const char* GraphicOptionsState::getStateName() const
 
 InputOptionsState::InputOptionsState()
 {
-	IMGUI::getSingleton().resetSelection();
 	mSetKeyboard = 0;
 	mOptionConfig.loadFile("inputconfig.xml");
 	//left data:
@@ -1063,8 +1060,6 @@ const char* InputOptionsState::getStateName() const
 
 MiscOptionsState::MiscOptionsState()
 {
-	IMGUI::getSingleton().resetSelection();
-
 	mOptionConfig.loadFile("config.xml");
 
 	std::string currentBackground = mOptionConfig.getString("background");

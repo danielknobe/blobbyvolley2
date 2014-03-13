@@ -38,8 +38,6 @@ LobbyState::LobbyState(ServerInfo info) : mClient(new RakClient(), [](RakClient*
 	mLobbyState = CONNECTING;
 
 	// send an ENTER_SERVER packet with name and side preference
-	// resert imgui
-	IMGUI::getSingleton().resetSelection();
 	RenderManager::getSingleton().redraw();
 
 	/// \todo we need read-only access here!

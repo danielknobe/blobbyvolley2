@@ -65,12 +65,9 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	 mChatCursorPosition(0),
 	 mChattext("")
 {
-	IMGUI::getSingleton().resetSelection();
-	/// \todo we need read-only access here!
-	UserConfig config;
-	config.loadFile("config.xml");
-	mOwnSide = (PlayerSide)config.getInteger("network_side");
-	mUseRemoteColor = config.getBool("use_remote_color");
+	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
+	mOwnSide = (PlayerSide)config->getInteger("network_side");
+	mUseRemoteColor = config->getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
 	mLocalInput->setMatch(mMatch.get());
 
@@ -84,16 +81,16 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 
 	if(mOwnSide == LEFT_PLAYER)
 	{
-		PlayerIdentity localplayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
-		PlayerIdentity remoteplayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
+		PlayerIdentity localplayer = config->loadPlayerIdentity(LEFT_PLAYER, true);
+		PlayerIdentity remoteplayer = config->loadPlayerIdentity(RIGHT_PLAYER, true);
 		mLocalPlayer = &mMatch->getPlayer( LEFT_PLAYER );
 		mRemotePlayer = &mMatch->getPlayer( RIGHT_PLAYER );
 		mMatch->setPlayers( localplayer, remoteplayer );
 	}
 	 else
 	{
-		PlayerIdentity localplayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
-		PlayerIdentity remoteplayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
+		PlayerIdentity localplayer = config->loadPlayerIdentity(RIGHT_PLAYER, true);
+		PlayerIdentity remoteplayer = config->loadPlayerIdentity(LEFT_PLAYER, true);
 		mLocalPlayer = &mMatch->getPlayer( RIGHT_PLAYER );
 		mRemotePlayer = &mMatch->getPlayer( LEFT_PLAYER );
 		mMatch->setPlayers( remoteplayer, localplayer );
