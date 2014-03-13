@@ -59,6 +59,7 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	ReplayLoader.cpp
 	InputSourceFactory.cpp InputSourceFactory.h
 	state/State.cpp state/State.h
+	state/GameState.cpp state/GameState.h
 	state/LocalGameState.cpp state/LocalGameState.h
 	state/NetworkState.cpp state/NetworkState.h
 	state/OptionsState.cpp state/OptionsState.h
