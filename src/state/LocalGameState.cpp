@@ -34,10 +34,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "IUserConfigReader.h"
-#include "FileExceptions.h"
-#include "FileSystem.h"
-#include "FileWrite.h"
-#include "GenericIO.h"
 #include "InputSourceFactory.h"
 
 /* implementation */
@@ -71,8 +67,6 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
-
-	IMGUI::getSingleton().resetSelection();
 }
 
 void LocalGameState::step_impl()

@@ -52,7 +52,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 NetworkSearchState::NetworkSearchState() :
 		mPingClient(new RakClient)
 {
-	IMGUI::getSingleton().resetSelection();
 	mSelectedServer = 0;
 	mServerBoxPosition = 0;
 	mDisplayInfo = false;

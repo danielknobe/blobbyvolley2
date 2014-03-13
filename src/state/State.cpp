@@ -88,6 +88,7 @@ const char* State::getCurrenStateName()
 
 State::State()
 {
+	IMGUI::getSingleton().resetSelection();
 }
 
 void State::switchState(State* newState)
@@ -101,8 +102,6 @@ void State::switchState(State* newState)
 
 MainMenuState::MainMenuState()
 {
-	IMGUI::getSingleton().resetSelection();
-
 	// set main menu fps
 	SpeedController::getMainInstance()->setGameSpeed(75);
 }
@@ -170,7 +169,6 @@ const char* MainMenuState::getStateName() const
 
 CreditsState::CreditsState()
 {
-	IMGUI::getSingleton().resetSelection();
 	mYPosition = 600;
 }
 

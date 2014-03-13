@@ -62,7 +62,9 @@ public:
 	static const char* getCurrenStateName();
 
 protected:
+	/// generic state constructor. automatically resets imgui selection
 	State();
+
 	static void switchState(State* newState);
 
 private:
