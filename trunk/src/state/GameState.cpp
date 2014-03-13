@@ -40,8 +40,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 GameState::GameState(DuelMatch* match) : mMatch(match), mSaveReplay(false), mErrorMessage("")
 {
-	// enable game drawing
-	RenderManager::getSingleton().drawGame(true);
 }
 
 GameState::~GameState()
@@ -52,6 +50,9 @@ GameState::~GameState()
 
 void GameState::presentGame()
 {
+	// enable game drawing
+	RenderManager::getSingleton().drawGame(true);
+
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
 
