@@ -274,43 +274,42 @@ void GraphicOptionsState::step_impl()
 		imgui.doImage(GEN_ID, Vector2(204.0, heightOfElement + 13.0), "gfx/pfeil_rechts.bmp");
 
 #if __MOBILE__
-	heightOfElement += 50.0;
+	float standardLineHeight = 50.0;
 #else
-	heightOfElement += 30.0;
+	float standardLineHeight = 30.0;
 #endif
+
+	heightOfElement += standardLineHeight;
 
 	//Blob colors:
 	imgui.doText(GEN_ID, Vector2(280.0, heightOfElement), TextManager::OP_BLOB_COLORS);
 	heightOfElement += 40.0;
+
+	float playerColorSettingsHeight = heightOfElement;
+
 	//left blob:
 	imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_LEFT_PLAYER);
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_RED);
 		float r1 = (float)mR1/255;
 		imgui.doScrollbar(GEN_ID, Vector2(160.0, heightOfElement), r1);
 		mR1 = (int)(r1*255);
 	}
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_GREEN);
 		float g1 = (float)mG1/255;
 		imgui.doScrollbar(GEN_ID, Vector2(160.0, heightOfElement), g1);
 		mG1 = (int)(g1*255);
 	}
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, heightOfElement), TextManager::OP_BLUE);
 		float b1 = (float)mB1/255;
@@ -338,40 +337,30 @@ void GraphicOptionsState::step_impl()
 	}
 
 	//right blob:
-#if __MOBILE__
-	heightOfElement = 160.0;
-#else
-	heightOfElement = 230.0;
-#endif
+	heightOfElement = playerColorSettingsHeight;
 
 	imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_RIGHT_PLAYER);
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_RED);
 		float r2 = (float)mR2/255;
 		imgui.doScrollbar(GEN_ID, Vector2(560.0, heightOfElement), r2);
 		mR2 = (int)(r2*255);
 	}
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_GREEN);
 		float g2 = (float)mG2/255;
 		imgui.doScrollbar(GEN_ID, Vector2(560.0, heightOfElement), g2);
 		mG2 = (int)(g2*255);
 	}
-#if __MOBILE__
-	heightOfElement += 50.0;
-#else
-	heightOfElement += 30.0;
-#endif
+
+	heightOfElement += standardLineHeight;
+
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, heightOfElement), TextManager::OP_BLUE);
 		float b2 = (float)mB2/255;
