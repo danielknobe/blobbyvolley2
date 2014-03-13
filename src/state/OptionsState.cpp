@@ -140,32 +140,27 @@ void OptionState::step_impl()
 	{
 		save();
 		switchState(new InputOptionsState());
-		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
 	{
 		save();
 		switchState(new GraphicOptionsState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 470.0), TextManager::OP_MISC))
 	{
 		save();
 		switchState(new MiscOptionsState());
-		return;
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
 		switchState(new MainMenuState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new MainMenuState());
-		return;
 	}
 }
 
@@ -391,12 +386,10 @@ void GraphicOptionsState::step_impl()
 	{
 		save();
 		switchState(new OptionState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new OptionState());
-		return;
 	}
 }
 
@@ -748,12 +741,10 @@ void InputOptionsState::step_impl()
 	{
 		save();
 		switchState(new OptionState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new OptionState());
-		return;
 	}
 }
 
@@ -856,13 +847,11 @@ void InputOptionsState::step_impl()
 		save();
 		deleteCurrentState();
 		switchState(new OptionState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		deleteCurrentState();
 		switchState(new OptionState());
-		return;
 	}
 }
 #endif
@@ -1046,12 +1035,10 @@ void MiscOptionsState::step_impl()
 	{
 		save();
 		switchState(new OptionState());
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new OptionState());
-		return;
 	}
 }
 

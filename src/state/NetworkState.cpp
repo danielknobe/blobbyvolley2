@@ -387,7 +387,6 @@ void NetworkGameState::step_impl()
 				if (packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
 				{
 					switchState(new LobbyState(info));
-					return;
 				}
 				break;
 			}
@@ -415,7 +414,6 @@ void NetworkGameState::step_impl()
 		else
 		{
 			switchState(new MainMenuState);
-			return;
 		}
 	}
 	else if (InputManager::getSingleton()->exit() && mSaveReplay)
@@ -472,7 +470,6 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 290.0), TextManager::LBL_OK))
 			{
 				switchState(new MainMenuState);
-				return;
 			}
 
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 290.0), TextManager::RP_SAVE))
@@ -503,7 +500,6 @@ void NetworkGameState::step_impl()
 					TextManager::LBL_OK))
 			{
 				switchState(new MainMenuState);
-				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::RP_SAVE))
 			{
@@ -520,7 +516,6 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::LBL_OK))
 			{
 				switchState(new MainMenuState);
-				return;
 			}
 			break;
 		}
@@ -551,7 +546,6 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::LBL_OK))
 			{
 				switchState(new MainMenuState());
-				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::RP_SAVE))
 			{
@@ -596,7 +590,6 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::GAME_QUIT))
 			{
 				switchState(new MainMenuState);
-				return;
 			}
 			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::RP_SAVE))
 			{

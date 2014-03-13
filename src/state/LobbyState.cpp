@@ -238,7 +238,6 @@ void LobbyState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
 		switchState( new MainMenuState );
-		return;
 	}
 
 	// ok button
@@ -259,7 +258,6 @@ void LobbyState::step_impl()
 		mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 
 		switchState( new NetworkGameState(mClient) );
-		return;
 	}
 }
 

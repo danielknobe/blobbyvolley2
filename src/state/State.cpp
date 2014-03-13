@@ -207,7 +207,6 @@ void CreditsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new MainMenuState());
-		return;
 	}
 }
 
