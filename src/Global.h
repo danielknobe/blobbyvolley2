@@ -30,6 +30,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GP2X GP2X
 #endif
 
+#if defined __ANDROID__ || (defined __APPLE__ && !MAC_OS_X)
+#define __MOBILE__ true
+#define __DESKTOP__ false
+#else
+#define __MOBILE__ false
+#define __DESKTOP__ true
+#endif // defined
+
 /*!	\def DEBUG
 	\brief Enable debugging support
 	\details when this marko is present, Blobby generates some additional debugging code
