@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "State.h"
+#include "GameState.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -40,7 +40,6 @@ class LocalGameState : public GameState
 		virtual const char* getStateName() const;
 
 	private:
-
 		bool mWinner;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;

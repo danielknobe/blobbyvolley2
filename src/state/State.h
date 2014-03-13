@@ -71,62 +71,6 @@ private:
 
 };
 
-// state classes
-/*! \class GameState
-	\brief base class for any game related state (Local, Network, Replay)
-*/
-
-class GameState : public State
-{
-public:
-	GameState(DuelMatch* match = nullptr);
-	virtual ~GameState();
-
-	// step function defines the steps actual work
-	virtual void step_impl() = 0;
-
-protected:
-
-	/// static protected helper function that
-	/// draws the game. It is in State because
-	/// this functionality is shared by
-	/// LocalGameState, NetworkGameState and ReplayState
-	void presentGame();
-
-	/// this draws the ui in the game, i.e. clock, score and player names
-	void presentGameUI();
-
-	// ui helpers
-	/// this function draws the save replay ui
-	/// it returns true if the player clicks on the OK button
-	bool displaySaveReplayPrompt();
-
-	/// this function draws the error message box
-	/// it returns true if the player clicks on the OK button
-	bool displayErrorMessageBox();
-
-	/// this function draws the winning player screen
-	/// does not display any buttons because they depend on the game type
-	bool displayWinningPlayerScreen(PlayerSide winner);
-
-
-	/// calculates the default name for a replay file
-	void setDefaultReplayName(const std::string& left, const std::string& right);
-
-	/// saves the replay to the desired file
-	void saveReplay(ReplayRecorder& recorder);
-
-
-	boost::scoped_ptr<DuelMatch> mMatch;
-
-	// ui helper variable for storing a filename
-	bool mSaveReplay;
-
-	std::string mErrorMessage;
-private:
-	std::string mFilename;
-};
-
 /*! \class MainMenuState
 	\brief state for main menu
 */
