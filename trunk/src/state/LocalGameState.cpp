@@ -33,7 +33,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "TextManager.h"
 #include "SpeedController.h"
-#include "Blood.h"
 #include "IUserConfigReader.h"
 #include "FileExceptions.h"
 #include "FileSystem.h"
@@ -47,10 +46,8 @@ LocalGameState::~LocalGameState()
 }
 
 LocalGameState::LocalGameState()
-	: mRecorder(new ReplayRecorder())
+	: mRecorder(new ReplayRecorder()), mWinner(false)
 {
-	mWinner = false;
-
 	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
@@ -58,19 +55,8 @@ LocalGameState::LocalGameState()
 	boost::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
 	boost::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER);
 
-//	mLeftPlayer.loadFromConfig("left");
-//	mRightPlayer.loadFromConfig("right");
-
 	// create default replay name
-	mFilename = leftPlayer.getName();
-	if(mFilename.size() > 7)
-		mFilename.resize(7);
-	mFilename += " vs ";
-	std::string oppname = rightPlayer.getName();
-	if(oppname.size() > 7)
-		oppname.resize(7);
-	mFilename += oppname;
-
+	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
 
 	// set speed
 	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
@@ -100,30 +86,7 @@ void LocalGameState::step_impl()
 	{
 		if ( displaySaveReplayPrompt() )
 		{
-			try
-				{
-				std::string repFileName = std::string("replays/") + mFilename + std::string(".bvr");
-				if (mFilename != "")
-				{
-					boost::shared_ptr<FileWrite> savetarget = boost::make_shared<FileWrite>(repFileName);
-					/// \todo add a check whether we overwrite a file
-					mRecorder->save(savetarget);
-					savetarget->close();
-					mSaveReplay = false;
-				}
-			}
-			catch( FileLoadException& ex)
-			{
-				mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
-			}
-			catch( FileAlreadyExistsException& ex)
-			{
-				mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
-			}
-			 catch( std::exception& ex)
-			{
-				mErrorMessage = std::string("Could not save replay: ");
-			}
+			saveReplay( *mRecorder.get() );
 		}
 	}
 	else if (mMatch->isPaused())

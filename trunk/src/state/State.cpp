@@ -12,6 +12,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
@@ -25,12 +26,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <cstdio>
 
+#include <boost/make_shared.hpp>
+
 #include "LocalGameState.h"
 #include "ReplaySelectionState.h"
 #include "NetworkState.h"
 #include "NetworkSearchState.h"
 #include "OptionsState.h"
 
+#include "ReplayRecorder.h"
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
@@ -39,6 +43,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
+#include "FileWrite.h"
 
 
 /* implementation */
@@ -182,8 +187,11 @@ bool GameState::displaySaveReplayPrompt()
 	imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
 	if(imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
 	{
-		imgui.resetSelection();
-		return true;
+		if(mFilename != "")
+		{
+			imgui.resetSelection();
+			return true;
+		}
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::LBL_CANCEL))
@@ -227,6 +235,51 @@ bool GameState::displayWinningPlayerScreen(PlayerSide winner)
 	imgui.doCursor();
 
 	return false;
+}
+
+void GameState::setDefaultReplayName(const std::string& left, const std::string& right)
+{
+	mFilename = left;
+	if(mFilename.size() > 7)
+		mFilename.resize(7);
+	mFilename += " vs ";
+
+	std::string opp = right;
+	if(right.size() > 7)
+		opp.resize(7);
+	mFilename += opp;
+}
+
+void GameState::saveReplay(ReplayRecorder& recorder)
+{
+	try
+	{
+		if (mFilename != "")
+		{
+			std::string repFileName = std::string("replays/") + mFilename + std::string(".bvr");
+
+			boost::shared_ptr<FileWrite> savetarget = boost::make_shared<FileWrite>(repFileName);
+			/// \todo add a check whether we overwrite a file
+			recorder.save(savetarget);
+			savetarget->close();
+			mSaveReplay = false;
+		}
+	}
+	catch( FileLoadException& ex)
+	{
+		mErrorMessage = std::string("Unable to create file:" + ex.getFileName());
+		mSaveReplay = true;	// try again
+	}
+	catch( FileAlreadyExistsException& ex)
+	{
+		mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
+		mSaveReplay = true;	// try again
+	}
+	 catch( std::exception& ex)
+	{
+		mErrorMessage = std::string("Could not save replay: ");
+		mSaveReplay = true;	// try again
+	}
 }
 
 
