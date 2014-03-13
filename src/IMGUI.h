@@ -75,6 +75,12 @@ class IMGUI : public ObjectCounter<IMGUI>
 
 		bool doButton(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
 		bool doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
+
+		// draws an image that also works as a button
+		// for now, it is not included in keyboard navigation, so it is more like a clickable image than a real button
+		/// \todo the size parameter should be calculated from the passed image
+		bool doImageButton(int id, const Vector2& position, const Vector2& size, const std::string& image);
+
 		bool doScrollbar(int id, const Vector2& position, float& value);
 		bool doEditbox(int id, const Vector2& position, unsigned length, std::string& text, unsigned& cpos, unsigned int flags = TF_NORMAL, bool force_active = false);
 		SelectBoxAction doSelectbox(int id, const Vector2& pos1, const Vector2& pos2, const std::vector<std::string>& entries, unsigned& selected, unsigned int flags = TF_NORMAL);

@@ -116,7 +116,7 @@ void ReplayState::step_impl()
 		if(mReplayPlayer->gotoPlayingPosition(mPositionJump, mMatch.get()))
 			mPositionJump = -1;
 	}
-		else if(!mPaused)
+	 else if(!mPaused)
 	{
 		while( mSpeedTimer >= 8)
 		{
@@ -134,7 +134,6 @@ void ReplayState::step_impl()
 	Vector2 prog_pos = Vector2(50, 600-22);
 	imgui.doOverlay(GEN_ID, prog_pos, Vector2(750, 600-3), Color(0,0,0));
 	imgui.doOverlay(GEN_ID, prog_pos, Vector2(700*mReplayPlayer->getPlayProgress()+50, 600-3), Color(0,255,0));
-	//imgui.doImage(GEN_ID, Vector2(50 + 700*mReplayPlayer->getPlayProgress(), 600-16), "gfx/scrollbar.bmp");
 
 	PlayerSide side = NO_PLAYER;
 	if (mReplayPlayer->endOfFile())
@@ -150,84 +149,59 @@ void ReplayState::step_impl()
 		}
 	}
 
-	// control replay position
-	Vector2 mousepos = InputManager::getSingleton()->position();
-	if (side == NO_PLAYER && mousepos.x + 5 > prog_pos.x &&
-		mousepos.y > prog_pos.y &&
-		mousepos.x < prog_pos.x + 700 &&
-		mousepos.y < prog_pos.y + 24.0)
-	{
-
-		if (InputManager::getSingleton()->click())
-		{
-			float pos = (mousepos.x - prog_pos.x) / 700.0;
-			mPositionJump = pos * mReplayPlayer->getReplayLength();
-		}
-	}
-
 	// play/pause button
 	imgui.doOverlay(GEN_ID, Vector2(350, 535.0), Vector2(450, 575.0));
-	if(mPaused)
-	{
-		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_play.bmp");
-	}
-	 else
-	{
-		imgui.doImage(GEN_ID, Vector2(400, 555.0), "gfx/btn_pause.bmp");
-	}
-
-	imgui.doImage(GEN_ID, Vector2(430, 555.0), "gfx/btn_fast.bmp");
-	imgui.doImage(GEN_ID, Vector2(370, 555.0), "gfx/btn_slow.bmp");
+	bool pause_click = imgui.doImageButton(GEN_ID, Vector2(400, 555), Vector2(24, 24), mPaused ? "gfx/btn_play.bmp" : "gfx/btn_pause.bmp");
+	bool fast_click = imgui.doImageButton(GEN_ID, Vector2(430, 555), Vector2(24, 24),  "gfx/btn_fast.bmp");
+	bool slow_click = imgui.doImageButton(GEN_ID, Vector2(370, 555), Vector2(24, 24),  "gfx/btn_slow.bmp");
 
 	// handle these image buttons. IMGUI is not capable of doing this.
 	if(side == NO_PLAYER)
 	{
-		if (InputManager::getSingleton()->click())
+		// control replay position
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		if (mousepos.x + 5 > prog_pos.x && mousepos.y > prog_pos.y &&
+			mousepos.x < prog_pos.x + 700 && mousepos.y < prog_pos.y + 24.0)
 		{
-			Vector2 mousepos = InputManager::getSingleton()->position();
-			Vector2 btnpos = Vector2(400-12, 550.0-12);
-			if (mousepos.x > btnpos.x &&
-				mousepos.y > btnpos.y &&
-				mousepos.x < btnpos.x + 24.0 &&
-				mousepos.y < btnpos.y + 24.0)
-			{
 
-				if(mPaused)
-				{
-					mPaused = false;
-					if(mReplayPlayer->endOfFile())
-						mPositionJump = 0;
-				}
-				else
-					mPaused = true;
-			}
-
-			Vector2 fastpos = Vector2(430-12, 550.0-12);
-			if (mousepos.x > fastpos.x &&
-				mousepos.y > fastpos.y &&
-				mousepos.x < fastpos.x + 24.0 &&
-				mousepos.y < fastpos.y + 24.0)
+			if (InputManager::getSingleton()->click())
 			{
-				mSpeedValue *= 2;
-				if(mSpeedValue > 64)
-					mSpeedValue = 64;
-			}
-
-			Vector2 slowpos = Vector2(370-12, 550.0-12);
-			if (mousepos.x > slowpos.x &&
-				mousepos.y > slowpos.y &&
-				mousepos.x < slowpos.x + 24.0 &&
-				mousepos.y < slowpos.y + 24.0)
-			{
-				mSpeedValue /= 2;
-				if(mSpeedValue < 1)
-					mSpeedValue = 1;
+				float pos = (mousepos.x - prog_pos.x) / 700.0;
+				mPositionJump = pos * mReplayPlayer->getReplayLength();
 			}
 		}
+
+		if (pause_click)
+		{
+			if(mPaused)
+			{
+				if(mReplayPlayer->endOfFile())
+					mPositionJump = 0;
+			}
+			mPaused = !mPaused;
+		}
+
+		if (fast_click)
+		{
+			mSpeedValue *= 2;
+			if(mSpeedValue > 64)
+				mSpeedValue = 64;
+		}
+
+		if (slow_click)
+		{
+			mSpeedValue /= 2;
+			if(mSpeedValue < 1)
+				mSpeedValue = 1;
+		}
+
+		if ((InputManager::getSingleton()->exit()))
+		{
+			switchState(new ReplaySelectionState());
+			return;
+		}
 	}
-
-
-	if (side != NO_PLAYER)
+	else
 	{
 		displayWinningPlayerScreen(side);
 
@@ -254,12 +228,6 @@ void ReplayState::step_impl()
 		}
 		imgui.doCursor();
 	}
-	else if ((InputManager::getSingleton()->exit()))
-	{
-		switchState(new ReplaySelectionState());
-		return;
-	}
-
 
 	// show the game ui
 	presentGameUI();
