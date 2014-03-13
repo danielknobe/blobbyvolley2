@@ -386,6 +386,25 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 	return clicked;
 }
 
+bool IMGUI::doImageButton(int id, const Vector2& position, const Vector2& size, const std::string& image)
+{
+	doImage(id, position, image);
+
+	// React to mouse input.
+	if (InputManager::getSingleton()->click())
+	{
+		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 btnpos = position - size * 0.5;
+		if (mousepos.x > btnpos.x && mousepos.y > btnpos.y &&
+				mousepos.x < btnpos.x + size.x &&	mousepos.y < btnpos.y + size.y)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 {
 	QueueObject obj;
