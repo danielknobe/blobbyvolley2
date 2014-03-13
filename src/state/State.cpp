@@ -44,6 +44,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
 #include "FileWrite.h"
+#include "InputManager.h"
 
 
 /* implementation */
@@ -52,6 +53,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 boost::scoped_ptr<State> State::mCurrentState(nullptr);
 boost::scoped_ptr<State> State::mStateToSwitchTo(nullptr);
 
+
+void State::deinit()
+{
+	mCurrentState.reset( nullptr );
+	mStateToSwitchTo.reset( nullptr );
+}
 
 void State::step()
 {
@@ -347,14 +354,7 @@ void MainMenuState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(434.0, 540.0), TextManager::MNU_LABEL_EXIT))
 	{
-		/// \todo This is not the right way to end Blobby!
-		///		We have shutdown actions in main.cpp, if we change
-		///		those, we'd have to update these here too.
-		///		we should have this at just one place.
-		RenderManager::getSingleton().deinit();
-		SoundManager::getSingleton().deinit();
-		SDL_Quit();
-		exit(0);
+		InputManager::getSingleton()->setEndBlobby();
 	}
 }
 

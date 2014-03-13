@@ -51,6 +51,11 @@ public:
 	/// performs a step in the current state
 	static void step();
 
+	/// deinits the state system, deleting the current state.
+	/// this is necessary for now to ensure correct destruction order, so the debug counters are destroyed after the
+	/// state is uncounted.
+	static void deinit();
+
 	/// gets the currently active state
 	static boost::scoped_ptr<State>& getCurrentState();
 	/// gets the name of the currently active state

@@ -429,6 +429,11 @@ bool InputManager::running() const
 	return mRunning;
 }
 
+void InputManager::setEndBlobby()
+{
+	mRunning = false;
+}
+
 std::string InputManager::getLastTextKey()
 {
 	if (mLastTextKey != "")
