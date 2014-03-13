@@ -90,7 +90,7 @@ void State::switchState(State* newState)
 	mStateToSwitchTo.reset(newState);
 }
 
-GameState::GameState(DuelMatch* match) : mMatch(match)
+GameState::GameState(DuelMatch* match) : mMatch(match), mSaveReplay(false), mErrorMessage("")
 {
 	// enable game drawing
 	RenderManager::getSingleton().drawGame(true);
@@ -174,12 +174,15 @@ bool GameState::displaySaveReplayPrompt()
 {
 	auto& imgui = IMGUI::getSingleton();
 
+	imgui.doCursor();
+
 	imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
 	imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
 	static unsigned cpos;
 	imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
 	if(imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
 	{
+		imgui.resetSelection();
 		return true;
 	}
 
@@ -189,7 +192,40 @@ bool GameState::displaySaveReplayPrompt()
 		imgui.resetSelection();
 		return false;
 	}
+	return false;
+}
+
+bool GameState::displayErrorMessageBox()
+{
+	auto& imgui = IMGUI::getSingleton();
+
 	imgui.doCursor();
+
+	imgui.doOverlay(GEN_ID, Vector2(100, 200), Vector2(700, 360));
+	size_t split = mErrorMessage.find(':');
+	std::string mProblem = mErrorMessage.substr(0, split);
+	std::string mInfo = mErrorMessage.substr(split+1);
+	imgui.doText(GEN_ID, Vector2(120, 220), mProblem);
+	imgui.doText(GEN_ID, Vector2(120, 260), mInfo);
+	if(imgui.doButton(GEN_ID, Vector2(330, 320), TextManager::LBL_OK))
+	{
+		mErrorMessage = "";
+		return true;
+	}
+	return false;
+}
+
+bool GameState::displayWinningPlayerScreen(PlayerSide winner)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	std::string tmp = mMatch->getPlayer(winner).getName();
+	imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
+	imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
+	imgui.doText(GEN_ID, Vector2(274, 240), tmp);
+	imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+	imgui.doCursor();
+
 	return false;
 }
 
