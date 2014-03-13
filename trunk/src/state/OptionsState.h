@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "UserConfig.h"
 #include "State.h"
+#include "TextManager.h"
 #include <vector>
 
 /*! \class OptionState
@@ -108,6 +109,11 @@ private:
 	std::string mRightBlobbyJoystickJump;
 	//global data:
 	int mBlobbyTouchType;
+
+	// helper function
+	void getMouseInput(int& action, TextManager::STRING input, int oldInt);
+	void getKeyboardInput(std::string& action, TextManager::STRING input, const std::string& oldString, std::string lastActionKey);
+	void getJoystickInput(std::string& action, TextManager::STRING input, const std::string& oldString);
 };
 
 /*! \class MiscOptionsState
