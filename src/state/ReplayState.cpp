@@ -95,8 +95,8 @@ void ReplayState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
 
-	// only draw cursor when mouse moved in the last second
-	if(mLastMousePosition != InputManager::getSingleton()->position())
+	// only draw cursor when mouse moved or clicked in the last second
+	if(mLastMousePosition != InputManager::getSingleton()->position() || InputManager::getSingleton()->click())
 	{
 		/// \todo we must do this framerate independent
 		mMouseShowTimer = 75;
