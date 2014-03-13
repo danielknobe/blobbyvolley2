@@ -229,15 +229,8 @@ void ReplayState::step_impl()
 
 	if (side != NO_PLAYER)
 	{
-		std::stringstream tmp;
-		if(side == LEFT_PLAYER)
-			tmp << mReplayPlayer->getPlayerName(LEFT_PLAYER);
-		else
-			tmp << mReplayPlayer->getPlayerName(RIGHT_PLAYER);
-		imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(650, 450));
-		imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-		imgui.doText(GEN_ID, Vector2(274, 250), tmp.str());
-		imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+		displayWinningPlayerScreen(side);
+
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
 			switchState(new ReplaySelectionState());
