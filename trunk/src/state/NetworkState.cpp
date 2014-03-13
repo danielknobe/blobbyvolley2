@@ -723,7 +723,7 @@ void NetworkHostState::step_impl()
 	mServer->updateGames();
 
 	if( mGameState )
-		mGameState->step();
+		mGameState->step_impl();
 }
 
 const char* NetworkHostState::getStateName() const
