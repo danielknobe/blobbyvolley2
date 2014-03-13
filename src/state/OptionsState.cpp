@@ -461,7 +461,7 @@ void InputOptionsState::save()
 	mOptionConfig.saveFile("inputconfig.xml");
 }
 
-#if !defined(__ANDROID__) && !TARGET_IPHONE_SIMULATOR && !TARGET_OS_IPHONE
+#if __DESKTOP__
 void InputOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
@@ -726,129 +726,59 @@ void InputOptionsState::step_impl()
 	//Capture dialogs:
 	if (mLeftBlobbyMouseJumpbutton == -1)
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(180.0, 250.0), TextManager::OP_PRESS_MOUSE_BUTTON);
-		imgui.doText(GEN_ID, Vector2(290.0, 300.0), TextManager::OP_JUMPING);
-		mLeftBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyMouseJumpbutton = mOldInteger;
+		getMouseInput(mLeftBlobbyMouseJumpbutton, TextManager::OP_JUMPING, mOldInteger);
 	}
 	if (mLeftBlobbyKeyboardLeft == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_LEFT);
-		mLeftBlobbyKeyboardLeft = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyKeyboardLeft = oldString;
+		getKeyboardInput(mLeftBlobbyKeyboardLeft, TextManager::OP_MOVING_LEFT, oldString, lastActionKey);
 	}
 	if (mLeftBlobbyKeyboardRight == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_RIGHT);
-		mLeftBlobbyKeyboardRight = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyKeyboardRight = oldString;
+		getKeyboardInput(mLeftBlobbyKeyboardRight, TextManager::OP_MOVING_RIGHT, oldString, lastActionKey);
 	}
 	if (mLeftBlobbyKeyboardJump == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_MOVING_LEFT);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_JUMPING);
-		mLeftBlobbyKeyboardJump = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyKeyboardJump = oldString;
+		getKeyboardInput(mLeftBlobbyKeyboardJump, TextManager::OP_JUMPING, oldString, lastActionKey);
 	}
 	if (mLeftBlobbyJoystickLeft == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_LEFT);
-		mLeftBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyJoystickLeft = oldString;
+		getJoystickInput(mLeftBlobbyJoystickLeft, TextManager::OP_MOVING_LEFT, oldString);
 	}
 	if (mLeftBlobbyJoystickRight == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_RIGHT);
-		mLeftBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyJoystickRight = oldString;
+		getJoystickInput(mLeftBlobbyJoystickRight, TextManager::OP_MOVING_RIGHT, oldString);
 	}
 	if (mLeftBlobbyJoystickJump == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_JUMPING);
-		mLeftBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mLeftBlobbyJoystickJump = oldString;
+		getJoystickInput(mLeftBlobbyJoystickJump, TextManager::OP_JUMPING, oldString);
 	}
 	if (mRightBlobbyMouseJumpbutton == -1)
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(180.0, 250.0), TextManager::OP_PRESS_MOUSE_BUTTON);
-		imgui.doText(GEN_ID, Vector2(290.0, 300.0), TextManager::OP_JUMPING);
-		mRightBlobbyMouseJumpbutton = InputManager::getSingleton()->getLastMouseButton();
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyMouseJumpbutton = mOldInteger;
+		getMouseInput(mRightBlobbyMouseJumpbutton, TextManager::OP_JUMPING, mOldInteger);
 	}
 	if (mRightBlobbyKeyboardLeft == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_LEFT);
-		mRightBlobbyKeyboardLeft = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyKeyboardLeft = oldString;
+		getKeyboardInput(mRightBlobbyKeyboardLeft, TextManager::OP_MOVING_LEFT, oldString, lastActionKey);
 	}
 	if (mRightBlobbyKeyboardRight == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_RIGHT);
-		mRightBlobbyKeyboardRight = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyKeyboardRight = oldString;
+		getKeyboardInput(mRightBlobbyKeyboardRight, TextManager::OP_MOVING_RIGHT, oldString, lastActionKey);
 	}
 	if (mRightBlobbyKeyboardJump == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_JUMPING);
-		mRightBlobbyKeyboardJump = lastActionKey;
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyKeyboardJump = oldString;
+		getKeyboardInput(mRightBlobbyKeyboardJump, TextManager::OP_JUMPING, oldString, lastActionKey);
 	}
 	if (mRightBlobbyJoystickLeft == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_LEFT);
-		mRightBlobbyJoystickLeft = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyJoystickLeft = oldString;
+		getJoystickInput(mRightBlobbyJoystickLeft, TextManager::OP_MOVING_LEFT, oldString);
 	}
 	if (mRightBlobbyJoystickRight == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_MOVING_RIGHT);
-		mRightBlobbyJoystickRight = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyJoystickRight = oldString;
+		getJoystickInput(mRightBlobbyJoystickRight, TextManager::OP_MOVING_RIGHT, oldString);
 	}
 	if (mRightBlobbyJoystickJump == "")
 	{
-		imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-		imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
-		imgui.doText(GEN_ID, Vector2(270.0, 300.0), TextManager::OP_JUMPING);
-		mRightBlobbyJoystickJump = InputManager::getSingleton()->getLastJoyAction();
-		if (InputManager::getSingleton()->exit())
-			mRightBlobbyJoystickJump = oldString;
+		getJoystickInput(mRightBlobbyJoystickJump, TextManager::OP_JUMPING, oldString);
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
@@ -863,6 +793,45 @@ void InputOptionsState::step_impl()
 		return;
 	}
 }
+
+void InputOptionsState::getMouseInput(int& action, TextManager::STRING input, int oldInt)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+	imgui.doText(GEN_ID, Vector2(180.0, 250.0), TextManager::OP_PRESS_MOUSE_BUTTON);
+	imgui.doText(GEN_ID, Vector2(290.0, 300.0), input);
+	action = InputManager::getSingleton()->getLastMouseButton();
+	if (InputManager::getSingleton()->exit())
+		action = oldInt;
+}
+
+void InputOptionsState::getKeyboardInput(std::string& action, TextManager::STRING input, const std::string& oldString, std::string lastActionKey)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+	imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_KEY_FOR);
+	imgui.doText(GEN_ID, Vector2(270.0, 300.0), input);
+	action = lastActionKey;
+	if (InputManager::getSingleton()->exit())
+		action = oldString;
+}
+
+void InputOptionsState::getJoystickInput(std::string& action, TextManager::STRING input, const std::string& oldString)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+	imgui.doText(GEN_ID, Vector2(250.0, 250.0), TextManager::OP_PRESS_BUTTON_FOR);
+	imgui.doText(GEN_ID, Vector2(270.0, 300.0), input);
+	action = InputManager::getSingleton()->getLastJoyAction();
+	if (InputManager::getSingleton()->exit())
+		action = oldString;
+
+}
+
+
 #else
 
 void InputOptionsState::step_impl()
