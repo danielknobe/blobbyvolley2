@@ -40,9 +40,7 @@ class LocalGameState : public GameState
 
 	private:
 		std::string mErrorMessage;
-		bool mSaveReplay;
 		bool mWinner;
-		std::string mFilename;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
 };
