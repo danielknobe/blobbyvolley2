@@ -68,6 +68,7 @@ void deinit()
 {
 	RenderManager::getSingleton().deinit();
 	SoundManager::getSingleton().deinit();
+	State::deinit();
 	SDL_Quit();
 }
 

@@ -39,6 +39,7 @@ class InputManager : public ObjectCounter<InputManager>
 		InputDevice* beginGame(PlayerSide side) const;
 
 		bool running() const;
+		void setEndBlobby();	// call to trigger the event that ends blobby, i.e. running will return false after this call.
 		void updateInput();
 
 		// For GUI navigation (Gamepad, Joystick or Keyboard)
@@ -47,7 +48,7 @@ class InputManager : public ObjectCounter<InputManager>
 		bool left() const;
 		bool right() const;
 		bool select() const;
-		bool exit() const; // extention for mouse included, so that right click = exit
+		bool exit() const; // extension for mouse included, so that right click = exit
 
 		std::string getLastTextKey();
 		std::string getLastActionKey();
