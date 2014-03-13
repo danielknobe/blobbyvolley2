@@ -204,11 +204,8 @@ void GraphicOptionsState::save()
 	}
 #endif
 
-	if(mOptionConfig.getBool("show_shadow") != mShowShadow)
-	{
-		RenderManager::getSingleton().showShadow(mShowShadow);
-		mOptionConfig.setBool("show_shadow", mShowShadow);
-	}
+	RenderManager::getSingleton().showShadow(mShowShadow);
+	mOptionConfig.setBool("show_shadow", mShowShadow);
 
 	mOptionConfig.setInteger("left_blobby_color_r", mR1);
 	mOptionConfig.setInteger("left_blobby_color_g", mG1);
