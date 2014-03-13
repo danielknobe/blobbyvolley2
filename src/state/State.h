@@ -90,7 +90,17 @@ protected:
 	/// this draws the ui in the game, i.e. clock, score and player names
 	void presentGameUI();
 
+	// ui helpers
+	/// this function draws the save replay ui
+	/// it returns true if the player clicks on the OK button
+	bool displaySaveReplayPrompt();
+
 	boost::scoped_ptr<DuelMatch> mMatch;
+
+	// ui helper variable for storing a filename
+	std::string mFilename;
+
+	bool mSaveReplay;
 };
 
 /*! \class MainMenuState

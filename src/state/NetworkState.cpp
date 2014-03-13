@@ -471,11 +471,7 @@ void NetworkGameState::step_impl()
 	}
 	else if (mSaveReplay)
 	{
-		imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-		imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
-		static unsigned cpos;
-		imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
-		if (imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
+		if ( displaySaveReplayPrompt() )
 		{
 			if (mFilename != "")
 			{
@@ -488,12 +484,6 @@ void NetworkGameState::step_impl()
 			mWaitingForReplay = true;
 			imgui.resetSelection();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::LBL_CANCEL))
-		{
-			mSaveReplay = false;
-			imgui.resetSelection();
-		}
-		imgui.doCursor();
 	}
 	else if (mWaitingForReplay)
 	{

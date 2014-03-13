@@ -72,9 +72,7 @@ private:
 
 	boost::scoped_ptr<InputSource> mLocalInput;
 
-	bool mSaveReplay;
 	bool mWaitingForReplay;
-	std::string mFilename;
 	std::string mErrorMessage;
 
 	boost::shared_ptr<RakClient> mClient;
