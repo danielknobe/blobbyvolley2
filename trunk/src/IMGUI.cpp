@@ -879,8 +879,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 	obj.type = CHAT;
 	obj.flags = flags;
 
-	const int itemsPerPage = int(pos2.y - pos1.y - 10) / FontSize;
-	unsigned int first = selected; //the first visible element in the list
+	const unsigned int itemsPerPage = int(pos2.y - pos1.y - 10) / FontSize;
 
 	if (!mInactive)
 	{
@@ -984,20 +983,17 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 	doImage(GEN_ID, Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
 	doImage(GEN_ID, Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
 
-	first = (selected / itemsPerPage)*itemsPerPage; //recalc first
+	unsigned int first = (selected / itemsPerPage) * itemsPerPage; //recalc first
 	if ( !entries.empty() )
 	{
 		unsigned int last = selected + 1;
-		first = last - itemsPerPage;
 		/// \todo maybe we should adapt selected so we even can't scroll up further!
 		// we don't want negative chatlog, so we just scroll upward without coming to negative
 		// elements.
-		if (first < 0)
-		{
-			// increase last element so we alway draw itemsPerPage items
-			last -= first;
+		if (last >= itemsPerPage)
+			first = last - itemsPerPage;
+		else
 			first = 0;
-		}
 
 		// check that we don't create out of bounds problems
 		if(last > entries.size())
