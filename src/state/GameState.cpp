@@ -128,12 +128,15 @@ bool GameState::displaySaveReplayPrompt()
 	imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
 	static unsigned cpos;
 	imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
+
+	bool doSave = false;
+
 	if(imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
 	{
 		if(mFilename != "")
 		{
 			imgui.resetSelection();
-			return true;
+			doSave = true;
 		}
 	}
 
@@ -141,9 +144,9 @@ bool GameState::displaySaveReplayPrompt()
 	{
 		mSaveReplay = false;
 		imgui.resetSelection();
-		return false;
+		doSave = false;
 	}
-	return false;
+	return doSave;
 }
 
 bool GameState::displayErrorMessageBox()
