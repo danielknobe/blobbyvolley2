@@ -93,7 +93,6 @@ void LocalGameState::step_impl()
 		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::LBL_YES))
 		{
 			switchState(new MainMenuState);
-			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::RP_SAVE))
 		{
@@ -108,12 +107,10 @@ void LocalGameState::step_impl()
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
 			switchState(new MainMenuState());
-			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::GAME_TRY_AGAIN))
 		{
 			switchState(new LocalGameState());
-			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::RP_SAVE))
 		{
@@ -131,7 +128,6 @@ void LocalGameState::step_impl()
 		else if (mMatch->isPaused())
 		{
 			switchState(new MainMenuState);
-			return;
 		}
 		else
 		{

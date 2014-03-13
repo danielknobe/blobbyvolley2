@@ -333,7 +333,6 @@ void NetworkSearchState::step_impl()
 			!mDisplayInfo)
 	{
 		switchState(new NetworkHostState());
-		return;
 	}
 
 	if ((imgui.doButton(GEN_ID, Vector2(230, 530), TextManager::LBL_OK) && !mScannedServers.empty())
@@ -341,12 +340,10 @@ void NetworkSearchState::step_impl()
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
 		switchState(new LobbyState(server));
-		return;
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
 		switchState(new MainMenuState);
-		return;
 	}
 
 	if(mDisplayUpdateNotification)
