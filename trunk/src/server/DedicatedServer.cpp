@@ -401,10 +401,12 @@ void DedicatedServer::allowNewPlayers( bool allow )
 // debug
 void DedicatedServer::printAllPlayers(std::ostream& stream) const
 {
-	for(auto it : mPlayerMap)
+	for( std::map< PlayerID, boost::shared_ptr<NetworkPlayer> >::const_iterator it = mPlayerMap.begin();
+	     it != mPlayerMap.end();
+	     ++it)
 	{
-		stream << it.second->getID().toString() << " \"" << it.second->getName() << "\" status: ";
-		if( it.second->getGame() )
+		stream << it->second->getID().toString() << " \"" << it->second->getName() << "\" status: ";
+		if( it->second->getGame() )
 		{
 			stream << "playing\n";
 		} else
@@ -416,9 +418,11 @@ void DedicatedServer::printAllPlayers(std::ostream& stream) const
 
 void DedicatedServer::printAllGames(std::ostream& stream) const
 {
-	for(auto it : mGameList)
+	for( std::list< boost::shared_ptr<NetworkGame> >::const_iterator it = mGameList.begin();
+	     it != mGameList.end();
+	     ++it)
 	{
-		stream << it->getPlayerID(LEFT_PLAYER).toString() << " vs " << it->getPlayerID(RIGHT_PLAYER).toString() << "\n";
+		stream << (*it)->getPlayerID(LEFT_PLAYER).toString() << " vs " << (*it)->getPlayerID(RIGHT_PLAYER).toString() << "\n";
 	}
 }
 
