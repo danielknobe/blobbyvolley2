@@ -208,6 +208,7 @@ void NetworkGameState::step_impl()
 			case ID_UNPAUSE:
 				if (mNetworkState == PAUSING)
 				{
+					SDL_StopTextInput();
 					mNetworkState = PLAYING;
 					mMatch->unpause();
 				}
