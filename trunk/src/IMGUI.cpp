@@ -211,11 +211,13 @@ void IMGUI::end()
 		}
 		mQueue->pop();
 	}
+#if __DESKTOP__
 	if (mDrawCursor)
 	{
 		rmanager.drawImage("gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2(24.0, 24.0));
 		mDrawCursor = false;
 	}
+#endif
 }
 
 void IMGUI::doImage(int id, const Vector2& position, const std::string& name, const Vector2& size)
@@ -362,17 +364,19 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			}
 		}
 
-
-
-
+		#if __MOBILE__
+			const int tolerance = 3;
+		#else
+			const int tolerance = 0;
+		#endif
 		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
-		if (mousepos.x > obj.pos1.x &&
-			mousepos.y > obj.pos1.y &&
-			mousepos.x < obj.pos1.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
-			mousepos.y < obj.pos1.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
+		if (mousepos.x + tolerance >= position.x &&
+			mousepos.y + tolerance * 2 >= position.y &&
+			mousepos.x - tolerance <= position.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
+			mousepos.y - tolerance * 2 <= position.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
 		{
-			obj.flags = obj.flags | TF_HIGHLIGHT;
+			obj.flags = obj.flags; //| TF_HIGHLIGHT;
 			if (InputManager::getSingleton()->click())
 			{
 				clicked = true;
@@ -479,12 +483,18 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			}
 		}
 
+		#if __MOBILE__
+			const int tolerance = 3;
+		#else
+			const int tolerance = 0;
+		#endif
+
 		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x + 5 > position.x &&
-			mousepos.y > position.y &&
+			mousepos.y + tolerance * 2 > position.y &&
 			mousepos.x < position.x + 205 &&
-			mousepos.y < position.y + 24.0)
+			mousepos.y - tolerance < position.y + 24.0)
 		{
 			obj.type = ACTIVESCROLLBAR;
 
