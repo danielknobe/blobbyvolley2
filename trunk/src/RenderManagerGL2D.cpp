@@ -284,7 +284,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	int x = 0;
 	int sx = 0;
 
-	for (int i = 0; i <= 53; ++i)
+	for (int i = 0; i <= 54; ++i)
 	{
 		char filename[64];
 		sprintf(filename, "gfx/font%02d.bmp", i);
