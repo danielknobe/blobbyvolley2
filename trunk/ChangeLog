@@ -1,3 +1,10 @@
+New in 1.0 (rev. 1500) since RC4:
+- small improvements to lua rules
+- smoother loading of server list
+- improved mouse input in online games
+- lots of tiny fixes
+
+
 New in 1.0 RC 4 (rev. 1345) since RC3:
 - Added Lobby
 - Added lua gamerules
