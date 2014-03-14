@@ -842,12 +842,10 @@ void InputOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		deleteCurrentState();
 		switchState(new OptionState());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		deleteCurrentState();
 		switchState(new OptionState());
 	}
 }
