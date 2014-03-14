@@ -40,7 +40,7 @@
 			</Target>
 			<Target title="R Server">
 				<Option output="bin/Release/Blobby Server" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -396,6 +396,14 @@
 			<Option target="Server Debug" />
 			<Option target="D Server" />
 			<Option target="R Server" />
+		</Unit>
+		<Unit filename="src/state/GameState.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="src/state/GameState.h">
+			<Option target="Debug" />
+			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/state/LobbyState.cpp">
 			<Option target="Debug" />

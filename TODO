@@ -13,7 +13,6 @@ features:
 - more dedicated server options (black/whitelist, statistics, etc)
 
 bugs:
-- mouse-input does not work very good in online-game
 - net bugs:
  - squeezing ball through blocking blobby ?  
      Please try to verify this
@@ -23,7 +22,3 @@ bugs:
 data:
 - monochrome font
 - more translation
-
-REQUIREMENTS FOR 1.0 RELEASE:
- fully functional online replays with versioning support and possibility to extend capabilities in the future
- 
