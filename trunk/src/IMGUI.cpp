@@ -376,7 +376,11 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			mousepos.x - tolerance <= position.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
 			mousepos.y - tolerance * 2 <= position.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
 		{
-			obj.flags = obj.flags; //| TF_HIGHLIGHT;
+			obj.flags = obj.flags
+			#if __DESKTOP__
+				| TF_HIGHLIGHT
+			#endif
+			;
 			if (InputManager::getSingleton()->click())
 			{
 				clicked = true;
