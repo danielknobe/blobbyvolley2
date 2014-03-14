@@ -127,7 +127,7 @@ void RenderManagerGP2X::init(int xResolution, int yResolution, bool fullscreen)
 
 	}
 
-	for (int i = 0; i <= 53; ++i)
+	for (int i = 0; i <= 54; ++i)
 	{
 		char filename[64], filename2[64];
 		sprintf(filename, "gf2x/font%02d.bmp", i);

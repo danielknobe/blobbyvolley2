@@ -144,6 +144,8 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 		index = 52;
 	else if (testChar == '%')
 		index = 53;
+	else if (testChar == '+')
+		index = 54;
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape
 	{
 		testChar = *iter;
