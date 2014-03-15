@@ -48,7 +48,7 @@ end
 function OnGame()
 	target = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,1) --X Ziel in Blobbyhoehe
 	targets = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,2) --X Richtung (-1 oder 1) bei Einschlag
-	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT,1) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT + CONST_NET_RADIUS,1) --X Ziel in Netzhoehe (Netzrollerberechnung)
 	targetJump = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,1) --X Ziel in Schmetterhoehe
 	targetJumps = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,2)
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
@@ -131,7 +131,7 @@ function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate
 		estimbspeedx=-estimbspeedx
 	end
 
-	if (resultX > CONST_NETZ_LINKS) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT) and (estimbspeedx > 0) then
+	if (resultX > CONST_NETZ_LINKS) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
 		resultX = 2 * CONST_NETZ_LINKS - resultX
 		estimbspeedx=-estimbspeedx
 	end
