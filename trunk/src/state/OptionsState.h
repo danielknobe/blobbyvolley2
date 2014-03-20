@@ -117,6 +117,8 @@ private:
 	void getKeyboardInput(std::string& action, TextManager::STRING input, std::string lastActionKey);
 	void getJoystickInput(std::string& action, TextManager::STRING input);
 	void getInputPrompt(TextManager::STRING prompt, TextManager::STRING input);
+	// returns the correct text manager string for the device string
+	TextManager::STRING getDeviceName(const std::string& device) const;
 };
 
 /*! \class MiscOptionsState
