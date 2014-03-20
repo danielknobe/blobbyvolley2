@@ -402,21 +402,21 @@ InputOptionsState::InputOptionsState()
 	//left data:
 	mLeftBlobbyDevice = mOptionConfig.getString("left_blobby_device");
 	mLeftBlobbyMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
-	mLeftBlobbyKeyboardLeft = mOptionConfig.getString("left_blobby_keyboard_left");
-	mLeftBlobbyKeyboardRight = mOptionConfig.getString("left_blobby_keyboard_right");
-	mLeftBlobbyKeyboardJump = mOptionConfig.getString("left_blobby_keyboard_jump");
-	mLeftBlobbyJoystickLeft = mOptionConfig.getString("left_blobby_joystick_left");
-	mLeftBlobbyJoystickRight = mOptionConfig.getString("left_blobby_joystick_right");
-	mLeftBlobbyJoystickJump = mOptionConfig.getString("left_blobby_joystick_jump");
+	mLeftBlobbyKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
+	mLeftBlobbyKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
+	mLeftBlobbyKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
+	mLeftBlobbyJoystick[IA_LEFT] = mOptionConfig.getString("left_blobby_joystick_left");
+	mLeftBlobbyJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
+	mLeftBlobbyJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
 	//right data:
 	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
 	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
-	mRightBlobbyKeyboardLeft = mOptionConfig.getString("right_blobby_keyboard_left");
-	mRightBlobbyKeyboardRight = mOptionConfig.getString("right_blobby_keyboard_right");
-	mRightBlobbyKeyboardJump = mOptionConfig.getString("right_blobby_keyboard_jump");
-	mRightBlobbyJoystickLeft = mOptionConfig.getString("right_blobby_joystick_left");
-	mRightBlobbyJoystickRight = mOptionConfig.getString("right_blobby_joystick_right");
-	mRightBlobbyJoystickJump = mOptionConfig.getString("right_blobby_joystick_jump");
+	mRightBlobbyKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
+	mRightBlobbyKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
+	mRightBlobbyKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
+	mRightBlobbyJoystick[IA_LEFT] = mOptionConfig.getString("right_blobby_joystick_left");
+	mRightBlobbyJoystick[IA_RIGHT] = mOptionConfig.getString("right_blobby_joystick_right");
+	mRightBlobbyJoystick[IA_JUMP] = mOptionConfig.getString("right_blobby_joystick_jump");
 	//global data:
 	mBlobbyTouchType = mOptionConfig.getInteger("blobby_touch_type");
 }
@@ -430,21 +430,21 @@ void InputOptionsState::save()
 	//left data:
 	mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
 	mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
-	mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboardLeft);
-	mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboardRight);
-	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboardJump);
-	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystickLeft);
-	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystickRight);
-	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystickJump);
+	mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboard[IA_LEFT]);
+	mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboard[IA_RIGHT]);
+	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboard[IA_JUMP]);
+	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystick[IA_LEFT]);
+	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystick[IA_RIGHT]);
+	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystick[IA_JUMP]);
 	//right data:
 	mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
 	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
-	mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboardLeft);
-	mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboardRight);
-	mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboardJump);
-	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystickLeft);
-	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystickRight);
-	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystickJump);
+	mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboard[IA_LEFT]);
+	mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboard[IA_RIGHT]);
+	mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboard[IA_JUMP]);
+	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystick[IA_LEFT]);
+	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystick[IA_RIGHT]);
+	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystick[IA_JUMP]);
 	//global data:
 	mOptionConfig.setInteger("blobby_touch_type", mBlobbyTouchType);
 
@@ -511,67 +511,67 @@ void InputOptionsState::step_impl()
 			mSetKeyboard = 1;
 
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::OP_LEFT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboardLeft) || mSetKeyboard == 1)
+		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_LEFT]) || mSetKeyboard == 1)
 		{
 			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboardLeft;
-			mLeftBlobbyKeyboardLeft = "";
+			mOldString = mLeftBlobbyKeyboard[IA_LEFT];
+			mLeftBlobbyKeyboard[IA_LEFT] = "";
 		}
 
 		if (mSetKeyboard == 1)
 			mSetKeyboard = 2;
 
-		if (mSetKeyboard == 2 && mLeftBlobbyKeyboardLeft != "")
+		if (mSetKeyboard == 2 && mLeftBlobbyKeyboard[IA_LEFT] != "")
 			mSetKeyboard = 3;
 
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RIGHT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboardRight) || mSetKeyboard == 3)
+		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_RIGHT]) || mSetKeyboard == 3)
 		{
 			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboardRight;
-			mLeftBlobbyKeyboardRight = "";
+			mOldString = mLeftBlobbyKeyboard[IA_RIGHT];
+			mLeftBlobbyKeyboard[IA_RIGHT] = "";
 		}
 
 		if (mSetKeyboard == 3)
 			mSetKeyboard = 4;
 
-		if (mSetKeyboard == 4 && mLeftBlobbyKeyboardRight != "")
+		if (mSetKeyboard == 4 && mLeftBlobbyKeyboard[IA_RIGHT] != "")
 			mSetKeyboard = 5;
 
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::OP_JUMP_KEY );
-		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboardJump) || mSetKeyboard == 5)
+		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_JUMP]) || mSetKeyboard == 5)
 		{
 			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboardJump;
-			mLeftBlobbyKeyboardJump = "";
+			mOldString = mLeftBlobbyKeyboard[IA_JUMP];
+			mLeftBlobbyKeyboard[IA_JUMP] = "";
 		}
 
 		if (mSetKeyboard == 5)
 			mSetKeyboard = 6;
 
-		if (mSetKeyboard == 6 && mLeftBlobbyKeyboardJump != "")
+		if (mSetKeyboard == 6 && mLeftBlobbyKeyboard[IA_JUMP] != "")
 			mSetKeyboard = 0;
 	}
 	//if joystick device is selected:
 	if (mLeftBlobbyDevice == "joystick")
 	{
 		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::OP_LEFT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystickLeft))
+		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystick[IA_LEFT]))
 		{
-			mOldString = mLeftBlobbyJoystickLeft;
-			mLeftBlobbyJoystickLeft = "";
+			mOldString = mLeftBlobbyJoystick[IA_LEFT];
+			mLeftBlobbyJoystick[IA_LEFT] = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RIGHT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystickRight))
+		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystick[IA_RIGHT]))
 		{
-			mOldString = mLeftBlobbyJoystickRight;
-			mLeftBlobbyJoystickRight = "";
+			mOldString = mLeftBlobbyJoystick[IA_RIGHT];
+			mLeftBlobbyJoystick[IA_RIGHT] = "";
 		}
 		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::OP_JUMP_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystickJump))
+		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystick[IA_JUMP]))
 		{
-			mOldString = mLeftBlobbyJoystickJump;
-			mLeftBlobbyJoystickJump = "";
+			mOldString = mLeftBlobbyJoystick[IA_JUMP];
+			mLeftBlobbyJoystick[IA_JUMP] = "";
 		}
 	}
 
@@ -625,72 +625,72 @@ void InputOptionsState::step_impl()
 			mSetKeyboard = 11;
 
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::OP_LEFT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboardLeft) || mSetKeyboard == 11)
+		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboard[IA_LEFT]) || mSetKeyboard == 11)
 		{
 			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboardLeft;
-			mRightBlobbyKeyboardLeft = "";
+			mOldString = mRightBlobbyKeyboard[IA_LEFT];
+			mRightBlobbyKeyboard[IA_LEFT] = "";
 		}
 
 		if (mSetKeyboard == 11)
 			mSetKeyboard = 12;
 
-		if (mSetKeyboard == 12 && mRightBlobbyKeyboardLeft != "")
+		if (mSetKeyboard == 12 && mRightBlobbyKeyboard[IA_LEFT] != "")
 			mSetKeyboard = 13;
 
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::OP_RIGHT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboardRight) || mSetKeyboard == 13)
+		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboard[IA_RIGHT]) || mSetKeyboard == 13)
 		{
 			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboardRight;
-			mRightBlobbyKeyboardRight = "";
+			mOldString = mRightBlobbyKeyboard[IA_RIGHT];
+			mRightBlobbyKeyboard[IA_RIGHT] = "";
 		}
 
 		if (mSetKeyboard == 13)
 			mSetKeyboard = 14;
 
-		if (mSetKeyboard == 14 && mRightBlobbyKeyboardRight != "")
+		if (mSetKeyboard == 14 && mRightBlobbyKeyboard[IA_RIGHT] != "")
 			mSetKeyboard = 15;
 
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::OP_JUMP_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboardJump) || mSetKeyboard == 15)
+		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboard[IA_JUMP]) || mSetKeyboard == 15)
 		{
 			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboardJump;
-			mRightBlobbyKeyboardJump = "";
+			mOldString = mRightBlobbyKeyboard[IA_JUMP];
+			mRightBlobbyKeyboard[IA_JUMP] = "";
 		}
 
 		if (mSetKeyboard == 15)
 			mSetKeyboard = 16;
 
-		if (mSetKeyboard == 16 && mRightBlobbyKeyboardJump != "")
+		if (mSetKeyboard == 16 && mRightBlobbyKeyboard[IA_JUMP] != "")
 			mSetKeyboard = 17;
 	}
 	//if joystick device is selected:
 	if (mRightBlobbyDevice == "joystick")
 	{
 		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::OP_LEFT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystickLeft))
+		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystick[IA_LEFT]))
 		{
-			mOldString = mRightBlobbyJoystickLeft;
-			mRightBlobbyJoystickLeft = "";
+			mOldString = mRightBlobbyJoystick[IA_LEFT];
+			mRightBlobbyJoystick[IA_LEFT] = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::OP_RIGHT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystickRight))
+		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystick[IA_RIGHT]))
 		{
-			mOldString = mRightBlobbyJoystickRight;
-			mRightBlobbyJoystickRight = "";
+			mOldString = mRightBlobbyJoystick[IA_RIGHT];
+			mRightBlobbyJoystick[IA_RIGHT] = "";
 		}
 		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::OP_JUMP_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystickJump))
+		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystick[IA_JUMP]))
 		{
-			mOldString = mRightBlobbyJoystickJump;
-			mRightBlobbyJoystickJump = "";
+			mOldString = mRightBlobbyJoystick[IA_JUMP];
+			mRightBlobbyJoystick[IA_JUMP] = "";
 		}
 	}
 
 	//check if a capture window is open, to set all widgets inactive:
-	if (mLeftBlobbyKeyboardLeft != "" && mLeftBlobbyKeyboardRight != "" && mLeftBlobbyKeyboardJump != "" && mLeftBlobbyJoystickLeft != "" && mLeftBlobbyJoystickRight != "" && mLeftBlobbyJoystickJump != "" && mLeftBlobbyMouseJumpbutton != -1 && mRightBlobbyKeyboardLeft != "" && mRightBlobbyKeyboardRight != "" && mRightBlobbyKeyboardJump != "" && mRightBlobbyJoystickLeft != "" && mRightBlobbyJoystickRight != "" && mRightBlobbyJoystickJump != "" && mRightBlobbyMouseJumpbutton != -1)
+	if (mLeftBlobbyKeyboard[IA_LEFT] != "" && mLeftBlobbyKeyboard[IA_RIGHT] != "" && mLeftBlobbyKeyboard[IA_JUMP] != "" && mLeftBlobbyJoystick[IA_LEFT] != "" && mLeftBlobbyJoystick[IA_RIGHT] != "" && mLeftBlobbyJoystick[IA_JUMP] != "" && mLeftBlobbyMouseJumpbutton != -1 && mRightBlobbyKeyboard[IA_LEFT] != "" && mRightBlobbyKeyboard[IA_RIGHT] != "" && mRightBlobbyKeyboard[IA_JUMP] != "" && mRightBlobbyJoystick[IA_LEFT] != "" && mRightBlobbyJoystick[IA_RIGHT] != "" && mRightBlobbyJoystick[IA_JUMP] != "" && mRightBlobbyMouseJumpbutton != -1)
 	{
 		imgui.doCursor(true);
 		imgui.doInactiveMode(false);
@@ -704,23 +704,23 @@ void InputOptionsState::step_impl()
 	//Capture dialogs:
 	getMouseInput(mLeftBlobbyMouseJumpbutton, TextManager::OP_JUMPING);
 
-	getKeyboardInput(mLeftBlobbyKeyboardLeft, TextManager::OP_MOVING_LEFT, lastActionKey);
-	getKeyboardInput(mLeftBlobbyKeyboardRight, TextManager::OP_MOVING_RIGHT, lastActionKey);
-	getKeyboardInput(mLeftBlobbyKeyboardJump, TextManager::OP_JUMPING, lastActionKey);
+	getKeyboardInput(mLeftBlobbyKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
+	getKeyboardInput(mLeftBlobbyKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
+	getKeyboardInput(mLeftBlobbyKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
 
-	getJoystickInput(mLeftBlobbyJoystickLeft, TextManager::OP_MOVING_LEFT);
-	getJoystickInput(mLeftBlobbyJoystickRight, TextManager::OP_MOVING_RIGHT);
-	getJoystickInput(mLeftBlobbyJoystickJump, TextManager::OP_JUMPING);
+	getJoystickInput(mLeftBlobbyJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mLeftBlobbyJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mLeftBlobbyJoystick[IA_JUMP], TextManager::OP_JUMPING);
 
 	getMouseInput(mRightBlobbyMouseJumpbutton, TextManager::OP_JUMPING);
 
-	getKeyboardInput(mRightBlobbyKeyboardLeft, TextManager::OP_MOVING_LEFT, lastActionKey);
-	getKeyboardInput(mRightBlobbyKeyboardRight, TextManager::OP_MOVING_RIGHT, lastActionKey);
-	getKeyboardInput(mRightBlobbyKeyboardJump, TextManager::OP_JUMPING, lastActionKey);
+	getKeyboardInput(mRightBlobbyKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
+	getKeyboardInput(mRightBlobbyKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
+	getKeyboardInput(mRightBlobbyKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
 
-	getJoystickInput(mRightBlobbyJoystickLeft, TextManager::OP_MOVING_LEFT);
-	getJoystickInput(mRightBlobbyJoystickRight, TextManager::OP_MOVING_RIGHT);
-	getJoystickInput(mRightBlobbyJoystickJump, TextManager::OP_JUMPING);
+	getJoystickInput(mRightBlobbyJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mRightBlobbyJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mRightBlobbyJoystick[IA_JUMP], TextManager::OP_JUMPING);
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{

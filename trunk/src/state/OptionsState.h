@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 #include "TextManager.h"
 #include <vector>
+#include <array>
 
 /*! \class OptionState
 	\brief State for managing the main options menu
@@ -82,6 +83,15 @@ public:
 	virtual void step_impl();
 	virtual const char* getStateName() const;
 private:
+
+	enum InputAction
+	{
+		IA_LEFT,
+		IA_RIGHT,
+		IA_JUMP,
+		IA_COUNT
+	};
+
 	/// writes current settings to disk
 	void save();
 
@@ -94,21 +104,14 @@ private:
 	//left data:
 	std::string mLeftBlobbyDevice;
 	int mLeftBlobbyMouseJumpbutton;
-	std::string mLeftBlobbyKeyboardLeft;
-	std::string mLeftBlobbyKeyboardRight;
-	std::string mLeftBlobbyKeyboardJump;
-	std::string mLeftBlobbyJoystickLeft;
-	std::string mLeftBlobbyJoystickRight;
-	std::string mLeftBlobbyJoystickJump;
+	/// \todo maybe use a struct here
+	std::array<std::string, IA_COUNT> mLeftBlobbyKeyboard;
+	std::array<std::string, IA_COUNT> mLeftBlobbyJoystick;
 	//right data:
 	std::string mRightBlobbyDevice;
 	int mRightBlobbyMouseJumpbutton;
-	std::string mRightBlobbyKeyboardLeft;
-	std::string mRightBlobbyKeyboardRight;
-	std::string mRightBlobbyKeyboardJump;
-	std::string mRightBlobbyJoystickLeft;
-	std::string mRightBlobbyJoystickRight;
-	std::string mRightBlobbyJoystickJump;
+	std::array<std::string, IA_COUNT> mRightBlobbyKeyboard;
+	std::array<std::string, IA_COUNT> mRightBlobbyJoystick;
 	//global data:
 	int mBlobbyTouchType;
 
