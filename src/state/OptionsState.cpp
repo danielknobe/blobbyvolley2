@@ -463,14 +463,8 @@ void InputOptionsState::step_impl()
 
 	// left player side:
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_LEFT_PLAYER);
-	// dirty hack for languagesupport
-	TextManager::STRING deviceLanguage = TextManager::OP_JOYSTICK;
-	if (mLeftBlobbyDevice[0] == 'k')
-		deviceLanguage = TextManager::OP_KEYBOARD;
-	else if (mLeftBlobbyDevice[0] == 'm')
-		deviceLanguage = TextManager::OP_MOUSE;
 
-	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), deviceLanguage))
+	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), getDeviceName(mLeftBlobbyDevice)))
 	{
 		if (mLeftBlobbyDevice == "mouse")
 		{
@@ -583,14 +577,8 @@ void InputOptionsState::step_impl()
 
 	//right player side:
 	imgui.doText(GEN_ID, Vector2(434.0, 10.0), TextManager::OP_RIGHT_PLAYER);
-	// dirty hack for languagesupport
-	deviceLanguage = TextManager::OP_JOYSTICK;
-	if (mRightBlobbyDevice[0] == 'k')
-		deviceLanguage = TextManager::OP_KEYBOARD;
-	else if (mRightBlobbyDevice[0] == 'm')
-		deviceLanguage = TextManager::OP_MOUSE;
 
-	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), deviceLanguage))
+	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), getDeviceName(mRightBlobbyDevice)))
 	{
 		if (mRightBlobbyDevice == "mouse")
 		{
@@ -791,6 +779,16 @@ void InputOptionsState::getJoystickInput(std::string& action, TextManager::STRIN
 
 }
 
+
+TextManager::STRING InputOptionsState::getDeviceName(const std::string& device) const
+{
+	// dirty hack for languagesupport
+	if (device[0] == 'k')
+		return TextManager::OP_KEYBOARD;
+	else if (device[0] == 'm')
+		return TextManager::OP_MOUSE;
+	return TextManager::OP_JOYSTICK;
+}
 
 #else
 
@@ -1014,7 +1012,7 @@ void MiscOptionsState::step_impl()
 	FPSInPercent << "%";
 	imgui.doText(GEN_ID, Vector2(660.0, 330.0), FPSInPercent.str());
 
-	//! \todo this must be reworket
+	//! \todo this must be reworked
 	std::map<std::string, std::string>::iterator olang = TextManager::language_names.find(TextManager::getSingleton()->getLang());
 	if(++olang == TextManager::language_names.end()){
 		olang = TextManager::language_names.begin();
