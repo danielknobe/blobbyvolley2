@@ -116,6 +116,8 @@ private:
 
 	// input display functions
 	void handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[]);
+	void handleJoystickInput(int base_x, std::string input[]);
+	void handleMouseInput(int base_x, int& input);
 
 	// helper function
 	void getMouseInput(int& action, TextManager::STRING input);

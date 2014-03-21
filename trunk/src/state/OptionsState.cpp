@@ -489,17 +489,7 @@ void InputOptionsState::step_impl()
 	//if mouse device is selected:
 	if (mLeftBlobbyDevice == "mouse")
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::OP_JUMP_BUTTON);
-		std::ostringstream text;
-		if (mLeftBlobbyMouseJumpbutton >= 0)
-			text << "Button " << mLeftBlobbyMouseJumpbutton;
-		else
-			text << "Button ";
-		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), text.str()))
-		{
-			mOldInteger = mLeftBlobbyMouseJumpbutton;
-			mLeftBlobbyMouseJumpbutton = -2;
-		}
+		handleMouseInput(0, mLeftBlobbyMouseJumpbutton);
 	}
 	if ((mLeftBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
 		mLeftBlobbyMouseJumpbutton = -1;
@@ -511,24 +501,7 @@ void InputOptionsState::step_impl()
 	//if joystick device is selected:
 	if (mLeftBlobbyDevice == "joystick")
 	{
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::OP_LEFT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), mLeftBlobbyJoystick[IA_LEFT]))
-		{
-			mOldString = mLeftBlobbyJoystick[IA_LEFT];
-			mLeftBlobbyJoystick[IA_LEFT] = "";
-		}
-		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RIGHT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), mLeftBlobbyJoystick[IA_RIGHT]))
-		{
-			mOldString = mLeftBlobbyJoystick[IA_RIGHT];
-			mLeftBlobbyJoystick[IA_RIGHT] = "";
-		}
-		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::OP_JUMP_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), mLeftBlobbyJoystick[IA_JUMP]))
-		{
-			mOldString = mLeftBlobbyJoystick[IA_JUMP];
-			mLeftBlobbyJoystick[IA_JUMP] = "";
-		}
+		handleJoystickInput(0, mLeftBlobbyJoystick);
 	}
 
 	//right player side:
@@ -559,17 +532,7 @@ void InputOptionsState::step_impl()
 	//if mouse device is selected:
 	if (mRightBlobbyDevice == "mouse")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::OP_JUMP_BUTTON);
-		std::ostringstream text;
-		if (mRightBlobbyMouseJumpbutton >= 0)
-			text << "Button " << mRightBlobbyMouseJumpbutton;
-		else
-			text << "Button ";
-		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), text.str()))
-		{
-			mOldInteger = mRightBlobbyMouseJumpbutton;
-			mRightBlobbyMouseJumpbutton = -2;
-		}
+		handleMouseInput(400, mRightBlobbyMouseJumpbutton);
 	}
 	if ((mRightBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
 		mRightBlobbyMouseJumpbutton = -1;
@@ -581,24 +544,7 @@ void InputOptionsState::step_impl()
 	//if joystick device is selected:
 	if (mRightBlobbyDevice == "joystick")
 	{
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::OP_LEFT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), mRightBlobbyJoystick[IA_LEFT]))
-		{
-			mOldString = mRightBlobbyJoystick[IA_LEFT];
-			mRightBlobbyJoystick[IA_LEFT] = "";
-		}
-		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::OP_RIGHT_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), mRightBlobbyJoystick[IA_RIGHT]))
-		{
-			mOldString = mRightBlobbyJoystick[IA_RIGHT];
-			mRightBlobbyJoystick[IA_RIGHT] = "";
-		}
-		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::OP_JUMP_BUTTON);
-		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), mRightBlobbyJoystick[IA_JUMP]))
-		{
-			mOldString = mRightBlobbyJoystick[IA_JUMP];
-			mRightBlobbyJoystick[IA_JUMP] = "";
-		}
+		handleJoystickInput(400, mRightBlobbyJoystick);
 	}
 
 	//check if a capture window is open, to set all widgets inactive:
@@ -695,6 +641,46 @@ void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionK
 		mSetKeyboard = 0;
 }
 
+void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_LEFT_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), input[IA_LEFT]))
+	{
+		mOldString = input[IA_LEFT];
+		input[IA_LEFT] = "";
+	}
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 190.0), TextManager::OP_RIGHT_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 220.0), input[IA_RIGHT]))
+	{
+		mOldString = input[IA_RIGHT];
+		input[IA_RIGHT] = "";
+	}
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 260.0), TextManager::OP_JUMP_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 290.0), input[IA_JUMP]))
+	{
+		mOldString = input[IA_JUMP];
+		input[IA_JUMP] = "";
+	}
+}
+
+void InputOptionsState::handleMouseInput(int base_x, int& input)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_JUMP_BUTTON);
+	std::ostringstream text;
+	if (input >= 0)
+		text << "Button " << input;
+	else
+		text << "Button ";
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), text.str()))
+	{
+		mOldInteger = input;
+		input = -2;
+	}
+}
 
 void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
 {
