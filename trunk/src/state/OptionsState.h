@@ -114,6 +114,9 @@ private:
 	//global data:
 	int mBlobbyTouchType;
 
+	// input display functions
+	void handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[]);
+
 	// helper function
 	void getMouseInput(int& action, TextManager::STRING input);
 	void getKeyboardInput(std::string& action, TextManager::STRING input, std::string lastActionKey);
