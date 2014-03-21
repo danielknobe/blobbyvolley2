@@ -506,51 +506,7 @@ void InputOptionsState::step_impl()
 	//if keyboard device is selected:
 	if (mLeftBlobbyDevice == "keyboard")
 	{
-
-		if (imgui.doButton(GEN_ID, Vector2(34, 350.0), TextManager::OP_SET_ALL))
-			mSetKeyboard = 1;
-
-		imgui.doText(GEN_ID, Vector2(34.0, 120.0), TextManager::OP_LEFT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(50, 150.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_LEFT]) || mSetKeyboard == 1)
-		{
-			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboard[IA_LEFT];
-			mLeftBlobbyKeyboard[IA_LEFT] = "";
-		}
-
-		if (mSetKeyboard == 1)
-			mSetKeyboard = 2;
-
-		if (mSetKeyboard == 2 && mLeftBlobbyKeyboard[IA_LEFT] != "")
-			mSetKeyboard = 3;
-
-		imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RIGHT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(50, 220.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_RIGHT]) || mSetKeyboard == 3)
-		{
-			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboard[IA_RIGHT];
-			mLeftBlobbyKeyboard[IA_RIGHT] = "";
-		}
-
-		if (mSetKeyboard == 3)
-			mSetKeyboard = 4;
-
-		if (mSetKeyboard == 4 && mLeftBlobbyKeyboard[IA_RIGHT] != "")
-			mSetKeyboard = 5;
-
-		imgui.doText(GEN_ID, Vector2(34.0, 260.0), TextManager::OP_JUMP_KEY );
-		if (imgui.doButton(GEN_ID, Vector2(50, 290.0), std::string("Key ")+mLeftBlobbyKeyboard[IA_JUMP]) || mSetKeyboard == 5)
-		{
-			lastActionKey = "";
-			mOldString = mLeftBlobbyKeyboard[IA_JUMP];
-			mLeftBlobbyKeyboard[IA_JUMP] = "";
-		}
-
-		if (mSetKeyboard == 5)
-			mSetKeyboard = 6;
-
-		if (mSetKeyboard == 6 && mLeftBlobbyKeyboard[IA_JUMP] != "")
-			mSetKeyboard = 0;
+		handleKeyboardInput(0, lastActionKey, mLeftBlobbyKeyboard);
 	}
 	//if joystick device is selected:
 	if (mLeftBlobbyDevice == "joystick")
@@ -620,51 +576,7 @@ void InputOptionsState::step_impl()
 	//if keyboard device is selected:
 	if (mRightBlobbyDevice == "keyboard")
 	{
-
-		if (imgui.doButton(GEN_ID, Vector2(434.0, 350.0), TextManager::OP_SET_ALL))
-			mSetKeyboard = 11;
-
-		imgui.doText(GEN_ID, Vector2(434.0, 120.0), TextManager::OP_LEFT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 150.0), std::string("Key ")+mRightBlobbyKeyboard[IA_LEFT]) || mSetKeyboard == 11)
-		{
-			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboard[IA_LEFT];
-			mRightBlobbyKeyboard[IA_LEFT] = "";
-		}
-
-		if (mSetKeyboard == 11)
-			mSetKeyboard = 12;
-
-		if (mSetKeyboard == 12 && mRightBlobbyKeyboard[IA_LEFT] != "")
-			mSetKeyboard = 13;
-
-		imgui.doText(GEN_ID, Vector2(434.0, 190.0), TextManager::OP_RIGHT_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 220.0), std::string("Key ")+mRightBlobbyKeyboard[IA_RIGHT]) || mSetKeyboard == 13)
-		{
-			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboard[IA_RIGHT];
-			mRightBlobbyKeyboard[IA_RIGHT] = "";
-		}
-
-		if (mSetKeyboard == 13)
-			mSetKeyboard = 14;
-
-		if (mSetKeyboard == 14 && mRightBlobbyKeyboard[IA_RIGHT] != "")
-			mSetKeyboard = 15;
-
-		imgui.doText(GEN_ID, Vector2(434.0, 260.0), TextManager::OP_JUMP_KEY);
-		if (imgui.doButton(GEN_ID, Vector2(450, 290.0), std::string("Key ")+mRightBlobbyKeyboard[IA_JUMP]) || mSetKeyboard == 15)
-		{
-			lastActionKey = "";
-			mOldString = mRightBlobbyKeyboard[IA_JUMP];
-			mRightBlobbyKeyboard[IA_JUMP] = "";
-		}
-
-		if (mSetKeyboard == 15)
-			mSetKeyboard = 16;
-
-		if (mSetKeyboard == 16 && mRightBlobbyKeyboard[IA_JUMP] != "")
-			mSetKeyboard = 17;
+		handleKeyboardInput(400, lastActionKey, mRightBlobbyKeyboard);
 	}
 	//if joystick device is selected:
 	if (mRightBlobbyDevice == "joystick")
@@ -732,6 +644,57 @@ void InputOptionsState::step_impl()
 		switchState(new OptionState());
 	}
 }
+
+void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[])
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 34, 350.0), TextManager::OP_SET_ALL))
+		mSetKeyboard = base_x + 1;
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_LEFT_KEY);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), std::string("Key ")+input[IA_LEFT]) || mSetKeyboard == base_x + 1)
+	{
+		lastActionKey = "";
+		mOldString = input[IA_LEFT];
+		input[IA_LEFT] = "";
+	}
+
+	if (mSetKeyboard == base_x + 1)
+		mSetKeyboard = base_x + 2;
+
+	if (mSetKeyboard == base_x + 2 && input[IA_LEFT] != "")
+		mSetKeyboard = base_x + 3;
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 190.0), TextManager::OP_RIGHT_KEY);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 220.0), std::string("Key ")+input[IA_RIGHT]) || mSetKeyboard == base_x + 3)
+	{
+		lastActionKey = "";
+		mOldString = input[IA_RIGHT];
+		input[IA_RIGHT] = "";
+	}
+
+	if (mSetKeyboard == base_x + 3)
+		mSetKeyboard = base_x + 4;
+
+	if (mSetKeyboard == base_x + 4 && input[IA_RIGHT] != "")
+		mSetKeyboard = base_x + 5;
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 260.0), TextManager::OP_JUMP_KEY );
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 290.0), std::string("Key ")+input[IA_JUMP]) || mSetKeyboard == base_x + 5)
+	{
+		lastActionKey = "";
+		mOldString = input[IA_JUMP];
+		input[IA_JUMP] = "";
+	}
+
+	if (mSetKeyboard == base_x + 5)
+		mSetKeyboard = base_x + 6;
+
+	if (mSetKeyboard == base_x + 6 && input[IA_JUMP] != "")
+		mSetKeyboard = 0;
+}
+
 
 void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
 {
