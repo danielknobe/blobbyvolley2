@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 #include "TextManager.h"
 #include <vector>
-#include <array>
 
 /*! \class OptionState
 	\brief State for managing the main options menu
@@ -105,13 +104,13 @@ private:
 	std::string mLeftBlobbyDevice;
 	int mLeftBlobbyMouseJumpbutton;
 	/// \todo maybe use a struct here
-	std::array<std::string, IA_COUNT> mLeftBlobbyKeyboard;
-	std::array<std::string, IA_COUNT> mLeftBlobbyJoystick;
+	std::string mLeftBlobbyKeyboard[IA_COUNT];
+	std::string mLeftBlobbyJoystick[IA_COUNT];
 	//right data:
 	std::string mRightBlobbyDevice;
 	int mRightBlobbyMouseJumpbutton;
-	std::array<std::string, IA_COUNT> mRightBlobbyKeyboard;
-	std::array<std::string, IA_COUNT> mRightBlobbyJoystick;
+	std::string mRightBlobbyKeyboard[IA_COUNT];
+	std::string mRightBlobbyJoystick[IA_COUNT];
 	//global data:
 	int mBlobbyTouchType;
 
