@@ -687,8 +687,8 @@ void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::
 	auto& imgui = IMGUI::getSingleton();
 
 	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
-	imgui.doText(GEN_ID, Vector2(250.0, 250.0), prompt);
-	imgui.doText(GEN_ID, Vector2(270.0, 300.0), input);
+	imgui.doText(GEN_ID, Vector2(400.0, 250.0), prompt, TF_ALIGN_CENTER);
+	imgui.doText(GEN_ID, Vector2(400.0, 300.0), input, TF_ALIGN_CENTER);
 }
 
 void InputOptionsState::getMouseInput(int& action, TextManager::STRING input)
