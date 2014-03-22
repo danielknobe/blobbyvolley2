@@ -18,6 +18,8 @@ bugs:
      Please try to verify this
  - flat ball (replay Mr. Enderson)
 - don't close chat if one player leaves the game
+- whistle at the end of networkgame
+- ... has won screen in replay player when game ended prematurely
 
 data:
 - monochrome font
