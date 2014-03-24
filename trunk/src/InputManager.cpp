@@ -372,24 +372,15 @@ bool InputManager::exit() const
 
 Vector2 InputManager::position()
 {
-	// Workarround because SDL has a bug in Version 2.0.1,
-	// so that we can't use mouse here
-#if !defined(__ANDROID__) && !TARGET_IPHONE_SIMULATOR && !TARGET_OS_IPHONE
+	int windowX = 0;
+	int windowY = 0;
+
 	SDL_GetMouseState(&mMouseX,&mMouseY);
-#else
-	SDL_TouchID device = SDL_GetTouchDevice(0);
 
-	for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
-	{
-		SDL_Finger *finger = SDL_GetTouchFinger(device, i);
+	SDL_GetWindowSize(RenderManager::getSingleton().getWindow(), &windowX, &windowY);
+	mMouseX = (int)((((float)mMouseX) * ((float)BASE_RESOLUTION_X)) / windowX);
+	mMouseY = (int)((((float)mMouseY) * ((float)BASE_RESOLUTION_Y)) / windowY);
 
-		if (finger == NULL)
-			continue;
-
-		mMouseX = finger->x * 800;
-		mMouseY = finger->y * 600;
-	}
-#endif
 	return Vector2(mMouseX,mMouseY);
 }
 
