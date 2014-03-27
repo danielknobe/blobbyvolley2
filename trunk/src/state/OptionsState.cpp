@@ -462,90 +462,10 @@ void InputOptionsState::step_impl()
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
 
 	// left player side:
-	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_LEFT_PLAYER);
-
-	if (imgui.doButton(GEN_ID, Vector2(80.0, 60.0), getDeviceName(mLeftBlobbyDevice)))
-	{
-		if (mLeftBlobbyDevice == "mouse")
-		{
-			mLeftBlobbyDevice = "keyboard";
-		}
-		else if (mLeftBlobbyDevice == "keyboard")
-		{
-			mLeftBlobbyDevice = "joystick";
-		}
-		else if (mLeftBlobbyDevice == "joystick")
-		{
-			if (mRightBlobbyDevice != "mouse")
-			{
-				mLeftBlobbyDevice = "mouse";
-			}
-			else
-			{
-				mLeftBlobbyDevice = "keyboard";
-			}
-		}
-	}
-	//if mouse device is selected:
-	if (mLeftBlobbyDevice == "mouse")
-	{
-		handleMouseInput(0, mLeftBlobbyMouseJumpbutton);
-	}
-	if ((mLeftBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
-		mLeftBlobbyMouseJumpbutton = -1;
-	//if keyboard device is selected:
-	if (mLeftBlobbyDevice == "keyboard")
-	{
-		handleKeyboardInput(0, lastActionKey, mLeftBlobbyKeyboard);
-	}
-	//if joystick device is selected:
-	if (mLeftBlobbyDevice == "joystick")
-	{
-		handleJoystickInput(0, mLeftBlobbyJoystick);
-	}
+	handlePlayerInput(LEFT_PLAYER, lastActionKey, mLeftBlobbyMouseJumpbutton, mLeftBlobbyKeyboard, mLeftBlobbyJoystick);
 
 	//right player side:
-	imgui.doText(GEN_ID, Vector2(434.0, 10.0), TextManager::OP_RIGHT_PLAYER);
-
-	if (imgui.doButton(GEN_ID, Vector2(480.0, 60.0), getDeviceName(mRightBlobbyDevice)))
-	{
-		if (mRightBlobbyDevice == "mouse")
-		{
-			mRightBlobbyDevice = "keyboard";
-		}
-		else if (mRightBlobbyDevice == "keyboard")
-		{
-			mRightBlobbyDevice = "joystick";
-		}
-		else if (mRightBlobbyDevice == "joystick")
-		{
-			if (mLeftBlobbyDevice != "mouse")
-			{
-				mRightBlobbyDevice = "mouse";
-			}
-			else
-			{
-				mRightBlobbyDevice = "keyboard";
-			}
-		}
-	}
-	//if mouse device is selected:
-	if (mRightBlobbyDevice == "mouse")
-	{
-		handleMouseInput(400, mRightBlobbyMouseJumpbutton);
-	}
-	if ((mRightBlobbyMouseJumpbutton == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
-		mRightBlobbyMouseJumpbutton = -1;
-	//if keyboard device is selected:
-	if (mRightBlobbyDevice == "keyboard")
-	{
-		handleKeyboardInput(400, lastActionKey, mRightBlobbyKeyboard);
-	}
-	//if joystick device is selected:
-	if (mRightBlobbyDevice == "joystick")
-	{
-		handleJoystickInput(400, mRightBlobbyJoystick);
-	}
+	handlePlayerInput(RIGHT_PLAYER, lastActionKey, mRightBlobbyMouseJumpbutton, mRightBlobbyKeyboard, mRightBlobbyJoystick);
 
 	//check if a capture window is open, to set all widgets inactive:
 	if (mLeftBlobbyKeyboard[IA_LEFT] != "" && mLeftBlobbyKeyboard[IA_RIGHT] != "" && mLeftBlobbyKeyboard[IA_JUMP] != "" && mLeftBlobbyJoystick[IA_LEFT] != "" && mLeftBlobbyJoystick[IA_RIGHT] != "" && mLeftBlobbyJoystick[IA_JUMP] != "" && mLeftBlobbyMouseJumpbutton != -1 && mRightBlobbyKeyboard[IA_LEFT] != "" && mRightBlobbyKeyboard[IA_RIGHT] != "" && mRightBlobbyKeyboard[IA_JUMP] != "" && mRightBlobbyJoystick[IA_LEFT] != "" && mRightBlobbyJoystick[IA_RIGHT] != "" && mRightBlobbyJoystick[IA_JUMP] != "" && mRightBlobbyMouseJumpbutton != -1)
@@ -588,6 +508,56 @@ void InputOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
 		switchState(new OptionState());
+	}
+}
+
+void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastActionKey, int& mouse, std::string keyboard[], std::string joystick[])
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+
+	TextManager::STRING p_str = (player == LEFT_PLAYER) ? TextManager::OP_LEFT_PLAYER : TextManager::OP_RIGHT_PLAYER;
+	std::string& device = (player == LEFT_PLAYER) ? mLeftBlobbyDevice : mRightBlobbyDevice;
+	int base_x = (player == LEFT_PLAYER) ? 0 : 400;
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 10.0), p_str);
+
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 80.0, 60.0), getDeviceName(device)))
+	{
+		if (device == "mouse")
+		{
+			device = "keyboard";
+		}
+		else if (device == "keyboard")
+		{
+			device = "joystick";
+		}
+		else if (device == "joystick")
+		{
+			if (mRightBlobbyDevice != "mouse" && mLeftBlobbyDevice != "mouse")
+			{
+				device = "mouse";
+			}
+			else
+			{
+				device = "keyboard";
+			}
+		}
+	}
+	//if mouse device is selected:
+	if (device == "mouse")
+	{
+		handleMouseInput(base_x, mouse);
+	}
+	if ((mouse == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
+		mouse = -1;
+	//if keyboard device is selected:
+	if (device == "keyboard")
+	{
+		handleKeyboardInput(base_x, lastActionKey, keyboard);
+	}
+	//if joystick device is selected:
+	if (device == "joystick")
+	{
+		handleJoystickInput(base_x, joystick);
 	}
 }
 
