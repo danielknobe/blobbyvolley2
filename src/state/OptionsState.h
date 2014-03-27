@@ -115,6 +115,7 @@ private:
 	int mBlobbyTouchType;
 
 	// input display functions
+	void handlePlayerInput(PlayerSide player, std::string& lastActionKey, int& mouse, std::string keyboard[], std::string joystick[]);
 	void handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[]);
 	void handleJoystickInput(int base_x, std::string input[]);
 	void handleMouseInput(int base_x, int& input);
