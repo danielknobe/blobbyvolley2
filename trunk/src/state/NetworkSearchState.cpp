@@ -71,10 +71,13 @@ NetworkSearchState::~NetworkSearchState()
 			delete *iter;
 		}
 	}
+	// request ping thread to stop
+	mCancelPing = true;
 }
 
 void NetworkSearchState::searchServers()
 {
+	mCancelPing = false;
 	// we need the explicit async launch policy here, because otherwise gcc will always launch deferred and we have no sync point
 	// where we would wait for that.
 	mPingJob = std::async(std::launch::async, [this](){ doSearchServers();});
@@ -478,6 +481,10 @@ void OnlineSearchState::doSearchServers()
 
 	for( auto& server : serverList )
 	{
+		// if we receive the cancel signal from the main thread, we leave as soon as possible
+		if(mCancelPing)
+			break;
+
 		std::cout << "ping" << server.first << "\n";
 		mPingClient->Ping(server.first.c_str(), server.second, true);
 	}
