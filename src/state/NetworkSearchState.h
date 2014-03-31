@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include <list>
 #include <future>
+#include <atomic>
 #include <boost/scoped_ptr.hpp>
 
 class RakClient;
@@ -55,6 +56,8 @@ public:
 protected:
 	std::vector<ServerInfo> mScannedServers;
 	boost::scoped_ptr<RakClient> mPingClient;
+	// set this to true to step pinging before we are finished
+	std::atomic<bool> mCancelPing;
 
 private:
 	virtual void doSearchServers() = 0;
