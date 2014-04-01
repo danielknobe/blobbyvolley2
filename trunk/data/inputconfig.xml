@@ -3,6 +3,7 @@
 <userconfig>
 	<var name="left_blobby_device" value="keyboard"/>
 	<var name="left_blobby_mouse_jumpbutton" value="1"/>
+	<var name="left_blobby_mouse_sensitivity" value="1"/>
 	<var name="left_blobby_keyboard_left" value="a"/>
 	<var name="left_blobby_keyboard_right" value="d"/>
 	<var name="left_blobby_keyboard_jump" value="w"/>
@@ -12,6 +13,7 @@
 
 	<var name="right_blobby_device" value="keyboard"/>
 	<var name="right_blobby_mouse_jumpbutton" value="1"/>
+	<var name="right_blobby_mouse_sensitivity" value="1"/>
 	<var name="right_blobby_keyboard_left" value="left"/>
 	<var name="right_blobby_keyboard_right" value="right"/>
 	<var name="right_blobby_keyboard_jump" value="up"/>
