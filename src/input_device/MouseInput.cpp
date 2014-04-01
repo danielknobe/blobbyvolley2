@@ -39,10 +39,11 @@ class MouseInputDevice : public InputDevice
 		int mJumpButton;
 		int mMarkerX;
 		bool mDelay; // The pressed button of the mainmenu must be ignored
+		float mSensitivity;
 
 	public:
-		virtual ~MouseInputDevice(){};
-		MouseInputDevice(PlayerSide player, int jumpbutton);
+		virtual ~MouseInputDevice();
+		MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity);
 		virtual PlayerInputAbs transferInput();
 };
 
@@ -54,37 +55,39 @@ class MouseInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createMouseInput(PlayerSide player, int jumpbutton)
+InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float sensitivity)
 {
-	return new MouseInputDevice(player, jumpbutton);
+	return new MouseInputDevice(player, jumpbutton, sensitivity);
 }
 
 // -------------------------------------------------------------------------------------------------
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
-MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton)
-	: InputDevice()
+MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity)
+	: InputDevice(), mJumpButton(jumpbutton), mPlayer(player), mMarkerX(0), mSensitivity( sensitivity )
 {
-	mJumpButton = jumpbutton;
-	mPlayer = player;
 	if (SDL_GetMouseState(NULL, NULL))
 		mDelay = true;
 	else
 		mDelay = false;
+
+	SDL_SetRelativeMouseMode( SDL_TRUE );  // capture mouse in window
+}
+
+MouseInputDevice::~MouseInputDevice()
+{
+	SDL_SetRelativeMouseMode( SDL_FALSE ); // allow mouse to leave the window again
 }
 
 PlayerInputAbs MouseInputDevice::transferInput()
 {
 	PlayerInputAbs input = PlayerInputAbs();
 
-	int mMouseXPos;
+	int deltaX;
 
 	SDL_Window* window = RenderManager::getSingleton().getWindow();
 	bool warp = InputManager::getSingleton()->windowFocus(); //SDL_GetAppState() & SDL_APPINPUTFOCUS;
-	int mouseState = SDL_GetMouseState(&mMouseXPos, NULL);
-
-	if (warp)
-		SDL_WarpMouseInWindow(window, mMouseXPos, 310);
+	int mouseState = SDL_GetRelativeMouseState(&deltaX, NULL);
 
 	if (mouseState == 0)
 		mDelay = false;
@@ -92,20 +95,13 @@ PlayerInputAbs MouseInputDevice::transferInput()
 	if((mouseState & SDL_BUTTON(mJumpButton)) && !mDelay)
 		input.setJump( true );
 
-	const int playerOffset = mPlayer == RIGHT_PLAYER ? 200 : -200;
-	mMouseXPos = mMouseXPos < 201 ? 201 : mMouseXPos;
+	const int playerOffset = mPlayer == RIGHT_PLAYER ? 600 : 200;
+	mMarkerX += deltaX * mSensitivity;
+	mMarkerX = std::max(-200, std::min(200, mMarkerX));
 
-	if (mMouseXPos <= 201 && warp)
-		SDL_WarpMouseInWindow(window, 201, 310);
+	input.setTarget( mMarkerX + playerOffset, mPlayer );
 
-	mMouseXPos = mMouseXPos > 600 ? 600 : mMouseXPos;
-	if (mMouseXPos >= 600 && warp)
-		SDL_WarpMouseInWindow(window, 600, 310);
-
-	mMarkerX = mMouseXPos + playerOffset;
-	input.setTarget( mMarkerX, mPlayer );
-
-	RenderManager::getSingleton().setMouseMarker(mMarkerX);
+	RenderManager::getSingleton().setMouseMarker(mMarkerX + playerOffset);
 
 	return input;
 }

@@ -41,4 +41,4 @@ class JoystickAction;
 InputDevice* createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
 InputDevice* createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);
 InputDevice* createTouchInput(PlayerSide side, int type);
-InputDevice* createMouseInput(PlayerSide player, int jumpbutton);
+InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float sensitivity);

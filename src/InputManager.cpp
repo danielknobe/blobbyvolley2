@@ -82,7 +82,8 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	if (device == "mouse")
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
-		return createMouseInput(side, jumpbutton);
+		float sensitivity = config.getInteger(prefix + "mouse_sensitivity");
+		return createMouseInput(side, jumpbutton, sensitivity);
 	}
 	// load config for keyboard
 
