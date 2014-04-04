@@ -114,6 +114,8 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		static int predicty(lua_State* state);
 		static int timetox(lua_State* state);
 		static int timetoy(lua_State* state);
+		static int blobtimetox(lua_State* state);
+		static int blobtimetoy(lua_State* state);
 		static int xaty(lua_State* state);
 		static int yatx(lua_State* state);
 

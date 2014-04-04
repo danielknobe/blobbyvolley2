@@ -126,6 +126,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	lua_register(mState, "estimy", estimy);
 	lua_register(mState, "timetox", timetox);
 	lua_register(mState, "timetoy", timetoy);
+	lua_register(mState, "blobtimetox", blobtimetox);
+	lua_register(mState, "blobtimetoy", blobtimetoy);
 	lua_register(mState, "predictx", predictx);
 	lua_register(mState, "predicty", predicty);
 	lua_register(mState, "xaty", xaty);
@@ -578,4 +580,48 @@ int ScriptedInputSource::getGameTime(lua_State* state)
 	float time = mMatch->getClock().getTime();
 	lua_pushnumber(state, time);
 	return 1;
+}
+
+int ScriptedInputSource::blobtimetox(lua_State* state)
+{
+	coordinate<pos_x> destination = lua_tonumber(state, -1);
+	coordinate<pos_x> pos = mMatch->getBlobPosition(mCurrentSource->mSide).x;
+	int time = std::abs(pos - destination) / BLOBBY_SPEED;
+	lua_pushnumber(state, time);
+	return 1;
+}
+
+int ScriptedInputSource::blobtimetoy(lua_State* state)
+{
+	coordinate<pos_y> destination = lua_tonumber(state, -1);
+	coordinate<pos_x> pos = mMatch->getBlobPosition(mCurrentSource->mSide).x;
+
+	float vel = mMatch->getBlobVelocity(mCurrentSource->mSide).y;
+	float grav = GRAVITATION - BLOBBY_JUMP_BUFFER;
+
+	// if blobby stands on ground, assume we jump right now
+	if(vel == 0)
+	{
+		vel = BLOBBY_JUMP_ACCELERATION;
+	}
+
+	float sq = vel*vel + 2*grav*(destination - pos);
+
+	// if unreachable, return -1
+	if ( sq < 0 )
+	{
+		return -1;
+	}
+
+	sq = std::sqrt(sq);
+
+	float tmin = (-vel - sq) / grav;
+	float tmax = (-vel + sq) / grav;
+
+	if ( tmin > 0 )
+		return tmin;
+	else if ( tmax > 0 )
+		return tmax;
+
+	return -1;
 }
