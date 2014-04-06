@@ -71,7 +71,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 		void doText(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
 		void doText(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
 		void doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col = Color(0, 0, 0), float alpha = 0.65);
-		void doCursor(bool draw = true) { mDrawCursor = draw; 	mUsingCursor = true; }
+		void doCursor(bool draw = true);
 
 		bool doButton(int id, const Vector2& position, const std::string& text, unsigned int flags = TF_NORMAL);
 		bool doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags = TF_NORMAL);
