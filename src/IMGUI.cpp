@@ -218,6 +218,12 @@ void IMGUI::end()
 		mDrawCursor = false;
 	}
 #endif
+	static bool lastCursor = true;
+	if( mUsingCursor != lastCursor  )
+	{
+		lastCursor = mUsingCursor;
+		SDL_SetRelativeMouseMode( mUsingCursor ? SDL_FALSE : SDL_TRUE );
+	}
 }
 
 void IMGUI::doImage(int id, const Vector2& position, const std::string& name, const Vector2& size)
@@ -1062,6 +1068,12 @@ bool IMGUI::doBlob(int id, const Vector2& position, const Color& col)
 	obj.col = col;
 	mQueue->push(obj);
 	return false;
+}
+
+void IMGUI::doCursor(bool draw)
+{
+	mDrawCursor = draw;
+	mUsingCursor = true;
 }
 
 bool IMGUI::usingCursor() const

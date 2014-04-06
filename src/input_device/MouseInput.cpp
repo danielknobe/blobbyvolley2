@@ -70,13 +70,10 @@ MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sens
 		mDelay = true;
 	else
 		mDelay = false;
-
-	SDL_SetRelativeMouseMode( SDL_TRUE );  // capture mouse in window
 }
 
 MouseInputDevice::~MouseInputDevice()
 {
-	SDL_SetRelativeMouseMode( SDL_FALSE ); // allow mouse to leave the window again
 }
 
 PlayerInputAbs MouseInputDevice::transferInput()
