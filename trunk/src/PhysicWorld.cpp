@@ -156,7 +156,7 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 	{
 		if (blobHitGround(player))
 		{
-			mBlobVelocity[player].y = -BLOBBY_JUMP_ACCELERATION;
+			mBlobVelocity[player].y = BLOBBY_JUMP_ACCELERATION;
 			blobbyStartAnimation( player );
 		}
 
