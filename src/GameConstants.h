@@ -46,7 +46,7 @@ const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
 // This is exactly the half of the gravitation, i checked it in
 // the original code
 const float BLOBBY_MAX_JUMP_HEIGHT = GROUND_PLANE_HEIGHT - 206.375;	// GROUND_Y - MAX_Y
-const float BLOBBY_JUMP_ACCELERATION = 15.1;
+const float BLOBBY_JUMP_ACCELERATION = -15.1;
 
 // these values are calculated from the other two
 const float GRAVITATION = BLOBBY_JUMP_ACCELERATION * BLOBBY_JUMP_ACCELERATION / BLOBBY_MAX_JUMP_HEIGHT;

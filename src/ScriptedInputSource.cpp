@@ -320,9 +320,9 @@ int ScriptedInputSource::launched(lua_State* state)
 
 int ScriptedInputSource::debug(lua_State* state)
 {
-	float number = lua_tonumber(state, -1);
+	const char* str = lua_tostring(state, -1);
+	std::cerr << "Lua Debug: " << str << std::endl;
 	lua_pop(state, 1);
-	std::cerr << "Lua Debug: " << number << std::endl;
 	return 0;
 }
 
@@ -594,23 +594,24 @@ int ScriptedInputSource::blobtimetox(lua_State* state)
 int ScriptedInputSource::blobtimetoy(lua_State* state)
 {
 	coordinate<pos_y> destination = lua_tonumber(state, -1);
-	coordinate<pos_x> pos = mMatch->getBlobPosition(mCurrentSource->mSide).x;
+	coordinate<pos_y> pos = mMatch->getBlobPosition(mCurrentSource->mSide).y;
 
-	float vel = mMatch->getBlobVelocity(mCurrentSource->mSide).y;
-	float grav = GRAVITATION - BLOBBY_JUMP_BUFFER;
+	float vel = -mMatch->getBlobVelocity(mCurrentSource->mSide).y;
+	float grav = -(GRAVITATION - BLOBBY_JUMP_BUFFER);
 
 	// if blobby stands on ground, assume we jump right now
 	if(vel == 0)
 	{
-		vel = BLOBBY_JUMP_ACCELERATION;
+		vel = -BLOBBY_JUMP_ACCELERATION;
 	}
 
-	float sq = vel*vel + 2*grav*(destination - pos);
+	float sq = vel*vel - 2*grav*(destination - pos);
 
 	// if unreachable, return -1
 	if ( sq < 0 )
 	{
-		return -1;
+		lua_pushnumber(state, -1);
+		return 1;
 	}
 
 	sq = std::sqrt(sq);
@@ -619,9 +620,11 @@ int ScriptedInputSource::blobtimetoy(lua_State* state)
 	float tmax = (-vel + sq) / grav;
 
 	if ( tmin > 0 )
-		return tmin;
+		lua_pushnumber(state, tmin);
 	else if ( tmax > 0 )
-		return tmax;
+		lua_pushnumber(state, tmax);
+	else
+		lua_pushnumber(state, -1);
 
-	return -1;
+	return 1;
 }
