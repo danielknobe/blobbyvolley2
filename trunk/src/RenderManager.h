@@ -105,17 +105,11 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();
-#ifndef __ANDROID__
-#ifdef __APPLE__
-#if MAC_OS_X
+#if __DESKTOP__
         static RenderManager* createRenderManagerGL2D();
-#endif
-#else
-        static RenderManager* createRenderManagerGL2D();
-#endif
 #endif
 		static RenderManager* createRenderManagerNull();
-
+    
 		static RenderManager& getSingleton()
 		{
 			return *mSingleton;
