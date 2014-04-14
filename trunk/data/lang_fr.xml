@@ -52,6 +52,9 @@
 	<string english = "connection failed" translation = "echec de connexion" />
 	<string english = "server full" translation = "serveur surcharge" />
 
+	<string english = "touch input type:" translation = "mode de saisie tactile:" />
+	<string english = "arrow keys" translation = "touches directionnelles" />
+	<string english = "blobby follows finger" translation = "blobby suit le mouvement du doigt" />
 	<string english = "input options" translation = "options des peripheriques" />
 	<string english = "graphic options" translation = "options graphiques" />
 	<string english = "misc options" translation = "options diverses" />
