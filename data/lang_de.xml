@@ -58,7 +58,7 @@
 	<string english = "speed: " translation = "Tempo: " />
 	<string english = "stay on server" translation = "auf server bleiben" />
 
-	<string english = "touch input type:" translation = "Toucheingabe Modus:" />
+	<string english = "touch input type:" translation = "Toucheingabemodus:" />
 	<string english = "arrow keys" translation = "Pfeiltasten" />
 	<string english = "blobby follows finger" translation = "Blobby folgt dem Finger" />
 	<string english = "input options" translation = "eingabeoptionen" />
