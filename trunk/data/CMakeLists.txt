@@ -24,6 +24,7 @@ set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	${CMAKE_CURRENT_BINARY_DIR}/rules.zip
+	Icon.bmp
 	config.xml
 	inputconfig.xml
 	server/server.xml
