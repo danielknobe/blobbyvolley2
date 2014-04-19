@@ -27,7 +27,7 @@ set(install_files
 	Icon.bmp
 	config.xml
 	inputconfig.xml
-	server/server.xml
+	server.xml
 	lang_de.xml
 	lang_en.xml
 	lang_fr.xml

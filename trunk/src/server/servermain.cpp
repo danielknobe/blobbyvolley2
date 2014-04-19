@@ -60,7 +60,7 @@ void syslog(int pri, const char* format, ...);
 static bool g_run_in_foreground = false;
 static bool g_print_syslog_to_stderr = false;
 static bool g_workaround_memleaks = false;
-static std::string g_config_file = "server/server.xml";
+static std::string g_config_file = "server.xml";
 static std::string g_rules_file = "";
 
 // ...
