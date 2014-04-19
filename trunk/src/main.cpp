@@ -26,16 +26,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL2/SDL.h>
 
-#ifndef __APPLE__
-#ifndef __ANDROID__
-#include "config.h"
-#endif
-#endif
+#include "Global.h"
 
 #ifdef __APPLE__
 	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 		#include <physfs.h>
-	#else
+	#endif
+#endif
+
+#if __DESKTOP__
+	#ifndef WIN32
 		#include "config.h"
 	#endif
 #endif
@@ -99,14 +99,6 @@ void setupPHYSFS()
 	#if defined(WIN32)
 		// Just write in installation directory
 		fs.setWriteDir("data");
-
-		// handle the case when it is installed
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 	#else
 		#ifndef __ANDROID__
 			// Create a search path in the home directory and ensure that
@@ -118,7 +110,16 @@ void setupPHYSFS()
 					std::string userdir = fs.getUserDir();
 				#endif
 			#else
+				// Linux
 				std::string userdir = fs.getUserDir();
+
+				// handle the case when it is installed
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
+				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 			#endif
 			std::string userAppend = ".blobby";
 			std::string homedir = userdir + userAppend;

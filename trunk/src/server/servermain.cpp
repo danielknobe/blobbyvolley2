@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "FileSystem.h"
 #include "UserConfig.h"
+#include "Global.h"
 
 // platform specific
 #ifndef WIN32
@@ -43,6 +44,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sys/wait.h>
 #else
 #include <cstdarg>
+#endif
+
+#if __DESKTOP__
+#ifndef WIN32
+#include "config.h"
+#endif
 #endif
 
 
@@ -85,8 +92,7 @@ int main(int argc, char** argv)
 	process_arguments(argc, argv);
 
 	FileSystem fileSys(argv[0]);
-	fileSys.addToSearchPath("data" + fileSys.getDirSeparator() + "rules.zip");
-
+	
 	if (!g_run_in_foreground)
 	{
 		fork_to_background();
@@ -312,7 +318,15 @@ void wait_and_restart_child()
 void setup_physfs(char* argv0)
 {
 	FileSystem& fs = FileSystem::getSingleton();
+
+	#if __DESKTOP__
+	#ifndef WIN32
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
+	#endif
+	#endif	
 	fs.addToSearchPath("data");
+	fs.addToSearchPath("data" + fs.getDirSeparator() + "rules.zip");
 }
 
 
