@@ -446,3 +446,13 @@ std::string InputManager::getLastJoyAction() const
 	return mLastJoyAction;
 }
 
+void InputManager::captureMouse( bool c )
+{
+	mMouseCaptured = c;
+}
+
+bool InputManager::isMouseCaptured() const
+{
+	return mMouseCaptured;
+}
+

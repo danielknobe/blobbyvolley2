@@ -218,11 +218,12 @@ void IMGUI::end()
 		mDrawCursor = false;
 	}
 #endif
-	static bool lastCursor = true;
-	if( mUsingCursor != lastCursor  )
+	static bool lastCursor = false;
+	bool relativeCursor = !mUsingCursor && InputManager::getSingleton()->isMouseCaptured();
+	if( relativeCursor != lastCursor  )
 	{
-		lastCursor = mUsingCursor;
-		SDL_SetRelativeMouseMode( mUsingCursor ? SDL_FALSE : SDL_TRUE );
+		lastCursor = relativeCursor;
+		SDL_SetRelativeMouseMode( relativeCursor ? SDL_TRUE : SDL_FALSE );
 	}
 }
 
