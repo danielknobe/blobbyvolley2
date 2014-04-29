@@ -42,6 +42,9 @@ class InputManager : public ObjectCounter<InputManager>
 		void setEndBlobby();	// call to trigger the event that ends blobby, i.e. running will return false after this call.
 		void updateInput();
 
+		void captureMouse( bool c );		// sets whether the mouse should be captures
+		bool isMouseCaptured() const;
+
 		// For GUI navigation (Gamepad, Joystick or Keyboard)
 		bool up() const;
 		bool down() const;
@@ -100,6 +103,8 @@ class InputManager : public ObjectCounter<InputManager>
 		std::string mLastJoyAction;
 
 		bool mRunning;
+
+		bool mMouseCaptured;
 
 		InputManager();
 

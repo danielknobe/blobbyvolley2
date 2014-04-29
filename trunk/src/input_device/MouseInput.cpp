@@ -70,10 +70,15 @@ MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sens
 		mDelay = true;
 	else
 		mDelay = false;
+
+	assert(InputManager::getSingleton()->isMouseCaptured() == false);
+	InputManager::getSingleton()->captureMouse( true );
 }
 
 MouseInputDevice::~MouseInputDevice()
 {
+	assert(InputManager::getSingleton()->isMouseCaptured() == true);
+	InputManager::getSingleton()->captureMouse( false );
 }
 
 PlayerInputAbs MouseInputDevice::transferInput()
@@ -83,7 +88,6 @@ PlayerInputAbs MouseInputDevice::transferInput()
 	int deltaX;
 
 	SDL_Window* window = RenderManager::getSingleton().getWindow();
-	bool warp = InputManager::getSingleton()->windowFocus(); //SDL_GetAppState() & SDL_APPINPUTFOCUS;
 	int mouseState = SDL_GetRelativeMouseState(&deltaX, NULL);
 
 	if (mouseState == 0)
