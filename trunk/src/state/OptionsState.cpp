@@ -400,23 +400,23 @@ InputOptionsState::InputOptionsState()
 	mSetKeyboard = 0;
 	mOptionConfig.loadFile("inputconfig.xml");
 	//left data:
-	mLeftBlobbyDevice = mOptionConfig.getString("left_blobby_device");
-	mLeftBlobbyMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
-	mLeftBlobbyKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
-	mLeftBlobbyKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
-	mLeftBlobbyKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
-	mLeftBlobbyJoystick[IA_LEFT] = mOptionConfig.getString("left_blobby_joystick_left");
-	mLeftBlobbyJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
-	mLeftBlobbyJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
+	mLeftDevice = mOptionConfig.getString("left_blobby_device");
+	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
+	mLeftKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
+	mLeftKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
+	mLeftKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
+	mLeftJoystick[IA_LEFT] = mOptionConfig.getString("left_blobby_joystick_left");
+	mLeftJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
+	mLeftJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
 	//right data:
-	mRightBlobbyDevice = mOptionConfig.getString("right_blobby_device");
-	mRightBlobbyMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
-	mRightBlobbyKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
-	mRightBlobbyKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
-	mRightBlobbyKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
-	mRightBlobbyJoystick[IA_LEFT] = mOptionConfig.getString("right_blobby_joystick_left");
-	mRightBlobbyJoystick[IA_RIGHT] = mOptionConfig.getString("right_blobby_joystick_right");
-	mRightBlobbyJoystick[IA_JUMP] = mOptionConfig.getString("right_blobby_joystick_jump");
+	mRightDevice = mOptionConfig.getString("right_blobby_device");
+	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
+	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
+	mRightKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
+	mRightKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
+	mRightJoystick[IA_LEFT] = mOptionConfig.getString("right_blobby_joystick_left");
+	mRightJoystick[IA_RIGHT] = mOptionConfig.getString("right_blobby_joystick_right");
+	mRightJoystick[IA_JUMP] = mOptionConfig.getString("right_blobby_joystick_jump");
 	//global data:
 	mBlobbyTouchType = mOptionConfig.getInteger("blobby_touch_type");
 }
@@ -428,23 +428,23 @@ InputOptionsState::~InputOptionsState()
 void InputOptionsState::save()
 {
 	//left data:
-	mOptionConfig.setString("left_blobby_device", mLeftBlobbyDevice);
-	mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftBlobbyMouseJumpbutton);
-	mOptionConfig.setString("left_blobby_keyboard_left", mLeftBlobbyKeyboard[IA_LEFT]);
-	mOptionConfig.setString("left_blobby_keyboard_right", mLeftBlobbyKeyboard[IA_RIGHT]);
-	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftBlobbyKeyboard[IA_JUMP]);
-	mOptionConfig.setString("left_blobby_joystick_left", mLeftBlobbyJoystick[IA_LEFT]);
-	mOptionConfig.setString("left_blobby_joystick_right", mLeftBlobbyJoystick[IA_RIGHT]);
-	mOptionConfig.setString("left_blobby_joystick_jump", mLeftBlobbyJoystick[IA_JUMP]);
+	mOptionConfig.setString("left_blobby_device", mLeftDevice);
+	mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftMouseJumpbutton);
+	mOptionConfig.setString("left_blobby_keyboard_left", mLeftKeyboard[IA_LEFT]);
+	mOptionConfig.setString("left_blobby_keyboard_right", mLeftKeyboard[IA_RIGHT]);
+	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftKeyboard[IA_JUMP]);
+	mOptionConfig.setString("left_blobby_joystick_left", mLeftJoystick[IA_LEFT]);
+	mOptionConfig.setString("left_blobby_joystick_right", mLeftJoystick[IA_RIGHT]);
+	mOptionConfig.setString("left_blobby_joystick_jump", mLeftJoystick[IA_JUMP]);
 	//right data:
-	mOptionConfig.setString("right_blobby_device", mRightBlobbyDevice);
-	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightBlobbyMouseJumpbutton);
-	mOptionConfig.setString("right_blobby_keyboard_left", mRightBlobbyKeyboard[IA_LEFT]);
-	mOptionConfig.setString("right_blobby_keyboard_right", mRightBlobbyKeyboard[IA_RIGHT]);
-	mOptionConfig.setString("right_blobby_keyboard_jump", mRightBlobbyKeyboard[IA_JUMP]);
-	mOptionConfig.setString("right_blobby_joystick_left", mRightBlobbyJoystick[IA_LEFT]);
-	mOptionConfig.setString("right_blobby_joystick_right", mRightBlobbyJoystick[IA_RIGHT]);
-	mOptionConfig.setString("right_blobby_joystick_jump", mRightBlobbyJoystick[IA_JUMP]);
+	mOptionConfig.setString("right_blobby_device", mRightDevice);
+	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightMouseJumpbutton);
+	mOptionConfig.setString("right_blobby_keyboard_left", mRightKeyboard[IA_LEFT]);
+	mOptionConfig.setString("right_blobby_keyboard_right", mRightKeyboard[IA_RIGHT]);
+	mOptionConfig.setString("right_blobby_keyboard_jump", mRightKeyboard[IA_JUMP]);
+	mOptionConfig.setString("right_blobby_joystick_left", mRightJoystick[IA_LEFT]);
+	mOptionConfig.setString("right_blobby_joystick_right", mRightJoystick[IA_RIGHT]);
+	mOptionConfig.setString("right_blobby_joystick_jump", mRightJoystick[IA_JUMP]);
 	//global data:
 	mOptionConfig.setInteger("blobby_touch_type", mBlobbyTouchType);
 
@@ -462,13 +462,16 @@ void InputOptionsState::step_impl()
 	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
 
 	// left player side:
-	handlePlayerInput(LEFT_PLAYER, lastActionKey, mLeftBlobbyMouseJumpbutton, mLeftBlobbyKeyboard, mLeftBlobbyJoystick);
+	handlePlayerInput(LEFT_PLAYER, lastActionKey, mLeftMouseJumpbutton, mLeftKeyboard, mLeftJoystick);
 
 	//right player side:
-	handlePlayerInput(RIGHT_PLAYER, lastActionKey, mRightBlobbyMouseJumpbutton, mRightBlobbyKeyboard, mRightBlobbyJoystick);
+	handlePlayerInput(RIGHT_PLAYER, lastActionKey, mRightMouseJumpbutton, mRightKeyboard, mRightJoystick);
 
 	//check if a capture window is open, to set all widgets inactive:
-	if (mLeftBlobbyKeyboard[IA_LEFT] != "" && mLeftBlobbyKeyboard[IA_RIGHT] != "" && mLeftBlobbyKeyboard[IA_JUMP] != "" && mLeftBlobbyJoystick[IA_LEFT] != "" && mLeftBlobbyJoystick[IA_RIGHT] != "" && mLeftBlobbyJoystick[IA_JUMP] != "" && mLeftBlobbyMouseJumpbutton != -1 && mRightBlobbyKeyboard[IA_LEFT] != "" && mRightBlobbyKeyboard[IA_RIGHT] != "" && mRightBlobbyKeyboard[IA_JUMP] != "" && mRightBlobbyJoystick[IA_LEFT] != "" && mRightBlobbyJoystick[IA_RIGHT] != "" && mRightBlobbyJoystick[IA_JUMP] != "" && mRightBlobbyMouseJumpbutton != -1)
+	if (mLeftKeyboard[IA_LEFT] != "" && mLeftKeyboard[IA_RIGHT] != "" && mLeftKeyboard[IA_JUMP] != "" && mLeftJoystick[IA_LEFT] != "" &&
+		 mLeftJoystick[IA_RIGHT] != "" && mLeftJoystick[IA_JUMP] != "" && mLeftMouseJumpbutton != -1 && mRightKeyboard[IA_LEFT] != "" &&
+		 mRightKeyboard[IA_RIGHT] != "" && mRightKeyboard[IA_JUMP] != "" && mRightJoystick[IA_LEFT] != "" && mRightJoystick[IA_RIGHT] != "" &&
+		 mRightJoystick[IA_JUMP] != "" && mRightMouseJumpbutton != -1)
 	{
 		imgui.doCursor(true);
 		imgui.doInactiveMode(false);
@@ -480,25 +483,25 @@ void InputOptionsState::step_impl()
 	}
 
 	//Capture dialogs:
-	getMouseInput(mLeftBlobbyMouseJumpbutton, TextManager::OP_JUMPING);
+	getMouseInput(mLeftMouseJumpbutton, TextManager::OP_JUMPING);
 
-	getKeyboardInput(mLeftBlobbyKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
-	getKeyboardInput(mLeftBlobbyKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
-	getKeyboardInput(mLeftBlobbyKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
+	getKeyboardInput(mLeftKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
+	getKeyboardInput(mLeftKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
+	getKeyboardInput(mLeftKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
 
-	getJoystickInput(mLeftBlobbyJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
-	getJoystickInput(mLeftBlobbyJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
-	getJoystickInput(mLeftBlobbyJoystick[IA_JUMP], TextManager::OP_JUMPING);
+	getJoystickInput(mLeftJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mLeftJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mLeftJoystick[IA_JUMP], TextManager::OP_JUMPING);
 
-	getMouseInput(mRightBlobbyMouseJumpbutton, TextManager::OP_JUMPING);
+	getMouseInput(mRightMouseJumpbutton, TextManager::OP_JUMPING);
 
-	getKeyboardInput(mRightBlobbyKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
-	getKeyboardInput(mRightBlobbyKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
-	getKeyboardInput(mRightBlobbyKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
+	getKeyboardInput(mRightKeyboard[IA_LEFT], TextManager::OP_MOVING_LEFT, lastActionKey);
+	getKeyboardInput(mRightKeyboard[IA_RIGHT], TextManager::OP_MOVING_RIGHT, lastActionKey);
+	getKeyboardInput(mRightKeyboard[IA_JUMP], TextManager::OP_JUMPING, lastActionKey);
 
-	getJoystickInput(mRightBlobbyJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
-	getJoystickInput(mRightBlobbyJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
-	getJoystickInput(mRightBlobbyJoystick[IA_JUMP], TextManager::OP_JUMPING);
+	getJoystickInput(mRightJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mRightJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mRightJoystick[IA_JUMP], TextManager::OP_JUMPING);
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
@@ -516,7 +519,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastAc
 	IMGUI& imgui = IMGUI::getSingleton();
 
 	TextManager::STRING p_str = (player == LEFT_PLAYER) ? TextManager::OP_LEFT_PLAYER : TextManager::OP_RIGHT_PLAYER;
-	std::string& device = (player == LEFT_PLAYER) ? mLeftBlobbyDevice : mRightBlobbyDevice;
+	std::string& device = (player == LEFT_PLAYER) ? mLeftDevice : mRightDevice;
 	int base_x = (player == LEFT_PLAYER) ? 0 : 400;
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 10.0), p_str);
 
@@ -532,7 +535,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastAc
 		}
 		else if (device == "joystick")
 		{
-			if (mRightBlobbyDevice != "mouse" && mLeftBlobbyDevice != "mouse")
+			if (mRightDevice != "mouse" && mLeftDevice != "mouse")
 			{
 				device = "mouse";
 			}

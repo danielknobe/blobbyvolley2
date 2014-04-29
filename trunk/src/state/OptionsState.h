@@ -101,16 +101,16 @@ private:
 
 	int mSetKeyboard; // 1-10 for LeftKeyboard | 11-20 for RightKeyboard
 	//left data:
-	std::string mLeftBlobbyDevice;
-	int mLeftBlobbyMouseJumpbutton;
+	std::string mLeftDevice;
+	int mLeftMouseJumpbutton;
 	/// \todo maybe use a struct here
-	std::string mLeftBlobbyKeyboard[IA_COUNT];
-	std::string mLeftBlobbyJoystick[IA_COUNT];
+	std::string mLeftKeyboard[IA_COUNT];
+	std::string mLeftJoystick[IA_COUNT];
 	//right data:
-	std::string mRightBlobbyDevice;
-	int mRightBlobbyMouseJumpbutton;
-	std::string mRightBlobbyKeyboard[IA_COUNT];
-	std::string mRightBlobbyJoystick[IA_COUNT];
+	std::string mRightDevice;
+	int mRightMouseJumpbutton;
+	std::string mRightKeyboard[IA_COUNT];
+	std::string mRightJoystick[IA_COUNT];
 	//global data:
 	int mBlobbyTouchType;
 
