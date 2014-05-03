@@ -103,12 +103,14 @@ private:
 	//left data:
 	std::string mLeftDevice;
 	int mLeftMouseJumpbutton;
+	float mLeftMouseSensitivity;
 	/// \todo maybe use a struct here
 	std::string mLeftKeyboard[IA_COUNT];
 	std::string mLeftJoystick[IA_COUNT];
 	//right data:
 	std::string mRightDevice;
 	int mRightMouseJumpbutton;
+	float mRightMouseSensitivity;
 	std::string mRightKeyboard[IA_COUNT];
 	std::string mRightJoystick[IA_COUNT];
 	//global data:
@@ -118,7 +120,7 @@ private:
 	void handlePlayerInput(PlayerSide player, std::string& lastActionKey, int& mouse, std::string keyboard[], std::string joystick[]);
 	void handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[]);
 	void handleJoystickInput(int base_x, std::string input[]);
-	void handleMouseInput(int base_x, int& input);
+	void handleMouseInput(int base_x, int& input, float& sens);
 
 	// helper function
 	void getMouseInput(int& action, TextManager::STRING input);
