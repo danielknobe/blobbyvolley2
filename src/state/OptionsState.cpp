@@ -402,6 +402,7 @@ InputOptionsState::InputOptionsState()
 	//left data:
 	mLeftDevice = mOptionConfig.getString("left_blobby_device");
 	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
+	mLeftMouseSensitivity = mOptionConfig.getFloat("left_blobby_mouse_sensitivity");
 	mLeftKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
 	mLeftKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
 	mLeftKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
@@ -411,6 +412,7 @@ InputOptionsState::InputOptionsState()
 	//right data:
 	mRightDevice = mOptionConfig.getString("right_blobby_device");
 	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
+	mRightMouseSensitivity = mOptionConfig.getFloat("right_blobby_mouse_sensitivity");
 	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
 	mRightKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
 	mRightKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
@@ -430,6 +432,7 @@ void InputOptionsState::save()
 	//left data:
 	mOptionConfig.setString("left_blobby_device", mLeftDevice);
 	mOptionConfig.setInteger("left_blobby_mouse_jumpbutton", mLeftMouseJumpbutton);
+	mOptionConfig.setFloat("left_blobby_mouse_sensitivity", mLeftMouseSensitivity);
 	mOptionConfig.setString("left_blobby_keyboard_left", mLeftKeyboard[IA_LEFT]);
 	mOptionConfig.setString("left_blobby_keyboard_right", mLeftKeyboard[IA_RIGHT]);
 	mOptionConfig.setString("left_blobby_keyboard_jump", mLeftKeyboard[IA_JUMP]);
@@ -439,6 +442,7 @@ void InputOptionsState::save()
 	//right data:
 	mOptionConfig.setString("right_blobby_device", mRightDevice);
 	mOptionConfig.setInteger("right_blobby_mouse_jumpbutton", mRightMouseJumpbutton);
+	mOptionConfig.setFloat("right_blobby_mouse_sensitivity", mRightMouseSensitivity);
 	mOptionConfig.setString("right_blobby_keyboard_left", mRightKeyboard[IA_LEFT]);
 	mOptionConfig.setString("right_blobby_keyboard_right", mRightKeyboard[IA_RIGHT]);
 	mOptionConfig.setString("right_blobby_keyboard_jump", mRightKeyboard[IA_JUMP]);
@@ -548,7 +552,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastAc
 	//if mouse device is selected:
 	if (device == "mouse")
 	{
-		handleMouseInput(base_x, mouse);
+		handleMouseInput(base_x, mouse, player == LEFT_PLAYER ? mLeftMouseSensitivity : mRightMouseSensitivity);
 	}
 	if ((mouse == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
 		mouse = -1;
@@ -638,7 +642,7 @@ void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
 	}
 }
 
-void InputOptionsState::handleMouseInput(int base_x, int& input)
+void InputOptionsState::handleMouseInput(int base_x, int& input, float& sens)
 {
 	auto& imgui = IMGUI::getSingleton();
 
@@ -653,6 +657,11 @@ void InputOptionsState::handleMouseInput(int base_x, int& input)
 		mOldInteger = input;
 		input = -2;
 	}
+
+	// sensitivity settings
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 200), /*TextManager::OP_SENSITIVITY*/"SENSITIVITY");
+	imgui.doScrollbar(GEN_ID, Vector2(base_x + 50, 240), sens);
+
 }
 
 void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
