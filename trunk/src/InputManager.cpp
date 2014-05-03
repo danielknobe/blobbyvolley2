@@ -51,6 +51,7 @@ InputManager::InputManager()
 	/// \todo init properly?
 	mLastTextKey = "";
 	mLastClickTime = 0;
+	mMouseCaptured = false;
 }
 
 InputManager::~InputManager()
@@ -82,7 +83,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	if (device == "mouse")
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
-		float sensitivity = config.getInteger(prefix + "mouse_sensitivity");
+		float sensitivity = config.getFloat(prefix + "mouse_sensitivity");
 		return createMouseInput(side, jumpbutton, sensitivity);
 	}
 	// load config for keyboard
