@@ -30,9 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h" /// needed because we can't forward declare that enum
 #include "BlobbyDebug.h"
 
-// Warning: This may explode if we use the GUI from several files
-
-#define GEN_ID (__LINE__)
+#define GEN_ID IMGUI::getSingleton().getNextId()
 
 enum KeyAction
 {
@@ -89,6 +87,8 @@ class IMGUI : public ObjectCounter<IMGUI>
 
 		bool usingCursor() const;
 		void doInactiveMode(bool inactive) { mInactive = inactive; }
+
+		int getNextId() { return mIdCounter++; };
 	private:
 		IMGUI();
 		~IMGUI();
@@ -103,5 +103,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 		bool mButtonReset;
 		bool mInactive;
 		bool mUsingCursor;
+
+		int mIdCounter;
 };
 
