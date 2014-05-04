@@ -76,6 +76,7 @@ IMGUI::IMGUI()
 	mLastWidget = 0;
 	mButtonReset = false;
 	mInactive = false;
+	mIdCounter = 0;
 }
 
 IMGUI::~IMGUI()
@@ -118,6 +119,8 @@ void IMGUI::begin()
 
 	if (InputManager::getSingleton()->exit())
 		mLastKeyAction = BACK;
+
+	mIdCounter = 0;
 }
 
 void IMGUI::end()
