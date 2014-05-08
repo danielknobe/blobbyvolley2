@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "DedicatedServer.h"
 
+#include <set>
 #include <algorithm>
 #include <iostream>
 
@@ -514,16 +515,9 @@ boost::shared_ptr<NetworkGame> DedicatedServer::createGame(boost::shared_ptr<Net
 
 void DedicatedServer::broadcastServerStatus()
 {
-	RakNet::BitStream stream;
-
-	auto out = createGenericWriter(&stream);
-	out->byte((unsigned char)ID_SERVER_STATUS);
-
-
-
-
 	std::vector<std::string> playernames;
 	std::vector<PlayerID> playerIDs;
+	std::map<PlayerID, std::set<PlayerID>> requestMap;
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
 		// only send players that are waiting
@@ -531,17 +525,44 @@ void DedicatedServer::broadcastServerStatus()
 		{
 			playernames.push_back( it->second->getName() );
 			playerIDs.push_back( it->second->getID() );
+			requestMap[it->first] = std::set<PlayerID>();
 		}
 	}
-	out->generic<std::vector<std::string>>( playernames );
-	out->generic<std::vector<PlayerID>>( playerIDs );
-
-	out->uint32(mGameList.size());
-
+	for( auto rit = mGameRequests.begin(); rit != mGameRequests.end(); ++rit)
+	{
+		if( mPlayerMap[rit->first]->getGame() == nullptr)
+		{
+			if( rit->second == UNASSIGNED_PLAYER_ID)
+			{
+				for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+				{
+					if( it->second->getGame() == nullptr)
+					{
+						requestMap[it->first].insert(rit->first);
+					}
+				}
+			}
+			else
+			{
+				requestMap[rit->second].insert(rit->first);
+			}
+		}
+	}
 	for( auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
 	{
 		if( it->second->getGame() == nullptr)
 		{
+			RakNet::BitStream stream;
+
+			auto out = createGenericWriter(&stream);
+			out->byte((unsigned char)ID_SERVER_STATUS);
+
+			out->generic<std::vector<std::string>>( playernames );
+			out->generic<std::vector<PlayerID>>( playerIDs );
+			out->generic<std::set<PlayerID>>( requestMap[it->first] );
+
+			out->uint32(mGameList.size());
+
 			mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, it->first, false);
 		}
 	}

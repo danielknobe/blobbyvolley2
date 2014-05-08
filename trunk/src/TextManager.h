@@ -101,7 +101,6 @@ class TextManager
 			NET_SPEED,
 			NET_RULES_TITLE,
 			NET_RULES_BY,
-			NET_CHALLENGE,
 
 			// options
 			OP_TOUCH_TYPE,

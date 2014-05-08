@@ -51,10 +51,10 @@ class LobbyState : public State
 		{
 			std::string displayname;
 			PlayerID id;
+			bool challengedMe;
 		};
 
 		std::vector<WaitingPlayer> mConnectedPlayers;
-		std::string mChallenge;
 
 		enum
 		{

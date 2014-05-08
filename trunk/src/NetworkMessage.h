@@ -221,6 +221,8 @@ enum MessageType
 //	Structure:
 //		ID_SERVER_STATUS
 //		vector<string> playernames
+//		vector<PlayerId> playerIDs
+//		set<PlayerId> requests
 //
 // ID_CHALLENGE
 // 	Description:
