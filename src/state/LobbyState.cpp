@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "LobbyState.h"
 
+#include <set>
 #include <stdexcept>
 #include <iostream>
 
@@ -113,11 +114,13 @@ void LobbyState::step_impl()
 
 				std::vector<std::string> names;
 				std::vector<PlayerID> ids;
+				std::set<PlayerID> requestSet;
 
 				PlayerID own_id = mClient->GetPlayerID(  );
 
 				in->generic<std::vector<std::string>>( names );
 				in->generic<std::vector<PlayerID>>( ids );
+				in->generic<std::set<PlayerID>>( requestSet );
 				unsigned int games;
 				in->uint32( games );
 				mInfo.activegames = games;
@@ -128,7 +131,7 @@ void LobbyState::step_impl()
 				{
 					if(ids[i] != own_id)
 					{
-						mConnectedPlayers.push_back( {names[i], ids[i]} );
+						mConnectedPlayers.push_back( {names[i], ids[i], (bool)requestSet.count(ids[i])} );
 					}
 				}
 			}
@@ -145,7 +148,8 @@ void LobbyState::step_impl()
 
 				// find player with that id
 				auto pl = std::find_if( mConnectedPlayers.begin(), mConnectedPlayers.end(), [challenger](WaitingPlayer& wp) { return wp.id == challenger; } );
-				mChallenge = pl->displayname;
+				if(pl != mConnectedPlayers.end())
+					pl->challengedMe = true;
 			}
 			break;
 			// we ignore these packets. they tell us about remote connections, which we handle manually with ID_SERVER_STATUS packets.
@@ -186,9 +190,9 @@ void LobbyState::step_impl()
 	else
 	{
 		std::string description = mInfo.description;
-		for (unsigned int i = 0; i < description.length(); i += 70)
+		for (unsigned int i = 0; i < description.length(); i += 63)
 		{
-			imgui.doText(GEN_ID, Vector2(25, 55 + i / 70 * 15), description.substr(i, 70), TF_SMALL_FONT);
+			imgui.doText(GEN_ID, Vector2(25, 55 + i / 63 * 15), description.substr(i, 63), TF_SMALL_FONT);
 		}
 	}
 
@@ -200,7 +204,13 @@ void LobbyState::step_impl()
 		playerlist.push_back( TextManager::getSingleton()->getString(TextManager::NET_RANDOM_OPPONENT) );
 		for (unsigned int i = 0; i < mConnectedPlayers.size(); i++)
 		{
-			playerlist.push_back(mConnectedPlayers[i].displayname );
+			std::string str(mConnectedPlayers[i].displayname);
+			if (mConnectedPlayers[i].challengedMe)
+			{
+				str.resize(13, ' ');
+				str += "!";
+			}
+			playerlist.push_back(str);
 		}
 	}
 
@@ -227,10 +237,6 @@ void LobbyState::step_impl()
 	{
 		imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
 	}
-
-	// * last challenge
-	imgui.doText(GEN_ID, Vector2(435, 245), TextManager::getSingleton()->getString(TextManager::NET_CHALLENGE));
-	imgui.doText(GEN_ID, Vector2(435, 280), " " + mChallenge);
 
 
 

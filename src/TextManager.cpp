@@ -222,7 +222,6 @@ void TextManager::setDefault()
 	mStrings[NET_SPEED] = "speed: ";
 	mStrings[NET_RULES_TITLE] = "rules: ";
 	mStrings[NET_RULES_BY] = " by ";
-	mStrings[NET_CHALLENGE] = "challenger: ";
 
 	mStrings[OP_TOUCH_TYPE] = "touch input type:";
 	mStrings[OP_TOUCH_ARROWS] = "arrow keys";
