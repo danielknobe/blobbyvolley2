@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIOFwd.h"
 
 #include <string>
+#include <type_traits>
 
 #include <boost/type_traits/integral_constant.hpp>
 
@@ -141,8 +142,10 @@ namespace detail
 	template<class T>
 	struct is_container_type
 	{
-		typedef char yes[1];
-		typedef char no[2];
+		struct yes {char p[1];};
+		struct no{char p[2];};
+
+		static_assert( sizeof(yes) != sizeof(no), "yes and no type need different sizes" );
 
 		template<typename C>
 		static yes& test_size( int arg =  (C()).size());
@@ -151,13 +154,26 @@ namespace detail
 		static no& test_size(...);
 
 		template<typename C>
+		static decltype(std::declval<C>().resize(5), yes())& test_resize( int );
+
+		template<typename>
+		static no& test_resize(...);
+
+		template<typename C>
 		static yes& test_begin( typename C::iterator* it = &(C()).begin());
 
 		template<typename>
 		static no& test_begin(...);
 
+		// remove reference from type
+		typedef typename std::remove_reference<T>::type simplified_type;
+
+		static const bool has_size = sizeof(test_size<simplified_type>(0)) == sizeof(yes);
+		static const bool has_begin = sizeof(test_begin<simplified_type>(0)) == sizeof(yes);
+		static const bool has_resize = sizeof(test_resize<simplified_type>(0)) == sizeof(yes);
+
 		// this is only true if size and begin functions exist.
-		static const bool value = sizeof(test_size<T>(0)) == sizeof(yes) && sizeof(test_begin<T>(0)) == sizeof(yes);
+		static const bool value = has_size && has_begin;
 	};
 
 
