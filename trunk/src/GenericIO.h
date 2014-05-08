@@ -202,8 +202,10 @@ namespace detail
 			}
 		}
 
-		static void serialize( GenericIn& in, T& list)
+		// deserialize containers with resize function
+		static void serialize_imp( GenericIn& in, T& list, bool has_reize=true)
 		{
+			static_assert(is_container_type<T>::has_resize, "no resize function in container");
 			unsigned int size;
 
 			in.uint32( size );
@@ -213,6 +215,30 @@ namespace detail
 			{
 				in.generic<typename T::value_type>( *i );
 			}
+		}
+
+		// deserialize containers with insert function
+		static void serialize_imp(GenericIn& in, T& list, void* no_resize=0)
+		{
+			unsigned int size;
+
+			in.uint32( size );
+			list.clear();
+
+			static_assert(!is_container_type<T>::has_resize, "trying to use insert serialization for container with resize support");
+
+
+			typename T::value_type temp;
+			for(int i = 0; i < size; ++i)
+			{
+				in.generic<decltype(temp)>( temp );
+				list.insert(temp);
+			}
+		}
+
+		static void serialize(GenericIn& in, T& list)
+		{
+			serialize_imp( in, list, typename std::conditional<is_container_type<T>::has_resize, bool, void*>::type(0) );
 		}
 	};
 }
