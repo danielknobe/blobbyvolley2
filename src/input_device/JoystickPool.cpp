@@ -23,14 +23,17 @@ SDL_Joystick* JoystickPool::getJoystick(int id)
 	SDL_Joystick* joy =  mJoyMap[id];
 
 	if (!joy)
-		std::cerr << "Warning: could not find joystick number "
-			<< id << "!" << std::endl;
+	{
+		std::cerr << "Warning: could not find joystick number " << id << "!" << std::endl;
+		mJoyMap.erase(id);
+	}
 
 	return joy;
 }
 
 void JoystickPool::probeJoysticks()
 {
+	/*
 	int numJoysticks = SDL_NumJoysticks();
 	SDL_Joystick* lastjoy;
 	for(int i = 0; i < numJoysticks; i++)
@@ -42,6 +45,26 @@ void JoystickPool::probeJoysticks()
 
 		mJoyMap[SDL_JoystickInstanceID(lastjoy)] = lastjoy;
 	}
+	*/
+}
+
+void JoystickPool::openJoystick(const int joyIndex)
+{
+	SDL_Joystick* joystickInstance = SDL_JoystickOpen(joyIndex);
+	if (joystickInstance != NULL)
+	{
+		mJoyMap[SDL_JoystickInstanceID(joystickInstance)] = joystickInstance;
+	}
+}
+
+void JoystickPool::closeJoystick(const int joyId)
+{
+	SDL_Joystick* joystickInstance = mJoyMap[joyId];
+	if (joystickInstance != NULL)
+	{
+		SDL_JoystickClose(joystickInstance);
+	}
+	mJoyMap.erase(joyId);
 }
 
 void JoystickPool::closeJoysticks()
@@ -50,6 +73,7 @@ void JoystickPool::closeJoysticks()
 		iter != mJoyMap.end(); ++iter)
 	{
 		SDL_JoystickClose((*iter).second);
+		mJoyMap.erase((*iter).first);
 	}
 }
 

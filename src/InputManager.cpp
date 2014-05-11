@@ -156,7 +156,12 @@ void InputManager::updateInput()
 			case SDL_QUIT:
 				mRunning = false;
 				break;
-
+			case SDL_JOYDEVICEADDED:
+				JoystickPool::getSingleton().openJoystick(event.jdevice.which);
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				JoystickPool::getSingleton().closeJoystick(event.jdevice.which);
+				break;
 			case SDL_KEYDOWN:
 				mLastActionKey = event.key.keysym.sym;
 				switch (event.key.keysym.sym)
