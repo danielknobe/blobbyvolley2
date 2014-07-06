@@ -27,21 +27,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 
 #include "RenderManager.h"
+#include "InputManager.h"
 #include "TextManager.h" /// needed because we can't forward declare that enum
 #include "BlobbyDebug.h"
 
-#define GEN_ID IMGUI::getSingleton().getNextId()
 
-enum KeyAction
-{
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-	SELECT,
-	BACK,
-	NONE
-};
+
+#define GEN_ID IMGUI::getSingleton().getNextId()
 
 enum SelectBoxAction
 {

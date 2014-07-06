@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL2/SDL_events.h>
 
 #include "BlobbyDebug.h"
+#include "InputManager.h"
 
 class JoystickPool : public ObjectCounter<JoystickPool>
 {
@@ -48,6 +49,7 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 {
 	enum Type
 	{
+		NONE,
 		AXIS,
 		BUTTON,
 // 	We don't implement these exotic input methods here
@@ -63,6 +65,7 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 	JoystickAction(const JoystickAction& action);
 
 	std::string toString();
+	KeyAction toKeyAction();
 
 	Type type;
 

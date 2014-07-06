@@ -209,9 +209,7 @@ void InputManager::updateInput()
 				break;
 			// Workarround because SDL has a bug in Version 2.0.1,
 			// so that we can't use mouse here
-#ifndef __ANDROID__
-#ifdef __APPLE__
-#if MAC_OS_X
+#if __DESKTOP__
 			case SDL_MOUSEBUTTONDOWN:
 				mLastMouseButton = event.button.button;
 				switch (event.button.button)
@@ -228,37 +226,7 @@ void InputManager::updateInput()
 						break;
 				}
 				break;
-#else
-			case SDL_FINGERDOWN:
-				mClick = true;
-
-				if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
-				{
-                    mDoubleClick = true;
-				}
-
-				mLastClickTime = SDL_GetTicks();
-				break;
-#endif
-#else
-			case SDL_MOUSEBUTTONDOWN:
-				mLastMouseButton = event.button.button;
-				switch (event.button.button)
-            {
-                case SDL_BUTTON_LEFT:
-                    mClick = true;
-
-                    if(SDL_GetTicks() - mLastClickTime < DOUBLE_CLICK_TIME )
-                    {
-                        mDoubleClick = true;
-                    }
-
-                    mLastClickTime = SDL_GetTicks();
-                    break;
-            }
-				break;
-#endif
-#else
+#elif __MOBILE__
 			case SDL_FINGERDOWN:
 				mClick = true;
 
@@ -284,26 +252,63 @@ void InputManager::updateInput()
 				mUnclick = true;
 				break;
 
+			case SDL_JOYAXISMOTION:
 			case SDL_JOYBUTTONDOWN:
 			{
 				JoystickAction joyAction(event.jbutton.which,
-					JoystickAction::BUTTON, event.jbutton.button);
-				mLastJoyAction = joyAction.toString();
-				break;
-			}
-			case SDL_JOYAXISMOTION:
-			{
-				if (abs(event.jaxis.value) > 10000)
+					JoystickAction::NONE, event.jbutton.button);
+
+				// Handle Axis
+				if (event.type == SDL_JOYAXISMOTION)
 				{
-					int axis = 0;
-					if (event.jaxis.value > 0)
-						axis = event.jaxis.axis + 1;
+					if (abs(event.jaxis.value) > 10000)
+					{
+						std::cout << "HALLO" << std::endl;
+						int axis = 0;
+						if (event.jaxis.value > 0)
+							joyAction.number = event.jaxis.axis + 1;
 
-					if (event.jaxis.value < 0)
-						axis = -(event.jaxis.axis + 1);
+						if (event.jaxis.value < 0)
+							joyAction.number = -(event.jaxis.axis + 1);
 
-					JoystickAction joyAction(event.jaxis.which, JoystickAction::AXIS, axis);
+						joyAction.type = JoystickAction::AXIS;
+						mLastJoyAction = joyAction.toString();
+					}
+				}
+				// Handle Buttons
+				else if (event.type == SDL_JOYBUTTONDOWN)
+				{
+					joyAction.type = JoystickAction::BUTTON;
 					mLastJoyAction = joyAction.toString();
+				}
+
+				switch (joyAction.toKeyAction())
+				{
+					case KeyAction::UP:
+						mUp = true;
+						break;
+
+					case KeyAction::DOWN:
+						mDown = true;
+						break;
+
+					case KeyAction::LEFT:
+						mLeft = true;
+						break;
+
+					case KeyAction::RIGHT:
+						mRight = true;
+						break;
+
+					case KeyAction::SELECT:
+						mLastTextKey = "return";
+						mSelect = true;
+						break;
+					case KeyAction::BACK:
+						mExit = true;
+						break;
+					default:
+						break;
 				}
 				break;
 			}
