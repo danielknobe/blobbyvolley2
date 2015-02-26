@@ -33,11 +33,11 @@ void DuelMatchState::swapSides()
 {
 	worldState.swapSides();
 	logicState.swapSides();
-	
+
 	std::swap(playerInput[LEFT_PLAYER].left, playerInput[LEFT_PLAYER].right);
 	std::swap(playerInput[RIGHT_PLAYER].left, playerInput[RIGHT_PLAYER].right);
 	std::swap(playerInput[LEFT_PLAYER], playerInput[RIGHT_PLAYER]);
-	
+
 	switch (errorSide)
 	{
 		case LEFT_PLAYER:
@@ -53,19 +53,11 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(DuelMatchState)
 {
 	io.template generic<PhysicState> (value.worldState);
 	io.template generic<GameLogicState> (value.logicState);
-	
+
 	// the template keyword is needed here so the compiler knows generic is
 	// a template function and does not complain about <>.
 	io.template generic<PlayerInput> ( value.playerInput[LEFT_PLAYER] );
 	io.template generic<PlayerInput> ( value.playerInput[RIGHT_PLAYER] );
-	
-	io.byte(value.errorSide);
-}
 
-bool DuelMatchState::operator==(const DuelMatchState& other) const
-{
-	return worldState == other.worldState  &&  logicState == other.logicState &&
-		playerInput[LEFT_PLAYER] == other.playerInput[LEFT_PLAYER] && 
-		playerInput[RIGHT_PLAYER] == other.playerInput[RIGHT_PLAYER] &&
-		errorSide == other.errorSide;
+	io.byte(value.errorSide);
 }

@@ -41,7 +41,7 @@ void GameLogicState::swapSides()
 {
 	std::swap(leftScore, rightScore);
 	std::swap(leftSquish, rightSquish);
-	
+
 	if(servingPlayer == LEFT_PLAYER)
 	{
 		servingPlayer = RIGHT_PLAYER;
@@ -52,19 +52,10 @@ void GameLogicState::swapSides()
 	}
 }
 
-bool GameLogicState::operator==(const GameLogicState& other) const
-{
-	return leftScore == other.leftScore && rightScore == other.rightScore &&
-			isGameRunning == other.isGameRunning && isBallValid == other.isBallValid &&
-			servingPlayer == other.servingPlayer && leftSquish == other.leftSquish &&
-			rightSquish == other.rightSquish && squishWall == other.squishWall &&
-			squishGround == other.squishGround;
-}
-
 std::ostream& operator<<(std::ostream& stream, const GameLogicState& state)
 {
 	stream << "GAME LOGIC STATE [ " << state.leftScore << " : " << state.rightScore << "  " << state.servingPlayer
-			<< "  " << state.leftSquish << " " << state.rightSquish << "  " << state.squishWall 
+			<< "  " << state.leftSquish << " " << state.rightSquish << "  " << state.squishWall
 			<< "  " << state.squishGround << "  " << state.isGameRunning << "  " << state.isBallValid << "]";
 	return stream;
 }

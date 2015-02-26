@@ -39,8 +39,5 @@ struct PhysicState
 	Vector2 ballVelocity;
 	float ballAngularVelocity;
 
-	// equality comparision
-	bool operator==(const PhysicState& other) const;
-
 	void swapSides();
 };
