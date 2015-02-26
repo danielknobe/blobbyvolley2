@@ -180,7 +180,7 @@ void debug_count_execution_fkt(std::string file, int line);
 
 
 #ifdef DEBUG
-
+#include <iostream>
 #define DEBUG_STATUS(x) std::cout << x << std::endl;
 
 #else

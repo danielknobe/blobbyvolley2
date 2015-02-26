@@ -31,23 +31,20 @@ struct GameLogicState
 	unsigned int leftScore;
 	unsigned int rightScore;
 	PlayerSide servingPlayer;
-	
+
 	unsigned int leftSquish;
 	unsigned int rightSquish;
 	unsigned int squishWall;
 	unsigned int squishGround;
-	
+
 	bool isGameRunning;
 	bool isBallValid;
-	
-	
+
+
 	void swapSides();
-	
+
 	void serialize(GenericOut* io) const;
 	void deserialize(GenericIn* io);
-	
-	// equality comparision
-	bool operator==(const GameLogicState& other) const;
 };
 
 std::ostream& operator<<(std::ostream&, const GameLogicState&);

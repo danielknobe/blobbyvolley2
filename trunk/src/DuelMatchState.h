@@ -28,8 +28,6 @@ struct DuelMatchState
 {
 	void swapSides();
 
-	bool operator==(const DuelMatchState& other) const;
-
 	PhysicState worldState;
 	GameLogicState logicState;
 
