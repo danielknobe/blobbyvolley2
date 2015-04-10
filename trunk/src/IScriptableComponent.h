@@ -20,7 +20,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <boost/scoped_ptr.hpp>
+
 struct lua_State;
+class DuelMatchState;
 
 /*! \class IScriptableComponent
 	\brief Base class for lua scripted objects.
@@ -29,6 +32,8 @@ struct lua_State;
 */
 class IScriptableComponent
 {
+public:
+	struct Access;
 protected:
 	IScriptableComponent();
 	virtual ~IScriptableComponent();
@@ -38,7 +43,13 @@ protected:
 
 	// load lua functions
 	void setGameConstants();
+	void setGameFunctions();
+
+	void updateGameState(const DuelMatchState& state);
 
 	lua_State* mState;
+
+private:
+	boost::scoped_ptr<DuelMatchState> mGameState;
 };
 

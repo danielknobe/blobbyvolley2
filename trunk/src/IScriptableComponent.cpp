@@ -4,10 +4,16 @@
 
 #include "Global.h"
 #include "GameConstants.h"
+#include "DuelMatchState.h"
 
-IScriptableComponent::IScriptableComponent() : mState(luaL_newstate())
+IScriptableComponent::IScriptableComponent() :
+	mState(luaL_newstate()),
+	mGameState( new DuelMatchState() )
 {
-
+	// register this in the lua registry
+	lua_pushliteral(mState, "__C++_ScriptComponent__");
+	lua_pushlightuserdata(mState, (void*)this);
+	lua_settable(mState, LUA_REGISTRYINDEX);
 }
 
 IScriptableComponent::~IScriptableComponent()
@@ -50,4 +56,73 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("NO_PLAYER", NO_PLAYER);
 	setLuaGlobal("LEFT_PLAYER", LEFT_PLAYER);
 	setLuaGlobal("RIGHT_PLAYER", RIGHT_PLAYER);
+}
+
+void IScriptableComponent::updateGameState(const DuelMatchState& state)
+{
+	*mGameState = state;
+}
+
+// helpers
+inline IScriptableComponent* getScriptComponent(lua_State* state)
+{
+	lua_pushliteral(state, "__C++_ScriptComponent__");
+	lua_gettable(state, LUA_REGISTRYINDEX);
+	void* result = lua_touserdata(state, -1);
+	lua_pop(state, 1);
+	return (IScriptableComponent*)result;
+}
+
+enum class VectorType
+{
+	POSITION,
+	VELOCITY
+};
+
+int lua_pushvector(lua_State* state, const Vector2& v, VectorType type)
+{
+	if( type == VectorType::VELOCITY )
+	{
+		lua_pushnumber( state, v.x );
+		lua_pushnumber( state, -v.y );
+	}
+	 else if ( type == VectorType::POSITION )
+	{
+		lua_pushnumber( state, v.x );
+		lua_pushnumber( state, 600 - v.y );
+	}
+	return 2;
+}
+
+// Access struct to get to the privates of IScriptableComponent
+struct IScriptableComponent::Access
+{
+	static DuelMatchState* getMatch( lua_State* state )
+	{
+		auto sc = getScriptComponent( state );
+		return sc->mGameState.get();
+	}
+};
+
+inline auto getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
+
+// standard lua functions
+int get_ball_pos(lua_State* state)
+{
+	auto s = getMatch( state );
+	return lua_pushvector(state, s->worldState.ballPosition, VectorType::POSITION);
+}
+
+int get_ball_vel(lua_State* state)
+{
+	auto s = getMatch( state );
+	return lua_pushvector(state, s->worldState.ballVelocity, VectorType::VELOCITY);
+}
+
+
+
+void IScriptableComponent::setGameFunctions()
+{
+	lua_register(mState, "get_ball_pos", get_ball_pos);
+	lua_register(mState, "get_ball_vel", get_ball_vel);
 }
