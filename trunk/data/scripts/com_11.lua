@@ -2,7 +2,7 @@
 -- by Oreon, Axji & Enormator
 
 -- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
--- 11.04.15	- ngc92: Removed unused functions
+-- 11.04.15	- ngc92: Removed unused functions, updated math helpers
 
 -- Flags und runners
 wait = 0
@@ -160,9 +160,7 @@ function jumpto (y)
 end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
- time1=-bspeedy()/-0.28+1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
- time2=-bspeedy()/-0.28-1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
- return math.max(time1, time2)
+ return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), y)
 end
 
 function blobtimetoy (y, Anweisung) --funktioniert in Ermangelung einer Zugriffsfunktion blobbyspeedy() nur vor dem Absprung :[
@@ -204,15 +202,6 @@ function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0
  return answer
 end
 
-function balltimetox (x, Anweisung) --Zeit, die der Ball bis zu einer X Position braucht
- if (bspeedx() == 0) then
-  return nil
- end
- strecke=x-ballx()
- time=(strecke)/bspeedx()
- return time
-end
-
 function ballxaftertime (t)
  x=ballx()+bspeedx()*t
  estimbspeedx=bspeedx()
@@ -229,8 +218,7 @@ function ballxaftertime (t)
 end
 
 function estimatey (x)
- y=estimy(balltimetox(x,3))
- return y
+ return estimy(linear_time_first(ballx(), bspeedx(), x))
 end
 
 function touchable (t)

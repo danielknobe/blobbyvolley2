@@ -2,6 +2,7 @@
 --27.3.2007 - version 2
 --Enormator
 -- 11.01.12 - insert game-provided physic constants where possible - by ngc92
+-- 11.04.15 - updated math helper functions
 
 --Startwerte setzen
 --set starting values
@@ -261,17 +262,17 @@ function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück
  estimbspeedx=bspeedx()
 
  if(resultX > CONST_BALL_RIGHT_BORDER) then -- Korrigieren der Appraller an der Rechten Ebene
-  resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
+  resultX = mirror(resultX, CONST_BALL_RIGHT_BORDER)
   estimbspeedx=-estimbspeedx
  end
 
  if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
-  resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
+  resultX = mirror(resultX, CONST_BALL_LEFT_BORDER)
   estimbspeedx=-estimbspeedx
  end
 
  if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
-  resultX = 2 * CONST_BALL_LEFT_NET - resultX
+  resultX = mirror(resultX, CONST_BALL_LEFT_NET)
   estimbspeedx=-estimbspeedx
  end
  return resultX
@@ -324,8 +325,5 @@ end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
                          --time needed by the ball to reach a given y position
- time1=-bspeedy()/CONST_BALL_GRAVITY+1/CONST_BALL_GRAVITY*math.sqrt(2*CONST_BALL_GRAVITY*(y-bally())+bspeedy()^2)
- time2=-bspeedy()/CONST_BALL_GRAVITY-1/CONST_BALL_GRAVITY*math.sqrt(2*CONST_BALL_GRAVITY*(y-bally())+bspeedy()^2)
- timemax=math.max(time1, time2)
- return timemax
+ return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), y)
 end

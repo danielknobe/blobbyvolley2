@@ -1,4 +1,5 @@
 -- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+-- 11.04.15 - ngc92: updated math helpers
 
 function OnOpponentServe()
 	moveto(120)
@@ -90,38 +91,12 @@ function aggroflagtesten()
 	end
 end
 
-function estimTime()
-	bgrav = 0.248	
+function estimImpact()
+	--diese Funktion sollte die einschlagkoordinaten auf K�pfh�he Rechnen
 	-- standart Realfloor ist 144 
 	-- warscheinilcher Realflfoor f�r Ball + blobby ist 144 (der Ball muss schon berechnet worden sein)
 	realFloor = 144
-
-    by=bally()
-    vby=bspeedy()-600
-
-	time1 =(-vby+math.sqrt((vby^2)-(4*-0.5*bgrav*(by-realFloor))))/(-2*0.5*bgrav)
-    time2 =(-vby-math.sqrt((vby^2)-(4*-0.5*bgrav*(by-realFloor))))/(-2*0.5*bgrav)
     
-    if time1>time2 then
-        time3 = time1
-    else
-        time3 = time2
-    end
-	
-	return time3
-
-	--ist die Funktion nicht auf folgende aussage minimierbar ?
-	-- time1 =(-vby-math.sqrt((vby^2)-(-2*bgrav*(by-realFloor))))/-bgrav
-	-- return time1
-end
-
-function estimImpact()
-	--diese Funktion sollte die einschlagkoordinaten auf K�pfh�he Rechnen
-    bx=ballx()
-    vbx=bspeedx()
-    
-    time3 = estimTime()
-    resultX = (vbx * time3) + bx    
-    
-    return resultX
+    time3 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), realFloor)
+    return estimx(time3)    
 end
