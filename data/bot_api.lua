@@ -54,6 +54,78 @@ function oppy()
 	return y
 end
 
+-----------------------------------------------------------------------------------------------
+-- helper functions
+
+-- this function returns the first positive time that pos + vel*t + grav/2 * t² == destination. 
+function parabola_time_first(pos, vel, grav, destination)
+	local sq = vel^2 + 2*grav*(destination - pos);
+
+	-- if unreachable, return inf
+	if ( sq < 0 ) then
+		return math.huge
+	end
+	
+	sq = math.sqrt(sq);
+	
+	local tmin = (-vel - sq) / grav;
+	local tmax = (-vel + sq) / grav;
+	
+	if ( grav < 0 ) then
+		tmin, tmax = tmax, tmin
+	end
+
+	if ( tmin > 0 ) then
+		return tmin
+	elseif ( tmax > 0 ) then
+		return tmax
+	else
+		return math.huge
+	end
+end
+
+-- this function returns the first positive time that pos + vel*t  == destination. 
+function linear_time_first(pos, vel, destination)
+	if vel == 0 then
+		return math.huge
+	end
+	return (destination - pos) / vel
+end
+
+-- this function mirrors pos around mirror
+function mirror(pos, mirror)
+	return 2*mirror - pos
+end
+
+-------------------------------------------------------------------------------------
+--   utilities
+
+-- emulate ?: operator
+function select(cond, a, b)
+	if cond then
+		return a
+	end
+	return b
+end
+
+function make_unsigned(num)
+	if num >= 0 then
+		return num
+	else
+		return math.huge
+	end
+end
+
+-----------------------------------------------------------------------------------------
+-- 						enhances ball prediction functions							   --
+-----------------------------------------------------------------------------------------
+
+-- calculates the time the ball needs from pos to destination
+function ball_time_to_y( posx, posy, velx, vely, destination )
+	-- TODO this ignores net bounces
+	return parabola_first_time( posy, vely, CONST_BALL_GRAVITY, destination )
+end
+
 -- old style estimate functions
 
 function estimx(time)

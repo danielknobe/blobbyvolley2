@@ -138,20 +138,20 @@ function estimImpact2(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimat
    direct = true
 
    if(resultX > CONST_BALL_RIGHT_BORDER) then
-      resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
+      resultX = mirror(resultX, CONST_BALL_RIGHT_BORDER)
       estimbspeedx=-estimbspeedx
       direct = true
    end
 
    if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
-      resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
+      resultX = mirror(resultX, CONST_BALL_LEFT_BORDER)
       estimbspeedx=-estimbspeedx
       direct = false
    end
 
    if (estimbspeedx > 0) and (resultX > CONST_BALL_LEFT_NET) then
       direct = false
-      resultX = 2 * CONST_BALL_LEFT_NET - resultX
+      resultX = mirror(resultX, CONST_BALL_LEFT_NET)
       estimbspeedx=-estimbspeedx
    end
 
