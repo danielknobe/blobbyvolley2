@@ -16,13 +16,6 @@ direct = true
 servrand = nil
 
 -- Konstanten
-CONST_MITTE = CONST_FIELD_WIDTH/2
-CONST_RECHTER_RAND = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
-
--- Berührungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
-CONST_NETZ_RECHTS = CONST_MITTE + CONST_NET_RADIUS + CONST_BALL_RADIUS 
-
 CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 -- TODO calculate this from constants
 CONST_BLOBBY_MAXJUMP = 393.625
@@ -144,21 +137,21 @@ function estimImpact2(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimat
 
    direct = true
 
-   if(resultX > CONST_RECHTER_RAND) then
-      resultX = 2 * CONST_RECHTER_RAND - resultX
+   if(resultX > CONST_BALL_RIGHT_BORDER) then
+      resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
       estimbspeedx=-estimbspeedx
       direct = true
    end
 
-   if(resultX < CONST_BALL_RADIUS) then -- korrigieren der Appraller an der linken Ebene
-      resultX = 2 * CONST_BALL_RADIUS - resultX
+   if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
+      resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
       estimbspeedx=-estimbspeedx
       direct = false
    end
 
-   if (estimbspeedx > 0) and (resultX > CONST_NETZ_LINKS) then
+   if (estimbspeedx > 0) and (resultX > CONST_BALL_LEFT_NET) then
       direct = false
-      resultX = 2 * CONST_NETZ_LINKS - resultX
+      resultX = 2 * CONST_BALL_LEFT_NET - resultX
       estimbspeedx=-estimbspeedx
    end
 

@@ -1,7 +1,7 @@
 --UNION
 --27.3.2007 - version 2
 --Enormator
--- 11.1.12 - insert game-provided physic constants where possible - by ngc92
+-- 11.01.12 - insert game-provided physic constants where possible - by ngc92
 
 --Startwerte setzen
 --set starting values
@@ -16,14 +16,10 @@ serve=false
 
 --Weltkonstanten definieren
 --define world constants
-middle = CONST_FIELD_WIDTH/2
-wallright = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
 blobbyheadheight = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 blobbymaxjump = 393.625
 blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
 netheight = CONST_NET_HEIGHT + CONST_NET_RADIUS -- height is just the rod. for total height, we have to add the net-sphere-radius too
-netcolissionleft = middle - CONST_NET_RADIUS - CONST_BALL_RADIUS 
-netcolissionright = middle + CONST_NET_RADIUS + CONST_BALL_RADIUS
 
 --Hauptfunktionen
 --main functions
@@ -80,7 +76,7 @@ function OnGame()
   dofunc (3, decision, true) --Der Funktion sagen, dass sie im Spiel ist
                              --tell the function that it's OnGame
  end
- if (ballx()>netcolissionleft+CONST_BALL_RADIUS) then --Falls Ball nicht mehr erreichbar
+ if (ballx()>CONST_BALL_LEFT_NET+CONST_BALL_RADIUS) then --Falls Ball nicht mehr erreichbar
                                                --If Ball not gettable by Bot
   serve=false --Aufschlagende erzwingen
               --Make an end to the serve
@@ -156,7 +152,7 @@ function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45°
     else
      ret=math.min((10^(-math.abs(bspeedx()))+1),1)*85
     end
-    if (estimhitnet()==true) and (blobtimetox(netcolissionleft)<=balltimetoy(netheight)) then
+    if (estimhitnet()==true) and (blobtimetox(CONST_BALL_LEFT_NET)<=balltimetoy(netheight)) then
      ret=190
     end
     return ret
@@ -264,18 +260,18 @@ function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück
  resultX = (bspeedx() * time1) + ballx()
  estimbspeedx=bspeedx()
 
- if(resultX > wallright) then -- Korrigieren der Appraller an der Rechten Ebene
-  resultX = 2 * CONST_FIELD_WIDTH - resultX
+ if(resultX > CONST_BALL_RIGHT_BORDER) then -- Korrigieren der Appraller an der Rechten Ebene
+  resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
   estimbspeedx=-estimbspeedx
  end
 
- if(resultX < CONST_BALL_RADIUS) then -- korrigieren der Appraller an der linken Ebene
-  resultX = 2 * CONST_BALL_RADIUS - resultX
+ if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
+  resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
   estimbspeedx=-estimbspeedx
  end
 
- if (resultX > netcolissionleft) and (estimatey(netcolissionleft-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
-  resultX = 2 * netcolissionleft - resultX
+ if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
+  resultX = 2 * CONST_BALL_LEFT_NET - resultX
   estimbspeedx=-estimbspeedx
  end
  return resultX
@@ -316,13 +312,7 @@ end
 
 function estimatey (x) --Y Position des Balls, wenn er sich an der angegebenen X Koordinate befindet
                        --y position of the ball, when it is at the given x coordinate
- y=ballyaftertime(balltimetox(x,3))
- return y
-end
-
-function ballyaftertime (t) --Y Position des Balls nach der angegebenen Zahl von Physikschritten
-                            --y position of the ball after the given time
- y=1/2*CONST_BALL_GRAVITY*t^2+bspeedy()*t+bally()
+ y=estimy(balltimetox(x,3))
  return y
 end
 

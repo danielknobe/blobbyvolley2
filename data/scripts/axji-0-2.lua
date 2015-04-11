@@ -13,12 +13,6 @@ aggroservice = 50 -- versetzung zum Ball je gr�sser desto tiefer fliegt der Se
 korrekturfaktor = 7
 
 -- Konstanten
-CONST_MITTE = CONST_FIELD_WIDTH/2
-
--- Linke Ber�hrungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
-
-
 function OnServe(ballready)
 	moveto(ballx())
 	wait = wait + 1 
@@ -41,13 +35,13 @@ function OnGame()
 	end
 
 	-- Zielbestimmung --> optimierung weniger CPU power n�tig ;)
-	if (target < CONST_BALL_RADIUS) then -- ball wird hinten apprallen
+	if (target < CONST_BALL_LEFT_BORDER) then -- ball wird hinten apprallen
 		vonhinten(target)
 		return
 	end
 	
 	-- nun k�mmern wir uns um die B�lle die ans netz prallen
-	if ((target > CONST_NETZ_LINKS) and (ballx() < CONST_NETZ_LINKS)) then
+	if ((target > CONST_BALL_LEFT_NET) and (ballx() < CONST_BALL_LEFT_NET)) then
 		netzappraller(target)
 		return
 	end
@@ -63,7 +57,7 @@ end
 
 function netzappraller(p_target)
 		--moveto(netzlinks - (netzlinks - estimate()))
-		moveto(CONST_NETZ_LINKS - (p_target - CONST_NETZ_LINKS) + math.abs(bspeedx()*bspeedx()*1.4))
+		moveto(CONST_BALL_LEFT_NET - (p_target - CONST_BALL_LEFT_NET) + math.abs(bspeedx()*bspeedx()*1.4))
 end
 
 function vonhinten(p_target)
