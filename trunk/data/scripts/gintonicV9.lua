@@ -227,8 +227,8 @@ function r_estimx(time)
         if estim < 31.5 then estim = 63-estim end
         if estim > 768.5 then estim = 1537-estim end
         if (bally() < 330) then
-                if (ballx() < 400 and estim > 400) then estim = 723-estim end
-                if (ballx() > 400 and estim < 400) then estim = 877-estim end
+                if (ballx() < CONST_FIELD_MIDDLE and estim > CONST_FIELD_MIDDLE) then estim = 723-estim end
+                if (ballx() > CONST_FIELD_MIDDLE and estim < CONST_FIELD_MIDDLE) then estim = 877-estim end
         end
         return estim        
 end

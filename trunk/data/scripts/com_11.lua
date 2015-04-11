@@ -2,6 +2,7 @@
 -- by Oreon, Axji & Enormator
 
 -- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+-- 11.04.15	- ngc92: Removed unused functions
 
 -- Flags und runners
 wait = 0
@@ -9,15 +10,8 @@ naechsterBallSchmettern = true -- evtl Variablennamen wechseln
 
 
 -- Weltkonstanten
-CONST_MITTE = CONST_FIELD_WIDTH/2
-CONST_RECHTER_RAND = CONST_FIELD_WIDTH - CONST_BALL_RADIUS
-
 CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 CONST_BLOBBY_MAXJUMP = 393.625
-
--- Berührungsebene des Balls falls er ans Netz kommt
-CONST_NETZ_LINKS = CONST_MITTE - CONST_NET_RADIUS - CONST_BALL_RADIUS 
-CONST_NETZ_RECHTS = CONST_MITTE + CONST_NET_RADIUS + CONST_BALL_RADIUS 
 
 -- Charakter
 CONST_ANGRIFFSGRUNDWERT_MIN = 30
@@ -57,7 +51,7 @@ function OnGame()
 		movetoX(135) --Dann auf Standartposition warten
 		generatenaechsterBallSchmettern() --Angriffsstaerke neu berechnen
 	else
-		if (targetNetz > CONST_NETZ_LINKS - 10) then --Bei Netzroller einfach schmettern
+		if (targetNetz > CONST_BALL_LEFT_NET - 10) then --Bei Netzroller einfach schmettern
 			naechsterBallSchmettern = true
 		end
 
@@ -76,12 +70,12 @@ end
 
 
 function sprungattacke(p_angriffsstaerke)
-	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP,2))) then
+	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP))) then
 		movetoX (CONST_MITTE)
 		jumpto (383)
 	else
-		p_angriffsstaerke=math.max(p_angriffsstaerke, MIN_ANGRIFFSSTAERKE + ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_NETZ_LINKS)) --Weiter hinten nicht ganz so hoch spielen (kommt nicht auf die andere Seite)
-		p_angriffsstaerke=math.min(p_angriffsstaerke, MAX_ANGRIFFSSTAERKE - ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_NETZ_LINKS)) --Weiter hinten nicht ganz so tief spielen (kommt ans Netz)
+		p_angriffsstaerke=math.max(p_angriffsstaerke, MIN_ANGRIFFSSTAERKE + ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_BALL_LEFT_NET)) --Weiter hinten nicht ganz so hoch spielen (kommt nicht auf die andere Seite)
+		p_angriffsstaerke=math.min(p_angriffsstaerke, MAX_ANGRIFFSSTAERKE - ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_BALL_LEFT_NET)) --Weiter hinten nicht ganz so tief spielen (kommt ans Netz)
 		movetoX(targetJump-p_angriffsstaerke) -- Bei der Sprungatacke wird die Stärke des gewünschten schlages angegeben
 		jumpto (383)
 	end
@@ -121,18 +115,18 @@ function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate
     resultX = (vbx * time1) + bx
 	estimbspeedx=bspeedx()
 
-	if(resultX > CONST_RECHTER_RAND) then -- Korrigieren der Appraller an der Rechten Ebene
-		resultX = 2 * CONST_FIELD_WIDTH - resultX
+	if(resultX > CONST_BALL_RIGHT_BORDER) then -- Korrigieren der Appraller an der Rechten Ebene
+		resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
 		estimbspeedx=-estimbspeedx
 	end
 
-	if(resultX < CONST_BALL_RADIUS) then -- korrigieren der Appraller an der linken Ebene
-		resultX = 2 * CONST_BALL_RADIUS - resultX
+	if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
+		resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
 		estimbspeedx=-estimbspeedx
 	end
 
-	if (resultX > CONST_NETZ_LINKS) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
-		resultX = 2 * CONST_NETZ_LINKS - resultX
+	if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
+		resultX = 2 * CONST_BALL_LEFT_NET - resultX
 		estimbspeedx=-estimbspeedx
 	end
 
@@ -160,39 +154,15 @@ function movetoX (x)
 end
 
 function jumpto (y)
- if (blobtimetoy (y,3) >= balltimetoy (y,2)) then
+ if (blobtimetoy (y,3) >= balltimetoy (y)) then
   jump()
  end
 end
 
-function balltimetoy (y, Anweisung) --Zeit, die der Ball bis zu einer Y Position benoetigt
+function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
  time1=-bspeedy()/-0.28+1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
  time2=-bspeedy()/-0.28-1/-0.28*math.sqrt(2*-0.28*(y-bally())+bspeedy()^2)
- timemin=math.min(time1, time2)
- timemax=math.max(time1, time2)
- if (Anweisung==01) or (Anweisung==00) then
-  return timemin
- end
- if (Anweisung==02) then
-  return timemax
- end
- if (Anweisung==3) then
-  if (timemin > 0) then
-   return timemin
-  else
-   return timemax
-  end
- end
- if (Anweisung==11) then
-  if (timemin < 0) then
-   return nil
-  end
- end
- if (Anweisung==12) then
-  if (timemax < 0) then
-   return nil
-  end
- end
+ return math.max(time1, time2)
 end
 
 function blobtimetoy (y, Anweisung) --funktioniert in Ermangelung einer Zugriffsfunktion blobbyspeedy() nur vor dem Absprung :[
@@ -234,16 +204,6 @@ function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0
  return answer
 end
 
-function blobtimetox (x) --Zeit, die der Bot benoetigt, um eine X Position zu erreichen
- time=math.int(math.abs(posx()-x)/4.5)
- return time
-end
-
-function opptimetox (x) --Zeit, die der Gegner benoetigt, um eine X Position zu erreichen
- time=math.int(math.abs(oppx()-x)/4.5)
- return time
-end
-
 function balltimetox (x, Anweisung) --Zeit, die der Ball bis zu einer X Position braucht
  if (bspeedx() == 0) then
   return nil
@@ -269,21 +229,16 @@ function ballxaftertime (t)
 end
 
 function estimatey (x)
- y=ballyaftertime(balltimetox(x,3))
- return y
-end
-
-function ballyaftertime (t)
- y=1/2*(-0.28)*t^2+bspeedy()*t+bally()
+ y=estimy(balltimetox(x,3))
  return y
 end
 
 function touchable (t)
  x=ballxaftertime (t)
- return (x <= CONST_NETZ_LINKS + CONST_BALL_RADIUS)
+ return (x <= CONST_BALL_LEFT_NET + CONST_BALL_RADIUS)
 end
 
 function opptouchable (t)
  x=ballxaftertime (t)
- return (x >= CONST_NETZ_RECHTS - CONST_BALL_RADIUS)
+ return (x >= CONST_BALL_RIGHT_NET - CONST_BALL_RADIUS)
 end
