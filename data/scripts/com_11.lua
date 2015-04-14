@@ -4,6 +4,8 @@
 -- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
 -- 11.04.15	- ngc92: Removed unused functions, updated math helpers
 
+-- TODO estimatex function is missing
+
 -- Flags und runners
 wait = 0
 naechsterBallSchmettern = true -- evtl Variablennamen wechseln
@@ -26,7 +28,7 @@ servexVersetzung=-6 --Wert ist so gewaehlt, dass der Ball nah ans Netz fliegt, d
 -- ***ANFANG***
 
 function OnOpponentServe()
-	movetoX(130)
+	moveto(130)
 	generatenaechsterBallSchmettern()
 end
 
@@ -48,7 +50,7 @@ function OnGame()
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
 	if (target > CONST_MITTE) then --Wenn der Ball mich nix angeht
-		movetoX(135) --Dann auf Standartposition warten
+		moveto(135) --Dann auf Standartposition warten
 		generatenaechsterBallSchmettern() --Angriffsstaerke neu berechnen
 	else
 		if (targetNetz > CONST_BALL_LEFT_NET - 10) then --Bei Netzroller einfach schmettern
@@ -64,19 +66,19 @@ function OnGame()
 			return
 		end
 
-		movetoX(target)
+		moveto(target)
 	end
 end
 
 
 function sprungattacke(p_angriffsstaerke)
 	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP))) then
-		movetoX (CONST_MITTE)
+		moveto (CONST_MITTE)
 		jumpto (383)
 	else
 		p_angriffsstaerke=math.max(p_angriffsstaerke, MIN_ANGRIFFSSTAERKE + ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_BALL_LEFT_NET)) --Weiter hinten nicht ganz so hoch spielen (kommt nicht auf die andere Seite)
 		p_angriffsstaerke=math.min(p_angriffsstaerke, MAX_ANGRIFFSSTAERKE - ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_BALL_LEFT_NET)) --Weiter hinten nicht ganz so tief spielen (kommt ans Netz)
-		movetoX(targetJump-p_angriffsstaerke) -- Bei der Sprungatacke wird die Stärke des gewünschten schlages angegeben
+		moveto(targetJump-p_angriffsstaerke) -- Bei der Sprungatacke wird die Stärke des gewünschten schlages angegeben
 		jumpto (383)
 	end
 end
@@ -109,19 +111,11 @@ function generatenaechsterBallSchmettern()
 end
 
 function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-	bgrav = 0.28	
+    local time1 = ball_time_to_y(bx, by, vbx, vby, destY)
+    local resultX, hiz = estimx(time1)
+	local estimbspeedx = bspeedx()
 
-    time1 =(-vby-math.sqrt((vby^2)-(-2*bgrav*(by-destY))))/(-bgrav)
-    resultX = (vbx * time1) + bx
-	estimbspeedx=bspeedx()
-
-	if(resultX > CONST_BALL_RIGHT_BORDER) then -- Korrigieren der Appraller an der Rechten Ebene
-		resultX = 2 * CONST_BALL_RIGHT_BORDER - resultX
-		estimbspeedx=-estimbspeedx
-	end
-
-	if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
-		resultX = 2 * CONST_BALL_LEFT_BORDER - resultX
+	if hit then
 		estimbspeedx=-estimbspeedx
 	end
 
@@ -138,6 +132,7 @@ function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate
 	end
 end
 
+-- TODO make the API function return that bool, so we can remove this one
 function movetoX (x)
  if (math.abs(posx()-x)>math.abs(posx()+4.5-x)) then
   right()
@@ -202,31 +197,16 @@ function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0
  return answer
 end
 
-function ballxaftertime (t)
- x=ballx()+bspeedx()*t
- estimbspeedx=bspeedx()
-
- if (x<31.5) then
-  x=2*31.5-x
-  estimbspeedx=-estimbspeedx
- end
- if (x>800-31.5) then
-  x=2*(800-31.5)-x
-  estimbspeedx=-estimbspeedx
- end 
- return x
-end
-
 function estimatey (x)
  return estimy(linear_time_first(ballx(), bspeedx(), x))
 end
 
 function touchable (t)
- x=ballxaftertime (t)
+ local x=estimx(t)
  return (x <= CONST_BALL_LEFT_NET + CONST_BALL_RADIUS)
 end
 
 function opptouchable (t)
- x=ballxaftertime (t)
+ local x=estimx(t)
  return (x >= CONST_BALL_RIGHT_NET - CONST_BALL_RADIUS)
 end

@@ -120,6 +120,11 @@ end
 -- 						enhances ball prediction functions							   --
 -----------------------------------------------------------------------------------------
 
+-- calculates the time the ball needs to reach the specified x position
+function ball_time_to_x( posx, posy, velx, vely, destination)
+	return linear_time_first(posx, velx, destination)
+end
+
 -- calculates the time the ball needs from pos to destination
 function ball_time_to_y( posx, posy, velx, vely, destination )
 	-- TODO this ignores net bounces
@@ -129,7 +134,15 @@ end
 -- old style estimate functions
 
 function estimx(time)
-	return ballx() + time * bspeedx()
+	local straight = ballx() + time * bspeedx()
+	-- correct wall impacts
+	if(straight > CONST_BALL_RIGHT_BORDER) then
+		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER
+	elseif(straight < CONST_BALL_LEFT_BORDER) then
+		return mirror(resultX, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER
+	else
+		return mirror, nil
+	end
 end
 
 function estimy(time)

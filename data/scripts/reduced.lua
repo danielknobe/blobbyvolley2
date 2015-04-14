@@ -109,28 +109,21 @@ function lowPlay()
 end
 
 function estimImpactHigh()
-   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP - 25,1)
+   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP - 25)
 end
 
 function estimImpactLow()
-   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,1)
+   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG)
 end
 
-function estimImpact2(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   bgrav = -CONST_BALL_GRAVITY
+function estimImpact2(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+   timeto = ball_time_to_y(bx, by, vbx, vby, destY)
 
-   if ((vby^2)-(-2*bgrav*(by-destY))) < 0 then
+   if (timeto == math.huge) then
       target = nil
       return
    end
-   time1 =(-vby-math.sqrt((vby^2)-(-2*bgrav*(by-destY))))/(-bgrav)
-   --time2 =(-vby+math.sqrt((vby^2)-(-2*bgrav*(by-destY))))/(-bgrav)
-   timeto = time1
-
-   if (timeto < 0) then
-      target = nil
-      return
-   end
+   -- TODO need estimx function for bx and vbx state
    naivetarget = (vbx * time1) + bx
    resultX = naivetarget
    estimbspeedx=bspeedx()
