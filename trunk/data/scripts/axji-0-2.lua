@@ -28,7 +28,7 @@ end
 
 function OnGame()
 	aggroflagtesten() -- schaut ob der bot aggro werden soll oder nicht
-	target = estimImpact()
+	local target, hit = estimImpact()
 	
 	if aggro then
 		sprungattacke(aggroservice)
@@ -36,7 +36,7 @@ function OnGame()
 	end
 
 	-- Zielbestimmung --> optimierung weniger CPU power n�tig ;)
-	if (target < CONST_BALL_LEFT_BORDER) then -- ball wird hinten apprallen
+	if (hit == CONST_BALL_LEFT_BORDER) then -- ball wird hinten apprallen
 		vonhinten(target)
 		return
 	end
@@ -58,13 +58,12 @@ end
 
 function netzappraller(p_target)
 		--moveto(netzlinks - (netzlinks - estimate()))
-		moveto(CONST_BALL_LEFT_NET - (p_target - CONST_BALL_LEFT_NET) + math.abs(bspeedx()*bspeedx()*1.4))
+		moveto(mirror(p_target, CONST_BALL_LEFT_NET) + bspeedx()*bspeedx()*1.4)
 end
 
 function vonhinten(p_target)
-		p_target = CONST_BALL_RADIUS + math.abs(CONST_BALL_RADIUS-p_target)
 		--das ist der fall wenn  der Ball hinten abprallt
-		moveto(p_target-math.abs(bspeedx()*bspeedx()*1.1))
+		moveto(p_target - bspeedx()*bspeedx()*1.1)
 end
 
 function sprungattacke(p_aggroservice)
@@ -95,8 +94,8 @@ function estimImpact()
 	--diese Funktion sollte die einschlagkoordinaten auf K�pfh�he Rechnen
 	-- standart Realfloor ist 144 
 	-- warscheinilcher Realflfoor f�r Ball + blobby ist 144 (der Ball muss schon berechnet worden sein)
-	realFloor = 144
+	local realFloor = 144
     
-    time3 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), realFloor)
+    local time3 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), realFloor)
     return estimx(time3)    
 end

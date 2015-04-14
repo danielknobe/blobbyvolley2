@@ -202,30 +202,19 @@ end
 
 
 function timeToHitHeight(minheight, maxheight, depth)
-        local i = 0
-        for i=1, depth do
-                if (estimy(i) >= minheight and estimy(i) <= maxheight) then
-                        return i
-                end
-        end
-        return -1
+    local target = minheight
+    if bspeedy() < 0 then
+        target = maxheight
+    end
+    return math.ceil(ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), (minheight + maxheight)/2))
 end
 
 function timeToOppSmash(height)
-        if (bally() < height) then return -1 end
-        local i = 0
-        for i=1, 17 do
-                if (estimy(i) < height) then
-                        return i
-                end
-        end
-        return -1
+    return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), height)
 end
 
 function r_estimx(time)
         local estim = estimx(time)
-        if estim < 31.5 then estim = 63-estim end
-        if estim > 768.5 then estim = 1537-estim end
         if (bally() < 330) then
                 if (ballx() < CONST_FIELD_MIDDLE and estim > CONST_FIELD_MIDDLE) then estim = 723-estim end
                 if (ballx() > CONST_FIELD_MIDDLE and estim < CONST_FIELD_MIDDLE) then estim = 877-estim end
@@ -234,7 +223,6 @@ function r_estimx(time)
 end
 
 function willHitWall(time)
-        if (estimx(time) < 31.5) then return true end
-        if (estimx(time) > 768.5) then return true end
-        return false
+    local pos, hit = estimx(time)
+    return hit
 end

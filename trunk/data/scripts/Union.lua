@@ -147,7 +147,7 @@ function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45°
    return math.random(10, 100)
   end
   if (funcno==3) and (action==false) then
-   if (bspeedx() <= 3) and (math.max(balltimetox(targetx),balltimetoy(maxjump)) >= math.max(blobtimetoy(maxjump), blobtimetox(targetx))) then
+   if (bspeedx() <= 3) and (math.max(balltimetox(targetx), balltimetoy(maxjump)) >= math.max(blobtimetoy(maxjump), blobtimetox(targetx))) then
     if (bspeedx()==0) then
      ret=85
     else
@@ -257,35 +257,19 @@ function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück
  if (bspeedy()==0) and (bspeedx()==0) then
   return ballx()
  end
- time1 =(-bspeedy()-math.sqrt((bspeedy()^2)-(2*CONST_BALL_GRAVITY * (bally()-destY)))) / CONST_BALL_GRAVITY
- resultX = (bspeedx() * time1) + ballx()
- estimbspeedx=bspeedx()
-
- if(resultX > CONST_BALL_RIGHT_BORDER) then -- Korrigieren der Appraller an der Rechten Ebene
-  resultX = mirror(resultX, CONST_BALL_RIGHT_BORDER)
-  estimbspeedx=-estimbspeedx
+ local time1 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), destY)
+ local resultX, hit = estimx(time1)
+ local estimbspeedx=bspeedx()
+ 
+ if hit then
+  estimbspeedx = -estimbspeedx
  end
-
- if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
-  resultX = mirror(resultX, CONST_BALL_LEFT_BORDER)
-  estimbspeedx=-estimbspeedx
- end
-
+ 
  if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
   resultX = mirror(resultX, CONST_BALL_LEFT_NET)
   estimbspeedx=-estimbspeedx
  end
  return resultX
-end
-
-function balltimetox (x) --Zeit in Physikschritten, die der Ball bei der derzeitigen Geschwindigkeit zu der angegebenen X-Position braucht
-                         --time in physic steps, which the ball needs to reach the given x-position with momentany speed
- if (bspeedx() == 0) then
-  return 10000
- end
- strecke=x-ballx()
- time=(strecke)/bspeedx()
- return time
 end
 
 function blobtimetoy (y) --Zeit, die ein Blob braucht, um eine Y Position zu erreichen
@@ -313,14 +297,17 @@ end
 
 function estimatey (x) --Y Position des Balls, wenn er sich an der angegebenen X Koordinate befindet
                        --y position of the ball, when it is at the given x coordinate
- y=estimy(balltimetox(x,3))
- return y
+ return estimy(balltimetox(x))
 end
 
 function blobtimetox (x) --Zeit, die der Bot benoetigt, um eine gewisse X-Koordinate zu erreichen
                          --time needed for the bot to reach a given x-coordinate
  time=math.abs(posx()-x)/4.5
  return time
+end
+
+function balltimetox(x)
+	return ball_time_to_x(ballx(), bally(), bspeedx(), bspeedy(), x)
 end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
