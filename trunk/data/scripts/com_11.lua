@@ -7,7 +7,6 @@
 -- TODO estimatex function is missing
 
 -- Flags und runners
-wait = 0
 naechsterBallSchmettern = true -- evtl Variablennamen wechseln
 
 
@@ -42,11 +41,9 @@ function OnServe(ballready)
 end	
 
 function OnGame()
-	target = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,1) --X Ziel in Blobbyhoehe
-	targets = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG,2) --X Richtung (-1 oder 1) bei Einschlag
-	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT + CONST_NET_RADIUS,1) --X Ziel in Netzhoehe (Netzrollerberechnung)
-	targetJump = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,1) --X Ziel in Schmetterhoehe
-	targetJumps = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP,2)
+	target, targets = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG) --X Ziel in Blobbyhoehe
+	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT + CONST_NET_RADIUS) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	targetJump, targetJumps = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP) --X Ziel in Schmetterhoehe
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
 	if (target > CONST_MITTE) then --Wenn der Ball mich nix angeht
@@ -110,26 +107,16 @@ function generatenaechsterBallSchmettern()
 	angriffsstaerke = math.random(MIN_ANGRIFFSSTAERKE,MAX_ANGRIFFSSTAERKE)
 end
 
-function estimImpact(bx,by,vbx,vby,destY,Frage) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-    local time1 = ball_time_to_y(bx, by, vbx, vby, destY)
-    local resultX, hiz = estimx(time1)
-	local estimbspeedx = bspeedx()
-
-	if hit then
-		estimbspeedx=-estimbspeedx
-	end
+function estimImpact(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+    local time1 = ball_time_to_y(destY, bx, by, vbx, vby)
+    local resultX, hit, estimbspeedx = estimx(time1)
 
 	if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
 		resultX = 2 * CONST_BALL_LEFT_NET - resultX
 		estimbspeedx=-estimbspeedx
 	end
-
-	if (Frage == 1) then
-		return resultX
-	end
-	if (Frage == 2) then
-		return estimbspeedx
-	end
+	
+	return resultX, estimbspeedx
 end
 
 -- TODO make the API function return that bool, so we can remove this one
@@ -149,34 +136,17 @@ function movetoX (x)
 end
 
 function jumpto (y)
- if (blobtimetoy (y,3) >= balltimetoy (y)) then
+ if (blobtimetoy (y) >= balltimetoy (y)) then
   jump()
  end
 end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
- return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), y)
+ return ball_time_to_y(y, balldata())
 end
 
-function blobtimetoy (y, Anweisung) --funktioniert in Ermangelung einer Zugriffsfunktion blobbyspeedy() nur vor dem Absprung :[
- grav=-0.44
- time1=-14.5/grav+1/grav*math.sqrt(2*grav*(y-144.5)+14.5^2)
- time2=-14.5/grav-1/grav*math.sqrt(2*grav*(y-144.5)+14.5^2)
- timemin=math.min(time1,time2)
- timemax=math.max(time1,time2)
- if (Anweisung==1) then
-  return timemin
- end
- if (Anweisung==2) then
-  return timemax
- end
- if (Anweisung==3) then
-  if (timemin > 0) then
-   return timemin
-  else
-   return timemax
-  end
- end
+function blobtimetoy (y) --funktioniert in Ermangelung einer Zugriffsfunktion blobbyspeedy() nur vor dem Absprung :[
+ return parabola_time_first(144.5, 14.5, -0.44, y)
 end
 
 function weiterleiten()
@@ -187,14 +157,13 @@ end
 function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0=nein, 1=ja auf der Seite des Bots, 2= auf der Seite des Gegners)
  if (361.5 < estimatex(323)) and (estimatex(323) < 438.5) then
   if (estimatex(323)<=400) then
-   answer=1
+   return 1
   else
-   answer=2
+   return 2
   end
- else
-  answer=0
  end
- return answer
+ -- otherwise, return 0
+ return 0
 end
 
 function estimatey (x)

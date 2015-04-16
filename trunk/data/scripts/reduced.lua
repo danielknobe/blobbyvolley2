@@ -109,15 +109,15 @@ function lowPlay()
 end
 
 function estimImpactHigh()
-   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP - 25)
+   estimImpact2(CONST_BLOBBY_MAXJUMP - 25, balldata())
 end
 
 function estimImpactLow()
-   estimImpact2(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG)
+   estimImpact2(CONST_BLOBBY_KOPF_BERUEHRUNG, balldata())
 end
 
-function estimImpact2(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   timeto = ball_time_to_y(bx, by, vbx, vby, destY)
+function estimImpact2(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+   timeto = ball_time_to_y(destY, bx, by, vbx, vby)
 
    if (timeto == math.huge) then
       target = nil

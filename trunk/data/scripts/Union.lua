@@ -136,9 +136,9 @@ end
 function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45° Winkel an
                                    --plays ball in the air at height maxjump with 45° angle
                                    --funcno(s)=2,3
- maxjump  = blobbymaxjump
- distance = 32.25
- targetx=estimatex (maxjump) - distance
+ local maxjump  = blobbymaxjump
+ local distance = 32.25
+ local targetx=estimatex (maxjump) - distance
  if (funcno==1) then
   return -1
  end
@@ -147,17 +147,16 @@ function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45°
    return math.random(10, 100)
   end
   if (funcno==3) and (action==false) then
-   if (bspeedx() <= 3) and (math.max(balltimetox(targetx), balltimetoy(maxjump)) >= math.max(blobtimetoy(maxjump), blobtimetox(targetx))) then
-    if (bspeedx()==0) then
-     ret=85
-    else
-     ret=math.min((10^(-math.abs(bspeedx()))+1),1)*85
-    end
+   if target ~= math.huge and (bspeedx() <= 3) and (math.max(balltimetox(targetx), balltimetoy(maxjump)) >= math.max(blobtimetoy(maxjump), blobtimetox(targetx))) then
     if (estimhitnet()==true) and (blobtimetox(CONST_BALL_LEFT_NET)<=balltimetoy(netheight)) then
-     ret=190
+     return 190
     end
-    return ret
-   else
+	if (bspeedx()==0) then
+     return 85
+    else
+     return math.min((10^(-math.abs(bspeedx()))+1),1)*85
+    end
+	else
     return 0
    end
   end
@@ -197,7 +196,12 @@ function takelow (funcno, action) --Ballannahme ohne Sprung zum Stellen (bspeedx
   end
  end
  if (action==true) then
-  moveto (estimatex(220.5))
+  local target =estimatex( blobbyheadheight )
+  if target ~= math.huge then
+	moveto ( target )
+  else
+	moveto( 200 )
+  end
  end
 end
 
@@ -211,7 +215,8 @@ function wait (funcno, action) --Auf guter Position auf eine gegnerische Aktion 
   return 200
  end
  if (funcno==3) and (action==false) then
-  if (estimatex(393.625) > 424.5) then
+  local estimpos = estimatex( blobbyheadheight )
+  if ( estimpos > 424.5 and estimpos ~= math.huge) then
    return 200
   else
    return -1
@@ -257,17 +262,18 @@ function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück
  if (bspeedy()==0) and (bspeedx()==0) then
   return ballx()
  end
- local time1 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), destY)
- local resultX, hit = estimx(time1)
- local estimbspeedx=bspeedx()
- 
- if hit then
-  estimbspeedx = -estimbspeedx
+ local time1 = ball_time_to_y(destY, balldata())
+ -- return #inf if time is #inf, i.e. destY will never be reached
+ if time1 == math.huge then
+	return time1
  end
+ local resultX, hit, estimbspeedx = estimx(time1)
  
- if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET-CONST_BALL_RADIUS) <= netheight) and (estimbspeedx > 0) then
+ if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET) <= netheight) and (estimbspeedx > 0) then
   resultX = mirror(resultX, CONST_BALL_LEFT_NET)
-  estimbspeedx=-estimbspeedx
+ end
+ if (resultX < CONST_BALL_RIGHT_NET) and (estimatey(CONST_BALL_RIGHT_NET) <= netheight) and (estimbspeedx < 0) then
+  resultX = mirror(resultX, CONST_BALL_RIGHT_NET)
  end
  return resultX
 end
@@ -287,12 +293,7 @@ end
 function estimhitnet() --Wird der Ball das Netz treffen (bool)
                        --Will the ball hit the net (bool)
  safety=5
- if (361.5-safety < estimatex(323)) and (estimatex(323) < 438.5+safety) then
-  answer=true
- else
-  answer=false
- end
- return answer
+ return (361.5-safety < estimatex(323)) and (estimatex(323) < 438.5+safety)
 end
 
 function estimatey (x) --Y Position des Balls, wenn er sich an der angegebenen X Koordinate befindet
@@ -307,10 +308,10 @@ function blobtimetox (x) --Zeit, die der Bot benoetigt, um eine gewisse X-Koordi
 end
 
 function balltimetox(x)
-	return ball_time_to_x(ballx(), bally(), bspeedx(), bspeedy(), x)
+	return ball_time_to_x(x, balldata())
 end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
                          --time needed by the ball to reach a given y position
- return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), y)
+ return ball_time_to_y(y, balldata())
 end

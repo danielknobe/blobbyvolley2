@@ -74,7 +74,7 @@ function sprungattacke(p_aggroservice)
 end
 
 function aggroflagtesten()
-	if (ballx() > CONST_MITTE) then
+	if (ballx() > CONST_FIELD_MIDDLE) then
 		aggro = false 
 		return
 	end
@@ -95,7 +95,7 @@ function estimImpact()
 	-- standart Realfloor ist 144 
 	-- warscheinilcher Realflfoor f�r Ball + blobby ist 144 (der Ball muss schon berechnet worden sein)
 	local realFloor = 144
-    
-    local time3 = ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), realFloor)
-    return estimx(time3)    
+	
+	local time3 = ball_time_to_y(realFloor, balldata())
+	return estimx(time3)
 end
