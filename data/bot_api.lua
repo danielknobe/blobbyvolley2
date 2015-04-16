@@ -7,8 +7,8 @@ CONST_FIELD_MIDDLE		= CONST_FIELD_WIDTH / 2 						-- centre position
 CONST_BALL_LEFT_BORDER	= CONST_BALL_RADIUS								-- minimum position of ball
 CONST_BALL_RIGHT_BORDER	= CONST_FIELD_WIDTH - CONST_BALL_RADIUS			-- maximum position of ball
 
-CONST_BALL_LEFT_NET		= FIELD_MIDDLE - CONST_BALL_RADIUS - CONST_NET_RADIUS
-CONST_BALL_RIGHT_NET	= FIELD_MIDDLE + CONST_BALL_RADIUS + CONST_NET_RADIUS
+CONST_BALL_LEFT_NET		= CONST_FIELD_MIDDLE - CONST_BALL_RADIUS - CONST_NET_RADIUS
+CONST_BALL_RIGHT_NET	= CONST_FIELD_MIDDLE + CONST_BALL_RADIUS + CONST_NET_RADIUS
 
 -- legacy functions
 -- these function definitions make lua functions for the old api functions, which are sometimes more conveniente to use 
@@ -34,6 +34,13 @@ function bspeedy()
 	return y
 end
 
+-- all combined
+function balldata()
+	-- need x,y vars to expand to two results
+	local x, y = get_ball_pos()
+	return x, y, get_ball_vel()
+end
+
 function posx()
 	local x, y = get_blob_pos( LEFT_PLAYER )
 	return x
@@ -42,6 +49,19 @@ end
 function posy()
 	local x, y = get_blob_pos( LEFT_PLAYER )
 	return y
+end
+
+function moveto(target)
+	local x = get_blob_pos( LEFT_PLAYER )
+	if x < target - 2 then
+		right()
+		return false
+	elseif x > target + 2 then
+		left()
+		return false
+	else
+		return true
+	end
 end
 
 function oppx()
@@ -121,14 +141,14 @@ end
 -----------------------------------------------------------------------------------------
 
 -- calculates the time the ball needs to reach the specified x position
-function ball_time_to_x( posx, posy, velx, vely, destination)
+function ball_time_to_x( destination, posx, posy, velx, vely )
 	return linear_time_first(posx, velx, destination)
 end
 
 -- calculates the time the ball needs from pos to destination
-function ball_time_to_y( posx, posy, velx, vely, destination )
+function ball_time_to_y( destination, posx, posy, velx, vely )
 	-- TODO this ignores net bounces
-	return parabola_first_time( posy, vely, CONST_BALL_GRAVITY, destination )
+	return parabola_time_first( posy, vely, CONST_BALL_GRAVITY, destination )
 end
 
 -- old style estimate functions
@@ -137,11 +157,11 @@ function estimx(time)
 	local straight = ballx() + time * bspeedx()
 	-- correct wall impacts
 	if(straight > CONST_BALL_RIGHT_BORDER) then
-		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER
+		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -bspeedx()
 	elseif(straight < CONST_BALL_LEFT_BORDER) then
-		return mirror(resultX, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER
+		return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -bspeedx()
 	else
-		return mirror, nil
+		return straight, nil, bspeedx()
 	end
 end
 

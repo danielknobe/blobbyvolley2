@@ -79,8 +79,8 @@ function OnGame()
         ResetWait()
         CT_ServeIndex = 0
 
-        local timeJump = timeToHitHeight(380, 390, 20)
-        local timeGround = timeToHitHeight(200, 222, 40)
+        local timeJump = timeToHitHeight(380, 390)
+        local timeGround = timeToHitHeight(200, 222)
         local timeBlock = timeToOppSmash(390)
         local estimhx = r_estimx(timeJump)
         local estimGround = r_estimx(timeGround)
@@ -88,9 +88,7 @@ function OnGame()
         local block = 0
         local wallcoll = willHitWall(timeJump)
         if (timeBlock ~= -1) then timeBlock = timeBlock+(estimBlock-400)/13 end
-        if (timeBlock == -1) then timeBlock = 9999 end
-        if (timeJump == -1) then estimhx = 9999 end
-        if (timeGround == -1) then estimGround = 210 end
+        if (timeGround == math.huge) then estimGround = 210 end	-- fallback option
         if (CT_SkipNextBlock == 0) then CT_SkipNextBlock = math.random(1,10) end
 
         if (posy() < CT_LastHeight and posy() > 150 and posy() < 330) then CT_Action = "" end
@@ -108,7 +106,7 @@ function OnGame()
                 if ((posy() < 150) or (touches() ~= CT_LastTouches)) then
                         CT_Action = ""
                 else
-                        if (estimhx == 9999) then estimhx = ballx()+bspeedx() end
+                        if (timeJump == math.huge) then estimhx = ballx()+bspeedx() end
                         jump()
                         if (posy() > 300) then
                                 if (math.abs(bally()-posy()) < 18) then
@@ -132,7 +130,7 @@ function OnGame()
                 if ((posy() < 150) or (touches() ~= CT_LastTouches)) then
                         CT_Action = ""
                 else
-                        if (estimhx == 9999) then estimhx = ballx()+bspeedx() end
+                        if (timeJump == math.huge) then estimhx = ballx()+bspeedx() end
                         jump()
                         if (CT_ShotDecision == 0 and touches() == 2) then CT_ShotDecision = math.random(5,6) end
                         if (CT_ShotDecision == 0) then CT_ShotDecision = math.random(3,6) end
@@ -201,16 +199,17 @@ function OnGame()
 end
 
 
-function timeToHitHeight(minheight, maxheight, depth)
+function timeToHitHeight(minheight, maxheight)
     local target = minheight
     if bspeedy() < 0 then
         target = maxheight
     end
-    return math.ceil(ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), (minheight + maxheight)/2))
+    return math.ceil(ball_time_to_y(target, balldata()))
 end
 
 function timeToOppSmash(height)
-    return ball_time_to_y(ballx(), bally(), bspeedx(), bspeedy(), height)
+	if (bally() < height) then return -1 end
+    return ball_time_to_y(height, balldata())
 end
 
 function r_estimx(time)

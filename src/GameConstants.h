@@ -20,9 +20,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cmath>
 
-// Difficulty Settings
-const float BALL_SPEED_FACTOR = 1.00;
-
 // Border Settings
 const float LEFT_PLANE = 0;
 const float RIGHT_PLANE = 800.0;
@@ -55,7 +52,7 @@ const float BLOBBY_JUMP_BUFFER = GRAVITATION / 2;
 
 // Ball Settings
 const float BALL_RADIUS = 31.5;
-const float BALL_GRAVITATION = 0.287 * BALL_SPEED_FACTOR * BALL_SPEED_FACTOR;
+const float BALL_GRAVITATION = 0.287;
 const float BALL_COLLISION_VELOCITY = std::sqrt(0.75 * RIGHT_PLANE * BALL_GRAVITATION); /// \todo work on a full-fledged physics spec
 
 
