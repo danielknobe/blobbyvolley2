@@ -87,40 +87,15 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		static const Vector2& getBallPosition();
 		static const Vector2& getBallVelocity();
 		static int touches(lua_State* state);
-		static int ballx(lua_State* state);
-		static int bally(lua_State* state);
-		static int bspeedx(lua_State* state);
-		static int bspeedy(lua_State* state);
 
 		// blob information
 		static int launched(lua_State* state);
-		static int posx(lua_State* state);
-		static int posy(lua_State* state);
-		static int oppx(lua_State* state);
-		static int oppy(lua_State* state);
 
 		// game status
 		static int getScore(lua_State* state);
 		static int getOppScore(lua_State* state);
 		static int getScoreToWin(lua_State* state);
 		static int getGameTime(lua_State* state);
-
-		// predictions
-		static int estimate(lua_State* state);		// deprecated
-		static int estimx(lua_State* state);		// deprecated
-		static int estimy(lua_State* state);		// deprecated
-
-		static int predictx(lua_State* state);
-		static int predicty(lua_State* state);
-		static int timetox(lua_State* state);
-		static int timetoy(lua_State* state);
-		static int blobtimetox(lua_State* state);
-		static int blobtimetoy(lua_State* state);
-		static int xaty(lua_State* state);
-		static int yatx(lua_State* state);
-
-		static int nextevent(lua_State* state);
-		static int predictImpact(lua_State* state);
 
 		unsigned int mStartTime;
 

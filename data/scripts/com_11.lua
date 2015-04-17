@@ -35,18 +35,18 @@ function OnServe(ballready)
 	servex=ballx()+servexVersetzung
 	naechsterBallSchmettern = true
 	generatenaechsterBallSchmettern()
-	if ballready and movetoX(servex) then
+	if ballready and moveto(servex) then
 		jump()
 	end
 end	
 
 function OnGame()
-	target, targets = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_KOPF_BERUEHRUNG) --X Ziel in Blobbyhoehe
-	targetNetz = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_NET_HEIGHT + CONST_NET_RADIUS) --X Ziel in Netzhoehe (Netzrollerberechnung)
-	targetJump, targetJumps = estimImpact(ballx(),bally(),bspeedx(),bspeedy(),CONST_BLOBBY_MAXJUMP) --X Ziel in Schmetterhoehe
+	target, targets = estimImpact(CONST_BLOBBY_KOPF_BERUEHRUNG, balldata()) --X Ziel in Blobbyhoehe
+	targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS, balldata()) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	targetJump, targetJumps = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
-	if (target > CONST_MITTE) then --Wenn der Ball mich nix angeht
+	if (target > CONST_FIELD_MIDDLE) then --Wenn der Ball mich nix angeht
 		moveto(135) --Dann auf Standartposition warten
 		generatenaechsterBallSchmettern() --Angriffsstaerke neu berechnen
 	else
@@ -70,7 +70,7 @@ end
 
 function sprungattacke(p_angriffsstaerke)
 	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP))) then
-		moveto (CONST_MITTE)
+		moveto (CONST_FIELD_MIDDLE)
 		jumpto (383)
 	else
 		p_angriffsstaerke=math.max(p_angriffsstaerke, MIN_ANGRIFFSSTAERKE + ANGRIFFSEINSCHRAENKUNG_HINTEN * (targetJump / CONST_BALL_LEFT_NET)) --Weiter hinten nicht ganz so hoch spielen (kommt nicht auf die andere Seite)
@@ -86,7 +86,7 @@ function naechsterBallSchmetternFlagTesten()
 		return
 	end
 	
-	if (ballx() > CONST_MITTE) then -- wenn der ball auf der Anderen Seite ist soll der bot nicht naechsterBallSchmettern sein
+	if (ballx() > CONST_FIELD_MIDDLE) then -- wenn der ball auf der Anderen Seite ist soll der bot nicht naechsterBallSchmettern sein
 		naechsterBallSchmettern = false 
 		return
 	end
@@ -107,32 +107,16 @@ function generatenaechsterBallSchmettern()
 	angriffsstaerke = math.random(MIN_ANGRIFFSSTAERKE,MAX_ANGRIFFSSTAERKE)
 end
 
-function estimImpact(bx,by,vbx,vby,destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+function estimImpact(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
     local time1 = ball_time_to_y(destY, bx, by, vbx, vby)
     local resultX, hit, estimbspeedx = estimx(time1)
 
-	if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_MITTE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
+	if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_FIELD_MIDDLE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
 		resultX = 2 * CONST_BALL_LEFT_NET - resultX
 		estimbspeedx=-estimbspeedx
 	end
 	
 	return resultX, estimbspeedx
-end
-
--- TODO make the API function return that bool, so we can remove this one
-function movetoX (x)
- if (math.abs(posx()-x)>math.abs(posx()+4.5-x)) then
-  right()
-  done=false
- else
-  if (math.abs(posx()-x)>math.abs(posx()-4.5-x)) then
-   left()
-   done=false
-  else
-   done=true
-  end
- end
- return done
 end
 
 function jumpto (y)
@@ -167,7 +151,7 @@ function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0
 end
 
 function estimatey (x)
- return estimy(linear_time_first(ballx(), bspeedx(), x))
+ return estimy(ball_time_to_x(x, balldata()))
 end
 
 function touchable (t)
