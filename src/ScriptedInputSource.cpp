@@ -38,7 +38,6 @@ extern "C"
 #include "DuelMatch.h"
 #include "DuelMatchState.h"
 #include "GameConstants.h"
-#include "FileRead.h"
 
 /* implementation */
 const DuelMatch* ScriptedInputSource::mMatch = 0;
@@ -104,24 +103,11 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	setGameConstants();
 	setGameFunctions();
 
-	int error = FileRead::readLuaScript("bot_api", mState);
-	if (error == 0)
-		error = lua_pcall(mState, 0, 6, 0);
-
-	if (error)
-	{
-		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-		std::cerr << std::endl;
-		ScriptException except;
-		except.luaerror = lua_tostring(mState, -1);
-		BOOST_THROW_EXCEPTION(except);
-	}
 
 	//luaopen_math(mState);
 	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "touches", touches);
 	lua_register(mState, "launched", launched);
-	lua_register(mState, "debug", debug);
 	lua_register(mState, "jump", jump);
 	lua_register(mState, "left", left);
 	lua_register(mState, "right", right);
@@ -130,22 +116,9 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	lua_register(mState, "getScoreToWin", getScoreToWin);
 	lua_register(mState, "getGameTime", getGameTime);
 
-	//lua_register(mState, "parabel", parabel);
-
-	error = FileRead::readLuaScript(filename, mState);
-
-	if (error == 0)
-		error = lua_pcall(mState, 0, 6, 0);
-
-	if (error)
-	{
-		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-		std::cerr << std::endl;
-		ScriptException except;
-		except.luaerror = lua_tostring(mState, -1);
-		BOOST_THROW_EXCEPTION(except);
-	}
-
+	openScript("api");
+	openScript("bot_api");
+	openScript(filename);
 
 	// check whether all required lua functions are available
 	bool onserve, ongame, onoppserve;
@@ -311,25 +284,6 @@ int ScriptedInputSource::launched(lua_State* state)
 {
 	lua_pushnumber(state, mMatch->getBlobJump(mCurrentSource->mSide));
 	return 1;
-}
-
-int ScriptedInputSource::debug(lua_State* state)
-{
-	int count = lua_gettop(state);
-	std::cout << "Lua Debug: ";
-	for( int i = 1; i <= count; ++i)
-	{
-		lua_pushvalue(state, i);
-		const char* str = lua_tostring(state, -1);
-		std::cout << (i != 1 ? ", " : "");
-		if(str)
-		 std::cout << str;
-		else
-		std::cout << "[" << lua_typename(state, lua_type(state, -1)) << "]";
-	}
-	std::cout << "\n";
-	lua_pop(state, lua_gettop(state));
-	return 0;
 }
 
 int ScriptedInputSource::jump(lua_State* state)

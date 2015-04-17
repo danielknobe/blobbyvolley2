@@ -30,10 +30,11 @@ struct GameLogicState
 {
 	unsigned int leftScore;
 	unsigned int rightScore;
+	unsigned int hitCount[MAX_PLAYERS];
 	PlayerSide servingPlayer;
+	PlayerSide winningPlayer = NO_PLAYER;
 
-	unsigned int leftSquish;
-	unsigned int rightSquish;
+	unsigned int squish[MAX_PLAYERS];
 	unsigned int squishWall;
 	unsigned int squishGround;
 

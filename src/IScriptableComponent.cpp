@@ -5,6 +5,12 @@
 #include "Global.h"
 #include "GameConstants.h"
 #include "DuelMatchState.h"
+#include "FileRead.h"
+
+#include <iostream>
+
+// fwd decl
+int lua_print(lua_State* state);
 
 IScriptableComponent::IScriptableComponent() :
 	mState(luaL_newstate()),
@@ -14,11 +20,29 @@ IScriptableComponent::IScriptableComponent() :
 	lua_pushliteral(mState, "__C++_ScriptComponent__");
 	lua_pushlightuserdata(mState, (void*)this);
 	lua_settable(mState, LUA_REGISTRYINDEX);
+
+	lua_register(mState, "print", lua_print);
 }
 
 IScriptableComponent::~IScriptableComponent()
 {
 	lua_close(mState);
+}
+
+void IScriptableComponent::openScript(std::string file)
+{
+	int error = FileRead::readLuaScript(file, mState);
+	if (error == 0)
+		error = lua_pcall(mState, 0, 0, 0);
+
+	if (error)
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+		ScriptException except;
+		except.luaerror = lua_tostring(mState, -1);
+		BOOST_THROW_EXCEPTION(except);
+	}
 }
 
 void IScriptableComponent::setLuaGlobal(const char* name, double value)
@@ -141,6 +165,24 @@ int get_blob_vel(lua_State* state)
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	return lua_pushvector(state, s->worldState.blobVelocity[side], VectorType::VELOCITY);
+}
+
+int lua_print(lua_State* state)
+{
+	int count = lua_gettop(state);
+	for( int i = 1; i <= count; ++i)
+	{
+		lua_pushvalue(state, i);
+		const char* str = lua_tostring(state, -1);
+		std::cout << (i != 1 ? ", " : "");
+		if(str)
+		 std::cout << str;
+		else
+		std::cout << "[" << lua_typename(state, lua_type(state, -1)) << "]";
+	}
+	std::cout << "\n";
+	lua_pop(state, lua_gettop(state));
+	return 0;
 }
 
 void IScriptableComponent::setGameFunctions()

@@ -28,9 +28,12 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(GameLogicState)
 {
 	io.uint32(value.leftScore);
 	io.uint32(value.rightScore);
+	io.uint32(value.hitCount[LEFT_PLAYER]);
+	io.uint32(value.hitCount[RIGHT_PLAYER]);
 	io.template generic<PlayerSide>( value.servingPlayer );
-	io.uint32(value.leftSquish);
-	io.uint32(value.rightSquish);
+	io.template generic<PlayerSide>( value.winningPlayer );
+	io.uint32(value.squish[LEFT_PLAYER]);
+	io.uint32(value.squish[RIGHT_PLAYER]);
 	io.uint32(value.squishWall);
 	io.uint32(value.squishGround);
 	io.boolean(value.isGameRunning);
@@ -40,7 +43,8 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(GameLogicState)
 void GameLogicState::swapSides()
 {
 	std::swap(leftScore, rightScore);
-	std::swap(leftSquish, rightSquish);
+	std::swap(squish[LEFT_PLAYER], squish[RIGHT_PLAYER]);
+	std::swap(hitCount[LEFT_PLAYER], hitCount[RIGHT_PLAYER]);
 
 	if(servingPlayer == LEFT_PLAYER)
 	{
@@ -54,8 +58,9 @@ void GameLogicState::swapSides()
 
 std::ostream& operator<<(std::ostream& stream, const GameLogicState& state)
 {
-	stream << "GAME LOGIC STATE [ " << state.leftScore << " : " << state.rightScore << "  " << state.servingPlayer
-			<< "  " << state.leftSquish << " " << state.rightSquish << "  " << state.squishWall
+	stream << "GAME LOGIC STATE [ " << state.leftScore << " : " << state.rightScore << " "
+			<< state.hitCount[LEFT_PLAYER] << " " << state.hitCount[RIGHT_PLAYER] << "  " << state.servingPlayer
+			<< "  " << state.squish[LEFT_PLAYER] << " " << state.squish[RIGHT_PLAYER] << "  " << state.squishWall
 			<< "  " << state.squishGround << "  " << state.isGameRunning << "  " << state.isBallValid << "]";
 	return stream;
 }

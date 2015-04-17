@@ -38,6 +38,7 @@ protected:
 	IScriptableComponent();
 	virtual ~IScriptableComponent();
 
+	void openScript(std::string file);
 	void setLuaGlobal(const char* name, double value);
 	bool getLuaFunction(const char* name) const;
 

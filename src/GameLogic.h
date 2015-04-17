@@ -231,7 +231,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		PlayerSide mWinningPlayer;
 
 		/// clock for determining game time
-		Clock clock;
+		Clock mClock;
 };
 
 extern const std::string DUMMY_RULES_NAME;
