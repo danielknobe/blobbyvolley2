@@ -124,7 +124,7 @@ function estimImpact2(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit
       return
    end
    -- TODO need estimx function for bx and vbx state
-   naivetarget = (vbx * time1) + bx
+   naivetarget = (vbx * timeto) + bx
    resultX = naivetarget
    estimbspeedx=bspeedx()
 

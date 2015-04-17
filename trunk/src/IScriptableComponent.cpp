@@ -94,6 +94,12 @@ int lua_pushvector(lua_State* state, const Vector2& v, VectorType type)
 	return 2;
 }
 
+static inline int lua_toint(lua_State* state, int index)
+{
+	double value = lua_tonumber(state, index);
+	return int(value + (value > 0 ? 0.5 : -0.5));
+}
+
 // Access struct to get to the privates of IScriptableComponent
 struct IScriptableComponent::Access
 {
@@ -119,10 +125,28 @@ int get_ball_vel(lua_State* state)
 	return lua_pushvector(state, s->worldState.ballVelocity, VectorType::VELOCITY);
 }
 
+int get_blob_pos(lua_State* state)
+{
+	auto s = getMatch( state );
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	lua_pop(state, 1);
+	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
+	return lua_pushvector(state, s->worldState.blobPosition[side], VectorType::POSITION);
+}
 
+int get_blob_vel(lua_State* state)
+{
+	auto s = getMatch( state );
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	lua_pop(state, 1);
+	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
+	return lua_pushvector(state, s->worldState.blobVelocity[side], VectorType::VELOCITY);
+}
 
 void IScriptableComponent::setGameFunctions()
 {
 	lua_register(mState, "get_ball_pos", get_ball_pos);
 	lua_register(mState, "get_ball_vel", get_ball_vel);
+	lua_register(mState, "get_blob_pos", get_blob_pos);
+	lua_register(mState, "get_blob_vel", get_blob_vel);
 }
