@@ -12,7 +12,7 @@ function OnMistake(player)
 end
 
 function OnBallHitsPlayer(player)
-	opp = opponent(player)
+	local opp = opponent(player)
 	if player == LEFT_PLAYER then
 		mh = lgh
 		oh = rgh
@@ -31,7 +31,7 @@ function OnBallHitsPlayer(player)
 end
 
 function OnBallHitsGround(player)
-	opp = opponent(player)
+	local opp = opponent(player)
 	if player == LEFT_PLAYER then
 		lgh = lgh + 1
 		mh = lgh

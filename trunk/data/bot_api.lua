@@ -1,45 +1,9 @@
 -- this file provides an intermediary layer between the very simplistic c++ lua api and the 
 -- lua bot api that can be used to program blobby volley 2 bots.
 
--- derived constants that can be useful 
-CONST_FIELD_MIDDLE		= CONST_FIELD_WIDTH / 2 						-- centre position
-
-CONST_BALL_LEFT_BORDER	= CONST_BALL_RADIUS								-- minimum position of ball
-CONST_BALL_RIGHT_BORDER	= CONST_FIELD_WIDTH - CONST_BALL_RADIUS			-- maximum position of ball
-
-CONST_BALL_LEFT_NET		= CONST_FIELD_MIDDLE - CONST_BALL_RADIUS - CONST_NET_RADIUS
-CONST_BALL_RIGHT_NET	= CONST_FIELD_MIDDLE + CONST_BALL_RADIUS + CONST_NET_RADIUS
-
 -- legacy functions
 -- these function definitions make lua functions for the old api functions, which are sometimes more conveniente to use 
 -- than their c api equivalent.
-
-function ballx()
-	local x, y = get_ball_pos()
-	return x
-end
-
-function bally()
-	local x, y = get_ball_pos()
-	return y
-end
-
-function bspeedx()
-	local x, y = get_ball_vel()
-	return x
-end
-
-function bspeedy()
-	local x, y = get_ball_vel()
-	return y
-end
-
--- all combined
-function balldata()
-	-- need x,y vars to expand to two results
-	local x, y = get_ball_pos()
-	return x, y, get_ball_vel()
-end
 
 function posx()
 	local x, y = get_blob_pos( LEFT_PLAYER )
@@ -112,30 +76,6 @@ function linear_time_first(pos, vel, destination)
 	return (destination - pos) / vel
 end
 
--- this function mirrors pos around mirror
-function mirror(pos, mirror)
-	return 2*mirror - pos
-end
-
--------------------------------------------------------------------------------------
---   utilities
-
--- emulate ?: operator
-function select(cond, a, b)
-	if cond then
-		return a
-	end
-	return b
-end
-
-function make_unsigned(num)
-	if num >= 0 then
-		return num
-	else
-		return math.huge
-	end
-end
-
 -----------------------------------------------------------------------------------------
 -- 						enhances ball prediction functions							   --
 -----------------------------------------------------------------------------------------
@@ -155,6 +95,7 @@ end
 
 function estimx(time)
 	local straight = ballx() + time * bspeedx()
+	debug(time, straight)
 	-- correct wall impacts
 	if(straight > CONST_BALL_RIGHT_BORDER) then
 		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -bspeedx()

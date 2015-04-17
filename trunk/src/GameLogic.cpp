@@ -69,8 +69,8 @@ IGameLogic::IGameLogic()
 , mWinningPlayer(NO_PLAYER)
 {
 	// init clock
-	clock.reset();
-	clock.start();
+	mClock.reset();
+	mClock.start();
 	mScores[LEFT_PLAYER] = 0;
 	mScores[RIGHT_PLAYER] = 0;
 	mTouches[LEFT_PLAYER] = 0;
@@ -122,7 +122,7 @@ PlayerSide IGameLogic::getWinningPlayer() const
 
 Clock& IGameLogic::getClock()
 {
-	return clock;
+	return mClock;
 }
 
 PlayerSide IGameLogic::getLastErrorSide()
@@ -139,9 +139,12 @@ GameLogicState IGameLogic::getState() const
 	GameLogicState gls;
 	gls.leftScore = getScore(LEFT_PLAYER);
 	gls.rightScore = getScore(RIGHT_PLAYER);
+	gls.hitCount[LEFT_PLAYER] = getTouches(LEFT_PLAYER);
+	gls.hitCount[RIGHT_PLAYER] = getTouches(RIGHT_PLAYER);
 	gls.servingPlayer = getServingPlayer();
-	gls.leftSquish = mSquish[LEFT_PLAYER];
-	gls.rightSquish = mSquish[RIGHT_PLAYER];
+	gls.winningPlayer = getWinningPlayer();
+	gls.squish[LEFT_PLAYER] = mSquish[LEFT_PLAYER];
+	gls.squish[RIGHT_PLAYER] = mSquish[RIGHT_PLAYER];
 	gls.squishWall = mSquishWall;
 	gls.squishGround = mSquishGround;
 	gls.isGameRunning = mIsGameRunning;
@@ -154,9 +157,11 @@ void IGameLogic::setState(GameLogicState gls)
 {
 	setScore(LEFT_PLAYER, gls.leftScore);
 	setScore(RIGHT_PLAYER, gls.rightScore);
+	mTouches[LEFT_PLAYER] = gls.hitCount[LEFT_PLAYER];
+	mTouches[RIGHT_PLAYER] = gls.hitCount[RIGHT_PLAYER];
 	setServingPlayer(gls.servingPlayer);
-	mSquish[LEFT_PLAYER] = gls.leftSquish;
-	mSquish[RIGHT_PLAYER] = gls.rightSquish;
+	mSquish[LEFT_PLAYER] = gls.squish[LEFT_PLAYER];
+	mSquish[RIGHT_PLAYER] = gls.squish[RIGHT_PLAYER];
 	mSquishWall = gls.squishWall;
 	mSquishGround = gls.squishGround;
 	mIsGameRunning = gls.isGameRunning;
@@ -168,9 +173,9 @@ void IGameLogic::setState(GameLogicState gls)
 // -------------------------------------------------------------------------------------------------
 void IGameLogic::step()
 {
-	clock.step();
+	mClock.step();
 
-	if(clock.isRunning())
+	if(mClock.isRunning())
 	{
 		--mSquish[0];
 		--mSquish[1];
@@ -184,12 +189,13 @@ void IGameLogic::step()
 void IGameLogic::onPause()
 {
 	/// pausing for now only means stopping the clock
-	clock.stop();
+	// pausing is saved into an atomic variable, so this is safe
+	mClock.stop();
 }
 
 void IGameLogic::onUnPause()
 {
-	clock.start();
+	mClock.start();
 }
 
 PlayerInput IGameLogic::transformInput(PlayerInput ip, PlayerSide player)
