@@ -22,6 +22,9 @@ IScriptableComponent::IScriptableComponent() :
 	lua_settable(mState, LUA_REGISTRYINDEX);
 
 	lua_register(mState, "print", lua_print);
+
+	// open math lib
+	luaL_requiref(mState, "math", luaopen_math, 1);
 }
 
 IScriptableComponent::~IScriptableComponent()
@@ -61,6 +64,16 @@ bool IScriptableComponent::getLuaFunction(const char* fname) const
 	}
 
 	return true;
+}
+
+void IScriptableComponent::callLuaFunction(int arg_count)
+{
+	if (lua_pcall(mState, arg_count, 0, 0))
+	{
+		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
+		std::cerr << std::endl;
+		lua_pop(mState, 1);
+	}
 }
 
 void IScriptableComponent::setGameConstants()
@@ -167,6 +180,30 @@ int get_blob_vel(lua_State* state)
 	return lua_pushvector(state, s->worldState.blobVelocity[side], VectorType::VELOCITY);
 }
 
+int get_score( lua_State* state )
+{
+	auto s = getMatch( state );
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	lua_pop(state, 1);
+	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
+	if( side == LEFT_PLAYER )
+		lua_pushinteger(state, s->logicState.leftScore);
+	else
+		lua_pushinteger(state, s->logicState.rightScore);
+	return 1;
+}
+
+int get_touches( lua_State* state )
+{
+	auto s = getMatch( state );
+	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	lua_pop(state, 1);
+	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
+	lua_pushinteger(state, s->logicState.hitCount[side]);
+	return 1;
+}
+
+
 int lua_print(lua_State* state)
 {
 	int count = lua_gettop(state);
@@ -191,4 +228,6 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "get_ball_vel", get_ball_vel);
 	lua_register(mState, "get_blob_pos", get_blob_pos);
 	lua_register(mState, "get_blob_vel", get_blob_vel);
+	lua_register(mState, "get_score", get_score);
+	lua_register(mState, "get_touches", get_touches);
 }

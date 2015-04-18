@@ -496,20 +496,8 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 	private:
 
 		// lua functions
-		static int luaTouches(lua_State* state);
-		static int luaLaunched(lua_State* state);
-		static int luaBallX(lua_State* state);
-		static int luaBallY(lua_State* state);
-		static int luaBSpeedX(lua_State* state);
-		static int luaBSpeedY(lua_State* state);
-		static int luaPosX(lua_State* state);
-		static int luaPosY(lua_State* state);
-		static int luaSpeedX(lua_State* state);
-		static int luaSpeedY(lua_State* state);
 		static int luaMistake(lua_State* state);
 		static int luaScore(lua_State* state);
-		static int luaGetScore(lua_State* state);
-		static int luaGetOpponent(lua_State* state);
 		static int luaGetServingPlayer(lua_State* state);
 		static int luaGetGameTime(lua_State* state);
 		static int luaIsGameRunning(lua_State* state);
@@ -537,38 +525,15 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 
 	// add functions
 	luaL_requiref(mState, "math", luaopen_math, 1);
-	lua_register(mState, "touches", luaTouches);
-	lua_register(mState, "launched", luaLaunched);
-	lua_register(mState, "ballx", luaBallX);
-	lua_register(mState, "bally", luaBallY);
-	lua_register(mState, "bspeedx", luaBSpeedX);
-	lua_register(mState, "bspeedy", luaBSpeedY);
-	lua_register(mState, "posx", luaPosX);
-	lua_register(mState, "posy", luaPosY);
-	lua_register(mState, "speedx", luaSpeedX);
-	lua_register(mState, "speedy", luaSpeedY);
-	lua_register(mState, "getScore", luaGetScore);
 	lua_register(mState, "score", luaScore);
 	lua_register(mState, "mistake", luaMistake);
-	lua_register(mState, "opponent", luaGetOpponent);
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
 	lua_register(mState, "time", luaGetGameTime);
 	lua_register(mState, "isgamerunning", luaIsGameRunning);
 
 	// now load script file
-	int error = FileRead::readLuaScript(std::string("rules/") + filename, mState);
-
-	if (error == 0)
-		error = lua_pcall(mState, 0, 6, 0);
-
-	if (error)
-	{
-		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-		std::cerr << std::endl;
-		ScriptException except;
-		except.luaerror = lua_tostring(mState, -1);
-		throw except;
-	}
+	openScript("api");
+	openScript("rules_api");
 
 	lua_getglobal(mState, "SCORE_TO_WIN");
 	mScoreToWin = lua_toint(mState, -1);
@@ -736,134 +701,6 @@ LuaGameLogic* LuaGameLogic::getGameLogic(lua_State* state)
 	return gl;
 }
 
-int LuaGameLogic::luaTouches(lua_State* state)
-{
-	LuaGameLogic* gl = getGameLogic(state);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	lua_pushnumber(state, gl->getTouches(side));
-	return 1;
-}
-
-int LuaGameLogic::luaLaunched(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	lua_pushboolean(state, match->getBlobJump(side));
-	return 1;
-}
-
-int LuaGameLogic::luaBallX(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	float pos = match->getBallPosition().x;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaBallY(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	float pos = match->getBallPosition().y;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaBSpeedX(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	float vel = match->getBallVelocity().x;
-	lua_pushnumber(state, vel);
-	return 1;
-}
-
-int LuaGameLogic::luaBSpeedY(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	float vel = match->getBallVelocity().y;
-	lua_pushnumber(state, vel);
-	return 1;
-}
-
-int LuaGameLogic::luaPosX(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	float pos = match->getBlobPosition(side).x;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaPosY(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	float pos = match->getBlobPosition(side).y;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaSpeedX(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	float pos = match->getBlobVelocity(side).x;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaSpeedY(lua_State* state)
-{
-	lua_getglobal(state, "__MATCH_POINTER");
-	DuelMatch* match = (DuelMatch*)lua_touserdata(state, -1);
-	lua_pop(state, 1);
-
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
-	lua_pop(state, 1);
-	float pos = match->getBlobVelocity(side).y;
-	lua_pushnumber(state, pos);
-	return 1;
-}
-
-int LuaGameLogic::luaGetScore(lua_State* state)
-{
-	int pl = lua_toint(state, -1);
-	lua_pop(state, 1);
-	LuaGameLogic* gl = getGameLogic(state);
-
-	lua_pushnumber(state, gl->getScore((PlayerSide)pl));
-	return 1;
-}
-
 int LuaGameLogic::luaMistake(lua_State* state)
 {
 	int amount = lua_toint(state, -1);
@@ -889,14 +726,6 @@ int LuaGameLogic::luaScore(lua_State* state)
 
 	gl->score((PlayerSide)player, amount);
 	return 0;
-}
-
-int LuaGameLogic::luaGetOpponent(lua_State* state)
-{
-	int pl = lua_toint(state, -1);
-	lua_pop(state, 1);
-	lua_pushnumber(state, other_side((PlayerSide)pl));
-	return 1;
 }
 
 int LuaGameLogic::luaGetServingPlayer(lua_State* state)

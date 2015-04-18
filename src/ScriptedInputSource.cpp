@@ -40,60 +40,10 @@ extern "C"
 #include "GameConstants.h"
 
 /* implementation */
-const DuelMatch* ScriptedInputSource::mMatch = 0;
 ScriptedInputSource* ScriptedInputSource::mCurrentSource = 0;
-
-struct pos_x;
-struct pos_y;
-struct vel_x;
-struct vel_y;
-
-template<class T>
-float convert(float f);
-
-template<class T>
-struct ScriptedInputSource::coordinate {
-	coordinate(float f) : value(convert(f)) {
-	}
-	coordinate(double f) : value(convert(f)) {
-	}
-
-	operator float() const {
-		return value;
-	}
-
-	float value;
-
-	private:
-		// other constructors ar prohibited !
-		template<class U>
-		coordinate(U u);
-
-		static float convert(float f);
-};
-
-// functions for coodinate transformation
-template<>
-float ScriptedInputSource::coordinate<pos_x>::convert (float val) {
-	return mCurrentSource->mSide == LEFT_PLAYER ? val : RIGHT_PLANE - val;
-}
-
-template<>
-float ScriptedInputSource::coordinate<pos_y>::convert (float val) {
-	return 600.f - val;
-}
-template<>
-float ScriptedInputSource::coordinate<vel_x>::convert (float val) {
-	return mCurrentSource->mSide == LEFT_PLAYER ? val : -val;
-}
-template<>
-float ScriptedInputSource::coordinate<vel_y>::convert (float val) {
-	return -val;
-}
 
 ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty)
 : mMaxDelay(difficulty)
-, mCurDelay(difficulty)
 , mLastBallSpeed(0)
 , mSide(playerside)
 {
@@ -103,18 +53,9 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	setGameConstants();
 	setGameFunctions();
 
-
-	//luaopen_math(mState);
-	luaL_requiref(mState, "math", luaopen_math, 1);
-	lua_register(mState, "touches", touches);
-	lua_register(mState, "launched", launched);
 	lua_register(mState, "jump", jump);
 	lua_register(mState, "left", left);
 	lua_register(mState, "right", right);
-	lua_register(mState, "getScore", getScore);
-	lua_register(mState, "getOppScore", getOppScore);
-	lua_register(mState, "getScoreToWin", getScoreToWin);
-	lua_register(mState, "getGameTime", getGameTime);
 
 	openScript("api");
 	openScript("bot_api");
@@ -148,15 +89,6 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 
 	// clean up stack
 	lua_pop(mState, lua_gettop(mState));
-
-	// init delay
-	mBallPositions.set_capacity(mMaxDelay + 1);
-	mBallVelocities.set_capacity(mMaxDelay + 1);
-
-	for(unsigned int i = 0; i < mMaxDelay + 1; ++i) {
-		mBallPositions.push_back(Vector2(0,0));
-		mBallVelocities.push_back(Vector2(0,0));
-	}
 }
 
 ScriptedInputSource::~ScriptedInputSource()
@@ -172,87 +104,50 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	mJump = false;
 
 	mCurrentSource = this;
-	mMatch = getMatch();
-	if (mMatch == 0)
+	if (getMatch() == 0)
 	{
 		return PlayerInputAbs();
 	}
 
+	// collect match states
 	if(mSide == LEFT_PLAYER)
-		updateGameState( mMatch->getState() );
+	{
+		updateGameState(getMatch()->getState());
+	}
 	else
 	{
-		auto s = mMatch->getState();
+		auto s = getMatch()->getState();
 		s.swapSides();
 		updateGameState( s );
 	}
 
-	// ball position and velocity update
-	mBallPositions.push_back(mMatch->getBallPosition());
-	mBallVelocities.push_back(mMatch->getBallVelocity());
-
-	// adapt current delay
-	char action = rand() % 8;
-	switch(action) {
-		case 0:
-		case 1:
-			mCurDelay--;
-			break;
-		case 2:
-		case 3:
-			mCurDelay++;
-	}
-
-	if ( mLastBallSpeed != getMatch()->getBallVelocity().x ) {
+	// detect bounce
+	if (mOnBounce && mLastBallSpeed != getMatch()->getBallVelocity().x )
+	{
 		mLastBallSpeed = getMatch()->getBallVelocity().x;
-		// reaction time after bounce
-		mCurDelay += rand() % (mMaxDelay+1);
+		lua_getglobal(mState, "OnBounce");
+		callLuaFunction();
 	}
 
-	if(mCurDelay == -1)
-		mCurDelay = 0;
-	if(mCurDelay > mMaxDelay)
-		mCurDelay = mMaxDelay;
-
-	int error = 0;
-
-	if (!mMatch->getBallActive() && mSide ==
+	if (!getMatch()->getBallActive() && mSide ==
 			// if no player is serving player, assume the left one is
-			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
+			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
 	{
 		serving = true;
 		lua_getglobal(mState, "OnServe");
-		lua_pushboolean(mState, !mMatch->getBallDown());
-		error = lua_pcall(mState, 1, 0, 0);
+		lua_pushboolean(mState, !getMatch()->getBallDown());
+		callLuaFunction(1);
 	}
-	else if (!mMatch->getBallActive() && mCurrentSource->mSide !=
-			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
+	else if (!getMatch()->getBallActive() && mCurrentSource->mSide !=
+			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
 	{
 		lua_getglobal(mState, "OnOpponentServe");
-		error = lua_pcall(mState, 0, 0, 0);
+		callLuaFunction();
 	}
 	else
 	{
-		if ( mOnBounce && mLastBallSpeedVirtual != getBallVelocity().x ) {
-			mLastBallSpeedVirtual = getBallVelocity().x;
-			lua_getglobal(mState, "OnBounce");
-			error = lua_pcall(mState, 0, 0, 0);
-			if (error)
-			{
-				std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-				std::cerr << std::endl;
-				lua_pop(mState, 1);
-			}
-		}
 		lua_getglobal(mState, "OnGame");
-		error = lua_pcall(mState, 0, 0, 0);
-	}
-
-	if (error)
-	{
-		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
-		std::cerr << std::endl;
-		lua_pop(mState, 1);
+		callLuaFunction();
 	}
 
 	// swap left/right if side is swapped
@@ -274,18 +169,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 		return PlayerInputAbs(mLeft, mRight, mJump);
 }
 
-int ScriptedInputSource::touches(lua_State* state)
-{
-	lua_pushnumber(state, mMatch->getHitcount(mCurrentSource->mSide));
-	return 1;
-}
-
-int ScriptedInputSource::launched(lua_State* state)
-{
-	lua_pushnumber(state, mMatch->getBlobJump(mCurrentSource->mSide));
-	return 1;
-}
-
 int ScriptedInputSource::jump(lua_State* state)
 {
 	mCurrentSource->mJump = true;
@@ -302,39 +185,4 @@ int ScriptedInputSource::right(lua_State* state)
 {
 	mCurrentSource->mRight = true;
 	return 0;
-}
-
-const Vector2& ScriptedInputSource::getBallPosition() {
-	return mCurrentSource->mBallPositions[mCurrentSource->mMaxDelay - mCurrentSource->mCurDelay];
-}
-const Vector2& ScriptedInputSource::getBallVelocity() {
-	return mCurrentSource->mBallVelocities[mCurrentSource->mMaxDelay - mCurrentSource->mCurDelay];
-}
-
-int ScriptedInputSource::getScore(lua_State* state)
-{
-	float score = mMatch->getScore( mCurrentSource->mSide );
-	lua_pushnumber(state, score);
-	return 1;
-}
-
-int ScriptedInputSource::getOppScore(lua_State* state)
-{
-	float score = mMatch->getScore( mCurrentSource->mSide == LEFT_PLAYER ? RIGHT_PLAYER: LEFT_PLAYER );
-	lua_pushnumber(state, score);
-	return 1;
-}
-
-int ScriptedInputSource::getScoreToWin(lua_State* state)
-{
-	float score = mMatch->getScoreToWin();
-	lua_pushnumber(state, score);
-	return 1;
-}
-
-int ScriptedInputSource::getGameTime(lua_State* state)
-{
-	float time = mMatch->getClock().getTime();
-	lua_pushnumber(state, time);
-	return 1;
 }

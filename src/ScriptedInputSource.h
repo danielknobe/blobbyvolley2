@@ -66,15 +66,7 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		/// it would even be enough to set it once, but we may change this
 		/// for making bot tournaments^^, so the idea of setting it for each
 		/// bot seems better to me
-		static const DuelMatch* mMatch;
 		static ScriptedInputSource* mCurrentSource;
-
-		// helpers
-		static int debug(lua_State* state);
-		static void setflags(lua_State* state);
-		// coordinate system conversion
-		template<class T>
-		struct coordinate;
 
 		// commands
 		static int jump(lua_State* state);
@@ -82,36 +74,15 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		static int right(lua_State* state);
 		static int moveto(lua_State* state);
 
-		// ball information
-		// internals
-		static const Vector2& getBallPosition();
-		static const Vector2& getBallVelocity();
-		static int touches(lua_State* state);
-
-		// blob information
-		static int launched(lua_State* state);
-
-		// game status
-		static int getScore(lua_State* state);
-		static int getOppScore(lua_State* state);
-		static int getScoreToWin(lua_State* state);
-		static int getGameTime(lua_State* state);
-
 		unsigned int mStartTime;
 
 		// ki strength values
 		unsigned int mMaxDelay;
-		unsigned int mCurDelay;
 
 		// which functions are available
 		bool mOnBounce;
 
-		// ball position and velocity in adapted coordinate system
-		boost::circular_buffer<Vector2> mBallPositions;
-		boost::circular_buffer<Vector2> mBallVelocities;
-
 		float mLastBallSpeed;
-		float mLastBallSpeedVirtual;
 
 		PlayerSide mSide;
 
