@@ -4,6 +4,8 @@
 -- derived constants that can be useful 
 CONST_FIELD_MIDDLE		= CONST_FIELD_WIDTH / 2 						-- centre position
 
+CONST_BLOBBY_GROUND_HEIGHT = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2
+
 CONST_BALL_LEFT_BORDER	= CONST_BALL_RADIUS								-- minimum position of ball
 CONST_BALL_RIGHT_BORDER	= CONST_FIELD_WIDTH - CONST_BALL_RADIUS			-- maximum position of ball
 
@@ -14,24 +16,53 @@ CONST_BALL_RIGHT_NET	= CONST_FIELD_MIDDLE + CONST_BALL_RADIUS + CONST_NET_RADIUS
 -- these function definitions make lua functions for the old api functions, which are sometimes more conveniente to use 
 -- than their c api equivalent.
 
+-- gets x coordinate of current ball position
 function ballx()
 	local x, y = get_ball_pos()
 	return x
 end
 
+-- gets y coordinate of current ball position
 function bally()
 	local x, y = get_ball_pos()
 	return y
 end
 
+-- gets x component of current ball velocity
 function bspeedx()
 	local x, y = get_ball_vel()
 	return x
 end
 
+-- gets y component of current ball velocity
 function bspeedy()
 	local x, y = get_ball_vel()
 	return y
+end
+
+-- gets x component of blobby speed
+function speedx( player )
+	local x, y = get_blob_vel( player )
+	return x
+end
+
+-- gets y component of blobby speed
+function speedy( player )
+	local x, y = get_blob_vel( player )
+	return y
+end
+
+-- returns whether blobby is in the air
+function launched( player )
+	local x, y = get_blob_pos( player )
+	return y > CONST_BLOBBY_GROUND_HEIGHT
+end
+
+-- gets the opponent of the player identification, i.e. LEFT_PLAYER <-> RIGHT_PLAYER
+function opponent( player ) 
+	if player == LEFT_PLAYER then return RIGHT_PLAYER end
+	if player == RIGHT_PLAYER then return LEFT_PLAYER end
+	return -1
 end
 
 -- all combined

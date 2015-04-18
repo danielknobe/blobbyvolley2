@@ -15,6 +15,30 @@ function posy()
 	return y
 end
 
+function touches()
+	return get_touches( LEFT_PLAYER )
+end
+
+-- redefine launched to refer to the LEFT_PLAYER
+_launched = launched
+function launched()
+	return _launched( LEFT_PLAYER )
+end
+
+function left()
+	__WANT_LEFT = true
+	__WANT_RIGHT = false
+end
+
+function right()
+	__WANT_RIGHT = true
+	__WANT_LEFT = false
+end
+
+function jump()
+	__WANT_JUMP = true
+end
+
 function moveto(target)
 	local x = get_blob_pos( LEFT_PLAYER )
 	if x < target - 2 then
@@ -36,6 +60,14 @@ end
 function oppy()
 	local x, y = get_blob_pos( RIGHT_PLAYER )
 	return y
+end
+
+function getScore()
+	return get_score( LEFT_PLAYER )
+end
+
+function getOppScore()
+	return get_score( RIGHT_PLAYER )
 end
 
 -----------------------------------------------------------------------------------------------
@@ -95,7 +127,6 @@ end
 
 function estimx(time)
 	local straight = ballx() + time * bspeedx()
-	debug(time, straight)
 	-- correct wall impacts
 	if(straight > CONST_BALL_RIGHT_BORDER) then
 		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -bspeedx()
