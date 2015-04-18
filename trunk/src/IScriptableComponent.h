@@ -42,6 +42,9 @@ protected:
 	void setLuaGlobal(const char* name, double value);
 	bool getLuaFunction(const char* name) const;
 
+	// calls a lua function that is on the stack and performs error handling
+	void callLuaFunction(int arg_count = 0);
+
 	// load lua functions
 	void setGameConstants();
 	void setGameFunctions();
