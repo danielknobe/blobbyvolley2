@@ -60,24 +60,11 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		virtual PlayerInputAbs getNextInput();
 
 	private:
-		/// this variable saves the current match
-		/// it is set each step in getInput
-		/// as in current design, only in single match mode bots are allowed
-		/// it would even be enough to set it once, but we may change this
-		/// for making bot tournaments^^, so the idea of setting it for each
-		/// bot seems better to me
-		static ScriptedInputSource* mCurrentSource;
-
-		// commands
-		static int jump(lua_State* state);
-		static int left(lua_State* state);
-		static int right(lua_State* state);
-		static int moveto(lua_State* state);
 
 		unsigned int mStartTime;
 
 		// ki strength values
-		unsigned int mMaxDelay;
+		int mDifficulty;
 
 		// which functions are available
 		bool mOnBounce;
@@ -86,6 +73,8 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 
 		PlayerSide mSide;
 
-		// input data
-		bool mLeft, mRight, mJump;
+		// error data
+		bool mLastJump = false;
+		double mJumpDelay = 0;
+		double mBallPosError = 0;
 };
