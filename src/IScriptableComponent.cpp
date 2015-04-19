@@ -147,7 +147,7 @@ struct IScriptableComponent::Access
 	}
 };
 
-inline auto getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
+inline DuelMatchState* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
 
 // standard lua functions
 int get_ball_pos(lua_State* state)
