@@ -30,10 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "MatchEvents.h"
 
 /* implementation */
-const int TIMESTEP = 5; // calculations per frame
-
-const float TIMEOUT_MAX = 2.5;
-
 // Gamefeeling relevant constants:
 const float BLOBBY_ANIMATION_SPEED = 0.5;
 

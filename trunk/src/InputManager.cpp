@@ -263,8 +263,6 @@ void InputManager::updateInput()
 				{
 					if (abs(event.jaxis.value) > 10000)
 					{
-						std::cout << "HALLO" << std::endl;
-						int axis = 0;
 						if (event.jaxis.value > 0)
 							joyAction.number = event.jaxis.axis + 1;
 
