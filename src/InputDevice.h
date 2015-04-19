@@ -36,7 +36,7 @@ class InputDevice : public ObjectCounter<InputDevice>
 		virtual PlayerInputAbs transferInput() = 0;
 };
 
-class JoystickAction;
+struct JoystickAction;
 
 InputDevice* createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
 InputDevice* createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);

@@ -834,7 +834,7 @@ bool BitStream::ReadBit( void )
 {
 #pragma warning( disable : 4800 )
 	readOffset++;
-	return ( bool ) ( data[ readOffset-1 >> 3 ] & ( 0x80 >> ( (readOffset-1) % 8 ) ) );
+	return ( bool ) ( data[ (readOffset - 1) >> 3 ] & ( 0x80 >> ( (readOffset - 1) % 8 ) ) );
 #pragma warning( default : 4800 )
 }
 

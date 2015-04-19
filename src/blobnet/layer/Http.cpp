@@ -185,6 +185,8 @@ int Http::getContentSize(std::stringstream& response)
 		case contentlength:
 			state = headerDone;
 			return atoi(token.c_str());
+		default:
+			break;
 		}
 	}
 	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't get contentsize of http response.") );
