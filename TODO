@@ -1,213 +1,27 @@
-[  0%] Generating backgrounds.zip
-  adding: backgrounds/strand2.bmp (deflated 59%)
-  adding: backgrounds/strand1.bmp (deflated 50%)
-[  0%] Built target backgrounds_zip
-[  0%] Generating gfx.zip
-  adding: gfx/blobbym4.bmp (deflated 81%)
-  adding: gfx/blobbym1.bmp (deflated 81%)
-  adding: gfx/ball10.bmp (deflated 28%)
-  adding: gfx/font10.bmp (deflated 49%)
-  adding: gfx/sch13.bmp (deflated 99%)
-  adding: gfx/font11.bmp (deflated 35%)
-  adding: gfx/font14.bmp (deflated 48%)
-  adding: gfx/scrollbar.bmp (deflated 19%)
-  adding: gfx/font01.bmp (deflated 73%)
-  adding: gfx/font20.bmp (deflated 55%)
-  adding: gfx/font38.bmp (deflated 74%)
-  adding: gfx/font53.bmp (deflated 65%)
-  adding: gfx/font47.bmp (deflated 61%)
-  adding: gfx/schball.bmp (deflated 97%)
-  adding: gfx/font29.bmp (deflated 63%)
-  adding: gfx/font16.bmp (deflated 53%)
-  adding: gfx/ball05.bmp (deflated 27%)
-  adding: gfx/font07.bmp (deflated 56%)
-  adding: gfx/font28.bmp (deflated 38%)
-  adding: gfx/ball09.bmp (deflated 28%)
-  adding: gfx/font03.bmp (deflated 43%)
-  adding: gfx/btn_fast.bmp (deflated 91%)
-  adding: gfx/font45.bmp (deflated 90%)
-  adding: gfx/ball08.bmp (deflated 29%)
-  adding: gfx/ball02.bmp (deflated 31%)
-  adding: gfx/font27.bmp (deflated 43%)
-  adding: gfx/font08.bmp (deflated 30%)
-  adding: gfx/sch12.bmp (deflated 98%)
-  adding: gfx/ball16.bmp (deflated 28%)
-  adding: gfx/font52.bmp (deflated 86%)
-  adding: gfx/font33.bmp (deflated 53%)
-  adding: gfx/font02.bmp (deflated 61%)
-  adding: gfx/font24.bmp (deflated 47%)
-  adding: gfx/pfeil_links.bmp (deflated 68%)
-  adding: gfx/font42.bmp (deflated 50%)
-  adding: gfx/stange.bmp (deflated 90%)
-  adding: gfx/font48.bmp (deflated 92%)
-  adding: gfx/titel.bmp (deflated 52%)
-  adding: gfx/font22.bmp (deflated 42%)
-  adding: gfx/schild.bmp (deflated 74%)
-  adding: gfx/font54.bmp (deflated 79%)
-  adding: gfx/ball07.bmp (deflated 29%)
-  adding: gfx/ball06.bmp (deflated 28%)
-  adding: gfx/pfeil_rechts.bmp (deflated 75%)
-  adding: gfx/font37.bmp (deflated 73%)
-  adding: gfx/ball04.bmp (deflated 30%)
-  adding: gfx/font31.bmp (deflated 64%)
-  adding: gfx/btn_slow.bmp (deflated 91%)
-  adding: gfx/flag.bmp (deflated 90%)
-  adding: gfx/btn_pause.bmp (deflated 95%)
-  adding: gfx/font17.bmp (deflated 46%)
-  adding: gfx/font39.bmp (deflated 74%)
-  adding: gfx/font06.bmp (deflated 43%)
-  adding: gfx/blobZeichenWeiss.bmp (deflated 45%)
-  adding: gfx/ball12.bmp (deflated 27%)
-  adding: gfx/ball15.bmp (deflated 28%)
-  adding: gfx/font25.bmp (deflated 52%)
-  adding: gfx/pfeil_oben.bmp (deflated 46%)
-  adding: gfx/ball13.bmp (deflated 27%)
-  adding: gfx/blobbym2.bmp (deflated 81%)
-  adding: gfx/btn_play.bmp (deflated 92%)
-  adding: gfx/font00.bmp (deflated 42%)
-  adding: gfx/font05.bmp (deflated 48%)
-  adding: gfx/pokal.bmp (deflated 88%)
-  adding: gfx/font46.bmp (deflated 87%)
-  adding: gfx/font21.bmp (deflated 64%)
-  adding: gfx/font19.bmp (deflated 62%)
-  adding: gfx/sch11.bmp (deflated 98%)
-  adding: gfx/font04.bmp (deflated 59%)
-  adding: gfx/font32.bmp (deflated 44%)
-  adding: gfx/font36.bmp (deflated 95%)
-  adding: gfx/blood.bmp (deflated 13%)
-  adding: gfx/ball03.bmp (deflated 28%)
-  adding: gfx/abbruchbild.bmp (deflated 30%)
-  adding: gfx/font34.bmp (deflated 50%)
-  adding: gfx/blobbym5.bmp (deflated 81%)
-  adding: gfx/font23.bmp (deflated 51%)
-  adding: gfx/sch14.bmp (deflated 99%)
-  adding: gfx/pfeil_unten.bmp (deflated 48%)
-  adding: gfx/font41.bmp (deflated 51%)
-  adding: gfx/font13.bmp (deflated 43%)
-  adding: gfx/cursor.bmp (deflated 67%)
-  adding: gfx/ball14.bmp (deflated 28%)
-  adding: gfx/font40.bmp (deflated 40%)
-  adding: gfx/font26.bmp (deflated 48%)
-  adding: gfx/font35.bmp (deflated 64%)
-  adding: gfx/font12.bmp (deflated 56%)
-  adding: gfx/blobbym3.bmp (deflated 81%)
-  adding: gfx/font44.bmp (deflated 92%)
-  adding: gfx/ball11.bmp (deflated 27%)
-  adding: gfx/font15.bmp (deflated 57%)
-  adding: gfx/font09.bmp (deflated 45%)
-  adding: gfx/font43.bmp (deflated 46%)
-  adding: gfx/font51.bmp (deflated 98%)
-  adding: gfx/sch15.bmp (deflated 99%)
-  adding: gfx/font30.bmp (deflated 41%)
-  adding: gfx/font50.bmp (deflated 89%)
-  adding: gfx/font49.bmp (deflated 71%)
-  adding: gfx/ball01.bmp (deflated 28%)
-  adding: gfx/font18.bmp (deflated 73%)
-[  0%] Built target gfx_zip
-[  1%] Generating rules.zip
-  adding: rules/back_defence.lua (deflated 42%)
-  adding: rules/blitz.lua (deflated 5%)
-  adding: rules/tennis.lua (deflated 64%)
-  adding: rules/classic.lua (deflated 67%)
-  adding: rules/the_double.lua (deflated 56%)
-  adding: rules/jumping_jack.lua (deflated 14%)
-  adding: rules/sticky_mode.lua (deflated 28%)
-  adding: rules/firewall.lua (deflated 46%)
-  adding: rules/one_hit_wonder.lua (deflated 21%)
-  adding: rules/default.lua (deflated 68%)
-[  1%] Built target rules_zip
-[  2%] Generating scripts.zip
-  adding: scripts/com_11.lua (deflated 62%)
-  adding: scripts/old/hyp07.lua (deflated 66%)
-  adding: scripts/old/axji.lua (deflated 51%)
-  adding: scripts/old/com_04c.lua (deflated 61%)
-  adding: scripts/old/com_10eB2.lua (deflated 65%)
-  adding: scripts/old/hyp011com.lua (deflated 75%)
-  adding: scripts/old/hyperion03.lua (deflated 60%)
-  adding: scripts/old/com_10eB1.lua (deflated 65%)
-  adding: scripts/old/hyp010.lua (deflated 72%)
-  adding: scripts/old/gintonicV7.lua (deflated 80%)
-  adding: scripts/old/hyperion6.lua (deflated 63%)
-  adding: scripts/old/hyp09.lua (deflated 72%)
-  adding: scripts/old/hyp012.lua (deflated 75%)
-  adding: scripts/old/com_10hB1.lua (deflated 65%)
-  adding: scripts/old/com_10B2ex.lua (deflated 64%)
-  adding: scripts/old/hyp011.lua (deflated 75%)
-  adding: scripts/old/com_10.lua (deflated 66%)
-  adding: scripts/old/gintonicV6.lua (deflated 79%)
-  adding: scripts/old/com_04d.lua (deflated 61%)
-  adding: scripts/old/hyp8.lua (deflated 70%)
-  adding: scripts/old/gintonicV8.lua (deflated 80%)
-  adding: scripts/old/hyp013.lua (deflated 72%)
-  adding: scripts/old/com_10Schm.lua (deflated 64%)
-  adding: scripts/hyp014.lua (deflated 72%)
-  adding: scripts/axji-0-2.lua (deflated 54%)
-  adding: scripts/reduced.lua (deflated 63%)
-  adding: scripts/gintonicV9.lua (deflated 80%)
-  adding: scripts/Union.lua (deflated 69%)
-[  2%] Built target scripts_zip
-[  3%] Generating sounds.zip
-  adding: sounds/chat.wav (deflated 42%)
-  adding: sounds/bums.wav (deflated 7%)
-  adding: sounds/pfiff.wav (deflated 54%)
-[  3%] Built target sounds_zip
-[  4%] Building CXX object src/blobnet/CMakeFiles/blobnet.dir/layer/Http.cpp.o
-Linking CXX static library libblobnet.a
-[  4%] Built target blobnet
-[  5%] Building C object src/lua/CMakeFiles/lua.dir/lapi.c.o
-[  6%] Building C object src/lua/CMakeFiles/lua.dir/lauxlib.c.o
-[  6%] Building C object src/lua/CMakeFiles/lua.dir/lbaselib.c.o
-[  7%] Building C object src/lua/CMakeFiles/lua.dir/lbitlib.c.o
-[  8%] Building C object src/lua/CMakeFiles/lua.dir/lcode.c.o
-[  9%] Building C object src/lua/CMakeFiles/lua.dir/lcorolib.c.o
-[  9%] Building C object src/lua/CMakeFiles/lua.dir/lctype.c.o
-[ 10%] Building C object src/lua/CMakeFiles/lua.dir/ldblib.c.o
-[ 11%] Building C object src/lua/CMakeFiles/lua.dir/ldebug.c.o
-[ 12%] Building C object src/lua/CMakeFiles/lua.dir/ldo.c.o
-[ 12%] Building C object src/lua/CMakeFiles/lua.dir/ldump.c.o
-[ 13%] Building C object src/lua/CMakeFiles/lua.dir/lfunc.c.o
-[ 14%] Building C object src/lua/CMakeFiles/lua.dir/lgc.c.o
-[ 15%] Building C object src/lua/CMakeFiles/lua.dir/linit.c.o
-[ 15%] Building C object src/lua/CMakeFiles/lua.dir/liolib.c.o
-[ 16%] Building C object src/lua/CMakeFiles/lua.dir/llex.c.o
-[ 17%] Building C object src/lua/CMakeFiles/lua.dir/lmathlib.c.o
-[ 18%] Building C object src/lua/CMakeFiles/lua.dir/lmem.c.o
-[ 18%] Building C object src/lua/CMakeFiles/lua.dir/loadlib.c.o
-[ 19%] Building C object src/lua/CMakeFiles/lua.dir/lobject.c.o
-[ 20%] Building C object src/lua/CMakeFiles/lua.dir/lopcodes.c.o
-[ 21%] Building C object src/lua/CMakeFiles/lua.dir/loslib.c.o
-[ 21%] Building C object src/lua/CMakeFiles/lua.dir/lparser.c.o
-[ 22%] Building C object src/lua/CMakeFiles/lua.dir/lstate.c.o
-[ 23%] Building C object src/lua/CMakeFiles/lua.dir/lstring.c.o
-[ 24%] Building C object src/lua/CMakeFiles/lua.dir/lstrlib.c.o
-[ 24%] Building C object src/lua/CMakeFiles/lua.dir/ltable.c.o
-[ 25%] Building C object src/lua/CMakeFiles/lua.dir/ltablib.c.o
-[ 26%] Building C object src/lua/CMakeFiles/lua.dir/ltm.c.o
-[ 26%] Building C object src/lua/CMakeFiles/lua.dir/lua.c.o
-[ 27%] Building C object src/lua/CMakeFiles/lua.dir/luac.c.o
-[ 28%] Building C object src/lua/CMakeFiles/lua.dir/lundump.c.o
-[ 29%] Building C object src/lua/CMakeFiles/lua.dir/lvm.c.o
-[ 29%] Building C object src/lua/CMakeFiles/lua.dir/lzio.c.o
-Linking C static library liblua.a
-[ 29%] Built target lua
-[ 29%] Building CXX object src/tinyxml/CMakeFiles/tinyxml.dir/tinystr.cpp.o
-[ 30%] Building CXX object src/tinyxml/CMakeFiles/tinyxml.dir/tinyxml.cpp.o
-[ 31%] Building CXX object src/tinyxml/CMakeFiles/tinyxml.dir/tinyxmlerror.cpp.o
-[ 32%] Building CXX object src/tinyxml/CMakeFiles/tinyxml.dir/tinyxmlparser.cpp.o
-Linking CXX static library libtinyxml.a
-[ 32%] Built target tinyxml
-[ 33%] Building CXX object src/raknet/CMakeFiles/raknet.dir/BitStream.cpp.o
-[ 34%] Building CXX object src/raknet/CMakeFiles/raknet.dir/GetTime.cpp.o
-[ 35%] Building CXX object src/raknet/CMakeFiles/raknet.dir/InternalPacketPool.cpp.o
-[ 35%] Building CXX object src/raknet/CMakeFiles/raknet.dir/NetworkTypes.cpp.o
-[ 36%] Building CXX object src/raknet/CMakeFiles/raknet.dir/PacketPool.cpp.o
-[ 37%] Building CXX object src/raknet/CMakeFiles/raknet.dir/RakClient.cpp.o
-[ 38%] Building CXX object src/raknet/CMakeFiles/raknet.dir/RakNetStatistics.cpp.o
-[ 38%] Building CXX object src/raknet/CMakeFiles/raknet.dir/RakPeer.cpp.o
-[ 39%] Building CXX object src/raknet/CMakeFiles/raknet.dir/RakServer.cpp.o
-[ 40%] Building CXX object src/raknet/CMakeFiles/raknet.dir/ReliabilityLayer.cpp.o
-[ 41%] Building CXX object src/raknet/CMakeFiles/raknet.dir/SimpleMutex.cpp.o
-[ 41%] Building CXX object src/raknet/CMakeFiles/raknet.dir/SocketLayer.cpp.o
-Linking CXX static library libraknet.a
-[ 41%] Built target raknet
-[ 42%] Building CXX object src/CMakeFiles/blobby.dir/BlobbyDebug.cpp.o
+TODO:
+
+coderework:
+- new clean rendererarchitecture
+- multithreading
+	fps independent physics
+- new gui system
+
+features:
+- full unicode support (e.g. for Russian characters)
+- improve replays (fast forward, rewind, etc)
+- improve bot system (more commands etc)
+- more dedicated server options (black/whitelist, statistics, etc)
+- vulkan api support
+
+bugs:
+- net bugs:
+ - squeezing ball through blocking blobby ?  
+     Please try to verify this
+ - flat ball (replay Mr. Enderson)
+- don't close chat if one player leaves the game
+- whistle at the end of networkgame
+- ... has won screen in replay player when game ended prematurely
+
+data:
+- monochrome font
+- more translation
