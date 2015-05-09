@@ -26,8 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-
-#include <boost/circular_buffer.hpp>
+#include <random>
 
 #include "Global.h"
 #include "InputSource.h"
@@ -76,5 +75,9 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		// error data
 		bool mLastJump = false;
 		double mJumpDelay = 0;
-		double mBallPosError = 0;
+		std::normal_distribution<double> mDelayDistribution;
+		std::normal_distribution<double> mPositionErrorDistribution;
+		std::default_random_engine mRandom;
+		Vector2 mBallPosError = Vector2{0,0};
+		double mBallVelError = 0.0;
 };
