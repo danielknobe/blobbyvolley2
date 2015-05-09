@@ -67,6 +67,11 @@ bool PhysicWorld::blobHitGround(PlayerSide player) const
 		return false;
 }
 
+void PhysicWorld::setLastHitIntensity(float intensity)
+{
+	mLastHitIntensity = intensity;
+}
+
 float PhysicWorld::getLastHitIntensity() const
 {
 	float intensity = mLastHitIntensity / 25.0;
