@@ -45,6 +45,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 : mDifficulty(difficulty)
 , mLastBallSpeed(0)
 , mSide(playerside)
+, mDelayDistribution( difficulty/3, difficulty/2 )
+, mPositionErrorDistribution( 0.0, difficulty / 75.0 * BALL_RADIUS )
 {
 	mStartTime = SDL_GetTicks();
 
@@ -111,23 +113,26 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	if(mSide != LEFT_PLAYER)
 		matchstate.swapSides();
 
-	/// \todo find a smoother way to add ball position errors
-	const double TIME_SCALE = 0.0005;
-	double back_force = mBallPosError > 0 ? -mBallPosError*mBallPosError : mBallPosError*mBallPosError;
-	if( back_force*TIME_SCALE > -mBallPosError)
-		back_force = -mBallPosError / TIME_SCALE;
-	mBallPosError += (back_force + 50*mDifficulty*(rand() % 3 - 1)) * TIME_SCALE;
-	std::cout << mBallPosError << "\n";
-
-	matchstate.worldState.ballPosition.x += mBallPosError;
+	matchstate.worldState.ballPosition += mBallPosError;
+	matchstate.worldState.ballVelocity *= Vector2(mBallVelError, mBallVelError);
 	updateGameState( matchstate );
 
 	// detect bounce
-	if (mOnBounce && mLastBallSpeed != getMatch()->getBallVelocity().x )
+	if ( mLastBallSpeed != getMatch()->getBallVelocity().x )
 	{
+		// change ball pos error
+		mBallPosError.x = mPositionErrorDistribution(mRandom);
+		mBallPosError.y = mPositionErrorDistribution(mRandom);
+		mBallVelError = 1.0 + mPositionErrorDistribution(mRandom) / (2*BALL_RADIUS);
+		// clamp max vel error
+		mBallVelError = std::max(0.85, std::min(1.15, mBallVelError) );
+
 		mLastBallSpeed = getMatch()->getBallVelocity().x;
-		lua_getglobal(mState, "OnBounce");
-		callLuaFunction();
+		if ( mOnBounce )
+		{
+			lua_getglobal(mState, "OnBounce");
+			callLuaFunction();
+		}
 	}
 
 	if (!getMatch()->getBallActive() && mSide ==
@@ -185,8 +190,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 			wantjump = false;
 		else
 		{
-			mJumpDelay = (rand() % (mDifficulty+1) + rand() % (mDifficulty+1)) / 2;
-			std::cout << "JD: " << mJumpDelay << "\n";
+			mJumpDelay = std::max(0.0, std::min( mDelayDistribution(mRandom) , (double)mDifficulty));
 		}
 	}
 
