@@ -29,15 +29,16 @@ namespace RakNet
 	class BitStream;
 }
 
-
 struct PhysicState
 {
 	Vector2 blobPosition[MAX_PLAYERS];
 	Vector2 blobVelocity[MAX_PLAYERS];
+	float   blobState[MAX_PLAYERS];
 
 	Vector2 ballPosition;
 	Vector2 ballVelocity;
-	float ballAngularVelocity;
+	float   ballRotation;
+	float   ballAngularVelocity;
 
 	void swapSides();
 };
