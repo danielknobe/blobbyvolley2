@@ -16,7 +16,6 @@ direct = true
 servrand = nil
 
 -- Konstanten
-CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 -- TODO calculate this from constants
 CONST_BLOBBY_MAXJUMP = 393.625
 
@@ -113,7 +112,7 @@ function estimImpactHigh()
 end
 
 function estimImpactLow()
-   estimImpact2(CONST_BLOBBY_KOPF_BERUEHRUNG, balldata())
+   estimImpact2(CONST_BALL_BLOBBY_HEAD, balldata())
 end
 
 function estimImpact2(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben

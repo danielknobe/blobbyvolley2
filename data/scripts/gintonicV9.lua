@@ -16,7 +16,6 @@ CT_WaitName = ""
 CT_WaitMoveTo = 0
 
 -- constants
-blobbyheadheight = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 blobbymaxjump = 393.625
 
 function IsAt(position)
@@ -83,7 +82,7 @@ function OnGame()
         ResetWait()
         CT_ServeIndex = 0
         local timeJump = timeToHitHeight(blobbymaxjump, 20)
-		local timeGround = timeToHitHeight(blobbyheadheight, 40)
+		local timeGround = timeToHitHeight(CONST_BALL_BLOBBY_HEAD, 40)
         local timeBlock = timeToOppSmash(blobbymaxjump)
         local estimhx = r_estimx(timeJump)
         local estimGround = r_estimx(timeGround)
@@ -219,10 +218,6 @@ end
 
 function r_estimx(time)
         local estim = estimx(time)
-        if (bally() < 330) then
-                if (ballx() < CONST_FIELD_MIDDLE and estim > CONST_FIELD_MIDDLE) then estim = 723-estim end
-                if (ballx() > CONST_FIELD_MIDDLE and estim < CONST_FIELD_MIDDLE) then estim = 877-estim end
-        end
         return estim        
 end
 

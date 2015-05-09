@@ -11,7 +11,6 @@ naechsterBallSchmettern = true -- evtl Variablennamen wechseln
 
 
 -- Weltkonstanten
-CONST_BLOBBY_KOPF_BERUEHRUNG = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 CONST_BLOBBY_MAXJUMP = 393.625
 
 -- Charakter
@@ -41,9 +40,9 @@ function OnServe(ballready)
 end	
 
 function OnGame()
-	target, targets = estimImpact(CONST_BLOBBY_KOPF_BERUEHRUNG, balldata()) --X Ziel in Blobbyhoehe
-	targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS, balldata()) --X Ziel in Netzhoehe (Netzrollerberechnung)
-	targetJump, targetJumps = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
+	local target = estimImpact(CONST_BALL_BLOBBY_HEAD, balldata()) --X Ziel in Blobbyhoehe
+	local targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS, balldata()) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	local targetJump, targetJumps = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
 	if (target > CONST_FIELD_MIDDLE) then --Wenn der Ball mich nix angeht
@@ -56,7 +55,7 @@ function OnGame()
 
 		if naechsterBallSchmettern then
 			if (targetJumps < 2) then
-				sprungattacke(angriffsstaerke)
+				sprungattacke(angriffsstaerke, targetJump)
 			else
 				weiterleiten()
 			end
@@ -68,7 +67,7 @@ function OnGame()
 end
 
 
-function sprungattacke(p_angriffsstaerke)
+function sprungattacke(p_angriffsstaerke, targetJump)
 	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP))) then
 		moveto (CONST_FIELD_MIDDLE)
 		jumpto (383)
@@ -110,12 +109,6 @@ end
 function estimImpact(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
     local time1 = ball_time_to_y(destY, bx, by, vbx, vby)
     local resultX, hit, estimbspeedx = estimx(time1)
-
-	if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_FIELD_MIDDLE) < CONST_NET_HEIGHT + CONST_NET_RADIUS) and (estimbspeedx > 0) then
-		resultX = 2 * CONST_BALL_LEFT_NET - resultX
-		estimbspeedx=-estimbspeedx
-	end
-	
 	return resultX, estimbspeedx
 end
 
