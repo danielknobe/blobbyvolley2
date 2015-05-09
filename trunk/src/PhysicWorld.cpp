@@ -351,6 +351,8 @@ int PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInpu
 		mBallRotation = mBallRotation - 6.25;
 
 	reset_fpu_flags(fpf);
+
+	return events;
 }
 
 Vector2 PhysicWorld::getBallPosition() const
