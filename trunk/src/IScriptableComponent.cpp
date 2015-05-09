@@ -25,6 +25,7 @@ IScriptableComponent::IScriptableComponent() :
 
 	// open math lib
 	luaL_requiref(mState, "math", luaopen_math, 1);
+	luaL_requiref(mState, "base", luaopen_base, 1);
 }
 
 IScriptableComponent::~IScriptableComponent()
@@ -83,7 +84,7 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("CONST_GROUND_HEIGHT", 600 - GROUND_PLANE_HEIGHT_MAX);
 	setLuaGlobal("CONST_BALL_GRAVITY", -BALL_GRAVITATION);
 	setLuaGlobal("CONST_BALL_RADIUS", BALL_RADIUS);
-	setLuaGlobal("CONST_BLOBBY_JUMP", -BLOBBY_JUMP_ACCELERATION);
+	setLuaGlobal("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
 	setLuaGlobal("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
 	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
 	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
@@ -93,6 +94,7 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("NO_PLAYER", NO_PLAYER);
 	setLuaGlobal("LEFT_PLAYER", LEFT_PLAYER);
 	setLuaGlobal("RIGHT_PLAYER", RIGHT_PLAYER);
+	setLuaGlobal("CONST_BLOBBY_SPEED", BLOBBY_SPEED);
 }
 
 void IScriptableComponent::updateGameState(const DuelMatchState& state)
@@ -203,6 +205,13 @@ int get_touches( lua_State* state )
 	return 1;
 }
 
+int get_ball_valid( lua_State* state )
+{
+	auto s = getMatch( state );
+	lua_pushboolean(state, s->logicState.isBallValid);
+	return 1;
+}
+
 
 int lua_print(lua_State* state)
 {
@@ -230,4 +239,5 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "get_blob_vel", get_blob_vel);
 	lua_register(mState, "get_score", get_score);
 	lua_register(mState, "get_touches", get_touches);
+	lua_register(mState, "is_ball_valid", get_ball_valid);
 }
