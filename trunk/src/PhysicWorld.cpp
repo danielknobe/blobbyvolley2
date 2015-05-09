@@ -67,11 +67,6 @@ bool PhysicWorld::blobHitGround(PlayerSide player) const
 		return false;
 }
 
-void PhysicWorld::setLastHitIntensity(float intensity)
-{
-	mLastHitIntensity = intensity;
-}
-
 float PhysicWorld::getLastHitIntensity() const
 {
 	float intensity = mLastHitIntensity / 25.0;
@@ -351,8 +346,6 @@ int PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInpu
 		mBallRotation = mBallRotation - 6.25;
 
 	reset_fpu_flags(fpf);
-
-	return events;
 }
 
 Vector2 PhysicWorld::getBallPosition() const
@@ -389,22 +382,28 @@ PhysicState PhysicWorld::getState() const
 	st.blobPosition[RIGHT_PLAYER] = mBlobPosition[RIGHT_PLAYER];
 	st.blobVelocity[LEFT_PLAYER] = mBlobVelocity[LEFT_PLAYER];
 	st.blobVelocity[RIGHT_PLAYER] = mBlobVelocity[RIGHT_PLAYER];
+	st.blobState[LEFT_PLAYER] = mBlobState[LEFT_PLAYER];
+	st.blobState[RIGHT_PLAYER] = mBlobState[RIGHT_PLAYER];
 
 	st.ballPosition = mBallPosition;
 	st.ballVelocity = mBallVelocity;
+	st.ballRotation = mBallRotation;
 	st.ballAngularVelocity = mBallAngularVelocity;
 	return st;
 }
 
 void PhysicWorld::setState(const PhysicState& ps)
 {
-	mBlobPosition[LEFT_PLAYER] = ps.blobPosition[LEFT_PLAYER];
+	mBlobPosition[LEFT_PLAYER] 	= ps.blobPosition[LEFT_PLAYER];
 	mBlobPosition[RIGHT_PLAYER] = ps.blobPosition[RIGHT_PLAYER];
-	mBlobVelocity[LEFT_PLAYER] = ps.blobVelocity[LEFT_PLAYER];
+	mBlobVelocity[LEFT_PLAYER] 	= ps.blobVelocity[LEFT_PLAYER];
 	mBlobVelocity[RIGHT_PLAYER] = ps.blobVelocity[RIGHT_PLAYER];
+	mBlobState[LEFT_PLAYER] 	= ps.blobState[LEFT_PLAYER];
+	mBlobState[RIGHT_PLAYER] 	= ps.blobState[RIGHT_PLAYER];
 
 	mBallPosition = ps.ballPosition;
 	mBallVelocity = ps.ballVelocity;
+	mBallRotation = ps.ballRotation;
 	mBallAngularVelocity = ps.ballAngularVelocity;
 }
 

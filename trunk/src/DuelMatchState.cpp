@@ -58,6 +58,76 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(DuelMatchState)
 	// a template function and does not complain about <>.
 	io.template generic<PlayerInput> ( value.playerInput[LEFT_PLAYER] );
 	io.template generic<PlayerInput> ( value.playerInput[RIGHT_PLAYER] );
-
+	
 	io.byte(value.errorSide);
 }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//  				info function implementation
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Vector2 DuelMatchState::getBlobPosition(PlayerSide player) const
+{
+	return worldState.blobPosition[player];
+}
+
+float DuelMatchState::getBlobState( PlayerSide player ) const
+{
+	return worldState.blobState[player];
+}
+
+Vector2 DuelMatchState::getBlobVelocity(PlayerSide player) const
+{
+	return worldState.blobVelocity[player];
+}
+
+Vector2 DuelMatchState::getBallPosition() const
+{
+	return worldState.ballPosition;
+}
+
+Vector2 DuelMatchState::getBallVelocity() const
+{
+	return worldState.ballVelocity;
+}
+
+float DuelMatchState::getBallRotation() const
+{
+	return worldState.ballRotation;
+}
+
+PlayerSide DuelMatchState::getServingPlayer() const
+{
+	return logicState.servingPlayer;
+}
+
+PlayerSide DuelMatchState::getWinningPlayer() const
+{
+	return logicState.winningPlayer;
+}
+
+bool DuelMatchState::getBallDown() const
+{
+	return !logicState.isBallValid;
+}
+
+bool DuelMatchState::getBallActive() const
+{
+	return logicState.isGameRunning;
+}
+
+int DuelMatchState::getHitcount(PlayerSide player) const
+{
+	return logicState.hitCount[player];
+}
+
+int DuelMatchState::getScore(PlayerSide player) const
+{
+	assert( player == LEFT_PLAYER || player == RIGHT_PLAYER );
+	if( player == LEFT_PLAYER )
+		return logicState.leftScore;
+	if( player == RIGHT_PLAYER )
+		return logicState.rightScore;
+	// unreachable
+	return -1;
+}
+

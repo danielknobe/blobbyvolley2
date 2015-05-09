@@ -36,6 +36,9 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(PhysicState)
 	io.number( value.blobPosition[RIGHT_PLAYER].x );
 	io.number( value.blobPosition[RIGHT_PLAYER].y );
 
+	io.number( value.blobState[LEFT_PLAYER] );
+	io.number( value.blobState[RIGHT_PLAYER] );
+
 	io.number( value.blobVelocity[RIGHT_PLAYER].x );
 	io.number( value.blobVelocity[RIGHT_PLAYER].y );
 
@@ -45,6 +48,7 @@ USER_SERIALIZER_IMPLEMENTATION_HELPER(PhysicState)
 	io.number( value.ballVelocity.x );
 	io.number( value.ballVelocity.y );
 
+	io.number( value.ballRotation );
 	io.number( value.ballAngularVelocity );
 }
 
@@ -56,8 +60,10 @@ void PhysicState::swapSides()
 	blobVelocity[RIGHT_PLAYER].x = -blobVelocity[RIGHT_PLAYER].x;
 	std::swap(blobPosition[LEFT_PLAYER], blobPosition[RIGHT_PLAYER]);
 	std::swap(blobVelocity[LEFT_PLAYER], blobVelocity[RIGHT_PLAYER]);
+	std::swap(blobState[LEFT_PLAYER], blobState[RIGHT_PLAYER]);
 
 	ballPosition.x = RIGHT_PLANE - ballPosition.x;
 	ballVelocity.x = -ballVelocity.x;
 	ballAngularVelocity = -ballAngularVelocity;
+	ballRotation = -ballRotation;	/// \todo save or 2pi-.?
 }
