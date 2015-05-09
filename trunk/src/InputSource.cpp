@@ -38,7 +38,7 @@ InputSource::~InputSource()
 
 PlayerInput InputSource::getInput() const
 {
-	return mInput.toPlayerInput( this->getMatch() );;
+	return mInput.toPlayerInput( this->getMatch() );
 }
 
 PlayerInput InputSource::updateInput()
