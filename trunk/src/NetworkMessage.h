@@ -32,23 +32,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 enum MessageType
 {
 	ID_GENERIC_MESSAGE = ID_RESERVED9 + 1,
-	ID_INPUT_UPDATE,
-	ID_PHYSIC_UPDATE,
-	ID_WIN_NOTIFICATION,
+	ID_INPUT_UPDATE,	// send input data from client to server
+	ID_GAME_UPDATE,		// send game status from server to client [unreliable]
+	ID_GAME_EVENTS,		// send game events from server to client [reliable]
 	ID_OPPONENT_DISCONNECTED,
-	ID_BALL_RESET,
-	ID_COLLISION,
-	ID_CURRENTLY_UNUSED_2,	// was ID_BALL_PLAYER_COLLISION, now handled via ID_COLLISION
 	ID_GAME_READY,
-	ID_ENTER_SERVER,
+	ID_WIN_NOTIFICATION,
+	ID_ENTER_SERVER = ID_RESERVED9 + 10,
 	ID_PAUSE,
 	ID_UNPAUSE,
-	ID_BLOBBY_SERVER_PRESENT,
-	ID_VERSION_MISMATCH,
-	ID_CURRENTLY_UNUSED,	// this value is to ensure network protocol compatibility between 0.9c and 1.0
+	ID_BLOBBY_SERVER_PRESENT = ID_RESERVED9 + 13,
+	ID_VERSION_MISMATCH = ID_RESERVED9 + 14,
 	ID_REPLAY,
 	ID_CHAT_MESSAGE,
-	ID_UPDATE_SCORE,		// no longer used, as ID_PHYSIC_UPDATE also contains the score information, and ID_BALL_RESET also works as a sync point for clocks
 	ID_RULES_CHECKSUM,
 	ID_RULES,
 	ID_SERVER_STATUS,
@@ -85,39 +81,6 @@ enum MessageType
 // 		timestamp (int)
 //		packet_number (unsigned char)
 // 		Physic data (analysed by PhysicWorld)
-//
-// ID_WIN_NOTIFICATION
-// 	Description:
-// 		Message sent from server to all clients when a player
-// 		won the game. The appended enum tells the client which
-// 		player won.
-// 	Structure:
-// 		ID_WIN_NOTIFICATION
-// 		winning player (PlayerSide)
-//
-// ID_BALL_RESET
-// 	Description:
-// 		 Message sent from server to all clients when the ball
-// 		 is reset to the starting position. It includes an information
-// 		 about the current point state and is used to synchronize
-//		 the clocks.
-// 	Structure:
-// 		ID_BALL_RESET
-// 		serving player (PlayerSide)
-// 		left score (int)
-// 		right score (int)
-//		time (int)
-//
-// ID_COLLISION
-// 	Description:
-// 		Message sent from server to all clients when the ball
-// 		hits a player or the ground.  It is the only valid reason for a player
-// 		collision sound. The event attribute contains the DuelMatch Event that
-//		caused the packet to be sent, intensity contains the hit intensity (only valid for player collisions)
-// 	Structure:
-// 		ID_BALL_PLAYER_COLLISION
-//		event (int)
-// 		intensity (float)
 //
 // ID_GAME_READY
 // 	Description:

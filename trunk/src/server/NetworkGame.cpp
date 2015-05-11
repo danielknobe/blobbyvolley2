@@ -54,7 +54,6 @@ NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> lef
 , mLeftInput (new InputSource())
 , mRightInput(new InputSource())
 , mRecorder(new ReplayRecorder())
-, mPausing(false)
 , mGameValid(true)
 {
 	// check that both players don't have an active game
@@ -154,7 +153,6 @@ void NetworkGame::processPackets()
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_OPPONENT_DISCONNECTED);
 				broadcastBitstream(stream);
-				mPausing = true;
 				mMatch->pause();
 				mGameValid = false;
 				break;
@@ -192,7 +190,6 @@ void NetworkGame::processPackets()
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_PAUSE);
 				broadcastBitstream(stream);
-				mPausing = true;
 				mMatch->pause();
 				break;
 			}
@@ -202,7 +199,6 @@ void NetworkGame::processPackets()
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_UNPAUSE);
 				broadcastBitstream(stream);
-				mPausing = false;
 				mMatch->unpause();
 				break;
 			}
@@ -309,31 +305,21 @@ void NetworkGame::step()
 
 	// don't record the pauses
 	if(!mMatch->isPaused())
+	{
 		mRecorder->record(mMatch->getState());
 
-	mMatch->step();
+		mMatch->step();
 
-	int events = mMatch->getEvents();
-	if(events & EVENT_COLLISION)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_COLLISION);
-		stream.Write( events & EVENT_COLLISION );
-		stream.Write( mMatch->getWorld().getLastHitIntensity() );
+		broadcastGameEvents();
 
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_COLLISION);
-		switchStream.Write( switchEventSides( events & EVENT_COLLISION ) );
-		switchStream.Write( mMatch->getWorld().getLastHitIntensity() );
-
-		broadcastBitstream(stream, switchStream);
-	}
-
-	if(!mPausing)
-	{
 		PlayerSide winning = mMatch->winningPlayer();
 		if (winning != NO_PLAYER)
 		{
+			// if someone has won, the game is paused
+			mMatch->pause();
+			mRecorder->record(mMatch->getState());
+			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+			
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
 			stream.Write(winning);
@@ -343,67 +329,36 @@ void NetworkGame::step()
 			switchStream.Write(winning == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 
 			broadcastBitstream(stream, switchStream);
-
-			// if someone has won, the game is paused
-			mPausing = true;
-			mMatch->pause();
-			mRecorder->record(mMatch->getState());
-			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 		}
-	}
 
-	if (events & EVENT_RESET)
-	{
-		RakNet::BitStream stream;
-		stream.Write((unsigned char)ID_BALL_RESET);
-		stream.Write(mMatch->getServingPlayer());
-		stream.Write(mMatch->getScore(LEFT_PLAYER));
-		stream.Write(mMatch->getScore(RIGHT_PLAYER));
-		stream.Write(mMatch->getClock().getTime());
-
-		RakNet::BitStream switchStream;
-		switchStream.Write((unsigned char)ID_BALL_RESET);
-		switchStream.Write(mMatch->getServingPlayer() == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
-		switchStream.Write(mMatch->getScore(RIGHT_PLAYER));
-		switchStream.Write(mMatch->getScore(LEFT_PLAYER));
-		switchStream.Write(mMatch->getClock().getTime());
-
-		broadcastBitstream(stream, switchStream);
-	}
-
-	if (!mPausing)
-	{
-		broadcastPhysicState();
+		broadcastPhysicState(mMatch->getState());
 	}
 }
 
-void NetworkGame::broadcastPhysicState()
+void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 {
-	RakNet::BitStream stream;
-	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
-	stream.Write((unsigned char)ID_TIMESTAMP);
-	stream.Write(RakNet::GetTime());
-	DuelMatchState ms = mMatch->getState();
+	DuelMatchState ms = state;	// modifyable copy
 
+	RakNet::BitStream stream;
+	stream.Write((unsigned char)ID_GAME_UPDATE);
+
+	/// \todo this required dynamic memory allocation! not good!
 	boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 
 	if (mSwitchedSide == LEFT_PLAYER)
 		ms.swapSides();
 
 	out->generic<DuelMatchState> (ms);
-
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mLeftPlayer, false);
 
 	// reset state and stream
-	ms = mMatch->getState();
 	stream.Reset();
-	stream.Write((unsigned char)ID_PHYSIC_UPDATE);
-	stream.Write((unsigned char)ID_TIMESTAMP);
-	stream.Write(RakNet::GetTime());
+	stream.Write((unsigned char)ID_GAME_UPDATE);
 
 	out = createGenericWriter( &stream );
 
-	if (mSwitchedSide == RIGHT_PLAYER)
+	// either switch back, or perform switching for right side
+	if (mSwitchedSide == LEFT_PLAYER || mSwitchedSide == RIGHT_PLAYER)
 		ms.swapSides();
 
 	out->generic<DuelMatchState> (ms);
@@ -411,6 +366,40 @@ void NetworkGame::broadcastPhysicState()
 	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mRightPlayer, false);
 }
 
+// helper function that writes a single event to bit stream in a space efficient way.
+void NetworkGame::writeEventToStream(RakNet::BitStream& stream, MatchEvent e, bool switchSides ) const
+{
+	stream.Write((unsigned char)e.event);
+	if( switchSides )
+		stream.Write((unsigned char)(e.side == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER ) );
+	else
+		stream.Write((unsigned char)e.side);
+	if( e.event == MatchEvent::BALL_HIT_BLOB )
+		stream.Write( e.intensity );
+}
+
+void NetworkGame::broadcastGameEvents() const
+{
+	RakNet::BitStream stream;
+
+	auto events = mMatch->getEvents();
+	// send the events
+	if( events.empty() )
+		return;
+	// add all the events to the stream
+	stream.Write( (unsigned char)ID_GAME_EVENTS );
+	for(auto& e : events)
+		writeEventToStream(stream, e, mSwitchedSide == LEFT_PLAYER );
+	stream.Write((char)0);
+	mServer.Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+
+	stream.Reset();
+	stream.Write( (unsigned char)ID_GAME_EVENTS );
+	for(auto& e : events)
+		writeEventToStream(stream, e, mSwitchedSide == RIGHT_PLAYER );
+	stream.Write((char)0);
+	mServer.Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+}
 
 PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
 {
@@ -424,36 +413,5 @@ PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
 	}
 
 	assert(0);
-}
-
-// helper function for NetworkGame::switchEventSides
-void setEventIf(int& events, int original, int trigger, int event)
-{
-	if( original & trigger )
-		events |= event;
-	else
-		events &= ~event;
-}
-
-int NetworkGame::switchEventSides(int events)
-{
-	int new_events = events;
-
-	setEventIf(new_events, events, EVENT_LEFT_BLOBBY_HIT, EVENT_RIGHT_BLOBBY_HIT);
-	setEventIf(new_events, events, EVENT_RIGHT_BLOBBY_HIT, EVENT_LEFT_BLOBBY_HIT);
-
-	setEventIf(new_events, events, EVENT_BALL_HIT_LEFT_GROUND, EVENT_BALL_HIT_RIGHT_GROUND);
-	setEventIf(new_events, events, EVENT_BALL_HIT_RIGHT_GROUND, EVENT_BALL_HIT_LEFT_GROUND);
-
-	setEventIf(new_events, events, EVENT_BALL_HIT_LEFT_WALL, EVENT_BALL_HIT_RIGHT_WALL);
-	setEventIf(new_events, events, EVENT_BALL_HIT_RIGHT_WALL, EVENT_BALL_HIT_LEFT_WALL);
-
-	setEventIf(new_events, events, EVENT_BALL_HIT_NET_LEFT, EVENT_BALL_HIT_NET_RIGHT);
-	setEventIf(new_events, events, EVENT_BALL_HIT_NET_RIGHT, EVENT_BALL_HIT_NET_LEFT);
-
-	setEventIf(new_events, events, EVENT_ERROR_LEFT, EVENT_ERROR_RIGHT);
-	setEventIf(new_events, events, EVENT_ERROR_RIGHT, EVENT_ERROR_LEFT);
-
-	return new_events;
 }
 

@@ -43,13 +43,11 @@ struct DuelMatchState
 	bool getBallActive() const;
 	int getHitcount(PlayerSide player) const;
 	int getScore(PlayerSide player) const;
-	
+
 	void swapSides();
 
 	PhysicState worldState;
 	GameLogicState logicState;
 
 	PlayerInput playerInput[MAX_PLAYERS];
-
-	unsigned char errorSide;
 };

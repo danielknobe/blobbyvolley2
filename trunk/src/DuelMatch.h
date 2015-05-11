@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PlayerInput.h"
 #include "PlayerIdentity.h"
 #include "BlobbyDebug.h"
+#include "MatchEvents.h"
 
 class InputSource;
 struct DuelMatchState;
@@ -84,8 +85,6 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		int getScoreToWin() const;
 		PlayerSide getServingPlayer() const;
 
-		void setLastHitIntensity(float intensity);
-
 		int getHitcount(PlayerSide player) const;
 
 		Vector2 getBallPosition() const;
@@ -112,6 +111,8 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		/// Set a new state using a saved DuelMatchState
 		void setState(const DuelMatchState& state);
+		/// trigger an external event
+		void trigger( const MatchEvent& event );
 
 		/// gets the current state
 		DuelMatchState getState() const;
@@ -124,7 +125,10 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		void setServingPlayer(PlayerSide side);
 
-		int getEvents() const { return events; }
+		const std::vector<MatchEvent>& getEvents() const { return mLastEvents; }
+		// this function will move all events into mLastEvents, so they will be returned by get events.
+		// use this if no match step is performed, but external events have to be processed.
+		void updateEvents();
 
 	private:
 
@@ -139,7 +143,9 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		bool mPaused;
 
-		int events;
-		int external_events;
+		// accumulation of physic events since last event processing
+		std::vector<MatchEvent> mEvents;
+		std::vector<MatchEvent> mLastEvents;	// events that were generated in the last processed frame
+
 		bool mRemote;
 };

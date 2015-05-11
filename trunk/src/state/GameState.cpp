@@ -56,8 +56,6 @@ void GameState::presentGame()
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
 
-
-
 	rmanager.setBlob(LEFT_PLAYER, mMatch->getBlobPosition(LEFT_PLAYER), mMatch->getWorld().getBlobState(LEFT_PLAYER));
 	rmanager.setBlob(RIGHT_PLAYER, mMatch->getBlobPosition(RIGHT_PLAYER),	mMatch->getWorld().getBlobState(RIGHT_PLAYER));
 
@@ -81,25 +79,20 @@ void GameState::presentGame()
 
 	rmanager.setBall(mMatch->getBallPosition(), mMatch->getWorld().getBallRotation());
 
-	int events = mMatch->getEvents();
-	if(events & EVENT_LEFT_BLOBBY_HIT)
+	auto events = mMatch->getEvents( );
+	for(const auto& e : events )
 	{
-		smanager.playSound("sounds/bums.wav", mMatch->getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = mMatch->getBallPosition() +
-				(mMatch->getBlobPosition(LEFT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().getLastHitIntensity(), 0);
-	}
+		if( e.event == MatchEvent::BALL_HIT_BLOB )
+		{
+			smanager.playSound("sounds/bums.wav", e.intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
+			/// \todo save that position inside the event
+			Vector2 hitPos = mMatch->getBallPosition() + (mMatch->getBlobPosition(e.side) - mMatch->getBallPosition()).normalise().scale(31.5);
+			BloodManager::getSingleton().spillBlood(hitPos, e.intensity, 0);
+		}
 
-	if (events & EVENT_RIGHT_BLOBBY_HIT)
-	{
-		smanager.playSound("sounds/bums.wav", mMatch->getWorld().getLastHitIntensity() + BALL_HIT_PLAYER_SOUND_VOLUME);
-		Vector2 hitPos = mMatch->getBallPosition() +
-				(mMatch->getBlobPosition(RIGHT_PLAYER) - mMatch->getBallPosition()).normalise().scale(31.5);
-		BloodManager::getSingleton().spillBlood(hitPos, mMatch->getWorld().getLastHitIntensity(), 1);
+		if( e.event == MatchEvent::PLAYER_ERROR )
+			smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 	}
-
-	if (events & EVENT_ERROR)
-		smanager.playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 }
 
 void GameState::presentGameUI()
