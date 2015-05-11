@@ -20,25 +20,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-enum
+// encoding of events that can happen in the physics subsystem
+struct MatchEvent
 {
-	// physic events
-	EVENT_LEFT_BLOBBY_HIT = 1,
-	EVENT_RIGHT_BLOBBY_HIT = 2,
-	EVENT_BALL_HIT_LEFT_GROUND = 4,
-	EVENT_BALL_HIT_RIGHT_GROUND = 8,
-	EVENT_BALL_HIT_LEFT_WALL = 16,
-	EVENT_BALL_HIT_RIGHT_WALL = 32,
-	EVENT_BALL_HIT_NET_LEFT = 64,
-	EVENT_BALL_HIT_NET_RIGHT = 128,
-	EVENT_BALL_HIT_NET_TOP = 256,
-	EVENT_BALL_HIT_GROUND = EVENT_BALL_HIT_LEFT_GROUND | EVENT_BALL_HIT_RIGHT_GROUND,
-	EVENT_BALL_HIT_BLOBBY = EVENT_LEFT_BLOBBY_HIT | EVENT_RIGHT_BLOBBY_HIT,
-	EVENT_COLLISION = EVENT_BALL_HIT_GROUND | EVENT_BALL_HIT_BLOBBY,
+	// this characterizes the event type
+	enum EventType
+	{
+		// physic events
+		BALL_HIT_BLOB = 1,
+		BALL_HIT_WALL,
+		BALL_HIT_GROUND,
+		BALL_HIT_NET,
+		BALL_HIT_NET_TOP,
+		// logic events
+		PLAYER_ERROR,				// a player made an error
+		RESET_BALL					// the ball was reset for next serve
+	};
 
-	// game events
-	EVENT_ERROR_LEFT = 512,
-	EVENT_ERROR_RIGHT = 1024,
- 	EVENT_ERROR = EVENT_ERROR_LEFT | EVENT_ERROR_RIGHT,
-	EVENT_RESET = 2048
+	// type of the event
+	EventType event;
+	// side on which the event happened
+	PlayerSide side;
+	// intensity of the event (only set if required by the event type)
+	float intensity;
+
+	MatchEvent(EventType e, PlayerSide s, float i = 0) : event(e), side(s), intensity(i)
+	{
+
+	}
 };
+

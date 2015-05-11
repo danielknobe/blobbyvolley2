@@ -65,5 +65,5 @@ void PhysicState::swapSides()
 	ballPosition.x = RIGHT_PLANE - ballPosition.x;
 	ballVelocity.x = -ballVelocity.x;
 	ballAngularVelocity = -ballAngularVelocity;
-	ballRotation = -ballRotation;	/// \todo save or 2pi-.?
+	ballRotation = 2*M_PI - ballRotation;
 }

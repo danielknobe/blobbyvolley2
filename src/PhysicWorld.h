@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PlayerInput.h"
 #include "BlobbyDebug.h"
 #include "PhysicState.h"
+#include "MatchEvents.h"
+#include <functional>	// for std::function used for the callback
 
 /*! \brief blobby world
 	\details This class encapuslates the physical world where blobby happens. It manages the two blobs,
@@ -32,9 +34,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class PhysicWorld : public ObjectCounter<PhysicWorld>
 {
+	// callback function type
+	typedef std::function<void(MatchEvent)> event_callback_fn;
+
 	public:
 		PhysicWorld();
 		~PhysicWorld();
+
+		// set the callback
+		void setEventCallback( event_callback_fn );
 
 		// ball information queries
 		Vector2 getBallPosition() const;
@@ -47,16 +55,12 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		// blobby information queries
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
-		bool blobHitGround(PlayerSide player) const;
 		float getBlobState(PlayerSide player) const;
-
-		// Methods to set/get the intensity of the collision
-		// which was detected and also queried last.
-		void setLastHitIntensity(float intensity);
-		float getLastHitIntensity() const;
+		// this function calculates whether the player is on the ground
+		bool blobHitGround(PlayerSide player) const;
 
 		// Important: This assumes a fixed framerate of 60 FPS!
-		int step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning);
+		void step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning);
 
 		// gets the physic state
 		PhysicState getState() const;
@@ -90,6 +94,8 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
 
 		float mLastHitIntensity;
+
+		event_callback_fn mCallback;
 };
 
 

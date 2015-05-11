@@ -273,8 +273,7 @@ void ReplayRecorder::record(const DuelMatchState& state)
 	// or when something interesting occurs
 	if(mSaveData.size() % REPLAY_SAVEPOINT_PERIOD == 0 ||
 		mEndScore[LEFT_PLAYER] != state.logicState.leftScore ||
-		mEndScore[RIGHT_PLAYER] != state.logicState.rightScore ||
-		state.errorSide != (unsigned char)NO_PLAYER)
+		mEndScore[RIGHT_PLAYER] != state.logicState.rightScore)
 	{
 		ReplaySavePoint sp;
 		sp.state = state;
