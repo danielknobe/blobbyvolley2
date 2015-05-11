@@ -68,12 +68,6 @@ bool PhysicWorld::blobHitGround(PlayerSide player) const
 		return false;
 }
 
-float PhysicWorld::getLastHitIntensity() const
-{
-	float intensity = mLastHitIntensity / 25.0;
-	return intensity < 1.0 ? intensity : 1.0;
-}
-
 bool PhysicWorld::playerTopBallCollision(int player) const
 {
 	if (Vector2(mBallPosition, Vector2(mBlobPosition[player].x,	mBlobPosition[player].y - BLOBBY_UPPER_SPHERE)).length()
@@ -189,7 +183,8 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	// Check for bottom circles
 	if(playerBottomBallCollision(player))
 	{
-		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length();
+		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
+		mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
 
 		const Vector2& blobpos = mBlobPosition[player];
 		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y + BLOBBY_LOWER_SPHERE);
@@ -202,7 +197,8 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	}
 	 else if(playerTopBallCollision(player))
 	{
-		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length();
+		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
+		mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
 
 		const Vector2& blobpos = mBlobPosition[player];
 		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y - BLOBBY_UPPER_SPHERE);
@@ -240,9 +236,9 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 	if(isBallValid)
 	{
 		if (handleBlobbyBallCollision(LEFT_PLAYER))
-			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, LEFT_PLAYER, getLastHitIntensity()} );
+			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, LEFT_PLAYER, mLastHitIntensity} );
 		if (handleBlobbyBallCollision(RIGHT_PLAYER))
-			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, RIGHT_PLAYER, getLastHitIntensity()} );
+			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, RIGHT_PLAYER, mLastHitIntensity} );
 	}
 	// Ball to ground Collision
 	if (mBallPosition.y + BALL_RADIUS > GROUND_PLANE_HEIGHT_MAX)
