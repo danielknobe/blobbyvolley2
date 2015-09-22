@@ -302,18 +302,24 @@ void setupPHYSFS()
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
 			static int lastfps = 0;
+			static int lastlag = -1;
 			if (scontroller.getDrawFPS())
 			{
 				// We need to ensure that the title bar is only set
 				// when the framerate changed, because setting the
-				// title can ne quite resource intensive on some
+				// title can be quite resource intensive on some
 				// windows manager, like for example metacity.
+				// we only update lag information if lag changed at least by
+				// 5 ms, for the same reason.
 				int newfps = scontroller.getFPS();
-				if (newfps != lastfps)
+				if (newfps != lastfps || std::abs(CURRENT_NETWORK_LAG - lastlag) > 4)
 				{
 					std::stringstream tmp;
-					tmp << AppTitle << "	FPS: " << newfps;
+					tmp << AppTitle << "  FPS: " << newfps;
+					if( CURRENT_NETWORK_LAG != -1)
+						tmp << "  LAG: " << CURRENT_NETWORK_LAG;
 					rmanager->setTitle(tmp.str());
+					lastlag = CURRENT_NETWORK_LAG;
 				}
 				lastfps = newfps;
 			}

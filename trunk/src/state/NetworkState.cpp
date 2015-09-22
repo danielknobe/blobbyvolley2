@@ -55,6 +55,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LobbyStates.h"
 #include "InputManager.h"
 
+// global variable to save the lag
+int CURRENT_NETWORK_LAG = -1;
+
 
 /* implementation */
 NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rule_checksum, int score_to_win):
@@ -124,6 +127,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rul
 
 NetworkGameState::~NetworkGameState()
 {
+	CURRENT_NETWORK_LAG = -1;
 	mClient->Disconnect(50);
 }
 
@@ -141,6 +145,9 @@ void NetworkGameState::step_impl()
 			{
 				RakNet::BitStream stream((char*)packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_GAME_UPDATE
+				unsigned timeBack;
+				stream.Read(timeBack);
+				CURRENT_NETWORK_LAG = SDL_GetTicks() - timeBack;
 				DuelMatchState ms;
 				/// \todo this is a performance nightmare: we create a new reader for every packet!
 				///			there should be a better way to do that
@@ -503,8 +510,7 @@ void NetworkGameState::step_impl()
 			}
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_INPUT_UPDATE);
-			stream.Write((unsigned char)ID_TIMESTAMP);	///! \todo do we really need this time stamps?
-			stream.Write(RakNet::GetTime());
+			stream.Write( SDL_GetTicks() );
 			input.writeTo(stream);
 			mClient->Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0);
 			break;

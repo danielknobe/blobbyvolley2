@@ -97,6 +97,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		SpeedController mSpeedController;
 		boost::shared_ptr<InputSource> mLeftInput;
 		boost::shared_ptr<InputSource> mRightInput;
+		unsigned mLeftLastTime = -1;
+		unsigned mRightLastTime = -1;
 		std::thread mGameThread;
 
 		boost::scoped_ptr<ReplayRecorder> mRecorder;
