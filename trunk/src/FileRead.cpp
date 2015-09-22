@@ -230,16 +230,18 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	}
 }
 
-int FileRead::readLuaScript(std::string filename, lua_State* mState)
+int FileRead::readLuaScript(const std::string& filename, lua_State* mState)
+{
+	ReaderInfo info;
+	info.file.open(makeLuaFilename(filename));
+	return lua_load(mState, chunkReader, &info, filename.c_str(), NULL);
+}
+
+std::string FileRead::makeLuaFilename(std::string filename)
 {
 	if( !boost::ends_with(filename, ".lua") )
-	{
 		filename += ".lua";
-	}
-
-	ReaderInfo info;
-	info.file.open(filename);
-	return lua_load(mState, chunkReader, &info, filename.c_str(), NULL);
+	return filename;
 }
 
 boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)

@@ -54,7 +54,21 @@ int operator<( const PlayerID& left, const PlayerID& right )
 
 std::string PlayerID::toString() const
 {
-	return boost::lexical_cast<std::string>(binaryAddress) + ":" +  boost::lexical_cast<std::string>(port);
+	auto tmp = binaryAddress;
+	std::string ip =  boost::lexical_cast<std::string>(tmp & 0xFF);
+	tmp >> 8;
+	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	tmp >> 8;
+	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	tmp >> 8;
+	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	
+	return ip + ":" +  boost::lexical_cast<std::string>(port);
+}
+
+std::ostream& operator<<(std::ostream& stream, const PlayerID& p)
+{
+	return stream << p.toString();
 }
 
 RakNet::BitStream Packet::getStream() const

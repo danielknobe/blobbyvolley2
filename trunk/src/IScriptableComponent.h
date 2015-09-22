@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 struct lua_State;
 struct DuelMatchState;
+struct GameLogicState;
 
 /*! \class IScriptableComponent
 	\brief Base class for lua scripted objects.
@@ -50,6 +51,7 @@ protected:
 	void setGameFunctions();
 
 	void updateGameState(const DuelMatchState& state);
+	void updateGameState( const GameLogicState& state ); // update only the game logic part
 
 	lua_State* mState;
 

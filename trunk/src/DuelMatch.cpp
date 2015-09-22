@@ -32,12 +32,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 #include "GameConstants.h"
 #include "InputSource.h"
+#include "IUserConfigReader.h"
 
 /* implementation */
 
-DuelMatch::DuelMatch(bool remote, std::string rules) :
+DuelMatch::DuelMatch(bool remote, std::string rules, int score_to_win) :
 		// we send a pointer to an unconstructed object here!
-		mLogic(createGameLogic(rules, this)),
+		mLogic(createGameLogic(rules, this, score_to_win == 0 ? IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin") : score_to_win)),
 		mPaused(false),
 		mRemote(remote)
 {
@@ -77,9 +78,11 @@ DuelMatch::~DuelMatch()
 {
 }
 
-void DuelMatch::setRules(std::string rulesFile)
+void DuelMatch::setRules(std::string rulesFile, int score_to_win)
 {
-	mLogic = createGameLogic(rulesFile, this);
+	if( score_to_win == 0)
+		score_to_win = getScoreToWin();
+	mLogic = createGameLogic(rulesFile, this, score_to_win);
 }
 
 
@@ -99,7 +102,7 @@ void DuelMatch::step()
 	}
 
 	// do steps in physic an logic
-	mLogic->step();
+	mLogic->step( getState() );
 	mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER],
 											mLogic->isBallValid(), mLogic->isGameRunning() );
 

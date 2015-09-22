@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/lexical_cast.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include "raknet/RakClient.h"
 #include "raknet/RakServer.h"
@@ -50,16 +52,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "MatchEvents.h"
 #include "SpeedController.h"
 #include "server/DedicatedServer.h"
-#include "LobbyState.h"
+#include "LobbyStates.h"
 #include "InputManager.h"
 
 
 /* implementation */
-NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
-	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE)),
+NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rule_checksum, int score_to_win):
+	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win)),
 	 mClient( client ),
-	 mWinningPlayer(NO_PLAYER),
 	 mNetworkState(WAITING_FOR_OPPONENT),
+	 mWinningPlayer(NO_PLAYER),
 	 mWaitingForReplay(false),
 	 mSelectedChatmessage(0),
 	 mChatCursorPosition(0),
@@ -97,6 +99,27 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client):
 	}
 
 	mRemotePlayer->setName("");
+
+	// check the rules
+	int ourChecksum = 0;
+	if (rule_checksum != 0)
+	{
+		try
+		{
+			FileRead rulesFile("server_rules.lua");
+			ourChecksum = rulesFile.calcChecksum(0);
+			rulesFile.close();
+		}
+		catch( FileLoadException& ex )
+		{
+			// file doesn't exist - nothing to do here
+		}
+	}
+
+	RakNet::BitStream stream2;
+	stream2.Write((unsigned char)ID_RULES);
+	stream2.Write(bool(rule_checksum != 0 && rule_checksum != ourChecksum));
+	mClient->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 }
 
 NetworkGameState::~NetworkGameState()
@@ -232,32 +255,7 @@ void NetworkGameState::step_impl()
 			}
 			case ID_RULES_CHECKSUM:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
-
-				stream.IgnoreBytes(1);	// ignore ID_RULES_CHECKSUM
-
-				int serverChecksum;
-				stream.Read(serverChecksum);
-				int ourChecksum = 0;
-				if (serverChecksum != 0)
-				{
-					try
-					{
-						FileRead rulesFile("server_rules.lua");
-						ourChecksum = rulesFile.calcChecksum(0);
-						rulesFile.close();
-					}
-					catch( FileLoadException& ex )
-					{
-						// file doesn't exist - nothing to do here
-					}
-				}
-
-				RakNet::BitStream stream2;
-				stream2.Write((unsigned char)ID_RULES);
-				stream2.Write(bool(serverChecksum != 0 && serverChecksum != ourChecksum));
-				mClient->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-
+				assert(0);
 				break;
 			}
 			case ID_RULES:
@@ -291,7 +289,6 @@ void NetworkGameState::step_impl()
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
 			case ID_REMOTE_CONNECTION_LOST:
 			case ID_SERVER_STATUS:
-			case ID_CHALLENGE:
 			case ID_REMOTE_NEW_INCOMING_CONNECTION:
 			case ID_REMOTE_EXISTING_CONNECTION:
 				break;
@@ -358,7 +355,7 @@ void NetworkGameState::step_impl()
 
 				if (packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
 				{
-					switchState(new LobbyState(info));
+					switchState(new LobbyState(info, PreviousState::MAIN));
 				}
 				break;
 			}
@@ -578,125 +575,6 @@ const char* NetworkGameState::getStateName() const
 {
 	return "NetworkGameState";
 }
-
-// ---------------------------------------------------------------------------------------------------------------------------------
-//	implementation of the local host state
-// ----------------------------------------
-
-NetworkHostState::NetworkHostState() : mServer(  ), mClient( new RakClient ), mGameState(nullptr)
-{
-	// read config
-	/// \todo we need read-only access here!
-	UserConfig config;
-	config.loadFile("config.xml");
-	PlayerSide localSide = (PlayerSide)config.getInteger("network_side");
-
-	// load/init players
-	if(localSide == LEFT_PLAYER)
-	{
-		mLocalPlayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
-	}
-	 else
-	{
-		mLocalPlayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
-	}
-
-	ServerInfo info( mLocalPlayer.getName().c_str());
-	std::string rulesfile = config.getString("rules");
-
-	mServer.reset( new DedicatedServer(info, rulesfile, 4));
-
-	// connect to server
-	if (!mClient->Connect(info.hostname, info.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
-		throw( std::runtime_error(std::string("Could not connect to server ") + info.hostname) );
-
-
-}
-
-NetworkHostState::~NetworkHostState()
-{
-	delete mGameState;
-}
-
-void NetworkHostState::step_impl()
-{
-	packet_ptr packet;
-	if( mGameState == nullptr )
-	{
-		while (packet = mClient->Receive())
-		{
-			switch(packet->data[0])
-			{
-				// as soon as we are connected to the server
-				case ID_CONNECTION_REQUEST_ACCEPTED:
-				{
-					// ----------------------------------------------------
-					// Send ENTER SERVER packet
-					RakNet::BitStream stream;
-					stream.Write((unsigned char)ID_ENTER_SERVER);
-
-					// Send preferred side
-					stream.Write( mLocalPlayer.getPreferredSide() );
-
-					// Send playername
-					char myname[16];
-					strncpy(myname, mLocalPlayer.getName().c_str(), sizeof(myname));
-					stream.Write(myname, sizeof(myname));
-
-					// send color settings
-					stream.Write(mLocalPlayer.getStaticColor().toInt());
-
-					mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-
-					// Send ENTER GAME packet
-
-					RakNet::BitStream stream2;
-					stream2.Write((char)ID_CHALLENGE);
-					auto writer = createGenericWriter(&stream2);
-					writer->generic<PlayerID>( UNASSIGNED_PLAYER_ID );
-
-					mClient->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-
-					mGameState = new NetworkGameState(mClient);
-
-					break;
-				}
-				case ID_SERVER_STATUS:
-					{
-
-					}
-					break;
-				default:
-					std::cout << "Unknown packet " << int(packet->data[0]) << " received\n";
-			}
-		}
-	}
-
-	if(mServer->hasActiveGame())
-	{
-		mServer->allowNewPlayers(false);
-	}
-
-	mServer->processPackets();
-
-	/// \todo make this gamespeed independent
-	mLobbyCounter++;
-	if(mLobbyCounter % (750 /*10s*/) == 0 )
-	{
-		mServer->updateLobby();
-	}
-
-	mServer->updateGames();
-
-	if( mGameState )
-		mGameState->step_impl();
-}
-
-const char* NetworkHostState::getStateName() const
-{
-	return "NetworkHostState";
-}
-
 // definition of syslog for client hosted games
 void syslog(int pri, const char* format, ...)
 {

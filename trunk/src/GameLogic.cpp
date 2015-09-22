@@ -37,7 +37,6 @@ extern "C"
 #include "GameLogicState.h"
 #include "DuelMatch.h"
 #include "GameConstants.h"
-#include "IUserConfigReader.h"
 #include "IScriptableComponent.h"
 #include "PlayerInput.h"
 
@@ -58,8 +57,8 @@ const std::string FALLBACK_RULES_NAME = "__FALLBACK__";
 const std::string DUMMY_RULES_NAME = "__DUMMY__";
 
 
-IGameLogic::IGameLogic()
-: mScoreToWin(IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin"))
+IGameLogic::IGameLogic( int stw )
+: mScoreToWin( stw)
 , mSquishWall(0)
 , mSquishGround(0)
 , mLastError(NO_PLAYER)
@@ -171,7 +170,7 @@ void IGameLogic::setState(GameLogicState gls)
 // -------------------------------------------------------------------------------------------------
 //								Event Handlers
 // -------------------------------------------------------------------------------------------------
-void IGameLogic::step()
+void IGameLogic::step( const DuelMatchState& state )
 {
 	mClock.step();
 
@@ -182,7 +181,7 @@ void IGameLogic::step()
 		--mSquishWall;
 		--mSquishGround;
 
-		OnGameHandler();
+		OnGameHandler( state );
 	}
 }
 
@@ -327,7 +326,7 @@ void IGameLogic::onError(PlayerSide errorSide, PlayerSide serveSide)
 class DummyGameLogic : public IGameLogic
 {
 	public:
-		DummyGameLogic()
+		DummyGameLogic(int stw ) : IGameLogic( stw )
 		{
 		}
 		virtual ~DummyGameLogic()
@@ -337,7 +336,7 @@ class DummyGameLogic : public IGameLogic
 
 		virtual GameLogic clone() const
 		{
-			return GameLogic(new DummyGameLogic());
+			return GameLogic(new DummyGameLogic( getScoreToWin() ));
 		}
 
 		virtual std::string getSourceFile() const
@@ -383,7 +382,7 @@ class DummyGameLogic : public IGameLogic
 		{
 		}
 
-		virtual void OnGameHandler()
+		virtual void OnGameHandler( const DuelMatchState& state )
 		{
 		}
 };
@@ -396,7 +395,7 @@ class DummyGameLogic : public IGameLogic
 class FallbackGameLogic : public DummyGameLogic
 {
 	public:
-		FallbackGameLogic()
+		FallbackGameLogic( int stw ) : DummyGameLogic( stw )
 		{
 		}
 		virtual ~FallbackGameLogic()
@@ -406,7 +405,7 @@ class FallbackGameLogic : public DummyGameLogic
 
 		virtual GameLogic clone() const
 		{
-			return GameLogic(new FallbackGameLogic());
+			return GameLogic(new FallbackGameLogic( getScoreToWin() ));
 		}
 
 		virtual std::string getTitle() const
@@ -454,7 +453,7 @@ protected:
 class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 {
 	public:
-		LuaGameLogic(const std::string& file, DuelMatch* match);
+		LuaGameLogic(const std::string& file, DuelMatch* match, int score_to_win);
 		virtual ~LuaGameLogic();
 
 		virtual std::string getSourceFile() const
@@ -467,7 +466,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 			lua_getglobal(mState, "__MATCH_POINTER");
 			DuelMatch* match = (DuelMatch*)lua_touserdata(mState, -1);
 			lua_pop(mState, 1);
-			return GameLogic(new LuaGameLogic(mSourceFile, match));
+			return GameLogic(new LuaGameLogic(mSourceFile, match, getScoreToWin()));
 		}
 
 		virtual std::string getAuthor() const
@@ -489,7 +488,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 		virtual void OnBallHitsWallHandler(PlayerSide side);
 		virtual void OnBallHitsNetHandler(PlayerSide side);
 		virtual void OnBallHitsGroundHandler(PlayerSide side);
-		virtual void OnGameHandler();
+		virtual void OnGameHandler( const DuelMatchState& state );
 
 		static LuaGameLogic* getGameLogic(lua_State* state);
 
@@ -510,7 +509,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 };
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mSourceFile(filename)
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match, int score_to_win ) : FallbackGameLogic( score_to_win ), mSourceFile(filename)
 {
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
@@ -522,6 +521,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	lua_setglobal(mState, "SCORE_TO_WIN");
 
 	setGameConstants();
+	setGameFunctions();
 
 	// add functions
 	luaL_requiref(mState, "math", luaopen_math, 1);
@@ -534,6 +534,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match ) : mS
 	// now load script file
 	openScript("api");
 	openScript("rules_api");
+	openScript("rules/"+mSourceFile);
 
 	lua_getglobal(mState, "SCORE_TO_WIN");
 	mScoreToWin = lua_toint(mState, -1);
@@ -558,6 +559,7 @@ LuaGameLogic::~LuaGameLogic()
 
 PlayerSide LuaGameLogic::checkWin() const
 {
+	const_cast<LuaGameLogic*>(this)->updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	bool won = false;
 	if (!getLuaFunction("IsWinning"))
 	{
@@ -589,6 +591,7 @@ PlayerSide LuaGameLogic::checkWin() const
 
 PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 {
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "HandleInput" ))
 	{
 		return FallbackGameLogic::handleInput(ip, player);
@@ -616,6 +619,7 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 
 void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 {
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction("OnBallHitsPlayer"))
 	{
 		FallbackGameLogic::OnBallHitsPlayerHandler(side);
@@ -631,6 +635,7 @@ void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction("OnBallHitsWall"))
 	{
 		FallbackGameLogic::OnBallHitsWallHandler(side);
@@ -647,6 +652,7 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 {
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnBallHitsNet" ))
 	{
 		FallbackGameLogic::OnBallHitsNetHandler(side);
@@ -664,6 +670,7 @@ void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 {
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnBallHitsGround" ))
 	{
 		FallbackGameLogic::OnBallHitsGroundHandler(side);
@@ -679,11 +686,16 @@ void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 	};
 }
 
-void LuaGameLogic::OnGameHandler()
+void LuaGameLogic::OnGameHandler( const DuelMatchState& state )
 {
+	// we need to do this on every function call, so maybe it was not the best idea
+	// to save the state instead of the pointer to a duel match inside the lua script.
+	/// \todo find a better way to do this.
+	updateGameState( state );		// set state of world
+	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnGame" ))
 	{
-		FallbackGameLogic::OnGameHandler();
+		FallbackGameLogic::OnGameHandler( state );
 		return;
 	}
 	if( lua_pcall(mState, 0, 0, 0) )
@@ -751,22 +763,23 @@ int LuaGameLogic::luaIsGameRunning(lua_State* state)
 
 GameLogic createGameLogic()
 {
-	return GameLogic(new DummyGameLogic());
+	return GameLogic(new DummyGameLogic( 15 ));
 }
-GameLogic createGameLogic(const std::string& file, DuelMatch* match)
+
+GameLogic createGameLogic(const std::string& file, DuelMatch* match, int score_to_win )
 {
 	if(file == DUMMY_RULES_NAME)
 	{
-		return GameLogic(new DummyGameLogic());
+		return GameLogic(new DummyGameLogic( score_to_win ));
 	}
 		else if (file == FALLBACK_RULES_NAME)
 	{
-		return GameLogic(new FallbackGameLogic());
+		return GameLogic(new FallbackGameLogic( score_to_win ));
 	}
 
 	try
 	{
-		return GameLogic( new LuaGameLogic(file, match) );
+		return GameLogic( new LuaGameLogic(file, match, score_to_win ) );
 	}
 	catch( std::exception& exp)
 	{
@@ -774,7 +787,7 @@ GameLogic createGameLogic(const std::string& file, DuelMatch* match)
 		std::cerr << exp.what() << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
-		return GameLogic(new FallbackGameLogic());
+		return GameLogic(new FallbackGameLogic( score_to_win ));
 	}
 
 }

@@ -36,47 +36,85 @@ class MatchMaker
 {
 public:
 	// returns a unique challenge ID
-	unsigned addChallenge( PlayerID challenger, PlayerID challenged, int speed, int rules, int points );	// add a new challenge.
-	/// accepts a challenge by ID. returns false if \p challenge is not a valid challenge id
-	bool acceptChallenge( PlayerID player, unsigned int challenge );
-	/// decline a challenge by ID. if \p challenge is no longer valid, do nothing
-	void declineChallenge( PlayerID player, unsigned int challenge );
-
+	unsigned openGame( PlayerID creator, int speed, int rules, int points );
 
 	void addPlayer( PlayerID id, boost::shared_ptr<NetworkPlayer> player );
 	void removePlayer( PlayerID id );
 
 	// set callback functions
-	typedef std::function<boost::shared_ptr<NetworkGame>(boost::shared_ptr<NetworkPlayer>, boost::shared_ptr<NetworkPlayer>, PlayerSide)> create_game_fn;
+	typedef std::function<void(boost::shared_ptr<NetworkPlayer>, boost::shared_ptr<NetworkPlayer>,
+								PlayerSide, std::string rules, int score, float speed)> create_game_fn;
 	void setCreateGame( create_game_fn func) { mCreateGame = func;};
 
 	typedef std::function<void(const RakNet::BitStream& stream, PlayerID target)> send_fn;
 	void setSendFunction( send_fn func ) { mSendPacket = func; };
 
 	// communication
-	void receiveChallengePacket( PlayerID sender, RakNet::BitStream content );
+	void receiveLobbyPacket( PlayerID sender, RakNet::BitStream content );
+	/// send a packet with all currently open games to \p recipient
+	void sendOpenGameList( PlayerID recipient );
+
+	// broadcast the status of a game
+	void broadcastOpenGameStatus( unsigned gameID );
+	void broadcastOpenGameList(); // sends the game list to all players that are not in a game
+
+
+	// add settings
+	void addGameSpeedOption( int speed );
+	void addRuleOption( const std::string& file );
+	void setAllowNewGames( bool allow );
+
+	// info functions
+	unsigned getOpenGamesCount() const;
+	std::vector<unsigned> getOpenGameIDs() const;
 
 private:
+	struct OpenGame;
+
+	/// add a new game to the gamelist
+	unsigned addGame( OpenGame game );
+	void joinGame(PlayerID player, unsigned gameID);
+	void startGame(PlayerID host, PlayerID client);
+
+	void removeGame( unsigned id );
+	void removePlayerFromAllGames( PlayerID player );
+	void removePlayerFromGame( unsigned game, PlayerID player );
 
 	/// create a new network game from the challenges id1 and id2. If either is not valid, no game is created.
 	void makeMatch( unsigned id1, unsigned id2 );
 
-	struct Challenge
+	struct OpenGame
 	{
-		PlayerID challenger;
-		PlayerID challenged;
+		// owner
+		PlayerID creator;
+		// game name
+		std::string name;
+		// settings
 		int speed;
 		int rules;
 		int points;
+		// connected players
+		std::vector<PlayerID> connected;
 	};
 
-	static bool compatible(const Challenge& c1, const Challenge& c2) ;
+	struct Rule
+	{
+		std::string file;
+		std::string name;
+		std::string author;
+		std::string description;
+	};
 
-	std::map<unsigned, Challenge> mChallenges;
+	std::map<unsigned, OpenGame> mOpenGames;
 	unsigned int mIDCounter = 0;
 
 	// waiting player map
 	std::map< PlayerID, boost::shared_ptr<NetworkPlayer>> mPlayerMap;
+
+	// possible game configurations
+	std::vector<unsigned int> mPossibleGameSpeeds;
+	std::vector<Rule> mPossibleGameRules;
+	bool mAllowNewGames = true;
 
 	// callbacks
 	create_game_fn mCreateGame;

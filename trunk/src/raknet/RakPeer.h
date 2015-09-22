@@ -36,6 +36,7 @@
 #include "SingleProducerConsumer.h"
 #include "PacketPool.h"
 
+#include <functional>
 
 #ifdef _WIN32
 void __stdcall ProcessNetworkPacket( unsigned int binaryAddress, unsigned short port, const char *data, int length, RakPeer *rakPeer );
@@ -370,6 +371,11 @@ public:
 	* --------------------------------------------------------------------------------------------
 	*/
 
+	void setUpdateCallback( std::function<void()> func )
+	{
+		mUpdateCallback = func;
+	}
+
 	/**
 	* Put a packet back at the end of the receive queue in case you don't want to deal with it immediately
 	*
@@ -571,6 +577,9 @@ protected:
 	bool allowConnectionResponseIPMigration;
 
 	PacketPool packetPool;
+
+	/* user callback for network thread */
+	std::function<void()> mUpdateCallback;
 };
 
 #endif
