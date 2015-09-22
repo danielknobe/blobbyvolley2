@@ -193,13 +193,12 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 		case ID_INPUT_UPDATE:
 		{
 
-			int ival;
+			unsigned time;
 			RakNet::BitStream stream((char*)packet->data, packet->length, false);
 
-			// ignore ID_INPUT_UPDATE and ID_TIMESTAMP
+			// ignore ID_INPUT_UPDATE
 			stream.IgnoreBytes(1);
-			stream.IgnoreBytes(1);
-			stream.Read(ival);
+			stream.Read(time);
 			PlayerInputAbs newInput(stream);
 
 			if (packet->playerId == mLeftPlayer)
@@ -207,12 +206,14 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				if (mSwitchedSide == LEFT_PLAYER)
 					newInput.swapSides();
 				mLeftInput->setInput(newInput);
+				mLeftLastTime = time;
 			}
 			if (packet->playerId == mRightPlayer)
 			{
 				if (mSwitchedSide == RIGHT_PLAYER)
 					newInput.swapSides();
 				mRightInput->setInput(newInput);
+				mRightLastTime = time;
 			}
 			break;
 		}
@@ -370,10 +371,11 @@ void NetworkGame::step()
 
 void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 {
-	DuelMatchState ms = state;	// modifyable copy
+	DuelMatchState ms = state;	// modifiable copy
 
 	RakNet::BitStream stream;
 	stream.Write((unsigned char)ID_GAME_UPDATE);
+	stream.Write( mLeftLastTime );
 
 	/// \todo this required dynamic memory allocation! not good!
 	boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
@@ -387,6 +389,7 @@ void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 	// reset state and stream
 	stream.Reset();
 	stream.Write((unsigned char)ID_GAME_UPDATE);
+	stream.Write( mRightLastTime );
 
 	out = createGenericWriter( &stream );
 
