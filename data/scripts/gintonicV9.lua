@@ -18,44 +18,40 @@ CT_WaitMoveTo = 0
 -- constants
 blobbymaxjump = 393.625
 
-function IsAt(position)
-        return (math.abs(posx()-position) <= CT_Tolerance)
-end
-
 function Wait(name, time, moveto)
-        if (CT_WaitName == name) then
-                if (CT_WaitCounter == 0) then
-                        return false
-                end
-        end
-        CT_WaitCounter = time
-        CT_WaitName = name
-        CT_WaitMoveTo = moveto
-        return true
+	if (CT_WaitName == name) then
+		if (CT_WaitCounter == 0) then
+			return false
+		end
+	end
+	CT_WaitCounter = time
+	CT_WaitName = name
+	CT_WaitMoveTo = moveto
+	return true
 end
 
 function WaitQueue()
-        if (CT_WaitCounter > 0) then
-                CT_WaitCounter = CT_WaitCounter - 1
-                if (CT_WaitMoveTo > 0) then
-                            if (not IsAt(CT_WaitMoveTo)) then moveto(CT_WaitMoveTo) end
-                end
-                return true
-        else
-                return false
-        end
+	if (CT_WaitCounter > 0) then
+		CT_WaitCounter = CT_WaitCounter - 1
+		if (CT_WaitMoveTo > 0) then
+			moveto(CT_WaitMoveTo)
+		end
+		return true
+	else
+		return false
+	end
 end
 
 function ResetWait()
-        CT_WaitCounter = 0
-        CT_WaitName = ""
+	CT_WaitCounter = 0
+	CT_WaitName = ""
 end
 
 function OnOpponentServe()
     if (CT_ServeIndex == 0) then
         CT_ServeIndex = math.random(1,3)
     end
-    if (not IsAt(CT_ServeOpp[CT_ServeIndex])) then moveto(CT_ServeOpp[CT_ServeIndex]) end
+    moveto(CT_ServeOpp[CT_ServeIndex])
 end
 
 function OnServe(ballready)
@@ -64,12 +60,10 @@ function OnServe(ballready)
         CT_ServeIndex = math.random(1,6)
     end
     if (ballready) then
-        if (Wait("ServeDelay",math.random(28,90),CT_ServeSelf[CT_ServeIndex]+math.random(-150, 150))) then return end
-        if (IsAt(CT_ServeSelf[CT_ServeIndex])) then
+        if (Wait("ServeDelay", math.random(28,90), CT_ServeSelf[CT_ServeIndex]+math.random(-150, 150))) then return end
+        if (moveto(CT_ServeSelf[CT_ServeIndex])) then
             jump()                                
-        else                
-            moveto(CT_ServeSelf[CT_ServeIndex])
-        end
+		end
     else
         if (posx() < 150) then
             jump()
@@ -84,9 +78,9 @@ function OnGame()
         local timeJump = timeToHitHeight(blobbymaxjump, 20)
 		local timeGround = timeToHitHeight(CONST_BALL_BLOBBY_HEAD, 40)
         local timeBlock = timeToOppSmash(blobbymaxjump)
-        local estimhx = r_estimx(timeJump)
-        local estimGround = r_estimx(timeGround)
-        local estimBlock = r_estimx(timeBlock)
+        local estimhx = estimx(timeJump)
+        local estimGround = estimx(timeGround)
+        local estimBlock = estimx(timeBlock)
         local block = 0
         local wallcoll = willHitWall(timeJump)
         if (timeBlock ~= -1) then timeBlock = timeBlock+(estimBlock-400)/13 end
@@ -214,11 +208,6 @@ function timeToOppSmash(height)
 	local time = ball_time_to_y(height, balldata())
 	if time > 17 then return -1 end
 	return math.ceil(time)
-end
-
-function r_estimx(time)
-        local estim = estimx(time)
-        return estim        
 end
 
 function willHitWall(time)
