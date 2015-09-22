@@ -26,9 +26,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <cstdio>
 #include <ctime>
+#include <future>
 
 #include <errno.h>
 #include <unistd.h>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 #include <SDL2/SDL_timer.h>
 
@@ -68,7 +73,7 @@ static bool g_run_in_foreground = false;
 static bool g_print_syslog_to_stderr = false;
 static bool g_workaround_memleaks = false;
 static std::string g_config_file = "server.xml";
-static std::string g_rules_file = "";
+static std::atomic<bool> g_run_server(true); // set this variable to false to stop the server
 
 // ...
 void printHelp();
@@ -84,15 +89,16 @@ int SWLS_Games		 = 0;
 int SWLS_GameSteps	 = 0;
 int SWLS_RunningTime = 0;
 
-// functions for processing certain network packets
-void createNewGame();
+const int UPDATE_FREQUENCY = 10;
+
+void main_loop(DedicatedServer& server);
 
 int main(int argc, char** argv)
 {
 	process_arguments(argc, argv);
 
 	FileSystem fileSys(argv[0]);
-	
+
 	if (!g_run_in_foreground)
 	{
 		fork_to_background();
@@ -102,9 +108,6 @@ int main(int argc, char** argv)
 	{
 		wait_and_restart_child();
 	}
-
-
-	int startTime = SDL_GetTicks();
 
 	#ifndef WIN32
 	int syslog_options = LOG_CONS | LOG_PID | (g_print_syslog_to_stderr ? LOG_PERROR : 0);
@@ -116,16 +119,18 @@ int main(int argc, char** argv)
 
 	int maxClients = 100;
 	std::string rulesFile = DEFAULT_RULES_FILE;
+	std::string gameSpeeds = "75";
 
 	UserConfig config;
 	try
 	{
 		config.loadFile(g_config_file);
 		maxClients = config.getInteger("maximum_clients");
-		rulesFile = g_rules_file == "" ? config.getString("rules", DEFAULT_RULES_FILE) : g_rules_file;
+		rulesFile  = config.getString("rules", DEFAULT_RULES_FILE);
+		gameSpeeds = config.getString("speed", gameSpeeds);
 
 		// bring that value into a sane range
-		if(maxClients <= 0 || maxClients > 1000)
+		if(maxClients <= 0 || maxClients > 150)
 			maxClients = 150;
 	}
 	catch (std::exception& e)
@@ -134,44 +139,85 @@ int main(int argc, char** argv)
 	}
 
 	ServerInfo myinfo(config);
-	DedicatedServer server(myinfo, rulesFile, maxClients);
+	std::vector<std::string> rule_vec;
+	boost::algorithm::split(rule_vec, rulesFile, boost::algorithm::is_space(), boost::algorithm::token_compress_on);
 
-	float speed = myinfo.gamespeed;
+	std::vector<std::string> speed_vec_str;
+	boost::algorithm::split(speed_vec_str, gameSpeeds, boost::algorithm::is_space(), boost::algorithm::token_compress_on);
 
-	SpeedController scontroller(speed);
-	SpeedController::setMainInstance(&scontroller);
+	std::vector<float> speed_vec;
+	std::transform(speed_vec_str.begin(), speed_vec_str.end(), std::back_inserter(speed_vec), [](const std::string& v ){ return boost::lexical_cast<float>(v);});
+
+	DedicatedServer server(myinfo, rule_vec, speed_vec, maxClients);
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server version %i.%i started", BLOBBY_VERSION_MAJOR, BLOBBY_VERSION_MINOR);
 
-	while (1)
+	// main loop
+	auto serverthread = std::async(std::launch::async, [&](){main_loop(server);});
+
+	while(true)
 	{
-		// -------------------------------------------------------------------------------
-		// process all incoming packets , probably relay them to responsible network games
-		// -------------------------------------------------------------------------------
+		std::string command;
+		std::cin >> command;
 
-		server.processPackets();
+		std::vector<std::string> cmd_vec;
+		boost::algorithm::split(cmd_vec, command, boost::algorithm::is_space(), boost::algorithm::token_compress_on);
 
-		/// \todo make this gamespeed independent
-		if(SWLS_RunningTime % (750 /*10s*/) == 0 )
+
+		if( cmd_vec[0] == "exit" )
 		{
-			server.updateLobby();
-		}
-
-		// -------------------------------------------------------------------------------
-		// now, step through all network games and process input - if a game ended, delete it
-		// -------------------------------------------------------------------------------
-
-		SWLS_RunningTime++;
-
-		if(SWLS_RunningTime % (75 * 60 * 60 /*1h*/) == 0 )
+			/// \todo check for confirmation if there are still players connected!
+			g_run_server = false;
+			break;
+		} else if ( cmd_vec[0] == "players" )
 		{
-			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / 75 / 60 / 60) << "h running \n";
+			server.printAllPlayers(std::cout);
+		} else if ( cmd_vec[0] == "games" )
+		{
+			server.printAllGames(std::cout);
+		} else if ( cmd_vec[0] == "status" )
+		{
+			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
 			std::cout << " packet count: " << SWLS_PacketCount << "\n";
 			std::cout << " accepted connections: " << SWLS_Connections << "\n";
 			std::cout << " started games: " << SWLS_Games << "\n";
 			std::cout << " game steps: " << SWLS_GameSteps << "\n";
 		}
 
+	}
+
+	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
+	#ifndef WIN32
+	closelog();
+	#endif
+}
+
+// -----------------------------------------------------------------------------------------
+//    server main loop function
+// ------------------------------
+void main_loop( DedicatedServer& server)
+{
+	int startTime = SDL_GetTicks();
+	SpeedController scontroller( UPDATE_FREQUENCY );
+
+	while ( g_run_server )
+	{
+		// -------------------------------------------------------------------------------
+		//  step through all network games and process input - if a game ended, delete it
+		// -------------------------------------------------------------------------------
+
+		SWLS_RunningTime++;
+
+		if(SWLS_RunningTime % (UPDATE_FREQUENCY * 60 * 60 /*1h*/) == 0 )
+		{
+			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
+			std::cout << " packet count: " << SWLS_PacketCount << "\n";
+			std::cout << " accepted connections: " << SWLS_Connections << "\n";
+			std::cout << " started games: " << SWLS_Games << "\n";
+			std::cout << " game steps: " << SWLS_GameSteps << "\n";
+		}
+
+		server.processPackets();
 		server.updateGames();
 
 		scontroller.update();
@@ -190,10 +236,6 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
-	#ifndef WIN32
-	closelog();
-	#endif
 }
 
 // -----------------------------------------------------------------------------------------
@@ -205,7 +247,6 @@ void printHelp()
 	std::cout << "  -n, --no-daemon           Don't run as background process" << std::endl;
 	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
 	std::cout << "  -c, --config-file <path>  Use custom config file instead of server.xml" << std::endl;
-	std::cout << "  -r, --rules-file <path>   Use custom rules file" << std::endl;
 	std::cout << "  -h, --help                This message" << std::endl;
 }
 
@@ -241,18 +282,6 @@ void process_arguments(int argc, char** argv)
 					exit(1);
 				}
 				g_config_file = std::string("server/") + argv[i];
-				continue;
-			}
-			if (strcmp(argv[i], "--rules-file") == 0 || strcmp(argv[i], "-r") == 0)
-			{
-				++i;
-				if (i >= argc)
-				{
-					std::cout << "\"rules-file\" option needs an argument" << std::endl;
-					printHelp();
-					exit(1);
-				}
-				g_rules_file = argv[i];
 				continue;
 			}
 			if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
@@ -324,7 +353,7 @@ void setup_physfs(char* argv0)
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 	#endif
-	#endif	
+	#endif
 	fs.addToSearchPath("data");
 	fs.addToSearchPath("data" + fs.getDirSeparator() + "rules.zip");
 }

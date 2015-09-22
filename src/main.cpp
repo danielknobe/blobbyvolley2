@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctime>
 #include <cstring>
 #include <sstream>
+#include <atomic>
+#include <thread>
 #include <iostream>
 
 #include <SDL2/SDL.h>
@@ -61,6 +63,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #undef main
 #endif
+
+// this global allows the host game thread to be killed
+extern std::atomic<bool> gKillHostThread;
+extern boost::shared_ptr<std::thread> gHostedServerThread;
 
 /* implementation */
 
@@ -189,6 +195,7 @@ void setupPHYSFS()
 	DEBUG_STATUS("SDL initialised");
 
 	atexit(SDL_Quit);
+	atexit([](){gKillHostThread=true; if(gHostedServerThread) gHostedServerThread->join();});
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
 	// choose renderer

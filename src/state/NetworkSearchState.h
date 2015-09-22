@@ -74,6 +74,8 @@ private:
 	bool mEnteringServer;
 	bool mDisplayUpdateNotification;
 
+	boost::scoped_ptr<ServerInfo> mHostedServer;
+
 	std::string mEnteredServer;
 	unsigned mServerBoxPosition;
 };
@@ -99,7 +101,9 @@ class LANSearchState : public NetworkSearchState
 public:
 	LANSearchState();
 	virtual ~LANSearchState() {};
-	virtual void doSearchServers();
 	virtual const char* getStateName() const;
+
+private:
+	virtual void doSearchServers();
 };
 

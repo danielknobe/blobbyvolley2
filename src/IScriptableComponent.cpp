@@ -101,6 +101,10 @@ void IScriptableComponent::updateGameState(const DuelMatchState& state)
 {
 	*mGameState = state;
 }
+void IScriptableComponent::updateGameState( const GameLogicState& state )
+{
+	mGameState->logicState = state;
+}
 
 // helpers
 inline IScriptableComponent* getScriptComponent(lua_State* state)

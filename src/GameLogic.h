@@ -36,6 +36,7 @@ class IGameLogic;
 typedef std::auto_ptr<IGameLogic> GameLogic;
 
 struct GameLogicState;
+struct DuelMatchState;
 class DuelMatch;
 struct PlayerInput;
 
@@ -48,7 +49,8 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 {
 	public:
 		// constuctor and destructor
-		IGameLogic();
+		/// \param stw score to win
+		IGameLogic( int stw );
 		virtual ~IGameLogic();
 
 		virtual GameLogic clone() const = 0;
@@ -141,7 +143,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		void onUnPause();
 
 		/// must be called every step
-		void step();
+		void step( const DuelMatchState& state );
 
 		// script information
 		virtual std::string getAuthor() const = 0;
@@ -196,7 +198,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 
 
 		/// this function gets called every frame
-		virtual void OnGameHandler() = 0;
+		virtual void OnGameHandler( const DuelMatchState& state ) = 0;
 
 		/// this function checks whether a player has won the game
 		virtual PlayerSide checkWin() const = 0;
@@ -238,6 +240,6 @@ extern const std::string DUMMY_RULES_NAME;
 extern const std::string FALLBACK_RULES_NAME;
 
 // functions for creating a game logic object
-GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match);
+GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match, int score_to_win);
 
 

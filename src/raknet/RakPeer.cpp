@@ -2190,6 +2190,9 @@ bool RakPeer::RunUpdateCycle( void )
 		}
 	}
 
+	if(mUpdateCallback)
+		mUpdateCallback();
+
 	return true;
 }
 

@@ -112,7 +112,8 @@ class FileRead : public File
 		// -----------------------------------------------------------------------------------------
 		// 								LUA/XML reading helper function
 		// -----------------------------------------------------------------------------------------
-		static int readLuaScript(std::string filename, lua_State* mState);
+		static std::string makeLuaFilename(std::string filename);
+		static int readLuaScript(const std::string& filename, lua_State* mState);
 		
 		static boost::shared_ptr<TiXmlDocument> readXMLDocument(const std::string& filename);
 };

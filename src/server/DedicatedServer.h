@@ -23,11 +23,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <map>
 #include <list>
+#include <mutex>
+#include <deque>
 #include <iosfwd>
 #include <boost/scoped_ptr.hpp>
 
 #include "NetworkPlayer.h"
 #include "NetworkMessage.h"
+#include "MatchMaker.h"
 
 class RakServer;
 
@@ -47,20 +50,24 @@ class DedicatedServer
 	public:
 		/// create a dedicated server with the data specified in info, using the rules from rulesfile, allowing max_clients
 		/// simulatanious connections
-		/// \todo Maybe two classes for server info: lokal server info for an server, and remote for data sent to client
-		DedicatedServer(const ServerInfo& info, const std::string& rulefile, int max_clients);
+		/// \todo Maybe two classes for server info: local server info for a server, and remote for data sent to client
+		/// \param is_local: Set to true, to indicate a locally hosted server intended for a single game.
+		DedicatedServer(const ServerInfo& info, const std::vector<std::string>& rulefile,
+						const std::vector<float>& speeds, int max_clients, bool is_local = false);
 		~DedicatedServer();
 
 		// server processing
+		void queuePackets(); // sort incoming packets into queues. called from raknet thread!
 		void processPackets();
 		void updateGames();
-		void updateLobby();
 
 		// status queries
 		bool hasActiveGame() const;
 		int getActiveGamesCount() const;
 		int getWaitingPlayers() const;
 		int getConnectedClients() const;
+
+		const ServerInfo& getServerInfo() const;
 
 		// debug functions
 		void printAllPlayers(std::ostream& stream) const;
@@ -75,9 +82,9 @@ class DedicatedServer
 		void processBlobbyServerPresent( const packet_ptr& packet );
 		// creates a new game with those players
 		// does not add the game to the active game list
-		boost::shared_ptr<NetworkGame> createGame(boost::shared_ptr<NetworkPlayer> first, boost::shared_ptr<NetworkPlayer> second);
+		void createGame(boost::shared_ptr<NetworkPlayer> left, boost::shared_ptr<NetworkPlayer> right,
+						PlayerSide switchSide, std::string rules, int scoreToWin, float gamespeed);
 		// broadcasts the current server  status to all waiting clients
-		void broadcastServerStatus();
 
 		// member variables
 		// number of currently connected clients
@@ -86,15 +93,21 @@ class DedicatedServer
 		// raknet server used
 		boost::scoped_ptr<RakServer> mServer;
 
-		// path to rules file
-		std::string mRulesFile;
 		// true, if new players should be accepted
 		bool mAcceptNewPlayers;
+		// true, if this is a player hosted local server
+		bool mPlayerHosted;
 		// server info with server config
 		ServerInfo mServerInfo;
 
 		// containers for all games and mapping players to their games
 		std::list< boost::shared_ptr<NetworkGame> > mGameList;
 		std::map< PlayerID, boost::shared_ptr<NetworkPlayer>> mPlayerMap;
-		std::map< PlayerID, PlayerID> mGameRequests;
+		std::mutex mPlayerMapMutex;
+
+		// packet queue
+		std::deque<packet_ptr> mPacketQueue;
+		std::mutex mPacketQueueMutex;
+
+		MatchMaker mMatchMaker;
 };

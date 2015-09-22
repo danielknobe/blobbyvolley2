@@ -106,6 +106,10 @@ struct PlayerID
 	*/
 	std::string toString() const;
 };
+
+/// default implementation of printing a player ID to an ostream.
+std::ostream& operator<<(std::ostream& stream, const PlayerID& p);
+
 /// Size of PlayerID data
 #define PlayerID_Size 6
 

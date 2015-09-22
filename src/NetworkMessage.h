@@ -48,7 +48,7 @@ enum MessageType
 	ID_RULES_CHECKSUM,
 	ID_RULES,
 	ID_SERVER_STATUS,
-	ID_CHALLENGE
+	ID_LOBBY
 };
 
 // General Information:
@@ -177,26 +177,23 @@ enum MessageType
 //		size (int)
 //		data
 //
-// ID_SERVER_STATUS
+// ID_LOBBY
 // 	Description:
-//		Sent from server to waiting clients with information about the
-//		current server status
-//	Structure:
-//		ID_SERVER_STATUS
-//		vector<string> playernames
-//		vector<PlayerId> playerIDs
-//		set<PlayerId> requests
-//
-// ID_CHALLENGE
-// 	Description:
-//		Sent when the client wants to start a game. If desired opponent is set, the server looks for that
-//		opponent and matches these players.
-//		Sent from the server when another player wants to start a game with this client.
-//	Structure:
+//		This packet is used for matchmaking messages in the lobby.
 //		ID_CHALLENGE
-//		PlayerID opponent
+//		(unsigned char) TYPE
 //
 
+enum class LobbyPacketType : unsigned char
+{
+	SERVER_STATUS,
+	REMOVED_FROM_GAME,
+	OPEN_GAME,
+	JOIN_GAME,
+	LEAVE_GAME,
+	GAME_STATUS,
+	START_GAME
+};
 
 class IUserConfigReader;
 
@@ -214,18 +211,18 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	///			as e.g., hostname can be left uninitialised on server
 	/// we combine to functionsalities here: server information and server addresses.
 	int activegames;
-	int gamespeed;
 	uint16_t port;
 	char hostname[64];
 	char name[32];
 	int waitingplayers;
 	char description[192];
 
-	char rulestitle[32];
-	char rulesauthor[32];
-
 	static const size_t BLOBBY_SERVER_PRESENT_PACKET_SIZE;
 };
+
+// convenience functions for building packets
+class PlayerIdentity;
+RakNet::BitStream makeEnterServerPacket( const PlayerIdentity& player );
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval);
 std::ostream& operator<<(std::ostream& stream, const ServerInfo& val);
