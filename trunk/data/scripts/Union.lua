@@ -108,7 +108,7 @@ function decide (funcno)
   end
   t1=t1+1
  end
- print (chosenret) --Sagt, für wie gut sich die gewählte Funktion hält
+ --print (chosenret) --Sagt, für wie gut sich die gewählte Funktion hält
                    --tells how good the chosen function says to fit
  return chosen
 end

@@ -75,11 +75,6 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/Blood.h" />
-		<Unit filename="src/BotAPICalculations.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/BotAPICalculations.h" />
 		<Unit filename="src/CMakeLists.txt" />
 		<Unit filename="src/Clock.cpp" />
 		<Unit filename="src/Clock.h" />
@@ -388,6 +383,8 @@
 		<Unit filename="src/raknet/SocketLayer.h" />
 		<Unit filename="src/server/DedicatedServer.cpp" />
 		<Unit filename="src/server/DedicatedServer.h" />
+		<Unit filename="src/server/MatchMaker.cpp" />
+		<Unit filename="src/server/MatchMaker.h" />
 		<Unit filename="src/server/NetworkGame.cpp" />
 		<Unit filename="src/server/NetworkGame.h" />
 		<Unit filename="src/server/NetworkPlayer.cpp" />
@@ -405,11 +402,11 @@
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/state/LobbyState.cpp">
+		<Unit filename="src/state/LobbyStates.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="src/state/LobbyState.h" />
+		<Unit filename="src/state/LobbyStates.h" />
 		<Unit filename="src/state/LocalGameState.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
