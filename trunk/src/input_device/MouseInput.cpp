@@ -97,8 +97,6 @@ PlayerInputAbs MouseInputDevice::transferInput()
 	PlayerInputAbs input = PlayerInputAbs();
 
 	int deltaX;
-
-	SDL_Window* window = RenderManager::getSingleton().getWindow();
 	int mouseState = SDL_GetRelativeMouseState(&deltaX, NULL);
 
 	if (mouseState == 0)
