@@ -6,13 +6,13 @@
 -- See the Blobby Volley distribution for the license text.
 
 -- 15.01.14 - ngc92: Use blobby volley api provided constants when possible
+-- 22.09.15 - ngc92: Adapted to new API, clean up
 
-modeLock = 0
+modeLock = false
 timeto = 0
 target = 0
 naivetarget = 0
 estimbspeedx = 0
-direct = true
 servrand = nil
 
 -- Konstanten
@@ -23,8 +23,8 @@ function OnServe(ballready)
    if servrand == nil then
       servrand = math.random()
    end
-   moveto(ballx() + servrand * 5)
-   if ballready and math.abs(posx() - (ballx() + servrand * 5)) < 3 then
+   
+   if moveto(ballx() + servrand * 5) and ballready then
       jump()
       servrand = nil
    end
@@ -35,41 +35,38 @@ function OnOpponentServe()
 end
 
 function OnGame()
-   estimImpactHigh()
-
-   if (not (target == nil))
-      and naivetarget < 400
-      and (modeLock == 1
-	   or timeto > math.abs(posx()-highPlayPos())/4.5 + 26)
-      and touches() < 3
-   then
-      if (timeto < 30) then
-	 modeLock = 1
-      else
-	 modeLock = 0
-	 servrand = nil
-      end
-      highPlay()
-   else
-      modeLock = 0
-      servrand = nil
-      estimImpactLow()
-      if (not (target == nil))
-         and ((estimbspeedx > 0 and timeto > (target-posx()-10)/4.5)
-	      or (estimbspeedx < 0 and timeto > (posx()-target-10)/4.5)
-	      or naivetarget >= 400) then
-	 lowPlay()
-      else
-	 -- HEELLPPP...
-	 if not (target == nil)
-	    and naivetarget < 400 then
-	    -- This often saves your ass if you're standing inside a
-	    -- corner and the ball bounces from the wall or the net.
-	    lowPlay()
-	    jump()
-	 end
-      end
+   -- try high play
+   if(estimImpactHigh()) then
+		if naivetarget < CONST_FIELD_MIDDLE and target < CONST_FIELD_MIDDLE
+			and (modeLock == true or timeto > math.abs(posx()-highPlayPos())/4.5 + 26)
+			and touches() < 3
+		then
+			modeLock = timeto < 30
+			if modeLock == false then
+				servrand = nil
+			end
+			highPlay()
+			return
+		end
    end
+
+	-- otherwise, low play
+	modeLock = false
+	servrand = nil
+	if(estimImpactLow()) then
+		if ((estimbspeedx > 0 and timeto > (target-posx()-10)/4.5)
+			or (estimbspeedx < 0 and timeto > (posx()-target-10)/4.5)
+			or naivetarget >= CONST_FIELD_MIDDLE) 
+		then
+			lowPlay()
+		-- HEELLPPP...
+		elseif naivetarget < CONST_FIELD_MIDDLE then
+			-- This often saves your ass if you're standing inside a
+			-- corner and the ball bounces from the wall or the net.
+			lowPlay()
+			jump()
+		end
+	end
 end
 
 function highPlayPos()
@@ -90,10 +87,10 @@ function highPlay()
       -- Regarding naive target here.
       -- If the ball really bounces back, it would be a bad idea to jump...
       if servrand == nil then
-	 servrand = math.random()
+		servrand = math.random()
       end
       if naivetarget < 400 and timeto < 28 + servrand then
-	 jump()
+		jump()
       end
    end
 end
@@ -108,44 +105,22 @@ function lowPlay()
 end
 
 function estimImpactHigh()
-   estimImpact2(CONST_BLOBBY_MAXJUMP - 25, balldata())
+	return estimImpact2(CONST_BLOBBY_MAXJUMP - 25)
 end
 
 function estimImpactLow()
-   estimImpact2(CONST_BALL_BLOBBY_HEAD, balldata())
+	return estimImpact2(CONST_BALL_BLOBBY_HEAD)
 end
 
-function estimImpact2(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   timeto = ball_time_to_y(destY, bx, by, vbx, vby)
+function estimImpact2(destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+   timeto = ball_time_to_y(destY, balldata())
 
    if (timeto == math.huge) then
       target = nil
-      return
+      return false
    end
-   -- TODO need estimx function for bx and vbx state
-   naivetarget = (vbx * timeto) + bx
-   resultX = naivetarget
-   estimbspeedx=bspeedx()
-
-   direct = true
-
-   if(resultX > CONST_BALL_RIGHT_BORDER) then
-      resultX = mirror(resultX, CONST_BALL_RIGHT_BORDER)
-      estimbspeedx=-estimbspeedx
-      direct = true
-   end
-
-   if(resultX < CONST_BALL_LEFT_BORDER) then -- korrigieren der Appraller an der linken Ebene
-      resultX = mirror(resultX, CONST_BALL_LEFT_BORDER)
-      estimbspeedx=-estimbspeedx
-      direct = false
-   end
-
-   if (estimbspeedx > 0) and (resultX > CONST_BALL_LEFT_NET) then
-      direct = false
-      resultX = mirror(resultX, CONST_BALL_LEFT_NET)
-      estimbspeedx=-estimbspeedx
-   end
-
-   target = resultX
+   
+   naivetarget = (bspeedx() * timeto) + ballx()
+   target, bounce, estimbspeedx = estimx(timeto)
+   return true
 end
