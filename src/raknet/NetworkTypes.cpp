@@ -56,13 +56,13 @@ std::string PlayerID::toString() const
 {
 	auto tmp = binaryAddress;
 	std::string ip =  boost::lexical_cast<std::string>(tmp & 0xFF);
-	tmp >> 8;
+	tmp >>= 8;
 	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
-	tmp >> 8;
+	tmp >>= 8;
 	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
-	tmp >> 8;
+	tmp >>= 8;
 	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
-	
+
 	return ip + ":" +  boost::lexical_cast<std::string>(port);
 }
 
