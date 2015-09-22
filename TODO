@@ -1,9 +1,12 @@
 TODO:
 
+new server code:
+  fix replays
+  fix host game (still some problems)
+  fix bots
+
 coderework:
 - new clean rendererarchitecture
-- multithreading
-	fps independent physics
 - new gui system
 
 features:
@@ -21,6 +24,8 @@ bugs:
 - don't close chat if one player leaves the game
 - whistle at the end of networkgame
 - ... has won screen in replay player when game ended prematurely
+- prevent hang when leaving network search state
+- find reasen for application lags
 
 data:
 - monochrome font
