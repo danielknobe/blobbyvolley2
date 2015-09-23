@@ -65,19 +65,11 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		// ki strength values
 		int mDifficulty;
 
-		// which functions are available
-		bool mOnBounce;
-
-		float mLastBallSpeed;
-
 		PlayerSide mSide;
 
 		// error data
 		bool mLastJump = false;
 		double mJumpDelay = 0;
 		std::normal_distribution<double> mDelayDistribution;
-		std::normal_distribution<double> mPositionErrorDistribution;
 		std::default_random_engine mRandom;
-		Vector2 mBallPosError = Vector2{0,0};
-		double mBallVelError = 0.0;
 };

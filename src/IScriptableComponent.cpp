@@ -89,12 +89,12 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
 	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
 	setLuaGlobal("CONST_BLOBBY_GRAVITY", -GRAVITATION);
+	setLuaGlobal("CONST_BLOBBY_SPEED", BLOBBY_SPEED);
 	setLuaGlobal("CONST_NET_HEIGHT", 600 - NET_SPHERE_POSITION);
 	setLuaGlobal("CONST_NET_RADIUS", NET_RADIUS);
 	setLuaGlobal("NO_PLAYER", NO_PLAYER);
 	setLuaGlobal("LEFT_PLAYER", LEFT_PLAYER);
 	setLuaGlobal("RIGHT_PLAYER", RIGHT_PLAYER);
-	setLuaGlobal("CONST_BLOBBY_SPEED", BLOBBY_SPEED);
 }
 
 void IScriptableComponent::updateGameState(const DuelMatchState& state)

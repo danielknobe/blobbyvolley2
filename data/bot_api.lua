@@ -73,45 +73,6 @@ function getOppScore()
 	return get_score( RIGHT_PLAYER )
 end
 
------------------------------------------------------------------------------------------------
--- helper functions
-
--- this function returns the first positive time that pos + vel*t + grav/2 * t² == destination. 
-function parabola_time_first(pos, vel, grav, destination)
-	local sq = vel^2 + 2*grav*(destination - pos);
-
-	-- if unreachable, return inf
-	if ( sq < 0 ) then
-		return math.huge, math.huge
-	end
-	
-	sq = math.sqrt(sq);
-	
-	local tmin = (-vel - sq) / grav;
-	local tmax = (-vel + sq) / grav;
-	
-	if ( grav < 0 ) then
-		tmin, tmax = tmax, tmin
-	end
-
-	if ( tmin > 0 ) then
-		return tmin, tmax
-	elseif ( tmax > 0 ) then
-		return tmax, tmin
-	else
-		return math.huge, math.huge
-	end
-end
-
--- this function returns the first positive time that pos + vel*t  == destination. 
-function linear_time_first(pos, vel, destination)
-	assert(pos, "linear time first called with nil as position")
-	if vel == 0 then
-		return math.huge
-	end
-	return (destination - pos) / vel
-end
-
 -----------------------------------------------------------------------------------------
 -- 						enhances ball prediction functions							   --
 -----------------------------------------------------------------------------------------
@@ -177,4 +138,75 @@ end
 
 function estimy(time)
 	return bally() + time * bspeedy() + 0.5 * time^2 * CONST_BALL_GRAVITY
+end
+
+---------------------------------------------------------------------------------------------
+
+-- this function is called every game step from the C++ api
+__lastBallSpeed = nil
+function __OnStep()
+	local ballspeed = bspeedx()
+	if __lastBallSpeed == nil then __lastBallSpeed = ballspeed end
+	
+	-- if the x velocity of the ball changed, it bounced and we call the listener function
+	if __lastBallSpeed ~= ballspeed then
+		__lastBallSpeed = ballspeed
+		if OnBounce then
+			OnBounce()
+		end
+	end
+end
+
+-- OnOpponentServe, called script function if it exists
+function __OnOpponentServe()
+	if OnOpponentServe then
+		OnOpponentServe()
+	end
+end
+
+function __OnServe( ballready )
+	OnServe(ballready)
+end
+
+function __OnGame()
+	OnGame()
+end
+
+-----------------------------------------------------------------------------------------------
+-- helper functions
+
+-- this function returns the first positive time that pos + vel*t + grav/2 * t² == destination. 
+function parabola_time_first(pos, vel, grav, destination)
+	local sq = vel^2 + 2*grav*(destination - pos);
+
+	-- if unreachable, return inf
+	if ( sq < 0 ) then
+		return math.huge, math.huge
+	end
+	
+	sq = math.sqrt(sq);
+	
+	local tmin = (-vel - sq) / grav;
+	local tmax = (-vel + sq) / grav;
+	
+	if ( grav < 0 ) then
+		tmin, tmax = tmax, tmin
+	end
+
+	if ( tmin > 0 ) then
+		return tmin, tmax
+	elseif ( tmax > 0 ) then
+		return tmax, tmin
+	else
+		return math.huge, math.huge
+	end
+end
+
+-- this function returns the first positive time that pos + vel*t  == destination. 
+function linear_time_first(pos, vel, destination)
+	assert(pos, "linear time first called with nil as position")
+	if vel == 0 then
+		return math.huge
+	end
+	return (destination - pos) / vel
 end
