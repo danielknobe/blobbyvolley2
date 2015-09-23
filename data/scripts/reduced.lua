@@ -53,9 +53,11 @@ function OnGame()
 	-- otherwise, low play
 	modeLock = false
 	servrand = nil
+	
+	local balldir = estimbspeedx > 0 and 1 or -1
+	
 	if(estimImpactLow()) then
-		if ((estimbspeedx > 0 and timeto > (target-posx()-10)/4.5)
-			or (estimbspeedx < 0 and timeto > (posx()-target-10)/4.5)
+		if (timeto > (balldir*(target-posx()) - 10)/CONST_BLOBBY_SPEED
 			or naivetarget >= CONST_FIELD_MIDDLE) 
 		then
 			lowPlay()

@@ -25,7 +25,8 @@ end
 
 function OnGame()
 	aggro = aggroflagtesten() -- schaut ob der bot aggro werden soll oder nicht
-	local target, hit = estimImpact()
+	local timetoblobhead = ball_time_to_y(CONST_BALL_BLOBBY_HEAD, balldata())
+	target, hit = estimx(timetoblobhead)
 	
 	if aggro then
 		sprungattacke(aggroservice)
@@ -43,6 +44,7 @@ function OnGame()
 		netzappraller(target)
 	end
 	
+	-- it crosses the net - we are save
 	if target > CONST_BALL_RIGHT_NET then
 		target = 220
 	end
@@ -82,16 +84,10 @@ function aggroflagtesten()
 		return true
 	end
 	
-	if (ballx() < (400-CONST_BALL_RADIUS)) and (bally() < 210) then -- der ball k�nnte nohc dr�ber fliegen ** noch optimieren
+	if (ballx() < (CONST_FIELD_MIDDLE - CONST_BALL_RADIUS)) and (bally() < 210) then -- der ball k�nnte nohc dr�ber fliegen ** noch optimieren
 		return true
 	end
 	
 	-- leave unchanged
 	return aggro
-end
-
-function estimImpact()
-	--diese Funktion sollte die einschlagkoordinaten auf K�pfh�he Rechnen
-	local time3 = ball_time_to_y(CONST_BALL_BLOBBY_HEAD, balldata())
-	return estimx(time3)
 end
