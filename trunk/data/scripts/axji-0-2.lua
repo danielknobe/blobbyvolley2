@@ -25,8 +25,8 @@ end
 
 function OnGame()
 	aggro = aggroflagtesten() -- schaut ob der bot aggro werden soll oder nicht
-	local timetoblobhead = ball_time_to_y(CONST_BALL_BLOBBY_HEAD, balldata())
-	target, hit = estimx(timetoblobhead)
+	local timetoblobhead = ball_time_to_y(CONST_BALL_BLOBBY_HEAD)
+	local target, hit = estimx(timetoblobhead)
 	
 	if aggro then
 		sprungattacke(aggroservice)

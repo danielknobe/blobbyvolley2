@@ -39,8 +39,8 @@ function OnServe(ballready)
 end	
 
 function OnGame()
-	local target = estimImpact(CONST_BALL_BLOBBY_HEAD, balldata()) --X Ziel in Blobbyhoehe
-	local targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS, balldata()) --X Ziel in Netzhoehe (Netzrollerberechnung)
+	local target = estimImpact(CONST_BALL_BLOBBY_HEAD) --X Ziel in Blobbyhoehe
+	local targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS) --X Ziel in Netzhoehe (Netzrollerberechnung)
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
 	if (target > CONST_FIELD_MIDDLE) then --Wenn der Ball mich nix angeht
@@ -51,7 +51,7 @@ function OnGame()
 			naechsterBallSchmettern = true
 		end
 		
-		local targetJump, targetspeed = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
+		local targetJump, targetspeed = estimImpact(CONST_BLOBBY_MAXJUMP) --X Ziel in Schmetterhoehe
 
 		if naechsterBallSchmettern then
 			if (targetspeed < 2) then
@@ -106,8 +106,8 @@ function generatenaechsterBallSchmettern()
 	angriffsstaerke = math.random(MIN_ANGRIFFSSTAERKE,MAX_ANGRIFFSSTAERKE)
 end
 
-function estimImpact(destY, bx,by,vbx,vby) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-    local time1 = ball_time_to_y(destY, bx, by, vbx, vby)
+function estimImpact(destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
+    local time1 = ball_time_to_y(destY)
     local resultX, hit, estimbspeedx = estimx(time1)
 	return resultX, estimbspeedx
 end
@@ -119,7 +119,7 @@ function jumpto (y)
 end
 
 function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
- return ball_time_to_y(y, balldata())
+ return ball_time_to_y(y)
 end
 
 function blobtimetoy (y) --funktioniert in Ermangelung einer Zugriffsfunktion blobbyspeedy() nur vor dem Absprung :[
@@ -132,7 +132,7 @@ function weiterleiten()
 end
 
 function estimatey (x)
- return estimy(ball_time_to_x(x, balldata()))
+ return estimy(ball_time_to_x(x))
 end
 
 function opptouchable (t)

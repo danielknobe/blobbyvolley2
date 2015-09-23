@@ -198,14 +198,14 @@ end
 
 
 function timeToHitHeight(height, depth)
-	local time = ball_time_to_y(height, balldata())
+	local time = ball_time_to_y(height)
 	if time > depth then return -1 end
 	return time
 end
 
 function timeToOppSmash(height)
 	if (bally() < height) then return -1 end
-	local time = ball_time_to_y(height, balldata())
+	local time = ball_time_to_y(height)
 	if time > 17 then return -1 end
 	return math.ceil(time)
 end

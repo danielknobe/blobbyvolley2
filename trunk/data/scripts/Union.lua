@@ -147,8 +147,8 @@ function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45°
    return math.random(10, 100)
   end
   if (funcno==3) and (action==false) then
-   if target ~= math.huge and (bspeedx() <= 3) and (math.max(balltimetox(targetx), balltimetoy(maxjump)) >= math.max(blobtimetoy(maxjump), blobtimetox(targetx))) then
-    if (estimhitnet()==true) and (blobtimetox(CONST_BALL_LEFT_NET)<=balltimetoy(netheight)) then
+   if target ~= math.huge and (bspeedx() <= 3) and (math.max(balltimetox(targetx), ball_time_to_y(maxjump)) >= math.max(blobtimetoy(maxjump), blob_time_to_x(targetx))) then
+    if (estimhitnet()==true) and (blob_time_to_x(CONST_BALL_LEFT_NET)<=ball_time_to_y(netheight)) then
      return 190
     end
 	if (bspeedx()==0) then
@@ -298,20 +298,5 @@ end
 
 function estimatey (x) --Y Position des Balls, wenn er sich an der angegebenen X Koordinate befindet
                        --y position of the ball, when it is at the given x coordinate
- return estimy(balltimetox(x))
-end
-
-function blobtimetox (x) --Zeit, die der Bot benoetigt, um eine gewisse X-Koordinate zu erreichen
-                         --time needed for the bot to reach a given x-coordinate
- time=math.abs(posx()-x)/4.5
- return time
-end
-
-function balltimetox(x)
-	return ball_time_to_x(x, balldata())
-end
-
-function balltimetoy (y) --Zeit, die der Ball bis zu einer Y Position benoetigt
-                         --time needed by the ball to reach a given y position
- return ball_time_to_y(y, balldata())
+ return estimy(ball_time_to_x(x))
 end
