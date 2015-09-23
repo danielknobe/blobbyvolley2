@@ -43,10 +43,8 @@ extern "C"
 
 ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty)
 : mDifficulty(difficulty)
-, mLastBallSpeed(0)
 , mSide(playerside)
 , mDelayDistribution( difficulty/3, difficulty/2 )
-, mPositionErrorDistribution( 0.0, difficulty / 75.0 * BALL_RADIUS )
 {
 	mStartTime = SDL_GetTicks();
 
@@ -59,13 +57,15 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	openScript(filename);
 
 	// check whether all required lua functions are available
-	bool onserve, ongame, onoppserve;
-	onserve = getLuaFunction("OnServe");
-	ongame = getLuaFunction("OnGame");
-	onoppserve = getLuaFunction("OnOpponentServe");
-	if (!onserve || !ongame ||!onoppserve)
+	bool step, onserve, ongame, onoppserve;
+	step = getLuaFunction("__OnStep");
+	onserve = getLuaFunction("__OnServe");
+	ongame = getLuaFunction("__OnGame");
+	onoppserve = getLuaFunction("__OnOpponentServe");
+	if (!step || !onserve || !ongame ||!onoppserve)
 	{
 		std::string error_message = "Missing bot function ";
+		error_message += step ? "" : "__OnStep() [this function should be provided by the api!] ";
 		error_message += onserve ? "" : "OnServe() ";
 		error_message += ongame ? "" : "OnGame() ";
 		error_message += onoppserve ? "" : "OnOpponentServe() ";
@@ -74,14 +74,6 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 		ScriptException except;
 		except.luaerror = error_message;
 		BOOST_THROW_EXCEPTION(except);
-	}
-
-	// record which of the optional functions are available
-	mOnBounce = getLuaFunction("OnBounce");
-
-	if(!mOnBounce)
-	{
-		std::cerr << "Lua Warning: Missing function OnBounce" << std::endl;
 	}
 
 	// clean up stack
@@ -113,46 +105,26 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	if(mSide != LEFT_PLAYER)
 		matchstate.swapSides();
 
-	matchstate.worldState.ballPosition += mBallPosError;
-	matchstate.worldState.ballVelocity *= Vector2(mBallVelError, mBallVelError);
 	updateGameState( matchstate );
-
-	// detect bounce
-	if ( mLastBallSpeed != getMatch()->getBallVelocity().x )
-	{
-		// change ball pos error
-		mBallPosError.x = mPositionErrorDistribution(mRandom);
-		mBallPosError.y = mPositionErrorDistribution(mRandom);
-		mBallVelError = 1.0 + mPositionErrorDistribution(mRandom) / (2*BALL_RADIUS);
-		// clamp max vel error
-		mBallVelError = std::max(0.85, std::min(1.15, mBallVelError) );
-
-		mLastBallSpeed = getMatch()->getBallVelocity().x;
-		if ( mOnBounce )
-		{
-			lua_getglobal(mState, "OnBounce");
-			callLuaFunction();
-		}
-	}
 
 	if (!getMatch()->getBallActive() && mSide ==
 			// if no player is serving player, assume the left one is
 			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
 	{
 		serving = true;
-		lua_getglobal(mState, "OnServe");
+		lua_getglobal(mState, "__OnServe");
 		lua_pushboolean(mState, !getMatch()->getBallDown());
 		callLuaFunction(1);
 	}
 	else if (!getMatch()->getBallActive() && mSide !=
 			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
 	{
-		lua_getglobal(mState, "OnOpponentServe");
+		lua_getglobal(mState, "__OnOpponentServe");
 		callLuaFunction();
 	}
 	else
 	{
-		lua_getglobal(mState, "OnGame");
+		lua_getglobal(mState, "__OnGame");
 		callLuaFunction();
 	}
 
