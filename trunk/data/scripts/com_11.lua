@@ -31,10 +31,9 @@ function OnOpponentServe()
 end
 
 function OnServe(ballready)
-	servex=ballx()+servexVersetzung
 	naechsterBallSchmettern = true
 	generatenaechsterBallSchmettern()
-	if ballready and moveto(servex) then
+	if ballready and moveto( ballx()+servexVersetzung ) then
 		jump()
 	end
 end	
@@ -42,7 +41,6 @@ end
 function OnGame()
 	local target = estimImpact(CONST_BALL_BLOBBY_HEAD, balldata()) --X Ziel in Blobbyhoehe
 	local targetNetz = estimImpact(CONST_NET_HEIGHT + CONST_NET_RADIUS, balldata()) --X Ziel in Netzhoehe (Netzrollerberechnung)
-	local targetJump, targetJumps = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
 	naechsterBallSchmetternFlagTesten() -- schaut ob der bot angreifen soll oder nicht
 	
 	if (target > CONST_FIELD_MIDDLE) then --Wenn der Ball mich nix angeht
@@ -52,9 +50,11 @@ function OnGame()
 		if (targetNetz > CONST_BALL_LEFT_NET - 10) then --Bei Netzroller einfach schmettern
 			naechsterBallSchmettern = true
 		end
+		
+		local targetJump, targetspeed = estimImpact(CONST_BLOBBY_MAXJUMP, balldata()) --X Ziel in Schmetterhoehe
 
 		if naechsterBallSchmettern then
-			if (targetJumps < 2) then
+			if (targetspeed < 2) then
 				sprungattacke(angriffsstaerke, targetJump)
 			else
 				weiterleiten()
@@ -131,28 +131,10 @@ function weiterleiten()
  jumpto(estimatey(200))
 end
 
-function netzroller() --Ist der Ball gefaehrdet, an der Netzkugel abzuprallen (0=nein, 1=ja auf der Seite des Bots, 2= auf der Seite des Gegners)
- if (361.5 < estimatex(323)) and (estimatex(323) < 438.5) then
-  if (estimatex(323)<=400) then
-   return 1
-  else
-   return 2
-  end
- end
- -- otherwise, return 0
- return 0
-end
-
 function estimatey (x)
  return estimy(ball_time_to_x(x, balldata()))
 end
 
-function touchable (t)
- local x=estimx(t)
- return (x <= CONST_BALL_LEFT_NET + CONST_BALL_RADIUS)
-end
-
 function opptouchable (t)
- local x=estimx(t)
- return (x >= CONST_BALL_RIGHT_NET - CONST_BALL_RADIUS)
+ return (estimx(t) >= CONST_BALL_RIGHT_NET - CONST_BALL_RADIUS)
 end

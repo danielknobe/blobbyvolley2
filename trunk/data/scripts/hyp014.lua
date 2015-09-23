@@ -305,8 +305,9 @@ function playto(position,delta)
 
 	end
 
-	if (x1>=0) and (imp>0) then
-	t2=t2-1
+	-- [ngc92]: the old script would generate a warning here when imp was not defined, so I explicitly test for non nil
+	if (x1 and x1>=0) and (imp>0) then
+		t2=t2-1
 		move(x1)
 		if (t2<=t1+0.1) and (y1>146) then
 			 jump()
@@ -375,17 +376,18 @@ function save()
 					t=t-3
 			end
 		end
-		t2=t2+1
+		-- [ngc92]: make sure t2=0 is seen when t2==nil.
+		t2=(t2 or 0)+1
 	end
 
-if (t2>-1) and (x1>=0) and (x1<=360) and (imp>0) then
-	t2=t2-1
+	if (t2 and t2>-1) and (x1 and x1>=0) and (x1<=360) and (imp>0) then
+		t2=t2-1
 		move(x1)
 		if (t2<=t1+0.1) and (y1>146) then
 			 jump()
 		end
-else move(200)
-end
+	else move(200)
+	end
 end
 
 
