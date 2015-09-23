@@ -1,6 +1,17 @@
 -- this file provides an intermediary layer between the very simplistic c++ lua api and the 
 -- lua bot api that can be used to program blobby volley 2 bots.
 
+-- in these global variables, we save the ball info for each step
+__bx = 0
+__by = 0
+__bvx = 0
+__bvy = 0
+-- these save the artificial errors used to reduce the bot strength
+__ebx = 0
+__eby = 0
+__ebvx = 0
+__ebvy = 0
+
 -- legacy functions
 -- these function definitions make lua functions for the old api functions, which are sometimes more conveniente to use 
 -- than their c api equivalent.
@@ -19,10 +30,33 @@ function touches()
 	return get_touches( LEFT_PLAYER )
 end
 
+-- redefine the ball coordinate functions to use the cached values
+function ballx()
+	return __bx
+end
+
+function bally()
+	return __by
+end
+
+function bspeedx()
+	return __bvx
+end
+
+function bspeedy()
+	return __bvy
+end
+
+-- we need to save balldata somewhere to use it in here
+__balldata = balldata
+function balldata()
+	return __bx, __by, __bvx, __bvy
+end
+
 -- redefine launched to refer to the LEFT_PLAYER
-_launched = launched
+__launched = launched
 function launched()
-	return _launched( LEFT_PLAYER )
+	return __launched( LEFT_PLAYER )
 end
 
 function left()
@@ -77,8 +111,15 @@ end
 -- 						enhances ball prediction functions							   --
 -----------------------------------------------------------------------------------------
 
--- calculates the time the ball needs to reach the specified x position
+-- calculates the time the ball needs to reach the specified x position.
+-- the parameters posy and vely are currently not used, but are present to
+-- ensure that the same group of parameters can be used like for any other 
+-- estimate like function
 function ball_time_to_x( destination, posx, posy, velx, vely )
+	if destination == nil then error("invalid destination specified for ball_time_to_x") end
+	
+	posx = posx or ballx()
+	velx = velx or bspeedx()
 	return linear_time_first(posx, velx, destination)
 end
 
@@ -89,50 +130,59 @@ end
 
 -- calculates the time the ball needs from pos to destination
 function ball_time_to_y( destination, posx, posy, velx, vely )
+	posy = posy or bally()
+	vely = vely or bspeedy()
 	-- TODO this ignores net bounces
 	return parabola_time_first( posy, vely, CONST_BALL_GRAVITY, destination )
 end
 
 -- old style estimate functions
-function estimx(time)
-	local straight = ballx() + time * bspeedx()
+function estimx(time, posx, posy, velx, vely)
+	-- read parameters and set correct defaults
+	-- TODO actually, it makes only sense to set them all, or none. should we check that somewhere?
+	posx = posx or ballx()
+	velx = velx or bspeedx()
+	posy = posy or bally()
+	vely = vely or bspeedy()
+	
+	local straight = posx + time * velx
 	-- correct wall impacts
 	if(straight > CONST_BALL_RIGHT_BORDER) then
-		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -bspeedx()
+		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -velx
 	elseif(straight < CONST_BALL_LEFT_BORDER) then
-		return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -bspeedx()
+		return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -velx
 	else
 		-- find net impacts
-		if ballx() < CONST_BALL_LEFT_NET and straight > CONST_BALL_LEFT_NET then
+		if posx < CONST_BALL_LEFT_NET and straight > CONST_BALL_LEFT_NET then
 			-- estimate where ball is when it reaches the net
-			local timenet = ball_time_to_x( CONST_BALL_LEFT_NET, balldata())
+			local timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
 			local y_at_net = estimy( timenet )
 			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -bspeedx()
+				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
 			end
 			-- otherwise, the ball might fall onto the net top
-			timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, balldata())
+			timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
 			y_at_net = estimy( timenet )
 			-- TODO add net sphere handling! for now just assume net spere acts like net side
 			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -bspeedx()
+				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
 			end
-		elseif ballx() > CONST_BALL_RIGHT_NET and straight < CONST_BALL_RIGHT_NET then
+		elseif posx > CONST_BALL_RIGHT_NET and straight < CONST_BALL_RIGHT_NET then
 			-- estimate where ball is when it reaches the net
-			local timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, balldata())
+			local timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
 			local y_at_net = estimy( timenet )
 			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -bspeedx()
+				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
 			end
 			-- otherwise, the ball might fall onto the net top
-			timenet = ball_time_to_x( CONST_BALL_LEFT_NET, balldata())
+			timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
 			y_at_net = estimy( timenet )
 			-- TODO add net sphere handling! for now just assume net spere acts like net side
 			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -bspeedx()
+				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
 			end
 		end
-		return straight, nil, bspeedx()
+		return straight, nil, velx
 	end
 end
 
@@ -145,12 +195,29 @@ end
 -- this function is called every game step from the C++ api
 __lastBallSpeed = nil
 function __OnStep()
-	local ballspeed = bspeedx()
-	if __lastBallSpeed == nil then __lastBallSpeed = ballspeed end
+	__bx, __by, __bvx, __bvy = __balldata()
+	-- add some random noise to the ball info, if we have difficulty enabled
+	if __DIFFICULTY > 0 then
+		__bx  = __bx + __ebx * __DIFFICULTY
+		__by  = __by + __eby * __DIFFICULTY
+		__bvx = __bvx + __ebvx * __DIFFICULTY
+		__bvy = __bvy + __ebvy * __DIFFICULTY
+	end
+	
+	if __lastBallSpeed == nil then __lastBallSpeed = __bvx end
 	
 	-- if the x velocity of the ball changed, it bounced and we call the listener function
-	if __lastBallSpeed ~= ballspeed then
-		__lastBallSpeed = ballspeed
+	if __lastBallSpeed ~= __bvx then
+		__lastBallSpeed = __bvx
+		-- update the error variables
+		local er = math.random() * CONST_BALL_RADIUS
+		local phi = 2*math.pi * math.random()
+		__ebx = math.sin(phi) * er
+		__eby = math.cos(phi) * er
+		er = math.random() * 1.5 -- this would be about 10% error
+		phi = 2*math.pi * math.random()
+		__ebvx = math.sin(phi) * er
+		__ebvy = math.cos(phi) * er
 		if OnBounce then
 			OnBounce()
 		end
