@@ -5,6 +5,7 @@
 #include "Global.h"
 #include "GameConstants.h"
 #include "DuelMatch.h"
+#include "DuelMatchState.h"
 #include "FileRead.h"
 
 #include <iostream>
@@ -158,6 +159,43 @@ int get_ball_vel(lua_State* state)
 	return lua_pushvector(state, s->getBallVelocity(), VectorType::VELOCITY);
 }
 
+int set_ball_data(lua_State* state)
+{
+	auto s = getMatch( state );
+	lua_checkstack(state, 4);
+	float x = lua_tonumber( state, 1);
+	float y = lua_tonumber( state, 2);
+	float vx = lua_tonumber( state, 3);
+	float vy = lua_tonumber( state, 4);
+	Vector2 p{x, 600 - y};
+	Vector2 v{vx, -vy};
+	DuelMatchState m = s->getState();
+	m.worldState.ballPosition = p;
+	m.worldState.ballVelocity = v;
+	m.logicState.isGameRunning = true;
+	m.logicState.isBallValid = true;
+	s->setState(m);
+	return 0;
+}
+
+int set_blob_data(lua_State* state)
+{
+	auto s = getMatch( state );
+	lua_checkstack(state, 5);
+	int side = lua_tointeger(state, 1);
+	float x = lua_tonumber( state, 2);
+	float y = lua_tonumber( state, 3);
+	float vx = lua_tonumber( state, 4);
+	float vy = lua_tonumber( state, 5);
+	Vector2 p{x, 600 - y};
+	Vector2 v{vx, -vy};
+	DuelMatchState m = s->getState();
+	m.worldState.blobPosition[side] = p;
+	m.worldState.blobVelocity[side] = v;
+	s->setState(m);
+	return 0;
+}
+
 int get_blob_pos(lua_State* state)
 {
 	auto s = getMatch( state );
@@ -210,6 +248,12 @@ int get_game_running( lua_State* state )
 	return 1;
 }
 
+int get_serving_player( lua_State* state )
+{
+	auto s = getMatch( state );
+	lua_pushinteger(state, s->getServingPlayer());
+	return 1;
+}
 
 int lua_print(lua_State* state)
 {
@@ -239,4 +283,11 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "get_touches", get_touches);
 	lua_register(mState, "is_ball_valid", get_ball_valid);
 	lua_register(mState, "is_game_running", get_game_running);
+	lua_register(mState, "get_serving_player", get_serving_player);
+
+	#ifndef NDEBUG
+	// only enable this function in debug builds.
+	lua_register(mState, "set_ball_data", set_ball_data);
+	lua_register(mState, "set_blob_data", set_blob_data);
+	#endif
 }
