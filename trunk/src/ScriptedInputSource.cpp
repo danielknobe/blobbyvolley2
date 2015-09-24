@@ -36,8 +36,7 @@ extern "C"
 }
 
 #include "DuelMatch.h"
-#include "DuelMatchState.h"
-#include "GameConstants.h"
+#include "IUserConfigReader.h"
 
 /* implementation */
 
@@ -55,7 +54,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	// push infos into script
 	lua_pushnumber(mState, mDifficulty / 25.0);
 	lua_setglobal(mState, "__DIFFICULTY");
-	bool debug = true; /// \todo get this setting from option file
+	auto config = IUserConfigReader::createUserConfigReader("config.xml");
+	bool debug = config->getBool("bot_debug");
 	lua_pushboolean(mState, debug);
 	lua_setglobal(mState, "__DEBUG");
 
@@ -64,12 +64,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	openScript(filename);
 
 	// check whether all required lua functions are available
-	bool step, onserve, ongame, onoppserve;
-	step = getLuaFunction("__OnStep");
-	onserve = getLuaFunction("__OnServe");
-	ongame = getLuaFunction("__OnGame");
-	onoppserve = getLuaFunction("__OnOpponentServe");
-	if (!step || !onserve || !ongame ||!onoppserve)
+	bool step = getLuaFunction("__OnStep");
+	if (!step)
 	{
 		std::string error_message = "Missing bot functions, check bot_api.lua! ";
 		std::cerr << "Lua Error: " << error_message << std::endl;
@@ -116,20 +112,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
 	{
 		serving = true;
-		lua_getglobal(mState, "__OnServe");
-		lua_pushboolean(mState, !getMatch()->getBallDown());
-		callLuaFunction(1);
-	}
-	else if (!getMatch()->getBallActive() && mSide !=
-			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
-	{
-		lua_getglobal(mState, "__OnOpponentServe");
-		callLuaFunction();
-	}
-	else
-	{
-		lua_getglobal(mState, "__OnGame");
-		callLuaFunction();
 	}
 
 	// read input info from lua script

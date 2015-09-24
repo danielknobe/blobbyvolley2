@@ -11,23 +11,37 @@ __ebx = 0
 __eby = 0
 __ebvx = 0
 __ebvy = 0
+-- flags, that determine what estimate takes into account
+__e_wall_bounce = true
+__e_net_bounce  = true
+__e_net_error   = true -- this variable controls net errors
+
+-- debug data
+__LastBounces = {}
+__OppServe = false
+
+__OPPSIDE = opponent(__SIDE)
 
 -- legacy functions
 -- these function definitions make lua functions for the old api functions, which are sometimes more conveniente to use 
 -- than their c api equivalent.
 
 function posx()
-	local x, y = get_blob_pos( LEFT_PLAYER )
-	return x
+	local x, y = get_blob_pos( __SIDE )
+	if __SIDE == RIGHT_PLAYER then
+		return CONST_FIELD_WIDTH - x
+	else
+		return x
+	end
 end
 
 function posy()
-	local x, y = get_blob_pos( LEFT_PLAYER )
+	local x, y = get_blob_pos( __SIDE )
 	return y
 end
 
 function touches()
-	return get_touches( LEFT_PLAYER )
+	return get_touches( __SIDE )
 end
 
 -- redefine the ball coordinate functions to use the cached values
@@ -48,25 +62,36 @@ function bspeedy()
 end
 
 -- we need to save balldata somewhere to use it in here
-__balldata = balldata
+__balldata__ = balldata
+-- this is the internal function that does the side correction
+function __balldata()
+	local x, y, vx, vy = __balldata__()
+	if __SIDE == RIGHT_PLAYER then
+		x = CONST_FIELD_WIDTH - x
+		vx = -vx
+	end
+	return x, y, vx, vy
+end
+
+-- this is the function to be used by bots, which includes the difficulty changes
 function balldata()
 	return __bx, __by, __bvx, __bvy
 end
 
--- redefine launched to refer to the LEFT_PLAYER
+-- redefine launched to refer to the __SIDE player
 __launched = launched
 function launched()
-	return __launched( LEFT_PLAYER )
+	return __launched( __SIDE )
 end
 
 function left()
-	__WANT_LEFT = true
-	__WANT_RIGHT = false
+	__WANT_LEFT  = __SIDE == LEFT_PLAYER
+	__WANT_RIGHT = __SIDE ~= LEFT_PLAYER
 end
 
 function right()
-	__WANT_RIGHT = true
-	__WANT_LEFT = false
+	__WANT_LEFT  = __SIDE ~= LEFT_PLAYER
+	__WANT_RIGHT = __SIDE == LEFT_PLAYER
 end
 
 function jump()
@@ -77,7 +102,7 @@ function moveto(target)
 	if target == nil then
 		error("invalid target for moveto", 2)
 	end
-	local x = get_blob_pos( LEFT_PLAYER )
+	local x = posx()
 	if x < target - CONST_BLOBBY_SPEED/2 then
 		right()
 		return false
@@ -90,21 +115,25 @@ function moveto(target)
 end
 
 function oppx()
-	local x, y = get_blob_pos( RIGHT_PLAYER )
-	return x
+	local x, y = get_blob_pos( __OPPSIDE )
+	if __SIDE == RIGHT_PLAYER then
+		return CONST_FIELD_WIDTH - x
+	else
+		return x
+	end
 end
 
 function oppy()
-	local x, y = get_blob_pos( RIGHT_PLAYER )
+	local x, y = get_blob_pos( __OPPSIDE )
 	return y
 end
 
 function getScore()
-	return get_score( LEFT_PLAYER )
+	return get_score( __SIDE )
 end
 
 function getOppScore()
-	return get_score( RIGHT_PLAYER )
+	return get_score( __OPPSIDE )
 end
 
 -----------------------------------------------------------------------------------------
@@ -147,47 +176,57 @@ function estimx(time, posx, posy, velx, vely)
 	
 	local straight = posx + time * velx
 	-- correct wall impacts
-	if(straight > CONST_BALL_RIGHT_BORDER) then
-		return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -velx
-	elseif(straight < CONST_BALL_LEFT_BORDER) then
-		return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -velx
-	else
-		-- find net impacts
+	if __e_wall_bounce then
+		if(straight > CONST_BALL_RIGHT_BORDER) then
+			return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -velx
+		elseif(straight < CONST_BALL_LEFT_BORDER) then
+			return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -velx
+		end
+	end
+	
+	-- find net impacts and correct
+	if __e_net_bounce then
 		if posx < CONST_BALL_LEFT_NET and straight > CONST_BALL_LEFT_NET then
 			-- estimate where ball is when it reaches the net
 			local timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
-			local y_at_net = estimy( timenet )
+			local y_at_net = estimy( timenet, posx, posy, velx, vely )
 			if y_at_net < CONST_BALL_TOP_NET then
 				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
 			end
+			-- if we want to play the ball to the other side, when in doubt, assume it bounces back
 			-- otherwise, the ball might fall onto the net top
-			timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
-			y_at_net = estimy( timenet )
-			-- TODO add net sphere handling! for now just assume net spere acts like net side
-			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
+			if __e_net_error then
+				timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
+				y_at_net = estimy( timenet, posx, posy, velx, vely )
+				-- TODO add net sphere handling! for now just assume net spere acts like net side
+				if y_at_net < CONST_BALL_TOP_NET then
+					return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
+				end
 			end
 		elseif posx > CONST_BALL_RIGHT_NET and straight < CONST_BALL_RIGHT_NET then
 			-- estimate where ball is when it reaches the net
 			local timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
-			local y_at_net = estimy( timenet )
+			local y_at_net = estimy( timenet, posx, posy, velx, vely )
 			if y_at_net < CONST_BALL_TOP_NET then
 				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
 			end
+			-- if the ball comes from the opponent, when in doubt assume it comes through!
 			-- otherwise, the ball might fall onto the net top
-			timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
-			y_at_net = estimy( timenet )
-			-- TODO add net sphere handling! for now just assume net spere acts like net side
-			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
+			if not __e_net_error then
+				timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
+				y_at_net = estimy( timenet, posx, posy, velx, vely )
+				-- TODO add net sphere handling! for now just assume net spere acts like net side
+				if y_at_net < CONST_BALL_TOP_NET then
+					return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
+				end
 			end
 		end
-		return straight, nil, velx
 	end
+	return straight, nil, velx
 end
 
-function estimy(time)
-	return bally() + time * bspeedy() + 0.5 * time^2 * CONST_BALL_GRAVITY
+function estimy(time, posx, posy, velx, vely)
+	return posy + time * vely + 0.5 * time^2 * CONST_BALL_GRAVITY
 end
 
 ---------------------------------------------------------------------------------------------
@@ -196,6 +235,7 @@ end
 __lastBallSpeed = nil
 function __OnStep()
 	__bx, __by, __bvx, __bvy = __balldata()
+	local original_bvx = __bvx
 	-- add some random noise to the ball info, if we have difficulty enabled
 	if __DIFFICULTY > 0 then
 		__bx  = __bx + __ebx * __DIFFICULTY
@@ -204,11 +244,11 @@ function __OnStep()
 		__bvy = __bvy + __ebvy * __DIFFICULTY
 	end
 	
-	if __lastBallSpeed == nil then __lastBallSpeed = __bvx end
+	if __lastBallSpeed == nil then __lastBallSpeed = original_bvx end
 	
 	-- if the x velocity of the ball changed, it bounced and we call the listener function
-	if __lastBallSpeed ~= __bvx then
-		__lastBallSpeed = __bvx
+	if __lastBallSpeed ~= original_bvx and is_ball_valid() then
+		__lastBallSpeed = original_bvx
 		-- update the error variables
 		local er = math.random() * CONST_BALL_RADIUS
 		local phi = 2*math.pi * math.random()
@@ -218,25 +258,65 @@ function __OnStep()
 		phi = 2*math.pi * math.random()
 		__ebvx = math.sin(phi) * er
 		__ebvy = math.cos(phi) * er
+		
+		-- enable and disable bounce predictions
+		__e_wall_bounce = (math.random()*__DIFFICULTY - 0.75) <= 0 				-- diff 1: 25% - diff 0.75: 0%
+		__e_net_bounce  = (math.random()*__DIFFICULTY * 0.5/0.66 - 0.50) <= 0 	-- diff 1: 50% -- diff 0.66: 0%
+		-- todo review the error values
+		
+		
+		-- debug data.
+		if __DEBUG and is_game_running() then
+			local bounce = capture_situation_data()
+			for i=10, 2, -1 do
+				__LastBounces[i] = __LastBounces[i-1]
+			end
+			__LastBounces[1] = bounce
+		end
+		
 		if OnBounce then
 			OnBounce()
 		end
 	end
-end
-
--- OnOpponentServe, called script function if it exists
-function __OnOpponentServe()
-	if OnOpponentServe then
-		OnOpponentServe()
+	
+	
+	-- call the action functions
+	if not is_game_running() then
+		
+		-- get the serving player. if NO_PLAYER, the ball is on the left.
+		local server = get_serving_player()
+		if server == NO_PLAYER then 
+			server = LEFT_PLAYER
+		end
+		
+		if __SIDE == server then
+			OnServe( is_ball_valid() )
+		else
+			-- print last ball information when the opponent serves
+			if __DEBUG then
+				if not __OppServe then
+					for k=1, #__LastBounces do
+						print("step ", k)
+						for i, v in pairs(__LastBounces[k]) do
+							print(i, v)
+						end
+					end
+					__OppServe = true
+				end
+			end
+			
+			--set_ball_data(743, 435, -3.7, 12.6)
+			--set_blob_data(0, 50, 144.5, 0, 0)
+			--print( estimx( ) )
+			
+			if OnOpponentServe then
+				OnOpponentServe()
+			end
+		end
+	else
+		__OppServe = false
+		OnGame()
 	end
-end
-
-function __OnServe( ballready )
-	OnServe(ballready)
-end
-
-function __OnGame()
-	OnGame()
 end
 
 -----------------------------------------------------------------------------------------------
@@ -276,4 +356,18 @@ function linear_time_first(pos, vel, destination)
 		return math.huge
 	end
 	return (destination - pos) / vel
+end
+
+-- debug function: capture situational information
+function capture_situation_data()
+	local x, y, vx, vy = __balldata()
+	local data = {}
+	data['ballx'] = x
+	data['bally'] = y
+	data['bspeedx'] = vx
+	data['bspeedy'] = vy
+	data['posx'] = posx()
+	data['posy'] = posy()
+	data['touches'] = touches()
+	return data
 end
