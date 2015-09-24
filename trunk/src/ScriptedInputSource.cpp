@@ -52,6 +52,13 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	setGameConstants();
 	setGameFunctions();
 
+	// push infos into script
+	lua_pushnumber(mState, mDifficulty / 25.0);
+	lua_setglobal(mState, "__DIFFICULTY");
+	bool debug = true; /// \todo get this setting from option file
+	lua_pushboolean(mState, debug);
+	lua_setglobal(mState, "__DEBUG");
+
 	openScript("api");
 	openScript("bot_api");
 	openScript(filename);
@@ -64,11 +71,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	onoppserve = getLuaFunction("__OnOpponentServe");
 	if (!step || !onserve || !ongame ||!onoppserve)
 	{
-		std::string error_message = "Missing bot function ";
-		error_message += step ? "" : "__OnStep() [this function should be provided by the api!] ";
-		error_message += onserve ? "" : "OnServe() ";
-		error_message += ongame ? "" : "OnGame() ";
-		error_message += onoppserve ? "" : "OnOpponentServe() ";
+		std::string error_message = "Missing bot functions, check bot_api.lua! ";
 		std::cerr << "Lua Error: " << error_message << std::endl;
 
 		ScriptException except;
@@ -95,17 +98,18 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	lua_pushboolean(mState, false);
 	lua_setglobal(mState, "__WANT_JUMP");
 
+	lua_pushinteger(mState, mSide);
+	lua_setglobal(mState, "__SIDE");
+
 	if (getMatch() == 0)
 	{
 		return PlayerInputAbs();
+	} else
+	{
+		IScriptableComponent::setMatch( const_cast<DuelMatch*>(getMatch()) );
 	}
-
-	// collect match states
-	auto matchstate = getMatch()->getState();
-	if(mSide != LEFT_PLAYER)
-		matchstate.swapSides();
-
-	updateGameState( matchstate );
+	lua_getglobal(mState, "__OnStep");
+	callLuaFunction();
 
 	if (!getMatch()->getBallActive() && mSide ==
 			// if no player is serving player, assume the left one is
@@ -137,10 +141,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	bool wantjump = lua_toboolean(mState, -1);
 	lua_pop(mState, 3);
 
-	// swap left/right if side is swapped
-	if ( mSide == RIGHT_PLAYER )
-		std::swap(wantleft, wantright);
-
 	int stacksize = lua_gettop(mState);
 	if (stacksize > 0)
 	{
@@ -156,7 +156,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	// random jump delay depending on difficulty
 	if( wantjump && !mLastJump )
 	{
-
 		mJumpDelay--;
 		if( mJumpDelay > 0 )
 			wantjump = false;
