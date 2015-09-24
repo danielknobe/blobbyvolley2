@@ -463,10 +463,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 
 		virtual GameLogic clone() const
 		{
-			lua_getglobal(mState, "__MATCH_POINTER");
-			DuelMatch* match = (DuelMatch*)lua_touserdata(mState, -1);
-			lua_pop(mState, 1);
-			return GameLogic(new LuaGameLogic(mSourceFile, match, getScoreToWin()));
+			return GameLogic(new LuaGameLogic(mSourceFile, getMatch(), getScoreToWin()));
 		}
 
 		virtual std::string getAuthor() const
@@ -509,14 +506,14 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 };
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match, int score_to_win ) : FallbackGameLogic( score_to_win ), mSourceFile(filename)
+LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match, int score_to_win ) :
+	FallbackGameLogic( score_to_win ), mSourceFile(filename)
 {
+	setMatch( match );
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 
 	/// \todo use lua registry instead of globals!
-	lua_pushlightuserdata(mState, match);
-	lua_setglobal(mState, "__MATCH_POINTER");
 	lua_pushnumber(mState, getScoreToWin());
 	lua_setglobal(mState, "SCORE_TO_WIN");
 
@@ -559,7 +556,6 @@ LuaGameLogic::~LuaGameLogic()
 
 PlayerSide LuaGameLogic::checkWin() const
 {
-	const_cast<LuaGameLogic*>(this)->updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	bool won = false;
 	if (!getLuaFunction("IsWinning"))
 	{
@@ -591,7 +587,6 @@ PlayerSide LuaGameLogic::checkWin() const
 
 PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 {
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "HandleInput" ))
 	{
 		return FallbackGameLogic::handleInput(ip, player);
@@ -619,7 +614,6 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 
 void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 {
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction("OnBallHitsPlayer"))
 	{
 		FallbackGameLogic::OnBallHitsPlayerHandler(side);
@@ -635,7 +629,6 @@ void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction("OnBallHitsWall"))
 	{
 		FallbackGameLogic::OnBallHitsWallHandler(side);
@@ -652,7 +645,6 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 {
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnBallHitsNet" ))
 	{
 		FallbackGameLogic::OnBallHitsNetHandler(side);
@@ -670,7 +662,6 @@ void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 {
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnBallHitsGround" ))
 	{
 		FallbackGameLogic::OnBallHitsGroundHandler(side);
@@ -688,11 +679,6 @@ void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 
 void LuaGameLogic::OnGameHandler( const DuelMatchState& state )
 {
-	// we need to do this on every function call, so maybe it was not the best idea
-	// to save the state instead of the pointer to a duel match inside the lua script.
-	/// \todo find a better way to do this.
-	updateGameState( state );		// set state of world
-	updateGameState( getState( ) ); // make sure the scripting engine gets current version
 	if (!getLuaFunction( "OnGame" ))
 	{
 		FallbackGameLogic::OnGameHandler( state );

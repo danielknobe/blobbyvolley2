@@ -78,12 +78,13 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		// This methods report the current game state and a useful for
 		// the input manager, which needs information about the blob
-		// positions and for lua export, which makes them accessable
+		// positions and for lua export, which makes them accessible
 		// for scripted input sources
 
 		int getScore(PlayerSide player) const;
 		int getScoreToWin() const;
 		PlayerSide getServingPlayer() const;
+		int getTouches(PlayerSide player) const;
 
 		int getHitcount(PlayerSide player) const;
 

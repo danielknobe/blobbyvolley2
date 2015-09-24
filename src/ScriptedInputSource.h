@@ -57,6 +57,7 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		~ScriptedInputSource();
 
 		virtual PlayerInputAbs getNextInput();
+		using InputSource::getMatch;
 
 	private:
 

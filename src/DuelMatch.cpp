@@ -196,6 +196,12 @@ int DuelMatch::getScore(PlayerSide player) const
 	return mLogic->getScore(player);
 }
 
+int DuelMatch::getTouches(PlayerSide player) const
+{
+	return mLogic->getTouches(player);
+}
+
+
 int DuelMatch::getScoreToWin() const
 {
 	return mLogic->getScoreToWin();

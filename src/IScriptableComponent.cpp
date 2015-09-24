@@ -4,7 +4,7 @@
 
 #include "Global.h"
 #include "GameConstants.h"
-#include "DuelMatchState.h"
+#include "DuelMatch.h"
 #include "FileRead.h"
 
 #include <iostream>
@@ -13,8 +13,7 @@
 int lua_print(lua_State* state);
 
 IScriptableComponent::IScriptableComponent() :
-	mState(luaL_newstate()),
-	mGameState( new DuelMatchState() )
+	mState(luaL_newstate())
 {
 	// register this in the lua registry
 	lua_pushliteral(mState, "__C++_ScriptComponent__");
@@ -97,15 +96,6 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("RIGHT_PLAYER", RIGHT_PLAYER);
 }
 
-void IScriptableComponent::updateGameState(const DuelMatchState& state)
-{
-	*mGameState = state;
-}
-void IScriptableComponent::updateGameState( const GameLogicState& state )
-{
-	mGameState->logicState = state;
-}
-
 // helpers
 inline IScriptableComponent* getScriptComponent(lua_State* state)
 {
@@ -146,26 +136,26 @@ static inline int lua_toint(lua_State* state, int index)
 // Access struct to get to the privates of IScriptableComponent
 struct IScriptableComponent::Access
 {
-	static DuelMatchState* getMatch( lua_State* state )
+	static DuelMatch* getMatch( lua_State* state )
 	{
 		auto sc = getScriptComponent( state );
-		return sc->mGameState.get();
+		return sc->mGame;
 	}
 };
 
-inline DuelMatchState* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
+inline DuelMatch* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
 
 // standard lua functions
 int get_ball_pos(lua_State* state)
 {
 	auto s = getMatch( state );
-	return lua_pushvector(state, s->worldState.ballPosition, VectorType::POSITION);
+	return lua_pushvector(state, s->getBallPosition(), VectorType::POSITION);
 }
 
 int get_ball_vel(lua_State* state)
 {
 	auto s = getMatch( state );
-	return lua_pushvector(state, s->worldState.ballVelocity, VectorType::VELOCITY);
+	return lua_pushvector(state, s->getBallVelocity(), VectorType::VELOCITY);
 }
 
 int get_blob_pos(lua_State* state)
@@ -174,7 +164,7 @@ int get_blob_pos(lua_State* state)
 	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	return lua_pushvector(state, s->worldState.blobPosition[side], VectorType::POSITION);
+	return lua_pushvector(state, s->getBlobPosition(side), VectorType::POSITION);
 }
 
 int get_blob_vel(lua_State* state)
@@ -183,7 +173,7 @@ int get_blob_vel(lua_State* state)
 	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	return lua_pushvector(state, s->worldState.blobVelocity[side], VectorType::VELOCITY);
+	return lua_pushvector(state, s->getBlobVelocity(side), VectorType::VELOCITY);
 }
 
 int get_score( lua_State* state )
@@ -192,10 +182,7 @@ int get_score( lua_State* state )
 	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	if( side == LEFT_PLAYER )
-		lua_pushinteger(state, s->logicState.leftScore);
-	else
-		lua_pushinteger(state, s->logicState.rightScore);
+	lua_pushinteger(state, s->getScore(side));
 	return 1;
 }
 
@@ -205,14 +192,21 @@ int get_touches( lua_State* state )
 	PlayerSide side = (PlayerSide)lua_toint(state, -1);
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	lua_pushinteger(state, s->logicState.hitCount[side]);
+	lua_pushinteger(state, s->getTouches(side));
 	return 1;
 }
 
 int get_ball_valid( lua_State* state )
 {
 	auto s = getMatch( state );
-	lua_pushboolean(state, s->logicState.isBallValid);
+	lua_pushboolean(state, !s->getBallDown());
+	return 1;
+}
+
+int get_game_running( lua_State* state )
+{
+	auto s = getMatch( state );
+	lua_pushboolean(state, s->getBallActive());
 	return 1;
 }
 
@@ -244,4 +238,5 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "get_score", get_score);
 	lua_register(mState, "get_touches", get_touches);
 	lua_register(mState, "is_ball_valid", get_ball_valid);
+	lua_register(mState, "is_game_running", get_game_running);
 }
