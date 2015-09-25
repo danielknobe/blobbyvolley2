@@ -142,9 +142,16 @@ struct IScriptableComponent::Access
 		auto sc = getScriptComponent( state );
 		return sc->mGame;
 	}
+
+	static PhysicWorld* getWorld( lua_State* state )
+	{
+		auto sc = getScriptComponent( state );
+		return &sc->mDummyWorld;
+	}
 };
 
 inline DuelMatch* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
+inline PhysicWorld* getWorld( lua_State* s )  { return IScriptableComponent::Access::getWorld(s); };
 
 // standard lua functions
 int get_ball_pos(lua_State* state)
@@ -255,6 +262,31 @@ int get_serving_player( lua_State* state )
 	return 1;
 }
 
+int simulate_steps( lua_State* state )
+{
+	PhysicWorld* world = getWorld( state );
+	// get the initial ball settings
+	lua_checkstack(state, 5);
+	int steps = lua_tointeger( state, 1);
+	float x = lua_tonumber( state, 2);
+	float y = lua_tonumber( state, 3);
+	float vx = lua_tonumber( state, 4);
+	float vy = lua_tonumber( state, 5);
+	lua_pop( state, 5);
+
+	Vector2 v{vx, -vy};
+	world->setBallPosition( Vector2{x, 600 - y} );
+	world->setBallVelocity( Vector2{vx, -vy});
+	for(int i = 0; i < steps; ++i)
+	{
+		// set ball valid to false to ignore blobby bounces
+		world->step(PlayerInput(), PlayerInput(), false, true);
+	}
+
+	int ret = lua_pushvector(state, world->getBallPosition(), VectorType::POSITION);
+	ret += lua_pushvector(state, world->getBallVelocity(), VectorType::VELOCITY);
+	return ret;
+}
 int lua_print(lua_State* state)
 {
 	int count = lua_gettop(state);
@@ -284,6 +316,7 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "is_ball_valid", get_ball_valid);
 	lua_register(mState, "is_game_running", get_game_running);
 	lua_register(mState, "get_serving_player", get_serving_player);
+	lua_register(mState, "simulate", simulate_steps);
 
 	#ifndef NDEBUG
 	// only enable this function in debug builds.

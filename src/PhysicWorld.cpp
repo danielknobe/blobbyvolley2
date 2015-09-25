@@ -214,7 +214,8 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	return false;
 }
 
-void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning)
+void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInput,
+					bool isBallValid, bool isGameRunning)
 {
 	// Determistic IEEE 754 floating point computations
 	short fpf = set_fpu_single_precision();
@@ -241,6 +242,43 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 		if (handleBlobbyBallCollision(RIGHT_PLAYER))
 			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, RIGHT_PLAYER, mLastHitIntensity} );
 	}
+
+	handleBallWorldCollisions();
+
+	// Collision between blobby and the net
+	if (mBlobPosition[LEFT_PLAYER].x+BLOBBY_LOWER_RADIUS>NET_POSITION_X-NET_RADIUS) // Collision with the net
+		mBlobPosition[LEFT_PLAYER].x=NET_POSITION_X-NET_RADIUS-BLOBBY_LOWER_RADIUS;
+
+	if (mBlobPosition[RIGHT_PLAYER].x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS)
+		mBlobPosition[RIGHT_PLAYER].x=NET_POSITION_X+NET_RADIUS+BLOBBY_LOWER_RADIUS;
+
+	// Collision between blobby and the border
+	if (mBlobPosition[LEFT_PLAYER].x < LEFT_PLANE)
+		mBlobPosition[LEFT_PLAYER].x=LEFT_PLANE;
+
+	if (mBlobPosition[RIGHT_PLAYER].x > RIGHT_PLANE)
+		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
+
+	// Velocity Integration
+	if( !isGameRunning )
+		mBallRotation -= mBallAngularVelocity;
+	else if (mBallVelocity.x > 0.0)
+		mBallRotation += mBallAngularVelocity * (mBallVelocity.length() / 6);
+	else
+		mBallRotation -= mBallAngularVelocity * (mBallVelocity.length()/ 6);
+
+	// Overflow-Protection
+	if (mBallRotation <= 0)
+		mBallRotation = 6.25 + mBallRotation;
+	else if (mBallRotation >= 6.25)
+		mBallRotation = mBallRotation - 6.25;
+
+
+	reset_fpu_flags(fpf);
+}
+
+void PhysicWorld::handleBallWorldCollisions()
+{
 	// Ball to ground Collision
 	if (mBallPosition.y + BALL_RADIUS > GROUND_PLANE_HEIGHT_MAX)
 	{
@@ -291,7 +329,6 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 			perp_ekin *= perp_ekin;
 			// parallel component of kinetic energy
 			float para_ekin = mBallVelocity.length() * mBallVelocity.length() - perp_ekin;
-			std::cout << perp_ekin << " " << para_ekin << "\n";
 
 			// the normal component is damped stronger than the parallel component
 			// the values are ~ 0.85 and ca. 0.95, because speed is sqrt(ekin)
@@ -309,38 +346,7 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 		}
 		// mBallVelocity = mBallVelocity.reflect( Vector2( mBallPosition, Vector2 (NET_POSITION_X, temp) ).normalise()).scale(0.75);
 	}
-
-	// Collision between blobby and the net
-	if (mBlobPosition[LEFT_PLAYER].x+BLOBBY_LOWER_RADIUS>NET_POSITION_X-NET_RADIUS) // Collision with the net
-		mBlobPosition[LEFT_PLAYER].x=NET_POSITION_X-NET_RADIUS-BLOBBY_LOWER_RADIUS;
-
-	if (mBlobPosition[RIGHT_PLAYER].x-BLOBBY_LOWER_RADIUS<NET_POSITION_X+NET_RADIUS)
-		mBlobPosition[RIGHT_PLAYER].x=NET_POSITION_X+NET_RADIUS+BLOBBY_LOWER_RADIUS;
-
-	// Collision between blobby and the border
-	if (mBlobPosition[LEFT_PLAYER].x < LEFT_PLANE)
-		mBlobPosition[LEFT_PLAYER].x=LEFT_PLANE;
-
-	if (mBlobPosition[RIGHT_PLAYER].x > RIGHT_PLANE)
-		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
-
-	// Velocity Integration
-	if( !isGameRunning )
-		mBallRotation -= mBallAngularVelocity;
-	else if (mBallVelocity.x > 0.0)
-		mBallRotation += mBallAngularVelocity * (mBallVelocity.length() / 6);
-	else
-		mBallRotation -= mBallAngularVelocity * (mBallVelocity.length()/ 6);
-
-	// Overflow-Protection
-	if (mBallRotation <= 0)
-		mBallRotation = 6.25 + mBallRotation;
-	else if (mBallRotation >= 6.25)
-		mBallRotation = mBallRotation - 6.25;
-
-	reset_fpu_flags(fpf);
 }
-
 Vector2 PhysicWorld::getBallPosition() const
 {
 	return mBallPosition;

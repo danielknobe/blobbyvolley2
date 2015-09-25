@@ -165,7 +165,7 @@ function OnGame()
                         moveto(180)
                 end
         end
-
+		
         if (posy() > 150) then return end
         if (touches() > 2) then return end
         
@@ -211,6 +211,6 @@ function timeToOppSmash(height)
 end
 
 function willHitWall(time)
-    local pos, hit = estimx(time)
-    return hit
+    local pos, velx = estimx(time)
+    return velx ~= bspeedx()
 end
