@@ -165,68 +165,190 @@ function ball_time_to_y( destination, posx, posy, velx, vely )
 	return parabola_time_first( posy, vely, CONST_BALL_GRAVITY, destination )
 end
 
--- old style estimate functions
-function estimx(time, posx, posy, velx, vely)
+-- advances the ball without calculating interactions
+function advance_ball( time, posx, posy, velx, vely )
+	return posx + time * velx, posy + time * vely + 0.5 * time^2 * CONST_BALL_GRAVITY, velx, vely + time * CONST_BALL_GRAVITY 
+end
+
+-- generic estimate function that advances the whole ball state
+function estimate(time, posx, posy, velx, vely)
+	__PERF_ESTIMATE_COUNTER = __PERF_ESTIMATE_COUNTER + 1
+	if __PERF_ESTIMATE_COUNTER > 100 then
+		print("OVERLOAD", posx, posy, velx, vely, time)
+		return
+	end
+--	print("estim", time, posx, posy, velx, vely)
 	-- read parameters and set correct defaults
 	-- TODO actually, it makes only sense to set them all, or none. should we check that somewhere?
+	-- TODO re-introduce errors
 	posx = posx or ballx()
 	velx = velx or bspeedx()
 	posy = posy or bally()
 	vely = vely or bspeedy()
 	
-	local straight = posx + time * velx
-	-- correct wall impacts
-	if __e_wall_bounce then
-		if(straight > CONST_BALL_RIGHT_BORDER) then
-			return mirror(straight, CONST_BALL_RIGHT_BORDER), CONST_BALL_RIGHT_BORDER, -velx
-		elseif(straight < CONST_BALL_LEFT_BORDER) then
-			return mirror(straight, CONST_BALL_LEFT_BORDER), CONST_BALL_LEFT_BORDER, -velx
-		end
+	if time <= 0 then
+		return posx, posy, velx, vely
 	end
 	
-	-- find net impacts and correct
-	if __e_net_bounce then
-		if posx < CONST_BALL_LEFT_NET and straight > CONST_BALL_LEFT_NET then
-			-- estimate where ball is when it reaches the net
-			local timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
-			local y_at_net = estimy( timenet, posx, posy, velx, vely )
-			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
-			end
-			-- if we want to play the ball to the other side, when in doubt, assume it bounces back
-			-- otherwise, the ball might fall onto the net top
-			if __e_net_error then
-				timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
-				y_at_net = estimy( timenet, posx, posy, velx, vely )
-				-- TODO add net sphere handling! for now just assume net spere acts like net side
-				if y_at_net < CONST_BALL_TOP_NET then
-					return mirror(straight, CONST_BALL_LEFT_NET), CONST_BALL_LEFT_NET, -velx
-				end
-			end
-		elseif posx > CONST_BALL_RIGHT_NET and straight < CONST_BALL_RIGHT_NET then
-			-- estimate where ball is when it reaches the net
-			local timenet = ball_time_to_x( CONST_BALL_RIGHT_NET, posx, posy, velx, vely)
-			local y_at_net = estimy( timenet, posx, posy, velx, vely )
-			if y_at_net < CONST_BALL_TOP_NET then
-				return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
-			end
-			-- if the ball comes from the opponent, when in doubt assume it comes through!
-			-- otherwise, the ball might fall onto the net top
-			if not __e_net_error then
-				timenet = ball_time_to_x( CONST_BALL_LEFT_NET, posx, posy, velx, vely)
-				y_at_net = estimy( timenet, posx, posy, velx, vely )
-				-- TODO add net sphere handling! for now just assume net spere acts like net side
-				if y_at_net < CONST_BALL_TOP_NET then
-					return mirror(straight, CONST_BALL_RIGHT_NET), CONST_BALL_RIGHT_NET, -velx
-				end
-			end
-		end
+	-- first, check where the ball would be if nothing happened
+	local straight = posx + time * velx
+	
+	-- estimate important events
+	local time_wall_right  = linear_time_first( posx, velx, CONST_BALL_RIGHT_BORDER )
+	local time_wall_left   = linear_time_first( posx, velx, CONST_BALL_LEFT_BORDER )
+	local time_left_net    = linear_time_first( posx, velx, CONST_BALL_LEFT_NET )
+	local time_right_net   = linear_time_first( posx, velx, CONST_BALL_RIGHT_NET )
+	local time_net         = math.min(time_left_net, time_right_net)
+	
+	-- detect and handle wall collisions
+	if time_wall_right < time_net and time_wall_right < time and velx > 0 then
+		posx, posy, velx, vely = advance_ball( time_wall_right, posx, posy, velx, vely )
+--		print("hit wall")
+		return estimate( time - time_wall_right, posx - 0.0001 * velx, posy, -velx, vely )
+	elseif time_wall_left < time_net and time_wall_left < time and velx < 0 then
+		posx, posy, velx, vely = advance_ball( time_wall_left, posx, posy, velx, vely )
+--		print("hit wall")
+		return estimate( time - time_wall_left, posx - 0.0001 * velx, posy, -velx, vely )
 	end
-	return straight, nil, velx
+	
+	-- detect net collisions
+	-- the easy case: the ball crosses the net boundary
+	if time_net < time then
+		local netside = 0
+		local otherside = 0
+		if velx > 0 then
+			netside = CONST_BALL_LEFT_NET
+			otherside = CONST_BALL_RIGHT_NET
+		else
+			netside = CONST_BALL_RIGHT_NET
+			otherside = CONST_BALL_LEFT_NET
+		end
+		
+		posx, posy, velx, vely = advance_ball( time_net, posx, posy, velx, vely )
+		
+		-- where does the ball hit the net (or does it pass over it)
+		if posy < CONST_NET_HEIGHT then
+--			print("hit side", time, time_net, posx, posy, velx, vely)
+			-- definitely hit the side of the net. easy
+			return estimate( time - time_net, posx - 0.0001 * velx, posy, -velx, vely )
+		end
+		
+		local tcross = linear_time_first(posx, velx, otherside)
+		tcross = math.min(tcross, time - time_net)
+		local ycross = posy + tcross * vely + 0.5 * tcross^2 * CONST_BALL_GRAVITY
+		-- the ugly! need to simulate here. we get some errors, as we have worked with non discrete times before!
+		if posy < CONST_BALL_TOP_NET or ycross < CONST_BALL_TOP_NET then
+			local dt
+			posx, posy, velx, vely, dt = simulate_ball_vs_nettop(posx, posy, velx, vely, tcross )
+--			print("netsphere", time - time_net - dt)
+			posx, posy, velx, vely = estimate( time - time_net - dt, posx, posy, velx, vely )
+			return posx, posy, velx, vely
+		end
+		
+		-- we need to use the corrected time here since we have changed posx etc
+		-- advance a tiny bit, to ensure we do net get multi intersections
+--		print("escaped net", time_net, tcross, posx, velx, otherside)
+		-- simulate till tcross without estimte to prevent single stepping
+		posx, posy, velx, vely = advance_ball( tcross + 0.0001, posx, posy, velx, vely )
+		-- then do the real simulation
+		return estimate( time - time_net - tcross, posx, posy, velx, vely )
+	
+	-- the other case: the ball is above the net the whole time
+	elseif math.abs(posx - CONST_FIELD_MIDDLE) < CONST_BALL_RADIUS + CONST_NET_RADIUS then
+		local maxt = ball_time_to_y(CONST_NET_HEIGHT - CONST_BALL_RADIUS, posx, posy, velx, vely)
+		maxt = math.min(time, maxt)
+		posx, posy, velx, vely, maxt = simulate_ball_vs_nettop(posx, posy, velx, vely, maxt)
+--		print("within", posx, posy, velx, vely, time, maxt, CONST_NET_HEIGHT - CONST_BALL_RADIUS)
+		-- if we started inside the net, perform one step to slip out!
+		if maxt == 0 then
+			posx = posx + velx
+			posy = posy + vely + 0.5 * CONST_BALL_GRAVITY
+			vely = CONST_BALL_GRAVITY
+			maxt = 1
+		end
+		return estimate( time - maxt, posx, posy, velx, vely )
+	end
+	
+	-- nothing happens, nice.
+	return advance_ball( time, posx, posy, velx, vely )
+end
+
+-- this simulates the ball for at most maxtime timesteps and checks if it hits the stationary sphere
+function ball_hit_sphere(ballx, bally, velx, vely, posx, posy, radius, maxtime)
+	local rsq = radius + CONST_BALL_RADIUS
+	rsq = rsq * rsq
+	for t = 0,maxtime do
+		local dx = ballx - posx
+		local dy = bally - posy
+		if dx^2 + dy^2 < rsq then
+			return t, ballx, bally, velx, vely
+		end
+		ballx = ballx + velx
+		bally = bally + vely + 0.5 * CONST_BALL_GRAVITY
+		vely = vely + CONST_BALL_GRAVITY
+	end
+	
+	return math.huge, ballx, bally, velx, vely
+end
+
+function simulate_ball_vs_nettop(posx, posy, velx, vely, maxtime)
+	local tsp
+	tsp, posx, posy, velx, vely = ball_hit_sphere(posx, posy, velx, vely, CONST_FIELD_MIDDLE, CONST_NET_HEIGHT, CONST_NET_RADIUS, maxtime)
+	if tsp ~= math.huge then
+		-- this calculation is really sensitive to small positional changes! it will only give a crude estimate about the long term behaviour of
+		-- the ball
+		local nx = posx - CONST_FIELD_MIDDLE
+		local ny = posy - CONST_NET_HEIGHT
+		local n = math.sqrt(nx*nx+ny*ny)
+		nx, ny = nx / n, ny / n
+		local dot =  nx * velx + ny * vely
+		local ep = dot^2
+		local el = velx * velx + vely * vely - ep
+		local ns = math.sqrt( 0.7 * ep + 0.9 * el )
+		
+		velx = velx - 2 * dot * nx
+		vely = vely - 2 * dot * ny
+		n = math.sqrt((0.7*ep + 0.9*el) / (velx^2 + vely^2))
+		
+		velx = velx * n
+		vely = vely * n
+		
+		-- shift the ball out of the net
+		posx = CONST_FIELD_MIDDLE - nx * (CONST_BALL_RADIUS + CONST_NET_RADIUS + 0.001)
+		posy = CONST_NET_HEIGHT - ny * (CONST_BALL_RADIUS + CONST_NET_RADIUS + 0.001)
+		
+		return posx, posy, velx, vely, tsp
+	end
+	
+	return posx, posy, velx, vely, maxtime
+end
+
+-- old style estimate functions, using the new, advanced function for implementation
+function estimx(time, posx, posy, velx, vely)
+	posx, posy, velx, vely = estimate(time, posx, posy, velx, vely)
+	return posx, velx
 end
 
 function estimy(time, posx, posy, velx, vely)
-	return posy + time * vely + 0.5 * time^2 * CONST_BALL_GRAVITY
+	posx, posy, velx, vely = estimate(time, posx, posy, velx, vely)
+	return posy, vely
+end
+
+-- really useful estimate functions
+function estimate_x_at_y(height, posx, posy, velx, vely)
+	local time = ball_time_to_y(height, posx, posy, velx, vely)
+	if time == math.huge then
+		return math.huge, math.huge, math.huge
+	end
+	posx, posy, velx, vely = estimate(time, posx, posy, velx, vely)
+	-- this works, because the only possible change to the estimated time
+	-- can happen at the net sphere, and that only increases time!
+	if math.abs( posy - height ) > 5  then
+--		print("recurse", posy, height)
+		posx, velx, t = estimate_x_at_y(height, posx, posy, velx, vely)
+		return posx, velx, t + time
+	end
+	return posx, velx, time
 end
 
 ---------------------------------------------------------------------------------------------
@@ -234,6 +356,7 @@ end
 -- this function is called every game step from the C++ api
 __lastBallSpeed = nil
 function __OnStep()
+	__PERF_ESTIMATE_COUNTER = 0 -- count the calls to estimate!
 	__bx, __by, __bvx, __bvy = __balldata()
 	local original_bvx = __bvx
 	-- add some random noise to the ball info, if we have difficulty enabled
@@ -266,9 +389,9 @@ function __OnStep()
 		
 		
 		-- debug data.
-		if __DEBUG and is_game_running() then
+		if __DEBUG and is_game_running() and ballx() > CONST_FIELD_MIDDLE - CONST_BALL_RADIUS then
 			local bounce = capture_situation_data()
-			for i=10, 2, -1 do
+			for i = 5, 2, -1 do
 				__LastBounces[i] = __LastBounces[i-1]
 			end
 			__LastBounces[1] = bounce
@@ -305,7 +428,7 @@ function __OnStep()
 				end
 			end
 			
-			--set_ball_data(743, 435, -3.7, 12.6)
+			set_ball_data(404.71929931641, 428.68881225586, -11.259716033936, 6.7393469810486)
 			--set_blob_data(0, 50, 144.5, 0, 0)
 			--print( estimx( ) )
 			
@@ -317,6 +440,8 @@ function __OnStep()
 		__OppServe = false
 		OnGame()
 	end
+	
+	--print(__PERF_ESTIMATE_COUNTER)
 end
 
 -----------------------------------------------------------------------------------------------
@@ -355,7 +480,12 @@ function linear_time_first(pos, vel, destination)
 	if vel == 0 then
 		return math.huge
 	end
-	return (destination - pos) / vel
+	local result = (destination - pos) / vel
+	if result < 0 then
+		return math.huge
+	else 
+		return result
+	end
 end
 
 -- debug function: capture situational information

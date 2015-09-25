@@ -63,6 +63,7 @@ function OnGame()
 			lowPlay()
 		-- HEELLPPP...
 		elseif naivetarget < CONST_FIELD_MIDDLE then
+--			print("PANIC!", ballx(), bally())
 			-- This often saves your ass if you're standing inside a
 			-- corner and the ball bounces from the wall or the net.
 			lowPlay()
@@ -115,14 +116,13 @@ function estimImpactLow()
 end
 
 function estimImpact(destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-   timeto = ball_time_to_y(destY)
-
-   if (timeto == math.huge) then
+   local x, v, t = estimate_x_at_y(destY)
+   if (t == math.huge) then
       target = nil
       return false
    end
    
-   naivetarget = (bspeedx() * timeto) + ballx()
-   target, bounce, estimbspeedx = estimx(timeto)
+   naivetarget = (bspeedx() * t) + ballx()
+   target, estimbspeedx, timeto = x, v, t
    return true
 end

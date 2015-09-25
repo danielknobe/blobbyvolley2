@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <limits>
+#include <iostream>
 
 #include "raknet/BitStream.h"
 
@@ -290,6 +291,7 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 			perp_ekin *= perp_ekin;
 			// parallel component of kinetic energy
 			float para_ekin = mBallVelocity.length() * mBallVelocity.length() - perp_ekin;
+			std::cout << perp_ekin << " " << para_ekin << "\n";
 
 			// the normal component is damped stronger than the parallel component
 			// the values are ~ 0.85 and ca. 0.95, because speed is sqrt(ekin)
