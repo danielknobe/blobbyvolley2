@@ -82,7 +82,7 @@ function highPlayPos()
 end
 
 function highPlay()
-   if (target > 400) then
+   if (target > CONST_FIELD_MIDDLE) then
       moveto(100)
    else
       moveto(highPlayPos())
@@ -92,7 +92,7 @@ function highPlay()
       if servrand == nil then
 		servrand = math.random()
       end
-      if naivetarget < 400 and timeto < 28 + servrand then
+      if naivetarget < CONST_FIELD_MIDDLE and timeto < 28 + servrand then
 		jump()
       end
    end
@@ -100,7 +100,7 @@ end
 
 
 function lowPlay()
-   if (target > 400) then
+   if (target > CONST_FIELD_MIDDLE) then
       moveto(100)
    else
       moveto(target)

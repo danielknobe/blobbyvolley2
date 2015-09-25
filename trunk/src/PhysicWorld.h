@@ -60,7 +60,8 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		bool blobHitGround(PlayerSide player) const;
 
 		// Important: This assumes a fixed framerate of 60 FPS!
-		void step(const PlayerInput& leftInput, const PlayerInput& rightInput, bool isBallValid, bool isGameRunning);
+		void step(const PlayerInput& leftInput, const PlayerInput& rightInput,
+					bool isBallValid, bool isGameRunning);
 
 		// gets the physic state
 		PhysicState getState() const;
@@ -81,6 +82,8 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 
 		// Detect and handle ball to blobby collisions
 		bool handleBlobbyBallCollision(PlayerSide player);
+		// calculate ball impacts vs wall, ground and net
+		void handleBallWorldCollisions();
 
 		Vector2 mBlobPosition[MAX_PLAYERS];
 		Vector2 mBallPosition;

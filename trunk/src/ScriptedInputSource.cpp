@@ -58,6 +58,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	bool debug = config->getBool("bot_debug");
 	lua_pushboolean(mState, debug);
 	lua_setglobal(mState, "__DEBUG");
+	lua_pushinteger(mState, mSide);
+	lua_setglobal(mState, "__SIDE");
 
 	openScript("api");
 	openScript("bot_api");
@@ -93,9 +95,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	lua_setglobal(mState, "__WANT_RIGHT");
 	lua_pushboolean(mState, false);
 	lua_setglobal(mState, "__WANT_JUMP");
-
-	lua_pushinteger(mState, mSide);
-	lua_setglobal(mState, "__SIDE");
 
 	if (getMatch() == 0)
 	{

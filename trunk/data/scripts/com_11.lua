@@ -47,7 +47,7 @@ function OnGame()
 		moveto(135) --Dann auf Standartposition warten
 		generatenaechsterBallSchmettern() --Angriffsstaerke neu berechnen
 	else
-		if (targetNetz > CONST_BALL_LEFT_NET - 10) then --Bei Netzroller einfach schmettern
+		if (targetNetz > CONST_BALL_LEFT_NET - 10) and targetNetz ~= math.huge then --Bei Netzroller einfach schmettern
 			naechsterBallSchmettern = true
 		end
 		
@@ -61,7 +61,7 @@ function OnGame()
 			end
 			return
 		end
-
+		
 		moveto(target)
 	end
 end
@@ -107,9 +107,7 @@ function generatenaechsterBallSchmettern()
 end
 
 function estimImpact(destY) -- erlaubt ein besseres Estimate mit ein paar unbeding nötigen Angaben
-    local time1 = ball_time_to_y(destY)
-    local resultX, hit, estimbspeedx = estimx(time1)
-	return resultX, estimbspeedx
+	return estimate_x_at_y(destY)
 end
 
 function jumpto (y)
