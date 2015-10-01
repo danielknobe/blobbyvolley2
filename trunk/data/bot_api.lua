@@ -153,6 +153,20 @@ function blob_time_to_x (destination)
 	return math.abs(posx() - destination) / CONST_BLOBBY_SPEED
 end
 
+-- checks whether a certain position can be reached by the blob in a certain time frame
+-- currently, this function assumes that the blob is standing on the ground.
+function can_blob_reach( time, blobx, posx, posy )
+	local minx = blobx - CONST_BLOBBY_SPEED * time
+	local maxx = blobx + CONST_BLOBBY_SPEED * time
+	local maxy = CONST_BLOBBY_GROUND_HEIGHT + CONST_BLOBBY_JUMP * time + CONST_BLOBBY_GRAVITY/2 * time^2
+	local vel = CONST_BLOBBY_JUMP + CONST_BLOBBY_GRAVITY * time
+	if vel < 0 then
+		maxy = CONST_BLOBBY_MAX_JUMP
+	end
+	
+	return minx < posx and posx < maxx and posy < maxy
+end
+
 -- calculates the time the ball needs from pos to destination
 function ball_time_to_y( destination, posx, posy, velx, vely )
 	posy = posy or bally()

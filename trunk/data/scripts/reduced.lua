@@ -15,10 +15,6 @@ naivetarget = 0
 estimbspeedx = 0
 servrand = nil
 
--- Konstanten
--- TODO calculate this from constants
-CONST_BLOBBY_MAXJUMP = 393.625
-
 function OnServe(ballready)
    if servrand == nil then
       servrand = math.random()
@@ -108,7 +104,7 @@ function lowPlay()
 end
 
 function estimImpactHigh()
-	return estimImpact(CONST_BLOBBY_MAXJUMP - 25)
+	return estimImpact(CONST_BLOBBY_MAX_JUMP - 25)
 end
 
 function estimImpactLow()

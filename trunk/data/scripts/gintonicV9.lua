@@ -15,9 +15,6 @@ CT_WaitCounter = 0
 CT_WaitName = ""
 CT_WaitMoveTo = 0
 
--- constants
-blobbymaxjump = 393.625
-
 function Wait(name, time, moveto)
 	if (CT_WaitName == name) then
 		if (CT_WaitCounter == 0) then
@@ -75,9 +72,9 @@ end
 function OnGame()
         ResetWait()
         CT_ServeIndex = 0
-        local timeJump = timeToHitHeight(blobbymaxjump, 20)
+        local timeJump = timeToHitHeight(CONST_BLOBBY_MAX_JUMP, 20)
 		local timeGround = timeToHitHeight(CONST_BALL_BLOBBY_HEAD, 40)
-        local timeBlock = timeToOppSmash(blobbymaxjump)
+        local timeBlock = timeToOppSmash(CONST_BLOBBY_MAX_JUMP)
         local estimhx = estimx(timeJump)
         local estimGround = estimx(timeGround)
         local estimBlock = estimx(timeBlock)
