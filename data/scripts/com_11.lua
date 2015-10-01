@@ -9,10 +9,6 @@
 -- Flags und runners
 naechsterBallSchmettern = true -- evtl Variablennamen wechseln
 
-
--- Weltkonstanten
-CONST_BLOBBY_MAXJUMP = 393.625
-
 -- Charakter
 CONST_ANGRIFFSGRUNDWERT_MIN = 30
 CONST_ANGRIFFSGRUNDWERT_MAX = 55
@@ -51,7 +47,7 @@ function OnGame()
 			naechsterBallSchmettern = true
 		end
 		
-		local targetJump, targetspeed = estimImpact(CONST_BLOBBY_MAXJUMP) --X Ziel in Schmetterhoehe
+		local targetJump, targetspeed = estimImpact(CONST_BLOBBY_MAX_JUMP) --X Ziel in Schmetterhoehe
 
 		if naechsterBallSchmettern then
 			if (targetspeed < 2) then
@@ -68,7 +64,7 @@ end
 
 
 function sprungattacke(p_angriffsstaerke, targetJump)
-	if (opptouchable(balltimetoy(CONST_BLOBBY_MAXJUMP))) then
+	if (opptouchable(balltimetoy(CONST_BLOBBY_MAX_JUMP))) then
 		moveto (CONST_FIELD_MIDDLE)
 		jumpto (383)
 	else
