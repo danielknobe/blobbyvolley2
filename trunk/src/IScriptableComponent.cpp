@@ -87,6 +87,9 @@ void IScriptableComponent::setGameConstants()
 	setLuaGlobal("CONST_BLOBBY_JUMP", BLOBBY_JUMP_ACCELERATION);
 	setLuaGlobal("CONST_BLOBBY_BODY_RADIUS", BLOBBY_LOWER_RADIUS);
 	setLuaGlobal("CONST_BLOBBY_HEAD_RADIUS", BLOBBY_UPPER_RADIUS);
+	setLuaGlobal("CONST_BLOBBY_HEAD_OFFSET", BLOBBY_UPPER_SPHERE);
+	setLuaGlobal("CONST_BLOBBY_BODY_OFFSET", -BLOBBY_LOWER_SPHERE);
+	setLuaGlobal("CONST_BALL_HITSPEED", BALL_COLLISION_VELOCITY);
 	setLuaGlobal("CONST_BLOBBY_HEIGHT", BLOBBY_HEIGHT);
 	setLuaGlobal("CONST_BLOBBY_GRAVITY", -GRAVITATION);
 	setLuaGlobal("CONST_BLOBBY_SPEED", BLOBBY_SPEED);
@@ -264,6 +267,7 @@ int get_serving_player( lua_State* state )
 
 int simulate_steps( lua_State* state )
 {
+	/// \todo should we gather and return all events that happen to the ball on the way?
 	PhysicWorld* world = getWorld( state );
 	// get the initial ball settings
 	lua_checkstack(state, 5);
@@ -287,6 +291,58 @@ int simulate_steps( lua_State* state )
 	ret += lua_pushvector(state, world->getBallVelocity(), VectorType::VELOCITY);
 	return ret;
 }
+
+int simulate_until(lua_State* state)
+{
+	/// \todo should we gather and return all events that happen to the ball on the way?
+	PhysicWorld* world = getWorld( state );
+	// get the initial ball settings
+	lua_checkstack(state, 6);
+	float x = lua_tonumber( state, 1);
+	float y = lua_tonumber( state, 2);
+	float vx = lua_tonumber( state, 3);
+	float vy = lua_tonumber( state, 4);
+	std::string axis = lua_tostring( state, 5 );
+	const float coordinate = lua_tonumber( state, 6 );
+	lua_pop( state, 6 );
+
+	const float ival = axis == "x" ? x : y;
+	if(axis != "x" && axis != "y")
+	{
+		lua_pushstring(state, "invalid condition specified: choose either 'x' or 'y'");
+		lua_error(state);
+	}
+	const bool init = ival < coordinate;
+
+	// setup the world
+	Vector2 v{vx, -vy};
+	world->setBallPosition( Vector2{x, 600 - y} );
+	world->setBallVelocity( Vector2{vx, -vy});
+
+	int steps = 0;
+	while(coordinate != ival && steps < 75 * 5)
+	{
+		steps++;
+		// set ball valid to false to ignore blobby bounces
+		world->step(PlayerInput(), PlayerInput(), false, true);
+		// check for the condition
+		auto pos = world->getBallPosition();
+		float v = axis == "x" ? pos.x : 600 - pos.y;
+		if( (v < coordinate) != init )
+			break;
+	}
+	// indicate failure
+	if(steps == 75 * 5)
+		steps = -1;
+
+	lua_pushinteger(state, steps);
+	int ret = 1;
+	ret += lua_pushvector(state, world->getBallPosition(), VectorType::POSITION);
+	ret += lua_pushvector(state, world->getBallVelocity(), VectorType::VELOCITY);
+	return ret;
+}
+
+
 int lua_print(lua_State* state)
 {
 	int count = lua_gettop(state);
@@ -317,6 +373,7 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "is_game_running", get_game_running);
 	lua_register(mState, "get_serving_player", get_serving_player);
 	lua_register(mState, "simulate", simulate_steps);
+	lua_register(mState, "simulate_until", simulate_until);
 
 	#ifndef NDEBUG
 	// only enable this function in debug builds.

@@ -155,6 +155,18 @@ function blob_time_to_x (destination)
 	return math.abs(posx() - destination) / CONST_BLOBBY_SPEED
 end
 
+function blob_time_to_y (destination) 
+	-- TODO allow specifying whether upward or downward!
+	-- TODO error handling
+	local blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
+	local y = posy()
+	grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
+	time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	timemin = math.min(time1,time2)
+	return timemin
+end
+
 -- checks whether a certain position can be reached by the blob in a certain time frame
 -- currently, this function assumes that the blob is standing on the ground.
 function can_blob_reach( time, blobx, posx, posy )
@@ -205,29 +217,31 @@ end
 -- really useful estimate functions
 function estimate_x_at_y(height, posx, posy, velx, vely, downward)
 	downward = downward or true
+	posx = posx or ballx()
+	velx = velx or bspeedx()
+	posy = posy or bally()
+	vely = vely or bspeedy()
 
+	-- we just use this as an early out to prevent needless calculation.
+	-- what about the ball hitting the net top on its way down. might 
+	-- make it possible to reach the destined hight.
 	local time, time2 = ball_time_to_y(height, posx, posy, velx, vely)
 	
 	-- check that we found a valid solution
 	if time == math.huge then
-		return math.huge, math.huge, math.huge
+		return math.huge, math.huge, math.huge, math.huge, math.huge
 	end
 	
-	-- if we want to catch the ball on its trip downward, check if we need to use the second time
-	if downward and time2 > 0 then
-		time = time2
+	time, posx, posy, velx, vely = simulate_until( posx, posy, velx, vely, "y", height )
+
+	if vely > 0 and downward then
+		local ot = time + 1
+		posx, posy, velx, vely = simulate(1, posx, posy, velx, vely)
+		time, posx, posy, velx, vely = simulate_until( posx, posy, velx, vely, "y", height )
+		time = time + ot
 	end
 	
-	-- now, the actual estimation
-	posx, posy, velx, vely = estimate(time, posx, posy, velx, vely)
-	-- this works, because the only possible change to the estimated time
-	-- can happen at the net sphere, and that only increases time!
-	if math.abs( posy - height ) > 10  then
---		print("recurse", height, posx, posy, velx, vely)
-		posx, velx, t = estimate_x_at_y(height, posx, posy, velx, vely)
-		return posx, velx, t + time
-	end
-	return posx, velx, time
+	return posx, velx, time, posy, vely
 end
 
 ---------------------------------------------------------------------------------------------
@@ -235,6 +249,8 @@ end
 -- this function is called every game step from the C++ api
 __lastBallSpeed = nil
 function __OnStep()
+	ActiveMode = "game"
+
 	__PERF_ESTIMATE_COUNTER = 0 -- count the calls to estimate!
 	__bx, __by, __bvx, __bvy = __balldata()
 	local original_bvx = __bvx
@@ -301,8 +317,8 @@ function __OnStep()
 				end
 			end
 			
-			--set_ball_data(404.71929931641, 428.68881225586, -11.259716033936, 6.7393469810486)
-			--set_blob_data(0, 50, 144.5, 0, 0)
+			--set_ball_data(587.4,415,-12.62, 3.58)
+			--set_blob_data(0, 360, 360, 0, 0)
 			--print( estimx( ) )
 			
 			if OnOpponentServe then
