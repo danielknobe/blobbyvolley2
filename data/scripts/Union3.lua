@@ -100,7 +100,7 @@ function decide()
 	ActiveFunction = best_fun['act']
 	best_fun['frq'] = best_fun['frq'] + 1
 	
-	print("decide", best_fun['name'], best_score)
+	print("decide", best_fun['name'], best_score, ballx(), bally(), bspeedx(), bspeedy())
 	
 	-- track decsions to debug bot
 	OldDecisions[3] = OldDecisions[2]
@@ -142,7 +142,7 @@ function std45deg_d(funcno)		  	--plays ball in the air at height maxjump with 4
 	
 	--print("45", targetx, velx, balltime, blobtime)
 	if targetx ~= math.huge and velx <= 3 and balltime >= blobtime and not launched() then
-		return math.min((10^(-math.abs(velx))+1),1)*85
+		return math.min(10^(-math.abs(velx)),1)*(70 + math.random() * 30)
 	else
 		return -1
 	end
@@ -213,7 +213,7 @@ function takelow_d() --Ballannahme ohne Sprung zum Stellen (bspeedx()=0) selten 
 	
 	-- if we have some time buffer, it is better
 	if balltime > blobtime + 5 then
-		return 2
+		return 2 + math.random()
 	else
 		return 1
 	end
@@ -233,6 +233,109 @@ function takelow_a() --Ballannahme ohne Sprung zum Stellen (bspeedx()=0) selten 
 end
 
 register("takelow", takelow_d, takelow_a, {"game"})
+
+-- -------------------------------------------------------------------------------------------------------------
+--		low play: plays the ball to the other side 
+
+function lowplay_d() 
+	-- check that ball is reachable
+	local estimpos = estimate_x_at_y( CONST_BALL_BLOBBY_HEAD )
+	-- since we want to play the ball directly over the net, we need some space
+	if ( estimpos > CONST_BALL_LEFT_NET - 2 * CONST_BALL_RADIUS) then
+		return -1
+	end
+	
+	-- check that I have enough time to get the ball, in the worst case even barely
+	local blobtime = blob_time_to_x( estimpos )
+	local balltime = ball_time_to_y( CONST_BALL_BLOBBY_HEAD )
+	if balltime < blobtime + 5 then
+		return -1
+	end
+	
+	-- if we have some time buffer, it is better
+	return 1 + (50 + math.random() * 30)*(1 - estimpos / CONST_FIELD_MIDDLE)
+end
+
+function lowplay_a()
+	local target, v, t, py, vy = estimate_x_at_y( CONST_BALL_BLOBBY_HEAD )
+	if target == math.huge then
+		target, py, v, vy = estimate(1)
+		t = 1
+	end
+	moveto ( target )
+	-- if we are almost there, think about careful aiming
+	if t < 10 and math.abs(posx() - target) < 5 * CONST_BLOBBY_SPEED then
+		local tf = function(bx, by, vx, vy)
+			if vx < 0 then return -1 end
+			local aim = estimate_x_at_y(CONST_BALL_BLOBBY_HEAD, bx, by, vx, vy)
+			--print(aim, bx, by, vx, vy)
+			if aim < CONST_BALL_RIGHT_NET then
+				return -1
+			end
+			
+			-- estimate whether the ball will cross the net safely
+			local ttn = (CONST_FIELD_MIDDLE - bx) / vx
+			local yan = by + 0.5 * ttn^2 * CONST_BALL_GRAVITY + ttn * vy
+			if yan < CONST_BALL_TOP_NET + CONST_BALL_RADIUS then
+				return -1
+			end
+			
+			-- number of steps the enemy needs to get to the ball
+			local getsteps = math.abs(aim - oppx())/CONST_BLOBBY_SPEED
+			local bsteps = math.abs(vy / CONST_BALL_GRAVITY)
+			return 2 * bsteps / getsteps + math.max(0, getsteps - bsteps)
+		end
+		-- correctly round time to get full step ball coordinates
+		print(py, vy)
+		local ac, score = aim(posx(), posy(), target, py, tf, math.ceil(t))
+		if ac then
+			moveto(posx() + CONST_BLOBBY_SPEED * ac)
+		end
+	end
+end
+
+register("lowplay", lowplay_d, lowplay_a, {"game"})
+
+-- block function
+function block_d()
+	if bspeedx() > 0 then
+		return -1
+	end
+	
+	-- check when ball crosses net
+	local time, bx, by, velx, vely = simulate_until( ballx(), bally(), bspeedx(), bspeedy(), "x", CONST_FIELD_MIDDLE )
+	
+	if time < 0 or by < CONST_BALL_TOP_NET then
+		return -1
+	end
+	
+	-- allow for an additional five frames after net passage to catch the ball
+	if not can_blob_reach(time+5, posx(), bx, by) then
+		return -1
+	end
+	
+	local owntime = blob_time_to_x( CONST_FIELD_MIDDLE - CONST_BLOBBY_BODY_RADIUS )
+	local posscore = math.max(0, 5 - (by - CONST_BALL_TOP_NET) / CONST_BALL_RADIUS) * 5
+	local velscore = 125 / (math.abs(vely) + 5)
+	local ecatchbonus = 0
+	if not can_blob_reach(time, oppx(), bx, by) then
+		ecatchbonus = 10
+	end
+	
+	-- todo incorporate estimates about enemy blocking etc.
+	
+	return 1 + (posscore + velscore) * (1 + math.random()) + ecatchbonus
+end
+
+function block_a()
+	local time, bx, by, velx, vely = simulate_until( ballx(), bally(), bspeedx(), bspeedy(), "x", CONST_FIELD_MIDDLE )
+	moveto ( CONST_FIELD_MIDDLE )
+	if blob_time_to_y(by) <= time + 1 or launched() then
+		jump()
+	end
+end
+
+register("block", block_d, block_a, {"game"})
 
 -- wait function
 function wait_d() -- decides whether wait is a viable option: only whenn ball will hit ground in opponents
@@ -305,8 +408,8 @@ function emergency_a() -- try to catch the ball by any means necessary
 	-- ok, we need to catch the ball somewhere in flight!
 	-- first, we can estimate the time the ball we need
 	-- at least to reach the ball
-	local time_x_dist = math.abs((posx() - ballx())/(math.abs(bspeedx) + CONST_BLOBBY_SPEED))
-	local bx, bx, vx, vy = estimate(time_x_dist)
+	local time_x_dist = math.abs((posx() - ballx())/(math.abs(bspeedx()) + CONST_BLOBBY_SPEED))
+	local bx, by, vx, vy = estimate(time_x_dist)
 	-- starting from here, we can find out if the ball is within our reach
 	for i = 0,50,2 do
 		if can_blob_reach(time_x_dist + i, posx(), bx, by) then
@@ -376,4 +479,50 @@ function blobtimetoy (y) --Zeit, die ein Blob braucht, um eine Y Position zu err
 	return math.max(time1,time2)
  end
  return timemin
+end
+
+-- aiming submodule --
+function simulateBallBlobbyContact(blobx, bloby, ballx, bally)
+	local dx = ballx - blobx
+	local dy1 = bally - bloby + CONST_BLOBBY_BODY_OFFSET
+	local dy2 = bally - bloby + CONST_BLOBBY_HEAD_OFFSET
+	
+	if dx^2 + dy1^2 < (CONST_BALL_RADIUS + CONST_BLOBBY_BODY_RADIUS)^2 then
+		local l = math.sqrt(dx^2 + dy1^2)
+		return true, CONST_BALL_HITSPEED * dx / l, CONST_BALL_HITSPEED * dy1 / l
+	end
+	
+	if dx^2 + dy2^2 < (CONST_BALL_RADIUS + CONST_BLOBBY_HEAD_RADIUS)^2 then
+		local l = math.sqrt(dx^2 + dy2^2)
+		return true, CONST_BALL_HITSPEED * dx / l, CONST_BALL_HITSPEED * dy2 / l
+	end
+	
+	return false
+end
+
+-- this function finds out how the blobby has to move to hit the ball such that it fulfills the target condition best
+-- note that target has to be a function of (ballx, bally, bspeedx, bspeedy), that returns a score. bloby and ballyalready in a position 
+-- have to be chosen such that we are where an impact can happen.
+function aim( blobx, bloby, ballx, bally, target, maxt )
+	assert( bally ~= nil )
+	maxt = maxt or 5
+	-- limit calculation
+	if maxt > 10 then
+		maxt = 10
+	end
+	
+	local best = -1
+	local optimal = nil
+	for dx = -maxt, maxt do
+		local hit, vx, vy = simulateBallBlobbyContact(blobx + dx * CONST_BLOBBY_SPEED, bloby, ballx, bally)
+		if hit then
+			local score = target(ballx, bally, vx, vy)
+			if score > best then
+				best = score
+				optimal = dx
+			end
+		end
+	end
+	
+	return optimal, best
 end
