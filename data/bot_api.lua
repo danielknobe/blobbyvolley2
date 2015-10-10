@@ -106,6 +106,8 @@ function moveto(target)
 		left()
 		return false
 	else
+		__WANT_LEFT  = false
+		__WANT_RIGHT = false
 		return true
 	end
 end

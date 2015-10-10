@@ -69,6 +69,10 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		// sets a new physic state
 		void setState(const PhysicState& state);
 
+		// helper functions
+		/// this function calculates whether two circles overlap.
+		static bool circleCircleCollision(const Vector2& pos1, float rad_1, const Vector2& pos2, float rad_2);
+
 	private:
 		// Blobby animation methods
 		void blobbyStartAnimation(PlayerSide player);

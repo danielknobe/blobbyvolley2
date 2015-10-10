@@ -71,20 +71,23 @@ bool PhysicWorld::blobHitGround(PlayerSide player) const
 
 bool PhysicWorld::playerTopBallCollision(int player) const
 {
-	if (Vector2(mBallPosition, Vector2(mBlobPosition[player].x,	mBlobPosition[player].y - BLOBBY_UPPER_SPHERE)).length()
-							<= BALL_RADIUS + BLOBBY_UPPER_RADIUS)
-		return true;
-
-	return false;
+	Vector2 blobpos{mBlobPosition[player].x, mBlobPosition[player].y - BLOBBY_UPPER_SPHERE};
+	return circleCircleCollision( mBallPosition, BALL_RADIUS,
+								blobpos, BLOBBY_UPPER_RADIUS );
 }
 
 inline bool PhysicWorld::playerBottomBallCollision(int player) const
 {
-	if (Vector2(mBallPosition, Vector2(mBlobPosition[player].x,	mBlobPosition[player].y + BLOBBY_LOWER_SPHERE)).length()
-							<= BALL_RADIUS + BLOBBY_LOWER_RADIUS)
-		return true;
+	Vector2 blobpos{mBlobPosition[player].x, mBlobPosition[player].y + BLOBBY_LOWER_SPHERE};
+	return circleCircleCollision( mBallPosition, BALL_RADIUS,
+								blobpos, BLOBBY_LOWER_RADIUS );
+}
 
-	return false;
+inline bool PhysicWorld::circleCircleCollision(const Vector2& pos1, float rad1, const Vector2& pos2, float rad2)
+{
+	Vector2 distance = pos1 - pos2;
+	float mxdist = rad1 + rad2;
+	return distance.lengthSQ() < mxdist * mxdist;
 }
 
 float PhysicWorld::getBallRotation() const
