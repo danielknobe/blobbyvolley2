@@ -83,14 +83,6 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		void setGameSpeed(int fps);
 
 	private:
-
-		void writeFileHeader(boost::shared_ptr<GenericOut>, uint32_t checksum) const;
-		void writeReplayHeader(boost::shared_ptr<GenericOut>) const;
-		void writeAttributesSection(boost::shared_ptr<GenericOut>) const;
-		void writeJumpTable(boost::shared_ptr<GenericOut>) const;
-		void writeInputSection(boost::shared_ptr<GenericOut>) const;
-		void writeStatesSection(boost::shared_ptr<GenericOut>) const;
-
 		std::vector<uint8_t> mSaveData;
 		std::vector<ReplaySavePoint> mSavePoints;
 
