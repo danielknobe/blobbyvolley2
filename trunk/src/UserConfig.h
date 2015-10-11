@@ -68,7 +68,7 @@ class UserConfig: public IUserConfigReader, public ObjectCounter<UserConfig>
 
 		std::vector<UserConfigVar*> mVars;
 		bool mChangeFlag;
-		UserConfigVar* findVarByName(const std::string& Name) const;
+		UserConfigVar* findVarByName(const std::string& name) const;
 		UserConfigVar* checkVarByName(const std::string& name) const;
 		UserConfigVar* createVar(const std::string& name, const std::string& value);
 };

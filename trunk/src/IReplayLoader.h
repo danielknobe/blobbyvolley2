@@ -127,5 +127,5 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 
 	private:
 		/// \todo add documentation
-		virtual void initLoading(boost::shared_ptr<GenericIn> file_handle, int minor_version) = 0;
+		virtual void initLoading(std::string filename) = 0;
 };

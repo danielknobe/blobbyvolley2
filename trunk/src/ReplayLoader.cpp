@@ -30,91 +30,48 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/crc.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include "tinyxml/tinyxml.h"
+
+#include "raknet/BitStream.h"
 
 #include "InputSource.h"
 #include "FileRead.h"
 #include "GenericIO.h"
+#include "base64.h"
 
 /* implementation */
 IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 {
-	// do some generic loading stuff:
-	// first, try to open the file
-	boost::shared_ptr<FileRead> file = boost::make_shared<FileRead>(filename);
-
-	// then, check the file length. We need at least 12 bytes.
-	int fileLength = file->length();
-	if (fileLength < 12)
-	{
-		/// \todo add some error handling here!
-		return 0;
-	}
-
-	// check if file contains a valid BV2 header
-	char header[4];
-	file->readRawBytes(header, sizeof(header));
-	if (memcmp(&header, &validHeader, 4) != 0)
-	{
-		/// \todo add some error handling here!
-		return 0;
-	}
-
-	// now, find out which version we need!
-	char version[4];
-	file->readRawBytes(version, sizeof(version));
-
-	// now we got our version number.
-	int major = version[1];
-	int minor = version[2];
-
-	// read checksum
-	uint32_t checksum;
-	file->readRawBytes((char*)&checksum, 4);
-
-	// calculate reference checksum
-	uint32_t refchecksum = file->calcChecksum(file->tell());
-
-	if(refchecksum != checksum && major > 0 && minor > 0)
-	{
-		BOOST_THROW_EXCEPTION (ChecksumException(file->getFileName(), checksum, refchecksum));
-	}
-
-	IReplayLoader* loader = createReplayLoader(major);
-	boost::shared_ptr<GenericIn> in = createGenericReader(file);
-	loader->initLoading(in, minor);
+	IReplayLoader* loader = createReplayLoader(0);
+	loader->initLoading(filename);
 
 	return loader;
 }
-
-/***************************************************************************************************
-			              R E P L A Y   L O A D E R    V 0.1
-***************************************************************************************************/
-
-// That version used different physics than we use now, and it does not include any save-points that would
-// allow to extrapolate the match, so we could not play these matches, even if we had a loader for them
 
 //
 // -------------------------------------------------------------------------------------------------
 //
 
 /***************************************************************************************************
-			              R E P L A Y   L O A D E R    V 1.x
+			              R E P L A Y   L O A D E R    V 2.x
 ***************************************************************************************************/
 
 
-/*! \class ReplayLoader_V1X
-	\brief Replay Loader V 1.x
-	\details Replay Loader for 1.0 and 1.1 replays
+/*! \class ReplayLoader_V2X
+	\brief Replay Loader V 2.x
+	\details Replay Loader for 2.0 replays
 */
-class ReplayLoader_V1X: public IReplayLoader
+class ReplayLoader_V2X: public IReplayLoader
 {
 	public:
-		ReplayLoader_V1X() {};
+		ReplayLoader_V2X() = default;
 
-		virtual ~ReplayLoader_V1X() { };
+		virtual ~ReplayLoader_V2X() { };
 
-		virtual int getVersionMajor() const { return 1; };
-		virtual int getVersionMinor() const { return 1; };
+		virtual int getVersionMajor() const { return 2; };
+		virtual int getVersionMinor() const { return 0; };
 
 		virtual std::string getPlayerName(PlayerSide player) const
 		{
@@ -236,109 +193,99 @@ class ReplayLoader_V1X: public IReplayLoader
 		}
 
 	private:
-		virtual void initLoading(boost::shared_ptr<GenericIn> file, int minor_version)
+		void initLoading(std::string filename) override
 		{
-			mReplayFormatVersion = minor_version;
-			mSavePoints.resize(0);
-			/// \todo check if minor_version < getVersionMinor, otherwise issue a warning
+			boost::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
 
-			// we start with the replay header.
-			uint32_t header_size, attr_ptr , attr_size ,
-					jptb_ptr, jptb_size , data_ptr , data_size,
-					states_ptr, states_size;
-
-			file->uint32(header_size);
-			file->uint32(attr_ptr);
-			file->uint32(attr_size);
-			file->uint32(jptb_ptr);
-			file->uint32(jptb_size);
-			file->uint32(data_ptr);
-			file->uint32(data_size);
-
-			// legacy support for 1.0 RC 1 replays
-			if(minor_version != 0)
+			if (configDoc->Error())
 			{
-				file->uint32(states_ptr);
-				file->uint32(states_size);
+				std::cerr << "Warning: Parse error in " << filename << "!" << std::endl;
+				throw( std::runtime_error("") );
 			}
 
-			// now, we read the attributes section
-			//  jump over the attr - marker
-			file->seek(attr_ptr + 4);
-			// copy attributes into buffer
+			TiXmlElement* userConfigElem = configDoc->FirstChildElement("replay");
+			if (userConfigElem == nullptr)
+				throw(std::runtime_error("No <replay> node found!"));
 
-			// read the attributes
-			file->uint32(mGameSpeed);
-			file->uint32(mGameDuration);
-			file->uint32(mGameLength);
-			file->uint32(mGameDate);
-
-			file->generic<Color> (mLeftColor);
-			file->generic<Color> (mRightColor);
-
-			if(minor_version != 0)
+			TiXmlElement* varElem = userConfigElem->FirstChildElement("version");
+			// the first element we find is expected to be the version
+			if(!varElem)
 			{
-				file->uint32(mLeftFinalScore);
-				file->uint32(mRightFinalScore);
-
-				file->string(mLeftPlayerName);
-				file->string(mRightPlayerName);
+				throw( std::runtime_error("") );
 			}
-			 else
+			else
 			{
-				mLeftPlayerName = "";
-
-				unsigned char c;
-				do
-				{
-					file->byte(c);
-					mLeftPlayerName += c;
-				} while(c);
-
-				mRightPlayerName = "";
-
-				do
-				{
-					file->byte(c);
-					mRightPlayerName += c;
-				} while(c);
+				const char* major = varElem->Attribute("major");
+				const char* minor = varElem->Attribute("minor");
+				if(!minor || !major)
+					throw(std::runtime_error(""));
+                assert(boost::lexical_cast<int>(major) == 2);
+                mReplayFormatVersion = boost::lexical_cast<int>(minor);
 			}
 
-			// now, read the raw data
-			file->seek(data_ptr + 8);		// jump over the dat marker and over the length value
-			/// \todo why do we set mBufferSize again? should we check if these two are identical
-			// read into buffer
-			std::cout << "read into buffer\n";
-			std::cout << "length: " << mGameLength << "   " << data_size << "\n";
-			mBuffer = boost::shared_array<char>(new char[data_size]);
-			file->array(mBuffer.get(), data_size);
-			mReplayOffset = 0;
 
-			// now read savepoints
-			if(minor_version != 0)
+			for (; varElem != nullptr; varElem = varElem->NextSiblingElement("var"))
 			{
-				file->seek(states_ptr + 4);		// jump over the sta marker
-				file->uint32(mSavePointsCount);
-				std::cout << "read " << mSavePointsCount << " savepoints\n";
-				mSavePoints.reserve(mSavePointsCount);
-				for(int i = 0; i < mSavePointsCount; ++i)
-				{
-					ReplaySavePoint sp;
-					file->generic<ReplaySavePoint>(sp);
-					mSavePoints.push_back(sp);
-				}
-			}
-			 else
-			{
-				mSavePointsCount = 0;
+				std::string name, value;
+				const char* c;
+				c = varElem->Attribute("name");
+				if (c)
+					name = c;
+				c = varElem->Attribute("value");
+				if (c)
+					value = c;
+
+				// find valid attribute
+				if( name == "game_speed" )
+					mGameSpeed = boost::lexical_cast<int>(value);
+				else if( name == "game_length" )
+					mGameLength = boost::lexical_cast<int>(value);
+				else if( name == "game_duration" )
+					mGameDuration = boost::lexical_cast<int>(value);
+				else if( name == "game_date" )
+					mGameDate = boost::lexical_cast<int>(value);
+				else if( name == "score_left" )
+					mLeftFinalScore = boost::lexical_cast<int>(value);
+				else if( name == "score_right" )
+					mRightFinalScore = boost::lexical_cast<int>(value);
+				else if( name == "name_left" )
+					mLeftPlayerName = value;
+				else if( name == "name_right" )
+					mRightPlayerName = value;
+				else if( name == "color_left" )
+					mLeftColor = Color(boost::lexical_cast<int>(value));
+				else if( name == "color_right" )
+					mRightColor = Color(boost::lexical_cast<int>(value));
 			}
 
-			/// \todo check that mSavePointsCount and states_size match
+			// now load buffer and savepoints
+			varElem = userConfigElem->FirstChildElement("input");
+			if(!varElem)
+				throw(std::runtime_error(""));
+			auto content = varElem->FirstChild();
+			if(!content)
+				throw(std::runtime_error(""));
 
+            mBuffer = decode(content->Value());
+
+            varElem = userConfigElem->FirstChildElement("states");
+			if(!varElem)
+				throw(std::runtime_error(""));
+			content = varElem->FirstChild();
+			if(!content)
+				throw(std::runtime_error(""));
+
+            // get save points
+            auto sp = decode( content->Value() );
+            RakNet::BitStream temp( (char*)sp.data(), sp.size(), false );
+			std::cout << temp.GetData() << "\n";
+			auto convert = createGenericReader(&temp);
+			std::cout << "HERE\n";
+			convert->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 		}
 
 
-		boost::shared_array<char> mBuffer;
+		std::vector<uint8_t> mBuffer;
 		uint32_t mReplayOffset;
 
 		std::vector<ReplaySavePoint> mSavePoints;
@@ -362,17 +309,5 @@ class ReplayLoader_V1X: public IReplayLoader
 
 IReplayLoader* IReplayLoader::createReplayLoader(int major)
 {
-	// we find a loader depending on major version
-	/// \todo throw, when version is too old
-	switch(major)
-	{
-		case 0:
-			break;
-		case 1:
-			return new ReplayLoader_V1X();
-			break;
-	}
-
-	// fallback
-	return 0;
+	return new ReplayLoader_V2X();
 }

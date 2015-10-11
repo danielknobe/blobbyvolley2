@@ -193,6 +193,8 @@
 		<Unit filename="src/UserConfig.cpp" />
 		<Unit filename="src/UserConfig.h" />
 		<Unit filename="src/Vector.h" />
+		<Unit filename="src/base64.cpp" />
+		<Unit filename="src/base64.h" />
 		<Unit filename="src/blobnet/Logger.hpp" />
 		<Unit filename="src/blobnet/adt/Queue.hpp" />
 		<Unit filename="src/blobnet/exception/HttpException.hpp" />
