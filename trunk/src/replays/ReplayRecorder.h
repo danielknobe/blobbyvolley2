@@ -29,9 +29,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/shared_ptr.hpp>
 
 #include "Global.h"
-#include "ReplayDefs.h"
+#include "ReplaySavePoint.h"
 #include "PlayerInput.h"
-#include "DuelMatchState.h"
 #include "BlobbyDebug.h"
 #include "GenericIOFwd.h"
 
@@ -74,6 +73,7 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 
 		// recording functions
 		void record(const DuelMatchState& input);
+
 		// saves the final score
 		void finalize(unsigned int left, unsigned int right);
 
@@ -91,13 +91,4 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		Color mPlayerColors[MAX_PLAYERS];
 		unsigned int mEndScore[MAX_PLAYERS];
 		unsigned int mGameSpeed;
-
-
-		// here we save the information needed to create the header
-		//  pointers  to replay sections
-		/// \todo this is ugly
-		mutable uint32_t attr_ptr;
-		mutable uint32_t jptb_ptr;
-		mutable uint32_t data_ptr;
-		mutable uint32_t states_ptr;
 };

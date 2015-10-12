@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL2/SDL.h>
 
 #include "Global.h"
+#include "ReplayDefs.h"
 #include "IReplayLoader.h"
 #include "PhysicState.h"
 #include "GenericIO.h"
@@ -44,25 +45,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "base64.h"
 
 /* implementation */
-ChecksumException::ChecksumException(std::string filename, uint32_t expected, uint32_t real)
-{
-	std::stringstream errorstr;
-
-	errorstr << "Error: Corrupted replay file: " << filename <<
-		std::endl << "real crc: " << real <<
-		" crc in file: " << expected;
-	error = errorstr.str();
-}
-
-ChecksumException::~ChecksumException() throw()
-{
-}
-
-const char* ChecksumException::what() const throw()
-{
-	return error.c_str();
-}
-
 VersionMismatchException::VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor)
 {
 	std::stringstream errorstr;
@@ -206,6 +188,8 @@ void ReplayRecorder::record(const DuelMatchState& state)
 	mEndScore[LEFT_PLAYER] = state.logicState.leftScore;
 	mEndScore[RIGHT_PLAYER] = state.logicState.rightScore;
 }
+
+
 
 void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& right)
 {
