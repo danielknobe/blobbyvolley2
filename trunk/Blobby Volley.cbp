@@ -159,20 +159,6 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="src/RenderManagerSDL.h" />
-		<Unit filename="src/ReplayDefs.h" />
-		<Unit filename="src/ReplayLoader.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/ReplayPlayer.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="src/ReplayPlayer.h" />
-		<Unit filename="src/ReplayRecorder.cpp" />
-		<Unit filename="src/ReplayRecorder.h" />
-		<Unit filename="src/ReplaySavePoint.cpp" />
-		<Unit filename="src/ReplaySavePoint.h" />
 		<Unit filename="src/ScriptedInputSource.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -383,6 +369,14 @@
 		<Unit filename="src/raknet/SingleProducerConsumer.h" />
 		<Unit filename="src/raknet/SocketLayer.cpp" />
 		<Unit filename="src/raknet/SocketLayer.h" />
+		<Unit filename="src/replays/ReplayDefs.h" />
+		<Unit filename="src/replays/ReplayLoader.cpp" />
+		<Unit filename="src/replays/ReplayPlayer.cpp" />
+		<Unit filename="src/replays/ReplayPlayer.h" />
+		<Unit filename="src/replays/ReplayRecorder.cpp" />
+		<Unit filename="src/replays/ReplayRecorder.h" />
+		<Unit filename="src/replays/ReplaySavePoint.cpp" />
+		<Unit filename="src/replays/ReplaySavePoint.h" />
 		<Unit filename="src/server/DedicatedServer.cpp" />
 		<Unit filename="src/server/DedicatedServer.h" />
 		<Unit filename="src/server/MatchMaker.cpp" />
