@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 #include "GenericIO.h"
 #include "base64.h"
+#include "ReplayDefs.h"
 
 /* implementation */
 IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)

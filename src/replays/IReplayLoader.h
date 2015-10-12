@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/shared_ptr.hpp>
 
 #include "Global.h"
-#include "ReplayDefs.h"
+#include "ReplaySavePoint.h"
 #include "BlobbyDebug.h"
 #include "GenericIOFwd.h"
 
