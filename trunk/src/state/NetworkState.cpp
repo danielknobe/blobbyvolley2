@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkState.h"
 #include "NetworkMessage.h"
 #include "TextManager.h"
-#include "ReplayRecorder.h"
+#include "replays/ReplayRecorder.h"
 #include "DuelMatch.h"
 #include "IMGUI.h"
 #include "SoundManager.h"

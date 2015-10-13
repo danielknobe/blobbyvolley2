@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <boost/make_shared.hpp>
 
-#include "ReplayRecorder.h"
+#include "replays/ReplayRecorder.h"
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
