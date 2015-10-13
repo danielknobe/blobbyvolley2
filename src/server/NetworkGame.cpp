@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 #include "NetworkMessage.h"
-#include "ReplayRecorder.h"
+#include "replays/ReplayRecorder.h"
 #include "FileRead.h"
 #include "FileSystem.h"
 #include "GenericIO.h"
