@@ -61,7 +61,7 @@ void ReplayState::loadReplay(const std::string& file)
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mMatch.reset(new DuelMatch(false, DUMMY_RULES_NAME));
+		mMatch.reset(new DuelMatch(false, FALLBACK_RULES_NAME));
 
 		SoundManager::getSingleton().playSound(
 				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
@@ -76,12 +76,7 @@ void ReplayState::loadReplay(const std::string& file)
 			);
 
 	//}
-	/*catch (ChecksumException& e)
-	{
-		delete mReplayRecorder;
-		mReplayRecorder = 0;
-		mChecksumError = true;
-	}
+	/*
 	catch (VersionMismatchException& e)
 	{
 		delete mReplayRecorder;

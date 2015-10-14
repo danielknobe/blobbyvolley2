@@ -319,24 +319,25 @@ void IGameLogic::onError(PlayerSide errorSide, PlayerSide serveSide)
 	mServingPlayer = serveSide;
 }
 
+
 // -------------------------------------------------------------------------------------------------
-// 	Dummy Game Logic
+// 	Fallback Game Logic
 // ---------------------
 
-class DummyGameLogic : public IGameLogic
+class FallbackGameLogic : public IGameLogic
 {
 	public:
-		DummyGameLogic(int stw ) : IGameLogic( stw )
+		FallbackGameLogic( int stw ) : IGameLogic( stw )
 		{
 		}
-		virtual ~DummyGameLogic()
+		virtual ~FallbackGameLogic()
 		{
 
 		}
 
 		virtual GameLogic clone() const
 		{
-			return GameLogic(new DummyGameLogic( getScoreToWin() ));
+			return GameLogic(new FallbackGameLogic( getScoreToWin() ));
 		}
 
 		virtual std::string getSourceFile() const
@@ -349,64 +350,6 @@ class DummyGameLogic : public IGameLogic
 			return "Blobby Volley 2 Developers";
 		}
 
-		virtual std::string getTitle() const
-		{
-			return DUMMY_RULES_NAME;
-		}
-
-	protected:
-
-		virtual PlayerSide checkWin() const
-		{
-			return NO_PLAYER;
-		}
-
-		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player)
-		{
-			return ip;
-		}
-
-		virtual void OnBallHitsPlayerHandler(PlayerSide side)
-		{
-		}
-
-		virtual void OnBallHitsWallHandler(PlayerSide side)
-		{
-		}
-
-		virtual void OnBallHitsNetHandler(PlayerSide side)
-		{
-		}
-
-		virtual void OnBallHitsGroundHandler(PlayerSide side)
-		{
-		}
-
-		virtual void OnGameHandler( const DuelMatchState& state )
-		{
-		}
-};
-
-
-// -------------------------------------------------------------------------------------------------
-// 	Fallback Game Logic
-// ---------------------
-
-class FallbackGameLogic : public DummyGameLogic
-{
-	public:
-		FallbackGameLogic( int stw ) : DummyGameLogic( stw )
-		{
-		}
-		virtual ~FallbackGameLogic()
-		{
-
-		}
-
-		virtual GameLogic clone() const
-		{
-			return GameLogic(new FallbackGameLogic( getScoreToWin() ));
-		}
 
 		virtual std::string getTitle() const
 		{
@@ -447,6 +390,15 @@ protected:
 			score( other_side(side), 1 );
 			onError( side, other_side(side) );
 		}
+
+		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player)
+		{
+			return ip;
+		}
+
+		virtual void OnBallHitsWallHandler(PlayerSide side)		{ };
+		virtual void OnBallHitsNetHandler(PlayerSide side)		{ };
+		virtual void OnGameHandler( const DuelMatchState& state ) { };
 };
 
 
@@ -747,18 +699,9 @@ int LuaGameLogic::luaIsGameRunning(lua_State* state)
 	return 1;
 }
 
-GameLogic createGameLogic()
-{
-	return GameLogic(new DummyGameLogic( 15 ));
-}
-
 GameLogic createGameLogic(const std::string& file, DuelMatch* match, int score_to_win )
 {
-	if(file == DUMMY_RULES_NAME)
-	{
-		return GameLogic(new DummyGameLogic( score_to_win ));
-	}
-		else if (file == FALLBACK_RULES_NAME)
+	if (file == FALLBACK_RULES_NAME)
 	{
 		return GameLogic(new FallbackGameLogic( score_to_win ));
 	}
