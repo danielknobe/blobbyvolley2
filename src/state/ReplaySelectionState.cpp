@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "FileSystem.h"
-#include "IReplayLoader.h"
+#include "replays/IReplayLoader.h"
 
 
 /* implementation */

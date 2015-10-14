@@ -236,7 +236,6 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		Clock mClock;
 };
 
-extern const std::string DUMMY_RULES_NAME;
 extern const std::string FALLBACK_RULES_NAME;
 
 // functions for creating a game logic object
