@@ -81,6 +81,7 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		void setPlayerNames(const std::string& left, const std::string& right);
 		void setPlayerColors(Color left, Color right);
 		void setGameSpeed(int fps);
+		void setGameRules( std::string rules );
 
 	private:
 		std::vector<uint8_t> mSaveData;
@@ -91,4 +92,5 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		Color mPlayerColors[MAX_PLAYERS];
 		unsigned int mEndScore[MAX_PLAYERS];
 		unsigned int mGameSpeed;
+		std::string mGameRules;
 };

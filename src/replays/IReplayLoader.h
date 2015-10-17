@@ -119,6 +119,9 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 		/// \param state[out] the read savepoint is written there
 		virtual void readSavePoint(int index, ReplaySavePoint& state) const = 0;
 
+		/// \brief get the rules script as a string
+		virtual std::string getRules() const = 0;
+
 	protected:
 		/// \brief protected constructor.
 		/// \details Create IReplayLoaders with createReplayLoader functions.
