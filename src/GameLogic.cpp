@@ -54,7 +54,7 @@ int lua_toint(lua_State* state, int index)
 const int SQUISH_TOLERANCE = 11;
 
 const std::string FALLBACK_RULES_NAME = "__FALLBACK__";
-const std::string DUMMY_RULES_NAME = "__DUMMY__";
+const std::string TEMP_RULES_NAME = "server_rules.lua";
 
 
 IGameLogic::IGameLogic( int stw )

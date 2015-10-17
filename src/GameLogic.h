@@ -237,6 +237,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 };
 
 extern const std::string FALLBACK_RULES_NAME;
+extern const std::string TEMP_RULES_NAME;
 
 // functions for creating a game logic object
 GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match, int score_to_win);
