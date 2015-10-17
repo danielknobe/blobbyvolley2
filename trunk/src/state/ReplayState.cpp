@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IUserConfigReader.h"
 #include "ReplaySelectionState.h"
 #include "InputManager.h"
+#include "FileWrite.h"
 
 /* implementation */
 
@@ -61,10 +62,12 @@ void ReplayState::loadReplay(const std::string& file)
 	//try
 	//{
 		mReplayPlayer->load(std::string("replays/" + file + ".bvr"));
-		mMatch.reset(new DuelMatch(false, FALLBACK_RULES_NAME));
+		FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
+		rulesFile.write(mReplayPlayer->getRules());
+		rulesFile.close();
+		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
 
-		SoundManager::getSingleton().playSound(
-				"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		SoundManager::getSingleton().playSound(	"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
 		mMatch->setPlayers(mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
 

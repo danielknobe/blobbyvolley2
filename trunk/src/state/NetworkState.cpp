@@ -109,7 +109,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rul
 	{
 		try
 		{
-			FileRead rulesFile("server_rules.lua");
+			FileRead rulesFile(TEMP_RULES_NAME);
 			ourChecksum = rulesFile.calcChecksum(0);
 			rulesFile.close();
 		}
@@ -279,10 +279,10 @@ void NetworkGameState::step_impl()
 					stream.Read(rulesString.get(), rulesLength);
 					// null terminate
 					rulesString[rulesLength] = 0;
-					FileWrite rulesFile("server_rules.lua");
+					FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
 					rulesFile.write(rulesString.get(), rulesLength);
 					rulesFile.close();
-					mMatch->setRules("server_rules.lua");
+					mMatch->setRules(TEMP_RULES_NAME);
 				}
 				else
 				{

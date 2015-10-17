@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 /// \brief class for repesenting 2d vectors
 /// \details e.g. positions, velocities.
@@ -244,4 +245,9 @@ inline bool operator > (const Vector2& v1, const Vector2& v2)
 			return true;
 	}
 	return false;
+}
+
+inline std::ostream& operator<<( std::ostream& stream, Vector2 v )
+{
+	return stream << "(" << v.x << ", " << v.y << ")";
 }
