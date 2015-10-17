@@ -67,6 +67,7 @@ LocalGameState::LocalGameState()
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
+	mRecorder->setGameRules( config->getString("rules") );
 }
 
 void LocalGameState::step_impl()

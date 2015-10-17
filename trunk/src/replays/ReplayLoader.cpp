@@ -125,6 +125,11 @@ class ReplayLoader_V2X: public IReplayLoader
 			return mGameDate;
 		};
 
+		virtual std::string getRules() const
+		{
+			return mRules;
+		}
+
 
 		virtual void getInputAt(int step, InputSource* left, InputSource* right)
 		{
@@ -259,29 +264,38 @@ class ReplayLoader_V2X: public IReplayLoader
 					mRightColor = Color(boost::lexical_cast<int>(value));
 			}
 
-			// now load buffer and savepoints
-			varElem = userConfigElem->FirstChildElement("input");
+			// load rules
+			varElem = userConfigElem->FirstChildElement("rules");
 			if(!varElem)
 				throw(std::runtime_error(""));
 			auto content = varElem->FirstChild();
 			if(!content)
 				throw(std::runtime_error(""));
 
-            mBuffer = decode(content->Value());
+			mRules = content->Value();
 
-            varElem = userConfigElem->FirstChildElement("states");
+			// now load buffer and savepoints
+			varElem = userConfigElem->FirstChildElement("input");
 			if(!varElem)
 				throw(std::runtime_error(""));
 			content = varElem->FirstChild();
 			if(!content)
 				throw(std::runtime_error(""));
 
-            // get save points
-            auto sp = decode( content->Value() );
-            RakNet::BitStream temp( (char*)sp.data(), sp.size(), false );
+			mBuffer = decode(content->Value());
+
+			varElem = userConfigElem->FirstChildElement("states");
+			if(!varElem)
+				throw(std::runtime_error(""));
+			content = varElem->FirstChild();
+			if(!content)
+				throw(std::runtime_error(""));
+
+			// get save points
+			auto sp = decode( content->Value() );
+			RakNet::BitStream temp( (char*)sp.data(), sp.size(), false );
 			std::cout << temp.GetData() << "\n";
 			auto convert = createGenericReader(&temp);
-			std::cout << "HERE\n";
 			convert->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 		}
 
@@ -303,6 +317,8 @@ class ReplayLoader_V2X: public IReplayLoader
 		unsigned int mGameDuration;
 		Color mLeftColor;
 		Color mRightColor;
+
+		std::string mRules;
 
 		unsigned char mReplayFormatVersion;
 };

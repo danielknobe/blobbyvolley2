@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 #include <ctime>
 
-#include <boost/crc.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
 
 #include "tinyxml/tinyxml.h"
 
@@ -111,7 +111,15 @@ void ReplayRecorder::save( boost::shared_ptr<FileWrite> file) const
 	writeAttribute(*file, "color_left", mPlayerColors[LEFT_PLAYER].toInt());
 	writeAttribute(*file, "color_right", mPlayerColors[RIGHT_PLAYER].toInt());
 
-	// bow comes the actual replay data
+	// write the game rules
+	file->write("\t<rules>\n");
+	std::string coded;
+	TiXmlBase::EncodeString(mGameRules, &coded);
+	file->write(coded);
+	file->write("\n\t</rules>\n");
+
+
+	// now comes the actual replay data
 	file->write("\t<input>\n");
 	std::string binary = encode(mSaveData, 80);
 	file->write(binary);
@@ -143,6 +151,8 @@ void ReplayRecorder::send(boost::shared_ptr<GenericOut> target) const
 	target->uint32( mEndScore[LEFT_PLAYER] );
 	target->uint32( mEndScore[RIGHT_PLAYER] );
 
+	target->string(mGameRules);
+
 	target->generic<std::vector<unsigned char> >(mSaveData);
 	target->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
@@ -158,6 +168,8 @@ void ReplayRecorder::receive(boost::shared_ptr<GenericIn> source)
 	source->uint32( mGameSpeed );
 	source->uint32( mEndScore[LEFT_PLAYER] );
 	source->uint32( mEndScore[RIGHT_PLAYER] );
+
+	source->string(mGameRules);
 
 	source->generic<std::vector<unsigned char> >(mSaveData);
 	source->generic<std::vector<ReplaySavePoint> > (mSavePoints);
@@ -206,6 +218,14 @@ void ReplayRecorder::setPlayerColors(Color left, Color right)
 void ReplayRecorder::setGameSpeed(int fps)
 {
 	mGameSpeed = fps;
+}
+
+void ReplayRecorder::setGameRules( std::string rules )
+{
+	FileRead file(FileRead::makeLuaFilename("rules/"+rules));
+	mGameRules.resize( file.length() );
+	file.readRawBytes(&*mGameRules.begin(), file.length());
+	boost::algorithm::trim_all(mGameRules);
 }
 
 void ReplayRecorder::finalize(unsigned int left, unsigned int right)
