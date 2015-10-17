@@ -45,6 +45,7 @@ class ReplayPlayer : public ObjectCounter<ReplayPlayer>
 		~ReplayPlayer();
 
 		void load(const std::string& filename);
+		std::string getRules() const;
 
 		// -----------------------------------------------------------------------------------------
 		// 							Replay Attributes

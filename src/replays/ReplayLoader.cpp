@@ -164,7 +164,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			// cause additional savepoints could shift it only right
 			int index = targetPosition / REPLAY_SAVEPOINT_PERIOD;
 
-			if(index >= mSavePointsCount)
+			if(index >= mSavePoints.size())
 				return -1;
 
 			savepoint = mSavePoints[index].step;
@@ -178,7 +178,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			{
 				int nextIndex = index + 1;
 
-				if (nextIndex >= mSavePointsCount)
+				if (nextIndex >= mSavePoints.size())
 					break;
 
 				int nextPos = mSavePoints[nextIndex].step;
@@ -304,7 +304,6 @@ class ReplayLoader_V2X: public IReplayLoader
 		uint32_t mReplayOffset;
 
 		std::vector<ReplaySavePoint> mSavePoints;
-		uint32_t mSavePointsCount;
 
 		// specific data
 		std::string mLeftPlayerName;
