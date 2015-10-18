@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "NetworkPlayer.h"
 #include "NetworkMessage.h"
-#include "MatchMaker.h"
+#include "server/MatchMaker.h"
 
 class RakServer;
 

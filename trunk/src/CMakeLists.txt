@@ -10,6 +10,7 @@ set(CMAKE_CXX_FLAGS "-Wall")
 include_directories(.)
 
 set(common_SRC
+	base64.cpp base64.h
 	BlobbyDebug.cpp BlobbyDebug.h
 	Clock.cpp Clock.h
 	DuelMatch.cpp DuelMatch.h
@@ -22,13 +23,11 @@ set(common_SRC
 	Global.h
 	NetworkMessage.cpp NetworkMessage.h
 	PhysicWorld.cpp PhysicWorld.h
-	ReplayRecorder.cpp ReplayRecorder.h
 	SpeedController.cpp SpeedController.h
 	UserConfig.cpp UserConfig.h
 	PhysicState.cpp PhysicState.h
 	DuelMatchState.cpp DuelMatchState.h
 	GameLogicState.cpp GameLogicState.h
-	ReplaySavePoint.cpp ReplaySavePoint.h
 	InputSource.cpp InputSource.h
 	PlayerInput.h PlayerInput.cpp
 	IScriptableComponent.cpp IScriptableComponent.h
@@ -36,6 +35,9 @@ set(common_SRC
 	server/DedicatedServer.cpp server/DedicatedServer.h
 	server/NetworkPlayer.cpp server/NetworkPlayer.h
 	server/NetworkGame.cpp server/NetworkGame.h
+	server/MatchMaker.cpp server/MatchMaker.h
+	replays/ReplayRecorder.cpp replays/ReplayRecorder.h
+	replays/ReplaySavePoint.cpp replays/ReplaySavePoint.h
 	)
 
 set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
@@ -54,9 +56,8 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	BotAPICalculations.cpp BotAPICalculations.h
 	SoundManager.cpp SoundManager.h
 	Vector.h
-	ReplayRecorder.cpp ReplayRecorder.h
-	ReplayPlayer.cpp ReplayPlayer.h
-	ReplayLoader.cpp
+	replays/ReplayPlayer.cpp replays/ReplayPlayer.h
+	replays/ReplayLoader.cpp
 	InputSourceFactory.cpp InputSourceFactory.h
 	state/State.cpp state/State.h
 	state/GameState.cpp state/GameState.h
@@ -66,7 +67,7 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	state/NetworkSearchState.cpp state/NetworkSearchState.h
 	state/ReplayState.cpp state/ReplayState.h
 	state/ReplaySelectionState.cpp state/ReplaySelectionState.h
-	state/LobbyState.cpp state/LobbyState.h
+	state/LobbyStates.cpp state/LobbyStates.h
 	input_device/JoystickInput.cpp
 	input_device/JoystickPool.cpp input_device/JoystickPool.h
 	input_device/KeyboardInput.cpp

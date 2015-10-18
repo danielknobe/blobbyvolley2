@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <cassert>
 
-#include "global.h"
 #include "GenericIO.h"
 #include "NetworkMessage.h"
 #include "NetworkGame.h"
