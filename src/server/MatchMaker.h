@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/NetworkTypes.h"
 #include <map>
 #include <functional>
-#include "global.h"
+#include "Global.h"
 
 class NetworkPlayer;
 class NetworkGame;
