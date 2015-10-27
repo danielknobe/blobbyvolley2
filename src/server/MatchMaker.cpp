@@ -261,7 +261,6 @@ void MatchMaker::startGame(PlayerID host, PlayerID client)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void MatchMaker::receiveLobbyPacket( PlayerID player, RakNet::BitStream stream )
 {
-	std::cout << "recv lobby packet\n";
 	unsigned char byte;
 	auto reader = createGenericReader(&stream);
 	reader->byte(byte);

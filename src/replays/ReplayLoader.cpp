@@ -294,7 +294,6 @@ class ReplayLoader_V2X: public IReplayLoader
 			// get save points
 			auto sp = decode( content->Value() );
 			RakNet::BitStream temp( (char*)sp.data(), sp.size(), false );
-			std::cout << temp.GetData() << "\n";
 			auto convert = createGenericReader(&temp);
 			convert->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 		}

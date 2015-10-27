@@ -101,7 +101,6 @@ bool ReplayPlayer::play(DuelMatch* virtual_match)
 		int point;
 		if(loader->isSavePoint(mPosition, point))
 		{
-			std::cout << "HAS SAVE POINT HERE" << point << "\n";
 			ReplaySavePoint reference;
 			loader->readSavePoint(point, reference);
 			virtual_match->setState(reference.state);
