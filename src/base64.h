@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // encodes a single three byte data element
 // advances both by 3 or 4 positions resp.
-void encode( std::uint8_t*& bits, std::string::iterator& writer );
+void encode( const std::uint8_t*& bits, std::string::iterator& writer );
 
 // encodes an arbitrary pointer range
 std::string encode( const char* begin, const char* end, int newlines = -1);
@@ -42,6 +42,9 @@ std::string encode(const std::vector<T>& data_vec, int newlines = -1)
 }
 
 // decoder
+/// basic block decoder function. Does not take into account = signs.
+void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader );
+
 /// decodes a base64 encoded string into a byte vector. All characters
 /// that are not valid encodings are ignored (i.e. linefeeds).
 std::vector<uint8_t> decode(const std::string& data );
