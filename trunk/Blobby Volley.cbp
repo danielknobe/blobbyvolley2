@@ -56,6 +56,7 @@
 			<Add option="-Wall" />
 			<Add option="-DWIN32" />
 			<Add option="-DHAVE_LIBGL" />
+			<Add option="-DTIXML_USE_STL" />
 			<Add directory="./src" />
 		</Compiler>
 		<Linker>

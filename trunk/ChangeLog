@@ -1,7 +1,8 @@
 New in 1.1 (rev. 1???) since 1.0
 - reworked online game lobbby
-- different game settings (rules and final scores) possible on the same server
+- different game settings (rules, final scores and speeds) possible on the same server
 - bot scripting overhaul (needs some work before release)
+- new xml based replay file format
 
 New in 1.0 (rev. 1516) since RC4:
 - small improvements to lua rules

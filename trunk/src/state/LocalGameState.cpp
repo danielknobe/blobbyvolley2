@@ -42,7 +42,7 @@ LocalGameState::~LocalGameState()
 }
 
 LocalGameState::LocalGameState()
-	: mRecorder(new ReplayRecorder()), mWinner(false)
+	: mWinner(false), mRecorder(new ReplayRecorder())
 {
 	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
