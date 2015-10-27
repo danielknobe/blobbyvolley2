@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // helper functions and constants
 constexpr const char translation_table[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	"abcdefghijklmnopqrstuvcxyz"
+	"abcdefghijklmnopqrstuvwxyz"
 	"0123456789+/";
 
 // this gives the length of a constexpr string literal.
@@ -100,7 +100,7 @@ constexpr auto decoding_table = make_table_helper<typename make_index_sq<255>::t
 
 constexpr uint8_t decode( uint8_t byte )
 {
-    return is_valid(byte) ? decoding_table[byte] : -1;
+	return is_valid(byte) ? decoding_table[byte] : -1;
 }
 
 // the bitmask for slicing the three bytes into subelements
@@ -188,10 +188,10 @@ void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
 
 std::vector<uint8_t> decode(const std::string& data )
 {
-    // pre-allocate buffer
-    std::vector<uint8_t> buffer( data.size() / 4 * 3 + 4 );
-    uint8_t* iter = buffer.data();
-    auto reader = data.cbegin();
+	// pre-allocate buffer
+	std::vector<uint8_t> buffer( data.size() / 4 * 3 + 4 );
+	uint8_t* iter = buffer.data();
+	auto reader = data.cbegin();
 
 	// read block by block
 	while(reader != data.cend())
@@ -199,7 +199,7 @@ std::vector<uint8_t> decode(const std::string& data )
 		// decode the valid group
 		if( is_valid(*reader) )
 		{
-            decode( iter, reader );
+			decode( iter, reader );
 		// correct fill bytes
 		} else if( *reader == '=' )
 		{
