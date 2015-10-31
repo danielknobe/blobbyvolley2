@@ -1,18 +1,16 @@
 TODO:
 
 new server code:
-  fix replays
   fix host game (still some problems)
   fix bots
 
 coderework:
 - new clean rendererarchitecture
 - new gui system
+- decouple physics and graphics fps
 
 features:
 - full unicode support (e.g. for Russian characters)
-- improve replays (fast forward, rewind, etc)
-- improve bot system (more commands etc)
 - more dedicated server options (black/whitelist, statistics, etc)
 - vulkan api support
 
@@ -25,7 +23,7 @@ bugs:
 - whistle at the end of networkgame
 - ... has won screen in replay player when game ended prematurely
 - prevent hang when leaving network search state
-- find reasen for application lags
+- find reason for application lags
 
 data:
 - monochrome font
