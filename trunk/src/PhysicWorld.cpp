@@ -184,37 +184,32 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 
 bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 {
-	// Check for bottom circles
+	Vector2 circlepos = mBlobPosition[player];
+	// check for impact
 	if(playerBottomBallCollision(player))
 	{
-		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
-		mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
-
-		const Vector2& blobpos = mBlobPosition[player];
-		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y + BLOBBY_LOWER_SPHERE);
-
-		mBallVelocity = -Vector2(mBallPosition, circlepos);
-		mBallVelocity = mBallVelocity.normalise();
-		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
-		mBallPosition += mBallVelocity;
-		return true;
+		circlepos.y += BLOBBY_LOWER_SPHERE;
 	}
 	 else if(playerTopBallCollision(player))
 	{
-		mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
-		mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
-
-		const Vector2& blobpos = mBlobPosition[player];
-		const Vector2 circlepos = Vector2(blobpos.x, blobpos.y - BLOBBY_UPPER_SPHERE);
-
-		mBallVelocity = -Vector2(mBallPosition, circlepos);
-		mBallVelocity = mBallVelocity.normalise();
-		mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
-		mBallPosition += mBallVelocity;
-		return true;
+		circlepos.y -= BLOBBY_LOWER_SPHERE;
+	} else
+	{	// no impact!
+		return false;
 	}
 
-	return false;
+	// ok, if we get here, there actually was a collision
+
+	// calculate hit intensity
+	mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
+	mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
+
+	// set ball velocity
+	mBallVelocity = -Vector2(mBallPosition, circlepos);
+	mBallVelocity = mBallVelocity.normalise();
+	mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
+	mBallPosition += mBallVelocity;
+	return true;
 }
 
 void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInput,
