@@ -71,7 +71,6 @@ void syslog(int pri, const char* format, ...);
 
 static bool g_run_in_foreground = false;
 static bool g_print_syslog_to_stderr = false;
-static bool g_workaround_memleaks = false;
 static std::string g_config_file = "server.xml";
 static std::atomic<bool> g_run_server(true); // set this variable to false to stop the server
 
@@ -79,7 +78,6 @@ static std::atomic<bool> g_run_server(true); // set this variable to false to st
 void printHelp();
 void process_arguments(int argc, char** argv);
 void fork_to_background();
-void wait_and_restart_child();
 void setup_physfs(char* argv0);
 
 // server workload statistics
@@ -102,11 +100,6 @@ int main(int argc, char** argv)
 	if (!g_run_in_foreground)
 	{
 		fork_to_background();
-	}
-
-	if (g_workaround_memleaks)
-	{
-		wait_and_restart_child();
 	}
 
 	#ifndef WIN32
@@ -169,13 +162,16 @@ int main(int argc, char** argv)
 			/// \todo check for confirmation if there are still players connected!
 			g_run_server = false;
 			break;
-		} else if ( cmd_vec[0] == "players" )
+		}
+		 else if ( cmd_vec[0] == "players" )
 		{
 			server.printAllPlayers(std::cout);
-		} else if ( cmd_vec[0] == "games" )
+		}
+		 else if ( cmd_vec[0] == "games" )
 		{
 			server.printAllGames(std::cout);
-		} else if ( cmd_vec[0] == "status" )
+		}
+		 else if ( cmd_vec[0] == "status" )
 		{
 			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
 			std::cout << " packet count: " << SWLS_PacketCount << "\n";
@@ -197,7 +193,6 @@ int main(int argc, char** argv)
 // ------------------------------
 void main_loop( DedicatedServer& server)
 {
-	int startTime = SDL_GetTicks();
 	SpeedController scontroller( UPDATE_FREQUENCY );
 
 	while ( g_run_server )
@@ -221,20 +216,6 @@ void main_loop( DedicatedServer& server)
 		server.updateGames();
 
 		scontroller.update();
-
-		if (g_workaround_memleaks)
-		{
-			// Workaround for memory leak
-			// Restart the server after 1 hour if no player is
-			// connected
-			if ((SDL_GetTicks() - startTime) > 60 * 60 * 1000)
-			{
-				if (!server.hasActiveGame() && server.getWaitingPlayers() == 0)
-				{
-					exit(0);
-				}
-			}
-		}
 	}
 }
 
@@ -243,11 +224,15 @@ void main_loop( DedicatedServer& server)
 void printHelp()
 {
 	std::cout << "Usage: blobby-server [OPTION...]" << std::endl;
-	std::cout << "  -m, --memleak-hack        Workaround memory leaks by restarting regularly" << std::endl;
 	std::cout << "  -n, --no-daemon           Don't run as background process" << std::endl;
 	std::cout << "  -p, --print-msgs          Print messages to stderr" << std::endl;
 	std::cout << "  -c, --config-file <path>  Use custom config file instead of server.xml" << std::endl;
-	std::cout << "  -h, --help                This message" << std::endl;
+	std::cout << "  -h, --help                This message\n" << std::endl;
+	std::cout << "during the run of the programme, the following commands can be used:\n"
+			  << "players:   print player list\n"
+			  << "games:     print game list\n"
+			  << "status:    print server status\n"
+			  << "exit:      exits server (kills all running games!)" << std::endl;
 }
 
 
@@ -257,11 +242,6 @@ void process_arguments(int argc, char** argv)
 	{
 		for (int i = 1; i < argc; ++i)
 		{
-			if (strcmp(argv[i], "--memleak-hack") == 0 || strcmp(argv[i], "-m") == 0)
-			{
-				g_workaround_memleaks = true;
-				continue;
-			}
 			if (strcmp(argv[i], "--no-daemon") == 0 || strcmp(argv[i], "-n") == 0)
 			{
 				g_run_in_foreground = true;
@@ -313,35 +293,6 @@ void fork_to_background()
 	#else
 	std::cerr<<"fork is not available under windows\n";
 	#endif
-}
-
-
-void wait_and_restart_child()
-{
-	#ifndef WIN32
-	pid_t leaking_server;
-	while ((leaking_server = fork()) > 0)
-	{
-		int status;
-
-		// Wait for server to quit and refork
-		waitpid(leaking_server, &status, 0);
-		// Error will propably occur again
-		if (WEXITSTATUS(status) != 0)
-		{
-			exit(WEXITSTATUS(status));
-		}
-	}
-
-	if (leaking_server == -1)
-	{
-		perror("fork");
-		exit(1);
-	}
-	#else
-	std::cerr<<"fork is not available under windows\n";
-	#endif
-
 }
 
 void setup_physfs(char* argv0)
