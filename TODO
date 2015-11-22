@@ -3,6 +3,7 @@ TODO:
 new server code:
   fix host game (still some problems)
   fix bots
+  autostart network game on connect
 
 coderework:
 - new clean rendererarchitecture
