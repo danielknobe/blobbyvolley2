@@ -33,7 +33,7 @@
 #define __SOCKET_LAYER_H
 
 #ifdef _WIN32
-#include <winsock.h>
+#include <winsock2.h>
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -151,37 +151,22 @@ public:
 	 */
 	int SendTo( SOCKET s, const char *data, int length, unsigned int binaryAddress, unsigned short port );
 
-
-
-
-
-
-
-
-
 	/// @brief Get the Ip address of an domain
 	/// @param name Name of the domain
-	/// @return Ip address
-	/// @todo This is only for IPv4. IPv6 is not available jet
-	const char* nameToIP(const char* name) const;
+	/// @param buffer Buffer for the result
+	/// @param bufferSize Size of the buffer
+	/// @return Pointer to buffer or NULL if buffer is to small or something goes wrong
+	/// @todo This is only for IPv4 but can easilly updated to IPv4/IPv6 or IPv6 only
+	char* const nameToIP(char const * const name, char* const buffer, int const bufferSize);
 
+private:	
+	/// @brief Convert a socketaddress to an ip string
+	/// @param socketaddress Socketaddress
+	/// @param buffer Buffer for the result
+	/// @param bufferSize Size of the buffer
+	/// @return Pointer to buffer or NULL if buffer is to small or something goes wrong
+	char const * ipToString(struct sockaddr const * const socketaddress, char * const buffer, int const bufferSize);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-private:
 	/**
 	 * Tell whether or not the socket layer is already active
 	 */
