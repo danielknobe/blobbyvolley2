@@ -107,7 +107,7 @@ SOCKET SocketLayer::Connect(SOCKET writeSocket, unsigned int binaryAddress, unsi
 }
 
 #pragma warning( disable : 4100 ) // warning C4100: <variable name> : unreferenced formal parameter
-SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket, const char *forceHostAddress )
+SOCKET SocketLayer::CreateBoundSocket(unsigned short port, bool blockingSocket, const char *forceHostAddress)
 {
 	SOCKET listenSocket;
 	sockaddr_in listenerSocketAddress;
@@ -183,9 +183,11 @@ SOCKET SocketLayer::CreateBoundSocket( unsigned short port, bool blockingSocket,
 	return listenSocket;
 }
 
-const char* SocketLayer::DomainNameToIP( const char *domainName )
+const char* SocketLayer::DomainNameToIP(const char *domainName)
 {
-
+	int getaddrinfo(const char *node, const char *service,
+                const struct addrinfo *hints,
+                struct addrinfo **res);
 	struct hostent * phe = gethostbyname( domainName );
 
 	if ( phe == 0 || phe->h_addr_list[ 0 ] == 0 )
@@ -380,19 +382,50 @@ void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
 }
 
 
-const char* SocketLayer::nameToIP(const char* name) const
+char* const SocketLayer::nameToIP(char const * const name, char* const buffer, int const bufferSize)
 {
-	struct in_addr address;
+	struct addrinfo *res = NULL;
+	int ErrorCode = 0;
+	struct addrinfo hints;
+	
+	// Prepare hints, atm get only ipv4 address
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_INET;
 
-	struct hostent * hostInformation = gethostbyname(name);
+	// Fill the list with data
+	int errorCode = getaddrinfo(name, NULL, &hints, &res);
 
-	if (hostInformation == 0 || hostInformation->h_addr_list[0] == 0)
+	// Check if data is available
+	// Copy and format address if possible
+	if ((errorCode != 0) || 
+	    (res == NULL) || 
+	    (res->ai_addr == NULL) ||
+	    (this->ipToString(res->ai_addr, buffer, bufferSize) == NULL))
 	{
-		LOG("SocketLayer", "Domainname of ip can't be resolved")
-		return 0;
+		LOG("SocketLayer", "Ip of host can't be resolved")
+		freeaddrinfo(res);
+		return NULL;
 	}
 
-	memcpy(&address, hostInformation->h_addr_list[0], sizeof(struct in_addr));
-	return inet_ntoa(address);
+	// Cleanup
+	freeaddrinfo(res);
+
+	return buffer;
+}
+
+
+char const * SocketLayer::ipToString(struct sockaddr const * const socketaddress, char * const buffer, int const bufferSize)
+{
+	switch(socketaddress->sa_family)
+	{
+	case AF_INET:
+		return inet_ntop(AF_INET, &(((struct sockaddr_in *)socketaddress)->sin_addr), buffer, bufferSize);
+	case AF_INET6:
+		return inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)socketaddress)->sin6_addr), buffer, bufferSize);
+	default:
+		return NULL;
+	}
+
+	return NULL;
 }
 
