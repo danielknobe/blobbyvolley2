@@ -61,7 +61,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 
 	// Connect to the host
 	char ipAddress[16];
-	if (mSocketLayer.nameToIP(mHostname.c_str(), ipAddress, sizeof(ipAddress)) == NULL)
+	if (mSocketLayer.nameToIpStrings(mHostname.c_str(), ipAddress, sizeof(ipAddress), 1) == 0)
 	{
 		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't resolve IP Address.") );
 	}

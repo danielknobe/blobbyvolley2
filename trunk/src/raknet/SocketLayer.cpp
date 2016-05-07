@@ -345,75 +345,78 @@ int SocketLayer::SendTo( SOCKET s, const char *data, int length, char ip[ 16 ], 
 	return SendTo( s, data, length, binaryAddress, port );
 }
 
-void SocketLayer::GetMyIP( char ipList[ 10 ][ 16 ] )
+
+void SocketLayer::GetMyIP(char ipList[10][16])
 {
 	// Longest possible Hostname
 	char hostname[80];
+	int count = 0;
 
 	// Get the hostname of the local maschine
 	if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR)
 	{
 		LOG("SocketLayer", "gethostname failed")
-
 		return ;
 	}
 
-	LOG("SocketLayer", "Host name is " << hostname )
+	LOG("SocketLayer", "Host name is " << hostname)
 
-	struct hostent *phe = gethostbyname( hostname );
+	count = this->nameToIpStrings(hostname, &ipList[0][0], 16, 10);
 
-	if ( phe == 0 )
+	for(int i = 0; i < count; i++)
 	{
-		LOG("SocketLayer", "gethostbyname failed")
-
-		return ;
-	}
-
-	for ( int i = 0; phe->h_addr_list[ i ] != 0 && i < 10; ++i )
-	{
-
-		struct in_addr addr;
-
-		memcpy( &addr, phe->h_addr_list[ i ], sizeof( struct in_addr ) );
-		//cout << "Address " << i << ": " << inet_ntoa(addr) << endl;
-		strcpy( ipList[ i ], inet_ntoa( addr ) );
-		LOG("SocketLayer", "My IP addresses "<< ipList[ i ])
+		LOG("SocketLayer", "One of my ip addresses: "<< ipList[i])
 	}
 }
 
 
-char* const SocketLayer::nameToIP(char const * const name, char* const buffer, int const bufferSize)
+int SocketLayer::nameToIpStrings(char const * const name, char* const buffer, int const bufferEntrySize, int const bufferEntryCount)
 {
 	struct addrinfo *res = NULL;
-	int ErrorCode = 0;
+	struct addrinfo *next = NULL;
 	struct addrinfo hints;
+	int count = 0;
 	
 	// Prepare hints, atm get only ipv4 address
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
 
-	// Fill the list with data
-	int errorCode = getaddrinfo(name, NULL, &hints, &res);
-
-	// Check if data is available
-	// Copy and format address if possible
-	if ((errorCode != 0) || 
-	    (res == NULL) || 
-	    (res->ai_addr == NULL) ||
-	    (this->ipToString(res->ai_addr, buffer, bufferSize) == NULL))
+	// Check and get data if available
+	if ((getaddrinfo(name, NULL, &hints, &res) != 0) || 
+	    (res == NULL))
 	{
-		LOG("SocketLayer", "Ip of host can't be resolved")
-		if (res != NULL)
-		{
-			freeaddrinfo(res);
-		}
-		return NULL;
+		LOG("SocketLayer", "Can't get addressinfo")
+		return 0;
 	}
 
-	// Cleanup
+	// Get first entry
+	next = res;
+
+	// Collect every entry in the list if buffer is sufficient, otherwise only
+	// the first x entries which fit into the buffer
+	for(int i = 0; (next != NULL) && (i < bufferEntryCount); i++)
+	{
+		// Copy and format address if possible
+		if ((next->ai_addr != NULL) &&
+		    (this->ipToString(next->ai_addr, &buffer[i * bufferEntrySize], bufferEntrySize) != NULL))
+		{
+			next = next->ai_next;
+			count = i + 1;
+		}
+		else
+		{
+			// Something goes wrong, leave the loop with hopefully
+			// one or more address
+			LOG("SocketLayer", "Can't format one ip address")
+			break;
+		}
+	}
+
+	// Cleanup the linked list
 	freeaddrinfo(res);
 
-	return buffer;
+	return count;
 }
 
 
