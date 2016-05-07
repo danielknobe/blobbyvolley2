@@ -122,11 +122,6 @@ public:
 	 */
 	int RecvFrom( SOCKET s, RakPeer *rakPeer, int *errorCode );
 	/**
-	 * Retrieve all local IP address in a printable format
-	 * @param ipList An array of ip address in dot format.
-	 */
-	void GetMyIP( char ipList[ 10 ][ 16 ] );
-	/**
 	 * Send data to a peer. The socket should not be connected to a remote host.
 	 * @param s the socket
 	 * @param data the byte buffer to send
@@ -151,13 +146,17 @@ public:
 	 */
 	int SendTo( SOCKET s, const char *data, int length, unsigned int binaryAddress, unsigned short port );
 
+	/// Retrieve all local IP address in a printable format
+	/// @param ipList An array of ip address in dot format.
+	void GetMyIP(char ipList[10][16]);
 	/// @brief Get the Ip address of an domain
 	/// @param name Name of the domain
 	/// @param buffer Buffer for the result
-	/// @param bufferSize Size of the buffer
-	/// @return Pointer to buffer or NULL if buffer is to small or something goes wrong
+	/// @param bufferEntrySize Size of one buffer entry
+	/// @param bufferEntryCount Count of bufferentries
+	/// @return Count of found ips
 	/// @todo This is only for IPv4 but can easilly updated to IPv4/IPv6 or IPv6 only
-	char* const nameToIP(char const * const name, char* const buffer, int const bufferSize);
+	int nameToIpStrings(char const * const name, char* const buffer, int const bufferEntrySize, int const bufferEntryCount);
 
 private:	
 	/// @brief Convert a socketaddress to an ip string
