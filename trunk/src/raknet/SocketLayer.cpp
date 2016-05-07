@@ -403,7 +403,10 @@ char* const SocketLayer::nameToIP(char const * const name, char* const buffer, i
 	    (this->ipToString(res->ai_addr, buffer, bufferSize) == NULL))
 	{
 		LOG("SocketLayer", "Ip of host can't be resolved")
-		freeaddrinfo(res);
+		if (res != NULL)
+		{
+			freeaddrinfo(res);
+		}
 		return NULL;
 	}
 
