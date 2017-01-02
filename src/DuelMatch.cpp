@@ -132,6 +132,8 @@ void DuelMatch::step()
 		case MatchEvent::BALL_HIT_WALL:
 			mLogic->onBallHitsWall( event.side );
 			break;
+		default:
+			break;
 		}
 	}
 
