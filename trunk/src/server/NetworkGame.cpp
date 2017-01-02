@@ -56,8 +56,8 @@ NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> lef
 	mLeftInput (new InputSource()),
 	mRightInput(new InputSource()),
 	mRecorder(new ReplayRecorder()),
-	mGameValid(true),
-	mSpeedController( speed )
+	mSpeedController(speed),
+	mGameValid(true)
 {
 	// check that both players don't have an active game
 	if(leftPlayer->getGame())
