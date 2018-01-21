@@ -75,7 +75,7 @@ InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float s)
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
 MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity)
-	: InputDevice(), mJumpButton(jumpbutton), mPlayer(player), mMarkerX(0), mSensitivity( sensitivity )
+	: InputDevice(), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity )
 {
 	if (SDL_GetMouseState(NULL, NULL))
 		mDelay = true;
