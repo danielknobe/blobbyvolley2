@@ -116,7 +116,7 @@ void LobbyState::step_impl()
 					}
 
 					// find out which settings most closely resemble the local config
-					bool first_config = mPreferedSpeed == -1; // detect whether we set config for the first time
+					bool first_config = (mPreferedSpeed == -1u); // detect whether we set config for the first time
 					boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 
 					// speed

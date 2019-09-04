@@ -66,7 +66,7 @@ uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 {
 	check_file_open();
 
-	PHYSFS_sint64 num_read = PHYSFS_read(reinterpret_cast<PHYSFS_file*> (mHandle), target, 1, num_of_bytes);
+	PHYSFS_sint64 num_read = PHYSFS_readBytes(reinterpret_cast<PHYSFS_file*> (mHandle), target, num_of_bytes);
 
 	// -1 indicates that reading was not possible
 	if( num_read == -1)

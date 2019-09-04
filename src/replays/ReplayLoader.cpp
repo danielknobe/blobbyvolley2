@@ -164,7 +164,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			// cause additional savepoints could shift it only right
 			int index = targetPosition / REPLAY_SAVEPOINT_PERIOD;
 
-			if(index >= mSavePoints.size())
+			if(index >= static_cast<int>(mSavePoints.size()))
 				return -1;
 
 			savepoint = mSavePoints[index].step;
@@ -178,7 +178,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			{
 				int nextIndex = index + 1;
 
-				if (nextIndex >= mSavePoints.size())
+				if (nextIndex >= static_cast<int>(mSavePoints.size()))
 					break;
 
 				int nextPos = mSavePoints[nextIndex].step;

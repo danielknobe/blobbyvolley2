@@ -62,7 +62,7 @@ void ReplaySelectionState::step_impl()
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 10.0), TextManager::RP_PLAY) &&
-				mSelectedReplay != -1)
+				(mSelectedReplay != -1u))
 	{
 		std::string loadrep = mReplayFiles[mSelectedReplay];
 

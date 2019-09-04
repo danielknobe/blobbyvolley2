@@ -60,15 +60,15 @@ int CURRENT_NETWORK_LAG = -1;
 
 
 /* implementation */
-NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rule_checksum, int score_to_win):
-	 GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win)),
-	 mClient( client ),
-	 mNetworkState(WAITING_FOR_OPPONENT),
-	 mWinningPlayer(NO_PLAYER),
-	 mWaitingForReplay(false),
-	 mSelectedChatmessage(0),
-	 mChatCursorPosition(0),
-	 mChattext("")
+NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rule_checksum, int score_to_win)
+	: GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win))
+	, mNetworkState(WAITING_FOR_OPPONENT)
+	, mWaitingForReplay(false)
+	, mClient(client)
+	, mWinningPlayer(NO_PLAYER)
+	, mSelectedChatmessage(0)
+	, mChatCursorPosition(0)
+	, mChattext("")
 {
 	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");

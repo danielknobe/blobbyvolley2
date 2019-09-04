@@ -968,13 +968,15 @@ namespace BasicDataStructures
 		void CircularLinkedList<CircularLinkedListType>::clear( void )
 	{
 		if ( this->list_size == 0 )
+		{
 			return ;
+		}
 		else
+		{
 			if ( this->list_size == 1 )  // {delete root->item; delete root;}
 			{
 				delete this->root;
 			}
-
 			else
 			{
 				node* current;
@@ -988,13 +990,13 @@ namespace BasicDataStructures
 					// delete temp->item;
 					delete temp;
 				}
-
 				while ( current != this->root );
 			}
 
 			this->list_size = 0;
 			this->root = 0;
 			this->position = 0;
+		}
 	}
 
 	template <class CircularLinkedListType>

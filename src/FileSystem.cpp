@@ -156,8 +156,8 @@ void FileSystem::probeDir(const std::string& dirname)
 
 std::string makeSafePhysfsErrorString()
 {
-	const char* physfserror = PHYSFS_getLastError();
-	return physfserror != 0 ? physfserror : "no physfs error message available.";
+	const char* physfserror = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
+	return physfserror != nullptr ? physfserror : "no physfs error message available.";
 }
 
 

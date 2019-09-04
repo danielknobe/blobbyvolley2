@@ -100,6 +100,8 @@ bool JoystickInputDevice::getAction(const JoystickAction& action)
 							action.number))
 					return true;
 				break;
+			default:
+				break;
 		}
 	}
 	return false;
