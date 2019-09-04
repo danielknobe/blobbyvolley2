@@ -1,6 +1,7 @@
 #ifndef LOBBYSTATES_H_INCLUDED
 #define LOBBYSTATES_H_INCLUDED
 
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include "NetworkMessage.h"
 #include "PlayerIdentity.h"
