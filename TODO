@@ -1,31 +1,27 @@
-TODO:
-
-new server code:
-  fix host game (still some problems)
-  fix bots
-  autostart network game on connect
-
-coderework:
-- new clean rendererarchitecture
-- new gui system
-- decouple physics and graphics fps
+TODO for Blobby Volley 2.1:
+libs:
+- switch to tinyxml2
+- reduce dependencies to libboost (use C++11 features instead)
+- switch to new opensource raknet version
 
 features:
+- network client which hosts a game can configure server rules, speed and points
+
+fix bugs:
+- network client can download replays from server
+- crash of dedicated server (memleak?)
+
+
+
+
+
+
+Roadmap to Blobby Volley 2.2 and later:
+- multithreading
+	fps independent physics
+- new gui system
 - full unicode support (e.g. for Russian characters)
-- more dedicated server options (black/whitelist, statistics, etc)
-- vulkan api support
-
-bugs:
-- net bugs:
- - squeezing ball through blocking blobby ?  
-     Please try to verify this
- - flat ball (replay Mr. Enderson)
-- don't close chat if one player leaves the game
-- whistle at the end of networkgame
-- ... has won screen in replay player when game ended prematurely
-- prevent hang when leaving network search state
-- find reason for application lags
-
-data:
-- monochrome font
+- improve replays (fast forward, rewind, etc)
+- improve bot system (more commands etc)
+- integrate new font
 - more translation
