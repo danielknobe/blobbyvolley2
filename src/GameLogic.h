@@ -31,9 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class IGameLogic;
 
-/// typedef to make GameLogic an auto_ptr
-/// \todo is auto_ptr the best choice here?
-typedef std::auto_ptr<IGameLogic> GameLogic;
+typedef std::unique_ptr<IGameLogic> GameLogicPtr;
 
 struct GameLogicState;
 struct DuelMatchState;
@@ -53,7 +51,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		IGameLogic( int stw );
 		virtual ~IGameLogic();
 
-		virtual GameLogic clone() const = 0;
+		virtual GameLogicPtr clone() const = 0;
 		virtual std::string getSourceFile() const = 0;
 
 		// -----------------------------------------------------------------------------------------
@@ -240,6 +238,6 @@ extern const std::string FALLBACK_RULES_NAME;
 extern const std::string TEMP_RULES_NAME;
 
 // functions for creating a game logic object
-GameLogic createGameLogic(const std::string& rulefile, DuelMatch* match, int score_to_win);
+GameLogicPtr createGameLogic(const std::string& rulefile, DuelMatch* match, int score_to_win);
 
 

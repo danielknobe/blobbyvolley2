@@ -335,9 +335,9 @@ class FallbackGameLogic : public IGameLogic
 
 		}
 
-		virtual GameLogic clone() const
+		virtual GameLogicPtr clone() const
 		{
-			return GameLogic(new FallbackGameLogic( getScoreToWin() ));
+			return GameLogicPtr(new FallbackGameLogic( getScoreToWin() ));
 		}
 
 		virtual std::string getSourceFile() const
@@ -413,9 +413,9 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 			return mSourceFile;
 		}
 
-		virtual GameLogic clone() const
+		virtual GameLogicPtr clone() const
 		{
-			return GameLogic(new LuaGameLogic(mSourceFile, getMatch(), getScoreToWin()));
+			return GameLogicPtr(new LuaGameLogic(mSourceFile, getMatch(), getScoreToWin()));
 		}
 
 		virtual std::string getAuthor() const
@@ -699,16 +699,16 @@ int LuaGameLogic::luaIsGameRunning(lua_State* state)
 	return 1;
 }
 
-GameLogic createGameLogic(const std::string& file, DuelMatch* match, int score_to_win )
+GameLogicPtr createGameLogic(const std::string& file, DuelMatch* match, int score_to_win )
 {
 	if (file == FALLBACK_RULES_NAME)
 	{
-		return GameLogic(new FallbackGameLogic( score_to_win ));
+		return GameLogicPtr(new FallbackGameLogic( score_to_win ));
 	}
 
 	try
 	{
-		return GameLogic( new LuaGameLogic(file, match, score_to_win ) );
+		return GameLogicPtr( new LuaGameLogic(file, match, score_to_win ) );
 	}
 	catch( std::exception& exp)
 	{
@@ -716,7 +716,7 @@ GameLogic createGameLogic(const std::string& file, DuelMatch* match, int score_t
 		std::cerr << exp.what() << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
-		return GameLogic(new FallbackGameLogic( score_to_win ));
+		return GameLogicPtr(new FallbackGameLogic( score_to_win ));
 	}
 
 }

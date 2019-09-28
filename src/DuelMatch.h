@@ -138,7 +138,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		PlayerIdentity mPlayers[MAX_PLAYERS];
 
-		GameLogic mLogic;
+		GameLogicPtr mLogic;
 
 		bool mPaused;
 
