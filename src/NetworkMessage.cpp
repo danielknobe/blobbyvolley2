@@ -86,9 +86,8 @@ const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned ch
 
 
 
-RakNet::BitStream makeEnterServerPacket( const PlayerIdentity& player )
+void makeEnterServerPacket(RakNet::BitStream& stream, const PlayerIdentity& player)
 {
-	RakNet::BitStream stream;
 	stream.Write((unsigned char)ID_ENTER_SERVER);
 
 	// Send preferred side
@@ -101,7 +100,6 @@ RakNet::BitStream makeEnterServerPacket( const PlayerIdentity& player )
 
 	// send color settings
 	stream.Write(player.getStaticColor().toInt());
-	return stream;
 }
 
 

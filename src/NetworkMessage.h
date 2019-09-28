@@ -222,7 +222,7 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 
 // convenience functions for building packets
 class PlayerIdentity;
-RakNet::BitStream makeEnterServerPacket( const PlayerIdentity& player );
+void makeEnterServerPacket(RakNet::BitStream& stream, const PlayerIdentity& player );
 
 bool operator == (const ServerInfo& lval, const ServerInfo& rval);
 std::ostream& operator<<(std::ostream& stream, const ServerInfo& val);

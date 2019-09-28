@@ -57,7 +57,8 @@ void LobbyState::step_impl()
 		{
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
-				RakNet::BitStream stream = makeEnterServerPacket( mLocalPlayer );
+				RakNet::BitStream stream;
+				makeEnterServerPacket(stream, mLocalPlayer);
 				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 
 				mSubState = boost::make_shared<LobbyMainSubstate>(mClient, 0, 0, 3);
