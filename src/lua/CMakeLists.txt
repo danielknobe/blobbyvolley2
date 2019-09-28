@@ -23,6 +23,7 @@ set (lua_SRC
 	lopcodes.c lopcodes.h
 	loslib.c
 	lparser.c lparser.h
+	lprefix.h
 	lstate.c lstate.h
 	lstring.c lstring.h
 	lstrlib.c
@@ -34,6 +35,7 @@ set (lua_SRC
 	luaconf.h
 	lualib.h
 	lundump.c lundump.h
+	lutf8lib.c
 	lvm.c lvm.h
 	lzio.c lzio.h
 	)
