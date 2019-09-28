@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctime>
 #include <iostream> // for cerr
 
-#include <boost/lexical_cast.hpp>
-
 #include "ReplayState.h"
 #include "IMGUI.h"
 #include "TextManager.h"
@@ -154,7 +152,7 @@ void ReplaySelectionState::step_impl()
 		imgui.doText(GEN_ID, Vector2(400 - 12*date.size(), 255), date);
 
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 300), TextManager::OP_SPEED);
-		std::string speed = boost::lexical_cast<std::string>(mReplayLoader->getSpeed() *100 / 75) + "%" ;
+		std::string speed = std::to_string(mReplayLoader->getSpeed() *100 / 75) + "%" ;
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*speed.size(), 300), speed);
 
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 335), TextManager::RP_DURATION);
@@ -162,15 +160,15 @@ void ReplaySelectionState::step_impl()
 		if(mReplayLoader->getDuration() > 99)
 		{
 			// +30 because of rounding
-			dur = boost::lexical_cast<std::string>((mReplayLoader->getDuration() + 30) / 60) + "min";
+			dur = std::to_string((mReplayLoader->getDuration() + 30) / 60) + "min";
 		} else
 		{
-			dur = boost::lexical_cast<std::string>(mReplayLoader->getDuration()) + "s";
+			dur = std::to_string(mReplayLoader->getDuration()) + "s";
 		}
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*dur.size(), 335), dur);
 
 		std::string res;
-		res = boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(LEFT_PLAYER)) + " : " +  boost::lexical_cast<std::string>(mReplayLoader->getFinalScore(RIGHT_PLAYER));
+		res = std::to_string(mReplayLoader->getFinalScore(LEFT_PLAYER)) + " : " +  std::to_string(mReplayLoader->getFinalScore(RIGHT_PLAYER));
 
 		imgui.doText(GEN_ID, Vector2(MARGIN+20, 370), TextManager::RP_RESULT);
 		imgui.doText(GEN_ID, Vector2(RIGHT - 20 - 24*res.size(), 370), res);

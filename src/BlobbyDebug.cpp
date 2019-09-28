@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <map>
 #include <iostream>
 #include <fstream>
-#include <boost/lexical_cast.hpp>
 
 std::map<std::string, CountingReport>& GetCounterMap()
 {
@@ -98,7 +97,7 @@ int uncount(const std::type_info& type, std::string tag, void* address)
 
 void debug_count_execution_fkt(std::string file, int line)
 {
-	std::string rec = file + ":" + boost::lexical_cast<std::string>(line);
+	std::string rec = file + ":" + std::to_string(line);
 	if(GetProfMap().find(rec) == GetProfMap().end() )
 	{
 		GetProfMap()[rec] = 0;

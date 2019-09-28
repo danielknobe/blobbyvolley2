@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/make_shared.hpp>
 
 #include "raknet/RakClient.h"
@@ -284,10 +283,10 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 		// info panel contents:
 		//  * gamespeed
 		imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
-					 boost::lexical_cast<std::string>(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(status.getGame(gameIndex).speed))) + "%");
+					 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(status.getGame(gameIndex).speed))) + "%");
 		//  * points
 		imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
-											 boost::lexical_cast<std::string>(status.getGame(gameIndex).score) );
+											 std::to_string(status.getGame(gameIndex).score) );
 
 		//  * rulesfile
 		imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
@@ -320,13 +319,13 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 		// info panel contents:
 		//  * gamespeed
 		if(imgui.doButton(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
-					 boost::lexical_cast<std::string>(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mChosenSpeed))) + "%"))
+					 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mChosenSpeed))) + "%"))
 		{
 			mChosenSpeed = (mChosenSpeed + 1) % status.mPossibleSpeeds.size();
 		}
 		//  * points
 		if(imgui.doButton(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
-											 boost::lexical_cast<std::string>( mPossibleScores.at(mChosenScore) ) ))
+											 std::to_string( mPossibleScores.at(mChosenScore) ) ))
 		{
 			mChosenScore = (mChosenScore + 1) % mPossibleScores.size();
 		}
@@ -402,10 +401,10 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 	// info panel contents:
 	//  * gamespeed
 	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
-				 boost::lexical_cast<std::string>(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mSpeed))) + "%");
+				 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mSpeed))) + "%");
 	//  * points
 	imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
-										 boost::lexical_cast<std::string>( mScore ) );
+										 std::to_string( mScore ) );
 	//  * rulesfile
 	imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
 	std::string rulesstring = status.mPossibleRules.at(mRules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);

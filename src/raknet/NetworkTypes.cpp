@@ -30,7 +30,6 @@
  */
 #include "NetworkTypes.h"
 #include "BitStream.h"
-#include <boost/lexical_cast.hpp>
 
 int operator==( const PlayerID& left, const PlayerID& right )
 {
@@ -55,15 +54,15 @@ int operator<( const PlayerID& left, const PlayerID& right )
 std::string PlayerID::toString() const
 {
 	auto tmp = binaryAddress;
-	std::string ip =  boost::lexical_cast<std::string>(tmp & 0xFF);
+	std::string ip =  std::to_string(tmp & 0xFF);
 	tmp >>= 8;
-	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	ip =  std::to_string(tmp & 0xFF) + "." + ip;
 	tmp >>= 8;
-	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	ip =  std::to_string(tmp & 0xFF) + "." + ip;
 	tmp >>= 8;
-	ip =  boost::lexical_cast<std::string>(tmp & 0xFF) + "." + ip;
+	ip =  std::to_string(tmp & 0xFF) + "." + ip;
 
-	return ip + ":" +  boost::lexical_cast<std::string>(port);
+	return ip + ":" +  std::to_string(port);
 }
 
 std::ostream& operator<<(std::ostream& stream, const PlayerID& p)

@@ -260,7 +260,7 @@ void NetworkSearchState::step_impl()
 	std::vector<std::string> servernames;
 	for (unsigned int i = 0; i < mScannedServers.size(); i++)
 	{
-		servernames.push_back(std::string(mScannedServers[i].name) + " (" + boost::lexical_cast<std::string>(mScannedServers[i].waitingplayers) + ")" );
+		servernames.push_back(std::string(mScannedServers[i].name) + " (" + std::to_string(mScannedServers[i].waitingplayers) + ")" );
 	}
 
 	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0), servernames, mSelectedServer) == SBA_DBL_CLICK )
