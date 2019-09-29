@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Global.h"
 #include "BlobbyDebug.h"
@@ -34,7 +34,7 @@ class IUserConfigReader : public ObjectCounter<IUserConfigReader>
 {
 	public:
 		IUserConfigReader() {};
-		static boost::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
+		static std::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
 		virtual ~IUserConfigReader() {};
 
 		virtual float getFloat(const std::string& name, float default_value = 0.f) const = 0;

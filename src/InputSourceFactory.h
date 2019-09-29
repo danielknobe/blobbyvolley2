@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class IUserConfigReader;
 class InputSource;
@@ -30,5 +30,5 @@ class InputSource;
 class InputSourceFactory
 {
 	public:
-		static boost::shared_ptr<InputSource> createInputSource( boost::shared_ptr<IUserConfigReader> config, PlayerSide pls );
+		static std::shared_ptr<InputSource> createInputSource( std::shared_ptr<IUserConfigReader> config, PlayerSide pls );
 };

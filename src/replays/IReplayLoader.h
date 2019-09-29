@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <ctime>	// for time_t
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Global.h"
 #include "ReplaySavePoint.h"

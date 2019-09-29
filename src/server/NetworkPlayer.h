@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/noncopyable.hpp>
 
 #include "raknet/NetworkTypes.h"
@@ -62,9 +62,9 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		PlayerIdentity getIdentity() const;
 
 		// get game the player currently is in
-		const boost::shared_ptr<NetworkGame>& getGame() const;
+		const std::shared_ptr<NetworkGame>& getGame() const;
 
-		void setGame(boost::shared_ptr<NetworkGame>);
+		void setGame(std::shared_ptr<NetworkGame>);
 
 	private:
 		/* Network ID */
@@ -73,7 +73,7 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		PlayerIdentity mIdentity;
 
 		/* Game Data */
-		boost::shared_ptr<NetworkGame> mGame;
+		std::shared_ptr<NetworkGame> mGame;
 
 		/* we could add more data such as stats,
 			accoutn info, etc later.

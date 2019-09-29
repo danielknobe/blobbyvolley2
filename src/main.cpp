@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
-extern boost::shared_ptr<std::thread> gHostedServerThread;
+extern std::shared_ptr<std::thread> gHostedServerThread;
 
 /* implementation */
 

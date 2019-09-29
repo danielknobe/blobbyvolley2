@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalInputSource.h"
 #include "ScriptedInputSource.h"
 
-boost::shared_ptr<InputSource> InputSourceFactory::createInputSource( boost::shared_ptr<IUserConfigReader> config, PlayerSide side )
+std::shared_ptr<InputSource> InputSourceFactory::createInputSource( std::shared_ptr<IUserConfigReader> config, PlayerSide side )
 {
 	std::string prefix = side == LEFT_PLAYER ? "left" : "right";
 	try
@@ -39,17 +39,17 @@ boost::shared_ptr<InputSource> InputSourceFactory::createInputSource( boost::sha
 		//  or has errors
 		if (config->getBool(prefix + "_player_human"))
 		{
-			return boost::make_shared<LocalInputSource>(side);
+			return std::make_shared<LocalInputSource>(side);
 		}
 		else
 		{
-			return boost::make_shared<ScriptedInputSource>("scripts/" + config->getString(prefix + "_script_name"),
+			return std::make_shared<ScriptedInputSource>("scripts/" + config->getString(prefix + "_script_name"),
 					side, config->getInteger(prefix + "_script_strength"));
 		}
 	} catch (std::exception& e)
 	{
 		/// \todo REWORK ERROR REPORTING
 		std::cerr << e.what() << std::endl;
-		return boost::make_shared<InputSource>();
+		return std::make_shared<InputSource>();
 	}
 }

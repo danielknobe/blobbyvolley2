@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( net_squish )
 	
 	DuelMatchState mstate;
 	FileRead reader ("katjareplay_crash.state");
-	boost::shared_ptr<GenericIn> gin = GenericIO::createReader(reader);
+	std::shared_ptr<GenericIn> gin = GenericIO::createReader(reader);
 	
 	mstate.deserialize(gin.get());
 	

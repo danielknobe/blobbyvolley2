@@ -244,7 +244,7 @@ std::string FileRead::makeLuaFilename(std::string filename)
 	return filename;
 }
 
-boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)
+std::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)
 {
 	// create and load file
 	FileRead file(filename);
@@ -257,7 +257,7 @@ boost::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& fi
 	fileBuffer[fileLength] = 0;
 
 	// parse file
-	boost::shared_ptr<TiXmlDocument> xml = boost::shared_ptr<TiXmlDocument> (new TiXmlDocument());
+	std::shared_ptr<TiXmlDocument> xml = std::shared_ptr<TiXmlDocument> (new TiXmlDocument());
 	xml->Parse(fileBuffer.get());
 
 	/// \todo do error handling here?

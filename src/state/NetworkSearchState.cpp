@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 // control variables for a dedicated server thread in case a game is hosted
-boost::shared_ptr<std::thread> gHostedServerThread;
+std::shared_ptr<std::thread> gHostedServerThread;
 std::atomic<bool> gKillHostThread{false};
 
 /* implementation */
@@ -382,7 +382,7 @@ void NetworkSearchState::step_impl()
 		};
 
 		gKillHostThread = true;
-		gHostedServerThread = boost::make_shared<std::thread>(server_func);
+		gHostedServerThread = std::make_shared<std::thread>(server_func);
 		SDL_Delay(100); // give the server some time to start up.
 		// might cause a slight visible delay, but I think we can
 		// live with that right now.
@@ -454,7 +454,7 @@ void OnlineSearchState::doSearchServers()
 
 	// Get the serverlist
 	try {
-		boost::shared_ptr<TiXmlDocument> serverListXml = FileRead::readXMLDocument("onlineserver.xml");
+		std::shared_ptr<TiXmlDocument> serverListXml = FileRead::readXMLDocument("onlineserver.xml");
 
 		if (serverListXml->Error())
 		{

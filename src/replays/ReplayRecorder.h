@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Global.h"
 #include "ReplaySavePoint.h"
@@ -66,10 +66,10 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		ReplayRecorder();
 		~ReplayRecorder();
 
-		void save(boost::shared_ptr<FileWrite> target) const;
+		void save(std::shared_ptr<FileWrite> target) const;
 
-		void send(boost::shared_ptr<GenericOut> stream) const;
-		void receive(boost::shared_ptr<GenericIn>stream);
+		void send(std::shared_ptr<GenericOut> stream) const;
+		void receive(std::shared_ptr<GenericIn>stream);
 
 		// recording functions
 		void record(const DuelMatchState& input);

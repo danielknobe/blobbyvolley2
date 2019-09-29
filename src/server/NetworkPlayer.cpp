@@ -87,12 +87,12 @@ PlayerIdentity NetworkPlayer::getIdentity() const
 	return mIdentity;
 }
 
-const boost::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
+const std::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
 {
 	return mGame;
 }
 
-void NetworkPlayer::setGame(boost::shared_ptr<NetworkGame> game)
+void NetworkPlayer::setGame(std::shared_ptr<NetworkGame> game)
 {
 	mGame = game;
 }

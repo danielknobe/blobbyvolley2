@@ -39,11 +39,11 @@ public:
 	// returns a unique challenge ID
 	unsigned openGame( PlayerID creator, int speed, int rules, int points );
 
-	void addPlayer( PlayerID id, boost::shared_ptr<NetworkPlayer> player );
+	void addPlayer( PlayerID id, std::shared_ptr<NetworkPlayer> player );
 	void removePlayer( PlayerID id );
 
 	// set callback functions
-	typedef std::function<void(boost::shared_ptr<NetworkPlayer>, boost::shared_ptr<NetworkPlayer>,
+	typedef std::function<void(std::shared_ptr<NetworkPlayer>, std::shared_ptr<NetworkPlayer>,
 								PlayerSide, std::string rules, int score, float speed)> create_game_fn;
 	void setCreateGame( create_game_fn func) { mCreateGame = func;};
 
@@ -110,7 +110,7 @@ private:
 	unsigned int mIDCounter = 0;
 
 	// waiting player map
-	std::map< PlayerID, boost::shared_ptr<NetworkPlayer>> mPlayerMap;
+	std::map< PlayerID, std::shared_ptr<NetworkPlayer>> mPlayerMap;
 
 	// possible game configurations
 	std::vector<unsigned int> mPossibleGameSpeeds;

@@ -61,7 +61,7 @@ void LobbyState::step_impl()
 				makeEnterServerPacket(stream, mLocalPlayer);
 				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 
-				mSubState = boost::make_shared<LobbyMainSubstate>(mClient, 0, 0, 3);
+				mSubState = std::make_shared<LobbyMainSubstate>(mClient, 0, 0, 3);
 				break;
 			}
 			case ID_CONNECTION_ATTEMPT_FAILED:
@@ -117,7 +117,7 @@ void LobbyState::step_impl()
 
 					// find out which settings most closely resemble the local config
 					bool first_config = (mPreferedSpeed == -1u); // detect whether we set config for the first time
-					boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
+					std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 
 					// speed
 					int speed = config->getInteger("gamefps");
@@ -145,15 +145,15 @@ void LobbyState::step_impl()
 					// if this is the first time we receive the config, create new main substate
 					if( first_config )
 					{
-						mSubState = boost::make_shared<LobbyMainSubstate>(mClient, mPreferedSpeed, mPreferedRules, mPreferedScore);
+						mSubState = std::make_shared<LobbyMainSubstate>(mClient, mPreferedSpeed, mPreferedRules, mPreferedScore);
 					}
 
 				} else if((LobbyPacketType)t == LobbyPacketType::GAME_STATUS)
 				{
-					mSubState = boost::make_shared<LobbyGameSubstate>(mClient, in);
+					mSubState = std::make_shared<LobbyGameSubstate>(mClient, in);
 				} else if((LobbyPacketType)t == LobbyPacketType::REMOVED_FROM_GAME)
 				{
-					mSubState = boost::make_shared<LobbyMainSubstate>(mClient, mPreferedSpeed, mPreferedRules, mPreferedScore);
+					mSubState = std::make_shared<LobbyMainSubstate>(mClient, mPreferedSpeed, mPreferedRules, mPreferedScore);
 				}
 				}
 				break;
@@ -246,7 +246,7 @@ const char* LobbyState::getStateName() const
 // ----------------------------------------------------------------------------
 // 				M a i n     S u b s t a t e
 // ----------------------------------------------------------------------------
-LobbyMainSubstate::LobbyMainSubstate(boost::shared_ptr<RakClient> client,
+LobbyMainSubstate::LobbyMainSubstate(std::shared_ptr<RakClient> client,
 									unsigned prefspeed, unsigned prefrules, unsigned prefscore ) :
 	mClient(client),
 	mChosenSpeed( prefspeed ),
@@ -365,7 +365,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 // 			"Host" State Substate
 // -----------------------------------------------------------------------------------------
 
-LobbyGameSubstate::LobbyGameSubstate(boost::shared_ptr<RakClient> client, boost::shared_ptr<GenericIn> in):
+LobbyGameSubstate::LobbyGameSubstate(std::shared_ptr<RakClient> client, std::shared_ptr<GenericIn> in):
 	mClient( client )
 {
  	in->uint32( mGameID );

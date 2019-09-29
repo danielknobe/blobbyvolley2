@@ -48,8 +48,8 @@ extern int SWLS_GameSteps;
 
 /* implementation */
 
-NetworkGame::NetworkGame(RakServer& server, boost::shared_ptr<NetworkPlayer> leftPlayer,
-			boost::shared_ptr<NetworkPlayer> rightPlayer, PlayerSide switchedSide,
+NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftPlayer,
+			std::shared_ptr<NetworkPlayer> rightPlayer, PlayerSide switchedSide,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
 	mMatch(new DuelMatch(false, rules, scoreToWin)),
@@ -262,7 +262,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 		{
 			RakNet::BitStream stream = RakNet::BitStream();
 			stream.Write((unsigned char)ID_REPLAY);
-			boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
+			std::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 			mRecorder->send( out );
 			assert( stream.GetData()[0] == ID_REPLAY );
 
@@ -273,7 +273,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 
 		case ID_RULES:
 		{
-			boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>((char*)packet->data,
+			std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>((char*)packet->data,
 					packet->length, false);
 			bool needRules;
 			stream->IgnoreBytes(1);
@@ -282,7 +282,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 
 			if (needRules)
 			{
-				stream = boost::make_shared<RakNet::BitStream>();
+				stream = std::make_shared<RakNet::BitStream>();
 				stream->Write((unsigned char)ID_RULES);
 				stream->Write( mRulesLength );
 				stream->Write( mRulesString.get(), mRulesLength);
@@ -378,7 +378,7 @@ void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 	stream.Write( mLeftLastTime );
 
 	/// \todo this required dynamic memory allocation! not good!
-	boost::shared_ptr<GenericOut> out = createGenericWriter( &stream );
+	std::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 
 	if (mSwitchedSide == LEFT_PLAYER)
 		ms.swapSides();

@@ -154,7 +154,7 @@ void MatchMaker::removePlayerFromGame( unsigned game, PlayerID player )
 	broadcastOpenGameStatus(game);
 }
 
-void MatchMaker::addPlayer( PlayerID id, boost::shared_ptr<NetworkPlayer> player )
+void MatchMaker::addPlayer( PlayerID id, std::shared_ptr<NetworkPlayer> player )
 {
 	assert( mPlayerMap.find(id) == mPlayerMap.end() );
 	mPlayerMap[id] = player;

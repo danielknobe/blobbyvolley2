@@ -10,7 +10,7 @@
 #include "InputSource.h"
 #include "DuelMatchState.h"
 #include "raknet/BitStream.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/scoped_array.hpp>
 #include <boost/make_shared.hpp>
 #include <vector>
@@ -34,12 +34,12 @@ void init_Physfs()
 	}
 }
 
-void generic_io_types_test_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out);
-void generic_io_types_test_generics_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out);
+void generic_io_types_test_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
+void generic_io_types_test_generics_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
 template<class T>
-void generic_io_types_test_vector_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out);
-void generic_io_seek_tell_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out);
-void generic_io_types_test_special_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out);
+void generic_io_types_test_vector_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
+void generic_io_seek_tell_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
+void generic_io_types_test_special_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
 
 #define CHECK_EXCEPTION_SAFETY(expr, excp) 	try { 	\
 											BOOST_TEST_CHECKPOINT("trying " #expr);		\
@@ -63,9 +63,9 @@ BOOST_AUTO_TEST_CASE( generic_io_create )
 {
 	init_Physfs();
 	
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
 	
 	// no checks, just let this pass without exceptions
 	createGenericReader( read );
@@ -76,74 +76,74 @@ BOOST_AUTO_TEST_CASE( generic_io_create )
 
 BOOST_AUTO_TEST_CASE( generic_io_types_test_file )
 {
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
-	boost::shared_ptr<GenericIn>  inf = createGenericReader( read );
-	boost::shared_ptr<GenericOut>  outf = createGenericWriter( write );
+	std::shared_ptr<GenericIn>  inf = createGenericReader( read );
+	std::shared_ptr<GenericOut>  outf = createGenericWriter( write );
 	generic_io_types_test_f( inf, outf);
 };
 
 
 BOOST_AUTO_TEST_CASE( generic_io_types_test_stream )
 {
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
-	boost::shared_ptr<GenericIn>  ins = createGenericReader( stream );
-	boost::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
+	std::shared_ptr<GenericIn>  ins = createGenericReader( stream );
+	std::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
 	generic_io_types_test_f( ins, outs);
 };
 
 BOOST_AUTO_TEST_CASE( generic_io_generic_types_file )
 {
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
-	boost::shared_ptr<GenericIn>  inf = createGenericReader( read );
-	boost::shared_ptr<GenericOut>  outf = createGenericWriter( write );
+	std::shared_ptr<GenericIn>  inf = createGenericReader( read );
+	std::shared_ptr<GenericOut>  outf = createGenericWriter( write );
 	generic_io_types_test_generics_f( inf, outf);
 };
 
 
 BOOST_AUTO_TEST_CASE( generic_io_generic_types_stream )
 {
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
 	
-	boost::shared_ptr<GenericIn>  ins = createGenericReader( stream );
-	boost::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
+	std::shared_ptr<GenericIn>  ins = createGenericReader( stream );
+	std::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
 	generic_io_types_test_generics_f( ins, outs);
 };
 
 BOOST_AUTO_TEST_CASE( generic_io_seek_tell )
 {
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
-	boost::shared_ptr<GenericIn>  inf = createGenericReader( read );
-	boost::shared_ptr<GenericOut>  outf = createGenericWriter( write );
+	std::shared_ptr<GenericIn>  inf = createGenericReader( read );
+	std::shared_ptr<GenericOut>  outf = createGenericWriter( write );
 	generic_io_seek_tell_f( inf, outf);
 
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
 	
-	boost::shared_ptr<GenericIn>  ins = createGenericReader( stream );
-	boost::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
+	std::shared_ptr<GenericIn>  ins = createGenericReader( stream );
+	std::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
 	generic_io_seek_tell_f( ins, outs);
 };
 
 BOOST_AUTO_TEST_CASE( generic_io_generic_types_vector )
 {
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
-	boost::shared_ptr<GenericIn>  inf = createGenericReader( read );
-	boost::shared_ptr<GenericOut>  outf = createGenericWriter( write );
+	std::shared_ptr<GenericIn>  inf = createGenericReader( read );
+	std::shared_ptr<GenericOut>  outf = createGenericWriter( write );
 	generic_io_types_test_vector_f<std::vector<unsigned char> >( inf, outf );
 	generic_io_types_test_vector_f<std::list<unsigned char> >( inf, outf );
 	generic_io_types_test_vector_f<std::deque<unsigned char> >( inf, outf );
 
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
 	
-	boost::shared_ptr<GenericIn>  ins = createGenericReader( stream );
-	boost::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
+	std::shared_ptr<GenericIn>  ins = createGenericReader( stream );
+	std::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
 	generic_io_types_test_vector_f<std::vector<unsigned char> >( ins, outs );
 	generic_io_types_test_vector_f<std::list<unsigned char> >( ins, outs );
 	generic_io_types_test_vector_f<std::deque<unsigned char> >( ins, outs );
@@ -152,17 +152,17 @@ BOOST_AUTO_TEST_CASE( generic_io_generic_types_vector )
 
 BOOST_AUTO_TEST_CASE( generic_io_special_types )
 {
-	boost::shared_ptr<FileWrite> write = boost::make_shared<FileWrite>("test.tmp");
-	boost::shared_ptr<FileRead> read = boost::make_shared<FileRead>("test.tmp");
+	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
+	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
-	boost::shared_ptr<GenericIn>  inf = createGenericReader( read );
-	boost::shared_ptr<GenericOut>  outf = createGenericWriter( write );
+	std::shared_ptr<GenericIn>  inf = createGenericReader( read );
+	std::shared_ptr<GenericOut>  outf = createGenericWriter( write );
 	generic_io_types_test_special_f( inf, outf);
 
-	boost::shared_ptr<RakNet::BitStream> stream = boost::make_shared<RakNet::BitStream>();
+	std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>();
 	
-	boost::shared_ptr<GenericIn>  ins = createGenericReader( stream );
-	boost::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
+	std::shared_ptr<GenericIn>  ins = createGenericReader( stream );
+	std::shared_ptr<GenericOut>  outs = createGenericWriter( stream );
 	generic_io_types_test_special_f( ins, outs);
 };
 
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( generic_io_special_types )
 BOOST_AUTO_TEST_SUITE_END()
 
 
-void generic_io_types_test_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out)
+void generic_io_types_test_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out)
 {
 	// writing
 	const unsigned char byte1 = 6;
@@ -267,7 +267,7 @@ void generic_io_types_test_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<
 	BOOST_CHECK( memcmp(ar3.get(), str3.data(), str3.size()) == 0);
 }
 
-void generic_io_types_test_generics_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out)
+void generic_io_types_test_generics_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out)
 {
 	#ifndef DISABLE_COMPILATION_TEST
 	// writing
@@ -311,7 +311,7 @@ void generic_io_types_test_generics_f(boost::shared_ptr<GenericIn> in, boost::sh
 }
 
 template<class T>
-void generic_io_types_test_vector_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out)
+void generic_io_types_test_vector_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out)
 {
 	// writing
 	T basevec;
@@ -335,7 +335,7 @@ void generic_io_types_test_vector_f(boost::shared_ptr<GenericIn> in, boost::shar
 	}
 }
 
-void generic_io_seek_tell_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out)
+void generic_io_seek_tell_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out)
 {
 	out->uint32(5);
 	int pos = out->tell();
@@ -358,7 +358,7 @@ void generic_io_seek_tell_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<G
 	BOOST_CHECK_EQUAL(val, 42);
 }
 
-void generic_io_types_test_special_f(boost::shared_ptr<GenericIn> in, boost::shared_ptr<GenericOut> out)
+void generic_io_types_test_special_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out)
 {
 	const PlayerInput pi(true, false, false);
 	

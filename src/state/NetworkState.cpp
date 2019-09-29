@@ -60,7 +60,7 @@ int CURRENT_NETWORK_LAG = -1;
 
 
 /* implementation */
-NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rule_checksum, int score_to_win)
+NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_checksum, int score_to_win)
 	: GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win))
 	, mNetworkState(WAITING_FOR_OPPONENT)
 	, mWaitingForReplay(false)
@@ -70,7 +70,7 @@ NetworkGameState::NetworkGameState( boost::shared_ptr<RakClient> client, int rul
 	, mChatCursorPosition(0)
 	, mChattext("")
 {
-	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
+	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");
 	mUseRemoteColor = config->getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
@@ -151,7 +151,7 @@ void NetworkGameState::step_impl()
 				DuelMatchState ms;
 				/// \todo this is a performance nightmare: we create a new reader for every packet!
 				///			there should be a better way to do that
-				boost::shared_ptr<GenericIn> in = createGenericReader(&stream);
+				std::shared_ptr<GenericIn> in = createGenericReader(&stream);
 				in->generic<DuelMatchState> (ms);
 				// inject network data into game
 				mMatch->setState( ms );
@@ -334,7 +334,7 @@ void NetworkGameState::step_impl()
 				stream.IgnoreBytes(1);	// ID_REPLAY
 
 				// read stream into a dummy replay recorder
-				boost::shared_ptr<GenericIn> reader = createGenericReader( &stream );
+				std::shared_ptr<GenericIn> reader = createGenericReader( &stream );
 				ReplayRecorder dummyRec;
 				dummyRec.receive( reader );
 				// and save that

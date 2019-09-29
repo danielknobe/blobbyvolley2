@@ -33,7 +33,7 @@
 #define __NETWORK_TYPES_H
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace RakNet
 {
@@ -156,7 +156,7 @@ struct Packet
 	RakNet::BitStream getStream() const;
 };
 
-typedef boost::shared_ptr<Packet> packet_ptr;
+typedef std::shared_ptr<Packet> packet_ptr;
 
 /**
 *  Index of an unassigned player

@@ -201,7 +201,7 @@ class ReplayLoader_V2X: public IReplayLoader
 	private:
 		void initLoading(std::string filename) override
 		{
-			boost::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
+			std::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
 
 			if (configDoc->Error())
 			{

@@ -44,12 +44,12 @@ LocalGameState::~LocalGameState()
 LocalGameState::LocalGameState()
 	: mWinner(false), mRecorder(new ReplayRecorder())
 {
-	boost::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
+	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
 
-	boost::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
-	boost::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER);
+	std::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
+	std::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER);
 
 	// create default replay name
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
