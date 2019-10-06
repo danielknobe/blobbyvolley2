@@ -158,12 +158,16 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 			return 42;
 		else if (testChar == std::string("ü")[1])
 			return 43;
+		else if (testChar == std::string("ì")[1])
+			return 55;
 		else if (testChar == std::string("Ä")[1])
 			return 41;
 		else if (testChar == std::string("Ö")[1])
 			return 42;
 		else if (testChar == std::string("Ü")[1])
 			return 43;
+		else if (testChar == std::string("Ì")[1])
+			return 55;
 	}
 
 	return index;
