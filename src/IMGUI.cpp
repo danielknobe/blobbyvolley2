@@ -556,21 +556,31 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 	obj.length = length; // lenght does not actually work!
 	obj.flags = flags;
 
+	// Width and height including border
+	int width = length * FontSize + 10;
+	int height = FontSize + 10;
+
+		// update position depending on alignment
+	if( flags & TF_ALIGN_CENTER )
+	{
+		obj.pos1.x -= width / 2;
+	}
+
 	// React to mouse input.
 	Vector2 mousepos = InputManager::getSingleton()->position();
-	if (mousepos.x > position.x &&
-		mousepos.y > position.y &&
-		mousepos.x < position.x + length * FontSize + 10 &&
-		mousepos.y < position.y + FontSize + 10)
+	if (mousepos.x > obj.pos1.x &&
+		mousepos.y > obj.pos1.y &&
+		mousepos.x < obj.pos1.x + width &&
+		mousepos.y < obj.pos1.y + height)
 	{
 		obj.flags = obj.flags | TF_HIGHLIGHT;
 		if (InputManager::getSingleton()->click())
 		{
 			// Handle click on the text.
-			if (mousepos.x < position.x + text.length() * FontSize)
-				cpos = (int) ((mousepos.x-position.x-5+(FontSize/2)) / FontSize);
+			if (mousepos.x < obj.pos1.x + text.length() * FontSize)
+				cpos = (int) ((mousepos.x-obj.pos1.x-5+(FontSize/2)) / FontSize);
 			// Handle click behind the text.
-			else if (mousepos.x < position.x + length * FontSize + 10)
+			else if (mousepos.x < obj.pos1.x + width)
 				cpos = (int) text.length();
 
 			mActiveButton = id;
