@@ -194,7 +194,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 		{
 
 			unsigned time;
-			RakNet::BitStream stream((char*)packet->data, packet->length, false);
+			RakNet::BitStream stream(packet->data, packet->length, false);
 
 			// ignore ID_INPUT_UPDATE
 			stream.IgnoreBytes(1);
@@ -237,8 +237,8 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 		}
 
 		case ID_CHAT_MESSAGE:
-		{	RakNet::BitStream stream((char*)packet->data,
-					packet->length, false);
+		{
+			RakNet::BitStream stream(packet->data, packet->length, false);
 
 			stream.IgnoreBytes(1); // ID_CHAT_MESSAGE
 			char message[31];
@@ -273,7 +273,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 
 		case ID_RULES:
 		{
-			std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>((char*)packet->data,
+			std::shared_ptr<RakNet::BitStream> stream = std::make_shared<RakNet::BitStream>(packet->data,
 					packet->length, false);
 			bool needRules;
 			stream->IgnoreBytes(1);

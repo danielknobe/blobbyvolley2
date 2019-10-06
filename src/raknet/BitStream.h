@@ -91,7 +91,7 @@ namespace RakNet
 		 * @param lengthInBytes Size of the @em _data.
 		 * @param _copyData Does a copy of the input data.
 		 */
-		BitStream( char* _data, unsigned int lengthInBytes, bool _copyData );
+		BitStream( unsigned char* _data, unsigned int lengthInBytes, bool _copyData );
 		/**
 		 * Destructor
 		 */

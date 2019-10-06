@@ -129,7 +129,7 @@ BitStream::BitStream( int initialBytesToAllocate )
 	copyData = true;
 }
 
-BitStream::BitStream( char* _data, unsigned int lengthInBytes, bool _copyData )
+BitStream::BitStream( unsigned char* _data, unsigned int lengthInBytes, bool _copyData )
 {
 	numberOfBitsUsed = lengthInBytes << 3;
 	readOffset = 0;
@@ -142,7 +142,7 @@ BitStream::BitStream( char* _data, unsigned int lengthInBytes, bool _copyData )
 		{
 			if (lengthInBytes < BITSTREAM_STACK_ALLOCATION_SIZE)
 			{
-				data = ( unsigned char* ) stackData;
+				data = stackData;
 				numberOfBitsAllocated = BITSTREAM_STACK_ALLOCATION_SIZE << 3;
 			}
 			else
@@ -158,7 +158,7 @@ BitStream::BitStream( char* _data, unsigned int lengthInBytes, bool _copyData )
 			data = 0;
 	}
 	else
-		data = ( unsigned char* ) _data;
+		data = _data;
 }
 
 // Use this if you pass a pointer copy to the constructor (_copyData==false) and want to overallocate to prevent reallocation

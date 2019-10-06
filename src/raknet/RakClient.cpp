@@ -98,14 +98,14 @@ packet_ptr RakClient::Receive( void )
 
 	if ( packet )
 	{
-		RakNet::BitStream bitStream( ( char* ) packet->data, packet->length, false );
+		RakNet::BitStream bitStream(packet->data, packet->length, false );
 		int i;
 
 		if ( packet->data[ 0 ] == ID_CONNECTION_REQUEST_ACCEPTED )
 		{
 			PlayerIndex playerIndex;
 
-			RakNet::BitStream inBitStream((char*)packet->data, packet->length, false);
+			RakNet::BitStream inBitStream(packet->data, packet->length, false);
 			inBitStream.IgnoreBits(8); // ID_CONNECTION_REQUEST_ACCEPTED
 			inBitStream.IgnoreBits(8 * sizeof(unsigned short)); //inBitStream.Read(remotePort);
 			inBitStream.IgnoreBits(8 * sizeof(unsigned int)); //inBitStream.Read(externalID.binaryAddress);

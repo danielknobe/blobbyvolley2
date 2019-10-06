@@ -234,7 +234,7 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer( const char *buffe
 	statistics.bitsReceived += length * 8;
 	statistics.packetsReceived++;
 
-	RakNet::BitStream socketData( (char*)buffer, length, false ); // Convert the incoming data to a bitstream for easy parsing
+	RakNet::BitStream socketData( (unsigned char*)buffer, length, false ); // Convert the incoming data to a bitstream for easy parsing
 
 	unsigned int time = RakNet::GetTime();
 

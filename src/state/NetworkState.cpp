@@ -143,7 +143,7 @@ void NetworkGameState::step_impl()
 		{
 			case ID_GAME_UPDATE:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_GAME_UPDATE
 				unsigned timeBack;
 				stream.Read(timeBack);
@@ -160,7 +160,7 @@ void NetworkGameState::step_impl()
 
 			case ID_GAME_EVENTS:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_GAME_EVENTS
 				//printf("Physic packet received. Time: %d\n", ival);
 				// read events
@@ -179,7 +179,7 @@ void NetworkGameState::step_impl()
 			}
 			case ID_WIN_NOTIFICATION:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_WIN_NOTIFICATION
 				stream.Read((int&)mWinningPlayer);
 
@@ -217,7 +217,7 @@ void NetworkGameState::step_impl()
 			case ID_GAME_READY:
 			{
 				char charName[16];
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 
 				stream.IgnoreBytes(1);	// ignore ID_GAME_READY
 
@@ -267,7 +267,7 @@ void NetworkGameState::step_impl()
 			}
 			case ID_RULES:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 
 				stream.IgnoreBytes(1);	// ignore ID_RULES
 
@@ -309,7 +309,7 @@ void NetworkGameState::step_impl()
 				break;
 			case ID_CHAT_MESSAGE:
 			{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_CHAT_MESSAGE
 				// Insert Message in the log and focus the last element
 				char message[31];
@@ -330,7 +330,7 @@ void NetworkGameState::step_impl()
 				if(!mWaitingForReplay)
 					break;
 
-				RakNet::BitStream stream = RakNet::BitStream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream = RakNet::BitStream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
 
 				// read stream into a dummy replay recorder

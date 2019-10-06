@@ -556,7 +556,7 @@ bool RakPeer::Send( const char *data, const long length, PacketPriority priority
 	if ( data == 0 || length < 0 )
 		return false;
 
-	RakNet::BitStream temp( (char*)data, length, false );
+	RakNet::BitStream temp( (unsigned char*)data, length, false );
 	return Send( &temp, priority, reliability, orderingChannel, playerId, broadcast );
 
 }
@@ -1920,7 +1920,7 @@ bool RakPeer::RunUpdateCycle( void )
 						|| (unsigned char)(data)[0] == ID_UNCONNECTED_PING)
 						&& byteSize == sizeof(unsigned char)+sizeof(unsigned int) )
 					{
-						RakNet::BitStream inBitStream( data, byteSize, false );
+						RakNet::BitStream inBitStream( (unsigned char *)data, byteSize, false );
 						inBitStream.IgnoreBits(8);
 						unsigned int sendPingTime;
 						inBitStream.Read(sendPingTime);
@@ -1973,7 +1973,7 @@ bool RakPeer::RunUpdateCycle( void )
 							remoteSystem->connectMode=RemoteSystemStruct::CONNECTED;
 							PingInternal( playerId, true );
 
-							RakNet::BitStream inBitStream(data, byteSize, false);
+							RakNet::BitStream inBitStream((unsigned char *)data, byteSize, false);
 							PlayerID bsPlayerId;
 
 							inBitStream.IgnoreBits(8);
@@ -2011,7 +2011,7 @@ bool RakPeer::RunUpdateCycle( void )
 
 						// Copy into the ping times array the current time - the value returned
 						// First extract the sent ping
-						RakNet::BitStream inBitStream( data, byteSize, false );
+						RakNet::BitStream inBitStream( (unsigned char *)data, byteSize, false );
 						//PingStruct ps;
 						//ps.Deserialize(psBS);
 						inBitStream.IgnoreBits(8);
@@ -2038,7 +2038,7 @@ bool RakPeer::RunUpdateCycle( void )
 					}
 					else if ( (unsigned char)data[0] == ID_CONNECTED_PING && byteSize == sizeof(unsigned char)+sizeof(unsigned int) )
 					{
-						RakNet::BitStream inBitStream( data, byteSize, false );
+						RakNet::BitStream inBitStream( (unsigned char *)data, byteSize, false );
 						inBitStream.IgnoreBits(8);
 						unsigned int sendPingTime;
 						inBitStream.Read(sendPingTime);
@@ -2106,7 +2106,7 @@ bool RakPeer::RunUpdateCycle( void )
 								PlayerID externalID;
 								PlayerIndex playerIndex;
 
-								RakNet::BitStream inBitStream(data, byteSize, false);
+								RakNet::BitStream inBitStream((unsigned char *)data, byteSize, false);
 								inBitStream.IgnoreBits(8); // ID_CONNECTION_REQUEST_ACCEPTED
 								inBitStream.Read(remotePort);
 								inBitStream.Read(externalID.binaryAddress);

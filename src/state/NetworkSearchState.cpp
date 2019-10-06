@@ -126,7 +126,7 @@ void NetworkSearchState::step_impl()
 				{
 					//FIXME: We must copy the needed informations, so that we can call DeallocatePacket(packet)
 					//FIXME: The client finds a server at this point, which is not valid
-					RakNet::BitStream stream((char*)packet->data, packet->length, false);
+					RakNet::BitStream stream(packet->data, packet->length, false);
 					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 					ServerInfo info(stream,	(*iter)->PlayerIDToDottedIP(packet->playerId), packet->playerId.port);
 
@@ -182,7 +182,7 @@ void NetworkSearchState::step_impl()
 				{
 					// this packet is send when the client is older than the server!
 					// so
-					RakNet::BitStream stream((char*)packet->data, packet->length, false);
+					RakNet::BitStream stream(packet->data, packet->length, false);
 					stream.IgnoreBytes(1);	// ID_VERSION_MISMATCH
 
 					// default values if server does not send versions.

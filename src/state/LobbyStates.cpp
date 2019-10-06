@@ -161,7 +161,7 @@ void LobbyState::step_impl()
 				// this is only a valid request if we are in the lobby game substate
 				assert(dynamic_cast<LobbyGameSubstate*>(mSubState.get()) != nullptr);
 				{
-				RakNet::BitStream stream((char*)packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 
 				stream.IgnoreBytes(1);	// ignore ID_RULES_CHECKSUM
 
