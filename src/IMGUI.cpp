@@ -379,10 +379,10 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		#endif
 		// React to mouse input.
 		Vector2 mousepos = InputManager::getSingleton()->position();
-		if (mousepos.x + tolerance >= position.x &&
-			mousepos.y + tolerance * 2 >= position.y &&
-			mousepos.x - tolerance <= position.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
-			mousepos.y - tolerance * 2 <= position.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
+		if (mousepos.x + tolerance >= obj.pos1.x &&
+			mousepos.y + tolerance * 2 >= obj.pos1.y &&
+			mousepos.x - tolerance <= obj.pos1.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
+			mousepos.y - tolerance * 2 <= obj.pos1.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
 		{
 			obj.flags = obj.flags
 			#if __DESKTOP__
