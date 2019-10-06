@@ -118,14 +118,14 @@ bool GameState::displaySaveReplayPrompt()
 
 	imgui.doCursor();
 
-	imgui.doOverlay(GEN_ID, Vector2(150, 200), Vector2(650, 400));
-	imgui.doText(GEN_ID, Vector2(190, 220), TextManager::RP_SAVE_NAME);
+	imgui.doOverlay(GEN_ID, Vector2(0, 200), Vector2(800, 400));
+	imgui.doText(GEN_ID, Vector2(400, 230), TextManager::RP_SAVE_NAME, TF_ALIGN_CENTER);
 	static unsigned cpos;
-	imgui.doEditbox(GEN_ID, Vector2(180, 270), 18, mFilename, cpos);
+	imgui.doEditbox(GEN_ID, Vector2(400, 285), 18, mFilename, cpos, TF_ALIGN_CENTER);
 
 	bool doSave = false;
 
-	if(imgui.doButton(GEN_ID, Vector2(220, 330), TextManager::LBL_OK))
+	if(imgui.doButton(GEN_ID, Vector2(220, 350), TextManager::LBL_OK))
 	{
 		if(mFilename != "")
 		{
@@ -134,7 +134,7 @@ bool GameState::displaySaveReplayPrompt()
 		}
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(440, 330), TextManager::LBL_CANCEL))
+	if (imgui.doButton(GEN_ID, Vector2(440, 350), TextManager::LBL_CANCEL))
 	{
 		mSaveReplay = false;
 		imgui.resetSelection();
@@ -168,10 +168,10 @@ bool GameState::displayWinningPlayerScreen(PlayerSide winner)
 	auto& imgui = IMGUI::getSingleton();
 
 	std::string tmp = mMatch->getPlayer(winner).getName();
-	imgui.doOverlay(GEN_ID, Vector2(200, 150), Vector2(700, 450));
-	imgui.doImage(GEN_ID, Vector2(200, 250), "gfx/pokal.bmp");
-	imgui.doText(GEN_ID, Vector2(274, 240), tmp);
-	imgui.doText(GEN_ID, Vector2(274, 300), TextManager::GAME_WIN);
+	imgui.doOverlay(GEN_ID, Vector2(0, 150), Vector2(800, 450));
+	imgui.doImage(GEN_ID, Vector2(190, 250), "gfx/pokal.bmp");
+	imgui.doText(GEN_ID, Vector2(500, 210), tmp, TF_ALIGN_CENTER);
+	imgui.doText(GEN_ID, Vector2(500, 270), TextManager::GAME_WIN, TF_ALIGN_CENTER);
 	imgui.doCursor();
 
 	return false;

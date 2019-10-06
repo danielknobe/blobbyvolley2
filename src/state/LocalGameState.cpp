@@ -86,16 +86,16 @@ void LocalGameState::step_impl()
 	}
 	else if (mMatch->isPaused())
 	{
-		imgui.doOverlay(GEN_ID, Vector2(180, 200), Vector2(670, 400));
-		imgui.doText(GEN_ID, Vector2(281, 260), TextManager::LBL_CONF_QUIT);
-		if (imgui.doButton(GEN_ID, Vector2(530, 300), TextManager::LBL_NO)){
+		imgui.doOverlay(GEN_ID, Vector2(0, 200), Vector2(800, 400));
+		imgui.doText(GEN_ID, Vector2(400, 230), TextManager::LBL_CONF_QUIT, TF_ALIGN_CENTER);
+		if (imgui.doButton(GEN_ID, Vector2(530, 290), TextManager::LBL_NO)){
 			mMatch->unpause();
 		}
-		if (imgui.doButton(GEN_ID, Vector2(260, 300), TextManager::LBL_YES))
+		if (imgui.doButton(GEN_ID, Vector2(260, 290), TextManager::LBL_YES))
 		{
 			switchState(new MainMenuState);
 		}
-		if (imgui.doButton(GEN_ID, Vector2(293, 340), TextManager::RP_SAVE))
+		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SAVE, TF_ALIGN_CENTER))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
@@ -105,15 +105,15 @@ void LocalGameState::step_impl()
 	else if (mWinner)
 	{
 		displayWinningPlayerScreen( mMatch->winningPlayer() );
-		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
+		if (imgui.doButton(GEN_ID, Vector2(310, 340), TextManager::LBL_OK))
 		{
 			switchState(new MainMenuState());
 		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::GAME_TRY_AGAIN))
+		if (imgui.doButton(GEN_ID, Vector2(420, 340), TextManager::GAME_TRY_AGAIN))
 		{
 			switchState(new LocalGameState());
 		}
-		if (imgui.doButton(GEN_ID, Vector2(320, 390), TextManager::RP_SAVE))
+		if (imgui.doButton(GEN_ID, Vector2(500, 390), TextManager::RP_SAVE, TF_ALIGN_CENTER))
 		{
 			mSaveReplay = true;
 			imgui.resetSelection();
