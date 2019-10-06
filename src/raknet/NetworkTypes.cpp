@@ -69,8 +69,3 @@ std::ostream& operator<<(std::ostream& stream, const PlayerID& p)
 {
 	return stream << p.toString();
 }
-
-RakNet::BitStream Packet::getStream() const
-{
-	return RakNet::BitStream(data, BITS_TO_BYTES(bitSize), false);
-}

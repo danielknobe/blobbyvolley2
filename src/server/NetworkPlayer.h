@@ -44,9 +44,8 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		NetworkPlayer();
 
 		NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side);
-		// i guess we should! not need to make a copy here
-		// but this is saver as this constructor can't mess up other code.
-		NetworkPlayer(PlayerID id, RakNet::BitStream stream);
+
+		NetworkPlayer(PlayerID id, RakNet::BitStream& stream);
 
 		bool valid() const;
 

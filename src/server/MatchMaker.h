@@ -51,7 +51,7 @@ public:
 	void setSendFunction( send_fn func ) { mSendPacket = func; };
 
 	// communication
-	void receiveLobbyPacket( PlayerID sender, RakNet::BitStream content );
+	void receiveLobbyPacket( PlayerID sender, RakNet::BitStream& content );
 	/// send a packet with all currently open games to \p recipient
 	void sendOpenGameList( PlayerID recipient );
 

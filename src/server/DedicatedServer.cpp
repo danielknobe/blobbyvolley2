@@ -194,7 +194,7 @@ void DedicatedServer::processPackets()
 			// player connects to server
 			case ID_ENTER_SERVER:
 			{
-				RakNet::BitStream stream = packet->getStream();
+				RakNet::BitStream stream(packet->data, packet->length, false);
 
 				stream.IgnoreBytes(1);	//ID_ENTER_SERVER
 
@@ -225,7 +225,8 @@ void DedicatedServer::processPackets()
 				/// \todo assert that the player send an ID_ENTER_SERVER before
 
 				// which player is wanted as opponent
-				mMatchMaker.receiveLobbyPacket( packet->playerId, packet->getStream() );
+				RakNet::BitStream stream(packet->data, packet->length, false);
+				mMatchMaker.receiveLobbyPacket( packet->playerId, stream );
 				break;
 			}
 			case ID_BLOBBY_SERVER_PRESENT:
@@ -339,7 +340,7 @@ void DedicatedServer::printAllGames(std::ostream& stream) const
 // special packet processing
 void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 {
-	RakNet::BitStream stream = packet->getStream();
+	RakNet::BitStream stream(packet->data, packet->length, false);
 
 	// If the client knows nothing about versioning, the version is 0.0
 	int major = 0;

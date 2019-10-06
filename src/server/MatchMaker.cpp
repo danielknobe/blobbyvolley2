@@ -259,7 +259,7 @@ void MatchMaker::startGame(PlayerID host, PlayerID client)
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void MatchMaker::receiveLobbyPacket( PlayerID player, RakNet::BitStream stream )
+void MatchMaker::receiveLobbyPacket( PlayerID player, RakNet::BitStream& stream )
 {
 	unsigned char byte;
 	auto reader = createGenericReader(&stream);

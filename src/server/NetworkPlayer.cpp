@@ -39,7 +39,7 @@ NetworkPlayer::NetworkPlayer(PlayerID id, const std::string& name, Color color, 
 
 }
 
-NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream stream) : mID(id)
+NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream& stream) : mID(id)
 {
 	int playerSide;
 	stream.Read(playerSide);

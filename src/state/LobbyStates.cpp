@@ -85,7 +85,7 @@ void LobbyState::step_impl()
 			case ID_LOBBY:
 				{
 				mLobbyState = ConnectionState::CONNECTED;
-				RakNet::BitStream stream = packet->getStream();
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				auto in = createGenericReader( &stream );
 				unsigned char t;
 				in->byte(t);

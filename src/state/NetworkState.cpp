@@ -330,7 +330,7 @@ void NetworkGameState::step_impl()
 				if(!mWaitingForReplay)
 					break;
 
-				RakNet::BitStream stream = RakNet::BitStream(packet->data, packet->length, false);
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	// ID_REPLAY
 
 				// read stream into a dummy replay recorder
@@ -356,7 +356,7 @@ void NetworkGameState::step_impl()
 			case ID_BLOBBY_SERVER_PRESENT:
 			{
 				// this should only be called if we use the stay on server option
-				RakNet::BitStream stream( packet->getStream() );
+				RakNet::BitStream stream(packet->data, packet->length, false);
 				stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 				ServerInfo info(stream,	mClient->PlayerIDToDottedIP(packet->playerId), packet->playerId.port);
 

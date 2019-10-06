@@ -491,6 +491,12 @@ namespace RakNet
 
 	private:
 		/**
+		 * Newer versions of raknet have an deleted copy constructor
+		 */
+		BitStream( const BitStream &invalid) = delete;
+
+	private:
+		/**
 		 * Assume the input source points to a native type, compress and write it.
 		 */
 		void WriteCompressed( const unsigned char* input,

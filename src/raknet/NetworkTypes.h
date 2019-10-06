@@ -147,13 +147,6 @@ struct Packet
 	* @see PacketEnumerations.h
 	*/
 	unsigned char* data;
-
-
-	/**
-	* Converts the contents of this packet into a bitstream. Does not perform a deep copy of the packet data!
-	* Use stream only as long as packet exists.
-	*/
-	RakNet::BitStream getStream() const;
 };
 
 typedef std::shared_ptr<Packet> packet_ptr;

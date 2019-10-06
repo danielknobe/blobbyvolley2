@@ -260,7 +260,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 
 		case ID_REPLAY:
 		{
-			RakNet::BitStream stream = RakNet::BitStream();
+			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_REPLAY);
 			std::shared_ptr<GenericOut> out = createGenericWriter( &stream );
 			mRecorder->send( out );
