@@ -246,7 +246,7 @@ void IMGUI::doText(int id, const Vector2& position, const std::string& text, uns
 	obj.id = id;
 	obj.pos1 = position;
 
-	int fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
+	int const fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
 	// update position depending on alignment
 	if( flags & TF_ALIGN_CENTER )
 	{
@@ -297,7 +297,8 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 	obj.type = TEXT;
 	obj.flags = flags;
 
-	int fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
+	int const fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
+
 	// update position depending on alignment
 	if( flags & TF_ALIGN_CENTER )
 	{
@@ -381,8 +382,8 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x + tolerance >= obj.pos1.x &&
 			mousepos.y + tolerance * 2 >= obj.pos1.y &&
-			mousepos.x - tolerance <= obj.pos1.x + text.length() * (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL) &&
-			mousepos.y - tolerance * 2 <= obj.pos1.y + (flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL))
+			mousepos.x - tolerance <= obj.pos1.x + text.length() * fontSize &&
+			mousepos.y - tolerance * 2 <= obj.pos1.y + fontSize)
 		{
 			obj.flags = obj.flags
 			#if __DESKTOP__
