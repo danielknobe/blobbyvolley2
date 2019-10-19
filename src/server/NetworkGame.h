@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <list>
 #include <mutex>
 #include <thread>
+#include <memory>
 
-#include <boost/scoped_ptr.hpp>
 #include <boost/shared_array.hpp>
 
 #include "Global.h"
@@ -93,7 +93,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		PacketQueue mPacketQueue;
 		std::mutex mPacketQueueMutex;
 
-		boost::scoped_ptr<DuelMatch> mMatch;
+		const std::unique_ptr<DuelMatch> mMatch;
 		SpeedController mSpeedController;
 		std::shared_ptr<InputSource> mLeftInput;
 		std::shared_ptr<InputSource> mRightInput;
@@ -101,7 +101,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		unsigned mRightLastTime = -1;
 		std::thread mGameThread;
 
-		boost::scoped_ptr<ReplayRecorder> mRecorder;
+		const std::unique_ptr<ReplayRecorder> mRecorder;
 
 		bool mGameValid;
 

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <mutex>
 #include <deque>
 #include <iosfwd>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "NetworkPlayer.h"
 #include "NetworkMessage.h"
@@ -91,7 +91,7 @@ class DedicatedServer
 		/// \todo is this already counted by raknet?
 		unsigned int mConnectedClients;
 		// raknet server used
-		boost::scoped_ptr<RakServer> mServer;
+		const std::unique_ptr<RakServer> mServer;
 
 		// true, if new players should be accepted
 		bool mAcceptNewPlayers;
