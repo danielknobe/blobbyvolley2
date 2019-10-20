@@ -381,8 +381,17 @@ void NetworkSearchState::step_impl()
 			}
 		};
 
+		// shutdown previous hosted server
 		gKillHostThread = true;
+		if ((gHostedServerThread != nullptr) &&
+		    (gHostedServerThread->joinable()))
+		{
+			gHostedServerThread->join();
+		}
+
+		// start server
 		gHostedServerThread = std::make_shared<std::thread>(server_func);
+
 		SDL_Delay(100); // give the server some time to start up.
 		// might cause a slight visible delay, but I think we can
 		// live with that right now.
