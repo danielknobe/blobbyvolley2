@@ -21,12 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "RenderManagerGL2D.h"
 
+#if HAVE_LIBGL
+
 /* includes */
 #include "FileExceptions.h"
 
 /* implementation */
-#if HAVE_LIBGL
-
 RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) :
 		w(width), h(height), texture(tex)
 {
@@ -698,6 +698,8 @@ void RenderManagerGL2D::refresh()
 }
 
 #else
+
+#include "RenderManager.h"
 
 RenderManager* RenderManager::createRenderManagerGL2D()
 {

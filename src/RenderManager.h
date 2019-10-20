@@ -105,9 +105,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();
-#if __DESKTOP__
         static RenderManager* createRenderManagerGL2D();
-#endif
 		static RenderManager* createRenderManagerNull();
     
 		static RenderManager& getSingleton()
