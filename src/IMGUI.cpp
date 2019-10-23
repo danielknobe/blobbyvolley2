@@ -168,20 +168,9 @@ void IMGUI::end()
 				break;
 
 			case SELECTBOX:
-				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
-				for (unsigned int c = 0; c < obj.entries.size(); c++)
-				{
-					if( c == static_cast<unsigned int>(obj.selected) )
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
-					else
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
-				}
-				break;
-
 			case ACTIVESELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.3, obj.pos1, obj.pos2);
+				rmanager.drawOverlay((obj.type == SELECTBOX ? 0.5 : 0.3), obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if( c == static_cast<unsigned int>(obj.selected) )
