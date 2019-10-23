@@ -42,7 +42,8 @@ enum ObjectType
 	SELECTBOX,
 	ACTIVESELECTBOX,
 	BLOB,
-	CHAT
+	CHAT,
+	ACTIVECHAT
 };
 
 struct QueueObject
@@ -181,8 +182,9 @@ void IMGUI::end()
 				break;
 
 			case CHAT:
+			case ACTIVECHAT:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos2);
+				rmanager.drawOverlay((obj.type == CHAT ? 0.5 : 0.3), obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if (obj.text[c] == 'R' )
@@ -951,6 +953,7 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		// React to keyboard input.
 		if (id == mActiveButton)
 		{
+			obj.type = ACTIVECHAT;
 			switch (mLastKeyAction)
 			{
 				case DOWN:
