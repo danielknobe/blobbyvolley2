@@ -5,9 +5,9 @@ compiler:
 addons:
   apt:
     packages:
-      - boost
-      - physfs
-      - sdl2
+      - libboost-dev
+      - libphysfs-dev
+      - libsdl2-dev
 script:
   - cmake .
   - make
