@@ -1,12 +1,12 @@
-# Blobby Volley 2
-
+# Blobby Volley 2 [![Build Status](https://travis-ci.org/danielknobe/blobbyvolley2.svg?branch=master)](https://travis-ci.org/danielknobe/blobbyvolley2)
 **The head-to-head multiplayer ball game**
 
-### Website:
+### Website
  http://blobby.sourceforge.net
+ 
+ http://blobbyvolley.de
 
-### System requirements:
-
+### System requirements
 Either Windows 2000 or later, Linux or MacOS
 
 ### Dedicated Server
@@ -21,12 +21,11 @@ git clone https://github.com/danielknobe/blobbyvolley2.git
 ```
 
 ### Build for Debian-Based Distros
-```basj
+```bash
 apt-get install g++ cmake libsdl2-dev libboost-dev libphysfs-dev
 cmake .
 make
 ```
 
-
-### Credits:
+### Credits
 See AUTHORS
