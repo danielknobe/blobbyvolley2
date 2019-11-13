@@ -359,7 +359,7 @@ std::shared_ptr< GenericOut > createGenericWriter(RakNet::BitStream* stream)
 
 std::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream)
 {
-	return std::shared_ptr< StreamOut > ( new StreamOut(stream) );
+	return std::make_shared< StreamOut > (stream);
 }
 
 std::shared_ptr< GenericIn > createGenericReader(std::shared_ptr<FileRead> file)

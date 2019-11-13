@@ -257,7 +257,7 @@ std::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& file
 	fileBuffer[fileLength] = 0;
 
 	// parse file
-	std::shared_ptr<TiXmlDocument> xml = std::shared_ptr<TiXmlDocument> (new TiXmlDocument());
+	std::shared_ptr<TiXmlDocument> xml = std::make_shared<TiXmlDocument>();
 	xml->Parse(fileBuffer.get());
 
 	/// \todo do error handling here?
