@@ -15,6 +15,11 @@
 #include "GenericIO.h"
 #include "GameLogic.h"
 
+LobbySubstate::~LobbySubstate()
+{
+}
+
+
 LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 		mClient(new RakClient(), [](RakClient* client) { client->Disconnect(25); }),
 		mInfo(info), mPrevious( previous ),

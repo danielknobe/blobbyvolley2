@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 
 struct lua_State;
-struct DuelMatch;
+class DuelMatch;
 
 /*! \class IScriptableComponent
 	\brief Base class for lua scripted objects.

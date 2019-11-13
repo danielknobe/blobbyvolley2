@@ -51,6 +51,7 @@ enum class PreviousState
 class LobbySubstate
 {
 public:
+	virtual ~LobbySubstate();
 	void virtual step(const ServerStatusData& status ) = 0;
 };
 
