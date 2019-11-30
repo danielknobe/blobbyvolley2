@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream> // debugging
 
 #include <boost/crc.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "tinyxml/tinyxml.h"
 
@@ -224,8 +223,8 @@ class ReplayLoader_V2X: public IReplayLoader
 				const char* minor = varElem->Attribute("minor");
 				if(!minor || !major)
 					throw(std::runtime_error(""));
-                assert(boost::lexical_cast<int>(major) == 2);
-                mReplayFormatVersion = boost::lexical_cast<int>(minor);
+                assert(std::stoi(major) == 2);
+                mReplayFormatVersion = std::stoi(minor);
 			}
 
 
@@ -242,25 +241,25 @@ class ReplayLoader_V2X: public IReplayLoader
 
 				// find valid attribute
 				if( name == "game_speed" )
-					mGameSpeed = boost::lexical_cast<int>(value);
+					mGameSpeed = std::stoi(value);
 				else if( name == "game_length" )
-					mGameLength = boost::lexical_cast<int>(value);
+					mGameLength = std::stoi(value);
 				else if( name == "game_duration" )
-					mGameDuration = boost::lexical_cast<int>(value);
+					mGameDuration = std::stoi(value);
 				else if( name == "game_date" )
-					mGameDate = boost::lexical_cast<int>(value);
+					mGameDate = std::stoi(value);
 				else if( name == "score_left" )
-					mLeftFinalScore = boost::lexical_cast<int>(value);
+					mLeftFinalScore = std::stoi(value);
 				else if( name == "score_right" )
-					mRightFinalScore = boost::lexical_cast<int>(value);
+					mRightFinalScore = std::stoi(value);
 				else if( name == "name_left" )
 					mLeftPlayerName = value;
 				else if( name == "name_right" )
 					mRightPlayerName = value;
 				else if( name == "color_left" )
-					mLeftColor = Color(boost::lexical_cast<int>(value));
+					mLeftColor = Color(std::stoi(value));
 				else if( name == "color_right" )
-					mRightColor = Color(boost::lexical_cast<int>(value));
+					mRightColor = Color(std::stoi(value));
 			}
 
 			// load rules

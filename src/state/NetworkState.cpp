@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <ctime>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/algorithm/string/classification.hpp>
 

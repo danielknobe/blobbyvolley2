@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <errno.h>
 #include <unistd.h>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
@@ -139,7 +138,7 @@ int main(int argc, char** argv)
 	boost::algorithm::split(speed_vec_str, gameSpeeds, boost::algorithm::is_space(), boost::algorithm::token_compress_on);
 
 	std::vector<float> speed_vec;
-	std::transform(speed_vec_str.begin(), speed_vec_str.end(), std::back_inserter(speed_vec), [](const std::string& v ){ return boost::lexical_cast<float>(v);});
+	std::transform(speed_vec_str.begin(), speed_vec_str.end(), std::back_inserter(speed_vec), [](const std::string& v ){ return std::stof(v);});
 
 	DedicatedServer server(myinfo, rule_vec, speed_vec, maxClients);
 

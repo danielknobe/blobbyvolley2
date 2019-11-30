@@ -29,8 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <thread>
 #include <iostream> // debugging
 
-#include <boost/lexical_cast.hpp>
-
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
 #include "raknet/RakServer.h"
@@ -291,9 +289,9 @@ void NetworkSearchState::step_impl()
 
 				try
 				{
-					port = boost::lexical_cast<int>(mEnteredServer.substr(found+1));
+					port = std::stoi(mEnteredServer.substr(found+1));
 				}
-				catch (boost::bad_lexical_cast)
+				catch (... /* std::invalid_argument, std::out_of_range */)
 				{
 					/// \todo inform the user that default port was selected
 
@@ -501,9 +499,9 @@ void OnlineSearchState::doSearchServers()
 				{
 					try
 					{
-						port = boost::lexical_cast<int>(tmp);
+						port = std::stoi(tmp);
 					}
-					catch (boost::bad_lexical_cast)
+					catch (... /* std::invalid_argument, std::out_of_range */)
 					{
 						port = BLOBBY_PORT;
 					}
@@ -532,9 +530,9 @@ void OnlineSearchState::doSearchServers()
 
 		try
 		{
-			port = boost::lexical_cast<int>(address.substr(found+1));
+			port = std::stoi(address.substr(found+1));
 		}
-		 catch (boost::bad_lexical_cast)
+		catch (... /* std::invalid_argument, std::out_of_range */)
 		{
 			/// \todo inform the user that default port was selected
 		}
