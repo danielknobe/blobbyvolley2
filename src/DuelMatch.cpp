@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <cassert>
 
-#include <boost/make_shared.hpp>
-
 #include "DuelMatchState.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"

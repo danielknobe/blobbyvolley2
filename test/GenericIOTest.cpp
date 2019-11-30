@@ -12,7 +12,6 @@
 #include "raknet/BitStream.h"
 #include <memory>
 #include <boost/scoped_array.hpp>
-#include <boost/make_shared.hpp>
 #include <vector>
 #include <list>
 #include <deque>

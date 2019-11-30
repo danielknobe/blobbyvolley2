@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <cstdio>
 
-#include <boost/make_shared.hpp>
-
 #include "LocalGameState.h"
 #include "ReplaySelectionState.h"
 #include "NetworkState.h"

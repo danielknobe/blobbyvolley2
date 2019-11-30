@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <ctime>
 
-#include <boost/make_shared.hpp>
-
 #include "DuelMatch.h"
 #include "InputManager.h"
 #include "IMGUI.h"

@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include <boost/make_shared.hpp>
-
 #include "raknet/RakClient.h"
 
 #include "IMGUI.h"

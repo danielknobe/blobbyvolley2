@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GameState.h"
 
 /* includes */
-#include <boost/make_shared.hpp>
-
 #include "replays/ReplayRecorder.h"
 #include "DuelMatch.h"
 #include "SoundManager.h"
