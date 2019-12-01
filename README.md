@@ -20,12 +20,24 @@ Clone the git repository:
 git clone https://github.com/danielknobe/blobbyvolley2.git
 ```
 
-### Build for Debian-Based Distros
+### Build under Debian-Based Distros
 ```bash
 apt-get install g++ cmake libsdl2-dev libboost-dev libphysfs-dev
 cmake .
 make
 ```
+
+### Build under Windows 7 or newer and Visual Studio 2015 Update 3 or newer
+1. Install vcpkg by following the instructions:
+https://github.com/microsoft/vcpkg/blob/master/README.md
+
+2. Install dependencies:
+```powershell
+.\vcpkg install sdl2 boost physfs
+```
+3. Use dependencies by following the instructions:
+https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md
+4. Compile and run
 
 ### Credits
 See AUTHORS
