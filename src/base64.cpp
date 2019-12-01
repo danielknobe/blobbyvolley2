@@ -55,44 +55,39 @@ constexpr uint8_t find_in_table(uint8_t entry)
 template<>
 constexpr uint8_t find_in_table<0>(uint8_t entry) { return 0; };
 
-template<uint8_t...Is>
-struct index_seq
+template <uint8_t ... Ns> struct index_seq
 {
 };
 
-template<uint8_t N>
-struct make_index_sq
+template <uint8_t ... Ns> struct make_index_sq;
+
+template <uint8_t I, uint8_t ... Ns>
+struct make_index_sq<I, Ns...>
 {
-	template<typename>	struct append;
-
-	template<uint8_t... ints>
-	struct append<index_seq<ints...>>
-	{
-		using type = index_seq<ints..., N-1>;
-	};
-
-	using type = typename append<typename make_index_sq<N-1>::type>::type;
+	using type = typename make_index_sq<I - 1, I - 1, Ns...>::type;
 };
 
-template<>
-struct make_index_sq<1u>
+template <uint8_t ... Ns>
+struct make_index_sq<0, Ns...>
 {
-	using type = index_seq<0u>;
+	using type = index_seq<Ns...>;
 };
+
+template <uint8_t N>
+using make_index_sq_t = typename make_index_sq<N>::type;
 
 template<class T>
-struct make_table_helper {};
-
-template<uint8_t... seq>
-struct make_table_helper<index_seq<seq...>>
-{
-	static constexpr auto make() -> std::array<uint8_t, sizeof...(seq)>
-	{
-		return {{find_in_table<length(translation_table)>(seq)...}};
-	}
+struct make_table_helper {
 };
 
-
+template<uint8_t... Ns>
+struct make_table_helper<index_seq<Ns...>>
+{
+	static constexpr auto make() -> std::array<uint8_t, sizeof...(Ns)>
+	{
+		return {{find_in_table<length(translation_table)>(Ns)...}};
+	}
+};
 
 
 // generate the decoding table
