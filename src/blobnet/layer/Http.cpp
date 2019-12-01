@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Http.hpp"
 
 /* includes */
+#if !(defined _WIN32)
 #include <unistd.h>
+#endif
 
 #include <boost/exception/all.hpp>
 
@@ -95,7 +97,11 @@ void Http::request(const std::string& path, std::stringstream& response)
 	// Read the body
 	readBody(inOutSocket, response, contentSize);
 
+#if !(defined _WIN32)
 	close(inOutSocket);
+#else
+	closesocket(inOutSocket);
+#endif
 }
 
 void Http::readHeader(int inOutSocket, std::stringstream& response)
