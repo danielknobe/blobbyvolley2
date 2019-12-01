@@ -23,6 +23,13 @@ src/blobby
 src/blobby-server
 *.a
 
+#project vs2019
+/.vs
+/out
+/Blobby Volley.depend
+/Blobby Volley.layout
+/CMakeSettings.json
+
 #project platform independent
 *.zip
 config.h
