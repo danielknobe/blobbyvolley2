@@ -21,7 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "InputDevice.h"
 
-/* other includes */
+/* includes */
+#include <algorithm>
+
 #include "RenderManager.h"
 #include "InputManager.h"
 

@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
+#include <array>
 
 #include "raknet/RakClient.h"
 
