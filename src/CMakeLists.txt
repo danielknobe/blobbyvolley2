@@ -80,10 +80,14 @@ set (blobby-server_SRC ${common_SRC}
 find_package(Boost REQUIRED)
 find_package(PhysFS REQUIRED)
 find_package(OpenGL)
-find_package(Threads REQUIRED)
+find_package(SDL2 REQUIRED)
 
-INCLUDE(FindPkgConfig)
-PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
+	find_package(Threads REQUIRED)
+endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
+
+#INCLUDE(FindPkgConfig)
+#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 
 include_directories(
 	${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR}
@@ -95,12 +99,14 @@ endif (OPENGL_FOUND)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
 	set(RAKNET_LIBRARIES raknet ws2_32)
+	set(ADDITIONAL_LIBRARIES)
 else (CMAKE_SYSTEM_NAME STREQUAL Windows)
 	set(RAKNET_LIBRARIES raknet)
+	set(ADDITIONAL_LIBRARIES pthread)
 endif (CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 add_executable(blobby ${blobby_SRC})
-target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} pthread)
+target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
 
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
