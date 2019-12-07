@@ -26,13 +26,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unistd.h>
 #endif
 
-#include <boost/exception/all.hpp>
-
 #include <iostream>
 #include <sstream>
-#include <typeinfo>
 #include <string>
-#include <cstdlib>
+
+
+#if (defined _WIN32)
+	#define closeSocket(s) closesocket(s)
+#else
+	#define closeSocket(s) close(s)
+#endif
+
 
 namespace BlobNet
 {
@@ -58,35 +62,41 @@ void Http::request(const std::string& path, std::stringstream& response)
 	SOCKET inOutSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(inOutSocket == INVALID_SOCKET)
 	{
-		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't create HTTP-Socket.") );
+		throw Exception::HttpException("Can't create HTTP-Socket.");
 	}
 
-	// Connect to the host
-	char ipAddress[16];
-	if (mSocketLayer.nameToIpStrings(mHostname.c_str(), ipAddress, sizeof(ipAddress), 1) == 0)
-	{
-		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't resolve IP Address.") );
-	}
-
-	if(mSocketLayer.Connect(inOutSocket, inet_addr(ipAddress), mPort) == -1)
-	{
-
-		BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't connect to host.") );
-	};
-
-	// Message for a simple request
-	std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";
-
-	// Write the whole message
-	int bytesSend = 0;
-	do
-	{
-		bytesSend += mSocketLayer.Write(inOutSocket, request.c_str(), request.size());
-		if(bytesSend == -1)
+	try {
+		// Connect to the host
+		char ipAddress[16];
+		if (mSocketLayer.nameToIpStrings(mHostname.c_str(), ipAddress, sizeof(ipAddress), 1) == 0)
 		{
-			BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't send the request to host.") );
+			throw Exception::HttpException("Can't resolve IP Address.");
 		}
-	} while(bytesSend < request.size());
+
+		if(mSocketLayer.Connect(inOutSocket, inet_addr(ipAddress), mPort) == -1)
+		{
+			throw Exception::HttpException("Can't connect to host.");
+		};
+
+		// Message for a simple request
+		std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";
+
+		// Write the whole message
+		int bytesSend = 0;
+		do
+		{
+			bytesSend += mSocketLayer.Write(inOutSocket, request.c_str(), request.size());
+			if(bytesSend == -1)
+			{
+				throw Exception::HttpException("Can't send the request to host.");
+			}
+		} while(bytesSend < request.size());
+	}
+	catch (const Exception::HttpException& e)
+	{
+		closeSocket(inOutSocket);
+		throw e;
+	}
 
 	// Read the header of the response and extract content size
 	std::stringstream header;
@@ -97,11 +107,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 	// Read the body
 	readBody(inOutSocket, response, contentSize);
 
-#if !(defined _WIN32)
-	close(inOutSocket);
-#else
-	closesocket(inOutSocket);
-#endif
+	closeSocket(inOutSocket);
 }
 
 void Http::readHeader(int inOutSocket, std::stringstream& response)
@@ -150,7 +156,7 @@ void Http::readHeader(int inOutSocket, std::stringstream& response)
 			break;
 		}
 	}
-	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't read response.") );
+	throw Exception::HttpException("Can't read response.");
 }
 
 void Http::readBody(int inOutSocket, std::stringstream& response, int contentSize)
@@ -167,7 +173,7 @@ void Http::readBody(int inOutSocket, std::stringstream& response, int contentSiz
 			return;
 		}
 	}
-	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't read response.") );
+	throw Exception::HttpException("Can't read response.");
 }
 
 int Http::getContentSize(std::stringstream& response)
@@ -189,12 +195,12 @@ int Http::getContentSize(std::stringstream& response)
 			break;
 		case contentlength:
 			state = headerDone;
-			return atoi(token.c_str());
+			return std::stoi(token);
 		default:
 			break;
 		}
 	}
-	BOOST_THROW_EXCEPTION ( Exception::HttpException("Can't get contentsize of http response.") );
+	throw Exception::HttpException("Can't get contentsize of http response.");
 }
 
 }
