@@ -356,6 +356,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		if (mLastKeyAction == BACK)
 		{
 			if ((text == (TextManager::getSingleton())->getString(TextManager::LBL_CANCEL)) ||
+			    (text == (TextManager::getSingleton())->getString(TextManager::LBL_NO)) ||
 			    (text == (TextManager::getSingleton())->getString(TextManager::MNU_LABEL_EXIT)))
 			{
 				//todo: Workarround to catch backkey
