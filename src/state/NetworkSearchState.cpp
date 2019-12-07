@@ -367,10 +367,7 @@ void NetworkSearchState::step_impl()
 			while(!gKillHostThread)
 			{
 				// now run the server
-				if(server.hasActiveGame())
-				{
-					server.allowNewPlayers(false);
-				}
+				server.allowNewPlayers(!server.hasActiveGame());
 
 				server.processPackets();
 				server.updateGames();
