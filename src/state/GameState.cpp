@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
-#include "TextManager.h"
 #include "Blood.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
@@ -109,6 +108,29 @@ void GameState::presentGameUI()
 	imgui.doText(GEN_ID, Vector2(788, 550), mMatch->getPlayer(RIGHT_PLAYER).getName(), TF_ALIGN_RIGHT);
 	imgui.doText(GEN_ID, Vector2(400, 24), mMatch->getClock().getTimeString(), TF_ALIGN_CENTER);
 }
+
+
+void GameState::displayQueryPrompt(const int height, TextManager::STRING title, const QueryOption& opt1, const QueryOption& opt2, const QueryOption& opt3)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doOverlay(GEN_ID, Vector2(0, height), Vector2(800, height + 200));
+	imgui.doText(GEN_ID, Vector2(400, height + 30), title, TF_ALIGN_CENTER);
+
+	if (imgui.doButton(GEN_ID, Vector2(400 - 60, height + 90), std::get<0>(opt1), TF_ALIGN_RIGHT))
+	{
+		std::get<1>(opt1)();
+	}
+	if (imgui.doButton(GEN_ID, Vector2(400 + 60, height + 90), std::get<0>(opt2), TF_ALIGN_LEFT))
+	{
+		std::get<1>(opt2)();
+	}
+	if (imgui.doButton(GEN_ID, Vector2(400, height + 150), std::get<0>(opt3), TF_ALIGN_CENTER))
+	{
+		std::get<1>(opt3)();
+	}
+}
+
 
 bool GameState::displaySaveReplayPrompt()
 {

@@ -84,20 +84,12 @@ void LocalGameState::step_impl()
 	}
 	else if (mMatch->isPaused())
 	{
-		imgui.doOverlay(GEN_ID, Vector2(0, 200), Vector2(800, 400));
-		imgui.doText(GEN_ID, Vector2(400, 230), TextManager::LBL_CONF_QUIT, TF_ALIGN_CENTER);
-		if (imgui.doButton(GEN_ID, Vector2(530, 290), TextManager::LBL_NO)){
-			mMatch->unpause();
-		}
-		if (imgui.doButton(GEN_ID, Vector2(260, 290), TextManager::LBL_YES))
-		{
-			switchState(new MainMenuState);
-		}
-		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SAVE, TF_ALIGN_CENTER))
-		{
-			mSaveReplay = true;
-			imgui.resetSelection();
-		}
+		displayQueryPrompt(200,
+			TextManager::LBL_CONF_QUIT,
+			std::make_tuple(TextManager::LBL_YES, [&](){ switchState(new MainMenuState); }),
+			std::make_tuple(TextManager::LBL_NO,  [&](){ mMatch->unpause(); }),
+			std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
+
 		imgui.doCursor();
 	}
 	else if (mWinner)

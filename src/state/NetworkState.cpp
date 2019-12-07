@@ -529,17 +529,20 @@ void NetworkGameState::step_impl()
 		}
 		case PAUSING:
 		{
-			imgui.doOverlay(GEN_ID, Vector2(175, 20), Vector2(625, 175));
-			imgui.doText(GEN_ID, Vector2(275, 35), TextManager::GAME_PAUSED);
-			if (imgui.doButton(GEN_ID, Vector2(205, 95), TextManager::LBL_CONTINUE))
-			{
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_UNPAUSE);
-				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-			}
+			// Query
+			displayQueryPrompt(20,
+				TextManager::GAME_PAUSED,
+				std::make_tuple(TextManager::LBL_CONTINUE, [&](){
+					RakNet::BitStream stream;
+					stream.Write((unsigned char)ID_UNPAUSE);
+					mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+				}),
+				std::make_tuple(TextManager::GAME_QUIT,    [&](){ switchState(new MainMenuState); }),
+				std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
+
 			// Chat
-			imgui.doChatbox(GEN_ID, Vector2(10, 190), Vector2(790, 450), mChatlog, mSelectedChatmessage, mChatOrigin);
-			if (imgui.doEditbox(GEN_ID, Vector2(30, 460), 30, mChattext, mChatCursorPosition, 0, true))
+			imgui.doChatbox(GEN_ID, Vector2(10, 240), Vector2(790, 500), mChatlog, mSelectedChatmessage, mChatOrigin);
+			if (imgui.doEditbox(GEN_ID, Vector2(30, 510), 30, mChattext, mChatCursorPosition, 0, true))
 			{
 
 				// GUI-Hack, so that we can send messages
@@ -559,15 +562,6 @@ void NetworkGameState::step_impl()
 					mChatCursorPosition = 0;
 					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
 				}
-			}
-			if (imgui.doButton(GEN_ID, Vector2(500, 95), TextManager::GAME_QUIT))
-			{
-				switchState(new MainMenuState);
-			}
-			if (imgui.doButton(GEN_ID, Vector2(285, 125), TextManager::RP_SAVE))
-			{
-				mSaveReplay = true;
-				imgui.resetSelection();
 			}
 			imgui.doCursor();
 		}
