@@ -80,6 +80,7 @@ NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftP
 	mRecorder->setPlayerNames(leftPlayer->getName(), rightPlayer->getName());
 	mRecorder->setPlayerColors(leftPlayer->getColor(), rightPlayer->getColor());
 	mRecorder->setGameSpeed(mSpeedController.getGameSpeed());
+	mRecorder->setGameRules(rules);
 
 	// read rulesfile into a string
 	int checksum = 0;
