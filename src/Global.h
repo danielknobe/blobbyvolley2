@@ -30,13 +30,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GP2X GP2X
 #endif
 
+// Detect wheater we have a desktop or mobile target
 #if defined __ANDROID__ || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
 #define __MOBILE__ true
 #define __DESKTOP__ false
 #else
 #define __MOBILE__ false
 #define __DESKTOP__ true
-#endif // defined
+#endif
+
+// Detect features
+#if (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
+#define __FEATURE_HAS_BACKBUTTON__ false
+#else
+#define __FEATURE_HAS_BACKBUTTON__ true
+#endif
 
 /*!	\def DEBUG
 	\brief Enable debugging support

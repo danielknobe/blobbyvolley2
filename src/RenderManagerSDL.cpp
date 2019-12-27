@@ -269,15 +269,12 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				Color(255, 255, 255)));
 		SDL_UpdateTexture(rightBlobShadowTex, NULL, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 
-        // Load iOS specific icon (because we have no backbutton)
-#ifdef __APPLE__
-#if !MAC_OS_X
-        tmpSurface = loadSurface("gfx/flag.bmp");
-        SDL_SetColorKey(tmpSurface, SDL_TRUE,
-                        SDL_MapRGB(tmpSurface->format, 0, 0, 0));
-        mBackFlag = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
-        SDL_FreeSurface(tmpSurface);
-#endif
+		// Load specific icon to cancel a game
+#if !__FEATURE_HAS_BACKBUTTON__
+		tmpSurface = loadSurface("gfx/flag.bmp");
+		SDL_SetColorKey(tmpSurface, SDL_TRUE, SDL_MapRGB(tmpSurface->format, 0, 0, 0));
+		mBackFlag = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
+		SDL_FreeSurface(tmpSurface);
 #endif
 	}
 
@@ -374,10 +371,8 @@ void RenderManagerSDL::deinit()
 		SDL_DestroyTexture(mHighlightFont[i]);
 	}
 
-#ifdef __APPLE__
-#if !MAC_OS_X
+#if !__FEATURE_HAS_BACKBUTTON__
     SDL_DestroyTexture(mBackFlag);
-#endif
 #endif
 
 	SDL_DestroyRenderer(mRenderer);
@@ -438,14 +433,12 @@ void RenderManagerSDL::draw()
 	rodPosition.h = 300;
 	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
 
-#ifdef __APPLE__
-#if !MAC_OS_X
+#if !__FEATURE_HAS_BACKBUTTON__
 	position.x = 400 - 35;
 	position.y = 70;
 	position.w = 70;
 	position.h = 82;
     SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
-#endif
 #endif
 
 	// Drawing the Ball

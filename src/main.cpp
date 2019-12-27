@@ -234,29 +234,14 @@ void setupPHYSFS()
 			rmanager = RenderManager::createRenderManagerSDL();
 		/*else if (gameConfig.getString("device") == "GP2X")
 			rmanager = RenderManager::createRenderManagerGP2X();*/
-#ifndef __ANDROID__
-	#ifndef __APPLE__
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
 		{
 			std::cerr << "Warning: Unknown renderer selected!";
-			std::cerr << "Falling back to OpenGL" << std::endl;
-			rmanager = RenderManager::createRenderManagerGL2D();
+			std::cerr << "Falling back to SDL" << std::endl;
+			rmanager = RenderManager::createRenderManagerSDL();
 		}
-	#else
-		#if MAC_OS_X
-			else if (gameConfig.getString("device") == "OpenGL")
-				rmanager = RenderManager::createRenderManagerGL2D();
-			else
-			{
-				std::cerr << "Warning: Unknown renderer selected!";
-				std::cerr << "Falling back to OpenGL" << std::endl;
-				rmanager = RenderManager::createRenderManagerGL2D();
-			}
-		#endif
-	#endif
-#endif
 
 		// fullscreen?
 		if(gameConfig.getString("fullscreen") == "true")
