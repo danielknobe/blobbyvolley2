@@ -20,11 +20,19 @@ Clone the git repository:
 git clone https://github.com/danielknobe/blobbyvolley2.git
 ```
 
-### Build under Debian-Based Distros
+### Build under Debian-based Distros
+1. Install dependencies:
 ```bash
 apt-get install g++ cmake libsdl2-dev libboost-dev libphysfs-dev
+```
+2. Compile:
+```bash
 cmake .
 make
+```
+3. Run:
+```bash
+src/blobby
 ```
 
 ### Build under Windows 7 or newer and Visual Studio 2015 Update 3 or newer
@@ -38,6 +46,24 @@ https://github.com/microsoft/vcpkg/blob/master/README.md
 3. Use dependencies by following the instructions:
 https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md
 4. Compile and run
+
+### Build under MacOS
+1. Install homebrew by following the instructions:
+https://brew.sh
+
+2. Install dependencies:
+```bash
+brew install sdl2 physfs boost
+```
+3. Compile:
+```bash
+cmake .
+make
+```
+4. Run:
+```bash
+src/blobby
+```
 
 ### Credits
 See AUTHORS
