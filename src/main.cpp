@@ -111,6 +111,10 @@ void setupPHYSFS()
 			#ifdef __APPLE__
 				#if TARGET_OS_IPHONE
 					std::string userdir = baseSearchPath + "../Documents/";
+					#if TARGET_OS_SIMULATOR
+						// The simulator doesn't create documentsfolder anymore, we create it if necessary
+						fs.probeDir(userdir);
+					#endif
 				#else
 					std::string userdir = fs.getUserDir();
 				#endif
@@ -128,7 +132,7 @@ void setupPHYSFS()
 			#endif
 			std::string userAppend = ".blobby";
 			std::string homedir = userdir + userAppend;
-			/// \todo please review this code and determine if we really need to add userdir to serach path
+			/// \todo please review this code and determine if we really need to add userdir to search path
 			/// only to remove it later
 			fs.setWriteDir(userdir);
 			fs.probeDir(userAppend);

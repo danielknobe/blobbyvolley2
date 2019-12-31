@@ -30,8 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GP2X GP2X
 #endif
 
-// Detect wheater we have a desktop or mobile target
-#if defined __ANDROID__ || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
+// Detect wheather we have a desktop or mobile target
+#if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR)
 #define __MOBILE__ true
 #define __DESKTOP__ false
 #else
