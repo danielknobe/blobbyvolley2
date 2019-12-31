@@ -91,9 +91,11 @@ endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 include_directories(
 	${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR}
-	${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS}
+	${SDL2_INCLUDE_DIRS}
 )
+
 if (OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIR})
 	add_definitions(-DHAVE_LIBGL)
 endif (OPENGL_FOUND)
 
