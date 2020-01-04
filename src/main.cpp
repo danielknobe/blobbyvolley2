@@ -80,18 +80,16 @@ void deinit()
 void setupPHYSFS()
 {
 	FileSystem& fs = FileSystem::getSingleton();
-	std::string separator = fs.getDirSeparator();
+	const std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all
 	// relevant platforms.
-	std::string baseSearchPath("data" + separator);
-	// Android and iOS are needing a special path
-	#ifdef __ANDROID__
-		baseSearchPath = SDL_AndroidGetExternalStoragePath() + separator;
-	#endif
-	#ifdef __APPLE__
-		#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-			baseSearchPath = PHYSFS_getBaseDir();
-		#endif
+	#if __DESKTOP__
+		std::string baseSearchPath("data" + separator);
+	#elif (defined __ANDROID__)
+		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
+	#elif (defined __APPLE__)
+		// iOS
+		std::string baseSearchPath(PHYSFS_getBaseDir());
 	#endif
 
 	fs.addToSearchPath(baseSearchPath);
@@ -109,12 +107,13 @@ void setupPHYSFS()
 			// Create a search path in the home directory and ensure that
 			// all paths exist and are actually directories
 			#ifdef __APPLE__
+				#if TARGET_OS_SIMULATOR
+					// The simulator doesn't create documentsfolder anymore, we create it if necessary
+					fs.setWriteDir(baseSearchPath + "../");
+					fs.probeDir("Documents");
+				#endif
 				#if TARGET_OS_IPHONE
 					std::string userdir = baseSearchPath + "../Documents/";
-					#if TARGET_OS_SIMULATOR
-						// The simulator doesn't create documentsfolder anymore, we create it if necessary
-						fs.probeDir(userdir);
-					#endif
 				#else
 					std::string userdir = fs.getUserDir();
 				#endif
