@@ -31,7 +31,7 @@ set (lua_SRC
 	ltablib.c
 	ltm.c ltm.h
 	lua.c lua.h lua.hpp
-	luac.c	
+#	luac.c
 	luaconf.h
 	lualib.h
 	lundump.c lundump.h
