@@ -99,13 +99,34 @@ if (OPENGL_FOUND)
 	add_definitions(-DHAVE_LIBGL)
 endif (OPENGL_FOUND)
 
+# raknet additional dependencies
+set(RAKNET_LIBRARIES raknet)
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-	set(RAKNET_LIBRARIES raknet ws2_32)
-	set(ADDITIONAL_LIBRARIES)
-else (CMAKE_SYSTEM_NAME STREQUAL Windows)
-	set(RAKNET_LIBRARIES raknet)
-	set(ADDITIONAL_LIBRARIES pthread)
+	set(RAKNET_LIBRARIES ${RAKNET_LIBRARIES} ws2_32)
 endif (CMAKE_SYSTEM_NAME STREQUAL Windows)
+
+# sdl additional dependencies
+if (CMAKE_SYSTEM_NAME STREQUAL iOS)
+	set(SDL2_LIBRARIES ${SDL2_LIBRARIES}
+		"-framework AudioToolbox"
+		"-framework AVFoundation"
+		"-framework CoreAudio"
+		"-framework CoreAudioKit"
+		"-framework CoreGraphics"
+		"-framework CoreMotion"
+		"-framework Foundation"
+		"-framework GameController"
+		"-framework MediaPlayer"
+		"-framework OpenGLES"
+		"-framework QuartzCore"
+		"-framework UIKit")
+endif (CMAKE_SYSTEM_NAME STREQUAL iOS)
+
+# other additional dependencies
+set(ADDITIONAL_LIBRARIES)
+if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
+	set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} pthread)
+endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 add_executable(blobby ${blobby_SRC})
 target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
