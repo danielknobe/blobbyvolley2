@@ -24,6 +24,9 @@ set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	${CMAKE_CURRENT_BINARY_DIR}/rules.zip
+	api.lua
+	bot_api.lua
+	rules_api.lua
 	Icon.bmp
 	config.xml
 	inputconfig.xml
