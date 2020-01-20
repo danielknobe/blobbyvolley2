@@ -2,7 +2,7 @@ macro(add_zip_archive _dir _filetype)
 	file(GLOB_RECURSE archive_src RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${_dir}/*.${_filetype})
 	add_custom_command(
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip
-		COMMAND zip ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip ${archive_src}
+		COMMAND ${CMAKE_COMMAND} -E tar cf ${CMAKE_CURRENT_BINARY_DIR}/${_dir}.zip --format=zip ${archive_src}
 		DEPENDS ${archive_src}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		VERBATIM
