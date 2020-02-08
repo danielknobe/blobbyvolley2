@@ -31,48 +31,62 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 	SDL_Surface *newSurface = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ABGR8888, 0);
 
 	SDL_LockSurface(newSurface);
+
+	SDL_Color pixel;
+
 	for (int p = 0; p < newSurface->w * newSurface->h; ++p)
 	{
-		SDL_Color* pixel = &(((SDL_Color*)newSurface->pixels)[p]);
+		SDL_GetRGBA(((Uint32*)newSurface->pixels)[p], 
+		              newSurface->format,
+		              &pixel.r,
+		              &pixel.g,
+		              &pixel.b,
+		              &pixel.a);
 
-		int rr = (int(pixel->r) * int(color.r)) >> 8;
-		int rg = (int(pixel->g) * int(color.g)) >> 8;
-		int rb = (int(pixel->b) * int(color.b)) >> 8;
-		int fak = int(pixel->r) * 5 - 4 * 256 - 138;
-
-		bool colorkey = !(pixel->r | pixel->g | pixel->b);
+		const bool colorkey = !(pixel.r | pixel.g | pixel.b);
 
 		if (colorkey)
 		{
-			pixel->r = 0;
-			pixel->g = 0;
-			pixel->b = 0;
-			pixel->a = 0;
-			continue;
+			pixel.r = 0;
+			pixel.g = 0;
+			pixel.b = 0;
+			pixel.a = 0;
 		}
-
-		if (fak > 0)
+		else
 		{
-			rr += fak;
-			rg += fak;
-			rb += fak;
+			int rr = (int(pixel.r) * int(color.r)) >> 8;
+			int rg = (int(pixel.g) * int(color.g)) >> 8;
+			int rb = (int(pixel.b) * int(color.b)) >> 8;
+			int fak = int(pixel.r) * 5 - 4 * 256 - 138;
+
+
+			if (fak > 0)
+			{
+				rr += fak;
+				rg += fak;
+				rb += fak;
+			}
+			rr = rr < 255 ? rr : 255;
+			rg = rg < 255 ? rg : 255;
+			rb = rb < 255 ? rb : 255;
+
+			// This is clamped to 1 because dark colors may would be
+			// colorkeyed otherwise
+			pixel.r = rr > 0 ? rr : 1;
+			pixel.g = rg > 0 ? rg : 1;
+			pixel.b = rb > 0 ? rb : 1;
 		}
-		rr = rr < 255 ? rr : 255;
-		rg = rg < 255 ? rg : 255;
-		rb = rb < 255 ? rb : 255;
 
-		// This is clamped to 1 because dark colors may would be
-		// colorkeyed otherwise
-		pixel->r = rr > 0 ? rr : 1;
-		pixel->g = rg > 0 ? rg : 1;
-		pixel->b = rb > 0 ? rb : 1;
-
+		((Uint32*)newSurface->pixels)[p] = SDL_MapRGBA(newSurface->format, 
+		                                               pixel.r, 
+		                                               pixel.g, 
+		                                               pixel.b, 
+		                                               pixel.a);
 	}
 	SDL_UnlockSurface(newSurface);
 
 	// Use a black colorkey
-	SDL_SetColorKey(newSurface, SDL_TRUE,
-			SDL_MapRGB(newSurface->format, 0, 0, 0));
+	SDL_SetColorKey(newSurface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	return newSurface;
 }
