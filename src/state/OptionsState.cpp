@@ -237,7 +237,8 @@ void GraphicOptionsState::step_impl()
 		imgui.doImage(GEN_ID, Vector2(18.0, 52.0), "gfx/pfeil_rechts.bmp");
 	else
 		imgui.doImage(GEN_ID, Vector2(18.0, 82.0), "gfx/pfeil_rechts.bmp");
-
+#endif
+#if HAVE_LIBGL
 	imgui.doText(GEN_ID, Vector2(444.0, 10.0), TextManager::OP_RENDER_DEVICE);
 	if (imgui.doButton(GEN_ID, Vector2(444.0, 40.0), "OpenGL"))
 		mRenderer = "OpenGL";
