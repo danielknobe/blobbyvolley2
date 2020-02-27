@@ -16,7 +16,8 @@ addons:
     packages:
       - boost
       - physfs
-      - sdl2    
+      - sdl2
+    update: true
 script:
   - cmake .
   - make
