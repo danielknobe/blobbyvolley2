@@ -84,7 +84,7 @@ void GameState::presentGame()
 			smanager.playSound("sounds/bums.wav", e.intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 			/// \todo save that position inside the event
 			Vector2 hitPos = mMatch->getBallPosition() + (mMatch->getBlobPosition(e.side) - mMatch->getBallPosition()).normalise().scale(31.5);
-			BloodManager::getSingleton().spillBlood(hitPos, e.intensity, 0);
+			BloodManager::getSingleton().spillBlood(hitPos, e.intensity, e.side);
 		}
 
 		if( e.event == MatchEvent::PLAYER_ERROR )
