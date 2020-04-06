@@ -185,22 +185,13 @@ SOCKET SocketLayer::CreateBoundSocket(unsigned short port, bool blockingSocket, 
 
 const char* SocketLayer::DomainNameToIP(const char *domainName)
 {
-	int getaddrinfo(const char *node, const char *service,
-                const struct addrinfo *hints,
-                struct addrinfo **res);
-	struct hostent * phe = gethostbyname( domainName );
+	static char ip[16];
 
-	if ( phe == 0 || phe->h_addr_list[ 0 ] == 0 )
-	{
-		//cerr << "Yow! Bad host lookup." << endl;
-		return 0;
+	if (this->nameToIpStrings(domainName, ip, sizeof(ip), 1) > 0) {
+		return ip;
 	}
 
-	struct in_addr addr;
-
-	memcpy( &addr, phe->h_addr_list[ 0 ], sizeof( struct in_addr ) );
-
-	return inet_ntoa( addr );
+	return nullptr;
 }
 
 int SocketLayer::Write( SOCKET writeSocket, const char* data, int length )
