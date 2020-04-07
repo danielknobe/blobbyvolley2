@@ -150,7 +150,11 @@ int main(int argc, char** argv)
 	while(true)
 	{
 		std::string command;
-		std::cin >> command;
+
+		if (!(std::cin >> command))
+			// If we reached eof (happens immediately when server runs in background)
+			// we don't accept any input so that we have no endless loop
+			break;
 
 		std::vector<std::string> cmd_vec;
 		boost::algorithm::split(cmd_vec, command, boost::algorithm::is_space(), boost::algorithm::token_compress_on);
@@ -180,6 +184,9 @@ int main(int argc, char** argv)
 		}
 
 	}
+
+	// We wait until the dedicated server is shut down
+	serverthread.wait();
 
 	syslog(LOG_NOTICE, "Blobby Volley 2 dedicated server shutting down");
 	#ifndef WIN32
