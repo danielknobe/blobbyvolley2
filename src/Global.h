@@ -148,13 +148,13 @@ struct ExtensionUnsupportedException : public std::exception
 {
 	std::string extension;
 	ExtensionUnsupportedException(std::string name) : extension(name) {}
-	~ExtensionUnsupportedException() throw() {}
+	~ExtensionUnsupportedException() noexcept {}
 };
 
 struct ScriptException : public std::exception
 {
 	std::string luaerror;
-	~ScriptException() throw() {}
+	~ScriptException() noexcept {}
 };
 
 /// we need to define this constant to make it compile with strict c++98 mode

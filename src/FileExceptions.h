@@ -32,9 +32,9 @@ class FileSystemException : public std::exception
 {
 	public:
 		FileSystemException() { };
-		~FileSystemException() throw() { };
+		~FileSystemException() noexcept { };
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return "a file system related exception occured!";
 		}
@@ -50,9 +50,9 @@ class PhysfsException : public virtual FileSystemException
 		// implementation in FileSystem.cpp
 		PhysfsException();
 
-		~PhysfsException() throw() { };
+		~PhysfsException() noexcept { };
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return ("physfs reported an error: " + getPhysfsMessage()).c_str();
 		}
@@ -78,12 +78,12 @@ class PhysfsInitException : public PhysfsException
 
 		}
 
-		~PhysfsInitException() throw()
+		~PhysfsInitException() noexcept
 		{
 
 		}
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return ("could not initialise physfs to path " + getPath() + ": " + getPhysfsMessage()).c_str();
 		}
@@ -108,7 +108,7 @@ class FileException: public virtual FileSystemException {
 		{
 		}
 
-		virtual ~FileException() throw() {	}
+		virtual ~FileException() noexcept {	}
 
 		/// get the name of the file of the exception
 		const std::string& getFileName() const
@@ -135,9 +135,9 @@ class FileLoadException : public FileException, public PhysfsException
 			error = "Couldn't load " + name + ": " + getPhysfsMessage();
 		}
 
-		virtual ~FileLoadException() throw() {}
+		virtual ~FileLoadException() noexcept {}
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return error.c_str();
 		}
@@ -156,9 +156,9 @@ class FileAlreadyExistsException : public FileException
 		{
 		}
 
-		virtual ~FileAlreadyExistsException() throw() { }
+		virtual ~FileAlreadyExistsException() noexcept { }
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return ("File " + getFileName() + " already exists.").c_str();
 		}
@@ -176,9 +176,9 @@ class PhysfsFileException : public FileException, public PhysfsException
 		{
 		};
 
-		~PhysfsFileException() throw() { };
+		~PhysfsFileException() noexcept { };
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			return (getFileName() + ": " + getPhysfsMessage()).c_str();
 		}
@@ -198,9 +198,9 @@ class NoFileOpenedException : public FileException
 	public:
 		NoFileOpenedException() : FileException("") { };
 
-		~NoFileOpenedException() throw() { };
+		~NoFileOpenedException() noexcept { };
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			// default error message for now
 			return "trying to perform a file operation when no file was opened.";
@@ -217,9 +217,9 @@ class EOFException : public FileException
 	public:
 		EOFException(const std::string& file) : FileException( file ) { };
 
-		~EOFException() throw() { };
+		~EOFException() noexcept { };
 
-		virtual const char* what() const throw()
+		virtual const char* what() const noexcept
 		{
 			// default error message for now
 			return (getFileName() + " trying to read after eof.").c_str();

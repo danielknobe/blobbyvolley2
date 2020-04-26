@@ -56,11 +56,11 @@ VersionMismatchException::VersionMismatchException(const std::string& filename, 
 	error = errorstr.str();
 }
 
-VersionMismatchException::~VersionMismatchException() throw()
+VersionMismatchException::~VersionMismatchException() noexcept
 {
 }
 
-const char* VersionMismatchException::what() const throw()
+const char* VersionMismatchException::what() const noexcept
 {
 	return error.c_str();
 }
