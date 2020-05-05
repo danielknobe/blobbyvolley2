@@ -51,7 +51,12 @@ ServerInfo::ServerInfo(const IUserConfigReader& config)
 	std::string n = "Blobby Volley 2 Server";
 	std::string d = "no description available";
 
-	memset(this, 0, sizeof(ServerInfo));
+	activegames = 0;
+	memset(hostname, 0, sizeof(hostname));
+	memset(name, 0, sizeof(name));
+	memset(description, 0, sizeof(description));
+	waitingplayers = 0;
+
 	std::string tmp;
 	tmp = config.getString("name", n);
 	strncpy(name, tmp.c_str(), sizeof(name) - 1);
@@ -62,7 +67,11 @@ ServerInfo::ServerInfo(const IUserConfigReader& config)
 
 ServerInfo::ServerInfo(const std::string& playername)
 {
-	memset(this, 0, sizeof(ServerInfo));
+	activegames = 0;
+	memset(hostname, 0, sizeof(hostname));
+	memset(name, 0, sizeof(name));
+	memset(description, 0, sizeof(description));
+	waitingplayers = 0;
 
 	std::strncpy(hostname, "localhost", sizeof(hostname));
 	port = BLOBBY_PORT;
