@@ -86,7 +86,11 @@ bool FileSystem::exists(const std::string& filename) const
 
 bool FileSystem::isDirectory(const std::string& dirname) const
 {
-	return PHYSFS_isDirectory(dirname.c_str());
+	PHYSFS_Stat stat;
+	if ( !PHYSFS_stat(dirname.c_str(), &stat) )
+		BOOST_THROW_EXCEPTION( PhysfsException() );
+
+	return stat.filetype == PHYSFS_FILETYPE_DIRECTORY;
 }
 
 bool FileSystem::mkdir(const std::string& dirname)
@@ -97,15 +101,13 @@ bool FileSystem::mkdir(const std::string& dirname)
 void FileSystem::addToSearchPath(const std::string& dirname, bool append)
 {
 	/// \todo check if dir exists?
-	/// \todo use PHYSFS_mount? PHYSFS_addToSearchPath is listed as legacy function only there for binary 
-	///  compatibility with older version.
 	/// \todo check return value
-	PHYSFS_addToSearchPath(dirname.c_str(), append ? 1 : 0);
+	PHYSFS_mount(dirname.c_str(), nullptr, append ? 1 : 0);
 }
 
 void FileSystem::removeFromSearchPath(const std::string& dirname)
 {
-	PHYSFS_removeFromSearchPath(dirname.c_str());
+	PHYSFS_unmount(dirname.c_str());
 }
 
 void FileSystem::setWriteDir(const std::string& dirname)
