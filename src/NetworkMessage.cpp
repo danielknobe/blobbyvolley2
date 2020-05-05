@@ -77,7 +77,7 @@ void ServerInfo::writeToBitstream(RakNet::BitStream& stream)
 	stream.Write(name, sizeof(name));
 	stream.Write(waitingplayers);
 	stream.Write(description, sizeof(description));
-	assert( stream.GetNumberOfBytesUsed() == BLOBBY_SERVER_PRESENT_PACKET_SIZE);
+	assert( stream.GetNumberOfBytesUsed() == static_cast<int>(BLOBBY_SERVER_PRESENT_PACKET_SIZE) );
 }
 
 const size_t ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE = sizeof((unsigned char)ID_BLOBBY_SERVER_PRESENT)

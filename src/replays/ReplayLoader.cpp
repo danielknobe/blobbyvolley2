@@ -309,7 +309,7 @@ class ReplayLoader_V2X: public IReplayLoader
 		unsigned int mRightFinalScore;
 		unsigned int mGameSpeed;
 		unsigned int mGameDate;
-		unsigned int mGameLength;
+		int mGameLength;
 		unsigned int mGameDuration;
 		Color mLeftColor;
 		Color mRightColor;
