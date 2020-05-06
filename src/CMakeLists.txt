@@ -82,6 +82,10 @@ find_package(PhysFS REQUIRED)
 find_package(OpenGL)
 find_package(SDL2 REQUIRED)
 
+if ("${SDL2_LIBRARIES}" STREQUAL "")
+	set(SDL2_LIBRARIES "SDL2::SDL2")
+endif ("${SDL2_LIBRARIES}" STREQUAL "")
+
 if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 	find_package(Threads REQUIRED)
 endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
