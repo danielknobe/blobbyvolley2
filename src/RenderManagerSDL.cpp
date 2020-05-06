@@ -493,7 +493,7 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 		mBackground = newImage->sdlImage;
 		mImageMap["background"] = newImage;
 	}
-	catch (FileLoadException)
+	catch (const FileLoadException&)
 	{
 		return false;
 	}

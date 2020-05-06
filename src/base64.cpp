@@ -141,7 +141,7 @@ std::string encode( const char* begin, const char* end, int newlines)
 	for(unsigned i = 0; i < groups; ++i)
 	{
 		encode(read, write);
-		if( newlines > 0 && (i+1) * 4 >= last_newline + newlines )
+		if( newlines > 0 && (i+1) * 4 >= static_cast<unsigned>(last_newline + newlines) )
 		{
 			*write = '\n';
 			write++;

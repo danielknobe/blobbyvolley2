@@ -269,7 +269,7 @@ bool RenderManagerGP2X::setBackground(const std::string& filename)
 		mBackground = SDL_DisplayFormat(tempBackground);
 		SDL_FreeSurface(tempBackground);
 	}
-	catch (FileLoadException)
+	catch (const FileLoadException&)
 	{
 		return false;
 	}
