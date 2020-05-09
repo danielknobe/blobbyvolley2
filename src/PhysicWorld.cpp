@@ -41,7 +41,7 @@ void reset_fpu_flags(short flags);
 PhysicWorld::PhysicWorld()
 : mBallPosition(Vector2(200, STANDARD_BALL_HEIGHT))
 , mBallRotation(0)
-, mBallAngularVelocity(STANDARD_BALL_ANGULAR_VELOCITY)
+, mBallAngularVelocity(-STANDARD_BALL_ANGULAR_VELOCITY)
 , mLastHitIntensity(0)
 , mCallback( [](const MatchEvent& me) {} )
 {

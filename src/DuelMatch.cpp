@@ -314,7 +314,7 @@ void DuelMatch::resetBall( PlayerSide side )
 		mPhysicWorld->setBallPosition( Vector2(400, 450) );
 
 	mPhysicWorld->setBallVelocity( Vector2(0, 0) );
-	mPhysicWorld->setBallAngularVelocity( (side == RIGHT_PLAYER ? -1 : 1) * STANDARD_BALL_ANGULAR_VELOCITY );
+	mPhysicWorld->setBallAngularVelocity( (side == RIGHT_PLAYER ? 1 : -1) * STANDARD_BALL_ANGULAR_VELOCITY );
 }
 
 bool DuelMatch::canStartRound(PlayerSide servingPlayer) const
