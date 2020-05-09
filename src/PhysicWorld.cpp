@@ -200,6 +200,12 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 
 	// ok, if we get here, there actually was a collision
 
+	Vector2 relativeBallPosition = -Vector2(mBallPosition, circlepos);
+	Vector2 normalizedRelativeBallPosition = relativeBallPosition.normalise();
+
+	// illustration for ball friction velocity: https://i.gyazo.com/2576401601442907a05dcd211fae8a0c.png
+	float oldBallFrictionVelocity = mBallVelocity.rotateClockwise(normalizedRelativeBallPosition).x;
+
 	// calculate hit intensity
 	mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
 	mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
@@ -209,6 +215,12 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	mBallVelocity = mBallVelocity.normalise();
 	mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 	mBallPosition += mBallVelocity;
+
+	float newBallFrictionVelocity = mBallVelocity.rotateClockwise(normalizedRelativeBallPosition).x;
+	float blobFrictionVelocity = mBlobVelocity[player].rotateClockwise(normalizedRelativeBallPosition).x;
+
+	mBallAngularVelocity = (newBallFrictionVelocity - oldBallFrictionVelocity + blobFrictionVelocity) / BALL_RADIUS;
+
 	return true;
 }
 
@@ -258,12 +270,7 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
 
 	// Velocity Integration
-	if( !isGameRunning )
-		mBallRotation -= mBallAngularVelocity;
-	else if (mBallVelocity.x > 0.0)
-		mBallRotation += mBallAngularVelocity * (mBallVelocity.length() / 6);
-	else
-		mBallRotation -= mBallAngularVelocity * (mBallVelocity.length()/ 6);
+	mBallRotation += mBallAngularVelocity;
 
 	// Overflow-Protection
 	if (mBallRotation <= 0)
