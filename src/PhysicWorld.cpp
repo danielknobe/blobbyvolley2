@@ -290,6 +290,7 @@ void PhysicWorld::handleBallWorldCollisions()
 		mBallVelocity = mBallVelocity.reflectY();
 		mBallVelocity = mBallVelocity.scale(0.95);
 		mBallPosition.y = GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS;
+		mBallAngularVelocity = BALL_GROUND_COLLISION_SPIN_COEFFICIENT * mBallAngularVelocity + (1 - BALL_GROUND_COLLISION_SPIN_COEFFICIENT) * mBallVelocity.x / BALL_RADIUS;
 		mCallback( MatchEvent{MatchEvent::BALL_HIT_GROUND, mBallPosition.x > NET_POSITION_X ? RIGHT_PLAYER : LEFT_PLAYER, 0} );
 	}
 
