@@ -39,7 +39,7 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 
 	public:
 		PhysicWorld();
-		~PhysicWorld();
+		virtual ~PhysicWorld();
 
 		// set the callback
 		void setEventCallback( event_callback_fn );
@@ -73,7 +73,9 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		/// this function calculates whether two circles overlap.
 		static bool circleCircleCollision(const Vector2& pos1, float rad_1, const Vector2& pos2, float rad_2);
 
-	private:
+		virtual void resetBallAngularVelocity(PlayerSide side);
+
+	protected:
 		// Blobby animation methods
 		void blobbyStartAnimation(PlayerSide player);
 		void blobbyAnimationStep(PlayerSide player);
@@ -84,10 +86,15 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		// Do all blobby-related physic stuff which is independent from states
 		void handleBlob(PlayerSide player, PlayerInput input);
 
+		Vector2 getBlobbyBallCollisionCirclePosition(PlayerSide player) const;
 		// Detect and handle ball to blobby collisions
-		bool handleBlobbyBallCollision(PlayerSide player);
+		virtual bool handleBlobbyBallCollision(PlayerSide player);
+		// Detect and handle ball to ground collision
+		virtual bool handleBallGroundCollision();
 		// calculate ball impacts vs wall, ground and net
 		void handleBallWorldCollisions();
+
+		virtual void ballRotationStep(bool isGameRunning);
 
 		Vector2 mBlobPosition[MAX_PLAYERS];
 		Vector2 mBallPosition;
@@ -103,6 +110,20 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		float mLastHitIntensity;
 
 		event_callback_fn mCallback;
+};
+
+class PhysicWorldV2 : public PhysicWorld
+{
+	public:
+		PhysicWorldV2();
+
+		virtual void resetBallAngularVelocity(PlayerSide side);
+
+	protected:
+		virtual bool handleBlobbyBallCollision(PlayerSide player);
+		virtual bool handleBallGroundCollision();
+
+		virtual void ballRotationStep(bool isGameRunning);
 };
 
 

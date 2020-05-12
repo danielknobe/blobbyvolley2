@@ -50,7 +50,7 @@ NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftP
 			std::shared_ptr<NetworkPlayer> rightPlayer, PlayerSide switchedSide,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
-	mMatch(new DuelMatch(false, rules, scoreToWin)),
+	mMatch(DuelMatch::getLastVersion(false, rules, scoreToWin)),
 	mSpeedController(speed),
 	mLeftInput (new InputSource()),
 	mRightInput(new InputSource()),
@@ -77,6 +77,7 @@ NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftP
 	mRightPlayer = rightPlayer->getID();
 	mSwitchedSide = switchedSide;
 
+	mRecorder->setEngineVersion(mMatch->getVersion());
 	mRecorder->setPlayerNames(leftPlayer->getName(), rightPlayer->getName());
 	mRecorder->setPlayerColors(leftPlayer->getColor(), rightPlayer->getColor());
 	mRecorder->setGameSpeed(mSpeedController.getGameSpeed());

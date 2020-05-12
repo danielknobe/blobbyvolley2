@@ -40,9 +40,12 @@ DuelMatch::DuelMatch(bool remote, std::string rules, int score_to_win) :
 		mPaused(false),
 		mRemote(remote)
 {
-	mPhysicWorld.reset( new PhysicWorld() );
-
 	setInputSources(std::make_shared<InputSource>(), std::make_shared<InputSource>());
+}
+
+void DuelMatch::init()
+{
+	resetPhysicWorld();
 
 	if(!mRemote)
 		mPhysicWorld->setEventCallback( [this]( const MatchEvent& event ) { mEvents.push_back(event); } );
@@ -68,7 +71,7 @@ void DuelMatch::setInputSources(std::shared_ptr<InputSource> linput, std::shared
 
 void DuelMatch::reset()
 {
-	mPhysicWorld.reset(new PhysicWorld());
+	resetPhysicWorld();
 	mLogic = mLogic->clone();
 }
 
@@ -314,7 +317,7 @@ void DuelMatch::resetBall( PlayerSide side )
 		mPhysicWorld->setBallPosition( Vector2(400, 450) );
 
 	mPhysicWorld->setBallVelocity( Vector2(0, 0) );
-	mPhysicWorld->setBallAngularVelocity( (side == RIGHT_PLAYER ? 1 : -1) * STANDARD_BALL_ANGULAR_VELOCITY );
+	mPhysicWorld->resetBallAngularVelocity( side );
 }
 
 bool DuelMatch::canStartRound(PlayerSide servingPlayer) const
@@ -341,3 +344,40 @@ void DuelMatch::updateEvents()
 	mEvents.clear();
 }
 
+DuelMatch* DuelMatch::getLastVersion(bool remote, std::string rules, int score_to_win)
+{
+	DuelMatch* match = new DuelMatchV2(remote, rules, score_to_win);
+	match->init();
+	return match;
+}
+
+DuelMatchV1::DuelMatchV1(bool remote, std::string rules, int score_to_win) :
+		DuelMatch(remote, rules, score_to_win)
+{
+}
+
+int DuelMatchV1::getVersion()
+{
+	return 1;
+}
+
+void DuelMatchV1::resetPhysicWorld()
+{
+	mPhysicWorld.reset(new PhysicWorld());
+}
+
+
+DuelMatchV2::DuelMatchV2(bool remote, std::string rules, int score_to_win) :
+		DuelMatch(remote, rules, score_to_win)
+{
+}
+
+int DuelMatchV2::getVersion()
+{
+	return 2;
+}
+
+void DuelMatchV2::resetPhysicWorld()
+{
+	mPhysicWorld.reset(new PhysicWorldV2());
+}

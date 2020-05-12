@@ -96,6 +96,8 @@ void ReplayRecorder::save( std::shared_ptr<FileWrite> file) const
 			REPLAY_FILE_VERSION_MAJOR, REPLAY_FILE_VERSION_MINOR);
 	file->write(writeBuffer, charsWritten);
 
+	writeAttribute(*file, "engine_version", mEngineVersion);
+
 	writeAttribute(*file, "game_speed", mGameSpeed);
 	writeAttribute(*file, "game_length", mSaveData.size());
 	writeAttribute(*file, "game_duration", mSaveData.size() / mGameSpeed);
@@ -202,6 +204,11 @@ void ReplayRecorder::record(const DuelMatchState& state)
 }
 
 
+
+void ReplayRecorder::setEngineVersion(int version)
+{
+	mEngineVersion = version;
+}
 
 void ReplayRecorder::setPlayerNames(const std::string& left, const std::string& right)
 {

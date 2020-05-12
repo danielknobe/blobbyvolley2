@@ -58,10 +58,11 @@ LocalGameState::LocalGameState()
 
 	SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
-	mMatch.reset(new DuelMatch( false, config->getString("rules")));
+	mMatch.reset(DuelMatch::getLastVersion( false, config->getString("rules")));
 	mMatch->setPlayers(leftPlayer, rightPlayer);
 	mMatch->setInputSources(leftInput, rightInput);
 
+	mRecorder->setEngineVersion(mMatch->getVersion());
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));

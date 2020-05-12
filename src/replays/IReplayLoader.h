@@ -71,6 +71,9 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 
 		// Attributes Interface
 
+		/// gets the engine version
+		virtual int getEngineVersion() const = 0;
+
 		/// gets the name of a player
 		virtual std::string getPlayerName(PlayerSide player) const = 0;
 		/// gets blob color of a player
