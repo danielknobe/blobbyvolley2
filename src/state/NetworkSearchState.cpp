@@ -212,7 +212,7 @@ void NetworkSearchState::step_impl()
 		if (skip_iter)
 			break;
 	}
-	while (packet = mPingClient->Receive())
+	while (nullptr != (packet = mPingClient->Receive()))
 	{
 		switch (packet->data[0])
 		{

@@ -134,7 +134,7 @@ void NetworkGameState::step_impl()
 	RenderManager* rmanager = &RenderManager::getSingleton();
 
 	packet_ptr packet;
-	while (packet = mClient->Receive())
+	while (nullptr != (packet = mClient->Receive()))
 	{
 		switch(packet->data[0])
 		{

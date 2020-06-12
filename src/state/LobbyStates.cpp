@@ -55,7 +55,7 @@ void LobbyState::step_impl()
 {
 	// process packets
 	packet_ptr packet;
-	while (packet = mClient->Receive())
+	while (nullptr != (packet = mClient->Receive()))
 	{
 		switch(packet->data[0])
 		{
