@@ -648,91 +648,113 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 					break;
 			}
 			std::string input = InputManager::getSingleton()->getLastTextKey();
+
 			if (input == "backspace" && text.length() > 0 && cpos > 0)
 			{
 				text.erase(cpos - 1, 1);
 				cpos--;
 			}
-			 else if (input == "del" && text.length() > cpos)
+			else if (input == "del" && text.length() > cpos)
 			{
 				text.erase(cpos, 1);
 			}
-			 else if (input == "return")
+			else if (input == "return")
 			{
 				// Workarround for chatwindow! Delete this after GUI-Rework
 				changed = true;
 			}
 			// This is a temporary solution until the new
 			// UTF-8 class can tell the real length!!!
-			 else if (text.length() < length)
+			else if (text.length() < length)
 			{
+				if (input == "paste")
+				{
+					char * clipboardText = SDL_GetClipboardText();
+
+					if (clipboardText != nullptr) {
+						for (int i = 0; text.length() < length; i++)
+						{
+							const char c = clipboardText[i];
+
+							// Only ASCII is currently supported
+							if ((c == '\0') || (c < 0x20) || (c > 0xf7))
+								break;
+
+							text.insert(cpos, &c, 1);
+							cpos++;
+							changed = true;
+						}
+
+						SDL_free(clipboardText);
+					}
+				}
 				if (input == "space")
 				{
 					text.insert(cpos, " ");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad0")
+				else if (input == "keypad0")
 				{
 					text.insert(cpos, "0");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad1")
+				else if (input == "keypad1")
 				{
 					text.insert(cpos, "1");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad2")
+				else if (input == "keypad2")
 				{
 					text.insert(cpos, "2");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad3")
+				else if (input == "keypad3")
 				{
 					text.insert(cpos, "3");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad4")
+				else if (input == "keypad4")
 				{
 					text.insert(cpos, "4");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad5")
+				else if (input == "keypad5")
 				{
 					text.insert(cpos, "5");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad6")
+				else if (input == "keypad6")
 				{
 					text.insert(cpos, "6");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad7")
+				else if (input == "keypad7")
 				{
 					text.insert(cpos, "7");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad8")
+				else if (input == "keypad8")
 				{
 					text.insert(cpos, "8");
 					cpos++;
 					changed = true;
 				}
-				 else if (input == "keypad9")
+				else if (input == "keypad9")
 				{
 					text.insert(cpos, "9");
 					cpos++;
 					changed = true;
 				}
-				 else if (input.length() == 1)
+				else if (input.length() == 1)
 				{
 					text.insert(cpos, input);
 					cpos++;

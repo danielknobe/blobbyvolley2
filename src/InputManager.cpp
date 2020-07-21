@@ -198,6 +198,13 @@ void InputManager::updateInput()
 					case SDLK_DELETE:
 						mLastTextKey = "del";
 						break;
+					case SDLK_v:
+						// CTRL + v -> Paste
+						if ((event.key.keysym.mod & KMOD_CTRL) != 0)
+						{
+							mLastTextKey = "paste";
+						}
+						break;
 
 					default:
 						break;
