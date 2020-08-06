@@ -1962,7 +1962,7 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 #ifdef _DEBUG
 							assert(0);
 #endif
-							delete internalPacket->data;
+							delete[] internalPacket->data;
 							internalPacketPool.ReleasePointer(internalPacket);
 							return 0;
 						}
@@ -1978,7 +1978,7 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 #ifdef _DEBUG
 							assert(0);
 #endif
-							delete internalPacket->data;
+							delete[] internalPacket->data;
 							internalPacketPool.ReleasePointer(internalPacket);
 							return 0;
 						}
