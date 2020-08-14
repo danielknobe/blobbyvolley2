@@ -56,10 +56,11 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		void setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer);
 		void setInputSources(std::shared_ptr<InputSource> linput, std::shared_ptr<InputSource> rinput );
 
-		~DuelMatch();
+		virtual ~DuelMatch();
 
 		void setRules(std::string rulesFile, int score_to_win = 0);
 
+		void init();
 		void reset();
 
 		// This steps through one frame
@@ -129,7 +130,13 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// use this if no match step is performed, but external events have to be processed.
 		void updateEvents();
 
-	private:
+	    static DuelMatch* getLastVersion(bool remote, std::string rules, int score_to_win = 0);
+
+		virtual int getVersion() = 0;
+
+	protected:
+
+		virtual void resetPhysicWorld() = 0;
 
 		boost::scoped_ptr<PhysicWorld> mPhysicWorld;
 
@@ -147,4 +154,30 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		std::vector<MatchEvent> mLastEvents;	// events that were generated in the last processed frame
 
 		bool mRemote;
+};
+
+class DuelMatchV1 : public DuelMatch
+{
+	public:
+
+		DuelMatchV1(bool remote, std::string rules, int score_to_win = 0);
+
+		virtual int getVersion() override;
+
+	protected:
+
+		virtual void resetPhysicWorld() override;
+};
+
+class DuelMatchV2 : public DuelMatch
+{
+	public:
+
+		DuelMatchV2(bool remote, std::string rules, int score_to_win = 0);
+
+		virtual int getVersion() override;
+
+	protected:
+
+		virtual void resetPhysicWorld() override;
 };

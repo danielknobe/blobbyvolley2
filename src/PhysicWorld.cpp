@@ -182,7 +182,7 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 	blobbyAnimationStep(player);
 }
 
-bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
+Vector2 PhysicWorld::getBlobbyBallCollisionCirclePosition(PlayerSide player) const
 {
 	Vector2 circlepos = mBlobPosition[player];
 	// check for impact
@@ -194,6 +194,18 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	{
 		circlepos.y -= BLOBBY_UPPER_SPHERE;
 	} else
+	{	// no impact - return empty vector!
+		return Vector2();
+	}
+
+	return circlepos;
+}
+
+bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
+{
+	Vector2 circlepos = getBlobbyBallCollisionCirclePosition(player);
+	// check for impact
+	if(circlepos == Vector2())
 	{	// no impact!
 		return false;
 	}
@@ -209,6 +221,7 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	mBallVelocity = mBallVelocity.normalise();
 	mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 	mBallPosition += mBallVelocity;
+
 	return true;
 }
 
@@ -258,12 +271,7 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 		mBlobPosition[RIGHT_PLAYER].x=RIGHT_PLANE;
 
 	// Velocity Integration
-	if( !isGameRunning )
-		mBallRotation -= mBallAngularVelocity;
-	else if (mBallVelocity.x > 0.0)
-		mBallRotation += mBallAngularVelocity * (mBallVelocity.length() / 6);
-	else
-		mBallRotation -= mBallAngularVelocity * (mBallVelocity.length()/ 6);
+	ballRotationStep(isGameRunning);
 
 	// Overflow-Protection
 	if (mBallRotation <= 0)
@@ -275,16 +283,35 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 	reset_fpu_flags(fpf);
 }
 
+void PhysicWorld::ballRotationStep(bool isGameRunning)
+{
+	if( !isGameRunning )
+		mBallRotation -= mBallAngularVelocity;
+	else if (mBallVelocity.x > 0.0)
+		mBallRotation += mBallAngularVelocity * (mBallVelocity.length() / 6);
+	else
+		mBallRotation -= mBallAngularVelocity * (mBallVelocity.length() / 6);
+}
+
+bool PhysicWorld::handleBallGroundCollision()
+{
+	if (mBallPosition.y + BALL_RADIUS <= GROUND_PLANE_HEIGHT_MAX)
+	{
+		return false;
+	}
+
+	mBallVelocity = mBallVelocity.reflectY();
+	mBallVelocity = mBallVelocity.scale(0.95);
+	mBallPosition.y = GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS;
+	mCallback( MatchEvent{MatchEvent::BALL_HIT_GROUND, mBallPosition.x > NET_POSITION_X ? RIGHT_PLAYER : LEFT_PLAYER, 0} );
+
+	return true;
+}
+
 void PhysicWorld::handleBallWorldCollisions()
 {
 	// Ball to ground Collision
-	if (mBallPosition.y + BALL_RADIUS > GROUND_PLANE_HEIGHT_MAX)
-	{
-		mBallVelocity = mBallVelocity.reflectY();
-		mBallVelocity = mBallVelocity.scale(0.95);
-		mBallPosition.y = GROUND_PLANE_HEIGHT_MAX - BALL_RADIUS;
-		mCallback( MatchEvent{MatchEvent::BALL_HIT_GROUND, mBallPosition.x > NET_POSITION_X ? RIGHT_PLAYER : LEFT_PLAYER, 0} );
-	}
+	handleBallGroundCollision();
 
 	// Border Collision
 	if (mBallPosition.x - BALL_RADIUS <= LEFT_PLANE && mBallVelocity.x < 0.0)
@@ -407,6 +434,62 @@ void PhysicWorld::setState(const PhysicState& ps)
 void PhysicWorld::setEventCallback( event_callback_fn cb )
 {
 	mCallback = cb;
+}
+
+void PhysicWorld::resetBallAngularVelocity(PlayerSide side)
+{
+	mBallAngularVelocity = (side == RIGHT_PLAYER ? -1 : 1) * STANDARD_BALL_ANGULAR_VELOCITY;
+}
+
+PhysicWorldV2::PhysicWorldV2()
+		: PhysicWorld()
+{
+	mBallAngularVelocity = -mBallAngularVelocity;
+}
+
+void PhysicWorldV2::resetBallAngularVelocity(PlayerSide side)
+{
+	mBallAngularVelocity = (side == RIGHT_PLAYER ? 1 : -1) * STANDARD_BALL_ANGULAR_VELOCITY;
+}
+
+bool PhysicWorldV2::handleBlobbyBallCollision(PlayerSide player)
+{
+	Vector2 circlepos = getBlobbyBallCollisionCirclePosition(player);
+	Vector2 oldBallVelocity = mBallVelocity;
+
+	bool result = PhysicWorld::handleBlobbyBallCollision(player);
+
+	if(result)
+	{
+		Vector2 relativeBallPosition = -Vector2(mBallPosition, circlepos);
+		Vector2 normalizedRelativeBallPosition = relativeBallPosition.normalise();
+
+		// illustration for ball friction velocity: https://i.gyazo.com/2576401601442907a05dcd211fae8a0c.png
+		float oldBallFrictionVelocity = oldBallVelocity.rotateClockwise(normalizedRelativeBallPosition).x;
+		float newBallFrictionVelocity = mBallVelocity.rotateClockwise(normalizedRelativeBallPosition).x;
+		float blobFrictionVelocity = mBlobVelocity[player].rotateClockwise(normalizedRelativeBallPosition).x;
+
+		mBallAngularVelocity = (newBallFrictionVelocity - oldBallFrictionVelocity + blobFrictionVelocity) / BALL_RADIUS;
+	}
+
+	return result;
+}
+
+bool PhysicWorldV2::handleBallGroundCollision()
+{
+	bool result = PhysicWorld::handleBallGroundCollision();
+
+	if (result)
+	{
+		mBallAngularVelocity = BALL_GROUND_COLLISION_SPIN_COEFFICIENT * mBallAngularVelocity + (1 - BALL_GROUND_COLLISION_SPIN_COEFFICIENT) * mBallVelocity.x / BALL_RADIUS;
+	}
+
+	return result;
+}
+
+void PhysicWorldV2::ballRotationStep(bool isGameRunning)
+{
+	mBallRotation += mBallAngularVelocity;
 }
 
 inline short set_fpu_single_precision()

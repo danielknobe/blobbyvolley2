@@ -52,6 +52,11 @@ void ReplayPlayer::load(const std::string& filename)
 	mLength = loader->getLength();
 }
 
+int ReplayPlayer::getEngineVersion() const
+{
+	return loader->getEngineVersion();
+}
+
 std::string ReplayPlayer::getPlayerName(const PlayerSide side) const
 {
 	return mPlayerNames[side];

@@ -65,7 +65,18 @@ void ReplayState::loadReplay(const std::string& file)
 		FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
 		rulesFile.write(mReplayPlayer->getRules());
 		rulesFile.close();
-		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
+		switch (mReplayPlayer->getEngineVersion())
+		{
+			case 1:
+				mMatch.reset(new DuelMatchV1(false, TEMP_RULES_NAME));
+				break;
+			default:
+				std::cerr << "Warning: unrecognized engine version (" << mReplayPlayer->getEngineVersion() << ") - falling back to V2" << std::endl;
+			case 2:
+				mMatch.reset(new DuelMatchV2(false, TEMP_RULES_NAME));
+				break;
+		}
+		mMatch->init();
 
 		SoundManager::getSingleton().playSound(	"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 

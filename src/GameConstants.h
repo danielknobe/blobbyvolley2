@@ -54,6 +54,7 @@ const float BLOBBY_JUMP_BUFFER = GRAVITATION / 2;
 const float BALL_RADIUS = 31.5;
 const float BALL_GRAVITATION = 0.287;
 const float BALL_COLLISION_VELOCITY = std::sqrt(0.75 * RIGHT_PLANE * BALL_GRAVITATION); /// \todo work on a full-fledged physics spec
+const float BALL_GROUND_COLLISION_SPIN_COEFFICIENT = 0.1;
 
 
 // Volley Ball Net

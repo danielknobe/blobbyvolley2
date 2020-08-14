@@ -59,6 +59,9 @@ class Vector2
 		float lengthSQ() const;
 		Vector2 normalise();
 		Vector2 contraVector() const ;
+		Vector2 rotateClockwise(float angle) const;
+		// The "angle vector" of angle A is the rotation of Vector(0, 1) counterclockwise by A
+		Vector2 rotateClockwise(const Vector2& angleVector) const;
 
 		inline Vector2 halfVector(const Vector2& vec) const
 		{
@@ -217,6 +220,16 @@ inline Vector2 Vector2::normalise()
 inline Vector2 Vector2::contraVector() const
 {
 	return Vector2(-x, -y);
+}
+
+inline Vector2 Vector2::rotateClockwise(float angle) const
+{
+    return rotateClockwise(Vector2(sin(angle), cos(angle)));
+}
+
+inline Vector2 Vector2::rotateClockwise(const Vector2& angleVector) const
+{
+    return Vector2(x * angleVector.y - y * angleVector.x, y * angleVector.y + x * angleVector.x);
 }
 
 inline void Vector2::clear()

@@ -58,7 +58,7 @@ int CURRENT_NETWORK_LAG = -1;
 
 /* implementation */
 NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_checksum, int score_to_win)
-	: GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win))
+	: GameState(DuelMatch::getLastVersion(true, DEFAULT_RULES_FILE, score_to_win))
 	, mNetworkState(WAITING_FOR_OPPONENT)
 	, mWaitingForReplay(false)
 	, mClient(client)

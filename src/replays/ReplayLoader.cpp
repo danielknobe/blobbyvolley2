@@ -72,6 +72,11 @@ class ReplayLoader_V2X: public IReplayLoader
 		virtual int getVersionMajor() const override { return 2; };
 		virtual int getVersionMinor() const override { return 0; };
 
+		virtual int getEngineVersion() const override
+		{
+			return mEngineVersion;
+		};
+
 		virtual std::string getPlayerName(PlayerSide player) const override
 		{
 			if(player == LEFT_PLAYER)
@@ -228,6 +233,9 @@ class ReplayLoader_V2X: public IReplayLoader
 			}
 
 
+			// set default value for old replay files that don't contain the "engine_version" attribute
+			mEngineVersion = 1;
+
 			for (; varElem != nullptr; varElem = varElem->NextSiblingElement("var"))
 			{
 				std::string name, value;
@@ -240,7 +248,9 @@ class ReplayLoader_V2X: public IReplayLoader
 					value = c;
 
 				// find valid attribute
-				if( name == "game_speed" )
+				if( name == "engine_version" )
+					mEngineVersion = std::stoi(value);
+				else if( name == "game_speed" )
 					mGameSpeed = std::stoi(value);
 				else if( name == "game_length" )
 					mGameLength = std::stoi(value);
@@ -303,6 +313,7 @@ class ReplayLoader_V2X: public IReplayLoader
 		std::vector<ReplaySavePoint> mSavePoints;
 
 		// specific data
+		unsigned int mEngineVersion;
 		std::string mLeftPlayerName;
 		std::string mRightPlayerName;
 		unsigned int mLeftFinalScore;

@@ -51,6 +51,7 @@ class ReplayPlayer : public ObjectCounter<ReplayPlayer>
 		// 							Replay Attributes
 		// -----------------------------------------------------------------------------------------
 
+		int getEngineVersion() const;
 		std::string getPlayerName(const PlayerSide side) const;
 		Color getBlobColor(const PlayerSide side) const;
 		int getGameSpeed() const;
