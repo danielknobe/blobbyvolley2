@@ -86,10 +86,12 @@ void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
     printer.PushAttribute("minor", REPLAY_FILE_VERSION_MINOR);
     printer.CloseElement();
 
+    // the explicit template arguments below are to prevent ambiguities on OSX where
+    // size_t = unsigned long != unsigned int != uint64_t; same for time_t
 	writeAttribute(printer, "game_speed", mGameSpeed);
-	writeAttribute(printer, "game_length", mSaveData.size());
+	writeAttribute<std::uint64_t>(printer, "game_length", mSaveData.size());
 	writeAttribute(printer, "game_duration", mSaveData.size() / mGameSpeed);
-	writeAttribute(printer, "game_date", std::time(nullptr));
+	writeAttribute<std::int64_t>(printer, "game_date", std::time(nullptr));
 
 	writeAttribute(printer, "score_left", mEndScore[LEFT_PLAYER]);
 	writeAttribute(printer, "score_right", mEndScore[RIGHT_PLAYER]);
