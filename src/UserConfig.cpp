@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileWrite.h"
 #include "PlayerIdentity.h"
 #include "LocalInputSource.h"
-#include "ScriptedInputSource.h"
 
 
 /* implementation */
@@ -45,7 +44,7 @@ std::map<std::string, std::shared_ptr<IUserConfigReader> >& userConfigCache()
 std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
 {
 	// if we have this userconfig already cached, just return from cache
-	std::map<std::string, std::shared_ptr<IUserConfigReader> >:: iterator cfg_cached = userConfigCache().find(file);
+	auto cfg_cached = userConfigCache().find(file);
 	if( cfg_cached != userConfigCache().end() )
 	{
 		return cfg_cached->second;
@@ -65,7 +64,7 @@ std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(con
 PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human)
 {
 	std::string prefix = side == LEFT_PLAYER ? "left" : "right";
-	std::string name = "";
+	std::string name;
 	// init local input
 	if(force_human)
 	{
@@ -94,7 +93,7 @@ PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human)
 
 bool UserConfig::loadFile(const std::string& filename)
 {
-	std::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
+	auto configDoc = FileRead::readXMLDocument(filename);
 
 	if (configDoc->Error())
 	{
@@ -102,23 +101,22 @@ bool UserConfig::loadFile(const std::string& filename)
 		std::cerr << "!" << std::endl;
 	}
 
-	TiXmlElement* userConfigElem =
+	const auto* userConfigElem =
 		configDoc->FirstChildElement("userconfig");
-	if (userConfigElem == NULL)
+	if (!userConfigElem)
 		return false;
-	for (TiXmlElement* varElem = userConfigElem->FirstChildElement("var");
-		varElem != NULL;
+
+	for (const auto* varElem = userConfigElem->FirstChildElement("var");
+		varElem;
 		varElem = varElem->NextSiblingElement("var"))
 	{
-		std::string name, value;
-		const char* c;
-		c = varElem->Attribute("name");
-		if (c)
-			name = c;
-		c = varElem->Attribute("value");
-		if (c)
-			value = c;
-		createVar(name, value);
+		const char* c = varElem->Attribute("name");
+		const char* v = varElem->Attribute("value");
+		if(c && v) {
+            createVar(c, v);
+        } else {
+		    std::cerr << "name of value missing for <var>" << std::endl;
+		}
 	}
 
 	return true;
@@ -135,12 +133,12 @@ bool UserConfig::saveFile(const std::string& filename) const
 
 	file.write(xmlHeader);
 
-	for (unsigned int i = 0; i < mVars.size(); ++i)
+	for (auto variable : mVars)
 	{
 		char writeBuffer[256];
 		int charsWritten = snprintf(writeBuffer, 256,
-			"\t<var name=\"%s\" value=\"%s\"/>\n",
-			mVars[i]->Name.c_str(), mVars[i]->Value.c_str());
+                                    "\t<var name=\"%s\" value=\"%s\"/>\n",
+                                    variable->Name.c_str(), variable->Value.c_str());
 
 		file.write(writeBuffer, charsWritten);
 	}
@@ -180,7 +178,7 @@ bool UserConfig::getBool(const std::string& name, bool default_value) const
 {
 	auto var = checkVarByName(name);
 	if (var)
-		return (var->Value == "true") ? true : false;;
+		return var->Value == "true";
 
 	return default_value;
 }
@@ -220,7 +218,7 @@ void UserConfig::setInteger(const std::string& name, int var)
 
 UserConfigVar* UserConfig::createVar(const std::string& name, const std::string& value)
 {
-	if (findVarByName(name)) return NULL;
+	if (findVarByName(name)) return nullptr;
 	UserConfigVar *var = new UserConfigVar;
 	var->Name = name;
 	var->Value = value;
@@ -247,8 +245,8 @@ void UserConfig::setValue(const std::string& name, const std::string& value)
 
 UserConfig::~UserConfig()
 {
-	for (unsigned int i = 0; i < mVars.size(); ++i)
-		delete mVars[i];
+	for (auto & var : mVars)
+		delete var;
 }
 
 UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
@@ -264,8 +262,8 @@ UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
 
 UserConfigVar* UserConfig::findVarByName(const std::string& name) const
 {
-	for (unsigned int i = 0; i < mVars.size(); ++i)
-		if (mVars[i]->Name == name) return mVars[i];
+	for (auto var : mVars)
+		if (var->Name == name) return var;
 
 	return nullptr;
 }

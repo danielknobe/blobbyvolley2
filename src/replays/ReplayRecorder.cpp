@@ -22,9 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayRecorder.h"
 
 /* includes */
-#include <algorithm>
 #include <iostream>
-#include <sstream>
 #include <ctime>
 
 #include <boost/algorithm/string/trim_all.hpp>
@@ -32,8 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tinyxml/tinyxml.h"
 
 #include "raknet/BitStream.h"
-
-#include <SDL2/SDL.h>
 
 #include "Global.h"
 #include "ReplayDefs.h"
@@ -56,9 +52,7 @@ VersionMismatchException::VersionMismatchException(const std::string& filename, 
 	error = errorstr.str();
 }
 
-VersionMismatchException::~VersionMismatchException() noexcept
-{
-}
+VersionMismatchException::~VersionMismatchException() noexcept = default;
 
 const char* VersionMismatchException::what() const noexcept
 {
@@ -72,9 +66,7 @@ ReplayRecorder::ReplayRecorder()
 	mGameSpeed = -1;
 }
 
-ReplayRecorder::~ReplayRecorder()
-{
-}
+ReplayRecorder::~ReplayRecorder() = default;
 template<class T>
 void writeAttribute(FileWrite& file, const char* name, const T& value)
 {
@@ -83,7 +75,7 @@ void writeAttribute(FileWrite& file, const char* name, const T& value)
 	file.write( stream.str() );
 }
 
-void ReplayRecorder::save( std::shared_ptr<FileWrite> file) const
+void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 {
 	constexpr const char* xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<replay>\n";
 	constexpr const char* xmlFooter = "</replay>\n\n";
@@ -139,7 +131,8 @@ void ReplayRecorder::save( std::shared_ptr<FileWrite> file) const
 	file->write(xmlFooter);
 	file->close();
 }
-void ReplayRecorder::send(std::shared_ptr<GenericOut> target) const
+
+void ReplayRecorder::send(const std::shared_ptr<GenericOut>& target) const
 {
 	target->string(mPlayerNames[LEFT_PLAYER]);
 	target->string(mPlayerNames[RIGHT_PLAYER]);
@@ -157,7 +150,7 @@ void ReplayRecorder::send(std::shared_ptr<GenericOut> target) const
 	target->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
-void ReplayRecorder::receive(std::shared_ptr<GenericIn> source)
+void ReplayRecorder::receive(const std::shared_ptr<GenericIn>& source)
 {
 	source->string(mPlayerNames[LEFT_PLAYER]);
 	source->string(mPlayerNames[RIGHT_PLAYER]);
@@ -191,9 +184,9 @@ void ReplayRecorder::record(const DuelMatchState& state)
 
 	// we save this 1 here just for compatibility
 	// set highest bit to 1
-	unsigned char packet = 1 << 7;
-	packet |= (state.playerInput[LEFT_PLAYER].getAll() & 7) << 3;
-	packet |= (state.playerInput[RIGHT_PLAYER].getAll() & 7) ;
+	unsigned char packet = 1u << 7u;
+	packet |= (state.playerInput[LEFT_PLAYER].getAll() & 7u) << 3u;
+	packet |= (state.playerInput[RIGHT_PLAYER].getAll() & 7u) ;
 	mSaveData.push_back(packet);
 
 	// update the score
@@ -220,7 +213,7 @@ void ReplayRecorder::setGameSpeed(int fps)
 	mGameSpeed = fps;
 }
 
-void ReplayRecorder::setGameRules( std::string rules )
+void ReplayRecorder::setGameRules( const std::string& rules )
 {
 	FileRead file(FileRead::makeLuaFilename("rules/"+rules));
 	mGameRules.resize( file.length() );

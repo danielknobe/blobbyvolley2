@@ -176,10 +176,10 @@ class TextManager
 		static const TextManager* getSingleton();
 
 		/// creates a textmanager for a particular language
-		static TextManager* createTextManager(std::string langname);
+		static TextManager* createTextManager(const std::string& langname);
 
 		/// switches the language
-		static void switchLanguage(std::string langname);
+		static void switchLanguage(const std::string& langname);
 
 		/// map to map abbreviations to full name (e.g. de to deutsch)
 		static std::map<std::string, std::string> language_names;
@@ -198,7 +198,7 @@ class TextManager
 		std::string lang;
 
 		/// loads the language data from an xml file
-		bool loadFromXML(std::string file);
+		bool loadFromXML(const std::string& file);
 
 		/// sets the strings to the default values
 		void setDefault();

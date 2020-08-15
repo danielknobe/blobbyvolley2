@@ -66,10 +66,10 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		ReplayRecorder();
 		~ReplayRecorder();
 
-		void save(std::shared_ptr<FileWrite> target) const;
+		void save(const std::shared_ptr<FileWrite>& target) const;
 
-		void send(std::shared_ptr<GenericOut> stream) const;
-		void receive(std::shared_ptr<GenericIn>stream);
+		void send(const std::shared_ptr<GenericOut>& stream) const;
+		void receive(const std::shared_ptr<GenericIn>&stream);
 
 		// recording functions
 		void record(const DuelMatchState& input);
@@ -81,7 +81,7 @@ class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 		void setPlayerNames(const std::string& left, const std::string& right);
 		void setPlayerColors(Color left, Color right);
 		void setGameSpeed(int fps);
-		void setGameRules( std::string rules );
+		void setGameRules( const std::string& rules );
 
 	private:
 		std::vector<uint8_t> mSaveData;

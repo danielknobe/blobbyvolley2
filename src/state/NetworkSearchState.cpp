@@ -457,7 +457,7 @@ void OnlineSearchState::doSearchServers()
 
 	// Get the serverlist
 	try {
-		std::shared_ptr<TiXmlDocument> serverListXml = FileRead::readXMLDocument("onlineserver.xml");
+		auto serverListXml = FileRead::readXMLDocument("onlineserver.xml");
 
 		if (serverListXml->Error())
 		{
@@ -465,22 +465,22 @@ void OnlineSearchState::doSearchServers()
 			std::cerr << "!" << std::endl;
 		}
 
-		TiXmlElement* onlineserverElem = serverListXml->FirstChildElement("onlineserver");
+		const auto* onlineserverElem = serverListXml->FirstChildElement("onlineserver");
 
-		if (onlineserverElem == NULL)
+		if (!onlineserverElem)
 		{
 			std::cout << "Can't read onlineserver.xml" << std::endl;
 			return;
 		}
 
-		for (TiXmlElement* serverElem = onlineserverElem->FirstChildElement("server");
-		     serverElem != NULL;
+		for (const auto* serverElem = onlineserverElem->FirstChildElement("server");
+		     serverElem;
 		     serverElem = serverElem->NextSiblingElement("server"))
 		{
 			std::string host;
 			int port;
-			for (TiXmlElement* varElem = serverElem->FirstChildElement("var");
-			     varElem != NULL;
+			for (const auto* varElem = serverElem->FirstChildElement("var");
+			     varElem;
 			     varElem = varElem->NextSiblingElement("var"))
 			{
 				const char* tmp;
