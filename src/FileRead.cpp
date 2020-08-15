@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/scoped_array.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 extern "C"
 {
@@ -244,7 +244,7 @@ std::string FileRead::makeLuaFilename(std::string filename)
 	return filename;
 }
 
-std::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& filename)
+XMLDocumentPtr FileRead::readXMLDocument(const std::string& filename)
 {
 	// create and load file
 	FileRead file(filename);
@@ -257,7 +257,7 @@ std::shared_ptr<TiXmlDocument> FileRead::readXMLDocument(const std::string& file
 	fileBuffer[fileLength] = 0;
 
 	// parse file
-	std::shared_ptr<TiXmlDocument> xml = std::make_shared<TiXmlDocument>();
+    XMLDocumentPtr xml = std::make_shared<tinyxml2::XMLDocument>();
 	xml->Parse(fileBuffer.get());
 
 	/// \todo do error handling here?

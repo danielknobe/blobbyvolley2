@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <map>
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "Global.h"
 #include "FileRead.h"
@@ -127,23 +127,20 @@ bool UserConfig::saveFile(const std::string& filename) const
 	// this trows an exception if the file could not be opened for writing
 	FileWrite file(filename);
 
-	const std::string xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<userconfig>\n";
-
-	const std::string xmlFooter = "</userconfig>\n\n";
-
-	file.write(xmlHeader);
+	tinyxml2::XMLPrinter printer;
+    printer.PushHeader(false, true);
+	printer.OpenElement("userconfig");
 
 	for (auto variable : mVars)
 	{
-		char writeBuffer[256];
-		int charsWritten = snprintf(writeBuffer, 256,
-                                    "\t<var name=\"%s\" value=\"%s\"/>\n",
-                                    variable->Name.c_str(), variable->Value.c_str());
-
-		file.write(writeBuffer, charsWritten);
+		printer.OpenElement("var");
+		printer.PushAttribute("name", variable->Name.c_str());
+		printer.PushAttribute("value", variable->Value.c_str());
+		printer.CloseElement();
 	}
+    printer.CloseElement();
 
-	file.write(xmlFooter);
+	file.write(printer.CStr(), printer.CStrSize() - 1);  // do not write terminating \0 character
 	file.close();
 
 	// we have to make sure that we don't cache any outdated user configs

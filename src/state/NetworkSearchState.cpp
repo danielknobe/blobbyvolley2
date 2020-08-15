@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "blobnet/layer/Http.hpp"
 #include "blobnet/exception/HttpException.hpp"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "NetworkState.h"
 #include "LobbyStates.h"
@@ -491,23 +491,11 @@ void OnlineSearchState::doSearchServers()
 					continue;
 				}
 
-				tmp = varElem->Attribute("port");
-				if(tmp)
-				{
-					try
-					{
-						port = std::stoi(tmp);
-					}
-					catch (... /* std::invalid_argument, std::out_of_range */)
-					{
-						port = BLOBBY_PORT;
-					}
-					if ((port <= 0) || (port > 65535))
-					{
-						port = BLOBBY_PORT;
-					}
-					continue;
-				}
+                port = varElem->IntAttribute("port", BLOBBY_PORT);
+                if ((port <= 0) || (port > 65535))
+                {
+                    port = BLOBBY_PORT;
+                }
 			}
 			std::pair<std::string, int> pairs(host, port);
 			serverList.push_back(pairs);

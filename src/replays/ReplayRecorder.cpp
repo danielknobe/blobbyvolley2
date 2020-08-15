@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <boost/algorithm/string/trim_all.hpp>
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "raknet/BitStream.h"
 
@@ -68,68 +68,63 @@ ReplayRecorder::ReplayRecorder()
 
 ReplayRecorder::~ReplayRecorder() = default;
 template<class T>
-void writeAttribute(FileWrite& file, const char* name, const T& value)
+void writeAttribute(tinyxml2::XMLPrinter& printer, const char* name, const T& value)
 {
-	std::stringstream stream;
-	stream << "\t<var name=\"" << name << "\" value=\"" << value << "\" />\n";
-	file.write( stream.str() );
+    printer.OpenElement("var");
+    printer.PushAttribute("name", name);
+    printer.PushAttribute("value", value);
+    printer.CloseElement();
 }
 
 void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 {
-	constexpr const char* xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<replay>\n";
-	constexpr const char* xmlFooter = "</replay>\n\n";
+    tinyxml2::XMLPrinter printer;
+    printer.PushHeader(false, true);
+    printer.OpenElement("replay");
+    printer.OpenElement("version");
+    printer.PushAttribute("major", REPLAY_FILE_VERSION_MAJOR);
+    printer.PushAttribute("minor", REPLAY_FILE_VERSION_MINOR);
+    printer.CloseElement();
 
-	file->write(xmlHeader);
+	writeAttribute(printer, "game_speed", mGameSpeed);
+	writeAttribute(printer, "game_length", mSaveData.size());
+	writeAttribute(printer, "game_duration", mSaveData.size() / mGameSpeed);
+	writeAttribute(printer, "game_date", std::time(nullptr));
 
-	char writeBuffer[256];
-	int charsWritten = snprintf(writeBuffer, 256,
-			"\t<version major=\"%i\" minor=\"%i\"/>\n",
-			REPLAY_FILE_VERSION_MAJOR, REPLAY_FILE_VERSION_MINOR);
-	file->write(writeBuffer, charsWritten);
+	writeAttribute(printer, "score_left", mEndScore[LEFT_PLAYER]);
+	writeAttribute(printer, "score_right", mEndScore[RIGHT_PLAYER]);
 
-	writeAttribute(*file, "game_speed", mGameSpeed);
-	writeAttribute(*file, "game_length", mSaveData.size());
-	writeAttribute(*file, "game_duration", mSaveData.size() / mGameSpeed);
-	writeAttribute(*file, "game_date", std::time(0));
-
-	writeAttribute(*file, "score_left", mEndScore[LEFT_PLAYER]);
-	writeAttribute(*file, "score_right", mEndScore[RIGHT_PLAYER]);
-
-	writeAttribute(*file, "name_left", mPlayerNames[LEFT_PLAYER]);
-	writeAttribute(*file, "name_right", mPlayerNames[RIGHT_PLAYER]);
+	writeAttribute(printer, "name_left", mPlayerNames[LEFT_PLAYER].c_str());
+	writeAttribute(printer, "name_right", mPlayerNames[RIGHT_PLAYER].c_str());
 
 	/// \todo would be nice if we could write the actual colors instead of integers
-	writeAttribute(*file, "color_left", mPlayerColors[LEFT_PLAYER].toInt());
-	writeAttribute(*file, "color_right", mPlayerColors[RIGHT_PLAYER].toInt());
+	writeAttribute(printer, "color_left", mPlayerColors[LEFT_PLAYER].toInt());
+	writeAttribute(printer, "color_right", mPlayerColors[RIGHT_PLAYER].toInt());
 
 	// write the game rules
-	file->write("\t<rules>\n");
-	std::string coded;
-	TiXmlBase::EncodeString(mGameRules, &coded);
-	file->write(coded);
-	file->write("\n\t</rules>\n");
-
+	printer.OpenElement("rules");
+	printer.PushText(mGameRules.c_str());
+	printer.CloseElement();
 
 	// now comes the actual replay data
-	file->write("\t<input>\n");
+	printer.OpenElement("input");
 	std::string binary = encode(mSaveData, 80);
-	file->write(binary);
-	file->write("\n\t</input>\n");
+	printer.PushText(binary.c_str());
+	printer.CloseElement();
 
 	// finally, write the save points
 	// first, convert them into a POD
-	file->write("\t<states>\n");
+	printer.OpenElement("states");
 	RakNet::BitStream stream;
 	auto convert = createGenericWriter(&stream);
 	convert->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 
 	binary = encode((char*)stream.GetData(), (char*)stream.GetData() + stream.GetNumberOfBytesUsed(), 80);
-	file->write(binary);
-	file->write("\n\t</states>\n");
+	printer.PushText(binary.c_str());
+	printer.CloseElement();
 
-	file->write(xmlFooter);
-	file->close();
+    printer.CloseElement();  // </replay>
+    file->write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
 }
 
 void ReplayRecorder::send(const std::shared_ptr<GenericOut>& target) const

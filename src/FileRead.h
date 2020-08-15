@@ -25,7 +25,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  
 // forward declarations for convenience functions
 struct lua_State;
-class TiXmlDocument;
+namespace tinyxml2
+{
+    class XMLDocument;
+}
+
+using XMLDocumentPtr = std::shared_ptr<tinyxml2::XMLDocument>;
 
 /**
 	\class FileRead
@@ -115,5 +120,5 @@ class FileRead : public File
 		static std::string makeLuaFilename(std::string filename);
 		static int readLuaScript(const std::string& filename, lua_State* mState);
 		
-		static std::shared_ptr<TiXmlDocument> readXMLDocument(const std::string& filename);
+		static XMLDocumentPtr readXMLDocument(const std::string& filename);
 };
