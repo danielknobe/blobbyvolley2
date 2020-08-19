@@ -23,14 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <cassert>
-#include <algorithm>
 #include <vector>
 #include <ctime>
 #include <iostream> // debugging
 
-#include <boost/crc.hpp>
-
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "raknet/BitStream.h"
 
@@ -67,12 +64,12 @@ class ReplayLoader_V2X: public IReplayLoader
 	public:
 		ReplayLoader_V2X() = default;
 
-		virtual ~ReplayLoader_V2X() { };
+		~ReplayLoader_V2X() override = default;
 
-		virtual int getVersionMajor() const override { return 2; };
-		virtual int getVersionMinor() const override { return 0; };
+		int getVersionMajor() const override { return 2; };
+		int getVersionMinor() const override { return 0; };
 
-		virtual std::string getPlayerName(PlayerSide player) const override
+		std::string getPlayerName(PlayerSide player) const override
 		{
 			if(player == LEFT_PLAYER)
 				return mLeftPlayerName;
@@ -82,7 +79,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			assert(0);
 		}
 
-		virtual Color getBlobColor(PlayerSide player) const override
+		Color getBlobColor(PlayerSide player) const override
 		{
 			if(player == LEFT_PLAYER)
 				return mLeftColor;
@@ -93,7 +90,7 @@ class ReplayLoader_V2X: public IReplayLoader
 		}
 
 
-		virtual int getFinalScore(PlayerSide player) const override
+		int getFinalScore(PlayerSide player) const override
 		{
 			if(player == LEFT_PLAYER)
 				return mLeftFinalScore;
@@ -103,33 +100,33 @@ class ReplayLoader_V2X: public IReplayLoader
 			assert(0);
 		}
 
-		virtual int getSpeed() const override
+		int getSpeed() const override
 		{
 			return mGameSpeed;
 		};
 
-		virtual int getDuration() const override
+		int getDuration() const override
 		{
 			return mGameDuration;
 		};
 
-		virtual int getLength()  const override
+		int getLength()  const override
 		{
 			return mGameLength;
 		};
 
-		virtual std::time_t getDate() const override
+		std::time_t getDate() const override
 		{
 			return mGameDate;
 		};
 
-		virtual std::string getRules() const override
+		std::string getRules() const override
 		{
 			return mRules;
 		}
 
 
-		virtual void getInputAt(int step, InputSource* left, InputSource* right) override
+		void getInputAt(int step, InputSource* left, InputSource* right) override
 		{
 			assert( step  < mGameLength );
 
@@ -145,7 +142,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			right->setInput(PlayerInput((bool)(packet & 4), (bool)(packet & 2), (bool)(packet & 1)));
 		}
 
-		virtual bool isSavePoint(int position, int& save_position) const override
+		bool isSavePoint(int position, int& save_position) const override
 		{
 			int foundPos;
 			save_position = getSavePoint(position, foundPos);
@@ -156,7 +153,7 @@ class ReplayLoader_V2X: public IReplayLoader
 		// 		so we can start from it when calling
 		// 		getSavePoint in a row (without "jumping").
 		// 		we can save this parameter in ReplayPlayer
-		virtual int getSavePoint(int targetPosition, int& savepoint) const override
+		int getSavePoint(int targetPosition, int& savepoint) const override
 		{
 			// desired index can't be lower that this value,
 			// cause additional savepoints could shift it only right
@@ -191,7 +188,7 @@ class ReplayLoader_V2X: public IReplayLoader
 			return index;
 		}
 
-		virtual void readSavePoint(int index, ReplaySavePoint& state) const override
+		void readSavePoint(int index, ReplaySavePoint& state) const override
 		{
 			state = mSavePoints.at(index);
 		}
@@ -199,7 +196,7 @@ class ReplayLoader_V2X: public IReplayLoader
 	private:
 		void initLoading(std::string filename) override
 		{
-			std::shared_ptr<TiXmlDocument> configDoc = FileRead::readXMLDocument(filename);
+			auto configDoc = FileRead::readXMLDocument(filename);
 
 			if (configDoc->Error())
 			{
@@ -207,15 +204,15 @@ class ReplayLoader_V2X: public IReplayLoader
 				throw( std::runtime_error("") );
 			}
 
-			TiXmlElement* userConfigElem = configDoc->FirstChildElement("replay");
+			const auto* userConfigElem = configDoc->FirstChildElement("replay");
 			if (userConfigElem == nullptr)
 				throw(std::runtime_error("No <replay> node found!"));
 
-			TiXmlElement* varElem = userConfigElem->FirstChildElement("version");
+			const auto* varElem = userConfigElem->FirstChildElement("version");
 			// the first element we find is expected to be the version
 			if(!varElem)
 			{
-				throw( std::runtime_error("") );
+				throw( std::runtime_error("Could not find <version> tag") );
 			}
 			else
 			{
@@ -228,16 +225,18 @@ class ReplayLoader_V2X: public IReplayLoader
 			}
 
 
-			for (; varElem != nullptr; varElem = varElem->NextSiblingElement("var"))
+			for (; varElem; varElem = varElem->NextSiblingElement("var"))
 			{
 				std::string name, value;
-				const char* c;
-				c = varElem->Attribute("name");
-				if (c)
+				if (auto c = varElem->Attribute("name"))
 					name = c;
-				c = varElem->Attribute("value");
-				if (c)
+				else
+				    continue;
+
+				if (auto c = varElem->Attribute("value"))
 					value = c;
+				else
+				    continue;
 
 				// find valid attribute
 				if( name == "game_speed" )

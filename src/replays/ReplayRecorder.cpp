@@ -22,18 +22,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayRecorder.h"
 
 /* includes */
-#include <algorithm>
 #include <iostream>
-#include <sstream>
 #include <ctime>
 
 #include <boost/algorithm/string/trim_all.hpp>
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "raknet/BitStream.h"
-
-#include <SDL2/SDL.h>
 
 #include "Global.h"
 #include "ReplayDefs.h"
@@ -56,9 +52,7 @@ VersionMismatchException::VersionMismatchException(const std::string& filename, 
 	error = errorstr.str();
 }
 
-VersionMismatchException::~VersionMismatchException() noexcept
-{
-}
+VersionMismatchException::~VersionMismatchException() noexcept = default;
 
 const char* VersionMismatchException::what() const noexcept
 {
@@ -72,74 +66,70 @@ ReplayRecorder::ReplayRecorder()
 	mGameSpeed = -1;
 }
 
-ReplayRecorder::~ReplayRecorder()
-{
-}
+ReplayRecorder::~ReplayRecorder() = default;
 template<class T>
-void writeAttribute(FileWrite& file, const char* name, const T& value)
+void writeAttribute(tinyxml2::XMLPrinter& printer, const char* name, const T& value)
 {
-	std::stringstream stream;
-	stream << "\t<var name=\"" << name << "\" value=\"" << value << "\" />\n";
-	file.write( stream.str() );
+    printer.OpenElement("var");
+    printer.PushAttribute("name", name);
+    printer.PushAttribute("value", value);
+    printer.CloseElement();
 }
 
-void ReplayRecorder::save( std::shared_ptr<FileWrite> file) const
+void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 {
-	constexpr const char* xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<replay>\n";
-	constexpr const char* xmlFooter = "</replay>\n\n";
+    tinyxml2::XMLPrinter printer;
+    printer.PushHeader(false, true);
+    printer.OpenElement("replay");
+    printer.OpenElement("version");
+    printer.PushAttribute("major", REPLAY_FILE_VERSION_MAJOR);
+    printer.PushAttribute("minor", REPLAY_FILE_VERSION_MINOR);
+    printer.CloseElement();
 
-	file->write(xmlHeader);
+    // the explicit template arguments below are to prevent ambiguities on OSX where
+    // size_t = unsigned long != unsigned int != uint64_t; same for time_t
+	writeAttribute(printer, "game_speed", mGameSpeed);
+	writeAttribute<std::uint64_t>(printer, "game_length", mSaveData.size());
+	writeAttribute<std::uint64_t>(printer, "game_duration", mSaveData.size() / mGameSpeed);
+	writeAttribute<std::int64_t>(printer, "game_date", std::time(nullptr));
 
-	char writeBuffer[256];
-	int charsWritten = snprintf(writeBuffer, 256,
-			"\t<version major=\"%i\" minor=\"%i\"/>\n",
-			REPLAY_FILE_VERSION_MAJOR, REPLAY_FILE_VERSION_MINOR);
-	file->write(writeBuffer, charsWritten);
+	writeAttribute(printer, "score_left", mEndScore[LEFT_PLAYER]);
+	writeAttribute(printer, "score_right", mEndScore[RIGHT_PLAYER]);
 
-	writeAttribute(*file, "game_speed", mGameSpeed);
-	writeAttribute(*file, "game_length", mSaveData.size());
-	writeAttribute(*file, "game_duration", mSaveData.size() / mGameSpeed);
-	writeAttribute(*file, "game_date", std::time(0));
-
-	writeAttribute(*file, "score_left", mEndScore[LEFT_PLAYER]);
-	writeAttribute(*file, "score_right", mEndScore[RIGHT_PLAYER]);
-
-	writeAttribute(*file, "name_left", mPlayerNames[LEFT_PLAYER]);
-	writeAttribute(*file, "name_right", mPlayerNames[RIGHT_PLAYER]);
+	writeAttribute(printer, "name_left", mPlayerNames[LEFT_PLAYER].c_str());
+	writeAttribute(printer, "name_right", mPlayerNames[RIGHT_PLAYER].c_str());
 
 	/// \todo would be nice if we could write the actual colors instead of integers
-	writeAttribute(*file, "color_left", mPlayerColors[LEFT_PLAYER].toInt());
-	writeAttribute(*file, "color_right", mPlayerColors[RIGHT_PLAYER].toInt());
+	writeAttribute(printer, "color_left", mPlayerColors[LEFT_PLAYER].toInt());
+	writeAttribute(printer, "color_right", mPlayerColors[RIGHT_PLAYER].toInt());
 
 	// write the game rules
-	file->write("\t<rules>\n");
-	std::string coded;
-	TiXmlBase::EncodeString(mGameRules, &coded);
-	file->write(coded);
-	file->write("\n\t</rules>\n");
-
+	printer.OpenElement("rules");
+	printer.PushText(mGameRules.c_str());
+	printer.CloseElement();
 
 	// now comes the actual replay data
-	file->write("\t<input>\n");
+	printer.OpenElement("input");
 	std::string binary = encode(mSaveData, 80);
-	file->write(binary);
-	file->write("\n\t</input>\n");
+	printer.PushText(binary.c_str());
+	printer.CloseElement();
 
 	// finally, write the save points
 	// first, convert them into a POD
-	file->write("\t<states>\n");
+	printer.OpenElement("states");
 	RakNet::BitStream stream;
 	auto convert = createGenericWriter(&stream);
 	convert->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 
 	binary = encode((char*)stream.GetData(), (char*)stream.GetData() + stream.GetNumberOfBytesUsed(), 80);
-	file->write(binary);
-	file->write("\n\t</states>\n");
+	printer.PushText(binary.c_str());
+	printer.CloseElement();
 
-	file->write(xmlFooter);
-	file->close();
+    printer.CloseElement();  // </replay>
+    file->write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
 }
-void ReplayRecorder::send(std::shared_ptr<GenericOut> target) const
+
+void ReplayRecorder::send(const std::shared_ptr<GenericOut>& target) const
 {
 	target->string(mPlayerNames[LEFT_PLAYER]);
 	target->string(mPlayerNames[RIGHT_PLAYER]);
@@ -157,7 +147,7 @@ void ReplayRecorder::send(std::shared_ptr<GenericOut> target) const
 	target->generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
-void ReplayRecorder::receive(std::shared_ptr<GenericIn> source)
+void ReplayRecorder::receive(const std::shared_ptr<GenericIn>& source)
 {
 	source->string(mPlayerNames[LEFT_PLAYER]);
 	source->string(mPlayerNames[RIGHT_PLAYER]);
@@ -191,9 +181,9 @@ void ReplayRecorder::record(const DuelMatchState& state)
 
 	// we save this 1 here just for compatibility
 	// set highest bit to 1
-	unsigned char packet = 1 << 7;
-	packet |= (state.playerInput[LEFT_PLAYER].getAll() & 7) << 3;
-	packet |= (state.playerInput[RIGHT_PLAYER].getAll() & 7) ;
+	unsigned char packet = 1u << 7u;
+	packet |= (state.playerInput[LEFT_PLAYER].getAll() & 7u) << 3u;
+	packet |= (state.playerInput[RIGHT_PLAYER].getAll() & 7u) ;
 	mSaveData.push_back(packet);
 
 	// update the score
@@ -220,7 +210,7 @@ void ReplayRecorder::setGameSpeed(int fps)
 	mGameSpeed = fps;
 }
 
-void ReplayRecorder::setGameRules( std::string rules )
+void ReplayRecorder::setGameRules( const std::string& rules )
 {
 	FileRead file(FileRead::makeLuaFilename("rules/"+rules));
 	mGameRules.resize( file.length() );

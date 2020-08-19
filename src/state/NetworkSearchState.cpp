@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "blobnet/layer/Http.hpp"
 #include "blobnet/exception/HttpException.hpp"
 
-#include "tinyxml/tinyxml.h"
+#include "tinyxml2.h"
 
 #include "NetworkState.h"
 #include "LobbyStates.h"
@@ -457,7 +457,7 @@ void OnlineSearchState::doSearchServers()
 
 	// Get the serverlist
 	try {
-		std::shared_ptr<TiXmlDocument> serverListXml = FileRead::readXMLDocument("onlineserver.xml");
+		auto serverListXml = FileRead::readXMLDocument("onlineserver.xml");
 
 		if (serverListXml->Error())
 		{
@@ -465,22 +465,22 @@ void OnlineSearchState::doSearchServers()
 			std::cerr << "!" << std::endl;
 		}
 
-		TiXmlElement* onlineserverElem = serverListXml->FirstChildElement("onlineserver");
+		const auto* onlineserverElem = serverListXml->FirstChildElement("onlineserver");
 
-		if (onlineserverElem == NULL)
+		if (!onlineserverElem)
 		{
 			std::cout << "Can't read onlineserver.xml" << std::endl;
 			return;
 		}
 
-		for (TiXmlElement* serverElem = onlineserverElem->FirstChildElement("server");
-		     serverElem != NULL;
+		for (const auto* serverElem = onlineserverElem->FirstChildElement("server");
+		     serverElem;
 		     serverElem = serverElem->NextSiblingElement("server"))
 		{
 			std::string host;
 			int port;
-			for (TiXmlElement* varElem = serverElem->FirstChildElement("var");
-			     varElem != NULL;
+			for (const auto* varElem = serverElem->FirstChildElement("var");
+			     varElem;
 			     varElem = varElem->NextSiblingElement("var"))
 			{
 				const char* tmp;
@@ -491,23 +491,11 @@ void OnlineSearchState::doSearchServers()
 					continue;
 				}
 
-				tmp = varElem->Attribute("port");
-				if(tmp)
-				{
-					try
-					{
-						port = std::stoi(tmp);
-					}
-					catch (... /* std::invalid_argument, std::out_of_range */)
-					{
-						port = BLOBBY_PORT;
-					}
-					if ((port <= 0) || (port > 65535))
-					{
-						port = BLOBBY_PORT;
-					}
-					continue;
-				}
+                port = varElem->IntAttribute("port", BLOBBY_PORT);
+                if ((port <= 0) || (port > 65535))
+                {
+                    port = BLOBBY_PORT;
+                }
 			}
 			std::pair<std::string, int> pairs(host, port);
 			serverList.push_back(pairs);

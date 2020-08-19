@@ -3,7 +3,6 @@ add_subdirectory(tinyxml)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
 
-add_definitions(-DTIXML_USE_STL)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "-Wall")
 include_directories(.)
@@ -133,11 +132,11 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 add_executable(blobby ${blobby_SRC})
-target_link_libraries(blobby lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
+target_link_libraries(blobby lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
 
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
-	target_link_libraries(blobby-server lua raknet blobnet tinyxml ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(blobby-server lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif (UNIX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
