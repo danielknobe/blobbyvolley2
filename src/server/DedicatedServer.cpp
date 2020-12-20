@@ -178,10 +178,11 @@ void DedicatedServer::processPackets()
 					{
 						std::lock_guard<std::mutex> lock( mPlayerMapMutex );
 						mPlayerMap.erase( player );
+						// player iterator is invalid after erase
 					}
-					mMatchMaker.removePlayer( player->first );
+					mMatchMaker.removePlayer(packet->playerId);
 				}
-				 else
+				else
 				{
 				}
 
@@ -270,7 +271,7 @@ void DedicatedServer::updateGames()
 					);
 			iter = mGameList.erase(iter);
 		}
-		 else
+		else
 		{
 			++iter;
 		}
