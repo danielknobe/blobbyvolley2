@@ -1,7 +1,9 @@
 os:
   - linux
   - osx
-dist: bionic
+dist:
+  - bionic
+  - focal
 language: cpp
 compiler:
   - clang
@@ -17,7 +19,6 @@ addons:
       - boost
       - physfs
       - sdl2
-    update: true
 script:
   - cmake .
   - make
