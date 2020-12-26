@@ -1,9 +1,8 @@
 os:
   - linux
   - osx
-dist:
-  - bionic
-  - focal
+dist: bionic
+osx_image: xcode10.3
 language: cpp
 compiler:
   - clang
