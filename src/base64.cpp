@@ -1,10 +1,11 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
+Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
 
+This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-This program is free software; you can redistribute it and/or modify
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -99,7 +100,7 @@ constexpr uint8_t decode( uint8_t byte )
 }
 
 // the bitmask for slicing the three bytes into subelements
-constexpr std::uint64_t bitmask = (1 << 6) - 1;
+constexpr std::uint32_t bitmask = (1 << 6) - 1;
 
 static_assert( length(translation_table) == 64, "error: need 64 characters in the translation table" );
 
@@ -110,7 +111,7 @@ static_assert( length(translation_table) == 64, "error: need 64 characters in th
 // simple encoding function for 3 bytes
 void encode( const std::uint8_t*& byte_array, std::string::iterator& writer )
 {
-	const uint64_t* bits = reinterpret_cast<const uint64_t*>(byte_array);
+	const uint32_t* bits = reinterpret_cast<const uint32_t*>(byte_array);
 	for(int i = 0; i < 4; ++i)
 	{
 		unsigned index = bitmask & (*bits >> (6*i));
@@ -124,11 +125,11 @@ void encode( const std::uint8_t*& byte_array, std::string::iterator& writer )
 std::string encode( const char* begin, const char* end, int newlines)
 {
 	// allocate enough space inside the string
-	const std::size_t length = end - begin;
-	const unsigned tail 	 = length % 3;
-	const unsigned extra     = (tail != 0) ? 1 : 0;
-	const unsigned groups 	 = length / 3;
-	const unsigned total_data= (groups + extra) * 4 + tail;
+	const std::size_t length  = end - begin;
+	const unsigned tail       = length % 3;
+	const unsigned extra      = (tail != 0) ? 1 : 0;
+	const unsigned groups     = length / 3;
+	const unsigned total_data = (groups + extra) * 4 + tail;
 	newlines -= newlines % 4;
 	const unsigned linefeeds = newlines > 0 ? total_data / newlines : 0;
 
@@ -152,7 +153,7 @@ std::string encode( const char* begin, const char* end, int newlines)
 	// add the partial group
 	if(extra)
 	{
-		uint64_t copy = 0;
+		uint32_t copy = 0;
 		uint8_t* bits = reinterpret_cast<uint8_t*>(&copy);
 		for(unsigned i = 0; i < tail; ++i)
 			bits[i] = *(read++);
@@ -169,7 +170,7 @@ std::string encode( const char* begin, const char* end, int newlines)
 
 void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
 {
-	uint64_t* bits = reinterpret_cast<uint64_t*>(byte_array);
+	uint32_t* bits = reinterpret_cast<uint32_t*>(byte_array);
 	*bits &= 0;
 	for(int i = 0; i < 4; ++i)
 	{
@@ -184,7 +185,8 @@ void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
 std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
-	std::vector<uint8_t> buffer( data.size() / 4 * 3 + 4 );
+	const size_t dataSize = data.size();
+	std::vector<uint8_t> buffer( dataSize / 4 * 3 + 4 );
 	uint8_t* iter = buffer.data();
 	auto reader = data.cbegin();
 
