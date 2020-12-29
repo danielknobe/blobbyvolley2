@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cassert>
 #include <vector>
 #include <ctime>
+#include <memory>
 #include <iostream> // debugging
 
 #include "tinyxml2.h"
@@ -40,10 +41,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
 {
-	IReplayLoader* loader = createReplayLoader(0);
+	std::unique_ptr<IReplayLoader> loader(createReplayLoader(0));
 	loader->initLoading(filename);
 
-	return loader;
+	return loader.release();
 }
 
 //
