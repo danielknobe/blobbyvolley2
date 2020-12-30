@@ -12,3 +12,4 @@ include_directories(${Blobby_BINARY_DIR})
 add_subdirectory(data)
 add_subdirectory(src)
 
+add_subdirectory(linux)

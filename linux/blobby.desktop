@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Blobby Volley 2
+GenericName=Volley Ball Game
+GenericName[fr]=Jeu de Volley-Ball
+GenericName[de]=Volley-Ball Spiel
+Comment=Two alien blobs battle at volleyball
+Icon=blobby
+Exec=blobby
+Terminal=false
+Categories=Game;ArcadeGame;

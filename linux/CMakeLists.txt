@@ -1,0 +1,5 @@
+if (UNIX AND NOT APPLE)
+	install(FILES blobby.appdata.xml DESTINATION share/metainfo)
+	install(FILES blobby.desktop DESTINATION share/applications)
+	install(FILES blobby.png DESTINATION share/icons/hicolor/128x128/apps)
+endif (UNIX AND NOT APPLE)
