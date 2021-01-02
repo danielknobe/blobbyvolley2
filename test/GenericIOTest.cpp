@@ -16,7 +16,7 @@
 #include <list>
 #include <deque>
 
-#define TEST_EXECUTION_PATH "C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test"
+#define TEST_EXECUTION_PATH "./test"
 
 //#define DISABLE_COMPILATION_TEST
 
