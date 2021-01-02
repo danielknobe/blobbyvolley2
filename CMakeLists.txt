@@ -14,7 +14,8 @@ include_directories(${Blobby_BINARY_DIR})
 add_subdirectory(data)
 add_subdirectory(src)
 
+add_subdirectory(linux)
+
 if(BUILD_TESTS)
 	add_subdirectory(test)
 endif(BUILD_TESTS)
-
