@@ -33,3 +33,4 @@ src/blobby-server
 #project platform independent
 *.zip
 config.h
+build

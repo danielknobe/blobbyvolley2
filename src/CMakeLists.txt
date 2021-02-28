@@ -3,8 +3,11 @@ add_subdirectory(tinyxml)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
 
+set(APP_NAME "Blobby Volley 2")
+set(APP_AUTHOR "Erik Moldtmann")
+
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 include_directories(.)
 
 set(common_SRC
@@ -81,6 +84,10 @@ find_package(PhysFS REQUIRED)
 find_package(OpenGL)
 find_package(SDL2 REQUIRED)
 
+if (SWITCH)
+	find_library(NX nx)
+endif (SWITCH)
+
 if ("${SDL2_LIBRARIES}" STREQUAL "")
 	set(SDL2_LIBRARIES "SDL2::SDL2")
 endif ("${SDL2_LIBRARIES}" STREQUAL "")
@@ -131,8 +138,23 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 	set(ADDITIONAL_LIBRARIES ${ADDITIONAL_LIBRARIES} pthread)
 endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 
-add_executable(blobby ${blobby_SRC})
-target_link_libraries(blobby lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
+if (SWITCH)
+	add_executable(blobby.elf ${blobby_SRC})
+	target_link_libraries(blobby.elf lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${DEVKITPRO}/portlibs/switch/lib/libEGL.a ${DEVKITPRO}/portlibs/switch/lib/libdrm_nouveau.a ${DEVKITPRO}/portlibs/switch/lib/libglapi.a ${DEVKITPRO}/libnx/lib/libnx.a)
+	add_custom_command(
+		OUTPUT blobby.nro
+		COMMAND ${DEVKITPRO}/tools/bin/elf2nro blobby.elf blobby.nro --icon=${CMAKE_SOURCE_DIR}/data/Icon.jpg --nacp=blobby.nacp
+		DEPENDS blobby.elf blobby.nacp)
+	add_custom_command(
+		OUTPUT blobby.nacp
+		COMMAND ${DEVKITPRO}/tools/bin/nacptool --create "${APP_NAME}" "${APP_AUTHOR}" "${PROJECT_VERSION}" VERBATIM blobby.nacp
+	)
+	add_custom_target(blobby ALL DEPENDS blobby.nro)
+else (SWITCH)
+	add_executable(blobby ${blobby_SRC})
+	target_link_libraries(blobby lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
+endif (SWITCH)
+
 
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
@@ -147,4 +169,6 @@ if (WIN32)
 	install(TARGETS blobby DESTINATION .)
 elseif (UNIX)
 	install(TARGETS blobby blobby-server DESTINATION bin)
+elseif (SWITCH)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
 endif (WIN32)

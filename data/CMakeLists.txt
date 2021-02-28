@@ -36,8 +36,8 @@ set(install_files
 	lang_fr.xml
 	lang_it.xml)
 
-if (WIN32)
+if (WIN32 OR SWITCH)
 	install(FILES ${install_files} DESTINATION data)
 elseif (UNIX)
 	install(FILES ${install_files} DESTINATION share/blobby)
-endif (WIN32)
+endif (WIN32 OR SWITCH)

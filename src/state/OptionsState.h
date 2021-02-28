@@ -116,8 +116,16 @@ private:
 	//global data:
 	int mBlobbyTouchType;
 
+#ifdef __SWITCH__
+	bool mConfirmButtonReleased;
+#endif
+
 	// input display functions
+#ifdef __SWITCH__
+	void handlePlayerInput(PlayerSide player, std::string joystick[]);
+#else
 	void handlePlayerInput(PlayerSide player, std::string& lastActionKey, int& mouse, std::string keyboard[], std::string joystick[]);
+#endif
 	void handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[]);
 	void handleJoystickInput(int base_x, std::string input[]);
 	void handleMouseInput(int base_x, int& input, float& sens);

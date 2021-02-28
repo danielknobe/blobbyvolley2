@@ -42,6 +42,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	#endif
 #endif
 
+#ifdef __SWITCH__
+	#include <switch.h>
+#endif
+
 #include "RenderManager.h"
 #include "SoundManager.h"
 #include "InputManager.h"
@@ -75,6 +79,10 @@ void deinit()
 	SoundManager::getSingleton().deinit();
 	State::deinit();
 	SDL_Quit();
+
+#if (defined __SWITCH__) && (defined DEBUG)
+	socketExit();
+#endif
 }
 
 void setupPHYSFS()
@@ -83,11 +91,11 @@ void setupPHYSFS()
 	const std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all
 	// relevant platforms.
-	#if __DESKTOP__
+	#if (defined __DESKTOP__)
 		std::string baseSearchPath("data" + separator);
 	#elif (defined __ANDROID__)
 		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
-	#elif (defined __APPLE__)
+	#elif (defined __APPLE__) || (defined __SWITCH__)
 		// iOS
 		std::string baseSearchPath(PHYSFS_getBaseDir());
 	#endif
@@ -103,10 +111,10 @@ void setupPHYSFS()
 		// Just write in installation directory
 		fs.setWriteDir("data");
 	#else
-		#ifndef __ANDROID__
+		#if (!defined __ANDROID__)
 			// Create a search path in the home directory and ensure that
 			// all paths exist and are actually directories
-			#ifdef __APPLE__
+			#if (defined __APPLE__) || (defined __SWITCH__)
 				#if TARGET_OS_SIMULATOR
 					// The simulator doesn't create documentsfolder anymore, we create it if necessary
 					fs.setWriteDir(baseSearchPath + "../");
@@ -172,7 +180,7 @@ void setupPHYSFS()
 }
 
 #if __MOBILE__
-	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (defined __SWITCH__)
 		int main(int argc, char* argv[])
     #elif (defined __ANDROID__)
         #undef main
@@ -185,6 +193,11 @@ void setupPHYSFS()
 	int main(int argc, char* argv[])
 #endif
 {
+#if (defined __SWITCH__) && (defined DEBUG)
+	socketInitializeDefault();   
+	nxlinkStdio();
+#endif
+
 	DEBUG_STATUS("started main");
 
 	FileSystem filesys(argv[0]);
@@ -193,6 +206,7 @@ void setupPHYSFS()
 	DEBUG_STATUS("physfs initialised");
 
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+
 
 	DEBUG_STATUS("SDL initialised");
 
@@ -331,6 +345,7 @@ void setupPHYSFS()
 	}
 	catch (std::exception& e)
 	{
+		DEBUG_STATUS("CATCH")
 		std::cerr << e.what() << std::endl;
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), 0);
 		if (rmanager)
@@ -338,9 +353,12 @@ void setupPHYSFS()
 		if (smanager)
 			smanager->deinit();
 		SDL_Quit();
-		exit (EXIT_FAILURE);
-	}
+#if (defined __SWITCH__) && (defined DEBUG)
+	socketExit();
+#endif
 
+	exit (EXIT_FAILURE);
+	}
 	deinit();
 	exit(EXIT_SUCCESS);
 }

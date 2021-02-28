@@ -110,6 +110,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Set modesetting
 	Uint32 screenFlags = 0;
+#ifdef __SWITCH__
+	screenFlags |= SDL_WINDOW_FULLSCREEN;
+#else
 	if (fullscreen)
 	{
 		screenFlags |= SDL_WINDOW_FULLSCREEN;
@@ -118,6 +121,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	{
 		screenFlags |= SDL_WINDOW_RESIZABLE;
 	}
+#endif
 	// Create window
 	mWindow = SDL_CreateWindow(AppTitle,
 		SDL_WINDOWPOS_UNDEFINED,
@@ -125,15 +129,21 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		xResolution, yResolution,
 		screenFlags);
 
+#ifndef __SWITCH__
 	// Set icon
 	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,
 			SDL_MapRGB(icon->format, 0, 0, 0));
 	SDL_SetWindowIcon(mWindow, icon);
 	SDL_FreeSurface(icon);
+#endif
 
 	// Create renderer to draw in window
+#ifdef __SWITCH__
+	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+#else
 	mRenderer = SDL_CreateRenderer(mWindow, -1, 0);
+#endif
 
 	// Hide mousecursor
 	SDL_ShowCursor(0);
