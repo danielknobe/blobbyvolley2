@@ -291,6 +291,7 @@ struct lang_init{
 		TextManager::language_names["en"] = "english";
 		TextManager::language_names["fr"] = "francais";
 		TextManager::language_names["it"] = "italiano";
+		TextManager::language_names["cs"] = "česky";
 	}
 };
 static lang_init init;

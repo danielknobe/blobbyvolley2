@@ -146,11 +146,11 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 		index = 53;
 	else if (testChar == '+')
 		index = 54;
-	else if (testChar == std::string("ß")[0]) // UTF-8 escape
+	else if (testChar == std::string("ß")[0]) // UTF-8 escape (c3xx) 
 	{
 		testChar = *iter;
 		++iter;
-		if (testChar == std::string("ß")[1])
+		if (testChar == std::string("ß")[1]) 
 			return 40;
 		else if (testChar == std::string("ä")[1])
 			return 41;
@@ -168,6 +168,39 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 			return 43;
 		else if (testChar == std::string("Ì")[1])
 			return 55;
+		if ((testChar >= std::string("à")[1]) && (testChar <= std::string("å")[1]))
+			return 10; // Map to A
+		if ((testChar >= std::string("è")[1]) && (testChar <= std::string("ë")[1]))
+			return 14; // Map to E
+		else if (testChar == std::string("ý")[1])
+			return 34; // Map to Y
+		if ((testChar >= std::string("ì")[1]) && (testChar <= std::string("ï")[1]))
+			return 18; // Map to I
+
+	}
+	else if (testChar == std::string("Ć")[0]) // UTF-8 escape (c4xx)
+	{
+		testChar = *iter;
+		++iter;
+		if ((testChar >= std::string("Ć")[1]) && (testChar <= std::string("č")[1]))
+			return 12; // Map to C
+		if ((testChar >= std::string("Ē")[1]) && (testChar <= std::string("ě")[1]))
+			return 14; // Map to E
+	}
+	else if (testChar == std::string("Ś")[0]) // UTF-8 escape (c5xx)
+	{
+		testChar = *iter;
+		++iter;
+		if ((testChar >= std::string("Ŕ")[1]) && (testChar <= std::string("ř")[1]))
+			return 27; // Map to R
+		if ((testChar >= std::string("Ś")[1]) && (testChar <= std::string("š")[1]))
+			return 28; // Map to S
+		if ((testChar >= std::string("Ũ")[1]) && (testChar <= std::string("ų")[1]))
+			return 30; // Map to U
+		if ((testChar >= std::string("Ŷ")[1]) && (testChar <= std::string("Ÿ")[1]))
+			return 34; // Map to Y
+		if ((testChar >= std::string("Ź")[1]) && (testChar <= std::string("ž")[1]))
+			return 35; // Map to Z
 	}
 
 	return index;
@@ -265,8 +298,8 @@ Color RenderManager::getOscillationColor() const
 	float time = float(SDL_GetTicks()) / 1000.0;
 
 	return Color(
-					int((std::sin(time*1.5) + 1.0) * 128),
-					int((std::sin(time*2.5) + 1.0) * 128),
-					int((std::sin(time*3.5) + 1.0) * 128)
-				);
+		int((std::sin(time*1.5) + 1.0) * 128),
+		int((std::sin(time*2.5) + 1.0) * 128),
+		int((std::sin(time*3.5) + 1.0) * 128)
+	);
 }
