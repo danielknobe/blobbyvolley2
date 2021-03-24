@@ -57,6 +57,10 @@
 	<string english = "rules: " translation = "Pravidla: " />
 	<string english = "speed: " translation = "Rychlost: " />
 	<string english = "stay on server" translation = "Zůstat na serveru" />
+	<string english = "join game" translation = "Připojit se ke hře" />
+	<string english = "leave game" translation = "Opustit hru" />
+	<string english = "open game" translation = "Otevřít hru" />
+	<string english = "points: " translation = "Body: " />
 
 	<string english = "touch input type:" translation = "Dotykový zadávací režim:" />
 	<string english = "arrow keys" translation = "Klávesy šipek" />
