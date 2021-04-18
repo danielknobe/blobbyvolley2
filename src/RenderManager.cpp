@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 
 /* implementation */
+#define INVALID_FONT_INDEX -1
+
 RenderManager* RenderManager::mSingleton = 0;
 
 RenderManager::RenderManager() : mDrawGame(false)
@@ -107,7 +109,7 @@ SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int 
 
 int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 {
-	int index = 47;
+	int index = INVALID_FONT_INDEX;
 	wchar_t testChar = *iter;
 	++iter;
 	if (testChar >= '0' && testChar <= '9')
@@ -146,61 +148,85 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 		index = 53;
 	else if (testChar == '+')
 		index = 54;
+	else if (testChar == std::string("¿")[0]) // UTF-8 escape (c2xx)
+	{
+		testChar = *iter;
+		++iter;
+		if (testChar == std::string("¿")[1])
+			index = 56;
+	}
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape (c3xx) 
 	{
 		testChar = *iter;
 		++iter;
 		if (testChar == std::string("ß")[1]) 
-			return 40;
+			index = 40;
 		else if (testChar == std::string("ä")[1])
-			return 41;
+			index = 41;
 		else if (testChar == std::string("ö")[1])
-			return 42;
+			index = 42;
 		else if (testChar == std::string("ü")[1])
-			return 43;
+			index = 43;
 		else if (testChar == std::string("ì")[1])
-			return 55;
+			index = 55;
 		else if (testChar == std::string("Ä")[1])
-			return 41;
+			index = 41;
 		else if (testChar == std::string("Ö")[1])
-			return 42;
+			index = 42;
 		else if (testChar == std::string("Ü")[1])
-			return 43;
+			index = 43;
 		else if (testChar == std::string("Ì")[1])
-			return 55;
-		if ((testChar >= std::string("à")[1]) && (testChar <= std::string("å")[1]))
-			return 10; // Map to A
-		if ((testChar >= std::string("è")[1]) && (testChar <= std::string("ë")[1]))
-			return 14; // Map to E
+			index = 55;
+		else if ((testChar >= std::string("à")[1]) && (testChar <= std::string("å")[1]))
+			index = 10; // Map to A
+		else if ((testChar >= std::string("À")[1]) && (testChar <= std::string("Å")[1]))
+			index = 10; // Map to A
+		else if ((testChar >= std::string("è")[1]) && (testChar <= std::string("ë")[1]))
+			index = 14; // Map to E
+		else if ((testChar >= std::string("ò")[1]) && (testChar <= std::string("õ")[1]))
+			index = 24; // Map to O
+		else if ((testChar >= std::string("Ò")[1]) && (testChar <= std::string("Õ")[1]))
+			index = 24; // Map to O
 		else if (testChar == std::string("ý")[1])
-			return 34; // Map to Y
-		if ((testChar >= std::string("ì")[1]) && (testChar <= std::string("ï")[1]))
-			return 18; // Map to I
-
+			index = 34; // Map to Y
+		else if ((testChar >= std::string("ì")[1]) && (testChar <= std::string("ï")[1]))
+			index = 18; // Map to I
+		else if (testChar == std::string("ñ")[1])
+			index = 23; // Map to N
+		else if (testChar == std::string("Ñ")[1])
+			index = 23; // Map to N
 	}
 	else if (testChar == std::string("Ć")[0]) // UTF-8 escape (c4xx)
 	{
 		testChar = *iter;
 		++iter;
 		if ((testChar >= std::string("Ć")[1]) && (testChar <= std::string("č")[1]))
-			return 12; // Map to C
-		if ((testChar >= std::string("Ē")[1]) && (testChar <= std::string("ě")[1]))
-			return 14; // Map to E
+			index = 12; // Map to C
+		else if ((testChar >= std::string("Ē")[1]) && (testChar <= std::string("ě")[1]))
+			index = 14; // Map to E
 	}
 	else if (testChar == std::string("Ś")[0]) // UTF-8 escape (c5xx)
 	{
 		testChar = *iter;
 		++iter;
 		if ((testChar >= std::string("Ŕ")[1]) && (testChar <= std::string("ř")[1]))
-			return 27; // Map to R
-		if ((testChar >= std::string("Ś")[1]) && (testChar <= std::string("š")[1]))
-			return 28; // Map to S
-		if ((testChar >= std::string("Ũ")[1]) && (testChar <= std::string("ų")[1]))
-			return 30; // Map to U
-		if ((testChar >= std::string("Ŷ")[1]) && (testChar <= std::string("Ÿ")[1]))
-			return 34; // Map to Y
-		if ((testChar >= std::string("Ź")[1]) && (testChar <= std::string("ž")[1]))
-			return 35; // Map to Z
+			index = 27; // Map to R
+		else if ((testChar >= std::string("Ś")[1]) && (testChar <= std::string("š")[1]))
+			index = 28; // Map to S
+		else if ((testChar >= std::string("Ũ")[1]) && (testChar <= std::string("ų")[1]))
+			index = 30; // Map to U
+		else if ((testChar >= std::string("Ŷ")[1]) && (testChar <= std::string("Ÿ")[1]))
+			index = 34; // Map to Y
+		else if ((testChar >= std::string("Ź")[1]) && (testChar <= std::string("ž")[1]))
+			index = 35; // Map to Z
+	}
+
+	if (index == INVALID_FONT_INDEX)
+	{
+#ifdef DEBUG
+		std::cerr << "Warning: Missing font for character code " << testChar << std::endl;
+#endif
+		index = 47;
 	}
 
 	return index;
