@@ -3,7 +3,7 @@
 
 ### Website
  http://blobby.sourceforge.net
- 
+
  http://blobbyvolley.de
 
 ### System requirements
@@ -20,10 +20,17 @@ Clone the git repository:
 git clone https://github.com/danielknobe/blobbyvolley2.git
 ```
 
-### Build under Debian-based Distros
+### Build under Linux
+
 1. Install dependencies:
+
+Debian-based Distros:
 ```bash
 apt-get install g++ cmake libsdl2-dev libboost-dev libphysfs-dev
+```
+Arch-based Distros:
+```bash
+pacman -S gcc cmake sdl2 boost physfs
 ```
 2. Compile:
 ```bash
