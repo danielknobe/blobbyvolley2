@@ -4,7 +4,7 @@ add_subdirectory(raknet)
 add_subdirectory(blobnet)
 
 set(APP_NAME "Blobby Volley 2")
-set(APP_AUTHOR "Erik Moldtmann")
+set(APP_AUTHOR "")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
