@@ -105,6 +105,7 @@ class TextManager
 			NET_POINTS,
 			NET_RULES_TITLE,
 			NET_RULES_BY,
+			NET_CHALLENGER,
 
 			// options
 			OP_TOUCH_TYPE,
