@@ -44,19 +44,19 @@ src/blobby
 
 ### Build under Windows 7 or newer and Visual Studio 2015 Update 3 or newer
 1. Install vcpkg by following the instructions:
-- https://github.com/microsoft/vcpkg/blob/master/README.md
+https://github.com/microsoft/vcpkg/blob/master/README.md
 
 2. Install dependencies:
 ```powershell
 .\vcpkg install sdl2 boost physfs
 ```
 3. Use dependencies by following the instructions:
-- https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md
+https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md
 4. Compile and run
 
 ### Build under MacOS
 1. Install homebrew by following the instructions:
-- https://brew.sh
+https://brew.sh
 
 2. Install dependencies:
 ```bash
