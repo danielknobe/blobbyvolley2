@@ -115,16 +115,16 @@ void MainMenuState::step_impl()
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
-	imgui.doImage(GEN_ID, Vector2(250.0, 210.0), "gfx/titel.bmp");
-	if (imgui.doButton(GEN_ID, Vector2(434, 300.0), TextManager::MNU_LABEL_ONLINE))
+	imgui.doImage(GEN_ID, Vector2(400.0, 175.0), "gfx/titel.bmp");
+	if (imgui.doButton(GEN_ID, Vector2(34, 300.0), TextManager::MNU_LABEL_ONLINE))
 	{
 		switchState( new OnlineSearchState() );
 	}
-	if (imgui.doButton(GEN_ID, Vector2(434, 340.0), TextManager::MNU_LABEL_LAN))
+	if (imgui.doButton(GEN_ID, Vector2(34, 340.0), TextManager::MNU_LABEL_LAN))
 	{
 		switchState( new LANSearchState() );
 	}
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 380.0), TextManager::MNU_LABEL_START))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 380.0), TextManager::MNU_LABEL_START))
 	{
 		try
 		{
@@ -139,22 +139,22 @@ void MainMenuState::step_impl()
 		}
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 420.0), TextManager::MNU_LABEL_OPTIONS))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 420.0), TextManager::MNU_LABEL_OPTIONS))
 	{
 		switchState(new OptionState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 460.0), TextManager::MNU_LABEL_REPLAY))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 460.0), TextManager::MNU_LABEL_REPLAY))
 	{
 		switchState(new ReplaySelectionState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 500.0), TextManager::MNU_LABEL_CREDITS))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 500.0), TextManager::MNU_LABEL_CREDITS))
 	{
 		switchState(new CreditsState());
 	}
 
-	if (imgui.doButton(GEN_ID, Vector2(434.0, 540.0), TextManager::MNU_LABEL_EXIT))
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 540.0), TextManager::MNU_LABEL_EXIT))
 	{
 		InputManager::getSingleton()->setEndBlobby();
 	}

@@ -224,6 +224,7 @@ void TextManager::setDefault()
 	mStrings[NET_POINTS] = "points: ";
 	mStrings[NET_RULES_TITLE] = "rules: ";
 	mStrings[NET_RULES_BY] = " by ";
+	mStrings[NET_CHALLENGER] = "challenger: ";
 
 	mStrings[OP_TOUCH_TYPE] = "touch input type:";
 	mStrings[OP_TOUCH_ARROWS] = "arrow keys";
@@ -290,7 +291,9 @@ struct lang_init{
 		TextManager::language_names["de"] = "deutsch";
 		TextManager::language_names["en"] = "english";
 		TextManager::language_names["fr"] = "francais";
+		TextManager::language_names["es"] = "español";
 		TextManager::language_names["it"] = "italiano";
+		TextManager::language_names["cs"] = "česky";
 	}
 };
 static lang_init init;

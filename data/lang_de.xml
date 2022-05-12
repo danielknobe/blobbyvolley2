@@ -57,6 +57,10 @@
 	<string english = "rules: " translation = "Regeln: " />
 	<string english = "speed: " translation = "Tempo: " />
 	<string english = "stay on server" translation = "auf server bleiben" />
+	<string english = "join game" translation = "Spiel beitreten" />
+	<string english = "leave game" translation = "Spiel verlassen" />
+	<string english = "open game" translation = "Spiel öffnen" />
+	<string english = "points: " translation = "Punkte: " />
 
 	<string english = "touch input type:" translation = "Toucheingabemodus:" />
 	<string english = "arrow keys" translation = "Pfeiltasten" />
