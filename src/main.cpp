@@ -345,7 +345,6 @@ void setupPHYSFS()
 	}
 	catch (std::exception& e)
 	{
-		DEBUG_STATUS("CATCH")
 		std::cerr << e.what() << std::endl;
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), 0);
 		if (rmanager)
