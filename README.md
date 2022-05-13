@@ -89,7 +89,7 @@ cmake . -DCMAKE_TOOLCHAIN_FILE=NintendoSwitchToolchain.cmake -DCMAKE_INSTALL_PRE
 make && make install
 ```
 
-3. Copy the `build/blobby` folder to the `/switch/` directory on your SD card.
+3. Copy the `blobby` folder to the `/switch/` directory on your SD card.
 
 ### Credits
 See AUTHORS
