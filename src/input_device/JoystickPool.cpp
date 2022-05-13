@@ -33,7 +33,7 @@ SDL_Joystick* JoystickPool::getJoystick(int id)
 
 void JoystickPool::probeJoysticks()
 {
-	/*
+#ifdef __SWITCH__
 	int numJoysticks = SDL_NumJoysticks();
 	SDL_Joystick* lastjoy;
 	for(int i = 0; i < numJoysticks; i++)
@@ -45,7 +45,7 @@ void JoystickPool::probeJoysticks()
 
 		mJoyMap[SDL_JoystickInstanceID(lastjoy)] = lastjoy;
 	}
-	*/
+#endif
 }
 
 void JoystickPool::openJoystick(const int joyIndex)
@@ -143,6 +143,7 @@ KeyAction JoystickAction::toKeyAction()
 	// This is an place holder
 	// Just to get simple gamepad support for the GUI
 	// TODO: Fix that! Use GUID -> ButtonMapping to get this think cleaned up
+#ifndef __SWITCH__
 	if (type == AXIS)
 	{
 		// X-Achse?!
@@ -173,6 +174,7 @@ KeyAction JoystickAction::toKeyAction()
 			}
 		}
 	}
+#endif
 	
 	if (type == BUTTON)
 	{
@@ -188,6 +190,28 @@ KeyAction JoystickAction::toKeyAction()
 			// We don't allow back at the moment -> game is not leavable
 			return KeyAction::NONE;
 		}
+#ifdef __SWITCH__
+		if(number == 12 || number == 16) 
+		{
+			return KeyAction::LEFT;
+		}
+		if(number == 13 || number == 17) 
+		{
+			return KeyAction::UP;
+		}
+		if(number == 14 || number == 18) 
+		{
+			return KeyAction::RIGHT;
+		}
+		if(number == 15 || number == 19) 
+		{
+			return KeyAction::DOWN;
+		}
+		if(number == 10)
+		{
+			return KeyAction::BACK;
+		}
+#endif
 	}
 	return KeyAction::NONE;
 }

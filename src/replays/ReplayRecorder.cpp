@@ -40,6 +40,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileWrite.h"
 #include "base64.h"
 
+#ifdef __SWITCH__
+#define SIZET_TYPE unsigned int
+#else
+#define SIZET_TYPE std::uint64_t
+#endif
+
 /* implementation */
 VersionMismatchException::VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor)
 {
@@ -89,8 +95,8 @@ void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
     // the explicit template arguments below are to prevent ambiguities on OSX where
     // size_t = unsigned long != unsigned int != uint64_t; same for time_t
 	writeAttribute(printer, "game_speed", mGameSpeed);
-	writeAttribute<std::uint64_t>(printer, "game_length", mSaveData.size());
-	writeAttribute<std::uint64_t>(printer, "game_duration", mSaveData.size() / mGameSpeed);
+	writeAttribute<SIZET_TYPE>(printer, "game_length", mSaveData.size());
+	writeAttribute<SIZET_TYPE>(printer, "game_duration", mSaveData.size() / mGameSpeed);
 	writeAttribute<std::int64_t>(printer, "game_date", std::time(nullptr));
 
 	writeAttribute(printer, "score_left", mEndScore[LEFT_PLAYER]);

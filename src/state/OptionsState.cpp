@@ -401,7 +401,11 @@ InputOptionsState::InputOptionsState()
 	mSetKeyboard = 0;
 	mOptionConfig.loadFile("inputconfig.xml");
 	//left data:
+#ifdef __SWITCH__
+	mLeftDevice = "joystick";
+#else
 	mLeftDevice = mOptionConfig.getString("left_blobby_device");
+#endif
 	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
 	mLeftMouseSensitivity = mOptionConfig.getFloat("left_blobby_mouse_sensitivity");
 	mLeftKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
@@ -411,7 +415,11 @@ InputOptionsState::InputOptionsState()
 	mLeftJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
 	mLeftJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
 	//right data:
+#ifdef __SWITCH__
+	mRightDevice = "joystick";
+#else
 	mRightDevice = mOptionConfig.getString("right_blobby_device");
+#endif
 	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
 	mRightMouseSensitivity = mOptionConfig.getFloat("right_blobby_mouse_sensitivity");
 	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
@@ -722,6 +730,122 @@ TextManager::STRING InputOptionsState::getDeviceName(const std::string& device) 
 	return TextManager::OP_JOYSTICK;
 }
 
+#elif (defined __SWITCH__)
+void InputOptionsState::step_impl()
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+	imgui.doCursor();
+	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
+	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
+
+	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
+
+	// left player side:
+	handlePlayerInput(LEFT_PLAYER, mLeftJoystick);
+
+	//right player side:
+	handlePlayerInput(RIGHT_PLAYER, mRightJoystick);
+
+	//check if a capture window is open, to set all widgets inactive:
+	if ( mLeftJoystick[IA_LEFT] != "" &&
+		 mLeftJoystick[IA_RIGHT] != "" && mLeftJoystick[IA_JUMP] != "" && mRightJoystick[IA_LEFT] != "" && mRightJoystick[IA_RIGHT] != "" &&
+		 mRightJoystick[IA_JUMP] != "")
+	{
+		imgui.doInactiveMode(false);
+	}
+	else
+	{
+		imgui.doInactiveMode(true);
+	}
+
+	//Capture dialogs:
+	getJoystickInput(mLeftJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mLeftJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mLeftJoystick[IA_JUMP], TextManager::OP_JUMPING);
+
+	getJoystickInput(mRightJoystick[IA_LEFT], TextManager::OP_MOVING_LEFT);
+	getJoystickInput(mRightJoystick[IA_RIGHT], TextManager::OP_MOVING_RIGHT);
+	getJoystickInput(mRightJoystick[IA_JUMP], TextManager::OP_JUMPING);
+
+	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
+	{
+		save();
+		switchState(new OptionState());
+	}
+	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
+	{
+		switchState(new OptionState());
+	}
+}
+
+void InputOptionsState::handlePlayerInput(PlayerSide player, std::string joystick[])
+{
+	IMGUI& imgui = IMGUI::getSingleton();
+
+	TextManager::STRING p_str = (player == LEFT_PLAYER) ? TextManager::OP_LEFT_PLAYER : TextManager::OP_RIGHT_PLAYER;
+	std::string& device = (player == LEFT_PLAYER) ? mLeftDevice : mRightDevice;
+	int base_x = (player == LEFT_PLAYER) ? 0 : 400;
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 10.0), p_str);
+	handleJoystickInput(base_x, joystick);
+}
+
+void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_LEFT_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), input[IA_LEFT]))
+	{
+		mConfirmButtonReleased = false;
+		mOldString = input[IA_LEFT];
+		input[IA_LEFT] = "";
+	}
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 190.0), TextManager::OP_RIGHT_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 220.0), input[IA_RIGHT]))
+	{
+		mConfirmButtonReleased = false;
+		mOldString = input[IA_RIGHT];
+		input[IA_RIGHT] = "";
+	}
+	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 260.0), TextManager::OP_JUMP_BUTTON);
+	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 290.0), input[IA_JUMP]))
+	{
+		mConfirmButtonReleased = false;
+		mOldString = input[IA_JUMP];
+		input[IA_JUMP] = "";
+	}
+}
+
+void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
+{
+	auto& imgui = IMGUI::getSingleton();
+
+	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
+	imgui.doText(GEN_ID, Vector2(400.0, 250.0), prompt, TF_ALIGN_CENTER);
+	imgui.doText(GEN_ID, Vector2(400.0, 300.0), input, TF_ALIGN_CENTER);
+}
+
+void InputOptionsState::getJoystickInput(std::string& action, TextManager::STRING input)
+{
+	// if already set, do nothing
+	if (action != "")
+		return;
+
+	action = InputManager::getSingleton()->getLastJoyAction();
+	if(action == "") {
+		mConfirmButtonReleased = true;
+	}
+
+	getInputPrompt(TextManager::OP_PRESS_BUTTON_FOR, input);
+	if (!mConfirmButtonReleased) {
+		action = "";
+	}
+	else if (InputManager::getSingleton()->exit()) {
+		action = mOldString;
+	}
+
+}
+
 #else
 
 void InputOptionsState::step_impl()
@@ -863,12 +987,12 @@ void MiscOptionsState::step_impl()
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_BACKGROUND);
 	unsigned tmp = mBackground;
 	imgui.doSelectbox(GEN_ID, Vector2(34.0, 40.0), Vector2(400.0, 175.0), mBackgrounds, tmp);
+
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
 		RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
-
 	imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RULES);
 	imgui.doSelectbox(GEN_ID, Vector2(34.0, 220.0), Vector2(400.0, 354.0), mRules, mRule);
 

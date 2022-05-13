@@ -30,6 +30,12 @@ src/blobby-server
 /Blobby Volley.layout
 /CMakeSettings.json
 
+#project nintendo switch
+src/blobby.elf
+src/blobby.nro
+src/blobby.nacp
+/blobby
+
 #project platform independent
 *.zip
 config.h

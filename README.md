@@ -72,5 +72,24 @@ make
 src/blobby
 ```
 
+### Build for Nintendo Switch
+
+1. [devkitPro](https://switchbrew.org/wiki/Setting_up_Development_Environment) needs to be installed and completely configured.
+
+2. Install dependencies through devkitPro's package manager:
+
+- SDL2
+- PhysFS
+- OpenGL
+
+2. Compile:
+
+```bash
+cmake . -DCMAKE_TOOLCHAIN_FILE=NintendoSwitchToolchain.cmake -DCMAKE_INSTALL_PREFIX=blobby -DSWITCH=true -DCMAKE_BUILD_TYPE=Debug
+make && make install
+```
+
+3. Copy the `blobby` folder to the `/switch/` directory on your SD card.
+
 ### Credits
 See AUTHORS
