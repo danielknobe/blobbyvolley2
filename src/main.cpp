@@ -355,8 +355,7 @@ void setupPHYSFS()
 #if (defined __SWITCH__) && (defined DEBUG)
 	socketExit();
 #endif
-
-	exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);
 	}
 	deinit();
 	exit(EXIT_SUCCESS);

@@ -85,8 +85,7 @@ src/blobby
 2. Compile:
 
 ```bash
-./configure-switch.sh
-cd build
+cmake . -DCMAKE_TOOLCHAIN_FILE=NintendoSwitchToolchain.cmake -DCMAKE_INSTALL_PREFIX=blobby -DSWITCH=true -DCMAKE_BUILD_TYPE=Debug
 make && make install
 ```
 

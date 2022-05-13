@@ -403,10 +403,8 @@ InputOptionsState::InputOptionsState()
 	//left data:
 #ifdef __SWITCH__
 	mLeftDevice = "joystick";
-	mRightDevice = "joystick";
 #else
 	mLeftDevice = mOptionConfig.getString("left_blobby_device");
-	mRightDevice = mOptionConfig.getString("right_blobby_device");
 #endif
 	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
 	mLeftMouseSensitivity = mOptionConfig.getFloat("left_blobby_mouse_sensitivity");
@@ -417,6 +415,11 @@ InputOptionsState::InputOptionsState()
 	mLeftJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
 	mLeftJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
 	//right data:
+#ifdef __SWITCH__
+	mRightDevice = "joystick";
+#else
+	mRightDevice = mOptionConfig.getString("right_blobby_device");
+#endif
 	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
 	mRightMouseSensitivity = mOptionConfig.getFloat("right_blobby_mouse_sensitivity");
 	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
