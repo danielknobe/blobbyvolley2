@@ -55,4 +55,4 @@ jobs:
       - name: Configure CMake and Build
         run: |
           cmake .
-          make
+          cmake --build .
