@@ -1,4 +1,4 @@
-# Blobby Volley 2 [![Build Status](https://travis-ci.org/danielknobe/blobbyvolley2.svg?branch=master)](https://travis-ci.org/danielknobe/blobbyvolley2)
+# Blobby Volley 2 ![build workflow](https://github.com/danielknobe/blobbyvolley2/actions/workflows/main.yaml/badge.svg)
 **The head-to-head multiplayer ball game**
 
 ### Website
