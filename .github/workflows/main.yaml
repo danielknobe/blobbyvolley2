@@ -31,6 +31,7 @@ jobs:
           install: >-
             ${{ matrix.platform.msys-env }}-gcc
             ${{ matrix.platform.msys-env }}-cmake
+            ${{ matrix.platform.msys-env }}-ninja
             ${{ matrix.platform.msys-env }}-physfs
             ${{ matrix.platform.msys-env }}-boost
       - name: Setup Linux
@@ -42,8 +43,15 @@ jobs:
             cmake libsdl2-dev \
             libboost-dev \
             libphysfs-dev 
+      - name: Setup MacOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install \
+            sdl2 \
+            physfs \
+            boost
       - uses: actions/checkout@v2
-      - name: Configure CMake
+      - name: Configure CMake and Build
         run: |
           cmake .
           make
