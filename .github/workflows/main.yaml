@@ -32,6 +32,7 @@ jobs:
             ${{ matrix.platform.msys-env }}-gcc
             ${{ matrix.platform.msys-env }}-cmake
             ${{ matrix.platform.msys-env }}-ninja
+            ${{ matrix.platform.msys-env }}-SDL2
             ${{ matrix.platform.msys-env }}-physfs
             ${{ matrix.platform.msys-env }}-boost
       - name: Setup Linux
@@ -40,9 +41,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install \
             cmake \
-            cmake libsdl2-dev \
-            libboost-dev \
-            libphysfs-dev 
+            libsdl2-dev \
+            libphysfs-dev \
+            libboost-dev
       - name: Setup MacOS
         if: runner.os == 'macOS'
         run: |
