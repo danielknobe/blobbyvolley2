@@ -1,0 +1,49 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: Windows (mingw32), os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Ubuntu 18.04,      os: ubuntu-18.04,   shell: sh }
+        - { name: Ubuntu 20.04,      os: ubuntu-20.04,   shell: sh }
+        - { name: Ubuntu 22.04,      os: ubuntu-20.04,   shell: sh }
+        - { name: MacOS Big Sur,     os: macos-11,       shell: sh }
+
+  defaults:
+    run:
+      shell: ${{ matrix.platform.shell }}
+
+  steps:
+    - name: Setup Windows
+      if: matrix.platform.shell == 'msys2 {0}'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ matrix.platform.msystem }}
+        install: >-
+          ${{ matrix.platform.msys-env }}-gcc
+          ${{ matrix.platform.msys-env }}-cmake
+          ${{ matrix.platform.msys-env }}-physfs
+          ${{ matrix.platform.msys-env }}-boost
+    - name: Setup Linux
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install \
+          cmake \
+          cmake libsdl2-dev \
+          libboost-dev \
+          libphysfs-dev 
+    - uses: actions/checkout@v2
+    - name: Configure CMake
+      run: |
+        cmake .
+        make
