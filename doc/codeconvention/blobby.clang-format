@@ -1,0 +1,15 @@
+{
+    UseTab:	Always,
+    TabWidth: 4,
+    IndentWidth: 4,
+    BreakConstructorInitializers: BeforeComma,
+    BreakBeforeBraces: Custom,
+    BraceWrapping: {
+        AfterControlStatement: Always,
+        AfterClass: true,
+        AfterStruct: true,
+        AfterUnion: true,
+        AfterFunction: true,
+        AfterEnum : true
+    }
+}
