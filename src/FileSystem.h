@@ -55,7 +55,7 @@ class FileSystem : public boost::noncopyable, public ObjectCounter<FileSystem>
 		/// \brief tests whether a file exists
 		bool exists(const std::string& filename) const;
 
-		/// \brief tests wether given path is a directory
+		/// \brief tests whether given path is a directory
 		bool isDirectory(const std::string& dirname) const;
 
 		/// \brief creates a directory and reports success/failure

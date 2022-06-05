@@ -98,7 +98,7 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 		virtual void getInputAt(int step, InputSource* left, InputSource* right) = 0;
 
 
-		/// \brief checks wether the specified position is a savepoint
+		/// \brief checks whether the specified position is a savepoint
 		/// \param position[in] position to check for savepoint
 		/// \param save_position[out] if \t position is a savepoint, this int
 		///					contains the index of the savepoint

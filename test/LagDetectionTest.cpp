@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( self_correlation )
 }
 
 
-// test that checks wether LagDetector finds zero lag when no lag is present
+// test that checks whether LagDetector finds zero lag when no lag is present
 BOOST_FIXTURE_TEST_CASE( zero_lag, LagDetectionSetup )
 {
 	// insert zero lag data
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE( zero_lag, LagDetectionSetup )
 }
 
 
-// test that checks wether LagDetector finds constant lags
+// test that checks whether LagDetector finds constant lags
 /// \todo use http://www.boost.org/doc/libs/1_48_0/libs/test/doc/html/utf/user-guide/test-organization/unary-test-case.html
 BOOST_FIXTURE_TEST_CASE( constant_lag, LagDetectionSetup )
 {

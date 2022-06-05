@@ -271,7 +271,7 @@ void generic_io_types_test_generics_f(std::shared_ptr<GenericIn> in, std::shared
 	#ifndef DISABLE_COMPILATION_TEST
 	// writing
 	// these are not really run time tests... 
-	// it is tested here wether this code compiles.
+	// it is tested here whether this code compiles.
 	const unsigned char byte = 6;
 	out->generic<unsigned char>( byte );
 	out->generic<bool>(true);

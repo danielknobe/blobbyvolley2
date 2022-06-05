@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <type_traits>
 
-#include <boost/type_traits/integral_constant.hpp>
-
 #include "Global.h"
 
 struct PlayerInput;
@@ -45,7 +43,7 @@ namespace detail
 	// helper class to make parameter types
 	/* \class conster
 		helper class for parameter types.
-		Zhis class is used to adapt the parameters of the read/write methods,
+		This class is used to adapt the parameters of the read/write methods,
 		making them const references for writing and reference for reading.
 		The partial specialisations ensure that behaviour.
 	*/
@@ -83,56 +81,56 @@ namespace detail
 
 	// helper classes to determine which io algorithm to use for which type
 
-	// if any template specialisation of this class inherits from boost::true_type,
+	// if any template specialisation of this class inherits from std::true_type,
 	// this means that the io algorithm uses a predifined_serializer.
 	template<class T>
-	struct has_default_io_implementation : public boost::false_type
+	struct has_default_io_implementation : public std::false_type
 	{
 	};
 
 	// specialisations for default types
 	template<>
-	struct has_default_io_implementation<bool> : public boost::true_type
+	struct has_default_io_implementation<bool> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<unsigned char> : public boost::true_type
+	struct has_default_io_implementation<unsigned char> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<unsigned int> : public boost::true_type
+	struct has_default_io_implementation<unsigned int> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<float> : public boost::true_type
+	struct has_default_io_implementation<float> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<std::string> : public boost::true_type
+	struct has_default_io_implementation<std::string> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<PlayerSide> : public boost::true_type
+	struct has_default_io_implementation<PlayerSide> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<Color> : public boost::true_type
+	struct has_default_io_implementation<Color> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<PlayerInput> : public boost::true_type
+	struct has_default_io_implementation<PlayerInput> : public std::true_type
 	{
 	};
 
 	template<>
-	struct has_default_io_implementation<PlayerID> : public boost::true_type
+	struct has_default_io_implementation<PlayerID> : public std::true_type
 	{
 	};
 
@@ -180,7 +178,7 @@ namespace detail
 	/*! \class serialize_dispatch
 		\brief manages which generic implementation is used to serialize certain types
 		\details uses partial specialisation with the parameters init and container.
-				init has to be boost::true_type or boost::false_type.
+				init has to be std::true_type or std::false_type.
 	*/
 	template<class T, class init, bool container>
 	struct serialize_dispatch;
@@ -196,7 +194,7 @@ namespace detail
 	// inserts the methods from predefined_serializer, which are forward declared and
 	//  implemented in GenericIO.cpp. This happens when init is true_type
 	template<class T, bool b>
-	struct serialize_dispatch<T, boost::true_type, b> : public predifined_serializer<T>
+	struct serialize_dispatch<T, std::true_type, b> : public predifined_serializer<T>
 	{
 
 	};
@@ -207,7 +205,7 @@ namespace detail
 	// User serializers are used when there is no default implementation and the type does not provide a container
 	// interface.
 	template<class T>
-	struct serialize_dispatch<T, boost::false_type, false> : public UserSerializer<T>
+	struct serialize_dispatch<T, std::false_type, false> : public UserSerializer<T>
 	{
 
 	};

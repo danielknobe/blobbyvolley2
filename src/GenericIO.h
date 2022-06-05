@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <iosfwd>
+#include <vector>
+#include <type_traits>
 
 #include <boost/noncopyable.hpp>
 #include <memory>
@@ -61,7 +63,7 @@ std::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream);
 /*! \class GenericIO
 	\brief Class template that abstracts IO
 	\details This class abstract IO to/from different sources. Current implementations are
-			File and BitStream input/output. The template parameter tag decides wether
+			File and BitStream input/output. The template parameter tag decides whether
 			the actual instance is an input or an output object. This design ensure that
 			input and output have exactly the same interface and enables writing algorithms
 			that read and write data with exactly the same code, reducing the chance of
@@ -120,14 +122,14 @@ class GenericIO : public boost::noncopyable
 		void generic( typename detail::conster<tag, T>::type data )
 		{
 			// thats a rather complicated template construct. It uses the serialize_dispatch template
-			// with working type T, boost::true_type or boost::false_type as init depending wether the
+			// with working type T, std::true_type or std::false_type as init depending whether the
 			// supplied type T has a default implementation associated (as determined by the
 			// has_default_io_implementation template).
 			// the second parameter is a bool which is true if the type offeres a container interface
 			// and false otherwise (determined by the is_container_type template)
 			// depending on the second two template parameters, serialize_dispatch is either
-			// derived from detail::predifined_serializer (when init is boost::true_type)
-			// or UserSerializer if init is boost::false_type and container is false.
+			// derived from detail::predifined_serializer (when init is std::true_type)
+			// or UserSerializer if init is std::false_type and container is false.
 			// if it is a container type, the partial template specialisation foudn below is
 			// used to serialize that template.
 			detail::serialize_dispatch<T,
@@ -191,7 +193,7 @@ namespace detail
 
 
 	template<class T>
-	struct serialize_dispatch<T, boost::false_type, true>
+	struct serialize_dispatch<T, std::false_type, true>
 	{
 		static void serialize( GenericOut& out, const T& list)
 		{
@@ -203,9 +205,10 @@ namespace detail
 		}
 
 		// deserialize containers with resize function
-		static void serialize_imp( GenericIn& in, T& list, bool has_reize=true)
+		static void serialize_imp( GenericIn& in, T& list, bool has_resize=true)
 		{
 			static_assert(is_container_type<T>::has_resize, "no resize function in container");
+			static_assert(std::is_same<T, std::vector<bool>>::value == false, "std::vector<bool>::iterator is implementation-defined. Don't use it");
 			unsigned int size;
 
 			in.uint32( size );
