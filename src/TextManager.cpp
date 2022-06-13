@@ -81,6 +81,15 @@ std::string TextManager::getLang() const{
 	return lang;
 }
 
+const int TextManager::getUTF8Length(const std::string& str)
+{
+	int len = 0;
+	for(const char& character : str) {
+		len += (character & 0xc0) != 0x80;
+	}
+	return len;
+}
+
 bool TextManager::loadFromXML(const std::string& filename){
 	// read and parse file
 	auto language_data = FileRead::readXMLDocument(filename);

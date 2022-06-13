@@ -173,6 +173,9 @@ class TextManager
 
 		std::string getLang() const;
 
+		/// returns count of utf-8 characters
+		static const int getUTF8Length(const std::string& str);
+
 		/// returns the mSingleton
 		static const TextManager* getSingleton();
 

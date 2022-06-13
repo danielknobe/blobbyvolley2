@@ -288,17 +288,18 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 	obj.type = TEXT;
 	obj.flags = flags;
 
+	int const textLength = TextManager::getUTF8Length(text);
 	int const fontSize = flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL;
 
 	// update position depending on alignment
 	if( flags & TF_ALIGN_CENTER )
 	{
-		obj.pos1.x -= text.size() * fontSize / 2;
+		obj.pos1.x -= textLength * fontSize / 2;
 	}
 
 	if( flags & TF_ALIGN_RIGHT )
 	{
-		obj.pos1.x -= text.size() * fontSize;
+		obj.pos1.x -= textLength * fontSize;
 	}
 
 	if (!mInactive)
@@ -374,7 +375,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		Vector2 mousepos = InputManager::getSingleton()->position();
 		if (mousepos.x + tolerance >= obj.pos1.x &&
 			mousepos.y + tolerance * 2 >= obj.pos1.y &&
-			mousepos.x - tolerance <= obj.pos1.x + text.length() * fontSize &&
+			mousepos.x - tolerance <= obj.pos1.x + textLength * fontSize &&
 			mousepos.y - tolerance * 2 <= obj.pos1.y + fontSize)
 		{
 			obj.flags = obj.flags
@@ -546,7 +547,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 	obj.id = id;
 	obj.pos1 = position;
 	obj.type = EDITBOX;
-	obj.length = length; // lenght does not actually work!
+	obj.length = length; // length does not actually work!
 	obj.flags = flags;
 
 	// Width and height including border
