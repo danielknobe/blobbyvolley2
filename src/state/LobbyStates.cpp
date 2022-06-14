@@ -317,7 +317,8 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 
 		//  * rulesfile
 		imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
-		std::string rulesstring = status.mPossibleRules.at(status.getGame(gameIndex).rules);
+		std::string rulesstring = status.mPossibleRules.at(status.getGame(gameIndex).rules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
+		rulesstring += status.mPossibleRulesAuthor.at(mChosenRules);
 		for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 		{
 			imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
@@ -363,7 +364,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 			mChosenRules = (mChosenRules + 1) % status.mPossibleRules.size();
 		}
 		std::string rulesstring = status.mPossibleRules.at(mChosenRules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
-		rulesstring += " " + status.mPossibleRulesAuthor.at(mChosenRules);
+		rulesstring += status.mPossibleRulesAuthor.at(mChosenRules);
 		for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 		{
 			imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
@@ -435,7 +436,7 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 	//  * rulesfile
 	imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
 	std::string rulesstring = status.mPossibleRules.at(mRules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
-	rulesstring += " " + status.mPossibleRulesAuthor.at(mRules);
+	rulesstring += status.mPossibleRulesAuthor.at(mRules);
 	for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 	{
 		imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
@@ -467,7 +468,8 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 		{
 			imgui.doText(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::GAME_WAITING));
 		}
-	} else
+	}
+	else
 	{
 		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_LEAVE) ) )
 		{
