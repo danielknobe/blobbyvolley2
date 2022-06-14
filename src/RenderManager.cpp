@@ -155,6 +155,34 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 		if (testChar == std::string("¿")[1])
 			index = 56;
 	}
+	else if (testChar == std::string("👁")[0]) // UTF-8 escape (f0xxxxxx)
+	{
+		testChar = *iter;
+		++iter;
+		if (testChar == std::string("👁")[1]) // UTF-8 escape (xx9fxxxx)
+		{
+			testChar = *iter;
+			++iter;
+			if (testChar == std::string("👁")[2]) // UTF-8 escape (xxxx91xx)
+			{
+				testChar = *iter;
+				++iter;
+				if (testChar == std::string("👁")[3]) // UTF-8 escape (xxxxxx81)
+				{
+					index = 57;
+				}
+			}
+			else if (testChar == std::string("🔒")[2]) // UTF-8 escape (xxxx94xx)
+			{
+				testChar = *iter;
+				++iter;
+				if (testChar == std::string("🔒")[3]) // UTF-8 escape (xxxxxx92)
+				{
+					index = 58;
+				}
+			}
+		}
+	}
 	else if (testChar == std::string("ß")[0]) // UTF-8 escape (c3xx) 
 	{
 		testChar = *iter;

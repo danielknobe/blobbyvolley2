@@ -28,6 +28,7 @@ struct ServerStatusData
 		unsigned rules;
 		unsigned speed;
 		unsigned score;
+		bool hasPassword;
 	};
 
 	const OpenGame& getGame( unsigned id ) const
@@ -96,6 +97,9 @@ private:
 	unsigned mChosenSpeed;
 	unsigned mChosenRules;
 	unsigned mChosenScore;
+	std::string mChosenPassword;
+	unsigned int mChosenPasswordPosition;
+	bool mChosenPasswordVisible;
 
 	std::vector<unsigned> mPossibleScores{2, 5, 10, 15, 20, 25, 40, 50};
 };

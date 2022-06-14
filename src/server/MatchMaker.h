@@ -37,7 +37,7 @@ class MatchMaker
 {
 public:
 	// returns a unique challenge ID
-	unsigned openGame( PlayerID creator, int speed, int rules, int points );
+	unsigned openGame( PlayerID creator, int speed, int rules, int points, const std::string& password = "");
 
 	void addPlayer( PlayerID id, std::shared_ptr<NetworkPlayer> player );
 	void removePlayer( PlayerID id );
@@ -74,7 +74,7 @@ private:
 
 	/// add a new game to the gamelist
 	unsigned addGame( OpenGame game );
-	void joinGame(PlayerID player, unsigned gameID);
+	void joinGame(PlayerID player, unsigned gameID, const std::string& password = "");
 	void startGame(PlayerID host, PlayerID client);
 
 	void removeGame( unsigned id );
@@ -94,6 +94,7 @@ private:
 		int speed;
 		int rules;
 		int points;
+		std::string password;
 		// connected players
 		std::vector<PlayerID> connected;
 	};

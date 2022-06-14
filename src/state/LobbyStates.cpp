@@ -22,10 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LobbyStates.h"
 
 /* includes */
-#include <stdexcept>
 #include <algorithm>
-#include <iostream>
 #include <array>
+#include <deque>
+#include <iostream>
+#include <stdexcept>
 
 #include "raknet/RakClient.h"
 
@@ -129,16 +130,18 @@ void LobbyState::step_impl()
 					std::vector<unsigned char> gamespeeds;
 					std::vector<unsigned char> gamerules;
 					std::vector<unsigned char> gamescores;
+					std::deque<bool> passwords;
 					in->generic<std::vector<unsigned int>>( gameids );
 					in->generic<std::vector<std::string>>( gamenames );
 					in->generic<std::vector<unsigned char>>( gamespeeds );
 					in->generic<std::vector<unsigned char>>( gamerules );
 					in->generic<std::vector<unsigned char>>( gamescores );
+					in->generic<std::deque<bool>>( passwords );
 
 					mStatus.mOpenGames.clear();
 					for( unsigned i = 0; i < gameids.size(); ++i)
 					{
-						mStatus.mOpenGames.push_back( ServerStatusData::OpenGame{ gameids.at(i), gamenames.at(i), gamerules.at(i), gamespeeds.at(i), gamescores.at(i)});
+						mStatus.mOpenGames.push_back( ServerStatusData::OpenGame{ gameids.at(i), gamenames.at(i), gamerules.at(i), gamespeeds.at(i), gamescores.at(i), passwords.at(i)});
 					}
 
 					// find out which settings most closely resemble the local config
@@ -277,7 +280,10 @@ LobbyMainSubstate::LobbyMainSubstate(std::shared_ptr<RakClient> client,
 	mClient(client),
 	mChosenSpeed( prefspeed ),
 	mChosenRules( prefrules ),
-	mChosenScore( prefscore )
+	mChosenScore( prefscore ),
+	mChosenPassword(""),
+	mChosenPasswordPosition(0),
+	mChosenPasswordVisible(false)
 {
 
 }
@@ -291,10 +297,19 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 	gamelist.push_back( TextManager::getSingleton()->getString(TextManager::NET_OPEN_GAME) );
 	for ( const auto& game : status.mOpenGames)
 	{
-		gamelist.push_back( game.name );
+		gamelist.push_back( game.name + (game.hasPassword ? "🔒" : "") );
 	}
 
+	unsigned int previousSelectedGame = mSelectedGame;
 	bool doEnterGame = imgui.doSelectbox(GEN_ID, Vector2(25.0, 90.0), Vector2(375.0, 470.0), gamelist, mSelectedGame) == SBA_DBL_CLICK;
+
+	// Reset some configuration on change
+	if (previousSelectedGame != mSelectedGame)
+	{
+		mChosenPasswordVisible = false;
+		mChosenPassword = "";
+		mChosenPasswordPosition = 0;
+	}
 
 	// if selected game is invalid (i.e. a game was removed and the reference now is wrong), set to random
 	if(mSelectedGame >= gamelist.size())
@@ -323,6 +338,24 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 		{
 			imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
 		}
+		//  * password
+		if (status.getGame(gameIndex).hasPassword)
+		{
+			imgui.doText(GEN_ID, Vector2(435, 240), "Password:");
+			if(imgui.doEditbox(GEN_ID, 
+							Vector2(445, 275), 
+							11,
+							mChosenPassword, 
+							mChosenPasswordPosition,
+							mChosenPasswordVisible ? 0 : TF_OBFUSCATE))
+			{
+			}
+			if(imgui.doButton(GEN_ID, Vector2(735, 278), "👁"))
+			{
+				mChosenPasswordVisible = !mChosenPasswordVisible;
+			}
+		}
+
 
 		// open game button
 		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_JOIN) ) ||
@@ -332,7 +365,9 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_LOBBY);
 			stream.Write((unsigned char)LobbyPacketType::JOIN_GAME);
-			stream.Write( status.getGame(gameIndex).id );
+			auto writer = createGenericWriter(&stream);
+			writer->generic<unsigned int>(status.getGame(gameIndex).id);
+			writer->generic<std::string>(mChosenPassword);
 			/// \todo add a name
 
 			mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
@@ -369,6 +404,20 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 		{
 			imgui.doText(GEN_ID, Vector2(445, 205 + i / 25 * 15), rulesstring.substr(i, 25), TF_SMALL_FONT);
 		}
+		//  * password
+		imgui.doText(GEN_ID, Vector2(435, 240), "Password:");
+		if(imgui.doEditbox(GEN_ID, 
+		                   Vector2(445, 275), 
+		                   11,
+		                   mChosenPassword, 
+		                   mChosenPasswordPosition,
+		                   mChosenPasswordVisible ? 0 : TF_OBFUSCATE))
+		{
+		}
+		if(imgui.doButton(GEN_ID, Vector2(735, 278), "👁"))
+		{
+			mChosenPasswordVisible = !mChosenPasswordVisible;
+		}
 
 		// open game button
 		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_OPEN_GAME) ))
@@ -377,9 +426,11 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_LOBBY);
 			stream.Write((unsigned char)LobbyPacketType::OPEN_GAME);
-			stream.Write( mChosenSpeed );
-			stream.Write( mPossibleScores.at(mChosenScore) );
-			stream.Write( mChosenRules );
+			auto writer = createGenericWriter(&stream);
+			writer->generic<unsigned int>(mChosenSpeed);
+			writer->generic<unsigned int>(mPossibleScores.at(mChosenScore));
+			writer->generic<unsigned int>(mChosenRules);
+			writer->generic<std::string>(mChosenPassword);
 			/// \todo add a name
 
 			mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);

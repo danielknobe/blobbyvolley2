@@ -211,12 +211,15 @@ void DedicatedServer::processPackets()
 
 				// if this is a locally hosted server, any player that connects automatically joins an
 				// open game
-				if( mPlayerHosted && mMatchMaker.getOpenGamesCount() != 0)
+				if (mPlayerHosted && 
+				    mMatchMaker.getOpenGamesCount() != 0)
 				{
 					RakNet::BitStream stream;
 					stream.Write((unsigned char)ID_LOBBY);
 					stream.Write((unsigned char)LobbyPacketType::JOIN_GAME);
-					stream.Write( mMatchMaker.getOpenGameIDs().front() );
+					auto writer = createGenericWriter(&stream);
+					writer->uint32(mMatchMaker.getOpenGameIDs().front());
+					writer->generic<std::string>("");
 					mMatchMaker.receiveLobbyPacket( packet->playerId, stream );
 				}
 				break;

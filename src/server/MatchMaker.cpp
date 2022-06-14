@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include <deque>
 
 #include "GenericIO.h"
 #include "NetworkMessage.h"
@@ -35,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 			player management
 // - - - - - - - - - - - - - - - - - -
 
-unsigned MatchMaker::openGame( PlayerID creator, int speed, int rules, int points )
+unsigned MatchMaker::openGame( PlayerID creator, int speed, int rules, int points, const std::string& password )
 {
 	if(!mAllowNewGames)
 	{
@@ -51,7 +52,7 @@ unsigned MatchMaker::openGame( PlayerID creator, int speed, int rules, int point
 	}
 	auto create_pl = plid->second;
 
-	OpenGame newgame{creator, create_pl->getName()+"'s game" , speed, rules, points, std::vector<PlayerID>(0)};
+	OpenGame newgame{creator, create_pl->getName()+"'s game" , speed, rules, points, password, std::vector<PlayerID>(0)};
 
 	// if creator already has an open game, delete that
 	removePlayerFromAllGames( creator );
@@ -173,7 +174,7 @@ void MatchMaker::removePlayer( PlayerID id )
 	mPlayerMap.erase( id );
 }
 
-void MatchMaker::joinGame(PlayerID player, unsigned gameID)
+void MatchMaker::joinGame(PlayerID player, unsigned gameID, const std::string& password)
 {
 	// remove player from all other games
 	removePlayerFromAllGames( player );
@@ -191,6 +192,14 @@ void MatchMaker::joinGame(PlayerID player, unsigned gameID)
 	{
 		std::cerr << "player "<< pl->second->getName() << " [" << player << "] tried to join game " << gameID << " which does not exits (anymore?)\n";
 		sendOpenGameList( player ); // send the updated game list to that player
+		return;
+	}
+
+	if ((g->second.password != "") &&
+	    (g->second.password != password))
+	{
+		std::cerr << "player "<< pl->second->getName() << " [" << player << "] tried to join game " << gameID << " but password was wrong\n";
+		//TODO Send password fault message to client
 		return;
 	}
 
@@ -271,17 +280,21 @@ void MatchMaker::receiveLobbyPacket( PlayerID player, RakNet::BitStream& stream 
 	if( type == LobbyPacketType::OPEN_GAME )
 	{
 		unsigned speed, score, rules;
+		std::string password;
 		reader->uint32(speed);
 		reader->uint32(score);
 		reader->uint32(rules);
+		reader->generic<std::string>(password);
 
-		openGame( player, speed, rules, score);
+		openGame( player, speed, rules, score, password);
 		return;
 	} else if( type == LobbyPacketType::JOIN_GAME )
 	{
 		unsigned id;
+		std::string password;
 		reader->uint32(id);
-		joinGame(player, id);
+		reader->generic<std::string>(password);
+		joinGame(player, id, password);
 
 		return;
 	} else if( type == LobbyPacketType::LEAVE_GAME )
@@ -313,6 +326,7 @@ void MatchMaker::sendOpenGameList( PlayerID recipient )
 	std::vector<unsigned char> dGameSpeed;
 	std::vector<unsigned char> dGameRules;
 	std::vector<unsigned char> dGameScores;
+	std::deque<bool> dGameHasPassword;
 
 	// put all possible game rules and game speeds into the packet
 	auto out = createGenericWriter(&stream);
@@ -337,6 +351,7 @@ void MatchMaker::sendOpenGameList( PlayerID recipient )
 		dGameSpeed.push_back( game.second.speed );
 		dGameRules.push_back( game.second.rules );
 		dGameScores.push_back( game.second.points );
+		dGameHasPassword.push_back( game.second.password != "" );
 	}
 
 	out->generic<std::vector<unsigned int>>( dGameIDs );
@@ -344,6 +359,7 @@ void MatchMaker::sendOpenGameList( PlayerID recipient )
 	out->generic<std::vector<unsigned char>>( dGameSpeed );
 	out->generic<std::vector<unsigned char>>( dGameRules );
 	out->generic<std::vector<unsigned char>>( dGameScores );
+	out->generic<std::deque<bool>>( dGameHasPassword );
 
 	// send the packet
 	mSendPacket( stream, recipient );
