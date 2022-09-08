@@ -23,8 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 
 #include <vector>
-
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 class DuelMatch;
 class ReplayPlayer;
@@ -37,15 +36,15 @@ class ReplaySelectionState : public State
 {
 public:
 	ReplaySelectionState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	void step_impl() override;
+	const char* getStateName() const override;
 
 private:
 
 	std::vector<std::string> mReplayFiles;
 	unsigned mSelectedReplay;
 	bool mShowReplayInfo;
-	boost::scoped_ptr<IReplayLoader> mReplayLoader;
+	std::unique_ptr<IReplayLoader> mReplayLoader;
 
 	bool mChecksumError;
 	bool mVersionError;

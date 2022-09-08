@@ -109,7 +109,7 @@ struct Color
 
 	}
 
-	Color() {}
+	Color() = default;
 
 	union
 	{
@@ -147,14 +147,14 @@ struct Color
 struct ExtensionUnsupportedException : public std::exception
 {
 	std::string extension;
-	ExtensionUnsupportedException(std::string name) : extension(name) {}
-	~ExtensionUnsupportedException() noexcept {}
+	explicit ExtensionUnsupportedException(std::string name) : extension(name) {}
+	~ExtensionUnsupportedException() noexcept override = default;
 };
 
 struct ScriptException : public std::exception
 {
 	std::string luaerror;
-	~ScriptException() noexcept {}
+	~ScriptException() noexcept override = default;
 };
 
 /// we need to define this constant to make it compile with strict c++98 mode

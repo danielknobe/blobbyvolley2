@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <list>
 #include <future>
 #include <atomic>
-#include <boost/scoped_ptr.hpp>
 
 class RakClient;
 class RakServer;
@@ -45,17 +44,17 @@ class NetworkSearchState : public State
 {
 public:
 	NetworkSearchState();
-	virtual ~NetworkSearchState();
+	~NetworkSearchState() override;
 
-	virtual void step_impl();
+	void step_impl() override;
 	// onlinegames connect to the masterserver
 	// LAN games send a broadcast to local network
 	void searchServers();
 
-	virtual const char* getStateName() const;
+	const char* getStateName() const override;
 protected:
 	std::vector<ServerInfo> mScannedServers;
-	boost::scoped_ptr<RakClient> mPingClient;
+	std::unique_ptr<RakClient> mPingClient;
 	// set this to true to step pinging before we are finished
 	std::atomic<bool> mCancelPing;
 
@@ -74,7 +73,7 @@ private:
 	bool mEnteringServer;
 	bool mDisplayUpdateNotification;
 
-	boost::scoped_ptr<ServerInfo> mHostedServer;
+	std::unique_ptr<ServerInfo> mHostedServer;
 
 	std::string mEnteredServer;
 	unsigned mServerBoxPosition;
@@ -87,9 +86,9 @@ class OnlineSearchState : public NetworkSearchState
 {
 public:
 	OnlineSearchState();
-	virtual ~OnlineSearchState() {};
-	virtual void doSearchServers();
-	virtual const char* getStateName() const;
+	~OnlineSearchState() override = default;
+	void doSearchServers() override;
+	const char* getStateName() const override;
 };
 
 
@@ -100,10 +99,10 @@ class LANSearchState : public NetworkSearchState
 {
 public:
 	LANSearchState();
-	virtual ~LANSearchState() {};
-	virtual const char* getStateName() const;
+	~LANSearchState() override = default;
+	const char* getStateName() const override;
 
 private:
-	virtual void doSearchServers();
+	void doSearchServers() override;
 };
 

@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "Global.h"
-#include <boost/scoped_ptr.hpp>
+
+#include <memory>
 
 class DuelMatch;
 class ReplayRecorder;
@@ -41,7 +42,7 @@ class ReplayRecorder;
 class State
 {
 public:
-	virtual ~State() {}
+	virtual ~State() = default;
 
 	// step function defines the steps actual work
 	virtual void step_impl() = 0;
@@ -57,7 +58,7 @@ public:
 	static void deinit();
 
 	/// gets the currently active state
-	static boost::scoped_ptr<State>& getCurrentState();
+	static std::unique_ptr<State>& getCurrentState();
 	/// gets the name of the currently active state
 	static const char* getCurrenStateName();
 
@@ -68,8 +69,8 @@ protected:
 	static void switchState(State* newState);
 
 private:
-	static boost::scoped_ptr<State> mCurrentState;
-	static boost::scoped_ptr<State> mStateToSwitchTo;
+	static std::unique_ptr<State> mCurrentState;
+	static std::unique_ptr<State> mStateToSwitchTo;
 
 };
 
@@ -80,9 +81,9 @@ class MainMenuState : public State
 {
 public:
 	MainMenuState();
-	virtual ~MainMenuState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~MainMenuState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 };
 
 /*! \class CreditsState
@@ -92,8 +93,8 @@ class CreditsState : public State
 {
 public:
 	CreditsState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	void step_impl() override;
+	const char* getStateName() const override;
 private:
 	float mYPosition;
 };

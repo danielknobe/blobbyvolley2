@@ -33,9 +33,9 @@ class OptionState : public State
 {
 public:
 	OptionState();
-	virtual ~OptionState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~OptionState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 
 private:
 	/// writes current settings to disk
@@ -56,9 +56,9 @@ class GraphicOptionsState : public State
 {
 public:
 	GraphicOptionsState();
-	virtual ~GraphicOptionsState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~GraphicOptionsState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 private:
 	/// writes current settings to disk
 	void save();
@@ -78,9 +78,9 @@ class InputOptionsState : public State
 {
 public:
 	InputOptionsState();
-	virtual ~InputOptionsState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~InputOptionsState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 private:
 
 	enum InputAction
@@ -146,9 +146,9 @@ class MiscOptionsState : public State
 {
 public:
 	MiscOptionsState();
-	virtual ~MiscOptionsState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~MiscOptionsState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 private:
 	/// writes current settings to disk
 	void save();

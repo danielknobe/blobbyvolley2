@@ -28,13 +28,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* InputSource */
 
-InputSource::InputSource() : mInput(), mMatch(0)
+InputSource::InputSource() : mInput(), mMatch(nullptr)
 {
 }
 
-InputSource::~InputSource()
-{
-}
+InputSource::~InputSource() = default;
 
 PlayerInput InputSource::getInput() const
 {
@@ -75,7 +73,7 @@ const DuelMatch* InputSource::getMatch() const
 
 void InputSource::setMatch(const DuelMatch* match)
 {
-	assert(mMatch == 0);
+	assert(mMatch == nullptr);
 	mMatch = match;
 }
 

@@ -48,7 +48,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 	public:
 		// constuctor and destructor
 		/// \param stw score to win
-		IGameLogic( int stw );
+		explicit IGameLogic( int stw );
 		virtual ~IGameLogic();
 
 		virtual GameLogicPtr clone() const = 0;

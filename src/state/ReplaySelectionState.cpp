@@ -43,7 +43,7 @@ ReplaySelectionState::ReplaySelectionState()
 
 	mSelectedReplay = 0;
 	mReplayFiles = FileSystem::getSingleton().enumerateFiles("replays", ".bvr");
-	if (mReplayFiles.size() == 0)
+	if (mReplayFiles.empty())
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
 
@@ -68,7 +68,7 @@ void ReplaySelectionState::step_impl()
 		///		this is dangerous. we delete this state before it has done
 		///		all of its work.
 
-		ReplayState* rs = 0;
+		ReplayState* rs = nullptr;
 		try
 		{
 			rs = new ReplayState();

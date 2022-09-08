@@ -215,8 +215,8 @@ void setupPHYSFS()
 	srand(SDL_GetTicks());
 	// Default is OpenGL and false
 	// choose renderer
-	RenderManager *rmanager = 0;
-	SoundManager *smanager = 0;
+	RenderManager *rmanager = nullptr;
+	SoundManager *smanager = nullptr;
 
 
 	// Test Version Startup Warning
@@ -346,7 +346,7 @@ void setupPHYSFS()
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), 0);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), nullptr);
 		if (rmanager)
 			rmanager->deinit();
 		if (smanager)

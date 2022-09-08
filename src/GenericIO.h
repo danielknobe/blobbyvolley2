@@ -77,7 +77,7 @@ class GenericIO : public boost::noncopyable
 {
 	public:
 		/// virtual d'tor to ensure correct cleanup
-		virtual ~GenericIO() { };
+		virtual ~GenericIO() = default;
 
 		/// reads/writes one byte
 		virtual void byte ( typename detail::conster<tag, unsigned char>::type data) = 0;
@@ -221,7 +221,7 @@ namespace detail
 		}
 
 		// deserialize containers with insert function
-		static void serialize_imp(GenericIn& in, T& list, void* no_resize=0)
+		static void serialize_imp(GenericIn& in, T& list, void* no_resize=nullptr)
 		{
 			unsigned int size;
 

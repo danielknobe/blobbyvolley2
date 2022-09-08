@@ -23,19 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <algorithm>
 #include <iostream>
-#include <ctime>
 
 #include <boost/scoped_array.hpp>
-#include <boost/algorithm/string/classification.hpp>
 
 #include "raknet/RakClient.h"
-#include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
-#include "raknet/GetTime.h"
 
 #include "NetworkState.h"
-#include "NetworkMessage.h"
-#include "TextManager.h"
 #include "replays/ReplayRecorder.h"
 #include "DuelMatch.h"
 #include "IMGUI.h"
@@ -46,11 +40,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 #include "FileRead.h"
 #include "FileWrite.h"
-#include "MatchEvents.h"
 #include "SpeedController.h"
-#include "server/DedicatedServer.h"
 #include "LobbyStates.h"
-#include "InputManager.h"
 
 // global variable to save the lag
 int CURRENT_NETWORK_LAG = -1;
@@ -89,7 +80,7 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 		mRemotePlayer = &mMatch->getPlayer( RIGHT_PLAYER );
 		mMatch->setPlayers( localplayer, remoteplayer );
 	}
-	 else
+	else
 	{
 		PlayerIdentity localplayer = config->loadPlayerIdentity(RIGHT_PLAYER, true);
 		PlayerIdentity remoteplayer = config->loadPlayerIdentity(LEFT_PLAYER, true);
@@ -394,7 +385,7 @@ void NetworkGameState::step_impl()
 		mSaveReplay = false;
 		IMGUI::getSingleton().resetSelection();
 	}
-	else if (mErrorMessage != "")
+	else if (!mErrorMessage.empty())
 	{
 		displayErrorMessageBox();
 	}
@@ -546,7 +537,7 @@ void NetworkGameState::step_impl()
 			{
 
 				// GUI-Hack, so that we can send messages
-				if ((InputManager::getSingleton()->getLastActionKey() == "Return") && (mChattext != ""))
+				if ((InputManager::getSingleton()->getLastActionKey() == "Return") && (!mChattext.empty()))
 				{
 					RakNet::BitStream stream;
 					char message[31];

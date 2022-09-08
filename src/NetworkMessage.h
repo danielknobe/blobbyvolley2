@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <iosfwd>
-#include <stdint.h>
+#include <cstdint>
 
 #include "raknet/PacketEnumerations.h"
 #include "raknet/NetworkTypes.h"
@@ -202,8 +202,8 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 	// read server info from a bit stream, additionally, the server address and port are needed
 	ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t port);
 	// read server info from a user config object
-	ServerInfo(const IUserConfigReader& config);
-	ServerInfo(const std::string& playername);
+	explicit ServerInfo(const IUserConfigReader& config);
+	explicit ServerInfo(const std::string& playername);
 
 	void writeToBitstream(RakNet::BitStream& stream);
 

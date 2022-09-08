@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PlayerIdentity.h"
 
 #include <vector>
-#include <boost/scoped_ptr.hpp>
 #include <memory>
 
 class RakClient;
@@ -48,9 +47,9 @@ public:
 	/// \param client A client which has an established connection to the server we want to start the game on.
 	NetworkGameState(std::shared_ptr<RakClient> client, int rule_checksum, int score_to_win);
 
-	virtual ~NetworkGameState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~NetworkGameState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 
 private:
 	enum
@@ -70,7 +69,7 @@ private:
 
 	bool mUseRemoteColor;
 
-	boost::scoped_ptr<InputSource> mLocalInput;
+	std::unique_ptr<InputSource> mLocalInput;
 
 	bool mWaitingForReplay;
 

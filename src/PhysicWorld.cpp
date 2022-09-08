@@ -22,11 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 
 /* includes */
-#include <limits>
-#include <iostream>
-
-#include "raknet/BitStream.h"
-
 #include "GameConstants.h"
 #include "MatchEvents.h"
 
@@ -55,9 +50,7 @@ PhysicWorld::PhysicWorld()
 	mBlobPosition[RIGHT_PLAYER] = Vector2(600, GROUND_PLANE_HEIGHT);
 }
 
-PhysicWorld::~PhysicWorld()
-{
-}
+PhysicWorld::~PhysicWorld() = default;
 
 bool PhysicWorld::blobHitGround(PlayerSide player) const
 {
@@ -190,7 +183,7 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	{
 		circlepos.y += BLOBBY_LOWER_SPHERE;
 	}
-	 else if(playerTopBallCollision(player))
+	else if(playerTopBallCollision(player))
 	{
 		circlepos.y -= BLOBBY_UPPER_SPHERE;
 	} else

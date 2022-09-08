@@ -14,10 +14,7 @@ PlayerIdentity::PlayerIdentity(const std::string& name, Color color, bool osci, 
 
 }
 
-PlayerIdentity::~PlayerIdentity()
-{
-
-}
+PlayerIdentity::~PlayerIdentity() = default;
 
 const std::string& PlayerIdentity::getName() const
 {

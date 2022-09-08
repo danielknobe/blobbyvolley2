@@ -35,33 +35,33 @@ class RenderManagerSDL : public RenderManager
 	public:
 		RenderManagerSDL();
 
-		virtual void init(int xResolution, int yResolution, bool fullscreen);
-		virtual void deinit();
-		virtual void draw();
-		virtual void refresh();
+		void init(int xResolution, int yResolution, bool fullscreen) override;
+		void deinit() override;
+		void draw() override;
+		void refresh() override;
 
-		virtual bool setBackground(const std::string& filename);
-		virtual void setBlobColor(int player, Color color);
-		virtual void showShadow(bool shadow);
+		bool setBackground(const std::string& filename) override;
+		void setBlobColor(int player, Color color) override;
+		void showShadow(bool shadow) override;
 
-		virtual void setBall(const Vector2& position, float rotation);
-		virtual void setBlob(int player, const Vector2& position,
-				float animationState);
+		void setBall(const Vector2& position, float rotation) override;
+		void setBlob(int player, const Vector2& position,
+				float animationState) override;
 
-		virtual void setMouseMarker(float position);
+		void setMouseMarker(float position) override;
 
-		virtual void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL);
-		virtual void drawImage(const std::string& filename, Vector2 position, Vector2 size);
-		virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col);
-		virtual void drawBlob(const Vector2& pos, const Color& col);
-		virtual void drawParticle(const Vector2& pos, int player);
+		void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) override;
+		void drawImage(const std::string& filename, Vector2 position, Vector2 size) override;
+		void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col) override;
+		void drawBlob(const Vector2& pos, const Color& col) override;
+		void drawParticle(const Vector2& pos, int player) override;
 
 	private:
 		struct DynamicColoredTexture
 		{
 			// constructors
 			// start surface is expected to have color 0xffffff
-			DynamicColoredTexture() : mSDLsf(0), mColor(255, 255, 255) {};
+			DynamicColoredTexture() : mSDLsf(nullptr), mColor(255, 255, 255) {};
 			explicit DynamicColoredTexture(SDL_Texture* sf) : mSDLsf(sf), mColor(255, 255, 255) {};
 
 			DynamicColoredTexture(SDL_Texture* sf, Color c) : mSDLsf(sf), mColor(c) {};
