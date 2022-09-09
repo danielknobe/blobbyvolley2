@@ -63,10 +63,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 #endif
 
-#ifdef WIN32
-#undef main
-#endif
-
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
 extern std::shared_ptr<std::thread> gHostedServerThread;
@@ -182,13 +178,12 @@ void setupPHYSFS()
 #if __MOBILE__
 	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (defined __SWITCH__)
 		int main(int argc, char* argv[])
-    #elif (defined __ANDROID__)
-        #undef main
-        extern "C"
-        int SDL_main(int argc, char* argv[])
+	#elif (defined __ANDROID__)
+		#undef main
+		extern "C"
+		int SDL_main(int argc, char* argv[])
 	#endif
 #else
-	#undef main
 	extern "C"
 	int main(int argc, char* argv[])
 #endif
