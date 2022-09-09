@@ -76,24 +76,24 @@ ReplayRecorder::~ReplayRecorder() = default;
 template<class T>
 void writeAttribute(tinyxml2::XMLPrinter& printer, const char* name, const T& value)
 {
-    printer.OpenElement("var");
-    printer.PushAttribute("name", name);
-    printer.PushAttribute("value", value);
-    printer.CloseElement();
+	printer.OpenElement("var");
+	printer.PushAttribute("name", name);
+	printer.PushAttribute("value", value);
+	printer.CloseElement();
 }
 
 void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 {
-    tinyxml2::XMLPrinter printer;
-    printer.PushHeader(false, true);
-    printer.OpenElement("replay");
-    printer.OpenElement("version");
-    printer.PushAttribute("major", REPLAY_FILE_VERSION_MAJOR);
-    printer.PushAttribute("minor", REPLAY_FILE_VERSION_MINOR);
-    printer.CloseElement();
+	tinyxml2::XMLPrinter printer;
+	printer.PushHeader(false, true);
+	printer.OpenElement("replay");
+	printer.OpenElement("version");
+	printer.PushAttribute("major", REPLAY_FILE_VERSION_MAJOR);
+	printer.PushAttribute("minor", REPLAY_FILE_VERSION_MINOR);
+	printer.CloseElement();
 
-    // the explicit template arguments below are to prevent ambiguities on OSX where
-    // size_t = unsigned long != unsigned int != uint64_t; same for time_t
+	// the explicit template arguments below are to prevent ambiguities on OSX where
+	// size_t = unsigned long != unsigned int != uint64_t; same for time_t
 	writeAttribute(printer, "game_speed", mGameSpeed);
 	writeAttribute<SIZET_TYPE>(printer, "game_length", mSaveData.size());
 	writeAttribute<SIZET_TYPE>(printer, "game_duration", mSaveData.size() / mGameSpeed);
@@ -131,8 +131,8 @@ void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 	printer.PushText(binary.c_str());
 	printer.CloseElement();
 
-    printer.CloseElement();  // </replay>
-    file->write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
+	printer.CloseElement();  // </replay>
+	file->write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
 }
 
 void ReplayRecorder::send(const std::shared_ptr<GenericOut>& target) const

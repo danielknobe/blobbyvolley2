@@ -53,7 +53,7 @@ class LobbySubstate
 {
 public:
 	virtual ~LobbySubstate();
-    virtual void step(const ServerStatusData& status ) = 0;
+	virtual void step(const ServerStatusData& status ) = 0;
 };
 
 class LobbyState : public State

@@ -491,11 +491,11 @@ void OnlineSearchState::doSearchServers()
 					continue;
 				}
 
-                port = varElem->IntAttribute("port", BLOBBY_PORT);
-                if ((port <= 0) || (port > 65535))
-                {
-                    port = BLOBBY_PORT;
-                }
+				port = varElem->IntAttribute("port", BLOBBY_PORT);
+				if ((port <= 0) || (port > 65535))
+				{
+					port = BLOBBY_PORT;
+				}
 			}
 			std::pair<std::string, int> pairs(host, port);
 			serverList.push_back(pairs);

@@ -59,7 +59,7 @@ void GameState::presentGame()
 	{
 		rmanager.setBlobColor(LEFT_PLAYER, rmanager.getOscillationColor());
 	}
-    else
+	else
 	{
 		rmanager.setBlobColor(LEFT_PLAYER, mMatch->getPlayer(LEFT_PLAYER).getStaticColor());
 	}

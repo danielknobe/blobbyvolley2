@@ -316,12 +316,10 @@ void DedicatedServer::allowNewPlayers( bool allow )
 // debug
 void DedicatedServer::printAllPlayers(std::ostream& stream) const
 {
-	for( std::map< PlayerID, std::shared_ptr<NetworkPlayer> >::const_iterator it = mPlayerMap.begin();
-	     it != mPlayerMap.end();
-	     ++it)
+	for(const auto & it : mPlayerMap)
 	{
-		stream << it->second->getID().toString() << " \"" << it->second->getName() << "\" status: ";
-		if( it->second->getGame() )
+		stream << it.second->getID().toString() << " \"" << it.second->getName() << "\" status: ";
+		if( it.second->getGame() )
 		{
 			stream << "playing\n";
 		} else
@@ -333,11 +331,9 @@ void DedicatedServer::printAllPlayers(std::ostream& stream) const
 
 void DedicatedServer::printAllGames(std::ostream& stream) const
 {
-	for( std::list< std::shared_ptr<NetworkGame> >::const_iterator it = mGameList.begin();
-	     it != mGameList.end();
-	     ++it)
+	for(const auto & it : mGameList)
 	{
-		stream << (*it)->getPlayerID(LEFT_PLAYER).toString() << " vs " << (*it)->getPlayerID(RIGHT_PLAYER).toString() << "\n";
+		stream << it->getPlayerID(LEFT_PLAYER).toString() << " vs " << it->getPlayerID(RIGHT_PLAYER).toString() << "\n";
 	}
 }
 
