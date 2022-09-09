@@ -182,13 +182,12 @@ void setupPHYSFS()
 #if __MOBILE__
 	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (defined __SWITCH__)
 		int main(int argc, char* argv[])
-    #elif (defined __ANDROID__)
-        #undef main
-        extern "C"
-        int SDL_main(int argc, char* argv[])
+	#elif (defined __ANDROID__)
+		#undef main
+		extern "C"
+		int SDL_main(int argc, char* argv[])
 	#endif
 #else
-	#undef main
 	extern "C"
 	int main(int argc, char* argv[])
 #endif
