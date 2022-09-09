@@ -39,7 +39,7 @@ std::map<std::string, std::shared_ptr<IUserConfigReader> >& userConfigCache()
 {
      static std::map<std::string, std::shared_ptr<IUserConfigReader> > cache;
      return cache;
-};
+}
 
 std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
 {

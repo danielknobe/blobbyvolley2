@@ -46,19 +46,19 @@ struct UserConfigVar : public ObjectCounter<UserConfigVar>
 class UserConfig: public IUserConfigReader, public ObjectCounter<UserConfig>
 {
 	public:
-		~UserConfig();
+		~UserConfig() override;
 
 		bool loadFile(const std::string& filename);
 		bool saveFile(const std::string& filename) const;
 
 		void setValue(const std::string& name, const std::string& value);
 
-		float getFloat(const std::string& name, float default_value = 0.f) const;
-		std::string getString(const std::string& name, const std::string& default_value = "") const;
-		bool getBool(const std::string& name, bool default_value = false) const;
-		int getInteger(const std::string& name, int default_value = 0) const;
+		float getFloat(const std::string& name, float default_value = 0.f) const override;
+		std::string getString(const std::string& name, const std::string& default_value = "") const override;
+		bool getBool(const std::string& name, bool default_value = false) const override;
+		int getInteger(const std::string& name, int default_value = 0) const override;
 
-		PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human);
+		PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) override;
 
 		void setFloat(const std::string& name, float value);
 		void setString(const std::string& name, const std::string& value);

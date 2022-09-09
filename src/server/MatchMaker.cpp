@@ -195,7 +195,7 @@ void MatchMaker::joinGame(PlayerID player, unsigned gameID, const std::string& p
 		return;
 	}
 
-	if ((g->second.password != "") &&
+	if ((!g->second.password.empty()) &&
 	    (g->second.password != password))
 	{
 		std::cerr << "player "<< pl->second->getName() << " [" << player << "] tried to join game " << gameID << " but password was wrong\n";
@@ -228,7 +228,7 @@ void MatchMaker::startGame(PlayerID host, PlayerID client)
 
 	// check that client is a potential game client
 	auto conlist = game->second.connected;
-    if( std::find(conlist.begin(), conlist.end(), client) == conlist.end() )
+	if( std::find(conlist.begin(), conlist.end(), client) == conlist.end() )
 	{
 		std::cerr << "player " << host << " tried to start a game with player " << client
 					<< " who was not available!\n";

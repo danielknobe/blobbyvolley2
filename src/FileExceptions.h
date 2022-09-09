@@ -31,10 +31,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileSystemException : public std::exception
 {
 	public:
-		FileSystemException() { };
-		~FileSystemException() noexcept { };
+		FileSystemException() = default;
+		~FileSystemException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return "a file system related exception occured!";
 		}
@@ -50,9 +50,9 @@ class PhysfsException : public virtual FileSystemException
 		// implementation in FileSystem.cpp
 		PhysfsException();
 
-		~PhysfsException() noexcept { };
+		~PhysfsException() noexcept override = default;;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return ("physfs reported an error: " + getPhysfsMessage()).c_str();
 		}
@@ -73,17 +73,14 @@ class PhysfsException : public virtual FileSystemException
 class PhysfsInitException : public PhysfsException
 {
 	public:
-		PhysfsInitException(const std::string& path) : mPath(path)
+		explicit PhysfsInitException(const std::string& path) : mPath(path)
 		{
 
 		}
 
-		~PhysfsInitException() noexcept
-		{
+		~PhysfsInitException() noexcept override = default;
 
-		}
-
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return ("could not initialise physfs to path " + getPath() + ": " + getPhysfsMessage()).c_str();
 		}
@@ -104,11 +101,11 @@ class PhysfsInitException : public PhysfsException
 */
 class FileException: public virtual FileSystemException {
 	public:
-		FileException(const std::string& f) : filename(f)
+		explicit FileException(const std::string& f) : filename(f)
 		{
 		}
 
-		virtual ~FileException() noexcept {	}
+		~FileException() noexcept override = default;
 
 		/// get the name of the file of the exception
 		const std::string& getFileName() const
@@ -128,16 +125,16 @@ class FileException: public virtual FileSystemException {
 class FileLoadException : public FileException, public PhysfsException
 {
 	public:
-		FileLoadException(std::string name) : FileException(name)
+		explicit FileLoadException(std::string name) : FileException(name)
 		{
 			/// \todo do we really need to do this? std::exception already
 			/// provides the functionality for setting exception messages, i think.
 			error = "Couldn't load " + name + ": " + getPhysfsMessage();
 		}
 
-		virtual ~FileLoadException() noexcept {}
+		~FileLoadException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return error.c_str();
 		}
@@ -152,13 +149,13 @@ class FileLoadException : public FileException, public PhysfsException
 class FileAlreadyExistsException : public FileException
 {
 	public:
-		FileAlreadyExistsException(std::string name) : FileException(name)
+		explicit FileAlreadyExistsException(std::string name) : FileException(name)
 		{
 		}
 
-		virtual ~FileAlreadyExistsException() noexcept { }
+		~FileAlreadyExistsException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return ("File " + getFileName() + " already exists.").c_str();
 		}
@@ -172,13 +169,13 @@ class FileAlreadyExistsException : public FileException
 class PhysfsFileException : public FileException, public PhysfsException
 {
 	public:
-		PhysfsFileException(const std::string& filename) : FileException(filename)
+		explicit PhysfsFileException(const std::string& filename) : FileException(filename)
 		{
 		};
 
-		~PhysfsFileException() noexcept { };
+		~PhysfsFileException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			return (getFileName() + ": " + getPhysfsMessage()).c_str();
 		}
@@ -198,9 +195,9 @@ class NoFileOpenedException : public FileException
 	public:
 		NoFileOpenedException() : FileException("") { };
 
-		~NoFileOpenedException() noexcept { };
+		~NoFileOpenedException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			// default error message for now
 			return "trying to perform a file operation when no file was opened.";
@@ -215,11 +212,11 @@ class NoFileOpenedException : public FileException
 class EOFException : public FileException
 {
 	public:
-		EOFException(const std::string& file) : FileException( file ) { };
+		explicit EOFException(const std::string& file) : FileException( file ) { };
 
-		~EOFException() noexcept { };
+		~EOFException() noexcept override = default;
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			// default error message for now
 			return (getFileName() + " trying to read after eof.").c_str();

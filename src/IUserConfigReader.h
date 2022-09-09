@@ -33,9 +33,9 @@ class InputSource;
 class IUserConfigReader : public ObjectCounter<IUserConfigReader>
 {
 	public:
-		IUserConfigReader() {};
+		IUserConfigReader() = default;
 		static std::shared_ptr<IUserConfigReader> createUserConfigReader(const std::string& file);
-		virtual ~IUserConfigReader() {};
+		virtual ~IUserConfigReader() = default;
 
 		virtual float getFloat(const std::string& name, float default_value = 0.f) const = 0;
 		virtual std::string getString(const std::string& name, const std::string& default_value = "") const = 0;

@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileSystem : public boost::noncopyable, public ObjectCounter<FileSystem>
 {
 	public:
-		FileSystem(const std::string& path);
+		explicit FileSystem(const std::string& path);
 		~FileSystem();
 
 		/// \brief gets the file system

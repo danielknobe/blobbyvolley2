@@ -65,7 +65,7 @@ class InputManager : public ObjectCounter<InputManager>
 		bool exit() const; // extension for mouse included, so that right click = exit
 
 		std::string getLastTextKey();
-		std::string getLastActionKey();
+		std::string getLastActionKey() const;
 		int getLastMouseButton() const { return mLastMouseButton; }
 		std::string getLastJoyAction() const;
 

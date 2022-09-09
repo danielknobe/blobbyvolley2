@@ -33,12 +33,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
-File::File() : mHandle(0)
+File::File() : mHandle(nullptr)
 {
 
 }
 
-File::File(const std::string& filename, OpenMode mode, bool no_override) : mHandle(0), mFileName("")
+File::File(const std::string& filename, OpenMode mode, bool no_override) : mHandle(nullptr)
 {
 	open(filename, mode, no_override);
 }
@@ -54,7 +54,7 @@ void File::open(const std::string& filename, OpenMode mode, bool no_override)
 	// check that we don't have anything opened!
 	/// \todo maybe we could just close the old file here... but
 	///		  then, this could also lead to errors...
-	assert(mHandle == 0);
+	assert(mHandle == nullptr);
 
 	// open depending on mode
 	if( mode == OPEN_WRITE )
@@ -66,7 +66,7 @@ void File::open(const std::string& filename, OpenMode mode, bool no_override)
 
 		mHandle = PHYSFS_openWrite(filename.c_str());
 	}
-	 else
+	else
 	{
 		mHandle = PHYSFS_openRead(filename.c_str());
 	}

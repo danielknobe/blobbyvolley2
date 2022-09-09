@@ -36,7 +36,7 @@ struct Sound : public ObjectCounter<Sound>
 {
 	Sound()
 	{
-		data = 0;
+		data = nullptr;
 	}
 
 	Uint8* data;

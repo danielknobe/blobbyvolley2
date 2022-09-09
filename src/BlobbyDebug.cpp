@@ -111,19 +111,19 @@ void report(std::ostream& stream)
 {
 	stream << "MEMORY REPORT\n";
 	int sum = 0;
-	for(std::map<std::string, CountingReport>::iterator i = GetCounterMap().begin(); i != GetCounterMap().end(); ++i)
+	for(auto& i : GetCounterMap())
 	{
-		stream << i->first << "\n- - - - - - - - - -\n";
-		stream << " alive:   " << i->second.alive << "\n";
-		stream << " created: " << i->second.created << "\n\n";
-		sum += i->second.alive;
+		stream << i.first << "\n- - - - - - - - - -\n";
+		stream << " alive:   " << i.second.alive << "\n";
+		stream << " created: " << i.second.created << "\n\n";
+		sum += i.second.alive;
 	}
 
 	stream << "\n\nPROFILE REPORT\n";
-	for(std::map<std::string, int>::iterator i = GetProfMap().begin(); i != GetProfMap().end(); ++i)
+	for(auto& i : GetProfMap())
 	{
-		stream << i->first << ": ";
-		stream << i->second << "\n";
+		stream << i.first << ": ";
+		stream << i.second << "\n";
 	}
 
 

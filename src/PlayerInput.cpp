@@ -149,7 +149,7 @@ PlayerInput PlayerInputAbs::toPlayerInput( const DuelMatch* match ) const
 
 }
 
-void PlayerInputAbs::writeTo(RakNet::BitStream& stream)
+void PlayerInputAbs::writeTo(RakNet::BitStream& stream) const
 {
 	stream.Write( mFlags );
 	stream.Write( mTarget );

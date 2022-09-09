@@ -63,7 +63,7 @@ struct QueueObject
 
 typedef std::queue<QueueObject> RenderQueue;
 
-IMGUI* IMGUI::mSingleton = 0;
+IMGUI* IMGUI::mSingleton = nullptr;
 RenderQueue *mQueue;
 
 IMGUI::IMGUI()

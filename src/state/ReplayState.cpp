@@ -50,10 +50,7 @@ ReplayState::ReplayState()
 	mSpeedTimer = 0;
 }
 
-ReplayState::~ReplayState()
-{
-
-}
+ReplayState::~ReplayState() = default;
 
 void ReplayState::loadReplay(const std::string& file)
 {
@@ -69,7 +66,8 @@ void ReplayState::loadReplay(const std::string& file)
 
 		SoundManager::getSingleton().playSound(	"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
 
-		mMatch->setPlayers(mReplayPlayer->getPlayerName(LEFT_PLAYER), mReplayPlayer->getPlayerName(RIGHT_PLAYER));
+		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
+                           PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
 
 		mMatch->getPlayer(LEFT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
 		mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
@@ -114,7 +112,7 @@ void ReplayState::step_impl()
 		if(mReplayPlayer->gotoPlayingPosition(mPositionJump, mMatch.get()))
 			mPositionJump = -1;
 	}
-	 else if(!mPaused)
+	else if(!mPaused)
 	{
 		while( mSpeedTimer >= 8)
 		{

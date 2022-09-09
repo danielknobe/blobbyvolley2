@@ -221,8 +221,8 @@ class ReplayLoader_V2X: public IReplayLoader
 				const char* minor = varElem->Attribute("minor");
 				if(!minor || !major)
 					throw(std::runtime_error(""));
-                assert(std::stoi(major) == 2);
-                mReplayFormatVersion = std::stoi(minor);
+				assert(std::stoi(major) == 2);
+				mReplayFormatVersion = std::stoi(minor);
 			}
 
 
@@ -232,12 +232,12 @@ class ReplayLoader_V2X: public IReplayLoader
 				if (auto c = varElem->Attribute("name"))
 					name = c;
 				else
-				    continue;
+					continue;
 
 				if (auto c = varElem->Attribute("value"))
 					value = c;
 				else
-				    continue;
+					continue;
 
 				// find valid attribute
 				if( name == "game_speed" )

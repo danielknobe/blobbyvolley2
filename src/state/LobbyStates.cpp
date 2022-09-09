@@ -63,16 +63,13 @@ LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 	{
 		mLocalPlayer = config.loadPlayerIdentity(LEFT_PLAYER, true);
 	}
-	 else
+	else
 	{
 		mLocalPlayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
 	}
 }
 
-LobbyState::~LobbyState()
-{
-	// disconnect is handled by shared ptr
-}
+LobbyState::~LobbyState() = default;
 
 void LobbyState::step_impl()
 {
@@ -102,7 +99,7 @@ void LobbyState::step_impl()
 			{
 				mLobbyState = ConnectionState::DISCONNECTED;
 				break;
-			};
+			}
 			// we ignore these packets. they tell us about remote connections, which we handle manually with ID_SERVER_STATUS packets.
 			case ID_REMOTE_EXISTING_CONNECTION:
 			case ID_REMOTE_DISCONNECTION_NOTIFICATION:
@@ -241,7 +238,7 @@ void LobbyState::step_impl()
 		// empty info panel
 		imgui.doOverlay(GEN_ID, Vector2(425.0, 90.0), Vector2(775.0, 470.0));
 	}
-	 else
+	else
 	{
 		std::string description = mInfo.description;
 		for (unsigned int i = 0; i < description.length(); i += 63)

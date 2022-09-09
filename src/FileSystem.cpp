@@ -29,11 +29,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-FileSystem* mFileSystemSingleton = 0;
+FileSystem* mFileSystemSingleton = nullptr;
 
 FileSystem::FileSystem(const std::string& path)
 {
-	assert(mFileSystemSingleton == 0);
+	assert(mFileSystemSingleton == nullptr);
 	PHYSFS_init(path.c_str());
 	/// \todo do we need to check if this operation suceeded?
 	mFileSystemSingleton = this;
@@ -49,7 +49,7 @@ FileSystem& FileSystem::getSingleton()
 FileSystem::~FileSystem()
 {
 	PHYSFS_deinit();
-	mFileSystemSingleton = 0;
+	mFileSystemSingleton = nullptr;
 }
 
 std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory, const std::string& extension, bool keepExtension)
@@ -58,7 +58,7 @@ std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory
 	char** filenames = PHYSFS_enumerateFiles(directory.c_str());
 	
 	// now test which files have type extension
-	for (int i = 0; filenames[i] != 0; ++i)
+	for (int i = 0; filenames[i] != nullptr; ++i)
 	{
 		std::string tmp = filenames[i];
 		int position = tmp.length() - extension.length();
@@ -146,7 +146,7 @@ void FileSystem::probeDir(const std::string& dirname)
 			std::cout << PHYSFS_getWriteDir() <<
 				dirname << " created" << std::endl;
 		}
-		 else
+		else
 		{
 			std::cout << "Warning: Creation of" << 
 				PHYSFS_getWriteDir() << dirname <<

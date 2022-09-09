@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "GameState.h"
 
-#include <boost/scoped_ptr.hpp>
-
 class ReplayRecorder;
 
 /*! \class LocalGameState
@@ -33,15 +31,15 @@ class LocalGameState : public GameState
 {
 	public:
 		LocalGameState();
-		virtual ~LocalGameState();
+		~LocalGameState() override;
 
 		// implementation of the State Interface
-		virtual void step_impl();
-		virtual const char* getStateName() const;
+		void step_impl() override;
+		const char* getStateName() const override;
 
 	private:
 		bool mWinner;
 
-		boost::scoped_ptr<ReplayRecorder> mRecorder;
+		std::unique_ptr<ReplayRecorder> mRecorder;
 };
 

@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-InputManager* InputManager::mSingleton = 0;
+InputManager* InputManager::mSingleton = nullptr;
 
 const unsigned int DOUBLE_CLICK_TIME = 200;
 
@@ -43,7 +43,7 @@ InputManager::InputManager()
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	SDL_JoystickEventState(SDL_ENABLE);
 	JoystickPool::getSingleton().probeJoysticks();
-	assert (mSingleton == 0);
+	assert (mSingleton == nullptr);
 	mSingleton = this;
 	mRunning = true;
 	mWindowFocus = true;
@@ -111,7 +111,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	else
 		std::cerr << "Error: unknown input device: " << device << std::endl;
 
-	return 0;
+	return nullptr;
 }
 
 InputManager* InputManager::getSingleton()
@@ -444,7 +444,7 @@ void InputManager::setEndBlobby()
 
 std::string InputManager::getLastTextKey()
 {
-	if (mLastTextKey != "")
+	if (!mLastTextKey.empty())
 	{
 		return mLastTextKey;
 	}
@@ -452,7 +452,7 @@ std::string InputManager::getLastTextKey()
 		return "";
 }
 
-std::string InputManager::getLastActionKey()
+std::string InputManager::getLastActionKey() const
 {
 	return SDL_GetKeyName(mLastActionKey);
 }

@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 #define INVALID_FONT_INDEX -1
 
-RenderManager* RenderManager::mSingleton = 0;
+RenderManager* RenderManager::mSingleton = nullptr;
 
 RenderManager::RenderManager() : mDrawGame(false)
 {
@@ -47,7 +47,7 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 {
 	SDL_Surface *newSurface = createEmptySurface(surface->w, surface->h);
 	SDL_SetColorKey(surface, SDL_FALSE, 0);
-	SDL_BlitSurface(surface, 0, newSurface, 0);
+	SDL_BlitSurface(surface, nullptr, newSurface, nullptr);
 	SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	Uint8 alpha;
@@ -183,11 +183,11 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 			}
 		}
 	}
-	else if (testChar == std::string("ß")[0]) // UTF-8 escape (c3xx) 
+	else if (testChar == std::string("ß")[0]) // UTF-8 escape (c3xx)
 	{
 		testChar = *iter;
 		++iter;
-		if (testChar == std::string("ß")[1]) 
+		if (testChar == std::string("ß")[1])
 			index = 40;
 		else if (testChar == std::string("ä")[1])
 			index = 41;

@@ -20,10 +20,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
-
 #include "GameState.h"
 #include "Vector.h"
+
+#include <memory>
 
 class DuelMatch;
 class ReplayPlayer;
@@ -35,13 +35,13 @@ class ReplayState : public GameState
 {
 public:
 	ReplayState();
-	~ReplayState();
-	virtual void step_impl();
-	virtual const char* getStateName() const;
+	~ReplayState() override;
+	void step_impl() override;
+	const char* getStateName() const override;
 	void loadReplay(const std::string& replay);
 
 private:
-	boost::scoped_ptr<ReplayPlayer> mReplayPlayer;
+	std::unique_ptr<ReplayPlayer> mReplayPlayer;
 
 	//bool mChecksumError;
 	//bool mVersionError;

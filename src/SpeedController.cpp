@@ -28,11 +28,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 /// this is required to reduce rounding errors. now we have a resolution of
-/// 1µs. This is much better than SDL_Delay can handle, but we prevent 
+/// 1ï¿½s. This is much better than SDL_Delay can handle, but we prevent 
 /// accumulation errors.
 const int PRECISION_FACTOR = 1000;
 
-SpeedController* SpeedController::mMainInstance = NULL;
+SpeedController* SpeedController::mMainInstance = nullptr;
 
 SpeedController::SpeedController(float gameFPS)
 {
@@ -46,9 +46,7 @@ SpeedController::SpeedController(float gameFPS)
 	mCounter = 0;
 }
 
-SpeedController::~SpeedController()
-{
-}
+SpeedController::~SpeedController() = default;
 
 void SpeedController::setGameSpeed(float fps)
 {

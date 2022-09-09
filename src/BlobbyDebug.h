@@ -59,10 +59,7 @@ class ObjectCounter
 			count(typeid(Base));
 		}
 
-		ObjectCounter& operator=(const ObjectCounter& other)
-		{
-			return *this;
-		}
+		ObjectCounter& operator=(const ObjectCounter& other) = default;
 };
 
 
@@ -93,13 +90,10 @@ struct CountingAllocator : private std::allocator<T>
 	typedef size_t size_type;
 	typedef ptrdiff_t difference_type ;
 
-	CountingAllocator()
-	{
-
-	}
+	CountingAllocator() = default;
 
 	template<class V, typename tag2>
-	CountingAllocator(const CountingAllocator<V, tag2>& other)
+	explicit CountingAllocator(const CountingAllocator<V, tag2>& other)
 	{
 	}
 
