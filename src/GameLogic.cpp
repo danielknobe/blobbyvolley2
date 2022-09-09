@@ -494,7 +494,7 @@ LuaGameLogic::LuaGameLogic( std::string filename, DuelMatch* match, int score_to
 	mTitle = ( title ? title : "untitled script" );
 	lua_pop(mState, 1);
 
-	std::cout << "loaded rules "<< getTitle()<< " by " << getAuthor() << " from " << mSourceFile << std::endl;
+	std::cout << "loaded rules "<< mTitle<< " by " << mAuthor << " from " << mSourceFile << std::endl;
 }
 
 LuaGameLogic::~LuaGameLogic() = default;
