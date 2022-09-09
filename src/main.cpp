@@ -63,10 +63,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 #endif
 
-#ifdef WIN32
-#undef main
-#endif
-
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
 extern std::shared_ptr<std::thread> gHostedServerThread;
