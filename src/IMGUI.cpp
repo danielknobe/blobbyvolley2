@@ -257,7 +257,7 @@ void IMGUI::doText(int id, const Vector2& position, const std::string& text, uns
 
 void IMGUI::doText(int id, const Vector2& position, TextManager::STRING text, unsigned int flags)
 {
-	doText(id, position, TextManager::getSingleton()->getString(text), flags);
+	doText(id, position, getText(text), flags);
 }
 
 void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Color& col, float alpha)
@@ -275,7 +275,7 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 
 bool IMGUI::doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags)
 {
-	return doButton(id, position, TextManager::getSingleton()->getString(text), flags);
+	return doButton(id, position, getText(text), flags);
 }
 
 bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, unsigned int flags)
@@ -356,9 +356,9 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		// React to back button
 		if (mLastKeyAction == BACK)
 		{
-			if ((text == (TextManager::getSingleton())->getString(TextManager::LBL_CANCEL)) ||
-			    (text == (TextManager::getSingleton())->getString(TextManager::LBL_NO)) ||
-			    (text == (TextManager::getSingleton())->getString(TextManager::MNU_LABEL_EXIT)))
+			if ((text == getText(TextManager::LBL_CANCEL)) ||
+			    (text == getText(TextManager::LBL_NO)) ||
+			    (text == getText(TextManager::MNU_LABEL_EXIT)))
 			{
 				//todo: Workaround to catch backkey
 				clicked = true;
@@ -1108,4 +1108,16 @@ void IMGUI::doCursor(bool draw)
 bool IMGUI::usingCursor() const
 {
 	return mUsingCursor;
+}
+
+const TextManager& IMGUI::textMgr() const {
+	return *mTextManager;
+}
+
+const std::string& IMGUI::getText(TextManager::STRING id) const {
+	return textMgr().getString(id);
+}
+
+void IMGUI::setTextMgr(std::string lang) {
+	mTextManager.reset(new TextManager(std::move(lang)));
 }

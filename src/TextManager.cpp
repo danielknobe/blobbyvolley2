@@ -31,19 +31,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 
 /* implementation */
-TextManager* TextManager::mSingleton = nullptr;
 
+TextManager::TextManager(std::string l): lang(std::move(l)) {
+	mStrings.resize(COUNT);
+	setDefault();
 
-TextManager* TextManager::createTextManager(const std::string& langname){
-	delete mSingleton;
-
-	mSingleton = new TextManager(langname);
-
-	std::string langfile = "lang_"+langname+".xml";
+	std::string langfile = "lang_"+lang+".xml";
 
 	bool loaded = false;
 	try{
-		loaded = mSingleton->loadFromXML(langfile);
+		loaded = loadFromXML(langfile);
 	} catch(FileLoadException& fle) {
 		std::cerr << fle.what() << std::endl;
 	}
@@ -52,31 +49,12 @@ TextManager* TextManager::createTextManager(const std::string& langname){
 		std::cerr << "error loading language " << langfile << "!" << std::endl;
 		std::cerr << "\tfalling back to english" << std::endl;
 	}
-
-	return mSingleton;
-}
-
-const TextManager* TextManager::getSingleton(){
-	return mSingleton;
-}
-
-TextManager::TextManager(std::string l): lang(std::move(l)) {
-	mStrings.resize(COUNT);
-	setDefault();
-}
-
-void TextManager::switchLanguage(const std::string& langname){
-	// if old and new language are the same, nothing must be done
-	if(langname == mSingleton->lang)
-		return;
-
-	// otherwise, the old TextManager is destroyed and a new one is created
-	createTextManager(langname);
 }
 
 const std::string& TextManager::getString(STRING str) const{
 	return mStrings[str];
 }
+
 std::string TextManager::getLang() const{
 	return lang;
 }

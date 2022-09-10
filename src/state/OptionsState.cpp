@@ -964,7 +964,7 @@ void MiscOptionsState::save()
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
-	TextManager::switchLanguage(mOptionConfig.getString("language"));
+	IMGUI::getSingleton().setTextMgr(mOptionConfig.getString("language"));
 }
 
 void MiscOptionsState::step_impl()
@@ -1059,15 +1059,14 @@ void MiscOptionsState::step_impl()
 	imgui.doText(GEN_ID, Vector2(660.0, 330.0), FPSInPercent.str());
 
 	//! \todo this must be reworked
-	auto olang = TextManager::language_names.find(TextManager::getSingleton()->getLang());
+	auto olang = TextManager::language_names.find(imgui.textMgr().getLang());
 	if(++olang == TextManager::language_names.end()){
 		olang = TextManager::language_names.begin();
 	}
 	if (imgui.doButton(GEN_ID, Vector2(300.0, 490.0), (*olang).second)){
 		//! \todo autogenerierte liste mit allen lang_ dateien, namen auslesen
 		mLanguage = (*olang).first;
-		TextManager::switchLanguage(mLanguage);
-
+		imgui.setTextMgr(mLanguage);
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))

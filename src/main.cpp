@@ -240,7 +240,7 @@ void setupPHYSFS()
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		TextManager::createTextManager(gameConfig.getString("language"));
+		IMGUI::getSingleton().setTextMgr(gameConfig.getString("language"));
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
