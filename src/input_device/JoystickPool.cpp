@@ -8,11 +8,11 @@
 #include <SDL2/SDL.h>
 
 // Joystick Pool
-JoystickPool* JoystickPool::mSingleton = 0; //static
+JoystickPool* JoystickPool::mSingleton = nullptr; //static
 
 JoystickPool& JoystickPool::getSingleton()
 {
-	if (mSingleton == 0)
+	if (mSingleton == nullptr)
 		mSingleton = new JoystickPool();
 
 	return *mSingleton;
@@ -51,7 +51,7 @@ void JoystickPool::probeJoysticks()
 void JoystickPool::openJoystick(const int joyIndex)
 {
 	SDL_Joystick* joystickInstance = SDL_JoystickOpen(joyIndex);
-	if (joystickInstance != NULL)
+	if (joystickInstance != nullptr)
 	{
 		mJoyMap[SDL_JoystickInstanceID(joystickInstance)] = joystickInstance;
 	}
@@ -60,7 +60,7 @@ void JoystickPool::openJoystick(const int joyIndex)
 void JoystickPool::closeJoystick(const int joyId)
 {
 	SDL_Joystick* joystickInstance = mJoyMap[joyId];
-	if (joystickInstance != NULL)
+	if (joystickInstance != nullptr)
 	{
 		SDL_JoystickClose(joystickInstance);
 	}
@@ -83,7 +83,7 @@ JoystickAction::JoystickAction(std::string string)
 {
 	type = AXIS;
 	number = 0;
-	joy = 0;
+	joy = nullptr;
 	joyid = 0;
 	try
 	{
@@ -116,9 +116,7 @@ JoystickAction::JoystickAction(const JoystickAction& action)
 	number = action.number;
 }
 
-JoystickAction::~JoystickAction()
-{
-}
+JoystickAction::~JoystickAction() = default;
 
 std::string JoystickAction::toString()
 {

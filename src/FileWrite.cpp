@@ -31,18 +31,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-FileWrite::FileWrite()
-{
-}
+FileWrite::FileWrite() = default;
 
 FileWrite::FileWrite(const std::string& filename, bool no_override) : File(filename, File::OPEN_WRITE, no_override)
 {
 }
 
-FileWrite::~FileWrite()
-{
-	// no more actions than what ~File already does
-}
+FileWrite::~FileWrite() = default;
 
 void FileWrite::open(const std::string& filename, bool no_override)
 {

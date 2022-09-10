@@ -78,10 +78,7 @@ IGameLogic::IGameLogic( int stw )
 	mSquish[RIGHT_PLAYER] = 0;
 }
 
-IGameLogic::~IGameLogic()
-{
-	// nothing to do
-}
+IGameLogic::~IGameLogic() = default;
 
 int IGameLogic::getTouches(PlayerSide side) const
 {
@@ -330,35 +327,32 @@ class FallbackGameLogic : public IGameLogic
 		FallbackGameLogic( int stw ) : IGameLogic( stw )
 		{
 		}
-		virtual ~FallbackGameLogic()
-		{
+		~FallbackGameLogic() override = default;
 
-		}
-
-		virtual GameLogicPtr clone() const
+		GameLogicPtr clone() const override
 		{
 			return GameLogicPtr(new FallbackGameLogic( getScoreToWin() ));
 		}
 
-		virtual std::string getSourceFile() const
+		std::string getSourceFile() const override
 		{
 			return std::string("");
 		}
 
-		virtual std::string getAuthor() const
+		std::string getAuthor() const override
 		{
 			return "Blobby Volley 2 Developers";
 		}
 
 
-		virtual std::string getTitle() const
+		std::string getTitle() const override
 		{
 			return FALLBACK_RULES_NAME;
 		}
 
 protected:
 
-		virtual PlayerSide checkWin() const
+		PlayerSide checkWin() const override
 		{
 			int left = getScore(LEFT_PLAYER);
 			int right = getScore(RIGHT_PLAYER);
@@ -376,7 +370,7 @@ protected:
 			return NO_PLAYER;
 		}
 
-		virtual void OnBallHitsPlayerHandler(PlayerSide side)
+		void OnBallHitsPlayerHandler(PlayerSide side) override
 		{
 			if (getTouches(side) > 3)
 			{
@@ -385,20 +379,20 @@ protected:
 			}
 		}
 
-		virtual void OnBallHitsGroundHandler(PlayerSide side)
+		void OnBallHitsGroundHandler(PlayerSide side) override
 		{
 			score( other_side(side), 1 );
 			onError( side, other_side(side) );
 		}
 
-		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player)
+		PlayerInput handleInput(PlayerInput ip, PlayerSide player) override
 		{
 			return ip;
 		}
 
-		virtual void OnBallHitsWallHandler(PlayerSide side)		{ };
-		virtual void OnBallHitsNetHandler(PlayerSide side)		{ };
-		virtual void OnGameHandler( const DuelMatchState& state ) { };
+		void OnBallHitsWallHandler(PlayerSide side) override       { };
+		void OnBallHitsNetHandler(PlayerSide side) override	       { };
+		void OnGameHandler( const DuelMatchState& state ) override { };
 };
 
 
@@ -406,24 +400,24 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 {
 	public:
 		LuaGameLogic(const std::string& file, DuelMatch* match, int score_to_win);
-		virtual ~LuaGameLogic();
+		~LuaGameLogic() override;
 
-		virtual std::string getSourceFile() const
+		std::string getSourceFile() const override
 		{
 			return mSourceFile;
 		}
 
-		virtual GameLogicPtr clone() const
+		GameLogicPtr clone() const override
 		{
 			return GameLogicPtr(new LuaGameLogic(mSourceFile, getMatch(), getScoreToWin()));
 		}
 
-		virtual std::string getAuthor() const
+		std::string getAuthor() const override
 		{
 			return mAuthor;
 		}
 
-		virtual std::string getTitle() const
+		std::string getTitle() const override
 		{
 			return mTitle;
 		}
@@ -431,13 +425,13 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 
 	protected:
 
-		virtual PlayerInput handleInput(PlayerInput ip, PlayerSide player);
-		virtual PlayerSide checkWin() const;
-		virtual void OnBallHitsPlayerHandler(PlayerSide side);
-		virtual void OnBallHitsWallHandler(PlayerSide side);
-		virtual void OnBallHitsNetHandler(PlayerSide side);
-		virtual void OnBallHitsGroundHandler(PlayerSide side);
-		virtual void OnGameHandler( const DuelMatchState& state );
+		PlayerInput handleInput(PlayerInput ip, PlayerSide player) override;
+		PlayerSide checkWin() const override;
+		void OnBallHitsPlayerHandler(PlayerSide side) override;
+		void OnBallHitsWallHandler(PlayerSide side) override;
+		void OnBallHitsNetHandler(PlayerSide side) override;
+		void OnBallHitsGroundHandler(PlayerSide side) override;
+		void OnGameHandler( const DuelMatchState& state ) override;
 
 		static LuaGameLogic* getGameLogic(lua_State* state);
 
@@ -502,9 +496,7 @@ LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match, int s
 	std::cout << "loaded rules "<< getTitle()<< " by " << getAuthor() << " from " << mSourceFile << std::endl;
 }
 
-LuaGameLogic::~LuaGameLogic()
-{
-}
+LuaGameLogic::~LuaGameLogic() = default;
 
 PlayerSide LuaGameLogic::checkWin() const
 {
@@ -520,7 +512,7 @@ PlayerSide LuaGameLogic::checkWin() const
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 
 	won = lua_toboolean(mState, -1);
 	lua_pop(mState, 1);
@@ -551,7 +543,7 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 
 	PlayerInput ret;
 	ret.up = lua_toboolean(mState, -1);
@@ -576,7 +568,7 @@ void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 }
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
@@ -592,7 +584,7 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 }
 
 void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
@@ -609,7 +601,7 @@ void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 }
 
 void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
@@ -626,7 +618,7 @@ void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 }
 
 void LuaGameLogic::OnGameHandler( const DuelMatchState& state )
@@ -640,7 +632,7 @@ void LuaGameLogic::OnGameHandler( const DuelMatchState& state )
 	{
 		std::cerr << "Lua Error: " << lua_tostring(mState, -1);
 		std::cerr << std::endl;
-	};
+	}
 }
 
 LuaGameLogic* LuaGameLogic::getGameLogic(lua_State* state)

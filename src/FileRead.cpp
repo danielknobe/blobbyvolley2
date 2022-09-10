@@ -44,18 +44,13 @@ extern "C"
 
 /* implementation */
 
-FileRead::FileRead()
-{
-}
+FileRead::FileRead() = default;
 
 FileRead::FileRead(const std::string& filename) : File(filename, File::OPEN_READ)
 {
 }
 
-FileRead::~FileRead()
-{
-	// no more actions than what ~File already does
-}
+FileRead::~FileRead() = default;
 
 void FileRead::open(const std::string& filename)
 {
@@ -148,7 +143,7 @@ std::string FileRead::readString()
 				seek( tell() - maxread + i + 1);
 				return read;
 			}
-			 else
+			else
 			{
 				read += buffer[i];	// this might not be the most efficient way...
 			}
@@ -222,9 +217,9 @@ static const char* chunkReader(lua_State* state, void* data, size_t *size)
 	*size = bytesRead;
 	if (bytesRead == 0)
 	{
-		return 0;
+		return nullptr;
 	}
-	 else
+	else
 	{
 		return info->buffer;
 	}
@@ -234,7 +229,7 @@ int FileRead::readLuaScript(const std::string& filename, lua_State* mState)
 {
 	ReaderInfo info;
 	info.file.open(makeLuaFilename(filename));
-	return lua_load(mState, chunkReader, &info, filename.c_str(), NULL);
+	return lua_load(mState, chunkReader, &info, filename.c_str(), nullptr);
 }
 
 std::string FileRead::makeLuaFilename(std::string filename)

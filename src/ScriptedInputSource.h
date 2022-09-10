@@ -54,9 +54,9 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		/// with the given filename. The side parameter tells the script
 		/// which side is it on.
 		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
-		~ScriptedInputSource();
+		~ScriptedInputSource() override;
 
-		virtual PlayerInputAbs getNextInput();
+		PlayerInputAbs getNextInput() override;
 		using InputSource::getMatch;
 
 	private:

@@ -360,7 +360,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			    (text == (TextManager::getSingleton())->getString(TextManager::LBL_NO)) ||
 			    (text == (TextManager::getSingleton())->getString(TextManager::MNU_LABEL_EXIT)))
 			{
-				//todo: Workarround to catch backkey
+				//todo: Workaround to catch backkey
 				clicked = true;
 				mActiveButton = id;
 			}

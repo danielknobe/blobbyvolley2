@@ -90,13 +90,9 @@ namespace ADT {
 		ContainerType array;
 	};
 
-	template <class QueueType> Queue<QueueType>::Queue()
-	{
-	}
+	template <class QueueType> Queue<QueueType>::Queue() = default;
 
-	template <class QueueType> Queue<QueueType>::~Queue()
-	{
-	}
+	template <class QueueType> Queue<QueueType>::~Queue() = default;
 
 	template <class QueueType> Queue<QueueType>::Queue(const Queue& original_copy)
 	{

@@ -123,7 +123,7 @@ int lua_pushvector(lua_State* state, const Vector2& v, VectorType type)
 		lua_pushnumber( state, v.x );
 		lua_pushnumber( state, -v.y );
 	}
-	 else if ( type == VectorType::POSITION )
+	else if ( type == VectorType::POSITION )
 	{
 		lua_pushnumber( state, v.x );
 		lua_pushnumber( state, 600 - v.y );
@@ -153,8 +153,8 @@ struct IScriptableComponent::Access
 	}
 };
 
-inline DuelMatch* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); };
-inline PhysicWorld* getWorld( lua_State* s )  { return IScriptableComponent::Access::getWorld(s); };
+inline DuelMatch* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); }
+inline PhysicWorld* getWorld( lua_State* s )  { return IScriptableComponent::Access::getWorld(s); }
 
 // standard lua functions
 int get_ball_pos(lua_State* state)

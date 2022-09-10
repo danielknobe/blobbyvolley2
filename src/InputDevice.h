@@ -30,8 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class InputDevice : public ObjectCounter<InputDevice>
 {
 	public:
-		InputDevice() {}
-		virtual ~InputDevice() {}
+		InputDevice() = default;
+		virtual ~InputDevice() = default;
 
 		virtual PlayerInputAbs transferInput() = 0;
 };

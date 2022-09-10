@@ -39,9 +39,9 @@ class TouchInputDevice : public InputDevice
 		int mTouchXPos;
 		int mTouchType;
 	public:
-		virtual ~TouchInputDevice(){};
+		~TouchInputDevice() override = default;
 		TouchInputDevice(PlayerSide player, int type);
-		virtual PlayerInputAbs transferInput();
+		PlayerInputAbs transferInput() override;
 };
 
 // ********************************************************************************************************
@@ -86,7 +86,7 @@ PlayerInputAbs TouchInputDevice::transferInput()
 		{
 			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
 
-			if (finger == NULL)
+			if (finger == nullptr)
 				continue;
 
 			// Check the playerside
@@ -137,7 +137,7 @@ PlayerInputAbs TouchInputDevice::transferInput()
 		{
 			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
 
-			if (finger == NULL)
+			if (finger == nullptr)
 				continue;
 
 			// Check the playerside

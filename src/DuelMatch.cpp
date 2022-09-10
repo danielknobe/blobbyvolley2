@@ -72,9 +72,7 @@ void DuelMatch::reset()
 	mLogic = mLogic->clone();
 }
 
-DuelMatch::~DuelMatch()
-{
-}
+DuelMatch::~DuelMatch() = default;
 
 void DuelMatch::setRules(std::string rulesFile, int score_to_win)
 {

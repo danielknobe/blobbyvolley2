@@ -105,7 +105,7 @@ struct CountingAllocator : private std::allocator<T>
 
 
 
-	pointer allocate (size_type n, std::allocator<void>::const_pointer hint = 0)
+	pointer allocate (size_type n, std::allocator<void>::const_pointer hint = nullptr)
 	{
 		count(typeid(T), tag_type::tag(), n);
 		return Base::allocate(n, hint);

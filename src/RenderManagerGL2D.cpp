@@ -115,7 +115,7 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, bool specular)
 #else
 			0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 #endif
-	SDL_BlitSurface(textureSurface, 0, convertedTexture, &targetRect);
+	SDL_BlitSurface(textureSurface, nullptr, convertedTexture, &targetRect);
 
 	if (specular)
 	{
@@ -195,10 +195,7 @@ void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-RenderManagerGL2D::RenderManagerGL2D()
-	: RenderManager()
-{
-}
+RenderManagerGL2D::RenderManagerGL2D() = default;
 
 RenderManager* RenderManager::createRenderManagerGL2D()
 {
@@ -293,8 +290,8 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Surface* highlight = highlightSurface(fontSurface, 60);
 
 		SDL_Rect r = {(Uint16)x, 0, (Uint16)fontSurface->w, (Uint16)fontSurface->h};
-		SDL_BlitSurface(fontSurface, 0, textbase, &r);
-		SDL_BlitSurface(highlight, 0, hltextbase, &r);
+		SDL_BlitSurface(fontSurface, nullptr, textbase, &r);
+		SDL_BlitSurface(highlight, nullptr, hltextbase, &r);
 		r.x = sx;
 		r.y = 0;
 		Texture s = Texture(0, x, 0, fontSurface->w, fontSurface->h, 2048, 32);

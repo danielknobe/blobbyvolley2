@@ -91,8 +91,8 @@ void File::close()
 			/// we can't throw an error here, as this function gets called
 			/// in the destructor and therefore might be called while another
 			/// excpetion is active so we cant throw.
-		};
-		mHandle = 0;
+		}
+		mHandle = nullptr;
 		mFileName = "";
 	}
 }

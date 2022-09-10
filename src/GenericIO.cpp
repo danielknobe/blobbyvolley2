@@ -43,44 +43,44 @@ class FileOut : public GenericOut
 		}
 
 	private:
-		virtual void byte(const unsigned char& data) override
+		void byte(const unsigned char& data) override
 		{
 			mFile->writeByte(data);
 		}
 
-		virtual void boolean(const bool& data) override
+		void boolean(const bool& data) override
 		{
 			mFile->writeByte(data);
 		}
 
-		virtual void uint32(const unsigned int& data) override
+		void uint32(const unsigned int& data) override
 		{
 			mFile->writeUInt32(data);
 		}
 
-		virtual void number(const float& data) override
+		void number(const float& data) override
 		{
 			mFile->writeFloat(data);
 		}
 
-		virtual void string(const std::string& string) override
+		void string(const std::string& string) override
 		{
 			uint32(string.size());
 			mFile->write(string.data(), string.size());
 		}
 
 
-		virtual unsigned int tell() const override
+		unsigned int tell() const override
 		{
 			return mFile->tell();
 		}
 
-		virtual void seek(unsigned int pos) const override
+		void seek(unsigned int pos) const override
 		{
 			mFile->seek(pos);
 		}
 
-		virtual void array(const char* data, unsigned int length) override
+		void array(const char* data, unsigned int length) override
 		{
 			mFile->write(data, length);
 		}
@@ -101,27 +101,27 @@ class FileIn : public GenericIn
 		}
 
 	private:
-		virtual void byte(unsigned char& data) override
+		void byte(unsigned char& data) override
 		{
 			data = mFile->readByte();
 		}
 
-		virtual void boolean(bool& data) override
+		void boolean(bool& data) override
 		{
 			data = mFile->readByte();
 		}
 
-		virtual void uint32(unsigned int& data) override
+		void uint32(unsigned int& data) override
 		{
 			data = mFile->readUInt32();
 		}
 
-		virtual void number(float& data) override
+		void number(float& data) override
 		{
 			data = mFile->readFloat();
 		}
 
-		virtual void string(std::string& string) override
+		void string(std::string& string) override
 		{
 			/// \todo this might be bad performance wise
 			unsigned int ts;
@@ -137,17 +137,17 @@ class FileIn : public GenericIn
 		}
 
 
-		virtual unsigned int tell() const override
+		unsigned int tell() const override
 		{
 			return mFile->tell();
 		}
 
-		virtual void seek(unsigned int pos) const override
+		void seek(unsigned int pos) const override
 		{
 			mFile->seek(pos);
 		}
 
-		virtual void array(char* data, unsigned int length) override
+		void array(char* data, unsigned int length) override
 		{
 			mFile->readRawBytes(data, length);
 		}
@@ -169,44 +169,44 @@ class NetworkOut : public GenericOut
 		}
 
 	private:
-		virtual void byte(const unsigned char& data) override
+		void byte(const unsigned char& data) override
 		{
 			mStream->Write(data);
 		}
 
-		virtual void boolean(const bool& data) override
+		void boolean(const bool& data) override
 		{
 			mStream->Write(data);
 		}
 
-		virtual void uint32(const unsigned int& data) override
+		void uint32(const unsigned int& data) override
 		{
 			mStream->Write(data);
 		}
 
-		virtual void number(const float& data) override
+		void number(const float& data) override
 		{
 			mStream->Write(data);
 		}
 
-		virtual void string(const std::string& string) override
+		void string(const std::string& string) override
 		{
 			uint32(string.size());
 			mStream->Write(string.c_str(), string.size());
 		}
 
 
-		virtual unsigned int tell() const override
+		unsigned int tell() const override
 		{
 			return mStream->GetNumberOfBitsUsed();
 		}
 
-		virtual void seek(unsigned int pos) const override
+		void seek(unsigned int pos) const override
 		{
 			mStream->SetWriteOffset(pos);
 		}
 
-		virtual void array(const char* data, unsigned int length) override
+		void array(const char* data, unsigned int length) override
 		{
 			mStream->Write(data, length);
 		}
@@ -227,27 +227,27 @@ class NetworkIn : public GenericIn
 		}
 
 	private:
-		virtual void byte(unsigned char& data) override
+		void byte(unsigned char& data) override
 		{
 			mStream->Read(data);
 		}
 
-		virtual void boolean(bool& data) override
+		void boolean(bool& data) override
 		{
 			mStream->Read(data);
 		}
 
-		virtual void uint32( unsigned int& data) override
+		void uint32( unsigned int& data) override
 		{
 			mStream->Read(data);
 		}
 
-		virtual void number( float& data) override
+		void number( float& data) override
 		{
 			mStream->Read(data);
 		}
 
-		virtual void string( std::string& string) override
+		void string( std::string& string) override
 		{
 			/// \todo this might be bad performance wise
 			unsigned int ts;
@@ -263,18 +263,18 @@ class NetworkIn : public GenericIn
 		}
 
 
-		virtual unsigned int tell() const
+		unsigned int tell() const override
 		{
 			return mStream->GetReadOffset();
 		}
 
-		virtual void seek(unsigned int pos) const
+		void seek(unsigned int pos) const override
 		{
 			mStream->ResetReadPointer();
 			mStream->IgnoreBits(pos);
 		}
 
-		virtual void array( char* data, unsigned int length)
+		void array( char* data, unsigned int length) override
 		{
 			mStream->Read(data, length);
 		}
@@ -295,42 +295,42 @@ class StreamOut : public GenericOut
 		}
 
 	private:
-		virtual void byte(const unsigned char& data) override
+		void byte(const unsigned char& data) override
 		{
 			mStream << data << "\n";
 		}
 
-		virtual void boolean(const bool& data) override
+		void boolean(const bool& data) override
 		{
 			mStream << data << "\n";
 		}
 
-		virtual void uint32(const unsigned int& data) override
+		void uint32(const unsigned int& data) override
 		{
 			mStream << data << "\n";
 		}
 
-		virtual void number(const float& data) override
+		void number(const float& data) override
 		{
 			mStream << data << "\n";
 		}
 
-		virtual void string(const std::string& string) override
+		void string(const std::string& string) override
 		{
 			mStream << string << "\n";
 		}
 
 		/// currently not supported by StreamOut
-		virtual unsigned int tell() const override
+		unsigned int tell() const override
 		{
 			return -1;
 		}
 
-		virtual void seek(unsigned int pos) const override
+		void seek(unsigned int pos) const override
 		{
 		}
 
-		virtual void array(const char* data, unsigned int length) override
+		void array(const char* data, unsigned int length) override
 		{
 			std::string stringed(data, length);
 			mStream << stringed << "\n";

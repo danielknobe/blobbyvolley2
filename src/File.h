@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_array.hpp>

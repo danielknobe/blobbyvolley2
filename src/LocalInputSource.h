@@ -29,9 +29,9 @@ class LocalInputSource : public InputSource
 {
 	public:
 		LocalInputSource(PlayerSide player);
-		~LocalInputSource();
+		~LocalInputSource() override;
 
-		virtual PlayerInputAbs getNextInput();
+		PlayerInputAbs getNextInput() override;
 
 	private:
 		InputDevice* mInputDevice;
