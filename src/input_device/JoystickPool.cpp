@@ -69,12 +69,11 @@ void JoystickPool::closeJoystick(const int joyId)
 
 void JoystickPool::closeJoysticks()
 {
-	for (JoyMap::iterator iter = mJoyMap.begin();
-		iter != mJoyMap.end(); ++iter)
+	for (auto& iter : mJoyMap)
 	{
-		SDL_JoystickClose((*iter).second);
-		mJoyMap.erase((*iter).first);
+		SDL_JoystickClose(iter.second);
 	}
+	mJoyMap.clear();
 }
 
 // Joystick Action

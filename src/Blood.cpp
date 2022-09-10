@@ -78,10 +78,10 @@ void BloodManager::step()
 	RenderManager::getSingleton().startDrawParticles();
 	
 	// iterate over all particles
-	std::list<Blood>::iterator it = mParticles.begin();
+	auto it = mParticles.begin();
 	while (it != mParticles.end())
 	{
-		std::list<Blood>::iterator it2 = it;
+		auto it2 = it;
 		++it;	
 		it2->step();
 		// delete particles below lower screen border
