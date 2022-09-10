@@ -15,6 +15,7 @@ jobs:
           - { name: "Clang 12", cxx: "clang++-12", cc: "clang-12", install: "clang-12",        os: "ubuntu-22.04"}
           - { name: "Clang 13", cxx: "clang++-13", cc: "clang-13", install: "clang-13",        os: "ubuntu-22.04"}
           - { name: "Clang 14", cxx: "clang++-14", cc: "clang-14", install: "clang-14",        os: "ubuntu-22.04"}
+          - { name: "GCC 5",    cxx: "g++-5",      cc: "gcc-5",    install: "g++-5 gcc-5",     os: "ubuntu-18.04"}
           - { name: "GCC 6",    cxx: "g++-6",      cc: "gcc-6",    install: "g++-6 gcc-6",     os: "ubuntu-18.04"}
           - { name: "GCC 7",    cxx: "g++-7",      cc: "gcc-7",    install: "g++-7 gcc-7",     os: "ubuntu-20.04"}
           - { name: "GCC 9",    cxx: "g++-9",      cc: "gcc-9",    install: "g++-9 gcc-9",     os: "ubuntu-22.04"}
