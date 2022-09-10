@@ -7,15 +7,13 @@ PlayerIdentity::PlayerIdentity(std::string name) : mName(std::move(name)), mOsci
 
 }
 
-PlayerIdentity::PlayerIdentity(const std::string& name, Color color, bool osci, PlayerSide side) : mName(name),
+PlayerIdentity::PlayerIdentity(std::string name, Color color, bool osci, PlayerSide side) : mName(std::move(name)),
 																	mStaticColor(color),
 																	mOscillating(osci),
 																	mPreferredSide(side)
 {
 
 }
-
-PlayerIdentity::~PlayerIdentity() = default;
 
 const std::string& PlayerIdentity::getName() const
 {

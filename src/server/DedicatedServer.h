@@ -52,7 +52,7 @@ class DedicatedServer
 		/// simulatanious connections
 		/// \todo Maybe two classes for server info: local server info for a server, and remote for data sent to client
 		/// \param is_local: Set to true, to indicate a locally hosted server intended for a single game.
-		DedicatedServer(const ServerInfo& info, const std::vector<std::string>& rulefile,
+		DedicatedServer(ServerInfo info, const std::vector<std::string>& rulefile,
 						const std::vector<float>& speeds, int max_clients, bool is_local = false);
 		~DedicatedServer();
 
@@ -82,8 +82,8 @@ class DedicatedServer
 		void processBlobbyServerPresent( const packet_ptr& packet );
 		// creates a new game with those players
 		// does not add the game to the active game list
-		void createGame(std::shared_ptr<NetworkPlayer> left, std::shared_ptr<NetworkPlayer> right,
-						PlayerSide switchSide, std::string rules, int scoreToWin, float gamespeed);
+		void createGame(NetworkPlayer& left, NetworkPlayer& right,
+						PlayerSide switchSide, const std::string& rules, int scoreToWin, float gamespeed);
 		// broadcasts the current server  status to all waiting clients
 
 		// member variables

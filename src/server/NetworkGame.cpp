@@ -46,8 +46,8 @@ extern int SWLS_GameSteps;
 
 /* implementation */
 
-NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftPlayer,
-			std::shared_ptr<NetworkPlayer> rightPlayer, PlayerSide switchedSide,
+NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
+			NetworkPlayer& rightPlayer, PlayerSide switchedSide,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
 	mMatch(new DuelMatch(false, rules, scoreToWin)),
@@ -60,25 +60,25 @@ NetworkGame::NetworkGame(RakServer& server, std::shared_ptr<NetworkPlayer> leftP
 	mGameValid(true)
 {
 	// check that both players don't have an active game
-	if(leftPlayer->getGame())
+	if(leftPlayer.getGame())
 	{
 		BOOST_THROW_EXCEPTION( std::runtime_error("Trying to start a game with player already in another game!") );
 	}
 
-	if(rightPlayer->getGame())
+	if(rightPlayer.getGame())
 	{
 		BOOST_THROW_EXCEPTION( std::runtime_error("Trying to start a game with player already in another game!") );
 	}
 
-	mMatch->setPlayers( leftPlayer->getIdentity(), rightPlayer->getIdentity() );
+	mMatch->setPlayers( leftPlayer.getIdentity(), rightPlayer.getIdentity() );
 	mMatch->setInputSources(mLeftInput, mRightInput);
 
-	mLeftPlayer = leftPlayer->getID();
-	mRightPlayer = rightPlayer->getID();
+	mLeftPlayer = leftPlayer.getID();
+	mRightPlayer = rightPlayer.getID();
 	mSwitchedSide = switchedSide;
 
-	mRecorder->setPlayerNames(leftPlayer->getName(), rightPlayer->getName());
-	mRecorder->setPlayerColors(leftPlayer->getColor(), rightPlayer->getColor());
+	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
+	mRecorder->setPlayerColors(leftPlayer.getColor(), rightPlayer.getColor());
 	mRecorder->setGameSpeed(mSpeedController.getGameSpeed());
 	mRecorder->setGameRules(rules);
 

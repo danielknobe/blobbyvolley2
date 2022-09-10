@@ -50,17 +50,17 @@ DuelMatch::DuelMatch(bool remote, std::string rules, int score_to_win) :
 
 void DuelMatch::setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer)
 {
-	mPlayers[LEFT_PLAYER] = lplayer;
-	mPlayers[RIGHT_PLAYER] = rplayer;
+	mPlayers[LEFT_PLAYER] = std::move(lplayer);
+	mPlayers[RIGHT_PLAYER] = std::move(rplayer);
 }
 
 void DuelMatch::setInputSources(std::shared_ptr<InputSource> linput, std::shared_ptr<InputSource> rinput )
 {
 	if(linput)
-		mInputSources[LEFT_PLAYER] = linput;
+		mInputSources[LEFT_PLAYER] = std::move(linput);
 
 	if(rinput)
-		mInputSources[RIGHT_PLAYER] = rinput;
+		mInputSources[RIGHT_PLAYER] = std::move(rinput);
 
 	mInputSources[LEFT_PLAYER]->setMatch(this);
 	mInputSources[RIGHT_PLAYER]->setMatch(this);

@@ -82,7 +82,7 @@ SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance
 	return newSurface;
 }
 
-SDL_Surface* RenderManager::loadSurface(std::string filename)
+SDL_Surface* RenderManager::loadSurface(const std::string& filename)
 {
 	FileRead file(filename);
 	int fileLength = file.length();

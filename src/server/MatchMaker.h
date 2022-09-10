@@ -44,8 +44,8 @@ public:
 	void removePlayer( PlayerID id );
 
 	// set callback functions
-	typedef std::function<void(std::shared_ptr<NetworkPlayer>, std::shared_ptr<NetworkPlayer>,
-								PlayerSide, std::string rules, int score, float speed)> create_game_fn;
+	typedef std::function<void(NetworkPlayer&, NetworkPlayer&,
+								PlayerSide, const std::string& rules, int score, float speed)> create_game_fn;
 	void setCreateGame( create_game_fn func) { mCreateGame = std::move(func);};
 
 	typedef std::function<void(const RakNet::BitStream& stream, PlayerID target)> send_fn;

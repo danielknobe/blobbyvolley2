@@ -258,7 +258,7 @@ void MatchMaker::startGame(PlayerID host, PlayerID client)
 			switchSide = LEFT_PLAYER;
 	}
 
-	mCreateGame( leftPlayer->second, rightPlayer->second, switchSide,
+	mCreateGame( *leftPlayer->second, *rightPlayer->second, switchSide,
 				mPossibleGameRules.at(game->second.rules).file,
 				game->second.points,
 				mPossibleGameSpeeds.at(game->second.speed) );

@@ -33,7 +33,7 @@ IScriptableComponent::~IScriptableComponent()
 	lua_close(mState);
 }
 
-void IScriptableComponent::openScript(std::string file)
+void IScriptableComponent::openScript(const std::string& file)
 {
 	int error = FileRead::readLuaScript(file, mState);
 	if (error == 0)

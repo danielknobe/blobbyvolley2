@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 
 #include <boost/exception/all.hpp>
+#include <utility>
 
 /*! \class FileSystemException
 	\brief common base class of all file system related errors
@@ -73,7 +74,7 @@ class PhysfsException : public virtual FileSystemException
 class PhysfsInitException : public PhysfsException
 {
 	public:
-		explicit PhysfsInitException(const std::string& path) : mPath(path)
+		explicit PhysfsInitException(std::string path) : mPath(std::move(path))
 		{
 
 		}
@@ -101,7 +102,7 @@ class PhysfsInitException : public PhysfsException
 */
 class FileException: public virtual FileSystemException {
 	public:
-		explicit FileException(const std::string& f) : filename(f)
+		explicit FileException(std::string f) : filename(std::move(f))
 		{
 		}
 
