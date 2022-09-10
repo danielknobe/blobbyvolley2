@@ -71,7 +71,7 @@ JoystickInputDevice::JoystickInputDevice(JoystickAction laction, JoystickAction 
 
 PlayerInputAbs JoystickInputDevice::transferInput()
 {
-	return PlayerInputAbs( getAction(mLeftAction), getAction(mRightAction),	getAction(mJumpAction) );
+	return { getAction(mLeftAction), getAction(mRightAction), getAction(mJumpAction) };
 }
 
 bool JoystickInputDevice::getAction(const JoystickAction& action)

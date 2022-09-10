@@ -337,7 +337,7 @@ class FallbackGameLogic : public IGameLogic
 
 		std::string getSourceFile() const override
 		{
-			return std::string("");
+			return {};
 		}
 
 		std::string getAuthor() const override

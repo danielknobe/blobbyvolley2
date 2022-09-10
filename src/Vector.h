@@ -62,7 +62,7 @@ class Vector2
 
 		inline Vector2 halfVector(const Vector2& vec) const
 		{
-			return Vector2(x + (vec.x - x) / 2, y + (vec.y - y) / 2);
+			return {x + (vec.x - x) / 2, y + (vec.y - y) / 2};
 		}
 
 		inline Vector2& operator = (const Vector2& newVector)
@@ -84,34 +84,34 @@ class Vector2
 
 		inline Vector2 operator + (const Vector2& vector) const
 		{
-			return Vector2(x + vector.x, y + vector.y);
+			return {x + vector.x, y + vector.y};
 		}
 
 		inline Vector2 operator - (const Vector2& vector) const
 		{
-			return Vector2(x - vector.x, y - vector.y);
+			return {x - vector.x, y - vector.y};
 		}
 
 		inline Vector2 operator * (float scalar) const
 		{
-			return Vector2(x * scalar, y * scalar);
+			return {x * scalar, y * scalar};
 		}
 
 		inline Vector2 operator * (const Vector2& vector) const
 		{
-			return Vector2(x * vector.x, y * vector.y);
+			return {x * vector.x, y * vector.y};
 		}
 
 		inline Vector2 operator / (float scalar) const
 		{
 			assert(scalar != 0.0);
-			float invert = 1.0 / scalar;
-			return Vector2(x * invert, y * invert);
+			float invert = 1.f / scalar;
+			return {x * invert, y * invert};
 		}
 
 		inline Vector2 operator - () const
 		{
-			return Vector2(-x, -y);
+			return {-x, -y};
 		}
 
 		inline Vector2& operator += (const Vector2& vector)
@@ -161,7 +161,7 @@ inline Vector2::Vector2() : x(0), y(0)
 {
 }
 
-inline Vector2::Vector2(float a, float b) : x(a), y(b)
+inline Vector2::Vector2(float x_, float y_) : x(x_), y(y_)
 {
 }
 
@@ -172,27 +172,27 @@ inline Vector2::Vector2(const Vector2& v1, const Vector2& v2) : x(v2.x - v1.x), 
 
 inline Vector2 Vector2::reflectX() const
 {
-	return Vector2(-x, y);
+	return {-x, y};
 }
 
 inline Vector2 Vector2::reflectY() const
 {
-	return Vector2(x, -y);
+	return {x, -y};
 }
 
 inline Vector2 Vector2::scale(float factor) const
 {
-	return Vector2(x * factor, y * factor);
+	return {x * factor, y * factor};
 }
 
 inline Vector2 Vector2::scaleX(float factor) const
 {
-	return Vector2(x * factor, y);
+	return {x * factor, y};
 }
 
 inline Vector2 Vector2::scaleY(float factor) const
 {
-	return Vector2(x, y * factor);
+	return {x, y * factor};
 }
 
 inline float Vector2::length() const
@@ -209,14 +209,14 @@ inline Vector2 Vector2::normalise()
 {
 	float fLength = length();
 	if (fLength > 1e-08)
-		return Vector2(x / fLength, y / fLength);
+		return {x / fLength, y / fLength};
 
 	return *this;
 }
 
 inline Vector2 Vector2::contraVector() const
 {
-	return Vector2(-x, -y);
+	return {-x, -y};
 }
 
 inline void Vector2::clear()
