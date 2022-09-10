@@ -117,7 +117,7 @@ JoystickAction::JoystickAction(const JoystickAction& action)
 
 JoystickAction::~JoystickAction() = default;
 
-std::string JoystickAction::toString()
+std::string JoystickAction::toString() const
 {
 	const char* typestr = "unknown";
 	if (type == AXIS)
@@ -135,7 +135,7 @@ std::string JoystickAction::toString()
 	return buf.str();
 }
 
-KeyAction JoystickAction::toKeyAction()
+KeyAction JoystickAction::toKeyAction() const
 {
 	// This is an place holder
 	// Just to get simple gamepad support for the GUI

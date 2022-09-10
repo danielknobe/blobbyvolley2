@@ -64,8 +64,8 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 	~JoystickAction();
 	JoystickAction(const JoystickAction& action);
 
-	std::string toString();
-	KeyAction toKeyAction();
+	std::string toString() const;
+	KeyAction toKeyAction() const;
 
 	Type type;
 
