@@ -216,7 +216,7 @@ void InputManager::updateInput()
 				break;
 			// Workarround because SDL has a bug in Version 2.0.1,
 			// so that we can't use mouse here
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 			case SDL_MOUSEBUTTONDOWN:
 				mLastMouseButton = event.button.button;
 				switch (event.button.button)
@@ -233,7 +233,7 @@ void InputManager::updateInput()
 						break;
 				}
 				break;
-#elif __MOBILE__
+#elif BLOBBY_ON_MOBILE
 			case SDL_FINGERDOWN:
 				mClick = true;
 

@@ -185,7 +185,7 @@ GraphicOptionsState::~GraphicOptionsState() = default;
 
 void GraphicOptionsState::save()
 {
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 	if ((mOptionConfig.getBool("fullscreen") != mFullscreen) ||	(mOptionConfig.getString("device") != mRenderer))
 	{
 		mOptionConfig.setBool("fullscreen", mFullscreen);
@@ -220,7 +220,7 @@ void GraphicOptionsState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 	imgui.doText(GEN_ID, Vector2(34.0, 10.0), TextManager::OP_VIDEO);
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 40.0), TextManager::OP_FULLSCREEN))
@@ -245,7 +245,7 @@ void GraphicOptionsState::step_impl()
 #endif
 	float heightOfElement = 110.0;
 
-#if __MOBILE__
+#if BLOBBY_ON_MOBILE
 	heightOfElement = 10.0;
 #endif
 
@@ -260,7 +260,7 @@ void GraphicOptionsState::step_impl()
 	else
 		imgui.doImage(GEN_ID, Vector2(204.0, heightOfElement + 13.0), "gfx/pfeil_rechts.bmp");
 
-#if __MOBILE__
+#if BLOBBY_ON_MOBILE
 	float standardLineHeight = 50.0;
 #else
 	float standardLineHeight = 30.0;
@@ -456,7 +456,7 @@ void InputOptionsState::save()
 	mOptionConfig.saveFile("inputconfig.xml");
 }
 
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 void InputOptionsState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
@@ -1004,7 +1004,7 @@ void MiscOptionsState::step_impl()
 		imgui.doImage(GEN_ID, Vector2(513.0, 92.0), "gfx/pfeil_rechts.bmp");
 	}
 
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), TextManager::OP_FPS))
 	{
 		mShowFPS = !mShowFPS;

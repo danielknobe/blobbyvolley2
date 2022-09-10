@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#ifndef _BLOBNET_LAYER_HTTP_HPP_
-#define _BLOBNET_LAYER_HTTP_HPP_
+#ifndef BLOBNET_LAYER_HTTP_HPP_
+#define BLOBNET_LAYER_HTTP_HPP_
 
 /* Includes */
 #include "../exception/HttpException.hpp"

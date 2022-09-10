@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstdarg>
 #endif
 
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 #ifndef WIN32
 #include "config.h"
 #endif
@@ -305,7 +305,7 @@ void setup_physfs(char* argv0)
 {
 	FileSystem& fs = FileSystem::getSingleton();
 
-	#if __DESKTOP__
+	#if BLOBBY_ON_DESKTOP
 	#ifndef WIN32
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
