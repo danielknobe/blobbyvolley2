@@ -1,7 +1,8 @@
 #include "PlayerIdentity.h"
 
-PlayerIdentity::PlayerIdentity(std::string name) : mName(name),
-																	mOscillating(false)
+#include <utility>
+
+PlayerIdentity::PlayerIdentity(std::string name) : mName(std::move(name)), mOscillating(false)
 {
 
 }

@@ -64,7 +64,7 @@ std::vector<std::string> FileSystem::enumerateFiles(const std::string& directory
 		int position = tmp.length() - extension.length();
 		if (position >= 0 && tmp.substr(position) == extension)
 		{
-			files.push_back(std::string(tmp.begin(), keepExtension ? (tmp.end()) : (tmp.end() - extension.length()) ));
+			files.emplace_back(tmp.begin(), keepExtension ? (tmp.end()) : (tmp.end() - extension.length()) );
 		}
 	}
 	

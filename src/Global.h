@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <exception>
 #include <SDL2/SDL_stdinc.h>
 #include <cstring>
+#include <utility>
 
 // I hope the GP2X is the only combination of these systems
 #if defined(__linux__) && defined(__arm__)
@@ -147,7 +148,7 @@ struct Color
 struct ExtensionUnsupportedException : public std::exception
 {
 	std::string extension;
-	explicit ExtensionUnsupportedException(std::string name) : extension(name) {}
+	explicit ExtensionUnsupportedException(std::string name) : extension(std::move(name)) {}
 	~ExtensionUnsupportedException() noexcept override = default;
 };
 

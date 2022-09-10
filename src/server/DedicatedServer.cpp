@@ -393,7 +393,7 @@ void DedicatedServer::createGame(std::shared_ptr<NetworkPlayer> left,
 								PlayerSide switchSide, std::string rules,
 								int scoreToWin, float gamespeed)
 {
-	auto newgame = std::make_shared<NetworkGame>(*mServer.get(), left, right,
+	auto newgame = std::make_shared<NetworkGame>(*mServer, left, right,
 								switchSide, rules, scoreToWin, gamespeed);
 	left->setGame( newgame );
 	right->setGame( newgame );

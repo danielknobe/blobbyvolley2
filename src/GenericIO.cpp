@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cstring>
 #include <ostream>
+#include <utility>
 
 #include "raknet/BitStream.h"
 #include "raknet/NetworkTypes.h"
@@ -37,7 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileOut : public GenericOut
 {
 	public:
-		explicit FileOut(std::shared_ptr<FileWrite> file) : mFile(file)
+		explicit FileOut(std::shared_ptr<FileWrite> file) : mFile(std::move(file))
 		{
 
 		}
@@ -95,7 +96,7 @@ class FileOut : public GenericOut
 class FileIn : public GenericIn
 {
 	public:
-		explicit FileIn(std::shared_ptr<FileRead> file) : mFile(file)
+		explicit FileIn(std::shared_ptr<FileRead> file) : mFile(std::move(file))
 		{
 
 		}
@@ -347,7 +348,7 @@ class StreamOut : public GenericOut
 
 std::shared_ptr< GenericOut > createGenericWriter(std::shared_ptr<FileWrite> file)
 {
-	return std::make_shared< FileOut > (file);
+	return std::make_shared< FileOut > (std::move(file));
 }
 
 std::shared_ptr< GenericOut > createGenericWriter(RakNet::BitStream* stream)
@@ -362,7 +363,7 @@ std::shared_ptr< GenericOut > createGenericWriter(std::ostream& stream)
 
 std::shared_ptr< GenericIn > createGenericReader(std::shared_ptr<FileRead> file)
 {
-	return std::make_shared< FileIn > (file);
+	return std::make_shared< FileIn > (std::move(file));
 }
 
 std::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream)

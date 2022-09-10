@@ -65,7 +65,7 @@ int getObjectCount(const std::type_info& type)
 
 int count(const std::type_info& type, std::string tag, int n)
 {
-	std::string name = std::string(type.name()) + " - " + tag;
+	std::string name = std::string(type.name()) + " - " + std::move(tag);
 	if(GetCounterMap().find(name) == GetCounterMap().end() )
 	{
 		GetCounterMap()[name] = CountingReport();
@@ -76,13 +76,13 @@ int count(const std::type_info& type, std::string tag, int n)
 
 int uncount(const std::type_info& type, std::string tag, int n)
 {
-	return GetCounterMap()[std::string(type.name()) + " - " + tag].alive -= n;
+	return GetCounterMap()[std::string(type.name()) + " - " + std::move(tag)].alive -= n;
 }
 
 int count(const std::type_info& type, std::string tag, void* address, int num)
 {
 	std::cout << "MALLOC " << num << "\n";
-	count(type, tag, num);
+	count(type, std::move(tag), num);
 	GetAddressMap()[address] = num;
 	return 0;
 }
@@ -91,13 +91,13 @@ int uncount(const std::type_info& type, std::string tag, void* address)
 {
 	int num = GetAddressMap()[address];
 	std::cout << "FREE " << num << "\n";
-	uncount(type, tag, num);
+	uncount(type, std::move(tag), num);
 	return 0;
 }
 
 void debug_count_execution_fkt(std::string file, int line)
 {
-	std::string rec = file + ":" + std::to_string(line);
+	std::string rec = std::move(file) + ":" + std::to_string(line);
 	if(GetProfMap().find(rec) == GetProfMap().end() )
 	{
 		GetProfMap()[rec] = 0;

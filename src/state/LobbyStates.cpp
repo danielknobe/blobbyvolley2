@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <deque>
 #include <iostream>
 #include <stdexcept>
+#include <utility>
 
 #include "raknet/RakClient.h"
 
@@ -42,7 +43,7 @@ LobbySubstate::~LobbySubstate() = default;
 
 LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 		mClient(new RakClient(), [](RakClient* client) { client->Disconnect(25); delete client; }),
-		mInfo(info), mPrevious( previous ),
+		mInfo(std::move(info)), mPrevious( previous ),
 		mLobbyState(ConnectionState::CONNECTING)
 {
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
@@ -272,11 +273,10 @@ const char* LobbyState::getStateName() const
 // ----------------------------------------------------------------------------
 LobbyMainSubstate::LobbyMainSubstate(std::shared_ptr<RakClient> client,
 									unsigned prefspeed, unsigned prefrules, unsigned prefscore ) :
-	mClient(client),
+	mClient(std::move(client)),
 	mChosenSpeed( prefspeed ),
 	mChosenRules( prefrules ),
 	mChosenScore( prefscore ),
-	mChosenPassword(""),
 	mChosenPasswordPosition(0),
 	mChosenPasswordVisible(false)
 {
@@ -439,7 +439,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 // -----------------------------------------------------------------------------------------
 
 LobbyGameSubstate::LobbyGameSubstate(std::shared_ptr<RakClient> client, std::shared_ptr<GenericIn> in):
-	mClient( client )
+	mClient(std::move( client ))
 {
  	in->uint32( mGameID );
 	PlayerID creator;
@@ -460,7 +460,7 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 	bool no_players = mOtherPlayers.empty();
 	if(mOtherPlayerNames.empty())
 	{
-		mOtherPlayerNames.push_back(""); // fake entry to prevent crash! not nice!
+		mOtherPlayerNames.emplace_back(""); // fake entry to prevent crash! not nice!
 	}
 
 	bool doEnterGame = false;
