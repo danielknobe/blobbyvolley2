@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "Vector.h"
-#include <list>
-#include <boost/noncopyable.hpp>
+#include <vector>
+#include <random>
 
 //Bleeding blobs can be a lot of fun :)
 
@@ -57,9 +57,9 @@ class Blood
 /*!	\class BloodManager
 	\brief Manages blood effects
 	\details this class is responsible for managing blood effects, creating and deleting the particles, 
-			updating their positions etc. It is designed as a singleton, so it is noncopyable.
+			updating their positions etc.
 */
-class BloodManager : private boost::noncopyable
+class BloodManager
 {
 	public:
 		explicit BloodManager(bool enabled);
@@ -79,11 +79,14 @@ class BloodManager : private boost::noncopyable
 	private:
 		/// helper function which returns an integer between 
 		/// min and max, boundaries included
-		static int random(int min, int max);
+		int random(int min, int max);
 		
 		/// list which contains all currently existing blood particles
-		std::list<Blood> mParticles;
+		std::vector<Blood> mParticles;
 		
 		/// true, if blood should be handled/drawn
 		bool mEnabled;
+
+		/// Random number generator
+		std::mt19937 mRng;
 };

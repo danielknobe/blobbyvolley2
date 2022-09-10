@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 
 /* includes */
-#include <cstdlib>
+#include <algorithm>
 
 #include "RenderManager.h"
 
@@ -73,19 +73,17 @@ void BloodManager::step(RenderManager& renderer)
 	renderer.startDrawParticles();
 	
 	// iterate over all particles
-	auto it = mParticles.begin();
-	while (it != mParticles.end())
-	{
-		auto it2 = it;
-		++it;	
-		it2->step(renderer);
-		// delete particles below lower screen border
-		if (it2->getPosition().y > 600)
-			mParticles.erase(it2);
+	for(auto& pt : mParticles) {
+		pt.step(renderer);
 	}
 	
 	// finish drawing
 	renderer.endDrawParticles();
+
+	// delete old particles
+	mParticles.erase(std::remove_if(begin(mParticles), end(mParticles), [](const Blood& particle) {
+		return particle.getPosition().y > 600;
+	}), mParticles.end());
 }
 
 void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
@@ -103,12 +101,12 @@ void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
 		if( ( y * y / (EL_Y_AXIS * EL_Y_AXIS) + x * x / (EL_X_AXIS * EL_X_AXIS) ) > intensity * intensity)
 			continue;
 		
-		mParticles.push_front( Blood(pos, Vector2(x, y), player) );
+		mParticles.emplace_back(pos, Vector2(x, y), player );
 	}
 }
 
 int BloodManager::random(int min, int max)
 {
-	/// \todo is this really a good way of creating these numbers?
-	return (int)((double(rand()) / RAND_MAX) * (max - min)) + min;
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist(mRng);
 }
