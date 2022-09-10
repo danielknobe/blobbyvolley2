@@ -78,6 +78,6 @@ class SoundManager : public ObjectCounter<SoundManager>
 		float mVolume;
 		bool mMute;
 
-		Sound* loadSound(const std::string& filename);
+		Sound* loadSound(const std::string& filename) const;
 		static void playCallback(void* singleton, Uint8* stream, int length);
 };
