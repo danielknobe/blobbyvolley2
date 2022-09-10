@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	#endif
 #endif
 
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 	#ifndef WIN32
 		#include "config.h"
 	#endif
@@ -87,7 +87,7 @@ void setupPHYSFS()
 	const std::string separator = fs.getDirSeparator();
 	// Game should be playable out of the source package on all
 	// relevant platforms.
-	#if (defined __DESKTOP__)
+	#if BLOBBY_ON_DESKTOP
 		std::string baseSearchPath("data" + separator);
 	#elif (defined __ANDROID__)
 		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
@@ -175,7 +175,7 @@ void setupPHYSFS()
 	#endif
 }
 
-#if __MOBILE__
+#if BLOBBY_ON_MOBILE
 	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (defined __SWITCH__)
 		int main(int argc, char* argv[])
 	#elif (defined __ANDROID__)

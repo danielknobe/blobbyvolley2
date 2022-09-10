@@ -203,7 +203,7 @@ void IMGUI::end()
 		}
 		mQueue->pop();
 	}
-#if __DESKTOP__
+#if BLOBBY_ON_DESKTOP
 	if (mDrawCursor)
 	{
 		rmanager.drawImage("gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2(24.0, 24.0));
@@ -366,7 +366,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			}
 		}
 
-		#if __MOBILE__
+		#if BLOBBY_ON_MOBILE
 			const int tolerance = 3;
 		#else
 			const int tolerance = 0;
@@ -379,7 +379,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			mousepos.y - tolerance * 2 <= obj.pos1.y + fontSize)
 		{
 			obj.flags = obj.flags
-			#if __DESKTOP__
+			#if BLOBBY_ON_DESKTOP
 				| TF_HIGHLIGHT
 			#endif
 			;
@@ -489,7 +489,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			}
 		}
 
-		#if __MOBILE__
+		#if BLOBBY_ON_MOBILE
 			const int tolerance = 3;
 		#else
 			const int tolerance = 0;

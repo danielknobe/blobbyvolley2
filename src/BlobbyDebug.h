@@ -97,10 +97,10 @@ struct CountingAllocator : private std::allocator<T>
 	{
 	}
 
-	template<typename _Tp1>
+	template<typename Tp1_>
 	struct rebind
 	{
-		typedef CountingAllocator<_Tp1, tag_type> other;
+		typedef CountingAllocator<Tp1_, tag_type> other;
 	};
 
 

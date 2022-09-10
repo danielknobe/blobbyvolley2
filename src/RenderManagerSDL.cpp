@@ -293,7 +293,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_UpdateTexture(rightBlobShadowTex, nullptr, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 
 		// Load specific icon to cancel a game
-#if !__FEATURE_HAS_BACKBUTTON__
+#if !BLOBBY_FEATURE_HAS_BACKBUTTON
 		tmpSurface = loadSurface("gfx/flag.bmp");
 		SDL_SetColorKey(tmpSurface, SDL_TRUE, SDL_MapRGB(tmpSurface->format, 0, 0, 0));
 		mBackFlag = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
@@ -394,7 +394,7 @@ void RenderManagerSDL::deinit()
 		SDL_DestroyTexture(mHighlightFont[i]);
 	}
 
-#if !__FEATURE_HAS_BACKBUTTON__
+#if !BLOBBY_FEATURE_HAS_BACKBUTTON
     SDL_DestroyTexture(mBackFlag);
 #endif
 
@@ -453,7 +453,7 @@ void RenderManagerSDL::draw()
 	rodPosition.h = 300;
 	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
 
-#if !__FEATURE_HAS_BACKBUTTON__
+#if !BLOBBY_FEATURE_HAS_BACKBUTTON
 	position.x = 400 - 35;
 	position.y = 70;
 	position.w = 70;

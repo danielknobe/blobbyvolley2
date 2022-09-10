@@ -33,18 +33,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Detect wheather we have a desktop or mobile target
 #if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
-#define __MOBILE__ true
-#define __DESKTOP__ false
+#define BLOBBY_ON_MOBILE true
+#define BLOBBY_ON_DESKTOP false
 #else
-#define __MOBILE__ false
-#define __DESKTOP__ true
+#define BLOBBY_ON_MOBILE false
+#define BLOBBY_ON_DESKTOP true
 #endif
 
 // Detect features
 #if (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
-#define __FEATURE_HAS_BACKBUTTON__ false
+#define BLOBBY_FEATURE_HAS_BACKBUTTON false
 #else
-#define __FEATURE_HAS_BACKBUTTON__ true
+#define BLOBBY_FEATURE_HAS_BACKBUTTON true
 #endif
 
 /*!	\def DEBUG
