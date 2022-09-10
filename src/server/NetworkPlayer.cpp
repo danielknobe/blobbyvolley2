@@ -55,7 +55,7 @@ NetworkPlayer::NetworkPlayer(PlayerID id, RakNet::BitStream& stream) : mID(id)
 	int color;
 	stream.Read(color);
 
-	mIdentity = PlayerIdentity(charName, color, false, (PlayerSide)playerSide);
+	mIdentity = PlayerIdentity(charName, (Color)color, false, (PlayerSide)playerSide);
 }
 
 bool NetworkPlayer::valid() const

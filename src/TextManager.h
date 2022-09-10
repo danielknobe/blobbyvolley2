@@ -190,7 +190,7 @@ class TextManager
 
 	private:
 		/// private construktor, use createTextManager
-		TextManager(std::string l);
+		explicit TextManager(std::string l);
 
 		/// Singleton
 		static TextManager* mSingleton;

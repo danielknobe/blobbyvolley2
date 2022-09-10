@@ -44,7 +44,7 @@ class FileWrite : public File
 		/// \param no_override Set to true if you want to forbid writing over existing file.
 		/// \throw FileLoadException, if the file could not be loaded
 		/// \throw FileAlreadyExistsException in case of trying to write over existing file with no_override = true
-		FileWrite(const std::string& filename, bool no_override = false);
+		explicit FileWrite(const std::string& filename, bool no_override = false);
 		
 		/// \brief opens a file.
 		/// \param filename File to be opened for writing

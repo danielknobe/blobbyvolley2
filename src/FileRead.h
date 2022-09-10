@@ -53,7 +53,7 @@ class FileRead : public File
 		/// \brief constructor which opens a file.
 		/// \param filename File to be opened for reading
 		/// \throw FileLoadException, if the file could not be loaded
-		FileRead(const std::string& filename);
+		explicit FileRead(const std::string& filename);
 		
 		/// \brief opens a file.
 		/// \param filename File to be opened for reading

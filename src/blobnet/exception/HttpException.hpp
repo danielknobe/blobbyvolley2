@@ -33,7 +33,7 @@ namespace Exception {
 	public:
 		/// @brief constructor
 		/// @param message Message to describe the error
-		HttpException(const std::string& message) : std::runtime_error(message)
+		explicit HttpException(const std::string& message) : std::runtime_error(message)
 		{	
 		};
 	};

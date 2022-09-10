@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class FileOut : public GenericOut
 {
 	public:
-		FileOut(std::shared_ptr<FileWrite> file) : mFile(file)
+		explicit FileOut(std::shared_ptr<FileWrite> file) : mFile(file)
 		{
 
 		}
@@ -95,7 +95,7 @@ class FileOut : public GenericOut
 class FileIn : public GenericIn
 {
 	public:
-		FileIn(std::shared_ptr<FileRead> file) : mFile(file)
+		explicit FileIn(std::shared_ptr<FileRead> file) : mFile(file)
 		{
 
 		}
@@ -163,7 +163,7 @@ class FileIn : public GenericIn
 class NetworkOut : public GenericOut
 {
 	public:
-		NetworkOut(RakNet::BitStream* stream) : mStream(stream)
+		explicit NetworkOut(RakNet::BitStream* stream) : mStream(stream)
 		{
 
 		}
@@ -221,7 +221,7 @@ class NetworkOut : public GenericOut
 class NetworkIn : public GenericIn
 {
 	public:
-		NetworkIn(RakNet::BitStream* stream) : mStream(stream)
+		explicit NetworkIn(RakNet::BitStream* stream) : mStream(stream)
 		{
 
 		}
@@ -289,7 +289,7 @@ class NetworkIn : public GenericIn
 class StreamOut : public GenericOut
 {
 	public:
-		StreamOut(std::ostream& stream) : mStream(stream)
+		explicit StreamOut(std::ostream& stream) : mStream(stream)
 		{
 
 		}

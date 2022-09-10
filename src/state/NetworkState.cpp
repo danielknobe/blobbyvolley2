@@ -223,7 +223,7 @@ void NetworkGameState::step_impl()
 				// read colors
 				int temp;
 				stream.Read(temp);
-				Color ncolor = temp;
+				auto ncolor = Color(temp);
 
 				mRemotePlayer->setName(charName);
 
