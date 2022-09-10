@@ -37,12 +37,12 @@ const float BLOBBY_LOWER_RADIUS = 33;
 
 // Ground Settings
 const float GROUND_PLANE_HEIGHT_MAX = 500;
-const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.0;
+const float GROUND_PLANE_HEIGHT = GROUND_PLANE_HEIGHT_MAX - BLOBBY_HEIGHT / 2.f;
 
 
 // This is exactly the half of the gravitation, i checked it in
 // the original code
-const float BLOBBY_MAX_JUMP_HEIGHT = GROUND_PLANE_HEIGHT - 206.375;	// GROUND_Y - MAX_Y
+const float BLOBBY_MAX_JUMP_HEIGHT = GROUND_PLANE_HEIGHT - 206.375f;	// GROUND_Y - MAX_Y
 const float BLOBBY_JUMP_ACCELERATION = -15.1;
 
 // these values are calculated from the other two
@@ -53,7 +53,7 @@ const float BLOBBY_JUMP_BUFFER = GRAVITATION / 2;
 // Ball Settings
 const float BALL_RADIUS = 31.5;
 const float BALL_GRAVITATION = 0.287;
-const float BALL_COLLISION_VELOCITY = std::sqrt(0.75 * RIGHT_PLANE * BALL_GRAVITATION); /// \todo work on a full-fledged physics spec
+const float BALL_COLLISION_VELOCITY = std::sqrt(0.75f * RIGHT_PLANE * BALL_GRAVITATION); /// \todo work on a full-fledged physics spec
 
 
 // Volley Ball Net
