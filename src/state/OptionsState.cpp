@@ -46,7 +46,7 @@ OptionState::OptionState()
 	mScriptNames = FileSystem::getSingleton().enumerateFiles("scripts", ".lua");
 
 	// hack. we cant use something like push_front, though
-	mScriptNames.push_back("Human");
+	mScriptNames.emplace_back("Human");
 	std::swap(mScriptNames[0], mScriptNames[mScriptNames.size() - 1]);
 
 	for(unsigned int i = 0; i < mScriptNames.size(); ++i)
@@ -587,7 +587,7 @@ void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionK
 	if (mSetKeyboard == base_x + 1)
 		mSetKeyboard = base_x + 2;
 
-	if (mSetKeyboard == base_x + 2 && input[IA_LEFT] != "")
+	if (mSetKeyboard == base_x + 2 && !input[IA_LEFT].empty())
 		mSetKeyboard = base_x + 3;
 
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 190.0), TextManager::OP_RIGHT_KEY);
@@ -601,7 +601,7 @@ void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionK
 	if (mSetKeyboard == base_x + 3)
 		mSetKeyboard = base_x + 4;
 
-	if (mSetKeyboard == base_x + 4 && input[IA_RIGHT] != "")
+	if (mSetKeyboard == base_x + 4 && !input[IA_RIGHT].empty())
 		mSetKeyboard = base_x + 5;
 
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 260.0), TextManager::OP_JUMP_KEY );
@@ -615,7 +615,7 @@ void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionK
 	if (mSetKeyboard == base_x + 5)
 		mSetKeyboard = base_x + 6;
 
-	if (mSetKeyboard == base_x + 6 && input[IA_JUMP] != "")
+	if (mSetKeyboard == base_x + 6 && !input[IA_JUMP].empty())
 		mSetKeyboard = 0;
 }
 
@@ -693,7 +693,7 @@ void InputOptionsState::getKeyboardInput(std::string& action, TextManager::STRIN
 		return;
 
 	getInputPrompt(TextManager::OP_PRESS_KEY_FOR, input);
-	action = lastActionKey;
+	action = std::move(lastActionKey);
 	if (InputManager::getSingleton()->exit())
 		action = mOldString;
 }

@@ -128,7 +128,7 @@ float FileRead::readFloat()
 std::string FileRead::readString()
 {
 	char buffer[32]; 		// thats our read buffer
-	std::string read = "";	// thats what we read so far
+	std::string read;	    // thats what we read so far
 	size_t len = length();
 
 	while(true)	// check that we can read as much as want

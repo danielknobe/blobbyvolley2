@@ -357,7 +357,7 @@ void NetworkSearchState::step_impl()
 			PlayerSide localSide = (PlayerSide)config.getInteger("network_side");
 
 			PlayerIdentity local_player = config.loadPlayerIdentity(localSide, true);
-			ServerInfo info( local_player.getName().c_str());
+			ServerInfo info(local_player.getName());
 			std::vector<std::string> rule_vec{config.getString("rules")};
 
 
@@ -396,7 +396,7 @@ void NetworkSearchState::step_impl()
 		config.loadFile("config.xml");
 
 		PlayerIdentity local_player = config.loadPlayerIdentity((PlayerSide)config.getInteger("network_side"), true);
-		mHostedServer.reset(new ServerInfo( local_player.getName().c_str()));
+		mHostedServer.reset(new ServerInfo( local_player.getName()));
 		std::strncpy(mHostedServer->hostname,
 					mPingClient->PlayerIDToDottedIP(mPingClient->GetInternalID()),
 					sizeof(mHostedServer->hostname));

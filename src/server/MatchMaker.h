@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/NetworkTypes.h"
 #include <map>
+#include <utility>
 #include <vector>
 #include <functional>
 #include "Global.h"
@@ -45,10 +46,10 @@ public:
 	// set callback functions
 	typedef std::function<void(std::shared_ptr<NetworkPlayer>, std::shared_ptr<NetworkPlayer>,
 								PlayerSide, std::string rules, int score, float speed)> create_game_fn;
-	void setCreateGame( create_game_fn func) { mCreateGame = func;};
+	void setCreateGame( create_game_fn func) { mCreateGame = std::move(func);};
 
 	typedef std::function<void(const RakNet::BitStream& stream, PlayerID target)> send_fn;
-	void setSendFunction( send_fn func ) { mSendPacket = func; };
+	void setSendFunction( send_fn func ) { mSendPacket = std::move(func); };
 
 	// communication
 	void receiveLobbyPacket( PlayerID sender, RakNet::BitStream& content );

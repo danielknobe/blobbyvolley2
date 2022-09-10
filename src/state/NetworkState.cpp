@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 
 #include <boost/scoped_array.hpp>
+#include <utility>
 
 #include "raknet/RakClient.h"
 #include "raknet/PacketEnumerations.h"
@@ -52,11 +53,10 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 	: GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win))
 	, mNetworkState(WAITING_FOR_OPPONENT)
 	, mWaitingForReplay(false)
-	, mClient(client)
+	, mClient(std::move(client))
 	, mWinningPlayer(NO_PLAYER)
 	, mSelectedChatmessage(0)
 	, mChatCursorPosition(0)
-	, mChattext("")
 {
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");

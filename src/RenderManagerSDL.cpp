@@ -92,7 +92,6 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 }
 
 RenderManagerSDL::RenderManagerSDL()
-	: RenderManager()
 {
 	mBallRotation = 0.0;
 	mLeftBlobAnimationState = 0.0;
@@ -257,9 +256,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_SetTextureBlendMode(leftBlobTex, SDL_BLENDMODE_BLEND);
 		SDL_UpdateTexture(leftBlobTex, nullptr, formatedBlobImage->pixels, formatedBlobImage->pitch);
 
-		mLeftBlob.push_back(DynamicColoredTexture(
+		mLeftBlob.emplace_back(
 				leftBlobTex,
-				Color(255, 255, 255)));
+				Color(255, 255, 255));
 
 		SDL_Texture* rightBlobTex = SDL_CreateTexture(mRenderer,
 				SDL_PIXELFORMAT_ABGR8888,
@@ -268,9 +267,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_SetTextureBlendMode(rightBlobTex, SDL_BLENDMODE_BLEND);
 		SDL_UpdateTexture(rightBlobTex, nullptr, formatedBlobImage->pixels, formatedBlobImage->pitch);
 
-		mRightBlob.push_back(DynamicColoredTexture(
+		mRightBlob.emplace_back(
 				rightBlobTex,
-				Color(255, 255, 255)));
+				Color(255, 255, 255));
 
 		// Prepare blobby shadow textures
 		SDL_Texture* leftBlobShadowTex = SDL_CreateTexture(mRenderer,
@@ -278,9 +277,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				SDL_TEXTUREACCESS_STREAMING,
 				formatedBlobShadowImage->w, formatedBlobShadowImage->h);
 		SDL_SetTextureBlendMode(leftBlobShadowTex, SDL_BLENDMODE_BLEND);
-		mLeftBlobShadow.push_back(DynamicColoredTexture(
+		mLeftBlobShadow.emplace_back(
 				leftBlobShadowTex,
-				Color(255, 255, 255)));
+				Color(255, 255, 255));
 		SDL_UpdateTexture(leftBlobShadowTex, nullptr, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 
 		SDL_Texture* rightBlobShadowTex = SDL_CreateTexture(mRenderer,
@@ -288,9 +287,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				SDL_TEXTUREACCESS_STREAMING,
 				formatedBlobShadowImage->w, formatedBlobShadowImage->h);
 		SDL_SetTextureBlendMode(rightBlobShadowTex, SDL_BLENDMODE_BLEND);
-		mRightBlobShadow.push_back(DynamicColoredTexture(
+		mRightBlobShadow.emplace_back(
 				rightBlobShadowTex,
-				Color(255, 255, 255)));
+				Color(255, 255, 255));
 		SDL_UpdateTexture(rightBlobShadowTex, nullptr, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
 
 		// Load specific icon to cancel a game

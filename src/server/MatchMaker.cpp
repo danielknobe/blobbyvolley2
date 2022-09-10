@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <cassert>
 #include <deque>
+#include <utility>
 
 #include "GenericIO.h"
 #include "NetworkMessage.h"
@@ -70,7 +71,7 @@ unsigned MatchMaker::addGame( OpenGame game )
 		++mIDCounter;
 	}
 
-	mOpenGames[mIDCounter] = game;
+	mOpenGames[mIDCounter] = std::move(game);
 
 	// broadcast presence of new game
 	for( auto& player : mPlayerMap )
@@ -159,7 +160,7 @@ void MatchMaker::removePlayerFromGame( unsigned game, PlayerID player )
 void MatchMaker::addPlayer( PlayerID id, std::shared_ptr<NetworkPlayer> player )
 {
 	assert( mPlayerMap.find(id) == mPlayerMap.end() );
-	mPlayerMap[id] = player;
+	mPlayerMap[id] = std::move(player);
 
 	// greet the player with the list of all games
 	sendOpenGameList( id );
@@ -351,7 +352,7 @@ void MatchMaker::sendOpenGameList( PlayerID recipient )
 		dGameSpeed.push_back( game.second.speed );
 		dGameRules.push_back( game.second.rules );
 		dGameScores.push_back( game.second.points );
-		dGameHasPassword.push_back( game.second.password != "" );
+		dGameHasPassword.push_back( !game.second.password.empty() );
 	}
 
 	out->generic<std::vector<unsigned int>>( dGameIDs );
@@ -392,7 +393,7 @@ void MatchMaker::broadcastOpenGameStatus( unsigned gameID )
 	{
 		auto player = mPlayerMap.find(pid);
 		if( player == mPlayerMap.end() )
-			plnames.push_back("INVALID!");
+			plnames.emplace_back("INVALID!");
 		else
 		{
 			plnames.push_back( player->second->getName() );

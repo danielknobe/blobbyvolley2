@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "PhysicWorld.h"
 
 /* includes */
+#include <utility>
+
 #include "GameConstants.h"
 #include "MatchEvents.h"
 
@@ -399,7 +401,7 @@ void PhysicWorld::setState(const PhysicState& ps)
 
 void PhysicWorld::setEventCallback( event_callback_fn cb )
 {
-	mCallback = cb;
+	mCallback = std::move(cb);
 }
 
 inline short set_fpu_single_precision()

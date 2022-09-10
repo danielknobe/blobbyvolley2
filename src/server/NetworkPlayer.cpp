@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkPlayer.h"
 
 /* includes */
+#include <utility>
 
 /* implementation */
 
@@ -94,5 +95,5 @@ const std::shared_ptr<NetworkGame>& NetworkPlayer::getGame() const
 
 void NetworkPlayer::setGame(std::shared_ptr<NetworkGame> game)
 {
-	mGame = game;
+	mGame = std::move(game);
 }
