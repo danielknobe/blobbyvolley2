@@ -1,3 +1,5 @@
+set(CMAKE_CXX_STANDARD 11)
+
 set (raknet_SRC
 	ArrayList.h
 	BitStream.cpp BitStream.h
