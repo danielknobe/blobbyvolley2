@@ -143,14 +143,14 @@ void NetworkSearchState::step_impl()
 								doEnterServer = true;
 							}
 						}
-						 else
+						else
 						{
 							std::cout << "duplicate server entry\n";
 							std::cout << info << "\n";
 						}
 
 					}
-					 else
+					else
 					{
 						std::cout << " server invalid " << packet->length << " " << ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE << "\n";
 					}

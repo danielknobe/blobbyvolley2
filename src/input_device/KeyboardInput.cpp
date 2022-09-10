@@ -37,9 +37,9 @@ class KeyboardInputDevice : public InputDevice
 		SDL_Keycode mRightKey;
 		SDL_Keycode mJumpKey;
 	public:
-		virtual ~KeyboardInputDevice(){};
+		~KeyboardInputDevice() override = default;
 		KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
-		virtual PlayerInputAbs transferInput();
+		PlayerInputAbs transferInput() override;
 };
 
 // ********************************************************************************************************
@@ -66,7 +66,7 @@ KeyboardInputDevice::KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightK
 
 PlayerInputAbs KeyboardInputDevice::transferInput()
 {
-	const Uint8* keyState = SDL_GetKeyboardState(0);
+	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 
 	return PlayerInputAbs(keyState[SDL_GetScancodeFromKey(mLeftKey)], keyState[SDL_GetScancodeFromKey(mRightKey)], keyState[SDL_GetScancodeFromKey(mJumpKey)]);
 }

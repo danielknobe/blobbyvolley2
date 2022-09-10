@@ -47,9 +47,9 @@ class FileWrite;
 struct VersionMismatchException : public std::exception, public ObjectCounter<VersionMismatchException>
 {
 	VersionMismatchException(const std::string& filename, uint8_t major, uint8_t minor);
-	~VersionMismatchException() noexcept;
+	~VersionMismatchException() noexcept override;
 
-	virtual const char* what() const noexcept;
+	const char* what() const noexcept override;
 
 	std::string error;
 	uint8_t major;

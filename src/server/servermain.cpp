@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctime>
 #include <future>
 
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
 
 #include <boost/algorithm/string/split.hpp>
@@ -166,15 +166,15 @@ int main(int argc, char** argv)
 			g_run_server = false;
 			break;
 		}
-		 else if ( cmd_vec[0] == "players" )
+		else if ( cmd_vec[0] == "players" )
 		{
 			server.printAllPlayers(std::cout);
 		}
-		 else if ( cmd_vec[0] == "games" )
+		else if ( cmd_vec[0] == "games" )
 		{
 			server.printAllGames(std::cout);
 		}
-		 else if ( cmd_vec[0] == "status" )
+		else if ( cmd_vec[0] == "status" )
 		{
 			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
 			std::cout << " packet count: " << SWLS_PacketCount << "\n";

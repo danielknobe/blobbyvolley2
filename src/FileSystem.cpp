@@ -117,7 +117,7 @@ void FileSystem::setWriteDir(const std::string& dirname)
 	if( !PHYSFS_setWriteDir(dirname.c_str()) )
 	{
 		BOOST_THROW_EXCEPTION( PhysfsException() );
-	};
+	}
 	addToSearchPath(dirname, false);
 }
 

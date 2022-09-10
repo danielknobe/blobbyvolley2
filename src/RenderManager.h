@@ -101,7 +101,7 @@ struct BufferedImage : public ObjectCounter<BufferedImage>
 class RenderManager : public ObjectCounter<RenderManager>
 {
 	public:
-		virtual ~RenderManager(){};
+		virtual ~RenderManager() = default;
 
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();

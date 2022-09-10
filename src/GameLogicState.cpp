@@ -50,7 +50,7 @@ void GameLogicState::swapSides()
 	{
 		servingPlayer = RIGHT_PLAYER;
 	}
-	 else if(servingPlayer == RIGHT_PLAYER)
+	else if(servingPlayer == RIGHT_PLAYER)
 	{
 		servingPlayer = LEFT_PLAYER;
 	}

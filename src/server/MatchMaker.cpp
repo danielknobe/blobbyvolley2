@@ -68,7 +68,7 @@ unsigned MatchMaker::addGame( OpenGame game )
 	while(mOpenGames.find(mIDCounter) != mOpenGames.end())
 	{
 		++mIDCounter;
-	};
+	}
 
 	mOpenGames[mIDCounter] = game;
 

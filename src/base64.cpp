@@ -39,7 +39,7 @@ template< std::size_t N >
 constexpr std::size_t length( char const (&)[N] )
 {
 	return N-1;
-};
+}
 
 // checks whether a given character belongs to a valid base64 block
 constexpr bool is_valid( char c )

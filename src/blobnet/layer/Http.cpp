@@ -51,9 +51,7 @@ Http::Http(const std::string& hostname, const int& port)
 {
 }
 
-Http::~Http()
-{
-}
+Http::~Http() = default;
 
 
 void Http::request(const std::string& path, std::stringstream& response)
@@ -76,7 +74,7 @@ void Http::request(const std::string& path, std::stringstream& response)
 		if(mSocketLayer.Connect(inOutSocket, inet_addr(ipAddress), mPort) == -1)
 		{
 			throw Exception::HttpException("Can't connect to host.");
-		};
+		}
 
 		// Message for a simple request
 		std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";

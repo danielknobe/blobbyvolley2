@@ -44,9 +44,9 @@ class MouseInputDevice : public InputDevice
 		float mSensitivity;
 
 	public:
-		virtual ~MouseInputDevice();
+		~MouseInputDevice() override;
 		MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity);
-		virtual PlayerInputAbs transferInput();
+		PlayerInputAbs transferInput() override;
 };
 
 // ********************************************************************************************************
@@ -79,7 +79,7 @@ InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float s)
 MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity)
 	: InputDevice(), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity )
 {
-	if (SDL_GetMouseState(NULL, NULL))
+	if (SDL_GetMouseState(nullptr, nullptr))
 		mDelay = true;
 	else
 		mDelay = false;
@@ -99,7 +99,7 @@ PlayerInputAbs MouseInputDevice::transferInput()
 	PlayerInputAbs input = PlayerInputAbs();
 
 	int deltaX;
-	int mouseState = SDL_GetRelativeMouseState(&deltaX, NULL);
+	int mouseState = SDL_GetRelativeMouseState(&deltaX, nullptr);
 
 	if (mouseState == 0)
 		mDelay = false;

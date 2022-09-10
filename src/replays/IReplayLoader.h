@@ -55,7 +55,7 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 		/// \brief virtual destructor
 		/// \details
 		/// \exception none
-		virtual ~IReplayLoader() {};
+		virtual ~IReplayLoader() = default;
 
 		// General Interface
 
@@ -126,7 +126,7 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 		/// \brief protected constructor.
 		/// \details Create IReplayLoaders with createReplayLoader functions.
 		/// \exception none
-		IReplayLoader() {};
+		IReplayLoader() = default;
 
 	private:
 		/// \todo add documentation

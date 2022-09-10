@@ -82,9 +82,7 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	lua_pop(mState, lua_gettop(mState));
 }
 
-ScriptedInputSource::~ScriptedInputSource()
-{
-}
+ScriptedInputSource::~ScriptedInputSource() = default;
 
 PlayerInputAbs ScriptedInputSource::getNextInput()
 {
@@ -97,7 +95,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	lua_pushboolean(mState, false);
 	lua_setglobal(mState, "__WANT_JUMP");
 
-	if (getMatch() == 0)
+	if (getMatch() == nullptr)
 	{
 		return PlayerInputAbs();
 	} else

@@ -40,11 +40,11 @@ class JoystickInputDevice : public InputDevice
 		JoystickAction mRightAction;
 		JoystickAction mJumpAction;
 	public:
-		virtual ~JoystickInputDevice() {};
+		~JoystickInputDevice() override = default;
 		JoystickInputDevice(JoystickAction laction, JoystickAction raction,
 				JoystickAction jaction);
 
-		virtual PlayerInputAbs transferInput();
+		PlayerInputAbs transferInput() override;
 };
 
 // ********************************************************************************************************
@@ -76,7 +76,7 @@ PlayerInputAbs JoystickInputDevice::transferInput()
 
 bool JoystickInputDevice::getAction(const JoystickAction& action)
 {
-	if (action.joy != 0)
+	if (action.joy != nullptr)
 	{
 		switch (action.type)
 		{

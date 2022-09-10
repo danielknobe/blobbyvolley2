@@ -132,7 +132,7 @@ bool SoundManager::init()
 	desiredSpec.callback = playCallback;
 	desiredSpec.userdata = mSingleton;
 
-	mAudioDevice = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &mAudioSpec, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+	mAudioDevice = SDL_OpenAudioDevice(nullptr, 0, &desiredSpec, &mAudioSpec, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 
 	if (desiredSpec.format != mAudioSpec.format)
 	{
