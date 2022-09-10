@@ -324,7 +324,7 @@ void IGameLogic::onError(PlayerSide errorSide, PlayerSide serveSide)
 class FallbackGameLogic : public IGameLogic
 {
 	public:
-		FallbackGameLogic( int stw ) : IGameLogic( stw )
+		explicit FallbackGameLogic( int stw ) : IGameLogic( stw )
 		{
 		}
 		~FallbackGameLogic() override = default;

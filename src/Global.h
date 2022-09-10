@@ -101,7 +101,7 @@ struct Color
 	{}
 
 	/// \sa toInt()
-	Color(unsigned int col)
+	explicit Color(unsigned int col)
 	: r(col&0xff)
 	, g((col>>8)&0xff)
 	, b((col>>16)&0xff)

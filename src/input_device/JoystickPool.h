@@ -57,7 +57,7 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 //		TRACKBALL
 	};
 
-	JoystickAction(std::string string);
+	explicit JoystickAction(std::string string);
 	JoystickAction(int _joyid, Type _type, int _number)
 		: type(_type), joy(nullptr), joyid(_joyid),
 			number(_number) {}

@@ -28,7 +28,7 @@ class InputDevice;
 class LocalInputSource : public InputSource
 {
 	public:
-		LocalInputSource(PlayerSide player);
+		explicit LocalInputSource(PlayerSide player);
 		~LocalInputSource() override;
 
 		PlayerInputAbs getNextInput() override;
