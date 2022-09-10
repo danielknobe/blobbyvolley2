@@ -79,11 +79,24 @@ void LocalGameState::step_impl()
 	}
 	else if (mMatch->isPaused())
 	{
+		std::function<void()> yesPressed = [&]()
+		{
+			switchState(new MainMenuState);
+		};
+		std::function<void()> noPressed = [&]()
+		{
+			mMatch->unpause();
+		};
+		std::function<void()> savePressed = [&]()
+		{
+			mSaveReplay = true;
+			imgui.resetSelection();
+		};
 		displayQueryPrompt(200,
 			TextManager::LBL_CONF_QUIT,
-			std::make_tuple(TextManager::LBL_YES, [&](){ switchState(new MainMenuState); }),
-			std::make_tuple(TextManager::LBL_NO,  [&](){ mMatch->unpause(); }),
-			std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
+			std::make_tuple(TextManager::LBL_YES, yesPressed),
+			std::make_tuple(TextManager::LBL_NO,  noPressed),
+			std::make_tuple(TextManager::RP_SAVE, savePressed));
 
 		imgui.doCursor();
 	}

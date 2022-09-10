@@ -21,7 +21,7 @@ git clone https://github.com/danielknobe/blobbyvolley2.git
 ```
 
 ### Build under Linux
-Blobby Volley compiles with GCC 5 or newer, or Clang 10 or newer.
+Blobby Volley compiles with GCC 4.8 or newer, or Clang 10 or newer.
 Other compilers may work but are currently untested.
 
 1. Install dependencies:

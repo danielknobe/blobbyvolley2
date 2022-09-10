@@ -520,16 +520,29 @@ void NetworkGameState::step_impl()
 		}
 		case PAUSING:
 		{
+			std::function<void()> continuePressed = [&]()
+			{
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_UNPAUSE);
+				mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
+			};
+			std::function<void()> quitPressed = [&]()
+			{
+				switchState(new MainMenuState);
+			};
+			std::function<void()> savePressed = [&]()
+			{
+				mSaveReplay = true; 
+				imgui.resetSelection();
+			};
+
 			// Query
-			displayQueryPrompt(20,
+			displayQueryPrompt(
+				20,
 				TextManager::GAME_PAUSED,
-				std::make_tuple(TextManager::LBL_CONTINUE, [&](){
-					RakNet::BitStream stream;
-					stream.Write((unsigned char)ID_UNPAUSE);
-					mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
-				}),
-				std::make_tuple(TextManager::GAME_QUIT,    [&](){ switchState(new MainMenuState); }),
-				std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
+				std::make_tuple(TextManager::LBL_CONTINUE, continuePressed),
+				std::make_tuple(TextManager::GAME_QUIT, quitPressed),
+				std::make_tuple(TextManager::RP_SAVE, savePressed));
 
 			// Chat
 			imgui.doChatbox(GEN_ID, Vector2(10, 240), Vector2(790, 500), mChatlog, mSelectedChatmessage, mChatOrigin);
