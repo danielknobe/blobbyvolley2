@@ -337,11 +337,9 @@ void RenderManagerGL2D::deinit()
 	glDeleteTextures(1/*mFont.size()*/, &mFont[0].texture);
 	glDeleteTextures(/*mHighlightFont.size()*/1, &mHighlightFont[0].texture);
 
-	for (std::map<std::string, BufferedImage*>::iterator iter = mImageMap.begin();
-		iter != mImageMap.end(); ++iter)
-	{
-		glDeleteTextures(1, &(*iter).second->glHandle);
-		delete iter->second;
+	for (auto& iter : mImageMap) {
+		glDeleteTextures(1, &iter.second->glHandle);
+		delete iter.second;
 	}
 
 	glDeleteTextures(1, &mParticle);

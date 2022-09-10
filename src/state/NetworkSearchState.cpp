@@ -68,13 +68,12 @@ NetworkSearchState::NetworkSearchState() :
 NetworkSearchState::~NetworkSearchState()
 {
 	// Disconnect from servers
-	for (ClientList::iterator iter = mQueryClients.begin();
-		iter != mQueryClients.end(); ++iter)
+	for (auto& client : mQueryClients)
 	{
-		if (*iter)
+		if (client)
 		{
-			(*iter)->Disconnect(50);
-			delete *iter;
+			client->Disconnect(50);
+			delete client;
 		}
 	}
 	// request ping thread to stop
@@ -96,7 +95,7 @@ void NetworkSearchState::step_impl()
 	// set to true to initiate server connection
 	bool doEnterServer = false;
 
-	for (ClientList::iterator iter = mQueryClients.begin();
+	for (auto iter = mQueryClients.begin();
 		iter != mQueryClients.end(); ++iter)
 	{
 		bool skip = false;
@@ -255,9 +254,9 @@ void NetworkSearchState::step_impl()
 	}
 
 	std::vector<std::string> servernames;
-	for (unsigned int i = 0; i < mScannedServers.size(); i++)
+	for (auto& server : mScannedServers)
 	{
-		servernames.push_back(std::string(mScannedServers[i].name) + " (" + std::to_string(mScannedServers[i].waitingplayers) + ")" );
+		servernames.push_back(std::string(server.name) + " (" + std::to_string(server.waitingplayers) + ")" );
 	}
 
 	if( imgui.doSelectbox(GEN_ID, Vector2(25.0, 60.0), Vector2(775.0, 470.0), servernames, mSelectedServer) == SBA_DBL_CLICK )

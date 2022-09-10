@@ -183,16 +183,12 @@ void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
 
 void SoundManager::deinit()
 {
-	for (std::map<std::string, Sound*>::iterator iter = mSound.begin();
-			iter != mSound.end(); ++iter)
+	for (auto& iter : mSound)
 	{
-		if (iter->second)
+		if (iter.second)
 		{
-			if (iter->second->data != 0)
-			{
-				delete[] iter->second->data;
-			}
-			delete iter->second;
+			delete[] iter.second->data;
+			delete iter.second;
 		}
 	}
 	SDL_UnlockAudioDevice(mAudioDevice);

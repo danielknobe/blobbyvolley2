@@ -256,9 +256,9 @@ void DedicatedServer::updateGames()
 	// this loop ensures that all games that have finished (eg because one
 	// player left) still process network packets, to let the other player
 	// finalize its interactions (sending replays etc).
-	for(auto it = mPlayerMap.begin(); it != mPlayerMap.end(); ++it)
+	for(auto& it : mPlayerMap)
 	{
-		auto game = it->second->getGame();
+		auto game = it.second->getGame();
 		if(game && !game->isGameValid())
 		{
 			game->processPackets();
