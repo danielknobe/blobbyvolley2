@@ -290,10 +290,10 @@ SDL_Rect RenderManager::ballRect(const Vector2& position)
 
 Vector2 RenderManager::ballShadowPosition(const Vector2& position)
 {
-	return Vector2(
+	return {
 		position.x + (500.f - position.y) / 4.f + 16.f,
 		500.f - (500.f - position.y) / 16.f - 10.f
-	);
+	};
 }
 
 SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
@@ -310,10 +310,10 @@ SDL_Rect RenderManager::ballShadowRect(const Vector2& position)
 
 Vector2 RenderManager::blobShadowPosition(const Vector2& position)
 {
-	return Vector2(
+	return {
 		position.x + (500.f - position.y) / 4 + 16.f,
 		500.f - (500.f - position.y) / 16.f - 10.f
-	);
+	};
 }
 
 SDL_Rect RenderManager::blobShadowRect(const Vector2& position)
@@ -351,9 +351,9 @@ Color RenderManager::getOscillationColor() const
 {
 	float time = float(SDL_GetTicks()) / 1000.f;
 
-	return Color(
+	return {
 		int((std::sin(time*1.5) + 1.0) * 128),
 		int((std::sin(time*2.5) + 1.0) * 128),
 		int((std::sin(time*3.5) + 1.0) * 128)
-	);
+	};
 }

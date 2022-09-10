@@ -97,7 +97,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 
 	if (getMatch() == nullptr)
 	{
-		return PlayerInputAbs();
+		return {};
 	} else
 	{
 		IScriptableComponent::setMatch( const_cast<DuelMatch*>(getMatch()) );
@@ -131,7 +131,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	}
 
 	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
-		return PlayerInputAbs();
+		return {};
 
 	// random jump delay depending on difficulty
 	if( wantjump && !mLastJump )
@@ -147,5 +147,5 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 
 	mLastJump = wantjump;
 
-	return PlayerInputAbs(wantleft, wantright, wantjump);
+	return {wantleft, wantright, wantjump};
 }
