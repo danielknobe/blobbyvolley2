@@ -668,13 +668,13 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	float w = 16.0;
 	float h = 16.0;
 	glTexCoord2f(0.0, 0.0);
-	glVertex2f(pos.x - w / 2.0, pos.y - h / 2.0);
+	glVertex2f(pos.x - w / 2.f, pos.y - h / 2.f);
 	glTexCoord2f(1.0, 0.0);
-	glVertex2f(pos.x + w / 2.0, pos.y - h / 2.0);
+	glVertex2f(pos.x + w / 2.f, pos.y - h / 2.f);
 	glTexCoord2f(1.0, 1.0);
-	glVertex2f(pos.x + w / 2.0, pos.y + h / 2.0);
+	glVertex2f(pos.x + w / 2.f, pos.y + h / 2.f);
 	glTexCoord2f(0.0, 1.0);
-	glVertex2f(pos.x - w / 2.0, pos.y + h / 2.0);
+	glVertex2f(pos.x - w / 2.f, pos.y + h / 2.f);
 }
 
 void RenderManagerGL2D::endDrawParticles()

@@ -109,7 +109,7 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 		}
 		Sound soundInstance = Sound(*soundBuffer);
 		soundInstance.volume =
-			volume > 0.0 ? (volume < 1.0 ? volume : 1.0) : 0.0;
+			volume > 0.f ? (volume < 1.f ? volume : 1.f) : 0.f;
 		SDL_LockAudioDevice(mAudioDevice);
 		mPlayingSound.push_back(soundInstance);
 		SDL_UnlockAudioDevice(mAudioDevice);
@@ -225,7 +225,7 @@ SoundManager& SoundManager::getSingleton()
 
 void SoundManager::setVolume(float volume)
 {
-	volume = volume > 0.0 ? (volume < 1.0 ? volume : 1.0) : 0.0;
+	volume = volume > 0.f ? (volume < 1.f ? volume : 1.f) : 0.f;
 	mVolume = volume;
 }
 

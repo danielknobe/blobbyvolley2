@@ -162,7 +162,7 @@ void ReplayState::step_impl()
 
 			if (InputManager::getSingleton()->click())
 			{
-				float pos = (mousepos.x - prog_pos.x) / 700.0;
+				float pos = (mousepos.x - prog_pos.x) / 700.f;
 				mPositionJump = pos * mReplayPlayer->getReplayLength();
 			}
 		}

@@ -196,8 +196,8 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	// ok, if we get here, there actually was a collision
 
 	// calculate hit intensity
-	mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.0;
-	mLastHitIntensity = mLastHitIntensity > 1.0 ? 1.0 : mLastHitIntensity;
+	mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.f;
+	mLastHitIntensity = mLastHitIntensity > 1.f ? 1.f : mLastHitIntensity;
 
 	// set ball velocity
 	mBallVelocity = -Vector2(mBallPosition, circlepos);
@@ -262,9 +262,9 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 
 	// Overflow-Protection
 	if (mBallRotation <= 0)
-		mBallRotation = 6.25 + mBallRotation;
-	else if (mBallRotation >= 6.25)
-		mBallRotation = mBallRotation - 6.25;
+		mBallRotation = 6.25f + mBallRotation;
+	else if (mBallRotation >= 6.25f)
+		mBallRotation = mBallRotation - 6.25f;
 
 
 	reset_fpu_flags(fpf);

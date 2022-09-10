@@ -523,7 +523,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 		}
 	}
 
-	value = value > 0.0 ? (value < 1.0 ? value : 1.0) : 0.0;
+	value = value > 0.f ? (value < 1.f ? value : 1.f) : 0.f;
 	obj.pos2.x = value;
 
 	mLastWidget = id;
