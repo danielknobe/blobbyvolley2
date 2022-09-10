@@ -332,7 +332,7 @@ void setupPHYSFS()
 			{
 				rmanager->draw();
 				IMGUI::getSingleton().end();
-				BloodManager::getSingleton().step();
+				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}
 			scontroller.update();

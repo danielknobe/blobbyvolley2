@@ -960,7 +960,7 @@ void MiscOptionsState::save()
 	mOptionConfig.saveFile("config.xml");
 
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
-	BloodManager::getSingleton().enable(mOptionConfig.getBool("blood"));
+	RenderManager::getSingleton().getBlood().enable(mOptionConfig.getBool("blood"));
 	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
 	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
@@ -1018,8 +1018,8 @@ void MiscOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), TextManager::OP_BLOOD))
 	{
 		mShowBlood = !mShowBlood;
-		BloodManager::getSingleton().enable(mShowBlood);
-		BloodManager::getSingleton().spillBlood(Vector2(484.0, 160.0), 1.5, 2);
+		RenderManager::getSingleton().getBlood().enable(mShowBlood);
+		RenderManager::getSingleton().getBlood().spillBlood(Vector2(484.0, 160.0), 1.5, 2);
 	}
 	if (mShowBlood)
 	{

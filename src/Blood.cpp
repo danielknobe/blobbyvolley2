@@ -25,12 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstdlib>
 
 #include "RenderManager.h"
-#include "IUserConfigReader.h"
 
 /* implementation */
-
-
-BloodManager* BloodManager::mSingleton = nullptr;
 
 // Blood class
 // ------------
@@ -43,13 +39,13 @@ Blood::Blood(const Vector2& position, const Vector2& direction, int player):
 {
 }
 
-void Blood::step()
+void Blood::step(RenderManager& renderer)
 {
 	const float GRAVITY = 3;
 	/// \todo this is the only place where we do step-rate independent calculations.
 	///			is this intended behaviour???
 	int diff = SDL_GetTicks() - mLastFrame;
-	RenderManager::getSingleton().drawParticle(mPos, mPlayer);
+	renderer.drawParticle(mPos, mPlayer);
 	const int SPEED = 45;
 	
 	//this calculation is NOT based on physical rules
@@ -63,19 +59,18 @@ void Blood::step()
 // -------------------
 
 
-BloodManager::BloodManager()
+BloodManager::BloodManager(bool enabled) : mEnabled(enabled)
 {
-	mEnabled =  IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood");
 }
 
-void BloodManager::step()
+void BloodManager::step(RenderManager& renderer)
 {
 	// don't do any processing if there are no particles
 	if ( !mEnabled || mParticles.empty() )
 		return;
 	
 	// start drawing
-	RenderManager::getSingleton().startDrawParticles();
+	renderer.startDrawParticles();
 	
 	// iterate over all particles
 	auto it = mParticles.begin();
@@ -83,14 +78,14 @@ void BloodManager::step()
 	{
 		auto it2 = it;
 		++it;	
-		it2->step();
+		it2->step(renderer);
 		// delete particles below lower screen border
 		if (it2->getPosition().y > 600)
 			mParticles.erase(it2);
 	}
 	
 	// finish drawing
-	RenderManager::getSingleton().endDrawParticles();
+	renderer.endDrawParticles();
 }
 
 void BloodManager::spillBlood(Vector2 pos, float intensity, int player)

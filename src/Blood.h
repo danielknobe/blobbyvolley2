@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 //Bleeding blobs can be a lot of fun :)
 
+class RenderManager;
+
 /*!	\class Blood
 	\brief Container to hold the data of a single drop of blood
 */
@@ -40,7 +42,7 @@ class Blood
 		
 		/// this function has to be called each step
 		/// it updates position and velocity.
-		void step();
+		void step(RenderManager& renderer);
 		
 		/// gets the current position of this drop
 		const Vector2& getPosition() const { return mPos; }
@@ -60,8 +62,10 @@ class Blood
 class BloodManager : private boost::noncopyable
 {
 	public:
+		explicit BloodManager(bool enabled);
+
 		/// update function, to be called each step.
-		void step();
+		void step(RenderManager& renderer);
 		
 		/// \brief creates a blood effect
 		/// \param pos Position the effect occurs
@@ -71,21 +75,8 @@ class BloodManager : private boost::noncopyable
 		
 		/// enables or disables blood effects
 		void enable(bool enable) { mEnabled = enable; }
-		
-		/// gets the instance of BloodManager, creating one if it does not exists
-		static BloodManager& getSingleton()
-		{
-			if (!mSingleton)
-				mSingleton = new BloodManager;
-			
-			return *mSingleton;
-		}
-		
+
 	private:
-		/// default constructor, sets mEnabled to the value
-		///	set in config.xml
-		BloodManager();
-		
 		/// helper function which returns an integer between 
 		/// min and max, boundaries included
 		static int random(int min, int max);
@@ -95,7 +86,4 @@ class BloodManager : private boost::noncopyable
 		
 		/// true, if blood should be handled/drawn
 		bool mEnabled;
-		
-		/// singleton
-		static BloodManager* mSingleton;
 };
