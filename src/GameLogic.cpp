@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <utility>
 
 extern "C"
 {
@@ -399,7 +400,7 @@ protected:
 class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 {
 	public:
-		LuaGameLogic(const std::string& file, DuelMatch* match, int score_to_win);
+		LuaGameLogic(std::string file, DuelMatch* match, int score_to_win);
 		~LuaGameLogic() override;
 
 		std::string getSourceFile() const override
@@ -452,8 +453,8 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 };
 
 
-LuaGameLogic::LuaGameLogic( const std::string& filename, DuelMatch* match, int score_to_win ) :
-	FallbackGameLogic( score_to_win ), mSourceFile(filename)
+LuaGameLogic::LuaGameLogic( std::string filename, DuelMatch* match, int score_to_win ) :
+	FallbackGameLogic( score_to_win ), mSourceFile(std::move(filename))
 {
 	setMatch( match );
 	lua_pushlightuserdata(mState, this);

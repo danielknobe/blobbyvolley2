@@ -30,5 +30,5 @@ class InputSource;
 class InputSourceFactory
 {
 	public:
-		static std::shared_ptr<InputSource> createInputSource( std::shared_ptr<IUserConfigReader> config, PlayerSide pls );
+		static std::shared_ptr<InputSource> createInputSource(IUserConfigReader& config, PlayerSide pls );
 };

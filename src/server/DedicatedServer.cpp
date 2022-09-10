@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <set>
 #include <algorithm>
 #include <iostream>
+#include <utility>
 
 #include "raknet/RakServer.h"
 #include "raknet/PacketEnumerations.h"
@@ -45,7 +46,7 @@ extern int SWLS_Games;
 
 void syslog(int pri, const char* format, ...);
 
-DedicatedServer::DedicatedServer(const ServerInfo& info,
+DedicatedServer::DedicatedServer(ServerInfo info,
 								const std::vector<std::string>& rulefiles,
 								const std::vector<float>& gamespeeds,
 								int max_clients, bool local_server)
@@ -53,7 +54,7 @@ DedicatedServer::DedicatedServer(const ServerInfo& info,
 , mServer(new RakServer())
 , mAcceptNewPlayers(true)
 , mPlayerHosted( local_server )
-, mServerInfo(info)
+, mServerInfo(std::move(info))
 {
 	if (!mServer->Start(max_clients, 1, mServerInfo.port))
 	{
@@ -63,8 +64,8 @@ DedicatedServer::DedicatedServer(const ServerInfo& info,
 
 	/// \todo this code should be places in ServerInfo
 	mMatchMaker.setSendFunction([&](const RakNet::BitStream& stream, PlayerID target){ mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, target, false); });
-	mMatchMaker.setCreateGame([&](std::shared_ptr<NetworkPlayer> left, std::shared_ptr<NetworkPlayer> right,
-								PlayerSide switchSide, std::string rules, int stw, float sp){
+	mMatchMaker.setCreateGame([&](NetworkPlayer& left, NetworkPlayer& right,
+								PlayerSide switchSide, const std::string& rules, int stw, float sp){
 							createGame(left, right, switchSide, rules, stw, sp); });
 
 	// add gamespeeds
@@ -388,20 +389,21 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 	}
 }
 
-void DedicatedServer::createGame(std::shared_ptr<NetworkPlayer> left,
-								std::shared_ptr<NetworkPlayer> right,
-								PlayerSide switchSide, std::string rules,
+void DedicatedServer::createGame(NetworkPlayer& left,
+								NetworkPlayer& right,
+								PlayerSide switchSide,
+								const std::string& rules,
 								int scoreToWin, float gamespeed)
 {
 	auto newgame = std::make_shared<NetworkGame>(*mServer, left, right,
 								switchSide, rules, scoreToWin, gamespeed);
-	left->setGame( newgame );
-	right->setGame( newgame );
+	left.setGame( newgame );
+	right.setGame( newgame );
 
 	SWLS_Games++;
 
 	/// \todo add some logging?
-	syslog(LOG_DEBUG, "Created game \"%s\" vs. \"%s\", rules:%s", left->getName().c_str(), right->getName().c_str(), rules.c_str());
+	syslog(LOG_DEBUG, "Created game \"%s\" vs. \"%s\", rules:%s", left.getName().c_str(), right.getName().c_str(), rules.c_str());
 	mGameList.push_back(newgame);
 }
 

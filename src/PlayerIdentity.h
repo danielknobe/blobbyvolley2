@@ -29,8 +29,7 @@ class PlayerIdentity
 	public:
 		PlayerIdentity() = default;
 		explicit PlayerIdentity(std::string name);
-		PlayerIdentity(const std::string& name, Color color, bool osci, PlayerSide pref);
-		~PlayerIdentity();
+		PlayerIdentity(std::string name, Color color, bool osci, PlayerSide pref);
 
 		const std::string& getName() const;
 		Color getStaticColor() const;

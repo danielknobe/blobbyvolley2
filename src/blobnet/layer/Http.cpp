@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 
 
 #if (defined _WIN32)
@@ -45,8 +46,8 @@ namespace Layer
 {
 
 /* implementation */
-Http::Http(const std::string& hostname, const int& port)
-: mHostname(hostname)
+Http::Http(std::string hostname, const int& port)
+: mHostname(std::move(hostname))
 , mPort(port)
 {
 }

@@ -41,8 +41,8 @@ LocalGameState::LocalGameState()
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
 
-	std::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( config, LEFT_PLAYER);
-	std::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( config, RIGHT_PLAYER);
+	std::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( *config, LEFT_PLAYER);
+	std::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( *config, RIGHT_PLAYER);
 
 	// create default replay name
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
