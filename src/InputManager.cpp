@@ -59,7 +59,7 @@ InputManager::~InputManager()
 	JoystickPool::getSingleton().closeJoysticks();
 }
 
-InputDevice* InputManager::beginGame(PlayerSide side) const
+InputDevice* InputManager::beginGame(PlayerSide side)
 {
 	SDL_Window* window = RenderManager::getSingleton().getWindow();
 
@@ -84,7 +84,7 @@ InputDevice* InputManager::beginGame(PlayerSide side) const
 	{
 		int jumpbutton = config.getInteger(prefix + "mouse_jumpbutton");
 		float sensitivity = config.getFloat(prefix + "mouse_sensitivity");
-		return createMouseInput(side, jumpbutton, sensitivity);
+		return createMouseInput(this, side, jumpbutton, sensitivity);
 	}
 	// load config for keyboard
 

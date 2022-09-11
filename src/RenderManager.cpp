@@ -23,13 +23,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include "FileRead.h"
+#include "Blood.h"
+#include "IUserConfigReader.h"
 
 /* implementation */
 #define INVALID_FONT_INDEX -1
 
 RenderManager* RenderManager::mSingleton = nullptr;
 
-RenderManager::RenderManager() : mDrawGame(false)
+RenderManager::~RenderManager() = default;
+
+RenderManager::RenderManager() :
+	mDrawGame(false),
+	mBloodMgr(new BloodManager(IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood")))
 {
 	//assert(!mSingleton);
 	if (mSingleton)
@@ -41,6 +47,10 @@ RenderManager::RenderManager() : mDrawGame(false)
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
 	mNeedRedraw = true;
+}
+
+BloodManager& RenderManager::getBlood() {
+	return *mBloodMgr;
 }
 
 SDL_Surface* RenderManager::highlightSurface(SDL_Surface* surface, int luminance)

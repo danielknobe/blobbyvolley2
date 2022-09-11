@@ -81,6 +81,10 @@ class IMGUI : public ObjectCounter<IMGUI>
 		void doInactiveMode(bool inactive) { mInactive = inactive; }
 
 		int getNextId() { return mIdCounter++; };
+
+		const TextManager& textMgr() const;
+		const std::string& getText(TextManager::STRING id) const;
+		void setTextMgr(std::string lang);
 	private:
 		IMGUI();
 		~IMGUI();
@@ -97,5 +101,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 		bool mUsingCursor;
 
 		int mIdCounter;
+
+		std::unique_ptr<TextManager> mTextManager;
 };
 

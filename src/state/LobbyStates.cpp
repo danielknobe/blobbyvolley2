@@ -289,7 +289,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 
 	// player list
 	std::vector<std::string> gamelist;
-	gamelist.push_back( TextManager::getSingleton()->getString(TextManager::NET_OPEN_GAME) );
+	gamelist.push_back( imgui.getText(TextManager::NET_OPEN_GAME) );
 	for ( const auto& game : status.mOpenGames)
 	{
 		gamelist.push_back( game.name + (game.hasPassword ? "🔒" : "") );
@@ -319,15 +319,15 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 
 		// info panel contents:
 		//  * gamespeed
-		imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
+		imgui.doText(GEN_ID, Vector2(435, 100), imgui.getText(TextManager::NET_SPEED) +
 					 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(status.getGame(gameIndex).speed))) + "%");
 		//  * points
-		imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
+		imgui.doText(GEN_ID, Vector2(435, 135), imgui.getText(TextManager::NET_POINTS) +
 											 std::to_string(status.getGame(gameIndex).score) );
 
 		//  * rulesfile
-		imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
-		std::string rulesstring = status.mPossibleRules.at(status.getGame(gameIndex).rules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
+		imgui.doText(GEN_ID, Vector2(435, 170), imgui.getText(TextManager::NET_RULES_TITLE) );
+		std::string rulesstring = status.mPossibleRules.at(status.getGame(gameIndex).rules) + imgui.getText(TextManager::NET_RULES_BY);
 		rulesstring += status.mPossibleRulesAuthor.at(mChosenRules);
 		for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 		{
@@ -353,7 +353,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 
 
 		// open game button
-		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_JOIN) ) ||
+		if( imgui.doButton(GEN_ID, Vector2(435, 430), imgui.getText(TextManager::NET_JOIN) ) ||
 			doEnterGame)
 		{
 			// send open game packet to server
@@ -376,24 +376,24 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 
 		// info panel contents:
 		//  * gamespeed
-		if(imgui.doButton(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
+		if(imgui.doButton(GEN_ID, Vector2(435, 100), imgui.getText(TextManager::NET_SPEED) +
 					 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mChosenSpeed))) + "%"))
 		{
 			mChosenSpeed = (mChosenSpeed + 1) % status.mPossibleSpeeds.size();
 		}
 		//  * points
-		if(imgui.doButton(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
+		if(imgui.doButton(GEN_ID, Vector2(435, 135), imgui.getText(TextManager::NET_POINTS) +
 											 std::to_string( mPossibleScores.at(mChosenScore) ) ))
 		{
 			mChosenScore = (mChosenScore + 1) % mPossibleScores.size();
 		}
 
 		//  * rulesfile
-		if(imgui.doButton(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) ))
+		if(imgui.doButton(GEN_ID, Vector2(435, 170), imgui.getText(TextManager::NET_RULES_TITLE) ))
 		{
 			mChosenRules = (mChosenRules + 1) % status.mPossibleRules.size();
 		}
-		std::string rulesstring = status.mPossibleRules.at(mChosenRules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
+		std::string rulesstring = status.mPossibleRules.at(mChosenRules) + imgui.getText(TextManager::NET_RULES_BY);
 		rulesstring += status.mPossibleRulesAuthor.at(mChosenRules);
 		for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 		{
@@ -415,7 +415,7 @@ void LobbyMainSubstate::step(const ServerStatusData& status)
 		}
 
 		// open game button
-		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_OPEN_GAME) ))
+		if( imgui.doButton(GEN_ID, Vector2(435, 430), imgui.getText(TextManager::NET_OPEN_GAME) ))
 		{
 			// send open game packet to server
 			RakNet::BitStream stream;
@@ -474,14 +474,14 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 
 	// info panel contents:
 	//  * gamespeed
-	imgui.doText(GEN_ID, Vector2(435, 100), TextManager::getSingleton()->getString(TextManager::NET_SPEED) +
+	imgui.doText(GEN_ID, Vector2(435, 100), imgui.getText(TextManager::NET_SPEED) +
 				 std::to_string(int(0.5 + 100.0 / 75.0 * status.mPossibleSpeeds.at(mSpeed))) + "%");
 	//  * points
-	imgui.doText(GEN_ID, Vector2(435, 135), TextManager::getSingleton()->getString(TextManager::NET_POINTS) +
+	imgui.doText(GEN_ID, Vector2(435, 135), imgui.getText(TextManager::NET_POINTS) +
 										 std::to_string( mScore ) );
 	//  * rulesfile
-	imgui.doText(GEN_ID, Vector2(435, 170), TextManager::getSingleton()->getString(TextManager::NET_RULES_TITLE) );
-	std::string rulesstring = status.mPossibleRules.at(mRules) + TextManager::getSingleton()->getString(TextManager::NET_RULES_BY);
+	imgui.doText(GEN_ID, Vector2(435, 170), imgui.getText(TextManager::NET_RULES_TITLE) );
+	std::string rulesstring = status.mPossibleRules.at(mRules) + imgui.getText(TextManager::NET_RULES_BY);
 	rulesstring += status.mPossibleRulesAuthor.at(mRules);
 	for (unsigned int i = 0; i < rulesstring.length(); i += 25)
 	{
@@ -491,7 +491,7 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 	// open game button
 	if( mIsHost )
 	{
-		if( imgui.doButton(GEN_ID, Vector2(435, 395), TextManager::getSingleton()->getString(TextManager::NET_LEAVE) ) )
+		if( imgui.doButton(GEN_ID, Vector2(435, 395), imgui.getText(TextManager::NET_LEAVE) ) )
 		{
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_LOBBY);
@@ -499,7 +499,7 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 			mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
 		}
 
-		if( !no_players && (imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::MNU_LABEL_START) ) || doEnterGame) )
+		if( !no_players && (imgui.doButton(GEN_ID, Vector2(435, 430), imgui.getText(TextManager::MNU_LABEL_START) ) || doEnterGame) )
 		{
 			// Start Game
 			RakNet::BitStream stream;
@@ -512,12 +512,12 @@ void LobbyGameSubstate::step( const ServerStatusData& status )
 
 		if( no_players )
 		{
-			imgui.doText(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::GAME_WAITING));
+			imgui.doText(GEN_ID, Vector2(435, 430), imgui.getText(TextManager::GAME_WAITING));
 		}
 	}
 	else
 	{
-		if( imgui.doButton(GEN_ID, Vector2(435, 430), TextManager::getSingleton()->getString(TextManager::NET_LEAVE) ) )
+		if( imgui.doButton(GEN_ID, Vector2(435, 430), imgui.getText(TextManager::NET_LEAVE) ) )
 		{
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_LOBBY);

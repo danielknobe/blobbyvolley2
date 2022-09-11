@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "BlobbyDebug.h"
 
 
+class BloodManager;
+
 // Text definitions
 static const int FONT_WIDTH_NORMAL 	=	24;	// Height and width of the normal font.
 static const int LINE_SPACER_NORMAL	=	 6;	// Extra space between 2 lines in a normal SelectBox.
@@ -101,7 +103,7 @@ struct BufferedImage : public ObjectCounter<BufferedImage>
 class RenderManager : public ObjectCounter<RenderManager>
 {
 	public:
-		virtual ~RenderManager() = default;
+		virtual ~RenderManager();
 
 		static RenderManager* createRenderManagerSDL();
 		//static RenderManager* createRenderManagerGP2X();
@@ -114,6 +116,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		}
 
 		Color getOscillationColor() const;
+		BloodManager& getBlood();
 
 		// Draws the stuff
 		virtual void draw() = 0;
@@ -211,6 +214,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		bool mNeedRedraw;
 
 	private:
+		std::unique_ptr<BloodManager> mBloodMgr;
 		static RenderManager *mSingleton;
 
 };

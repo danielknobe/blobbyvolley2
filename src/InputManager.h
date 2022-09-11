@@ -47,7 +47,7 @@ class InputManager : public ObjectCounter<InputManager>
 		static InputManager* getSingleton();
 		~InputManager();
 
-		InputDevice* beginGame(PlayerSide side) const;
+		InputDevice* beginGame(PlayerSide side);
 
 		bool running() const;
 		void setEndBlobby();	// call to trigger the event that ends blobby, i.e. running will return false after this call.

@@ -21,10 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "Vector.h"
-#include <list>
-#include <boost/noncopyable.hpp>
+#include <vector>
+#include <random>
 
 //Bleeding blobs can be a lot of fun :)
+
+class RenderManager;
 
 /*!	\class Blood
 	\brief Container to hold the data of a single drop of blood
@@ -40,7 +42,7 @@ class Blood
 		
 		/// this function has to be called each step
 		/// it updates position and velocity.
-		void step();
+		void step(RenderManager& renderer);
 		
 		/// gets the current position of this drop
 		const Vector2& getPosition() const { return mPos; }
@@ -55,13 +57,15 @@ class Blood
 /*!	\class BloodManager
 	\brief Manages blood effects
 	\details this class is responsible for managing blood effects, creating and deleting the particles, 
-			updating their positions etc. It is designed as a singleton, so it is noncopyable.
+			updating their positions etc.
 */
-class BloodManager : private boost::noncopyable
+class BloodManager
 {
 	public:
+		explicit BloodManager(bool enabled);
+
 		/// update function, to be called each step.
-		void step();
+		void step(RenderManager& renderer);
 		
 		/// \brief creates a blood effect
 		/// \param pos Position the effect occurs
@@ -71,31 +75,18 @@ class BloodManager : private boost::noncopyable
 		
 		/// enables or disables blood effects
 		void enable(bool enable) { mEnabled = enable; }
-		
-		/// gets the instance of BloodManager, creating one if it does not exists
-		static BloodManager& getSingleton()
-		{
-			if (!mSingleton)
-				mSingleton = new BloodManager;
-			
-			return *mSingleton;
-		}
-		
+
 	private:
-		/// default constructor, sets mEnabled to the value
-		///	set in config.xml
-		BloodManager();
-		
 		/// helper function which returns an integer between 
 		/// min and max, boundaries included
-		static int random(int min, int max);
+		int random(int min, int max);
 		
 		/// list which contains all currently existing blood particles
-		std::list<Blood> mParticles;
+		std::vector<Blood> mParticles;
 		
 		/// true, if blood should be handled/drawn
 		bool mEnabled;
-		
-		/// singleton
-		static BloodManager* mSingleton;
+
+		/// Random number generator
+		std::mt19937 mRng;
 };

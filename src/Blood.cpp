@@ -22,15 +22,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 
 /* includes */
-#include <cstdlib>
+#include <algorithm>
 
 #include "RenderManager.h"
-#include "IUserConfigReader.h"
 
 /* implementation */
-
-
-BloodManager* BloodManager::mSingleton = nullptr;
 
 // Blood class
 // ------------
@@ -43,13 +39,13 @@ Blood::Blood(const Vector2& position, const Vector2& direction, int player):
 {
 }
 
-void Blood::step()
+void Blood::step(RenderManager& renderer)
 {
 	const float GRAVITY = 3;
 	/// \todo this is the only place where we do step-rate independent calculations.
 	///			is this intended behaviour???
 	int diff = SDL_GetTicks() - mLastFrame;
-	RenderManager::getSingleton().drawParticle(mPos, mPlayer);
+	renderer.drawParticle(mPos, mPlayer);
 	const int SPEED = 45;
 	
 	//this calculation is NOT based on physical rules
@@ -63,34 +59,31 @@ void Blood::step()
 // -------------------
 
 
-BloodManager::BloodManager()
+BloodManager::BloodManager(bool enabled) : mEnabled(enabled)
 {
-	mEnabled =  IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood");
 }
 
-void BloodManager::step()
+void BloodManager::step(RenderManager& renderer)
 {
 	// don't do any processing if there are no particles
 	if ( !mEnabled || mParticles.empty() )
 		return;
 	
 	// start drawing
-	RenderManager::getSingleton().startDrawParticles();
+	renderer.startDrawParticles();
 	
 	// iterate over all particles
-	auto it = mParticles.begin();
-	while (it != mParticles.end())
-	{
-		auto it2 = it;
-		++it;	
-		it2->step();
-		// delete particles below lower screen border
-		if (it2->getPosition().y > 600)
-			mParticles.erase(it2);
+	for(auto& pt : mParticles) {
+		pt.step(renderer);
 	}
 	
 	// finish drawing
-	RenderManager::getSingleton().endDrawParticles();
+	renderer.endDrawParticles();
+
+	// delete old particles
+	mParticles.erase(std::remove_if(begin(mParticles), end(mParticles), [](const Blood& particle) {
+		return particle.getPosition().y > 600;
+	}), mParticles.end());
 }
 
 void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
@@ -108,12 +101,12 @@ void BloodManager::spillBlood(Vector2 pos, float intensity, int player)
 		if( ( y * y / (EL_Y_AXIS * EL_Y_AXIS) + x * x / (EL_X_AXIS * EL_X_AXIS) ) > intensity * intensity)
 			continue;
 		
-		mParticles.push_front( Blood(pos, Vector2(x, y), player) );
+		mParticles.emplace_back(pos, Vector2(x, y), player );
 	}
 }
 
 int BloodManager::random(int min, int max)
 {
-	/// \todo is this really a good way of creating these numbers?
-	return (int)((double(rand()) / RAND_MAX) * (max - min)) + min;
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist(mRng);
 }

@@ -322,11 +322,11 @@ void NetworkSearchState::step_impl()
 		imgui.doText(GEN_ID, Vector2(50, 130), mScannedServers[mSelectedServer].hostname);
 
 		std::stringstream activegames;
-		activegames << TextManager::getSingleton()->getString(TextManager::NET_ACTIVE_GAMES)
+		activegames << imgui.getText(TextManager::NET_ACTIVE_GAMES)
 					<< mScannedServers[mSelectedServer].activegames;
 		imgui.doText(GEN_ID, Vector2(50, 160), activegames.str());
 		std::stringstream waitingplayer;
-		waitingplayer << TextManager::getSingleton()->getString(TextManager::NET_WAITING_PLAYER)
+		waitingplayer << imgui.getText(TextManager::NET_WAITING_PLAYER)
 					  << mScannedServers[mSelectedServer].waitingplayers;
 		imgui.doText(GEN_ID, Vector2(50, 190), waitingplayer.str());
 		std::string description = mScannedServers[mSelectedServer].description;
