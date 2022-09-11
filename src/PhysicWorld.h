@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <functional>	// for std::function used for the callback
 
 /*! \brief blobby world
-	\details This class encapuslates the physical world where blobby happens. It manages the two blobs,
+	\details This class encapsulates the physical world where blobby happens. It manages the two blobs,
 			the ball and collisions between them and the environment, it calculates object movements etc.
 */
 class PhysicWorld : public ObjectCounter<PhysicWorld>
@@ -50,7 +50,7 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		Vector2 getBallVelocity() const;
 		void setBallVelocity( Vector2 newVelocity );
 		float getBallRotation() const;
-		void setBallAngularVelocity( float angvel );
+		void setBallAngularVelocity( float angular_velocity );
 
 		// blobby information queries
 		Vector2 getBlobPosition(PlayerSide player) const;
@@ -81,7 +81,7 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		inline bool playerTopBallCollision(int player) const;
 		inline bool playerBottomBallCollision(int player) const;
 
-		// Do all blobby-related physic stuff which is independent from states
+		// Do all blobby-related physic stuff which is independent of states
 		void handleBlob(PlayerSide player, PlayerInput input);
 
 		// Detect and handle ball to blobby collisions
@@ -99,8 +99,6 @@ class PhysicWorld : public ObjectCounter<PhysicWorld>
 		float mBallAngularVelocity;
 		float mBlobState[MAX_PLAYERS];
 		float mCurrentBlobbyAnimationSpeed[MAX_PLAYERS];
-
-		float mLastHitIntensity;
 
 		event_callback_fn mCallback;
 };
