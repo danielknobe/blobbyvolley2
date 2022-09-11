@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <vector>
-#include <boost/scoped_ptr.hpp>
 #include <memory>
 
 #include "GameLogic.h"
@@ -51,14 +50,14 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// If remote is true, only physical responses will be calculated
 		// but hit events and score events are received from network
 
-		DuelMatch(bool remote, std::string rules, int score_to_win = 0);
+		DuelMatch(bool remote, const std::string& rules, int score_to_win = 0);
 
-		void setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer);
-		void setInputSources(std::shared_ptr<InputSource> linput, std::shared_ptr<InputSource> rinput );
+		void setPlayers(PlayerIdentity left_player, PlayerIdentity right_player);
+		void setInputSources(std::shared_ptr<InputSource> left_input, std::shared_ptr<InputSource> right_input );
 
 		~DuelMatch();
 
-		void setRules(std::string rulesFile, int score_to_win = 0);
+		void setRules(const std::string& rulesFile, int score_to_win = 0);
 
 		void reset();
 
@@ -131,7 +130,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 	private:
 
-		boost::scoped_ptr<PhysicWorld> mPhysicWorld;
+		std::unique_ptr<PhysicWorld> mPhysicWorld;
 
 		std::shared_ptr<InputSource> mInputSources[MAX_PLAYERS];
 		PlayerInput mTransformedInput[MAX_PLAYERS];
