@@ -36,17 +36,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class MouseInputDevice : public InputDevice
 {
+	public:
+		~MouseInputDevice() override;
+		MouseInputDevice(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity);
+		PlayerInputAbs transferInput() override;
+
 	private:
 		PlayerSide mPlayer;
 		int mJumpButton;
 		int mMarkerX;
 		bool mDelay; // The pressed button of the mainmenu must be ignored
 		float mSensitivity;
-
-	public:
-		~MouseInputDevice() override;
-		MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity);
-		PlayerInputAbs transferInput() override;
+		InputManager* mInputManager;
 };
 
 // ********************************************************************************************************
@@ -57,7 +58,7 @@ class MouseInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float s)
+InputDevice* createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float s)
 {
 	float maxFactor = 3;
 	// mapping  [0:1]  -> [-1:1] 	: se = (s - 0.5) * 2
@@ -70,28 +71,29 @@ InputDevice* createMouseInput(PlayerSide player, int jumpbutton, float s)
 	float se = (s - 0.5) * 2;
 	float sensitivity = std::exp(std::log(maxFactor) * se);
 
-	return new MouseInputDevice(player, jumpbutton, sensitivity);
+	return new MouseInputDevice(inputMgr, player, jumpbutton, sensitivity);
 }
 
 // -------------------------------------------------------------------------------------------------
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
-MouseInputDevice::MouseInputDevice(PlayerSide player, int jumpbutton, float sensitivity)
-	: InputDevice(), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity )
+MouseInputDevice::MouseInputDevice(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity)
+	: InputDevice(), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity ),
+	mInputManager(inputMgr)
 {
 	if (SDL_GetMouseState(nullptr, nullptr))
 		mDelay = true;
 	else
 		mDelay = false;
 
-	assert(InputManager::getSingleton()->isMouseCaptured() == false);
-	InputManager::getSingleton()->captureMouse( true );
+	assert(mInputManager->isMouseCaptured() == false);
+	mInputManager->captureMouse( true );
 }
 
 MouseInputDevice::~MouseInputDevice()
 {
-	assert(InputManager::getSingleton()->isMouseCaptured() == true);
-	InputManager::getSingleton()->captureMouse( false );
+	assert(mInputManager->isMouseCaptured() == true);
+	mInputManager->captureMouse( false );
 }
 
 PlayerInputAbs MouseInputDevice::transferInput()
