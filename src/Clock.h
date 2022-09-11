@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include <ctime>
+#include <chrono>
 
 /*! \class Clock
 	\brief Game Timing Management
@@ -31,8 +31,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class Clock
 {
 	public:
+		using seconds = std::chrono::seconds;
+		using milliseconds = std::chrono::milliseconds;
+
 		/// default c'tor
-		Clock();
+		Clock() = default;
 		
 		/// starts/unpauses the clock
 		void start();
@@ -50,24 +53,33 @@ class Clock
 		void step();
 		
 		/// gets the time in seconds as an integer
-		int getTime() const;
+		seconds getTime() const;
 		
 		/// set the time to a specified value
 		/// \param newTime: new time in seconds
-		void setTime(int newTime);
+		void setTime(seconds newTime);
 		
 		/// returns the time as a string
-		std::string getTimeString() const;
+		const std::string& getTimeString() const;
 		
 	private:
 		/// is the clock currently running?
-		bool mRunning;
+		bool mRunning{false};
 		
-		/// recorded time in seconds
-		time_t mGameTime;
+		/// recorded time in milliseconds. Do not write to this directly, but use
+		/// `updateGameTime` to ensure synchronization with `mCurrentTimeString`
+		milliseconds mGameRunning{0};
 		
 		/// last time that step was called. 
 		/// needed to calculate the time difference.
-		time_t mLastTime;
-		
+		milliseconds mLastTime{0};
+
+		/// Currently formatted time text
+		std::string mCurrentTimeString;
+
+		/// Sets the new game time, and updates `mCurrentTimeString` if appropriate.
+		void updateGameTime(milliseconds newTime);
+
+		/// Formats the given amount of seconds into a time string.
+		static std::string makeTimeString(seconds time);
 };
