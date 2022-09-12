@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <cassert>
 #include <iostream> /// \todo remove this? currently needed for that probeDir error messages
+#include <utility>
 
 #include <physfs.h>
 
@@ -34,8 +35,9 @@ FileSystem* mFileSystemSingleton = nullptr;
 FileSystem::FileSystem(const std::string& path)
 {
 	assert(mFileSystemSingleton == nullptr);
-	PHYSFS_init(path.c_str());
-	/// \todo do we need to check if this operation suceeded?
+	if(PHYSFS_init(path.c_str()) == 0) {
+		BOOST_THROW_EXCEPTION(PhysfsInitException(path));
+	}
 	mFileSystemSingleton = this;
 }
 
@@ -165,7 +167,39 @@ std::string makeSafePhysfsErrorString()
 }
 
 
-PhysfsException::PhysfsException() : mPhysfsErrorMsg( makeSafePhysfsErrorString() )
+PhysfsException::PhysfsException() : PhysfsException("physfs reported an error: ")
 {
 }
 
+PhysfsException::PhysfsException(std::string prefix) :
+	mPhysfsError(makeSafePhysfsErrorString())
+{
+	mMessage = std::move(prefix) + mPhysfsError;
+}
+
+PhysfsInitException::PhysfsInitException(std::string path) :
+PhysfsException("could not initialise physfs to path " + path + ": "), mPath(std::move(path))
+{
+}
+
+FileLoadException::FileLoadException(const std::string& name) :
+	FileException(name), PhysfsException("Couldn't open " + name + ": ")
+{
+}
+
+FileAlreadyExistsException::FileAlreadyExistsException(std::string name) : FileException(std::move(name))
+{
+	mMessage = "File " + getFileName() + " already exists.";
+}
+
+PhysfsFileException::PhysfsFileException(const std::string& filename) : FileException(filename) {
+	mMessage = getFileName() + ": " + getPhysfsMessage();
+}
+
+NoFileOpenedException::NoFileOpenedException() : FileException("") {
+	mMessage = "trying to perform a file operation when no file was opened.";
+}
+
+EOFException::EOFException(std::string file) : FileException( std::move(file) ) {
+	mMessage = getFileName() + " trying to read after eof.";
+}

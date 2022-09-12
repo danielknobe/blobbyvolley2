@@ -32,12 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "tinyxml2.h"
 
-extern "C"
-{
-#include "lua/lua.h"
-#include "lua/lauxlib.h"
-#include "lua/lualib.h"
-}
+#include "lua/lua.hpp"
 
 #include "Global.h"
 
@@ -127,20 +122,20 @@ float FileRead::readFloat()
 
 std::string FileRead::readString()
 {
-	char buffer[32]; 		// thats our read buffer
-	std::string read;	    // thats what we read so far
+	char buffer[32]; 		// that's our read buffer
+	std::string read;	    // that's what we read so far
 	size_t len = length();
 
 	while(true)	// check that we can read as much as want
 	{
-		int maxread = std::min(sizeof(buffer), len - tell());
-		readRawBytes( buffer, maxread );	// read into buffer
+		int max_read = std::min( sizeof(buffer), len - tell());
+		readRawBytes( buffer, max_read );	// read into buffer
 
-		for(int i = 0; i < maxread; ++i)
+		for( int i = 0; i < max_read; ++i)
 		{
 			if(buffer[i] == 0)
 			{
-				seek( tell() - maxread + i + 1);
+				seek( tell() - max_read + i + 1);
 				return read;
 			}
 			else
@@ -150,7 +145,7 @@ std::string FileRead::readString()
 		}
 
 		// when we reached the end of file
-		if(maxread < 32)
+		if( max_read < 32)
 			break;
 	}
 
@@ -160,7 +155,7 @@ std::string FileRead::readString()
 
 uint32_t FileRead::calcChecksum(uint32_t start)
 {
-	uint32_t oldpos = tell();
+	uint32_t old_position = tell();
 	seek(start);
 
 	// buffered reading
@@ -171,20 +166,20 @@ uint32_t FileRead::calcChecksum(uint32_t start)
 
 	while(true)
 	{
-		int maxread = std::min(sizeof(buffer), len - tell());
-		readRawBytes( buffer, maxread );	// read into buffer
+		int max_read = std::min( sizeof(buffer), len - tell());
+		readRawBytes( buffer, max_read );	// read into buffer
 
-		for(int i = 0; i < maxread; ++i)
+		for( int i = 0; i < max_read; ++i)
 		{
-			crc.process_bytes(buffer, maxread);
+			crc.process_bytes( buffer, max_read);
 		}
 
-		if(maxread < 32)
+		if( max_read < 32)
 			break;
 	}
 
 	// return read pointer back to old position
-	seek(oldpos);
+	seek( old_position);
 
 	return crc();
 }
@@ -244,7 +239,7 @@ XMLDocumentPtr FileRead::readXMLDocument(const std::string& filename)
 	// create and load file
 	FileRead file(filename);
 
-	// thats quite ugly
+	// that's quite ugly
 	int fileLength = file.length();
 	boost::scoped_array<char> fileBuffer(new char[fileLength + 1]);
 	file.readRawBytes( fileBuffer.get(), fileLength );

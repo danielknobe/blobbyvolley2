@@ -42,7 +42,7 @@ class FileSystem : public boost::noncopyable, public ObjectCounter<FileSystem>
 
 		/// \brief enumerates files
 		/// \details searches for all files in a certain directory with a given extension. The found files
-		///			are returned as a vector containing the filenames. The extension is cuttet from the filenames.
+		///			are returned as a vector containing the filenames. The extension is removed from the filenames.
 		/// \param directory where to search
 		///	\param extension file types to search for.
 		/// \param keepExtension If true, the return vector contains the full filenames, if false [default behaviour], 
