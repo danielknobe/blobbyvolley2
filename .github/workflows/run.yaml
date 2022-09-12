@@ -1,0 +1,77 @@
+name: Sanitizers
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    name: ${{ matrix.os }} - ${{ matrix.build }} - ${{ matrix.sanitizer }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04]
+        build: [Debug, RelWithDebInfo]
+        sanitizer: [address, memory]
+
+    steps:
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+            cmake \
+            libsdl2-dev \
+            libphysfs-dev \
+            libboost-dev \
+            xvfb
+      - name: Get debug symbols
+        # TODO figure this out also for ubuntu-20
+        # TODO do these actually help?
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt install ubuntu-dbgsym-keyring
+          
+          echo "Add debug symbol repository"
+          echo "deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted universe multiverse" | \
+          sudo tee -a /etc/apt/sources.list.d/ddebs.list
+          echo "deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted universe multiverse" | \
+          sudo tee -a /etc/apt/sources.list.d/ddebs.list
+          
+          echo "Update apt"
+          sudo apt-get update
+          
+          echo "Install debug symbols"
+          sudo apt-get install libsdl2-dev-dbgsym libphysfs-dev-dbgsym
+
+      - uses: actions/checkout@v2
+
+      - name: Setup Address Sanitizer
+        if: matrix.sanitizer == 'address'
+        run: |
+          echo "LDFLAGS=-fsanitize=address,undefined,leak -lgcov" >> $GITHUB_ENV
+          echo "CXXFLAGS=-fsanitize=address,undefined,leak -fno-omit-frame-pointer --coverage" >> $GITHUB_ENV
+
+      - name: Setup Memory Sanitizer
+        if: matrix.sanitizer == 'memory'
+        # memory sanitizer is not available for GCC, so we run it with clang
+        # TODO memory sanitizer requires that all libraries also be compiled with it
+        # to prevent false positives, so we should compile the c++ stdlib, sdl and libphysfs
+        # here, too.
+        # We install llvm, because this contains the llvm-symbolizer executable.
+        run: |
+          sudo apt-get install clang llvm
+          echo "CXX=clang++" >> $GITHUB_ENV
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+      - name: Configure CMake and Build
+        run: |
+          cmake . -DCMAKE_BUILD_TYPE=${{ matrix.build }}
+          cmake --build . --target blobby-runtest
+      - name: Running the game
+        run: |
+          xvfb-run src/blobby-runtest
+
+      - name: Show results
+        run: ls
