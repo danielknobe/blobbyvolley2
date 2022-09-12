@@ -90,9 +90,9 @@ class RenderManagerSDL : public RenderManager
 		std::vector<SDL_Texture*> mFont;
 		std::vector<SDL_Texture*> mHighlightFont;
 
-		SDL_Texture *mOverlayTexture;
+		SDL_Texture* mOverlayTexture = nullptr;
 
-		SDL_Renderer* mRenderer;
+		SDL_Renderer* mRenderer = nullptr;
 
 		Vector2 mBallPosition;
 		float mBallRotation;
@@ -107,7 +107,7 @@ class RenderManagerSDL : public RenderManager
 		Color mBlobColor[MAX_PLAYERS];
 
 		// Rendertarget to make windowmode resizeable
-		SDL_Texture* mRenderTarget;
+		SDL_Texture* mRenderTarget = nullptr;
 
 		// colors a surface
 		// the returned SDL_Surface* is already converted into DisplayFormat

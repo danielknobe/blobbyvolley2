@@ -32,60 +32,39 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 
 	SDL_LockSurface(newSurface);
 
-	SDL_Color pixel;
+	Uint32* surface_pixels = (Uint32*)newSurface->pixels;
 
 	for (int p = 0; p < newSurface->w * newSurface->h; ++p)
 	{
-		SDL_GetRGBA(((Uint32*)newSurface->pixels)[p], 
-		              newSurface->format,
-		              &pixel.r,
-		              &pixel.g,
-		              &pixel.b,
-		              &pixel.a);
+		SDL_Color pixel;
+		SDL_GetRGBA(surface_pixels[p], newSurface->format, &pixel.r, &pixel.g, &pixel.b, &pixel.a);
 
-		const bool colorkey = !(pixel.r | pixel.g | pixel.b);
+		const bool color_key = !(pixel.r | pixel.g | pixel.b);
 
-		if (colorkey)
-		{
-			pixel.r = 0;
-			pixel.g = 0;
-			pixel.b = 0;
-			pixel.a = 0;
-		}
-		else
+		if(!color_key)
 		{
 			int rr = (int(pixel.r) * int(color.r)) >> 8;
 			int rg = (int(pixel.g) * int(color.g)) >> 8;
 			int rb = (int(pixel.b) * int(color.b)) >> 8;
 			int fak = int(pixel.r) * 5 - 4 * 256 - 138;
 
+			auto clamp = [fak](int value) {
+				// Bright pixels in the original image should remain bright!
+				if (fak > 0)
+					value += fak;
+				// This is clamped to 1 because dark colors may would be
+				// color-keyed otherwise
+				return std::max(1, std::min(value, 255));
+			};
 
-			if (fak > 0)
-			{
-				rr += fak;
-				rg += fak;
-				rb += fak;
-			}
-			rr = rr < 255 ? rr : 255;
-			rg = rg < 255 ? rg : 255;
-			rb = rb < 255 ? rb : 255;
-
-			// This is clamped to 1 because dark colors may would be
-			// colorkeyed otherwise
-			pixel.r = rr > 0 ? rr : 1;
-			pixel.g = rg > 0 ? rg : 1;
-			pixel.b = rb > 0 ? rb : 1;
+			surface_pixels[p] = SDL_MapRGBA(newSurface->format, clamp(rr), clamp(rg), clamp(rb), pixel.a);
 		}
 
-		((Uint32*)newSurface->pixels)[p] = SDL_MapRGBA(newSurface->format, 
-		                                               pixel.r, 
-		                                               pixel.g, 
-		                                               pixel.b, 
-		                                               pixel.a);
+
 	}
 	SDL_UnlockSurface(newSurface);
 
-	// Use a black colorkey
+	// Use a black color-key
 	SDL_SetColorKey(newSurface, SDL_TRUE, SDL_MapRGB(newSurface->format, 0, 0, 0));
 
 	return newSurface;
@@ -211,21 +190,21 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		char filename[64];
 		sprintf(filename, "gfx/blobbym%d.bmp", i);
 		SDL_Surface* blobImage = loadSurface(filename);
-		SDL_Surface* formatedBlobImage = SDL_ConvertSurfaceFormat(blobImage, SDL_PIXELFORMAT_ABGR8888, 0);
+		SDL_Surface* formattedBlobImage = SDL_ConvertSurfaceFormat(blobImage, SDL_PIXELFORMAT_ABGR8888, 0);
 		SDL_FreeSurface(blobImage);
 
-		SDL_SetColorKey(formatedBlobImage, SDL_TRUE,
-				SDL_MapRGB(formatedBlobImage->format, 0, 0, 0));
-		for(int j = 0; j < formatedBlobImage->w * formatedBlobImage->h; j++)
+		SDL_SetColorKey(formattedBlobImage, SDL_TRUE,
+				SDL_MapRGB(formattedBlobImage->format, 0, 0, 0));
+		for(int j = 0; j < formattedBlobImage->w * formattedBlobImage->h; j++)
 		{
-			SDL_Color* pixel = &(((SDL_Color*)formatedBlobImage->pixels)[j]);
+			SDL_Color* pixel = &(((SDL_Color*)formattedBlobImage->pixels)[j]);
 			if (!(pixel->r | pixel->g | pixel->b))
 			{
 				pixel->a = 0;
 			}
 		}
 
-		mStandardBlob.push_back(formatedBlobImage);
+		mStandardBlob.push_back(formattedBlobImage);
 
 		// Load blobby shadow surface
 		sprintf(filename, "gfx/sch1%d.bmp", i);
@@ -252,9 +231,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Texture* leftBlobTex = SDL_CreateTexture(mRenderer,
 				SDL_PIXELFORMAT_ABGR8888,
 				SDL_TEXTUREACCESS_STREAMING,
-				formatedBlobImage->w, formatedBlobImage->h);
+				formattedBlobImage->w, formattedBlobImage->h);
 		SDL_SetTextureBlendMode(leftBlobTex, SDL_BLENDMODE_BLEND);
-		SDL_UpdateTexture(leftBlobTex, nullptr, formatedBlobImage->pixels, formatedBlobImage->pitch);
+		SDL_UpdateTexture(leftBlobTex, nullptr, formattedBlobImage->pixels, formattedBlobImage->pitch);
 
 		mLeftBlob.emplace_back(
 				leftBlobTex,
@@ -263,9 +242,9 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		SDL_Texture* rightBlobTex = SDL_CreateTexture(mRenderer,
 				SDL_PIXELFORMAT_ABGR8888,
 				SDL_TEXTUREACCESS_STREAMING,
-				formatedBlobImage->w, formatedBlobImage->h);
+				formattedBlobImage->w, formattedBlobImage->h);
 		SDL_SetTextureBlendMode(rightBlobTex, SDL_BLENDMODE_BLEND);
-		SDL_UpdateTexture(rightBlobTex, nullptr, formatedBlobImage->pixels, formatedBlobImage->pitch);
+		SDL_UpdateTexture(rightBlobTex, nullptr, formattedBlobImage->pixels, formattedBlobImage->pitch);
 
 		mRightBlob.emplace_back(
 				rightBlobTex,
@@ -717,7 +696,7 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 	setBlobColor(toDraw, col);
 	/// \todo this recolores the current frame (0)
-	/// + shadows; thats not exactly what we want
+	/// + shadows; that's not exactly what we want
 	colorizeBlobs(toDraw);
 
 
