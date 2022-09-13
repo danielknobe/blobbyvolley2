@@ -346,7 +346,6 @@ void RenderManagerSDL::deinit()
 	for(auto& i : mMarker) {
 		SDL_DestroyTexture(i);
 	}
-	SDL_DestroyTexture(mBackground);
 
 	for(auto& i : mBall)
 		SDL_DestroyTexture(i);
@@ -371,6 +370,11 @@ void RenderManagerSDL::deinit()
 	{
 		SDL_DestroyTexture(mFont[i]);
 		SDL_DestroyTexture(mHighlightFont[i]);
+	}
+
+	for(const auto& image : mImageMap) {
+		SDL_DestroyTexture(image.second->sdlImage);
+		delete image.second;
 	}
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON

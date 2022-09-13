@@ -271,18 +271,25 @@ void TextManager::setDefault()
 	mStrings[UPDATE_NOTIFICATION] = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley";
 }
 
-std::map<std::string, std::string> TextManager::language_names;
-
-struct lang_init{
-	lang_init(){
-		TextManager::language_names["de"] = "deutsch";
-		TextManager::language_names["en"] = "english";
-		TextManager::language_names["fr"] = "francais";
-		TextManager::language_names["es"] = "español";
-		TextManager::language_names["it"] = "italiano";
-		TextManager::language_names["cs"] = "česky";
+/// map to map abbreviations to full name (e.g. de to deutsch)
+namespace {
+	using lang_map_t = std::map<std::string, std::string>;
+	lang_map_t makeLanguageNamesMap() {
+		std::map<std::string, std::string> map {
+				{"de", "deutsch"},
+				{"en", "english"},
+				{"fr", "français"},
+				{"es", "español"},
+				{"it", "italiano"},
+				{"cs", "česky"},
+		};
+		return map;
 	}
-};
-static lang_init init;
+}
 
+const lang_map_t& TextManager::languageNames()
+{
+	static lang_map_t map = makeLanguageNamesMap();
+	return map;
+}
 

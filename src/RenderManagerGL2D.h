@@ -116,7 +116,7 @@ class RenderManagerGL2D : public RenderManager
 		void glDisable(unsigned int flag);
 		void glBindTexture(GLuint texture);
 
-		GLuint mCurrentTexture;
+		GLuint mCurrentTexture = 0;
 		std::set<unsigned int> mCurrentFlags;
 };
 
