@@ -1,0 +1,40 @@
+# The purpose of this workflow is to verify that we are compatible with older versions of CMake than available through
+# the ubuntu package sources
+name: Old CMake
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    env:
+      CMAKE_VERSION: 3.3.0
+    steps:
+      - name: Setup Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+            libsdl2-dev \
+            libphysfs-dev \
+            libboost-dev
+      - uses: actions/checkout@v2
+      - name: Get CMake
+        # note: newer versions of cmake have changed the naming scheme to use lower-case 'linux',
+        # which will break this script
+        run: |
+          wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar -xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          mv cmake-${CMAKE_VERSION}-Linux-x86_64 old-cmake
+      - name: Configure CMake and Build
+        run: |
+          echo "Using CMake"
+          old-cmake/bin/cmake --version
+          echo "Configuring"
+          old-cmake/bin/cmake .
+          echo "Building"
+          old-cmake/bin/cmake --build .
