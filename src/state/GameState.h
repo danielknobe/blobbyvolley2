@@ -53,7 +53,7 @@ protected:
 	// ui helpers
 	using QueryOption = std::tuple<TextManager::STRING, std::function<void()> >;
 	/// this function draws a query with 3 options
-	/// it calls the function inside the QueryOption when the coresponding text is clicked
+	/// it calls the function inside the QueryOption when the corresponding text is clicked
 	void displayQueryPrompt(int height, TextManager::STRING title, const QueryOption& opt1, const QueryOption& opt2, const QueryOption& opt3);
 
 	/// this function draws the save replay ui

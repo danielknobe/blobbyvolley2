@@ -129,7 +129,7 @@ PlayerInputAbs TouchInputDevice::transferInput()
 
 
 	// *********************************************************************************
-	// *playerside is devided in left/right move button, opponentside is the jumpbutton*
+	// *playerside is divided in left/right move button, opponentside is the jumpbutton*
 	// *********************************************************************************
 	case 1:
 	{

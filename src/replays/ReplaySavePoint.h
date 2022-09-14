@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 struct ReplaySavePoint
 {
-	DuelMatchState state;		// state of the match when the snapshot occured
+	DuelMatchState state;		// state of the match when the snapshot occurred
 	unsigned int step;		// number of game step this snapshot happened
 	void reset();
 	bool isEmpty() const;

@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GP2X GP2X
 #endif
 
-// Detect wheather we have a desktop or mobile target
+// Detect whether we have a desktop or mobile target
 #if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
 #define BLOBBY_ON_MOBILE true
 #define BLOBBY_ON_DESKTOP false
@@ -49,8 +49,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /*!	\def DEBUG
 	\brief Enable debugging support
-	\details when this marko is present, Blobby generates some additional debugging code
-			usefull for tracking down bugs.
+	\details when this marco is present, Blobby generates some additional debugging code
+			useful for tracking down bugs.
 */
 
 const int BLOBBY_PORT = 1234;

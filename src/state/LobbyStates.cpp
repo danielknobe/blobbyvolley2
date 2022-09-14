@@ -182,7 +182,7 @@ void LobbyState::step_impl()
 				}
 				}
 				break;
-			case ID_RULES_CHECKSUM: // this packet is send when a game was created, so we probably are joining a game here.
+			case ID_RULES_CHECKSUM: // this packet is sent when a game was created, so we probably are joining a game here.
 				// this is only a valid request if we are in the lobby game substate
 				assert(dynamic_cast<LobbyGameSubstate*>(mSubState.get()) != nullptr);
 				{

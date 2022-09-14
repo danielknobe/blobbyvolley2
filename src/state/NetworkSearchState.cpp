@@ -120,7 +120,7 @@ void NetworkSearchState::step_impl()
 				}
 				case ID_BLOBBY_SERVER_PRESENT:
 				{
-					//FIXME: We must copy the needed informations, so that we can call DeallocatePacket(packet)
+					//FIXME: We must copy the needed information, so that we can call DeallocatePacket(packet)
 					//FIXME: The client finds a server at this point, which is not valid
 					RakNet::BitStream stream(packet->data, packet->length, false);
 					stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
@@ -176,13 +176,13 @@ void NetworkSearchState::step_impl()
 				}
 				case ID_VERSION_MISMATCH:
 				{
-					// this packet is send when the client is older than the server!
+					// this packet is sent when the client is older than the server!
 					// so
 					RakNet::BitStream stream(packet->data, packet->length, false);
 					stream.IgnoreBytes(1);	// ID_VERSION_MISMATCH
 
 					// default values if server does not send versions.
-					// thats the 0.9 behaviour
+					// that's the 0.9 behaviour
 					int smajor = 0, sminor = 9;
 					stream.Read(smajor);	// load server version information
 					stream.Read(sminor);

@@ -58,7 +58,7 @@ struct VersionMismatchException : public std::exception, public ObjectCounter<Ve
 };
 
 /// \brief recording game
-/// \todo we safe replays in continuous storeage (array or std::vector)
+/// \todo we safe replays in continuous storage (array or std::vector)
 ///			which might be ineffective for huge replays (1h ~ 270kb)
 class ReplayRecorder : public ObjectCounter<ReplayRecorder>
 {

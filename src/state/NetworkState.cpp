@@ -172,7 +172,7 @@ void NetworkGameState::step_impl()
 				stream.Read((int&)mWinningPlayer);
 
 				// last point must not be added anymore, because
-				// the score is also simulated local so it is already
+				// the score is also simulated local, so it is already
 				// right. under strange circumstances this need not
 				// be true, but then the score is set to the correy value
 				// by ID_BALL_RESET
@@ -236,7 +236,7 @@ void NetworkGameState::step_impl()
 					RenderManager::getSingleton().redraw();
 				}
 
-				// Workarround for SDL-Renderer
+				// Workaround for SDL-Renderer
 				// Hides the GUI when networkgame starts
 				rmanager->redraw();
 

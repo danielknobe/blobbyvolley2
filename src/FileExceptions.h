@@ -45,7 +45,7 @@ class FileSystemException : public std::exception
 };
 
 /*! \class PhysfsException
-	\brief signales errors reported by physfs
+	\brief signals errors reported by physfs
 	\details base class for all exceptions that report physfs errors;
 */
 class PhysfsException : public virtual FileSystemException
@@ -125,7 +125,7 @@ class PhysfsFileException : public FileException, public PhysfsException
 /*!	\class NoFileOpenedException
 	\brief signals operations on closed files
 	\details Exceptions of this type are thrown when any file modifying or information querying
-				functions are called without a file beeing opened. These are serious errors
+				functions are called without a file being opened. These are serious errors
 				and generally, exceptions of this type should not occur, as it indicates logical
 				errors in the code. Still, this allows us to handle this situation without having
 				to crash or exit.

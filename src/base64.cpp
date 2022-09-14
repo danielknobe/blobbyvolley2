@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <array>
 #include <iterator>
-#include <iostream>
 
 #include "base64.h"
 
@@ -54,7 +53,7 @@ constexpr uint8_t find_in_table(uint8_t entry)
 	return is_valid(entry) ? translation_table[N] == entry ? N : find_in_table<N-1>(entry) : -1;
 }
 template<>
-constexpr uint8_t find_in_table<0>(uint8_t entry) { return 0; };
+constexpr uint8_t find_in_table<0>(uint8_t entry) { return 0; }
 
 template <uint8_t ... Ns> struct index_seq
 {

@@ -131,7 +131,7 @@ int lua_pushvector(lua_State* state, const Vector2& v, VectorType type)
 	return 2;
 }
 
-static inline int lua_toint(lua_State* state, int index)
+static inline int lua_to_int(lua_State* state, int index)
 {
 	double value = lua_tonumber(state, index);
 	return int(value + (value > 0 ? 0.5 : -0.5));
@@ -209,7 +209,7 @@ int set_blob_data(lua_State* state)
 int get_blob_pos(lua_State* state)
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	return lua_pushvector(state, s->getBlobPosition(side), VectorType::POSITION);
@@ -218,7 +218,7 @@ int get_blob_pos(lua_State* state)
 int get_blob_vel(lua_State* state)
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	return lua_pushvector(state, s->getBlobVelocity(side), VectorType::VELOCITY);
@@ -227,7 +227,7 @@ int get_blob_vel(lua_State* state)
 int get_score( lua_State* state )
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	lua_pushinteger(state, s->getScore(side));
@@ -237,7 +237,7 @@ int get_score( lua_State* state )
 int get_touches( lua_State* state )
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)lua_toint(state, -1);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	lua_pushinteger(state, s->getTouches(side));
@@ -278,7 +278,6 @@ int simulate_steps( lua_State* state )
 	float vy = lua_tonumber( state, 5);
 	lua_pop( state, 5);
 
-	Vector2 v{vx, -vy};
 	world->setBallPosition( Vector2{x, 600 - y} );
 	world->setBallVelocity( Vector2{vx, -vy});
 	for(int i = 0; i < steps; ++i)
@@ -314,8 +313,7 @@ int simulate_until(lua_State* state)
 	}
 	const bool init = ival < coordinate;
 
-	// setup the world
-	Vector2 v{vx, -vy};
+	// set up the world
 	world->setBallPosition( Vector2{x, 600 - y} );
 	world->setBallVelocity( Vector2{vx, -vy});
 

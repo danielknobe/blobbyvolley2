@@ -37,7 +37,7 @@ namespace Layer {
 		/// @brief constructor, connects to an host
 		Http(std::string hostname, const int& port);
 
-		/// @brief deconstructor, closes connection to host
+		/// @brief destructor, closes connection to host
 		~Http();
 
 		/// @brief sends a request

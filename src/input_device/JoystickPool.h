@@ -72,7 +72,7 @@ struct JoystickAction : public ObjectCounter<JoystickAction>
 	SDL_Joystick* joy;
 	int joyid;
 
-	// Note: Axis are stored as the SDL axis +1, so we can used
+	// Note: Axis are stored as the SDL axis +1, so we can use
 	// the signedness as direction indication
 	int number;
 };

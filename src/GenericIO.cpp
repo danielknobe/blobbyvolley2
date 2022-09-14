@@ -392,11 +392,11 @@ std::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream)
 
 #define GENERATE_STD_SERIALIZER_OUT(type)		\
 	template<>									\
-	void predifined_serializer<type>::serialize(GenericOut& io, const type& value)
+	void predefined_serializer<type>::serialize(GenericOut& io, const type& value)
 
 #define GENERATE_STD_SERIALIZER_IN(type)		\
 	template<>									\
-	void predifined_serializer<type>::serialize(GenericIn& io, type& value)
+	void predefined_serializer<type>::serialize(GenericIn& io, type& value)
 
 #define GENERATE_STD_SERIALIZER(type, func)		\
 	GENERATE_STD_SERIALIZER_OUT(type) { io.func(value); };	\

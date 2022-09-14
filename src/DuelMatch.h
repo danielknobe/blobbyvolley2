@@ -39,7 +39,7 @@ class PhysicWorld;
 	\brief class representing a blobby game.
 	\details
 	This class represents a single game between two players
-	It applys the rules itself and provides an interface for querying
+	It applies the rules itself and provides an interface for querying
 	different parameters. For this purpose it is designed as something
 	similar to a singleton, but it can be instantiated
 	multiple times on a server or be completely unavailable
@@ -64,7 +64,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// This steps through one frame
 		void step();
 
-		// this methods allow external input
+		// these methods allow external input
 		// events triggered by the network
 		void setScore(int left, int right);
 		void resetBall(PlayerSide side);
@@ -73,7 +73,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// game is still running
 		PlayerSide winningPlayer() const;
 
-		// This methods report the current game state and a useful for
+		// These methods report the current game state and a useful for
 		// the input manager, which needs information about the blob
 		// positions and for lua export, which makes them accessible
 		// for scripted input sources

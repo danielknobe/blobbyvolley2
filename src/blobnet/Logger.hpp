@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Includes */
 
 /**
- * Macros for primitive plattform independend logging and debugging
+ * Macros for primitive platform independent logging and debugging
  *
  * This header include the the logging macros for debugging. 
  * You can log information by calling the LOG(class, message) macro.

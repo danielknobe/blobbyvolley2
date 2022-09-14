@@ -82,7 +82,7 @@ namespace detail
 	// helper classes to determine which io algorithm to use for which type
 
 	// if any template specialisation of this class inherits from std::true_type,
-	// this means that the io algorithm uses a predifined_serializer.
+	// this means that the io algorithm uses a predefined_serializer.
 	template<class T>
 	struct has_default_io_implementation : public std::false_type
 	{
@@ -185,7 +185,7 @@ namespace detail
 
 
 	template<class T>
-	struct predifined_serializer
+	struct predefined_serializer
 	{
 		static void serialize( GenericOut& out, const T& c);
 		static void serialize( GenericIn& in, T& c);
@@ -194,7 +194,7 @@ namespace detail
 	// inserts the methods from predefined_serializer, which are forward declared and
 	//  implemented in GenericIO.cpp. This happens when init is true_type
 	template<class T, bool b>
-	struct serialize_dispatch<T, std::true_type, b> : public predifined_serializer<T>
+	struct serialize_dispatch<T, std::true_type, b> : public predefined_serializer<T>
 	{
 
 	};

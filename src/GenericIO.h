@@ -121,16 +121,16 @@ class GenericIO : public boost::noncopyable
 		template<class T>
 		void generic( typename detail::conster<tag, T>::type data )
 		{
-			// thats a rather complicated template construct. It uses the serialize_dispatch template
-			// with working type T, std::true_type or std::false_type as init depending whether the
+			// that's a rather complicated template construct. It uses the serialize_dispatch template
+			// with working type T, std::true_type or std::false_type as init depending on whether the
 			// supplied type T has a default implementation associated (as determined by the
 			// has_default_io_implementation template).
-			// the second parameter is a bool which is true if the type offeres a container interface
+			// the second parameter is a bool which is true if the type offers a container interface
 			// and false otherwise (determined by the is_container_type template)
 			// depending on the second two template parameters, serialize_dispatch is either
-			// derived from detail::predifined_serializer (when init is std::true_type)
+			// derived from detail::predefined_serializer (when init is std::true_type)
 			// or UserSerializer if init is std::false_type and container is false.
-			// if it is a container type, the partial template specialisation foudn below is
+			// if it is a container type, the partial template specialisation found below is
 			// used to serialize that template.
 			detail::serialize_dispatch<T,
 										typename detail::has_default_io_implementation<T>::type,

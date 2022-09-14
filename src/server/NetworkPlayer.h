@@ -75,7 +75,7 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		std::shared_ptr<NetworkGame> mGame;
 
 		/* we could add more data such as stats,
-			accoutn info, etc later.
+			account info, etc later.
 		*/
 };
 

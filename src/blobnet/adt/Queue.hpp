@@ -36,7 +36,7 @@ namespace ADT {
 		/// @brief constructor, creates an queue
 		Queue();
 
-		/// @brief deconstructor, destroys an queue
+		/// @brief destructor, destroys an queue
 		~Queue();
 
 		/// @brief constructor, creates a copy of an queue
