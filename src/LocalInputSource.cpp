@@ -36,7 +36,6 @@ LocalInputSource::LocalInputSource(PlayerSide player)
 LocalInputSource::~LocalInputSource()
 {
 	RenderManager::getSingleton().setMouseMarker(-6);
-	delete mInputDevice;
 }
 
 

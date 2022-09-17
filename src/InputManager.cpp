@@ -59,7 +59,7 @@ InputManager::~InputManager()
 	JoystickPool::getSingleton().closeJoysticks();
 }
 
-InputDevice* InputManager::beginGame(PlayerSide side)
+std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 {
 	SDL_Window* window = RenderManager::getSingleton().getWindow();
 

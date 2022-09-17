@@ -52,9 +52,9 @@ class TouchInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createTouchInput(PlayerSide player, int type)
+std::unique_ptr<InputDevice> createTouchInput(PlayerSide player, int type)
 {
-	return new TouchInputDevice(player, type);
+	return std::unique_ptr<InputDevice>{new TouchInputDevice(player, type)};
 }
 
 // -------------------------------------------------------------------------------------------------

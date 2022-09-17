@@ -55,9 +55,9 @@ class JoystickInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump)
+std::unique_ptr<InputDevice> createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump)
 {
-	return new JoystickInputDevice(left, right, jump);
+	return std::unique_ptr<InputDevice>{new JoystickInputDevice(left, right, jump)};
 }
 
 // -------------------------------------------------------------------------------------------------

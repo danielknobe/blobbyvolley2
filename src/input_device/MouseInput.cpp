@@ -58,7 +58,7 @@ class MouseInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float s)
+std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float s)
 {
 	float maxFactor = 3;
 	// mapping  [0:1]  -> [-1:1] 	: se = (s - 0.5) * 2
@@ -71,7 +71,7 @@ InputDevice* createMouseInput(InputManager* inputMgr, PlayerSide player, int jum
 	float se = (s - 0.5) * 2;
 	float sensitivity = std::exp(std::log(maxFactor) * se);
 
-	return new MouseInputDevice(inputMgr, player, jumpbutton, sensitivity);
+	return std::unique_ptr<InputDevice>{new MouseInputDevice(inputMgr, player, jumpbutton, sensitivity)};
 }
 
 // -------------------------------------------------------------------------------------------------

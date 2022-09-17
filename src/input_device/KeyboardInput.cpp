@@ -50,9 +50,9 @@ class KeyboardInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump)
+std::unique_ptr<InputDevice> createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump)
 {
-	return new KeyboardInputDevice(left, right, jump);
+	return std::unique_ptr<InputDevice>{new KeyboardInputDevice(left, right, jump)};
 }
 
 // -------------------------------------------------------------------------------------------------
