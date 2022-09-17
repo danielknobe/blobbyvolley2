@@ -331,7 +331,7 @@ void setupPHYSFS()
 			if (!scontroller.doFramedrop())
 			{
 				rmanager->draw();
-				IMGUI::getSingleton().end();
+				IMGUI::getSingleton().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}

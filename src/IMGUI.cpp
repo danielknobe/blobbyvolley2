@@ -122,80 +122,78 @@ void IMGUI::begin()
 	mIdCounter = 0;
 }
 
-void IMGUI::end()
+void IMGUI::end(RenderManager& renderer)
 {
 	int FontSize;
-	RenderManager& rmanager = RenderManager::getSingleton();
-
 	while (!mQueue->empty())
 	{
 		QueueObject& obj = mQueue->front();
 		switch (obj.type)
 		{
 			case IMAGE:
-				rmanager.drawImage(obj.text, obj.pos1, obj.pos2);
+				renderer.drawImage( obj.text, obj.pos1, obj.pos2);
 				break;
 
 			case OVERLAY:
-				rmanager.drawOverlay(obj.alpha, obj.pos1, obj.pos2, obj.col);
+				renderer.drawOverlay( obj.alpha, obj.pos1, obj.pos2, obj.col);
 				break;
 
 			case TEXT:
-				rmanager.drawText(obj.text, obj.pos1, obj.flags);
+				renderer.drawText( obj.text, obj.pos1, obj.flags);
 				break;
 
 			case SCROLLBAR:
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
-				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
+				renderer.drawOverlay( 0.5, obj.pos1, obj.pos1 + Vector2( 210.0, 26.0));
+				renderer.drawImage( "gfx/scrollbar.bmp", obj.pos1 + Vector2( obj.pos2.x * 200.0 + 5 , 13));
 				break;
 
 			case ACTIVESCROLLBAR:
-				rmanager.drawOverlay(0.4, obj.pos1, obj.pos1 + Vector2(210.0, 26.0));
-				rmanager.drawImage("gfx/scrollbar.bmp",obj.pos1 + Vector2(obj.pos2.x * 200.0 + 5 , 13));
+				renderer.drawOverlay( 0.4, obj.pos1, obj.pos1 + Vector2( 210.0, 26.0));
+				renderer.drawImage( "gfx/scrollbar.bmp", obj.pos1 + Vector2( obj.pos2.x * 200.0 + 5 , 13));
 				break;
 
 			case EDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-				rmanager.drawOverlay(0.5, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
-				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
+				renderer.drawOverlay( 0.5, obj.pos1, obj.pos1 + Vector2( 10 + obj.length * FontSize, 10 + FontSize));
+				renderer.drawText( obj.text, obj.pos1 + Vector2( 5, 5), obj.flags);
 				break;
 
 			case ACTIVEEDITBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? FONT_WIDTH_SMALL : FONT_WIDTH_NORMAL);
-				rmanager.drawOverlay(0.3, obj.pos1, obj.pos1 + Vector2(10+obj.length*FontSize, 10+FontSize));
-				rmanager.drawText(obj.text, obj.pos1+Vector2(5, 5), obj.flags);
+				renderer.drawOverlay( 0.3, obj.pos1, obj.pos1 + Vector2( 10 + obj.length * FontSize, 10 + FontSize));
+				renderer.drawText( obj.text, obj.pos1 + Vector2( 5, 5), obj.flags);
 				if (obj.pos2.x >= 0)
-					rmanager.drawOverlay(1.0, Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5, obj.pos1.y+5), Vector2((obj.pos2.x)*FontSize+obj.pos1.x+5+3, obj.pos1.y+5+FontSize), Color(255,255,255));
+					renderer.drawOverlay( 1.0, Vector2((obj.pos2.x) * FontSize + obj.pos1.x + 5, obj.pos1.y + 5), Vector2((obj.pos2.x) * FontSize + obj.pos1.x + 5 + 3, obj.pos1.y + 5 + FontSize), Color( 255, 255, 255));
 				break;
 
 			case SELECTBOX:
 			case ACTIVESELECTBOX:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay((obj.type == SELECTBOX ? 0.5 : 0.3), obj.pos1, obj.pos2);
+				renderer.drawOverlay((obj.type == SELECTBOX ? 0.5 : 0.3), obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if( c == static_cast<unsigned int>(obj.selected) )
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
+						renderer.drawText( obj.entries[c], Vector2( obj.pos1.x + 5, obj.pos1.y + (c * FontSize) + 5), obj.flags | TF_HIGHLIGHT);
 					else
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
+						renderer.drawText( obj.entries[c], Vector2( obj.pos1.x + 5, obj.pos1.y + (c * FontSize) + 5), obj.flags);
 				}
 				break;
 
 			case CHAT:
 			case ACTIVECHAT:
 				FontSize = (obj.flags & TF_SMALL_FONT ? (FONT_WIDTH_SMALL+LINE_SPACER_SMALL) : (FONT_WIDTH_NORMAL+LINE_SPACER_NORMAL));
-				rmanager.drawOverlay((obj.type == CHAT ? 0.5 : 0.3), obj.pos1, obj.pos2);
+				renderer.drawOverlay((obj.type == CHAT ? 0.5 : 0.3), obj.pos1, obj.pos2);
 				for (unsigned int c = 0; c < obj.entries.size(); c++)
 				{
 					if (obj.text[c] == 'R' )
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags | TF_HIGHLIGHT);
+						renderer.drawText( obj.entries[c], Vector2( obj.pos1.x + 5, obj.pos1.y + (c * FontSize) + 5), obj.flags | TF_HIGHLIGHT);
 					else
-						rmanager.drawText(obj.entries[c], Vector2(obj.pos1.x+5, obj.pos1.y+(c*FontSize)+5), obj.flags);
+						renderer.drawText( obj.entries[c], Vector2( obj.pos1.x + 5, obj.pos1.y + (c * FontSize) + 5), obj.flags);
 				}
 				break;
 
 			case BLOB:
-				rmanager.drawBlob(obj.pos1, obj.col);
+				renderer.drawBlob( obj.pos1, obj.col);
 				break;
 
 			default:
@@ -206,7 +204,7 @@ void IMGUI::end()
 #if BLOBBY_ON_DESKTOP
 	if (mDrawCursor)
 	{
-		rmanager.drawImage("gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2(24.0, 24.0));
+		renderer.drawImage( "gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2( 24.0, 24.0));
 		mDrawCursor = false;
 	}
 #endif
