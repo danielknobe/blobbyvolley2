@@ -1,4 +1,4 @@
-name: Build
+name: Compilers
 
 on: [push, pull_request]
 
