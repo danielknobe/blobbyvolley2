@@ -174,10 +174,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		// Finishes drawing particles
 		virtual void endDrawParticles() {};
 
-		// This forces a redraw of the background, for example
-		// when the windows was minimized
-		void redraw();
-
 		// This can disable the rendering of ingame graphics, for example for
 		// the main menu
 		void drawGame(bool draw);
@@ -211,7 +207,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		std::map<std::string, BufferedImage*> mImageMap;
 
 		float mMouseMarkerPosition;
-		bool mNeedRedraw;
 
 	private:
 		std::unique_ptr<BloodManager> mBloodMgr;

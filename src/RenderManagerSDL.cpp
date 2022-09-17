@@ -634,7 +634,6 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 
 void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position, Vector2 size)
 {
-	mNeedRedraw = true;
 	BufferedImage* imageBuffer = mImageMap[filename];
 
 	if (!imageBuffer)
@@ -724,8 +723,6 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 void RenderManagerSDL::drawParticle(const Vector2& pos, int player)
 {
-	mNeedRedraw = true;
-
 	SDL_Rect blitRect = {
 		(short)lround(pos.x - float(9) / 2.0),
 		(short)lround(pos.y - float(9) / 2.0),

@@ -117,7 +117,6 @@ void LocalGameState::step_impl()
 		}
 		else
 		{
-			RenderManager::getSingleton().redraw();
 			mMatch->pause();
 		}
 	}

@@ -268,7 +268,6 @@ void IMGUI::doOverlay(int id, const Vector2& pos1, const Vector2& pos2, const Co
 	obj.col = col;
 	obj.alpha = alpha;
 	mQueue->push(obj);
-	RenderManager::getSingleton().redraw();
 }
 
 bool IMGUI::doButton(int id, const Vector2& position, TextManager::STRING text, unsigned int flags)
