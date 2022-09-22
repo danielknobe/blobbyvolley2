@@ -39,7 +39,6 @@ PhysicWorld::PhysicWorld()
 : mBallPosition(Vector2(200, STANDARD_BALL_HEIGHT))
 , mBallRotation(0)
 , mBallAngularVelocity(STANDARD_BALL_ANGULAR_VELOCITY)
-, mLastHitIntensity(0)
 , mCallback( [](const MatchEvent& me) {} )
 {
 	mCurrentBlobbyAnimationSpeed[LEFT_PLAYER] = 0.0;
@@ -66,23 +65,23 @@ bool PhysicWorld::blobHitGround(PlayerSide player) const
 
 bool PhysicWorld::playerTopBallCollision(int player) const
 {
-	Vector2 blobpos{mBlobPosition[player].x, mBlobPosition[player].y - BLOBBY_UPPER_SPHERE};
+	Vector2 blobby_position{mBlobPosition[player].x, mBlobPosition[player].y - BLOBBY_UPPER_SPHERE};
 	return circleCircleCollision( mBallPosition, BALL_RADIUS,
-								blobpos, BLOBBY_UPPER_RADIUS );
+								  blobby_position, BLOBBY_UPPER_RADIUS );
 }
 
 inline bool PhysicWorld::playerBottomBallCollision(int player) const
 {
-	Vector2 blobpos{mBlobPosition[player].x, mBlobPosition[player].y + BLOBBY_LOWER_SPHERE};
+	Vector2 blobby_position{mBlobPosition[player].x, mBlobPosition[player].y + BLOBBY_LOWER_SPHERE};
 	return circleCircleCollision( mBallPosition, BALL_RADIUS,
-								blobpos, BLOBBY_LOWER_RADIUS );
+								  blobby_position, BLOBBY_LOWER_RADIUS );
 }
 
 inline bool PhysicWorld::circleCircleCollision(const Vector2& pos1, float rad1, const Vector2& pos2, float rad2)
 {
 	Vector2 distance = pos1 - pos2;
-	float mxdist = rad1 + rad2;
-	return distance.lengthSQ() < mxdist * mxdist;
+	float sum_radii = rad1 + rad2;
+	return distance.lengthSQ() < sum_radii * sum_radii;
 }
 
 float PhysicWorld::getBallRotation() const
@@ -179,15 +178,15 @@ void PhysicWorld::handleBlob(PlayerSide player, PlayerInput input)
 
 bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 {
-	Vector2 circlepos = mBlobPosition[player];
+	Vector2 collision_center = mBlobPosition[player];
 	// check for impact
 	if(playerBottomBallCollision(player))
 	{
-		circlepos.y += BLOBBY_LOWER_SPHERE;
+		collision_center.y += BLOBBY_LOWER_SPHERE;
 	}
 	else if(playerTopBallCollision(player))
 	{
-		circlepos.y -= BLOBBY_UPPER_SPHERE;
+		collision_center.y -= BLOBBY_UPPER_SPHERE;
 	} else
 	{	// no impact!
 		return false;
@@ -196,21 +195,23 @@ bool PhysicWorld::handleBlobbyBallCollision(PlayerSide player)
 	// ok, if we get here, there actually was a collision
 
 	// calculate hit intensity
-	mLastHitIntensity = Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.f;
-	mLastHitIntensity = mLastHitIntensity > 1.f ? 1.f : mLastHitIntensity;
+	float intensity = std::min(1.f, Vector2(mBallVelocity, mBlobVelocity[player]).length() / 25.f);
 
 	// set ball velocity
-	mBallVelocity = -Vector2(mBallPosition, circlepos);
+	mBallVelocity = -Vector2( mBallPosition, collision_center);
 	mBallVelocity = mBallVelocity.normalise();
 	mBallVelocity = mBallVelocity.scale(BALL_COLLISION_VELOCITY);
 	mBallPosition += mBallVelocity;
+
+	mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, player, intensity} );
+
 	return true;
 }
 
 void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInput,
 					bool isBallValid, bool isGameRunning)
 {
-	// Determistic IEEE 754 floating point computations
+	// Deterministic IEEE 754 floating point computations
 	short fpf = set_fpu_single_precision();
 
 	// Compute independent actions
@@ -230,10 +231,8 @@ void PhysicWorld::step(const PlayerInput& leftInput, const PlayerInput& rightInp
 	// Collision detection
 	if(isBallValid)
 	{
-		if (handleBlobbyBallCollision(LEFT_PLAYER))
-			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, LEFT_PLAYER, mLastHitIntensity} );
-		if (handleBlobbyBallCollision(RIGHT_PLAYER))
-			mCallback( MatchEvent{MatchEvent::BALL_HIT_BLOB, RIGHT_PLAYER, mLastHitIntensity} );
+		handleBlobbyBallCollision(LEFT_PLAYER);
+		handleBlobbyBallCollision(RIGHT_PLAYER);
 	}
 
 	handleBallWorldCollisions();
@@ -321,16 +320,16 @@ void PhysicWorld::handleBallWorldCollisions()
 			float perp_ekin = normal.dotProduct(mBallVelocity);
 			perp_ekin *= perp_ekin;
 			// parallel component of kinetic energy
-			float para_ekin = mBallVelocity.length() * mBallVelocity.length() - perp_ekin;
+			float para_ekin = mBallVelocity.lengthSQ() - perp_ekin;
 
 			// the normal component is damped stronger than the parallel component
 			// the values are ~ 0.85 and ca. 0.95, because speed is sqrt(ekin)
 			perp_ekin *= 0.7;
 			para_ekin *= 0.9;
 
-			float nspeed = sqrt(perp_ekin + para_ekin);
+			float new_speed = sqrt( perp_ekin + para_ekin );
 
-			mBallVelocity = Vector2(mBallVelocity.reflect(normal).normalise().scale(nspeed));
+			mBallVelocity = Vector2(mBallVelocity.reflect(normal).normalise().scale(new_speed));
 
 			// pushes the ball out of the net
 			mBallPosition = (Vector2(NET_POSITION_X, NET_SPHERE_POSITION) - normal * (NET_RADIUS + BALL_RADIUS));
@@ -362,9 +361,9 @@ void PhysicWorld::setBallVelocity( Vector2 newVelocity )
 	mBallVelocity = newVelocity;
 }
 
-void PhysicWorld::setBallAngularVelocity( float angvel )
+void PhysicWorld::setBallAngularVelocity( float angular_velocity )
 {
-	mBallAngularVelocity = angvel;
+	mBallAngularVelocity = angular_velocity;
 }
 
 PhysicState PhysicWorld::getState() const

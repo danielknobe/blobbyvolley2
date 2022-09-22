@@ -275,8 +275,8 @@ void setupPHYSFS()
 		smanager->setVolume(gameConfig.getFloat("global_volume"));
 		smanager->setMute(gameConfig.getBool("mute"));
 		/// \todo play sound is misleading. what we actually want to do is load the sound
-		smanager->playSound("sounds/bums.wav", 0.0);
-		smanager->playSound("sounds/pfiff.wav", 0.0);
+		smanager->playSound(SoundManager::IMPACT, 0.0);
+		smanager->playSound(SoundManager::WHISTLE, 0.0);
 
 		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
 		if ( FileSystem::getSingleton().exists(bg) )
@@ -331,7 +331,7 @@ void setupPHYSFS()
 			if (!scontroller.doFramedrop())
 			{
 				rmanager->draw();
-				IMGUI::getSingleton().end();
+				IMGUI::getSingleton().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}

@@ -49,7 +49,7 @@ File::~File()
 	close();
 }
 
-void File::open(const std::string& filename, OpenMode mode, bool no_override)
+void File::open(std::string filename, OpenMode mode, bool no_override)
 {
 	// check that we don't have anything opened!
 	/// \todo maybe we could just close the old file here... but
@@ -76,30 +76,25 @@ void File::open(const std::string& filename, OpenMode mode, bool no_override)
 		BOOST_THROW_EXCEPTION(FileLoadException(filename));
 	}
 
-	mFileName = filename;
+	mFileName = std::move(filename);
 }
 
 void File::close()
 {
 	// if handle is 0, no file is currently opened, so close does not do anything
-	// maybe we could assert this, but i'm not sure that that is necessary.
-	// we cannot assert this, because this function is run in the destrucor!
+	// maybe we could assert this, but I'm not sure that that is necessary.
+	// we cannot assert this, because this function is run in the destructor!
 	if(mHandle)
 	{
 		if (PHYSFS_close( reinterpret_cast<PHYSFS_file*> (mHandle) ) )
 		{
 			/// we can't throw an error here, as this function gets called
 			/// in the destructor and therefore might be called while another
-			/// excpetion is active so we cant throw.
+			/// exception is active so we cant throw.
 		}
 		mHandle = nullptr;
 		mFileName = "";
 	}
-}
-
-void* File::getPHYSFS_file()
-{
-	return mHandle;
 }
 
 bool File::is_open() const
@@ -132,7 +127,7 @@ uint32_t File::tell() const
 	return tp;
 }
 
-std::string File::getFileName() const
+const std::string& File::getFileName() const
 {
 	return mFileName;
 }

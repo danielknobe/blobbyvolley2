@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <vector>
-#include <boost/scoped_ptr.hpp>
 #include <memory>
 
 #include "GameLogic.h"
@@ -40,7 +39,7 @@ class PhysicWorld;
 	\brief class representing a blobby game.
 	\details
 	This class represents a single game between two players
-	It applys the rules itself and provides an interface for querying
+	It applies the rules itself and provides an interface for querying
 	different parameters. For this purpose it is designed as something
 	similar to a singleton, but it can be instantiated
 	multiple times on a server or be completely unavailable
@@ -51,21 +50,21 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// If remote is true, only physical responses will be calculated
 		// but hit events and score events are received from network
 
-		DuelMatch(bool remote, std::string rules, int score_to_win = 0);
+		DuelMatch(bool remote, const std::string& rules, int score_to_win = 0);
 
-		void setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer);
-		void setInputSources(std::shared_ptr<InputSource> linput, std::shared_ptr<InputSource> rinput );
+		void setPlayers(PlayerIdentity left_player, PlayerIdentity right_player);
+		void setInputSources(std::shared_ptr<InputSource> left_input, std::shared_ptr<InputSource> right_input );
 
 		~DuelMatch();
 
-		void setRules(std::string rulesFile, int score_to_win = 0);
+		void setRules(const std::string& rulesFile, int score_to_win = 0);
 
 		void reset();
 
 		// This steps through one frame
 		void step();
 
-		// this methods allow external input
+		// these methods allow external input
 		// events triggered by the network
 		void setScore(int left, int right);
 		void resetBall(PlayerSide side);
@@ -74,7 +73,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		// game is still running
 		PlayerSide winningPlayer() const;
 
-		// This methods report the current game state and a useful for
+		// These methods report the current game state and a useful for
 		// the input manager, which needs information about the blob
 		// positions and for lua export, which makes them accessible
 		// for scripted input sources
@@ -131,7 +130,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 	private:
 
-		boost::scoped_ptr<PhysicWorld> mPhysicWorld;
+		std::unique_ptr<PhysicWorld> mPhysicWorld;
 
 		std::shared_ptr<InputSource> mInputSources[MAX_PLAYERS];
 		PlayerInput mTransformedInput[MAX_PLAYERS];

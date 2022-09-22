@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <utility>
 
@@ -40,9 +39,10 @@ extern "C"
 #include "GameConstants.h"
 #include "IScriptableComponent.h"
 #include "PlayerInput.h"
+#include "Clock.h"
 
 
-int lua_toint(lua_State* state, int index)
+int lua_to_int(lua_State* state, int index)
 {
 	double value = lua_tonumber(state, index);
 	return int(value + (value > 0 ? 0.5 : -0.5));
@@ -67,10 +67,11 @@ IGameLogic::IGameLogic( int stw )
 , mIsBallValid(true)
 , mIsGameRunning(false)
 , mWinningPlayer(NO_PLAYER)
+, mClock(new Clock())
 {
 	// init clock
-	mClock.reset();
-	mClock.start();
+	mClock->reset();
+	mClock->start();
 	mScores[LEFT_PLAYER] = 0;
 	mScores[RIGHT_PLAYER] = 0;
 	mTouches[LEFT_PLAYER] = 0;
@@ -119,7 +120,7 @@ PlayerSide IGameLogic::getWinningPlayer() const
 
 Clock& IGameLogic::getClock()
 {
-	return mClock;
+	return *mClock;
 }
 
 PlayerSide IGameLogic::getLastErrorSide()
@@ -170,9 +171,9 @@ void IGameLogic::setState(GameLogicState gls)
 // -------------------------------------------------------------------------------------------------
 void IGameLogic::step( const DuelMatchState& state )
 {
-	mClock.step();
+	mClock->step();
 
-	if(mClock.isRunning())
+	if(mClock->isRunning())
 	{
 		--mSquish[0];
 		--mSquish[1];
@@ -187,12 +188,13 @@ void IGameLogic::onPause()
 {
 	/// pausing for now only means stopping the clock
 	// pausing is saved into an atomic variable, so this is safe
-	mClock.stop();
+	/// TODO this comment seems outdated, figure out what is supposed to happen here
+	mClock->stop();
 }
 
 void IGameLogic::onUnPause()
 {
-	mClock.start();
+	mClock->start();
 }
 
 PlayerInput IGameLogic::transformInput(PlayerInput ip, PlayerSide player)
@@ -481,7 +483,7 @@ LuaGameLogic::LuaGameLogic( std::string filename, DuelMatch* match, int score_to
 	openScript("rules/"+mSourceFile);
 
 	lua_getglobal(mState, "SCORE_TO_WIN");
-	mScoreToWin = lua_toint(mState, -1);
+	mScoreToWin = lua_to_int( mState, -1 );
 	lua_pop(mState, 1);
 
 	lua_getglobal(mState, "__AUTHOR__");
@@ -501,7 +503,6 @@ LuaGameLogic::~LuaGameLogic() = default;
 
 PlayerSide LuaGameLogic::checkWin() const
 {
-	bool won = false;
 	if (!getLuaFunction("IsWinning"))
 	{
 		return FallbackGameLogic::checkWin();
@@ -515,7 +516,7 @@ PlayerSide LuaGameLogic::checkWin() const
 		std::cerr << std::endl;
 	}
 
-	won = lua_toboolean(mState, -1);
+	bool won = lua_toboolean(mState, -1);
 	lua_pop(mState, 1);
 
 	if(won)
@@ -646,11 +647,11 @@ LuaGameLogic* LuaGameLogic::getGameLogic(lua_State* state)
 
 int LuaGameLogic::luaMistake(lua_State* state)
 {
-	int amount = lua_toint(state, -1);
+	int amount = lua_to_int( state, -1 );
  	lua_pop(state, 1);
-	PlayerSide serveSide = (PlayerSide)lua_toint(state, -1);
+	PlayerSide serveSide = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
-	PlayerSide mistakeSide = (PlayerSide)lua_toint(state, -1);
+	PlayerSide mistakeSide = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	LuaGameLogic* gl = getGameLogic(state);
 
@@ -661,9 +662,9 @@ int LuaGameLogic::luaMistake(lua_State* state)
 
 int LuaGameLogic::luaScore(lua_State* state)
 {
-	int amount = lua_toint(state, -1);
+	int amount = lua_to_int( state, -1 );
 	lua_pop(state, 1);
-	int player = lua_toint(state, -1);
+	int player = lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	LuaGameLogic* gl = getGameLogic(state);
 
@@ -681,7 +682,7 @@ int LuaGameLogic::luaGetServingPlayer(lua_State* state)
 int LuaGameLogic::luaGetGameTime(lua_State* state)
 {
 	LuaGameLogic* gl = getGameLogic(state);
-	lua_pushnumber(state, gl->getClock().getTime());
+	lua_pushnumber(state, gl->getClock().getTime().count());
 	return 1;
 }
 

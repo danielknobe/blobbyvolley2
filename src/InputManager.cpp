@@ -59,7 +59,7 @@ InputManager::~InputManager()
 	JoystickPool::getSingleton().closeJoysticks();
 }
 
-InputDevice* InputManager::beginGame(PlayerSide side)
+std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 {
 	SDL_Window* window = RenderManager::getSingleton().getWindow();
 
@@ -214,7 +214,7 @@ void InputManager::updateInput()
 			case SDL_TEXTINPUT:
 				mLastTextKey = std::string(event.text.text);
 				break;
-			// Workarround because SDL has a bug in Version 2.0.1,
+			// Workaround because SDL has a bug in Version 2.0.1,
 			// so that we can't use mouse here
 #if BLOBBY_ON_DESKTOP
 			case SDL_MOUSEBUTTONDOWN:

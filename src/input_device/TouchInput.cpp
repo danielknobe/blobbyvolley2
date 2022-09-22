@@ -52,9 +52,9 @@ class TouchInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-InputDevice* createTouchInput(PlayerSide player, int type)
+std::unique_ptr<InputDevice> createTouchInput(PlayerSide player, int type)
 {
-	return new TouchInputDevice(player, type);
+	return std::unique_ptr<InputDevice>{new TouchInputDevice(player, type)};
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ PlayerInputAbs TouchInputDevice::transferInput()
 
 
 	// *********************************************************************************
-	// *playerside is devided in left/right move button, opponentside is the jumpbutton*
+	// *playerside is divided in left/right move button, opponentside is the jumpbutton*
 	// *********************************************************************************
 	case 1:
 	{

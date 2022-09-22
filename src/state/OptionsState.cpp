@@ -990,14 +990,14 @@ void MiscOptionsState::step_impl()
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
-		SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+		SoundManager::getSingleton().playSound(SoundManager::IMPACT, 1.0);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), TextManager::OP_MUTE))
 	{
 		mMute = !mMute;
 		SoundManager::getSingleton().setMute(mMute);
 		if (!mMute)
-			SoundManager::getSingleton().playSound("sounds/bums.wav", 1.0);
+			SoundManager::getSingleton().playSound(SoundManager::IMPACT, 1.0);
 	}
 	if (mMute)
 	{
@@ -1059,9 +1059,9 @@ void MiscOptionsState::step_impl()
 	imgui.doText(GEN_ID, Vector2(660.0, 330.0), FPSInPercent.str());
 
 	//! \todo this must be reworked
-	auto olang = TextManager::language_names.find(imgui.textMgr().getLang());
-	if(++olang == TextManager::language_names.end()){
-		olang = TextManager::language_names.begin();
+	auto olang = TextManager::languageNames().find(imgui.textMgr().getLang());
+	if(++olang == TextManager::languageNames().end()){
+		olang = TextManager::languageNames().begin();
 	}
 	if (imgui.doButton(GEN_ID, Vector2(300.0, 490.0), (*olang).second)){
 		//! \todo autogenerierte liste mit allen lang_ dateien, namen auslesen

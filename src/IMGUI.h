@@ -54,7 +54,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 		static IMGUI& getSingleton();
 
 		void begin();
-		void end();
+		void end(RenderManager& renderer);
 		void resetSelection();
 
 		void doImage(int id, const Vector2& position, const std::string& name, const Vector2& size = Vector2(0,0));

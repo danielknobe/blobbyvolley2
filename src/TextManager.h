@@ -178,9 +178,7 @@ class TextManager
 		/// returns count of utf-8 characters
 		static const int getUTF8Length(const std::string& str);
 
-		/// map to map abbreviations to full name (e.g. de to deutsch)
-		static std::map<std::string, std::string> language_names;
-
+		static const std::map<std::string, std::string>& languageNames();
 	private:
 
 		/// vector with all strings

@@ -29,8 +29,8 @@ class ReplayRecorder;
 
 /*! \class State
 	\brief Base class for all programme states.
-	\details A programm state describes which state a programme is in
-			( e.g. MainMenu, OptionsMenu, SingleplayerGame etc. ). It defines
+	\details A program state describes which state a programme is in
+			( e.g. MainMenu, OptionsMenu, SinglePlayerGame etc. ). It defines
 			an abstract step function which is called each frame for the
 			currently active state.
 			Switching to a new state is a little cumbersome right now, as

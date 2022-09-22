@@ -37,12 +37,15 @@ class FileSystemException : public std::exception
 
 		const char* what() const noexcept override
 		{
-			return "a file system related exception occured!";
+			return mMessage.c_str();
 		}
+
+	protected:
+		std::string mMessage;
 };
 
 /*! \class PhysfsException
-	\brief signales errors reported by physfs
+	\brief signals errors reported by physfs
 	\details base class for all exceptions that report physfs errors;
 */
 class PhysfsException : public virtual FileSystemException
@@ -50,22 +53,12 @@ class PhysfsException : public virtual FileSystemException
 	public:
 		// implementation in FileSystem.cpp
 		PhysfsException();
+		explicit PhysfsException(std::string prefix);
 
-		~PhysfsException() noexcept override = default;;
-
-		const char* what() const noexcept override
-		{
-			return ("physfs reported an error: " + getPhysfsMessage()).c_str();
-		}
-
-		std::string getPhysfsMessage() const
-		{
-			return mPhysfsErrorMsg;
-		}
+		std::string getPhysfsMessage() const { return mPhysfsError; }
 	private:
-
-		/// this string saves the error message
-		std::string mPhysfsErrorMsg;
+		/// this string saves the error as reported by physfs
+		std::string mPhysfsError;
 };
 
 /*! \class PhysfsInitException
@@ -74,48 +67,28 @@ class PhysfsException : public virtual FileSystemException
 class PhysfsInitException : public PhysfsException
 {
 	public:
-		explicit PhysfsInitException(std::string path) : mPath(std::move(path))
-		{
-
-		}
-
-		~PhysfsInitException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			return ("could not initialise physfs to path " + getPath() + ": " + getPhysfsMessage()).c_str();
-		}
-
-		std::string getPath() const
-		{
-			return mPath;
-		}
-
+		explicit PhysfsInitException(std::string path);
+		std::string getPath() const { return mPath; }
 	private:
 		std::string mPath;
 };
 
 /*!	\class FileException
 	\brief common base type for file exceptions.
-	\details does not owerride what(), so there is
-				no default error message for FileException s
+	\details does not override what(), so there is
+				no default error message for `FileException`s
 */
 class FileException: public virtual FileSystemException {
 	public:
-		explicit FileException(std::string f) : filename(std::move(f))
+		explicit FileException(std::string f) : mFileName( std::move(f) )
 		{
 		}
-
-		~FileException() noexcept override = default;
 
 		/// get the name of the file of the exception
-		const std::string& getFileName() const
-		{
-			return filename;
-		}
+		const std::string& getFileName() const { return mFileName; }
 
 	private:
-		std::string filename;	///!< name of the file which caused the exception
+		std::string mFileName;	///!< name of the file which caused the exception
 };
 
 /*! \class FileLoadException
@@ -126,22 +99,7 @@ class FileException: public virtual FileSystemException {
 class FileLoadException : public FileException, public PhysfsException
 {
 	public:
-		explicit FileLoadException(std::string name) : FileException(name)
-		{
-			/// \todo do we really need to do this? std::exception already
-			/// provides the functionality for setting exception messages, i think.
-			error = "Couldn't load " + name + ": " + getPhysfsMessage();
-		}
-
-		~FileLoadException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			return error.c_str();
-		}
-
-	private:
-		std::string error;	///< saves the error message
+		explicit FileLoadException(const std::string& name);
 };
 
 /*! \class FileAlreadyExistsException
@@ -150,16 +108,7 @@ class FileLoadException : public FileException, public PhysfsException
 class FileAlreadyExistsException : public FileException
 {
 	public:
-		explicit FileAlreadyExistsException(std::string name) : FileException(name)
-		{
-		}
-
-		~FileAlreadyExistsException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			return ("File " + getFileName() + " already exists.").c_str();
-		}
+		explicit FileAlreadyExistsException(std::string name);
 };
 
 
@@ -170,22 +119,13 @@ class FileAlreadyExistsException : public FileException
 class PhysfsFileException : public FileException, public PhysfsException
 {
 	public:
-		explicit PhysfsFileException(const std::string& filename) : FileException(filename)
-		{
-		};
-
-		~PhysfsFileException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			return (getFileName() + ": " + getPhysfsMessage()).c_str();
-		}
+		explicit PhysfsFileException(const std::string& filename) ;
 };
 
 /*!	\class NoFileOpenedException
 	\brief signals operations on closed files
 	\details Exceptions of this type are thrown when any file modifying or information querying
-				functions are called without a file beeing opened. These are serious errors
+				functions are called without a file being opened. These are serious errors
 				and generally, exceptions of this type should not occur, as it indicates logical
 				errors in the code. Still, this allows us to handle this situation without having
 				to crash or exit.
@@ -194,15 +134,7 @@ class PhysfsFileException : public FileException, public PhysfsException
 class NoFileOpenedException : public FileException
 {
 	public:
-		NoFileOpenedException() : FileException("") { };
-
-		~NoFileOpenedException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			// default error message for now
-			return "trying to perform a file operation when no file was opened.";
-		}
+		NoFileOpenedException();
 };
 
 /*!	\class EOFException
@@ -213,13 +145,5 @@ class NoFileOpenedException : public FileException
 class EOFException : public FileException
 {
 	public:
-		explicit EOFException(const std::string& file) : FileException( file ) { };
-
-		~EOFException() noexcept override = default;
-
-		const char* what() const noexcept override
-		{
-			// default error message for now
-			return (getFileName() + " trying to read after eof.").c_str();
-		}
+		explicit EOFException(std::string file);
 };

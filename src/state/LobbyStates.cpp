@@ -50,7 +50,6 @@ LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
 
 	// send an ENTER_SERVER packet with name and side preference
-	RenderManager::getSingleton().redraw();
 
 	/// \todo we need read-only access here!
 	UserConfig config;
@@ -182,7 +181,7 @@ void LobbyState::step_impl()
 				}
 				}
 				break;
-			case ID_RULES_CHECKSUM: // this packet is send when a game was created, so we probably are joining a game here.
+			case ID_RULES_CHECKSUM: // this packet is sent when a game was created, so we probably are joining a game here.
 				// this is only a valid request if we are in the lobby game substate
 				assert(dynamic_cast<LobbyGameSubstate*>(mSubState.get()) != nullptr);
 				{

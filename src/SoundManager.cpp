@@ -29,64 +29,112 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 
 /* implementation */
-SoundManager* SoundManager::mSingleton;
+SoundManager* SoundManager::mSingleton = nullptr;
 
-Sound* SoundManager::loadSound(const std::string& filename) const
+namespace {
+	struct WavDeleter
+	{
+		void operator()(Uint8* ptr)
+		{
+			SDL_FreeWAV(ptr);
+		}
+	};
+
+	using WavPtr = std::unique_ptr<Uint8, WavDeleter>;
+
+	/// Struct that collects all data from reading a sound file.
+	struct WavData {
+		WavPtr Buffer;
+		unsigned Length;
+		SDL_AudioSpec Spec;
+	};
+
+
+	/// Reads in an entire WAV file and returns the audio samples in the original
+	/// format.
+	WavData readSoundFile(const std::string& filename)
+	{
+		// read the entire file into memory
+		FileRead file(filename);
+		int fileLength = file.length();
+		boost::shared_array<char> fileBuffer = file.readRawBytes( fileLength );
+		file.close();
+
+		// prepare output variables
+		SDL_AudioSpec newSoundSpec;
+		Uint32 newSoundLength = 0;
+		Uint8* temp = nullptr;
+
+		// Do the actual file decoding.
+		// Note: rwops is always closed by this function
+		SDL_RWops* rwops = SDL_RWFromMem(fileBuffer.get(), fileLength);
+		if (!SDL_LoadWAV_RW(rwops, 1, &newSoundSpec, &temp, &newSoundLength))
+			BOOST_THROW_EXCEPTION(FileLoadException(filename));
+
+		return {WavPtr(temp), newSoundLength, newSoundSpec};
+	}
+
+	/// Clips the value between 0 and 1, ensuring a valid volume value.
+	float clip_volume(float vol) {
+		return std::min(1.f, std::max(0.f, vol));
+	}
+}
+
+const Uint8* Sound::getCurrentSample() const {
+	return data + position;
+}
+
+int Sound::advance(int amount) {
+	if(position + amount > length) {
+		amount = length - position;
+	}
+	position += amount;
+	return amount;
+}
+
+bool Sound::done() const {
+	return position >= length;
+}
+
+Sound::Sound(const Uint8* data_, int length_, float volume_) :
+	data(data_), length(length_), volume(clip_volume(volume_))
 {
-	FileRead file(filename);
-	int fileLength = file.length();
+}
 
-	// safe file data into a shared_array to ensure it is deleten properly
-	// in case of exceptions
-	boost::shared_array<char> fileBuffer = file.readRawBytes( fileLength );
-
-	SDL_RWops* rwops = SDL_RWFromMem(fileBuffer.get(), fileLength);
-
-	// we don't need the file handle anymore
-	file.close();
-
-	SDL_AudioSpec newSoundSpec;
-	Uint8* newSoundBuffer;
-	Uint32 newSoundLength;
-	if (!SDL_LoadWAV_RW(rwops , 1,
-			&newSoundSpec, &newSoundBuffer, &newSoundLength))
-		BOOST_THROW_EXCEPTION(FileLoadException(filename));
-
+std::vector<Uint8> SoundManager::loadSound(const std::string& filename) const
+{
+	auto newSound = readSoundFile(filename);
 
 	// check if current audio format is target format
-	if (newSoundSpec.freq == mAudioSpec.freq &&
-		newSoundSpec.format == mAudioSpec.format &&
-		newSoundSpec.channels == mAudioSpec.channels)
+	if (newSound.Spec.freq == mAudioSpec.freq &&
+		newSound.Spec.format == mAudioSpec.format &&
+		newSound.Spec.channels == mAudioSpec.channels)
 	{
-		Sound *newSound = new Sound;
-		newSound->data = new Uint8[newSoundLength];
-		memcpy(newSound->data, newSoundBuffer, newSoundLength);
-		newSound->length = newSoundLength;
-		newSound->position = 0;
-		SDL_FreeWAV(newSoundBuffer);
-                return newSound;
+		std::vector<Uint8> result(newSound.Buffer.get(), newSound.Buffer.get() + newSound.Length);
+		return result;
 	}
 	else	// otherwise, convert audio
 	{
 		SDL_AudioCVT conversionStructure;
 		if (!SDL_BuildAudioCVT(&conversionStructure,
-			newSoundSpec.format, newSoundSpec.channels, newSoundSpec.freq,
+			newSound.Spec.format, newSound.Spec.channels, newSound.Spec.freq,
 			mAudioSpec.format, mAudioSpec.channels, mAudioSpec.freq))
 				BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
-		conversionStructure.buf =
-			new Uint8[newSoundLength * conversionStructure.len_mult];
-		memcpy(conversionStructure.buf, newSoundBuffer, newSoundLength);
-		conversionStructure.len = newSoundLength;
+
+		// allocate new sound buffer as a vector, and put the corresponding pointers into
+		// the conversion structure
+		std::vector<Uint8> result(newSound.Length * conversionStructure.len_mult);
+		std::copy(newSound.Buffer.get(), newSound.Buffer.get() + newSound.Length, result.begin());
+
+		conversionStructure.buf = result.data();
+		conversionStructure.len = newSound.Length;
 
 		if (SDL_ConvertAudio(&conversionStructure))
 			BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
-		SDL_FreeWAV(newSoundBuffer);
 
-		Sound *newSound = new Sound;
-		newSound->data = conversionStructure.buf;
-		newSound->length = Uint32(conversionStructure.len_cvt);
-		newSound->position = 0;
-		return newSound;
+		result.resize(conversionStructure.len_cvt);
+
+		return result;
 	}
 }
 
@@ -95,23 +143,21 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 	if (!mInitialised)
 		return false;
 
-	// everything is fine, so we return true
+	// everything is fine, so we return true,
 	// but we don't need to play the sound
 	if( mMute )
 		return true;
 	try
 	{
-		Sound* soundBuffer = mSound[filename];
-		if (!soundBuffer)
+		auto cached_sound = mSoundCache.find(filename);
+		if (cached_sound == mSoundCache.end())
 		{
-			soundBuffer = loadSound(filename);
-			mSound[filename] = soundBuffer;
+			auto inserted = mSoundCache.insert({filename, loadSound(filename)});
+			cached_sound = inserted.first;
 		}
-		Sound soundInstance = Sound(*soundBuffer);
-		soundInstance.volume =
-			volume > 0.f ? (volume < 1.f ? volume : 1.f) : 0.f;
+		const auto& buffer = cached_sound->second;
 		SDL_LockAudioDevice(mAudioDevice);
-		mPlayingSound.push_back(soundInstance);
+		mPlayingSound.emplace_back(buffer.data(), buffer.size(), volume);
 		SDL_UnlockAudioDevice(mAudioDevice);
 	}
 	catch (const FileLoadException& exception)
@@ -153,44 +199,31 @@ bool SoundManager::init()
 	return true;
 }
 
-void SoundManager::playCallback(void* singleton, Uint8* stream, int length)
+void SoundManager::playCallback(void* sound_mgr, Uint8* stream, int length)
 {
-	SDL_memset(stream, 0, length);
-	std::list<Sound>& playingSound = ((SoundManager*)singleton)->mPlayingSound;
-	int volume = int(SDL_MIX_MAXVOLUME * ((SoundManager*)singleton)->mVolume);
-
-	for (auto iter = playingSound.begin(); iter != playingSound.end(); ++iter)
-	{
-		int bytesLeft = iter->length - iter->position;
-		if (bytesLeft < length)
-		{
-			SDL_MixAudio(stream, iter->data + iter->position, bytesLeft, int(volume * iter->volume));
-			auto eraseIter = iter;
-			auto nextIter = ++iter;
-			playingSound.erase(eraseIter);
-			iter = nextIter;
-			// prevents increment of past-end-interator
-			if(iter == playingSound.end())
-				break;
-		}
-		else
-		{
-			SDL_MixAudioFormat(stream, iter->data + iter->position, mSingleton->mAudioSpec.format, length, int(volume * iter->volume));
-			iter->position += length;
-		}
-	}
+	reinterpret_cast<SoundManager*>(sound_mgr)->handleCallback(stream, length);
 }
+
+void SoundManager::handleCallback(Uint8* stream, int length) {
+	SDL_memset(stream, 0, length);
+	int volume = int(SDL_MIX_MAXVOLUME * mVolume);
+
+	for (auto& sound : mPlayingSound)
+	{
+		auto start = sound.getCurrentSample();
+		auto avail = sound.advance(length);
+		SDL_MixAudioFormat(stream, start, mAudioSpec.format, avail, int(volume * sound.volume));
+	}
+	auto new_end = std::remove_if(begin(mPlayingSound), end(mPlayingSound), [](const Sound& sound) {
+		return sound.done();
+	});
+	mPlayingSound.erase(new_end, mPlayingSound.end());
+}
+
 
 void SoundManager::deinit()
 {
-	for (auto& iter : mSound)
-	{
-		if (iter.second)
-		{
-			delete[] iter.second->data;
-			delete iter.second;
-		}
-	}
+	mSoundCache.clear();
 	SDL_UnlockAudioDevice(mAudioDevice);
 	SDL_CloseAudioDevice(mAudioDevice);
 	mInitialised = false;
@@ -225,8 +258,7 @@ SoundManager& SoundManager::getSingleton()
 
 void SoundManager::setVolume(float volume)
 {
-	volume = volume > 0.f ? (volume < 1.f ? volume : 1.f) : 0.f;
-	mVolume = volume;
+	mVolume = clip_volume(volume);
 }
 
 void SoundManager::setMute(bool mute)

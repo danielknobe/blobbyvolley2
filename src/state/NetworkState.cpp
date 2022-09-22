@@ -64,9 +64,6 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 	mLocalInput.reset(new LocalInputSource(mOwnSide));
 	mLocalInput->setMatch(mMatch.get());
 
-	/// \todo why do we need this here?
-	RenderManager::getSingleton().redraw();
-
 	// game is not started until two players are connected
 	mMatch->pause();
 
@@ -122,7 +119,6 @@ NetworkGameState::~NetworkGameState()
 void NetworkGameState::step_impl()
 {
 	IMGUI& imgui = IMGUI::getSingleton();
-	RenderManager* rmanager = &RenderManager::getSingleton();
 
 	packet_ptr packet;
 	while (nullptr != (packet = mClient->Receive()))
@@ -172,7 +168,7 @@ void NetworkGameState::step_impl()
 				stream.Read((int&)mWinningPlayer);
 
 				// last point must not be added anymore, because
-				// the score is also simulated local so it is already
+				// the score is also simulated local, so it is already
 				// right. under strange circumstances this need not
 				// be true, but then the score is set to the correy value
 				// by ID_BALL_RESET
@@ -233,19 +229,14 @@ void NetworkGameState::step_impl()
 				if(mUseRemoteColor)
 				{
 					mRemotePlayer->setStaticColor(ncolor);
-					RenderManager::getSingleton().redraw();
 				}
-
-				// Workarround for SDL-Renderer
-				// Hides the GUI when networkgame starts
-				rmanager->redraw();
 
 				mNetworkState = PLAYING;
 				// start game
 				mMatch->unpause();
 
 				// game ready whistle
-				SoundManager::getSingleton().playSound("sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+				SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_RULES_CHECKSUM:
@@ -308,7 +299,7 @@ void NetworkGameState::step_impl()
 				mChatlog.push_back((std::string) message);
 				mChatOrigin.push_back(false);
 				mSelectedChatmessage = mChatlog.size() - 1;
-				SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
+				SoundManager::getSingleton().playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_REPLAY:
@@ -551,7 +542,7 @@ void NetworkGameState::step_impl()
 					mSelectedChatmessage = mChatlog.size() - 1;
 					mChattext = "";
 					mChatCursorPosition = 0;
-					SoundManager::getSingleton().playSound("sounds/chat.wav", ROUND_START_SOUND_VOLUME);
+					SoundManager::getSingleton().playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
 				}
 			}
 			imgui.doCursor();

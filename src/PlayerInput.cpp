@@ -47,9 +47,7 @@ bool PlayerInput::operator==(const PlayerInput& other) const
 
 unsigned char PlayerInput::getAll() const
 {
-	unsigned char c = 0;
-	c = (left ? 4 : 0) + (right ? 2 : 0) + (up ? 1 : 0);
-	return c;
+	return (left ? 4 : 0) + (right ? 2 : 0) + (up ? 1 : 0);
 }
 
 /* PlayerInputAbs */

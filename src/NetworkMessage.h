@@ -53,8 +53,8 @@ enum MessageType
 
 // General Information:
 // 	Because the client may choose their side and the server rotates
-// 	everything if necessary, PlayerSide informations may not be
-// 	correct on all peers. When the server sends a side information
+// 	everything if necessary, PlayerSide information may not be
+// 	correct on all peers. When the server sends player side information
 // 	to a client, the information has to be converted into the view
 // 	of the client.
 
@@ -86,7 +86,7 @@ enum MessageType
 // 	Description:
 // 		Message sent from server to client when all clients are
 // 		ready. The input is enabled after this message on the client.
-// 		The attribute opponent name carrys the name of the connected
+// 		The attribute opponent name carry's the name of the connected
 // 		opponent.
 // 	Structure:
 // 		ID_GAME_READY
@@ -140,7 +140,7 @@ enum MessageType
 // ID_VERSION_MISMATCH
 // 	Description:
 // 		Sent from server to client if the version number
-// 		differes from the one of the server.
+// 		differs from the one of the server.
 // 	Structure:
 // 		ID_VERSION_MISMATCH
 //		server_major (int)
@@ -149,7 +149,7 @@ enum MessageType
 // ID_REPLAY
 // 	Description:
 // 		Sent from client to server to request a replay
-// 		Sent from server to client to transmitt the replay
+// 		Sent from server to client to transmit the replay
 // 	Structure:
 // 		ID_REPLAY
 //		size (int)
@@ -209,7 +209,7 @@ struct ServerInfo : public ObjectCounter<ServerInfo>
 
 	/// \todo maybe we should define ServerInfo a little bit more
 	///			as e.g., hostname can be left uninitialised on server
-	/// we combine to functionsalities here: server information and server addresses.
+	/// we combine to functionalities here: server information and server addresses.
 	int activegames;
 	uint16_t port;
 	char hostname[64];

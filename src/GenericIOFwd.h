@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	
 	Including this header will declare the types 
 	\p GenericIn an \p GenericOut so they can be passed
-	as parameters etc. If you wan't to use these classes
+	as parameters etc. If you want to use these classes
 	for actual io, you have to include GenericIO.h.
 	Including this header spares the compiler from having to
 	parse all the template stuff, though.

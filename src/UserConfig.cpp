@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <iostream>
 #include <map>
+#include <limits>
+#include <utility>
 
 #include "tinyxml2.h"
 
@@ -51,9 +53,8 @@ std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(con
 	}
 
 	// otherwise, load user config...
-	UserConfig* uc = new UserConfig();
-	uc->loadFile(file);
-	std::shared_ptr<IUserConfigReader> config(uc);
+	std::shared_ptr<UserConfig> config = std::make_shared<UserConfig>();
+	config->loadFile(file);
 
 	// ... and add to cache
 	userConfigCache()[file] = config;
@@ -131,11 +132,11 @@ bool UserConfig::saveFile(const std::string& filename) const
     printer.PushHeader(false, true);
 	printer.OpenElement("userconfig");
 
-	for (auto variable : mVars)
+	for (const auto& variable : mVars)
 	{
 		printer.OpenElement("var");
-		printer.PushAttribute("name", variable->Name.c_str());
-		printer.PushAttribute("value", variable->Value.c_str());
+		printer.PushAttribute("name", variable.Name.c_str());
+		printer.PushAttribute("value", variable.Value.c_str());
 		printer.CloseElement();
 	}
     printer.CloseElement();
@@ -157,7 +158,7 @@ float UserConfig::getFloat(const std::string& name, float default_value) const
 {
 	auto var = checkVarByName(name);
 	if (var)
-		return std::atof( var->Value.c_str() );
+		return std::strtof( var->Value.c_str(), nullptr );
 
 	return default_value;
 }
@@ -184,7 +185,16 @@ int UserConfig::getInteger(const std::string& name, int default_value) const
 {
 	auto var = checkVarByName(name);
 	if (var)
-		return std::atoi( var->Value.c_str() );
+	{
+		long result = std::strtol(var->Value.c_str(), nullptr, 10);
+		if(result >= std::numeric_limits<long>::max() || result <= std::numeric_limits<long>::min())
+		{
+			std::cerr << "Warning: value out of range, using default of "
+			          << name << " = " << default_value << std::endl;
+			return default_value;
+		}
+		return result;
+	}
 
 	return default_value;
 }
@@ -196,9 +206,9 @@ void UserConfig::setFloat(const std::string& name, float var)
 	setValue(name, writeBuffer);
 }
 
-void UserConfig::setString(const std::string& name, const std::string& var)
+void UserConfig::setString(const std::string& name, std::string var)
 {
-	setValue(name, var);
+	setValue(name, std::move(var));
 }
 
 void UserConfig::setBool(const std::string& name, bool var)
@@ -213,42 +223,45 @@ void UserConfig::setInteger(const std::string& name, int var)
 	setValue(name, writeBuffer);
 }
 
-UserConfigVar* UserConfig::createVar(const std::string& name, const std::string& value)
+namespace
 {
-	if (findVarByName(name)) return nullptr;
-	UserConfigVar *var = new UserConfigVar;
-	var->Name = name;
-	var->Value = value;
-	mVars.push_back(var);
-	return var;
+	/// Helper function to find a `UserConfigVar` with a given name. Implemented
+	/// as a template to generate const and non-const versions.
+	template<class C>
+	auto findByName(C&& container, const std::string& name) -> decltype(&container.back())
+	{
+		auto found = std::find_if(begin(container), end(container),
+								  [&](const UserConfigVar& var){ return var.Name == name; });
+		if(found == end(container)) return nullptr;
+		return &(*found);
+	}
 }
 
-void UserConfig::setValue(const std::string& name, const std::string& value)
+UserConfigVar* UserConfig::createVar(std::string name, std::string value)
 {
-	UserConfigVar *var = findVarByName(name);
+	if (findByName(mVars, name)) return nullptr;
+	mVars.emplace_back(std::move(name), std::move(value));
+	return &mVars.back();
+}
+
+void UserConfig::setValue(const std::string& name, std::string value)
+{
+	UserConfigVar* var = findByName(mVars, name);
 	if (!var)
 	{
 		std::cerr << "Warning: impossible to set value of " <<
 			"unknown configuration variable " << name <<
 			"\n Creating new variable" << std::endl;
-		var = createVar(name, value);
-		mChangeFlag = true;
+		createVar( name, std::move(value) );
 		return;
 	}
 
-	if (var->Value != value) mChangeFlag = true;
-	var->Value = value;
+	var->Value = std::move(value);
 }
 
-UserConfig::~UserConfig()
+const UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
 {
-	for (auto & var : mVars)
-		delete var;
-}
-
-UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
-{
-	auto var = findVarByName(name);
+	auto var = findByName(mVars, name);
 	if( !var )
 	{
 		std::cerr << "Warning: impossible to get value of " <<
@@ -257,11 +270,7 @@ UserConfigVar* UserConfig::checkVarByName(const std::string& name) const
 	return var;
 }
 
-UserConfigVar* UserConfig::findVarByName(const std::string& name) const
+UserConfigVar::UserConfigVar(std::string name, std::string value) : Name(std::move(name)), Value(std::move(value))
 {
-	for (auto var : mVars)
-		if (var->Name == name) return var;
 
-	return nullptr;
 }
-

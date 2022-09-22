@@ -65,7 +65,7 @@ class ReplayPlayer : public ObjectCounter<ReplayPlayer>
 		/// input record.
 		bool endOfFile() const;
 
-		/// \brief Replay Progress in precent
+		/// \brief Replay Progress in percent
 		/// \details returns (an estimate for) the replay progress in percent. Depending on
 		///			replay file version, this is either exact or a guess of the system (when we
 		///				don't know how long the replay is).

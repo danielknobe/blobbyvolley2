@@ -49,7 +49,7 @@ class DedicatedServer
 {
 	public:
 		/// create a dedicated server with the data specified in info, using the rules from rulesfile, allowing max_clients
-		/// simulatanious connections
+		/// simultaneous connections
 		/// \todo Maybe two classes for server info: local server info for a server, and remote for data sent to client
 		/// \param is_local: Set to true, to indicate a locally hosted server intended for a single game.
 		DedicatedServer(ServerInfo info, const std::vector<std::string>& rulefile,

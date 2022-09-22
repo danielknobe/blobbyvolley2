@@ -39,7 +39,7 @@ class InputDevice : public ObjectCounter<InputDevice>
 struct JoystickAction;
 class InputManager;
 
-InputDevice* createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
-InputDevice* createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);
-InputDevice* createTouchInput(PlayerSide side, int type);
-InputDevice* createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity);
+std::unique_ptr<InputDevice> createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
+std::unique_ptr<InputDevice> createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);
+std::unique_ptr<InputDevice> createTouchInput(PlayerSide side, int type);
+std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity);

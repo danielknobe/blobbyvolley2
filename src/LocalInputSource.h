@@ -34,6 +34,6 @@ class LocalInputSource : public InputSource
 		PlayerInputAbs getNextInput() override;
 
 	private:
-		InputDevice* mInputDevice;
+		std::unique_ptr<InputDevice> mInputDevice;
 };
 

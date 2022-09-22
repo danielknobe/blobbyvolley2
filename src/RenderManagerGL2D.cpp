@@ -301,6 +301,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 		x += fontSurface->w;
 
 		SDL_FreeSurface(fontSurface);
+		SDL_FreeSurface(highlight);
 	}
 
 	GLuint texture =  loadTexture(textbase, false);

@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayState.h"
 
 /* includes */
-#include <sstream>
-
 #include "IMGUI.h"
 #include "replays/ReplayPlayer.h"
 #include "DuelMatch.h"
@@ -34,6 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplaySelectionState.h"
 #include "InputManager.h"
 #include "FileWrite.h"
+#include "Clock.h"
 
 /* implementation */
 
@@ -64,7 +63,7 @@ void ReplayState::loadReplay(const std::string& file)
 		rulesFile.close();
 		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
 
-		SoundManager::getSingleton().playSound(	"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+		SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
                            PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
@@ -124,7 +123,7 @@ void ReplayState::step_impl()
 
 	}
 
-	mMatch->getClock().setTime( mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed() );
+	mMatch->getClock().setTime( Clock::seconds{mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed()} );
 
 	// draw the progress bar
 	Vector2 prog_pos = Vector2(50, 600-22);
@@ -208,10 +207,9 @@ void ReplayState::step_impl()
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
 		{
-			// we don't have to reset the match, cause we don't use lua rules
+			// we don't have to reset the match, because we don't use lua rules
 			// we just have to jump to the beginning
-			SoundManager::getSingleton().playSound(
-					"sounds/pfiff.wav", ROUND_START_SOUND_VOLUME);
+			SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 			// do we really need this?
 			// maybe, users want to replay the game on the current speed

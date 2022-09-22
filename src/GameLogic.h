@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 
 #include "Global.h"
-#include "Clock.h"
 #include "BlobbyDebug.h"
 
 class IGameLogic;
@@ -36,6 +35,7 @@ typedef std::unique_ptr<IGameLogic> GameLogicPtr;
 struct GameLogicState;
 struct DuelMatchState;
 class DuelMatch;
+class Clock;
 struct PlayerInput;
 
 /// \class IGameLogic
@@ -46,7 +46,7 @@ struct PlayerInput;
 class IGameLogic: public ObjectCounter<IGameLogic>
 {
 	public:
-		// constuctor and destructor
+		// constructor and destructor
 		/// \param stw score to win
 		explicit IGameLogic( int stw );
 		virtual ~IGameLogic();
@@ -58,7 +58,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		// 								Read/Write Basic Data
 		// -----------------------------------------------------------------------------------------
 
-		// methods for querying the score/touches of a patricular team
+		// methods for querying the score/touches of a particular team
 		/// returns hits count of the specified player
 		int getTouches(PlayerSide side) const;
 
@@ -231,7 +231,7 @@ class IGameLogic: public ObjectCounter<IGameLogic>
 		PlayerSide mWinningPlayer;
 
 		/// clock for determining game time
-		Clock mClock;
+		std::unique_ptr<Clock> mClock;
 };
 
 extern const std::string FALLBACK_RULES_NAME;

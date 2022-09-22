@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 
 /* includes */
-#include <cassert>
-
 #include "DuelMatchState.h"
 #include "MatchEvents.h"
 #include "PhysicWorld.h"
@@ -34,12 +32,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-DuelMatch::DuelMatch(bool remote, std::string rules, int score_to_win) :
-		// we send a pointer to an unconstructed object here!
-		mLogic(createGameLogic(rules, this, score_to_win == 0 ? IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin") : score_to_win)),
+DuelMatch::DuelMatch(bool remote, const std::string& rules, int score_to_win) :
 		mPaused(false),
 		mRemote(remote)
 {
+	if(score_to_win == 0) {
+		score_to_win = IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin");
+	}
+
+	mLogic = createGameLogic(rules, this, score_to_win);
 	mPhysicWorld.reset( new PhysicWorld() );
 
 	setInputSources(std::make_shared<InputSource>(), std::make_shared<InputSource>());
@@ -48,19 +49,19 @@ DuelMatch::DuelMatch(bool remote, std::string rules, int score_to_win) :
 		mPhysicWorld->setEventCallback( [this]( const MatchEvent& event ) { mEvents.push_back(event); } );
 }
 
-void DuelMatch::setPlayers( PlayerIdentity lplayer, PlayerIdentity rplayer)
+void DuelMatch::setPlayers(PlayerIdentity left_player, PlayerIdentity right_player)
 {
-	mPlayers[LEFT_PLAYER] = std::move(lplayer);
-	mPlayers[RIGHT_PLAYER] = std::move(rplayer);
+	mPlayers[LEFT_PLAYER] = std::move(left_player);
+	mPlayers[RIGHT_PLAYER] = std::move(right_player);
 }
 
-void DuelMatch::setInputSources(std::shared_ptr<InputSource> linput, std::shared_ptr<InputSource> rinput )
+void DuelMatch::setInputSources(std::shared_ptr<InputSource> left_input, std::shared_ptr<InputSource> right_input )
 {
-	if(linput)
-		mInputSources[LEFT_PLAYER] = std::move(linput);
+	if(left_input)
+		mInputSources[LEFT_PLAYER] = std::move(left_input);
 
-	if(rinput)
-		mInputSources[RIGHT_PLAYER] = std::move(rinput);
+	if(right_input)
+		mInputSources[RIGHT_PLAYER] = std::move(right_input);
 
 	mInputSources[LEFT_PLAYER]->setMatch(this);
 	mInputSources[RIGHT_PLAYER]->setMatch(this);
@@ -74,7 +75,7 @@ void DuelMatch::reset()
 
 DuelMatch::~DuelMatch() = default;
 
-void DuelMatch::setRules(std::string rulesFile, int score_to_win)
+void DuelMatch::setRules(const std::string& rulesFile, int score_to_win)
 {
 	if( score_to_win == 0)
 		score_to_win = getScoreToWin();
@@ -97,7 +98,7 @@ void DuelMatch::step()
 		mTransformedInput[RIGHT_PLAYER] = mLogic->transformInput( mTransformedInput[RIGHT_PLAYER], RIGHT_PLAYER );
 	}
 
-	// do steps in physic an logic
+	// do steps in physic and logic
 	mLogic->step( getState() );
 	mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER],
 											mLogic->isBallValid(), mLogic->isGameRunning() );
@@ -247,7 +248,7 @@ Vector2 DuelMatch::getBallVelocity() const
 }
 
 PlayerSide DuelMatch::getServingPlayer() const
-{	// NO_PLAYER hack was moved into ScriptedInpurSource.cpp
+{	// NO_PLAYER hack was moved into ScriptedInputSource.cpp
 	return mLogic->getServingPlayer();
 }
 

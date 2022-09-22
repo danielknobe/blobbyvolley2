@@ -46,7 +46,6 @@ RenderManager::RenderManager() :
 
 	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
-	mNeedRedraw = true;
 }
 
 BloodManager& RenderManager::getBlood() {
@@ -335,11 +334,6 @@ SDL_Rect RenderManager::blobShadowRect(const Vector2& position)
 		32
 	};
 	return rect;
-}
-
-void RenderManager::redraw()
-{
-	mNeedRedraw = true;
 }
 
 void RenderManager::drawGame(bool draw)

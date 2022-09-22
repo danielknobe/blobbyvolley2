@@ -28,22 +28,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-Clock::Clock() : mRunning(false), mGameTime(0), mLastTime(0)
-{
-	
-}
-
 void Clock::reset()
 {
 	// set all variables to their default values
 	mRunning = false;
-	mGameTime = 0;
-	mLastTime = SDL_GetTicks();
+	mGameRunning = milliseconds(0);
+	mLastTime = milliseconds{SDL_GetTicks()};
 }
 
 void Clock::start()
 {
-	mLastTime = SDL_GetTicks();
+	mLastTime = milliseconds{SDL_GetTicks()};
 	mRunning = true;
 }
 
@@ -57,60 +52,73 @@ bool Clock::isRunning() const
 	return mRunning;
 }
 
-int Clock::getTime() const 
+Clock::seconds Clock::getTime() const
 {
-	return mGameTime / 1000;
-}
-void Clock::setTime(int newTime) 
-{
-	mGameTime = newTime * 1000;
+	return std::chrono::duration_cast<seconds>(mGameRunning);
 }
 
-std::string Clock::getTimeString() const
+void Clock::setTime(seconds newTime)
 {
-	/// \todo maybe it makes sense to cache this value. we call this function ~75times a seconds
-	///			when the string changes only once. guest it does not make that much of a difference, but still...
-	// calculate seconds, minutes and hours as integers
-	int time_sec = mGameTime / 1000;
-	
+	updateGameTime(newTime * 1000);
+}
+
+std::string Clock::makeTimeString(seconds time)
+{
+	int time_sec = time.count();
 	int seconds = time_sec % 60;
 	int minutes = ((time_sec - seconds) / 60) % 60;
 	int hours = ((time_sec - 60 * minutes - seconds) / 3600) % 60;
-	
+
 	// now convert to string via stringstream
 	std::stringstream stream;
-	
+
 	// only write hours if already player more than 1h
 	if(hours > 0)
 		stream << hours << ":";
-		
+
 	// write minutes
 	// leading 0 if minutes < 10
 	if(minutes < 10)
 		stream << "0";
-	
+
 	stream << minutes << ":";
-	
+
 	// write seconds
 	// leading 0 if seconds < 10
 	if(seconds < 10)
 		stream << "0";
-	
+
 	stream << seconds;
-	
+
 	// convert stringstream to string and return
 	return stream.str();
+}
+
+const std::string& Clock::getTimeString() const
+{
+	return mCurrentTimeString;
 }
 
 void Clock::step()
 {
 	if(mRunning)
 	{
-		int newTime = SDL_GetTicks();
+		milliseconds newTime{SDL_GetTicks()};
 		if(newTime > mLastTime)
 		{
-			mGameTime += newTime - mLastTime;
+			updateGameTime(mGameRunning + newTime - mLastTime);
 		}
 		mLastTime = newTime;
+	}
+}
+
+void Clock::updateGameTime(std::chrono::milliseconds newTime) {
+	auto old_sec = std::chrono::duration_cast<seconds>(mGameRunning);
+	auto new_sec = std::chrono::duration_cast<seconds>(newTime);
+	mGameRunning = newTime;
+
+	// update time string only when the seconds change.
+	if(old_sec != new_sec) {
+		mCurrentTimeString = makeTimeString(new_sec);
 	}
 }
