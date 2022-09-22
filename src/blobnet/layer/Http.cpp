@@ -55,7 +55,7 @@ Http::Http(std::string hostname, const int& port)
 Http::~Http() = default;
 
 
-void Http::request(const std::string& path, std::stringstream& response)
+void Http::request(const std::string& path, std::stringstream& response, const HttpRequestHeader& requestHeader)
 {
 	// Create TCP/IP Socket
 	SOCKET inOutSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -78,7 +78,9 @@ void Http::request(const std::string& path, std::stringstream& response)
 		}
 
 		// Message for a simple request
-		std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n\r\n";
+		std::string request = "GET /" + path + " HTTP/1.1\r\nHost: " + mHostname + "\r\n";
+		request += requestHeader.getHeaderString();
+		request += "\r\n"; // End of header
 
 		// Write the whole message
 		int bytesSend = 0;

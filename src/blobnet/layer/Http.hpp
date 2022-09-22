@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* Includes */
 #include "../exception/HttpException.hpp"
 #include "../../raknet/SocketLayer.h"
+#include "HttpRequestHeader.hpp"
 
 #include <string>
 
@@ -43,7 +44,9 @@ namespace Layer {
 		/// @brief sends a request
 		/// @param path Path to the requested file
 		/// @param response Stringstream where the response will pushed in
-		void request(const std::string& path, std::stringstream& response);
+		void request(const std::string& path,
+		             std::stringstream& response,
+		             const HttpRequestHeader& requestHeader = HttpRequestHeader());
 	private:
 		void readHeader(int inOutSocket, std::stringstream& response);
 		void readBody(int inOutSocket, std::stringstream& response, int contentSize);
