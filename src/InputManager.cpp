@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "RenderManager.h"
 #include "InputDevice.h"
-#include "input_device/JoystickPool.h"
 
 /* implementation */
 
@@ -40,9 +39,12 @@ const unsigned int DOUBLE_CLICK_TIME = 200;
 
 InputManager::InputManager()
 {
+	// joystick
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	SDL_JoystickEventState(SDL_ENABLE);
-	JoystickPool::getSingleton().probeJoysticks();
+	mJoystickPool = std::unique_ptr<JoystickPool>{new JoystickPool()};
+	mJoystickPool->probeJoysticks();
+
 	assert (mSingleton == nullptr);
 	mSingleton = this;
 	mRunning = true;
@@ -56,7 +58,6 @@ InputManager::InputManager()
 
 InputManager::~InputManager()
 {
-	JoystickPool::getSingleton().closeJoysticks();
 }
 
 std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
@@ -101,7 +102,7 @@ std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 		JoystickAction laction(config.getString(prefix + "joystick_left"));
 		JoystickAction raction(config.getString(prefix + "joystick_right"));
 		JoystickAction jaction(config.getString(prefix + "joystick_jump"));
-		return createJoystrickInput(laction, raction, jaction);
+		return createJoystickInput(this, laction, raction, jaction);
 	}
 	// load config for touch
 	else if (device == "touch")
@@ -157,10 +158,10 @@ void InputManager::updateInput()
 				mRunning = false;
 				break;
 			case SDL_JOYDEVICEADDED:
-				JoystickPool::getSingleton().openJoystick(event.jdevice.which);
+				mJoystickPool->openJoystick(event.jdevice.which);
 				break;
 			case SDL_JOYDEVICEREMOVED:
-				JoystickPool::getSingleton().closeJoystick(event.jdevice.which);
+				mJoystickPool->closeJoystick(event.jdevice.which);
 				break;
 			case SDL_KEYDOWN:
 				mLastActionKey = event.key.keysym.sym;
@@ -472,3 +473,7 @@ bool InputManager::isMouseCaptured() const
 	return mMouseCaptured;
 }
 
+JoystickPool& InputManager::getJoystickPool()
+{
+	return *mJoystickPool;
+}

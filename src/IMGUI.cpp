@@ -71,7 +71,7 @@ IMGUI::IMGUI()
 	mQueue = new RenderQueue;
 	mActiveButton = -1;
 	mHeldWidget = 0;
-	mLastKeyAction = NONE;
+	mLastKeyAction = KeyAction::NONE;
 	mLastWidget = 0;
 	mButtonReset = false;
 	mInactive = false;
@@ -99,25 +99,25 @@ void IMGUI::begin()
 		mQueue->pop();
 
 
-	mLastKeyAction = NONE;
+	mLastKeyAction = KeyAction::NONE;
 
 	if (InputManager::getSingleton()->up())
-		mLastKeyAction = UP;
+		mLastKeyAction = KeyAction::UP;
 
 	if (InputManager::getSingleton()->down())
-		mLastKeyAction = DOWN;
+		mLastKeyAction = KeyAction::DOWN;
 
 	if (InputManager::getSingleton()->left())
-		mLastKeyAction = LEFT;
+		mLastKeyAction = KeyAction::LEFT;
 
 	if (InputManager::getSingleton()->right())
-		mLastKeyAction = RIGHT;
+		mLastKeyAction = KeyAction::RIGHT;
 
 	if (InputManager::getSingleton()->select())
-		mLastKeyAction = SELECT;
+		mLastKeyAction = KeyAction::SELECT;
 
 	if (InputManager::getSingleton()->exit())
-		mLastKeyAction = BACK;
+		mLastKeyAction = KeyAction::BACK;
 
 	mIdCounter = 0;
 }
@@ -306,14 +306,14 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		{
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -331,19 +331,19 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			obj.flags = obj.flags | TF_HIGHLIGHT;
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case SELECT:
+				case KeyAction::SELECT:
 					clicked = true;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 				default:
 					break;
@@ -351,7 +351,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 		}
 
 		// React to back button
-		if (mLastKeyAction == BACK)
+		if (mLastKeyAction == KeyAction::BACK)
 		{
 			if ((text == getText(TextManager::LBL_CANCEL)) ||
 			    (text == getText(TextManager::LBL_NO)) ||
@@ -436,14 +436,14 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 		{
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -461,24 +461,24 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 			obj.type = ACTIVESCROLLBAR;
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case LEFT:
+				case KeyAction::LEFT:
 					value -= 0.1;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case RIGHT:
+				case KeyAction::RIGHT:
 					value += 0.1;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -588,14 +588,14 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 		{
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -620,26 +620,26 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 			obj.type = ACTIVEEDITBOX;
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case LEFT:
+				case KeyAction::LEFT:
 					if (cpos > 0)
 						cpos--;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case RIGHT:
+				case KeyAction::RIGHT:
 					if (cpos < text.length())
 						cpos++;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -797,14 +797,14 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 		{
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -822,32 +822,32 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 			obj.type = ACTIVESELECTBOX;
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case LEFT:
+				case KeyAction::LEFT:
 					if (selected > 0)
 					{
 						selected--;
 						changed = SBA_SELECT;
 					}
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case RIGHT:
+				case KeyAction::RIGHT:
 					if (selected + 1 < entries.size())
 					{
 						selected++;
 						changed = SBA_SELECT;
 					}
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -952,14 +952,14 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		{
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
@@ -977,30 +977,30 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 			obj.type = ACTIVECHAT;
 			switch (mLastKeyAction)
 			{
-				case DOWN:
+				case KeyAction::DOWN:
 					mActiveButton = 0;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case UP:
+				case KeyAction::UP:
 					mActiveButton = mLastWidget;
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case LEFT:
+				case KeyAction::LEFT:
 					if (selected > 0)
 					{
 						selected--;
 					}
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
-				case RIGHT:
+				case KeyAction::RIGHT:
 					if (selected + 1 < entries.size())
 					{
 						selected++;
 					}
-					mLastKeyAction = NONE;
+					mLastKeyAction = KeyAction::NONE;
 					break;
 
 				default:
