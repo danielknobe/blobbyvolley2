@@ -51,7 +51,6 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	LocalInputSource.cpp LocalInputSource.h
 	RenderManager.cpp RenderManager.h
 	RenderManagerGL2D.cpp RenderManagerGL2D.h
-#	RenderManagerGP2X.cpp RenderManagerGP2X.h
 	RenderManagerSDL.cpp RenderManagerSDL.h
 	ScriptedInputSource.cpp ScriptedInputSource.h
 	SoundManager.cpp SoundManager.h
