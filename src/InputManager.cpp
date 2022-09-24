@@ -329,28 +329,6 @@ void InputManager::updateInput()
 						mWindowFocus = true;
 						break;
 				}
-
-	/* This handles the special buttons on the GP2X, this will
-	 * have to be renewed with the next GP2X release.
-	/// even if we reintroduce this behaviour, we should move this code
-	/// elsewhere...
-	/// this is input processing not input retrieving/managing!
-	#if defined(__arm__) && defined(linux)
-			case SDL_JOYBUTTONDOWN:
-				switch (event.jbutton.button)
-				{
-					case 17:
-						volume -= 0.15;
-					break;
-					case 16:
-						volume += 0.15;
-					break;
-				}
-				SoundManager::getSingleton().setVolume(volume);
-				break;
-	#else
-	#endif
-	*/
 		}
 	}
 }

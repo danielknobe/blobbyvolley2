@@ -26,11 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstring>
 #include <utility>
 
-// I hope the GP2X is the only combination of these systems
-#if defined(__linux__) && defined(__arm__)
-#define GP2X GP2X
-#endif
-
 // Detect whether we have a desktop or mobile target
 #if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
 #define BLOBBY_ON_MOBILE true

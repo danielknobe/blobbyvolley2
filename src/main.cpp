@@ -244,8 +244,6 @@ void setupPHYSFS()
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
-		/*else if (gameConfig.getString("device") == "GP2X")
-			rmanager = RenderManager::createRenderManagerGP2X();*/
 		else if (gameConfig.getString("device") == "OpenGL")
 			rmanager = RenderManager::createRenderManagerGL2D();
 		else
