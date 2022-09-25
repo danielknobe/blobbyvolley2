@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <cinttypes>
 
-#include <boost/noncopyable.hpp>
 #include <boost/shared_array.hpp>
 
 
@@ -47,7 +46,7 @@ struct PHYSFS_File;
 							message physfs created.
 	\todo 	write tests for this class.
 */
-class File : boost::noncopyable, public ObjectCounter<File>
+class File : public ObjectCounter<File>
 {
 	public:
 		/// \brief closes the file
@@ -60,6 +59,10 @@ class File : boost::noncopyable, public ObjectCounter<File>
 		/// \sa close()
 		/// \throw nothing
 		~File();
+
+		// no copies
+		File(const File&) = delete;
+		File& operator=(const File&) = delete;
 		
 		// ------------------------------------
 		// information querying interface
