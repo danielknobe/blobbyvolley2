@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* other includes */
 #include "JoystickPool.h"
+#include "InputManager.h"
 
 // ********************************************************************************************************
 // 		Interface Definition
@@ -39,9 +40,11 @@ class JoystickInputDevice : public InputDevice
 		JoystickAction mLeftAction;
 		JoystickAction mRightAction;
 		JoystickAction mJumpAction;
+		
+		InputManager* mInputManager;
 	public:
 		~JoystickInputDevice() override = default;
-		JoystickInputDevice(JoystickAction laction, JoystickAction raction,
+		JoystickInputDevice(InputManager* inputMgr, JoystickAction laction, JoystickAction raction,
 				JoystickAction jaction);
 
 		PlayerInputAbs transferInput() override;
@@ -55,17 +58,20 @@ class JoystickInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-std::unique_ptr<InputDevice> createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump)
+std::unique_ptr<InputDevice> createJoystickInput(InputManager* inputMgr, JoystickAction left, JoystickAction right, JoystickAction jump)
 {
-	return std::unique_ptr<InputDevice>{new JoystickInputDevice(left, right, jump)};
+	return std::unique_ptr<InputDevice>{new JoystickInputDevice(inputMgr, left, right, jump)};
 }
 
 // -------------------------------------------------------------------------------------------------
 // 		Joystick Input Device
 // -------------------------------------------------------------------------------------------------
 
-JoystickInputDevice::JoystickInputDevice(JoystickAction laction, JoystickAction raction, JoystickAction jaction)
-	: mLeftAction(laction), mRightAction(raction), mJumpAction(jaction)
+JoystickInputDevice::JoystickInputDevice(InputManager* inputMgr, JoystickAction laction, JoystickAction raction, JoystickAction jaction)
+	: mLeftAction(laction)
+	, mRightAction(raction)
+	, mJumpAction(jaction)
+	, mInputManager(inputMgr)
 {
 }
 
@@ -76,27 +82,28 @@ PlayerInputAbs JoystickInputDevice::transferInput()
 
 bool JoystickInputDevice::getAction(const JoystickAction& action)
 {
-	if (action.joy != nullptr)
+	SDL_Joystick* joystick = mInputManager->getJoystickById(action.joyid);
+	if (joystick != nullptr)
 	{
 		switch (action.type)
 		{
 			case JoystickAction::AXIS:
 				if (action.number < 0)
 				{
-					if (SDL_JoystickGetAxis(action.joy,
+					if (SDL_JoystickGetAxis(joystick,
 						-action.number - 1) < -15000)
 						return true;
 				}
 				else if (action.number > 0)
 				{
-					if (SDL_JoystickGetAxis(action.joy,
+					if (SDL_JoystickGetAxis(joystick,
 						action.number - 1) > 15000)
 						return true;
 				}
 				break;
 
 			case JoystickAction::BUTTON:
-				if (SDL_JoystickGetButton(action.joy,
+				if (SDL_JoystickGetButton(joystick,
 							action.number))
 					return true;
 				break;

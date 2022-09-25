@@ -7,22 +7,23 @@
 
 #include <SDL2/SDL.h>
 
+#include <InputManager.h>
+
 // Joystick Pool
-JoystickPool* JoystickPool::mSingleton = nullptr; //static
-
-JoystickPool& JoystickPool::getSingleton()
+JoystickPool::~JoystickPool()
 {
-	if (mSingleton == nullptr)
-		mSingleton = new JoystickPool();
-
-	return *mSingleton;
+	for (auto& iter : mJoyMap)
+	{
+		SDL_JoystickClose(iter.second);
+	}
 }
+
 
 SDL_Joystick* JoystickPool::getJoystick(int id)
 {
 	SDL_Joystick* joy =  mJoyMap[id];
 
-	if (!joy)
+	if (joy == nullptr)
 	{
 		std::cerr << "Warning: could not find joystick number " << id << "!" << std::endl;
 		mJoyMap.erase(id);
@@ -67,22 +68,12 @@ void JoystickPool::closeJoystick(const int joyId)
 	mJoyMap.erase(joyId);
 }
 
-void JoystickPool::closeJoysticks()
-{
-	for (auto& iter : mJoyMap)
-	{
-		SDL_JoystickClose(iter.second);
-	}
-	mJoyMap.clear();
-}
-
 // Joystick Action
 
 JoystickAction::JoystickAction(std::string string)
 {
 	type = AXIS;
 	number = 0;
-	joy = nullptr;
 	joyid = 0;
 	try
 	{
@@ -98,21 +89,11 @@ JoystickAction::JoystickAction(std::string string)
 			if (sscanf(str, "joy_%d_axis_%d", &joyid, &number) < 2)
 				throw string;
 		}
-
-		joy = JoystickPool::getSingleton().getJoystick(joyid);
 	}
 	catch (const std::string& e)
 	{
 		std::cerr << "Parse error in joystick config: " << e << std::endl;
 	}
-}
-
-JoystickAction::JoystickAction(const JoystickAction& action)
-{
-	type = action.type;
-	joy = JoystickPool::getSingleton().getJoystick(action.joyid);
-	joyid = action.joyid;
-	number = action.number;
 }
 
 JoystickAction::~JoystickAction() = default;

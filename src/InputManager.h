@@ -20,13 +20,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <memory>
+
 #include <SDL2/SDL.h>
 
 #include "PlayerInput.h"
 #include "Vector.h"
 #include "BlobbyDebug.h"
 
-enum KeyAction
+enum class KeyAction
 {
 	UP,
 	DOWN,
@@ -37,6 +39,7 @@ enum KeyAction
 	NONE
 };
 
+class JoystickPool;
 class InputDevice;
 
 /// \brief class for managing input
@@ -79,6 +82,8 @@ class InputManager : public ObjectCounter<InputManager>
 
 		bool windowFocus() const;
 
+		SDL_Joystick* getJoystickById(int joyId);
+
 		// config conversion methods
 		//std::string keyToString(const SDL_keysym& key) const;
 
@@ -116,6 +121,8 @@ class InputManager : public ObjectCounter<InputManager>
 		bool mRunning;
 
 		bool mMouseCaptured;
+
+		std::unique_ptr<JoystickPool> mJoystickPool;
 
 		InputManager();
 

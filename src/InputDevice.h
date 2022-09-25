@@ -40,6 +40,6 @@ struct JoystickAction;
 class InputManager;
 
 std::unique_ptr<InputDevice> createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
-std::unique_ptr<InputDevice> createJoystrickInput(JoystickAction left, JoystickAction right, JoystickAction jump);
+std::unique_ptr<InputDevice> createJoystickInput(InputManager* inputMgr, JoystickAction left, JoystickAction right, JoystickAction jump);
 std::unique_ptr<InputDevice> createTouchInput(PlayerSide side, int type);
 std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity);
