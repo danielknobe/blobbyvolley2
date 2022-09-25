@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <memory>
-#include <boost/noncopyable.hpp>
 
 #include "raknet/NetworkTypes.h"
 #include "raknet/BitStream.h"
@@ -38,7 +37,7 @@ class NetworkGame;
 		his network address and associated game
 */
 /// \todo add data to log when last packet arrived
-class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopyable
+class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 {
 	public:
 		NetworkPlayer();
@@ -46,6 +45,9 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>, public boost::noncopy
 		NetworkPlayer(PlayerID id, const std::string& name, Color color, PlayerSide side);
 
 		NetworkPlayer(PlayerID id, RakNet::BitStream& stream);
+
+        NetworkPlayer(const NetworkPlayer&) = delete;
+        NetworkPlayer& operator=(const NetworkPlayer&) = delete;
 
 		bool valid() const;
 

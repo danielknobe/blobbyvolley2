@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include <type_traits>
 
-#include <boost/noncopyable.hpp>
 #include <memory>
 
 #include "GenericIOFwd.h"
@@ -68,16 +67,19 @@ std::shared_ptr< GenericIn > createGenericReader(RakNet::BitStream* stream);
 			input and output have exactly the same interface and enables writing algorithms
 			that read and write data with exactly the same code, reducing the chance of
 			errors.
-			This class derives from boost::noncopyable, which seems a reasonable choice for these
+			This class is noncopyable, which seems a reasonable choice for these
 			IO classes. Having different GenericIO objects which read/write from/to the same source/target
 			just makes things more complicated and error prone.
 */
 template<class tag>
-class GenericIO : public boost::noncopyable
+class GenericIO
 {
 	public:
 		/// virtual d'tor to ensure correct cleanup
 		virtual ~GenericIO() = default;
+
+        GenericIO(const GenericIO&) = delete;
+        GenericIO& operator=(const GenericIO&) = delete;
 
 		/// reads/writes one byte
 		virtual void byte ( typename detail::conster<tag, unsigned char>::type data) = 0;

@@ -22,18 +22,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <vector>
-#include <boost/noncopyable.hpp>
 
 #include "FileExceptions.h"
 #include "BlobbyDebug.h"
 
 // some convenience wrappers around physfs
 
-class FileSystem : public boost::noncopyable, public ObjectCounter<FileSystem>
+class FileSystem : public ObjectCounter<FileSystem>
 {
 	public:
 		explicit FileSystem(const std::string& path);
 		~FileSystem();
+
+        FileSystem(const FileSystem&) = delete;
+        FileSystem& operator=(const FileSystem&) = delete;
 
 		/// \brief gets the file system
 		/// \details throws an error when file system has
