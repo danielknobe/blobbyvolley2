@@ -92,11 +92,6 @@ struct BufferedImage : public ObjectCounter<BufferedImage>
      of OpenGL to present special effects like per-pixel-lighting,
      stencil shadows, motion blur, and much more. It will requiere
      OpenGL 2.0 compliant graphics hardware.
-	RenderManagerGP2X:
-	 This manager is used to port Blobby Volley to the GP2X handheld.
-	 It makes use of a fixed resolution at 320x240 and others for TV-Out.
-	 It also uses highly optimised loading routines with raw image data.
-	 In all other terms its similar to the RenderManagerSDL
 
 	\todo This classes need a complete rework! They include far too much information about the actual game.
 */
@@ -106,7 +101,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual ~RenderManager();
 
 		static RenderManager* createRenderManagerSDL();
-		//static RenderManager* createRenderManagerGP2X();
         static RenderManager* createRenderManagerGL2D();
 		static RenderManager* createRenderManagerNull();
     
