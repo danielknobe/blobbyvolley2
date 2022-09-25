@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "RenderManager.h"
 #include "InputDevice.h"
+#include "input_device/JoystickPool.h"
 
 /* implementation */
 
@@ -473,7 +474,7 @@ bool InputManager::isMouseCaptured() const
 	return mMouseCaptured;
 }
 
-JoystickPool& InputManager::getJoystickPool()
+SDL_Joystick* InputManager::getJoystickById(int joyId)
 {
-	return *mJoystickPool;
+	return mJoystickPool->getJoystick(joyId);
 }

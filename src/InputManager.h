@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Vector.h"
 #include "BlobbyDebug.h"
 
-#include "input_device/JoystickPool.h"
-
 enum class KeyAction
 {
 	UP,
@@ -41,7 +39,7 @@ enum class KeyAction
 	NONE
 };
 
-
+class JoystickPool;
 class InputDevice;
 
 /// \brief class for managing input
@@ -84,7 +82,7 @@ class InputManager : public ObjectCounter<InputManager>
 
 		bool windowFocus() const;
 
-		JoystickPool& getJoystickPool();
+		SDL_Joystick* getJoystickById(int joyId);
 
 		// config conversion methods
 		//std::string keyToString(const SDL_keysym& key) const;

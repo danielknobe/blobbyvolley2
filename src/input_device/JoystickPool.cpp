@@ -16,7 +16,6 @@ JoystickPool::~JoystickPool()
 	{
 		SDL_JoystickClose(iter.second);
 	}
-	mJoyMap.clear();
 }
 
 

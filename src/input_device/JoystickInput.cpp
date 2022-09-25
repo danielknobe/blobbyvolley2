@@ -82,7 +82,7 @@ PlayerInputAbs JoystickInputDevice::transferInput()
 
 bool JoystickInputDevice::getAction(const JoystickAction& action)
 {
-	SDL_Joystick* joystick = mInputManager->getJoystickPool().getJoystick(action.joyid);
+	SDL_Joystick* joystick = mInputManager->getJoystickById(action.joyid);
 	if (joystick != nullptr)
 	{
 		switch (action.type)
