@@ -34,8 +34,8 @@ class FileSystem : public ObjectCounter<FileSystem>
 		explicit FileSystem(const std::string& path);
 		~FileSystem();
 
-        FileSystem(const FileSystem&) = delete;
-        FileSystem& operator=(const FileSystem&) = delete;
+		FileSystem(const FileSystem&) = delete;
+		FileSystem& operator=(const FileSystem&) = delete;
 
 		/// \brief gets the file system
 		/// \details throws an error when file system has

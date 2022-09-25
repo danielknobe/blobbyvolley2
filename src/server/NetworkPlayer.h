@@ -46,8 +46,8 @@ class NetworkPlayer : public ObjectCounter<NetworkPlayer>
 
 		NetworkPlayer(PlayerID id, RakNet::BitStream& stream);
 
-        NetworkPlayer(const NetworkPlayer&) = delete;
-        NetworkPlayer& operator=(const NetworkPlayer&) = delete;
+		NetworkPlayer(const NetworkPlayer&) = delete;
+		NetworkPlayer& operator=(const NetworkPlayer&) = delete;
 
 		bool valid() const;
 

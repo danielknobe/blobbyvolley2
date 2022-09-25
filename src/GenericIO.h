@@ -75,12 +75,12 @@ template<class tag>
 class GenericIO
 {
 	public:
-        GenericIO() = default;
+		GenericIO() = default;
 		/// virtual d'tor to ensure correct cleanup
 		virtual ~GenericIO() = default;
 
-        GenericIO(const GenericIO&) = delete;
-        GenericIO& operator=(const GenericIO&) = delete;
+		GenericIO(const GenericIO&) = delete;
+		GenericIO& operator=(const GenericIO&) = delete;
 
 		/// reads/writes one byte
 		virtual void byte ( typename detail::conster<tag, unsigned char>::type data) = 0;

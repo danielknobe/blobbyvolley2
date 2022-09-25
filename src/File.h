@@ -60,9 +60,9 @@ class File : public ObjectCounter<File>
 		/// \throw nothing
 		~File();
 
-        // no copies
-        File(const File&) = delete;
-        File& operator=(const File&) = delete;
+		// no copies
+		File(const File&) = delete;
+		File& operator=(const File&) = delete;
 		
 		// ------------------------------------
 		// information querying interface
