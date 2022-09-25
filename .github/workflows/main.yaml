@@ -52,7 +52,18 @@ jobs:
             physfs \
             boost
       - uses: actions/checkout@v2
+      # Check that blobby builds
       - name: Configure CMake and Build
         run: |
           cmake .
           cmake --build .
+
+      # On linux, we can try to let blobby run in a virtual framebuffer
+      # The runtest target produces an executable that performs a few actions
+      # in blobby and then exists
+      - name: Run Test Scenario
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install xvfb
+          cmake --build . --target blobby-runtest
+          xvfb-run src/blobby-runtest

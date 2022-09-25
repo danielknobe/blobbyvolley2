@@ -44,7 +44,6 @@ set(common_SRC
 set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	Blood.cpp Blood.h
 	TextManager.cpp TextManager.h
-	main.cpp
 	IMGUI.cpp IMGUI.h
 	InputDevice.h
 	InputManager.cpp InputManager.h
@@ -138,7 +137,7 @@ if (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 endif (NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
 
 if (SWITCH)
-	add_executable(blobby.elf ${blobby_SRC})
+	add_executable(blobby.elf main.cpp ${blobby_SRC})
 	target_link_libraries(blobby.elf lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${DEVKITPRO}/portlibs/switch/lib/libEGL.a ${DEVKITPRO}/portlibs/switch/lib/libdrm_nouveau.a ${DEVKITPRO}/portlibs/switch/lib/libglapi.a ${DEVKITPRO}/libnx/lib/libnx.a)
 	add_custom_command(
 		OUTPUT blobby.nro
@@ -150,7 +149,7 @@ if (SWITCH)
 	)
 	add_custom_target(blobby ALL DEPENDS blobby.nro)
 else (SWITCH)
-	add_executable(blobby ${blobby_SRC})
+	add_executable(blobby main.cpp ${blobby_SRC})
 	target_link_libraries(blobby lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
 endif (SWITCH)
 
@@ -158,6 +157,8 @@ endif (SWITCH)
 if (UNIX)
 	add_executable(blobby-server ${blobby-server_SRC})
 	target_link_libraries(blobby-server lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_executable(blobby-runtest EXCLUDE_FROM_ALL runtest.cpp ${blobby_SRC})
+	target_link_libraries(blobby-runtest lua raknet blobnet tinyxml2 ${RAKNET_LIBRARIES} ${PHYSFS_LIBRARY} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${ADDITIONAL_LIBRARIES})
 endif (UNIX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
