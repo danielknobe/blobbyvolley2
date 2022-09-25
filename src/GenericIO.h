@@ -75,6 +75,7 @@ template<class tag>
 class GenericIO
 {
 	public:
+        GenericIO() = default;
 		/// virtual d'tor to ensure correct cleanup
 		virtual ~GenericIO() = default;
 
