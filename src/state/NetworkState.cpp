@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <iostream>
 
-#include <boost/scoped_array.hpp>
 #include <utility>
 
 #include "raknet/RakClient.h"
@@ -254,12 +253,10 @@ void NetworkGameState::step_impl()
 				stream.Read(rulesLength);
 				if (rulesLength)
 				{
-					boost::shared_array<char>  rulesString( new char[rulesLength + 1] );
-					stream.Read(rulesString.get(), rulesLength);
-					// null terminate
-					rulesString[rulesLength] = 0;
+                    std::vector<char> rulesString(rulesLength + 1, '\0');
+					stream.Read(rulesString.data(), rulesLength);
 					FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
-					rulesFile.write(rulesString.get(), rulesLength);
+					rulesFile.write(rulesString.data(), rulesLength);
 					rulesFile.close();
 					mMatch->setRules(TEMP_RULES_NAME);
 				}

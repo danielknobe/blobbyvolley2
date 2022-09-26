@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "File.h"
 #include <memory>
+#include <vector>
  
 // forward declarations for convenience functions
 struct lua_State;
@@ -78,13 +79,13 @@ class FileRead : public File
 		uint32_t readRawBytes( char* target, std::size_t num_of_bytes );
 		
 		
-		/// reads bytes and returns a safe-pointed buffer
+		/// reads bytes and returns the buffer
 		/// the buffer is allocated by this function and has a size of \p num_of_bytes
 		/// \param num_of_bytes Number of bytes to read; size of buffer
 		/// \throw PhysfsFileException when nothing could be read
 		/// \throw NoFileOpenedException when called while no file is opened.
 		/// \throw EOFException when less than \p num_of_bytes bytes are available.
-		boost::shared_array<char> readRawBytes( std::size_t num_of_bytes );
+		std::vector<char> readRawBytes( std::size_t num_of_bytes );
 		
 		/// reads exactly one byte
 		/// \throw PhysfsFileException when Physfs reports an error

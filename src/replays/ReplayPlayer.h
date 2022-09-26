@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-#include <boost/scoped_ptr.hpp>
-
 #include "Global.h"
 #include "ReplayDefs.h"
 #include "PlayerInput.h"
@@ -98,7 +96,7 @@ class ReplayPlayer : public ObjectCounter<ReplayPlayer>
 
 		int mPosition;
 		int mLength;
-		boost::scoped_ptr<IReplayLoader> loader;
+		std::unique_ptr<IReplayLoader> loader;
 
 		std::string mPlayerNames[MAX_PLAYERS];
 };

@@ -57,7 +57,7 @@ namespace {
 		// read the entire file into memory
 		FileRead file(filename);
 		int fileLength = file.length();
-		boost::shared_array<char> fileBuffer = file.readRawBytes( fileLength );
+		auto fileBuffer = file.readRawBytes( fileLength );
 		file.close();
 
 		// prepare output variables
@@ -67,7 +67,7 @@ namespace {
 
 		// Do the actual file decoding.
 		// Note: rwops is always closed by this function
-		SDL_RWops* rwops = SDL_RWFromMem(fileBuffer.get(), fileLength);
+		SDL_RWops* rwops = SDL_RWFromMem(fileBuffer.data(), fileLength);
 		if (!SDL_LoadWAV_RW(rwops, 1, &newSoundSpec, &temp, &newSoundLength))
 			BOOST_THROW_EXCEPTION(FileLoadException(filename));
 
