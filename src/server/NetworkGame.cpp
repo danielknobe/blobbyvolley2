@@ -83,16 +83,13 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 	mRecorder->setGameRules(rules);
 
 	// read rulesfile into a string
-	int checksum = 0;
-	mRulesLength = 0;
 	mRulesSent[0] = false;
 	mRulesSent[1] = false;
 
 	rules = FileRead::makeLuaFilename( rules );
 	FileRead file(std::string("rules/") + rules);
-	checksum = file.calcChecksum(0);
-	mRulesLength = file.length();
-	mRulesString = file.readRawBytes(mRulesLength);
+	int checksum = file.calcChecksum(0);
+	mRulesString = file.readRawBytes(file.length());
 
 	// writing rules checksum
 	RakNet::BitStream stream;
@@ -285,8 +282,8 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 			{
 				stream = std::make_shared<RakNet::BitStream>();
 				stream->Write((unsigned char)ID_RULES);
-				stream->Write( mRulesLength );
-				stream->Write( mRulesString.get(), mRulesLength);
+				stream->Write( (int)mRulesString.size() );
+				stream->Write( mRulesString.data(), mRulesString.size());
 				assert( stream->GetData()[0] == ID_RULES );
 
 				mServer.Send(stream.get(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);

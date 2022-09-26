@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <physfs.h>
 
 #include <boost/crc.hpp>
-#include <boost/scoped_array.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "tinyxml2.h"
@@ -72,12 +71,12 @@ uint32_t FileRead::readRawBytes( char* target, std::size_t num_of_bytes )
 	return num_read;
 }
 
-boost::shared_array<char> FileRead::readRawBytes( std::size_t num_of_bytes )
+std::vector<char> FileRead::readRawBytes( std::size_t num_of_bytes )
 {
 	// creates the buffer
-	boost::shared_array<char> buffer ( new char[num_of_bytes] );
+	std::vector<char> buffer ( num_of_bytes );
 
-	readRawBytes( buffer.get(), num_of_bytes );
+	readRawBytes( buffer.data(), num_of_bytes );
 	return buffer;
 }
 
@@ -241,14 +240,14 @@ XMLDocumentPtr FileRead::readXMLDocument(const std::string& filename)
 
 	// that's quite ugly
 	int fileLength = file.length();
-	boost::scoped_array<char> fileBuffer(new char[fileLength + 1]);
-	file.readRawBytes( fileBuffer.get(), fileLength );
+	std::vector<char> fileBuffer(fileLength + 1);
+	file.readRawBytes( fileBuffer.data(), fileLength );
 	// null-terminate
 	fileBuffer[fileLength] = 0;
 
 	// parse file
     XMLDocumentPtr xml = std::make_shared<tinyxml2::XMLDocument>();
-	xml->Parse(fileBuffer.get());
+	xml->Parse(fileBuffer.data());
 
 	/// \todo do error handling here?
 

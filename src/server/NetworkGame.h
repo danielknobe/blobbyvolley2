@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <thread>
 #include <memory>
 
-#include <boost/shared_array.hpp>
-
 #include "Global.h"
 #include "raknet/NetworkTypes.h"
 #include "raknet/BitStream.h"
@@ -106,7 +104,6 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		bool mGameValid;
 
 		bool mRulesSent[MAX_PLAYERS];
-		int mRulesLength;
-		boost::shared_array<char> mRulesString;
+		std::vector<char> mRulesString;
 };
 
