@@ -1,5 +1,5 @@
 # The purpose of this workflow is to verify that we are compatible with older versions of CMake than available through
-# the ubuntu package sources
+# the ubuntu package sources, with a minimum of available libraries on the system.
 name: Old CMake
 on:
   push:
@@ -10,19 +10,21 @@ on:
       - "master"
   workflow_dispatch:
 jobs:
-  Build:
+  CMake_3_3:
     runs-on: ubuntu-latest
     env:
       CMAKE_VERSION: 3.3.0
     steps:
       - name: Setup Linux
+        # Note: We are not installing physfs-dev here, in order to check that our build can cope with it being missing.
         run: |
           sudo apt-get update
           sudo apt-get install \
             libsdl2-dev \
-            libphysfs-dev \
             libboost-dev
       - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Get CMake
         # note: newer versions of cmake have changed the naming scheme to use lower-case 'linux',
         # which will break this script

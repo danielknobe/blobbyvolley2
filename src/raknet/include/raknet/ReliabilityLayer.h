@@ -35,6 +35,7 @@
 #include "MTUSize.h"
 #include "LinkedList.h"
 #include "ArrayList.h"
+#include "Queue.h"
 #include "SocketLayer.h"
 #include "PacketPriority.h"
 #include "BitStream.h"
@@ -43,8 +44,6 @@
 #include "InternalPacketPool.h"
 #include "RakNetStatistics.h"
 #include "NetworkTypes.h"
-
-#include "../blobnet/adt/Queue.hpp"
 
 /**
 * Sizeof an UDP header in byte
@@ -272,9 +271,9 @@ private:
 
 	BasicDataStructures::List<InternalPacket*> splitPacketList;
 	BasicDataStructures::List<BasicDataStructures::LinkedList<InternalPacket*>*> orderingList;
-	BlobNet::ADT::Queue<InternalPacket*> acknowledgementQueue, outputQueue;
-	BlobNet::ADT::Queue<InternalPacket*> resendQueue;
-	BlobNet::ADT::Queue<InternalPacket*> sendPacketSet[ NUMBER_OF_PRIORITIES ];
+	BasicDataStructures::Queue<InternalPacket*> acknowledgementQueue, outputQueue;
+	BasicDataStructures::Queue<InternalPacket*> resendQueue;
+	BasicDataStructures::Queue<InternalPacket*> sendPacketSet[ NUMBER_OF_PRIORITIES ];
 	PacketNumberType packetNumber;
 	//unsigned int windowSize;
 	unsigned int lastAckTime;
@@ -297,7 +296,7 @@ private:
 	//     We got a duplicate packet.
 	//   else
 	//     Add 0 times to the queue until (packetNumber - baseIndex) < queue size.
-	BlobNet::ADT::Queue<unsigned int> receivedPackets;
+	BasicDataStructures::Queue<unsigned int> receivedPackets;
 	PacketNumberType receivedPacketsBaseIndex;
 	bool resetReceivedPackets;
 

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* Includes */
 #include "../exception/HttpException.hpp"
-#include "../../raknet/SocketLayer.h"
+#include "raknet/SocketLayer.h"
 
 #include <string>
 

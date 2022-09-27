@@ -1,0 +1,4 @@
+[submodule "deps/physfs"]
+	path = deps/physfs
+	url = https://github.com/icculus/physfs.git
+	shallow = true

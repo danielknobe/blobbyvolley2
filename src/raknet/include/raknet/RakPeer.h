@@ -513,7 +513,7 @@ protected:
 #endif
 		processPacketsThreadHandle, recvfromThreadHandle;
 	SimpleMutex incomingQueueMutex;
-	BlobNet::ADT::Queue<Packet *> incomingPacketQueue;
+	BasicDataStructures::Queue<Packet *> incomingPacketQueue;
 	// BitStream enumerationData;
 
 	struct RequestedConnectionStruct

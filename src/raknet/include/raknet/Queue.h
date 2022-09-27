@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <deque>
 #include <algorithm>
 
-namespace BlobNet {
-namespace ADT {
+namespace BasicDataStructures {
 	/*!	\class Queue
 		\brief ADT for a Queue with some extra functionality
 		\note This class needs a cleanup. There are some dummy methods
@@ -169,6 +168,4 @@ namespace ADT {
 		return this->array.clear();
 	}
 }
-}
 #endif
-

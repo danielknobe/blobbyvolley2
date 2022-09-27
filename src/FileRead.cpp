@@ -30,8 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/algorithm/string.hpp>
 
 #include "tinyxml2.h"
-
-#include "lua/lua.hpp"
+#include "lua.hpp"
 
 
 /* implementation */
