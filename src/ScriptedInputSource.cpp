@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL.h>
 
-#include "lua/lua.hpp"
+#include "lua.hpp"
 
 #include "DuelMatch.h"
 #include "IUserConfigReader.h"
