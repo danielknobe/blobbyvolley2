@@ -41,3 +41,5 @@ set (lua_SRC
 	)
 
 add_library(lua STATIC ${lua_SRC})
+add_library(lua::lua ALIAS lua)
+target_include_directories(lua PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

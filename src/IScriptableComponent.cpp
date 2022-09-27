@@ -1,6 +1,6 @@
 #include "IScriptableComponent.h"
 
-#include "lua/lua.hpp"
+#include "lua.hpp"
 
 #include "Global.h"
 #include "GameConstants.h"

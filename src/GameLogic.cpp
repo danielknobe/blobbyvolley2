@@ -26,12 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <utility>
 
-extern "C"
-{
-#include "lua/lua.h"
-#include "lua/lauxlib.h"
-#include "lua/lualib.h"
-}
+#include "lua.hpp"
 
 #include "FileRead.h"
 #include "GameLogicState.h"
