@@ -27,6 +27,8 @@ endif ()
 
 add_library(raknet::raknet ALIAS raknet)
 
+MakeHeaderTests(test-headers-raknet "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(test-headers-raknet PRIVATE raknet)
 
 
 

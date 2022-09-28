@@ -46,15 +46,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	#include <switch.h>
 #endif
 
-#include "RenderManager.h"
+#include "render/RenderManager.h"
 #include "SoundManager.h"
-#include "InputManager.h"
+#include "input/InputManager.h"
 #include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
 #include "SpeedController.h"
-#include "Blood.h"
-#include "FileSystem.h"
+#include "render/Blood.h"
+#include "io/FileSystem.h"
 #include "state/State.h"
 
 #if defined(WIN32)

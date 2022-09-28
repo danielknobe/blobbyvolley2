@@ -19,8 +19,6 @@ CTestTestfile.cmake
 _deps
 
 #project linux
-src/blobby
-src/blobby-server
 *.a
 
 #project vs2019

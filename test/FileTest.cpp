@@ -1,9 +1,9 @@
 //#define BOOST_TEST_MODULE FileAbstraction
 #include <boost/test/unit_test.hpp>
 
-#include "FileRead.h"
-#include "FileWrite.h"
-#include "FileSystem.h"
+#include "io/FileRead.h"
+#include "io/FileWrite.h"
+#include "io/FileSystem.h"
 #include <iostream>
 #include <cstring>
 #include <physfs.h>

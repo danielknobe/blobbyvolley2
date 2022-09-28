@@ -1,15 +1,15 @@
 #define BOOST_TEST_MODULE Blobby Tests
 #include <boost/test/unit_test.hpp>
 
-#include "FileRead.h"
-#include "FileWrite.h"
-#include "FileSystem.h"
+#include "io/FileRead.h"
+#include "io/FileWrite.h"
+#include "io/FileSystem.h"
 #include "Color.h"
 #include <iostream>
 #include <cstring>
-#include "GenericIO.h"
-#include "InputSource.h"
-#include "DuelMatchState.h"
+#include "io/GenericIO.h"
+#include "match/InputSource.h"
+#include "match/DuelMatchState.h"
 #include "raknet/BitStream.h"
 #include <memory>
 #include <boost/scoped_array.hpp>
