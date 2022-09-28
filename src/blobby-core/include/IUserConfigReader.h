@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <memory>
 
-#include "Global.h"
+#include "match/PlayerSide.h"
 #include "BlobbyDebug.h"
 
 class PlayerIdentity;

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <iosfwd>
 #include "BlobbyDebug.h"
-#include "Global.h"
+#include "match/PlayerSide.h"
 
 class DuelMatch;
 

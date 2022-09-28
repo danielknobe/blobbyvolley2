@@ -2,6 +2,7 @@
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
 Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2022 Erik Schultheis (erik-schultheis@freenet.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,19 +21,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "match/PlayerSide.h"
-#include "Vector.h"
+// Detect whether we have a desktop or mobile target
+/// TODO should we do this in CMake?
+#if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
+#define BLOBBY_ON_MOBILE true
+#define BLOBBY_ON_DESKTOP false
+#else
+#define BLOBBY_ON_MOBILE false
+#define BLOBBY_ON_DESKTOP true
+#endif
 
-struct PhysicState
-{
-	Vector2 blobPosition[MAX_PLAYERS];
-	Vector2 blobVelocity[MAX_PLAYERS];
-	float   blobState[MAX_PLAYERS];
+// Detect features
+#if (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
+#define BLOBBY_FEATURE_HAS_BACKBUTTON false
+#else
+#define BLOBBY_FEATURE_HAS_BACKBUTTON true
+#endif
 
-	Vector2 ballPosition;
-	Vector2 ballVelocity;
-	float   ballRotation;
-	float   ballAngularVelocity;
-
-	void swapSides();
-};
+const char AppTitle[] = "Blobby Volley 2 Version 1.0";
+const int BASE_RESOLUTION_X = 800;
+const int BASE_RESOLUTION_Y = 600;

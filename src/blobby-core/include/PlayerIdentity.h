@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-#include "Global.h"
 #include "Color.h"
+#include "match/PlayerSide.h"
 
 class PlayerIdentity
 {

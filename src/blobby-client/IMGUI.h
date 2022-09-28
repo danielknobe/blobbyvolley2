@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 
 #include "Vector.h"
-#include "Global.h"
 
 #include "render/RenderManager.h"
 #include "input/InputManager.h"

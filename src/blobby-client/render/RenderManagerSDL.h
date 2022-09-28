@@ -24,7 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 #include "RenderManager.h"
-#include "Global.h"
+#include "match/PlayerSide.h"
+#include "TargetDevice.h"
 
 /*! \class RenderManagerSDL
 	\brief Render Manager on top of SDL

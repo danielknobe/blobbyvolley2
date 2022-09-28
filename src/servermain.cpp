@@ -23,10 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
-#include <ctime>
 #include <future>
 
-#include <cerrno>
 #include <unistd.h>
 
 #include <boost/algorithm/string/split.hpp>

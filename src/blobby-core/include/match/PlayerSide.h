@@ -2,6 +2,7 @@
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
 Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2022 Erik Schultheis (erik-schultheis@freenet.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,19 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "match/PlayerSide.h"
-#include "Vector.h"
-
-struct PhysicState
+enum PlayerSide
 {
-	Vector2 blobPosition[MAX_PLAYERS];
-	Vector2 blobVelocity[MAX_PLAYERS];
-	float   blobState[MAX_PLAYERS];
-
-	Vector2 ballPosition;
-	Vector2 ballVelocity;
-	float   ballRotation;
-	float   ballAngularVelocity;
-
-	void swapSides();
+	NO_PLAYER = -1,
+	LEFT_PLAYER = 0,
+	RIGHT_PLAYER = 1,
+	//LEFT_PLAYER_2 = 2,
+	//RIGHT_PLAYER_2 = 3,
+	MAX_PLAYERS // This is always one more than the highest player enum
+	// and can be used to declare arrays
 };

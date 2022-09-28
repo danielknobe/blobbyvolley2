@@ -26,7 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include "io/FileExceptions.h"
 #include "Color.h"
-#include "Global.h"
+#include "TargetDevice.h"
+#include "match/PlayerSide.h"
 
 /* implementation */
 RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) :

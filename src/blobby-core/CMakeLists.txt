@@ -57,6 +57,7 @@ target_link_libraries(blobby-core PUBLIC raknet::raknet ${SDL2_LIBRARIES})
 target_link_libraries(blobby-core PRIVATE tinyxml2::tinyxml2 PhysFS::PhysFS lua::lua)
 target_include_directories(blobby-core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(blobby-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(blobby-core PRIVATE -Werror=undef)
 
 MakeHeaderTests(test-headers-core "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(test-headers-core PRIVATE blobby-client)

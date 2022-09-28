@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "IUserConfigReader.h"
 #include "PlayerIdentity.h"
+#include "Global.h"
 
 /* implementation */
 ServerInfo::ServerInfo(RakNet::BitStream& stream, const char* ip, uint16_t p)

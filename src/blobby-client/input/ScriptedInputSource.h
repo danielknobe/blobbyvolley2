@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <random>
 
-#include "Global.h"
 #include "match/InputSource.h"
 #include "Vector.h"
 #include "IScriptableComponent.h"

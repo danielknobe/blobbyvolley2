@@ -45,6 +45,7 @@ endif (OPENGL_FOUND)
 add_library(blobby-client ${INPUT_SRC} ${STATE_SRC} ${RENDER_SRC} ${OTHER_SRC})
 target_include_directories(blobby-client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(blobby-client PUBLIC blobby-core blobnet::blobnet lua::lua ${OPENGL_LIBRARIES} tinyxml2::tinyxml2)
+target_compile_options(blobby-client PRIVATE -Werror=undef)
 
 if (UNIX)
     find_package(Threads REQUIRED)

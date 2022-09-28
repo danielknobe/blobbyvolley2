@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL.h>
 
-#include "Global.h"
+#include "TargetDevice.h"
 
 #ifdef __APPLE__
 	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
@@ -49,13 +49,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "render/RenderManager.h"
 #include "SoundManager.h"
 #include "input/InputManager.h"
-#include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
 #include "SpeedController.h"
 #include "render/Blood.h"
 #include "io/FileSystem.h"
 #include "state/State.h"
+#include "Global.h"
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR

@@ -48,6 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "UserConfig.h"
 #include "SpeedController.h"
 #include "network/DedicatedServer.h"
+#include "Global.h"
 
 
 // control variables for a dedicated server thread in case a game is hosted

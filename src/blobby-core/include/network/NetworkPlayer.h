@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "raknet/NetworkTypes.h"
 #include "raknet/BitStream.h"
-#include "Global.h"
 #include "BlobbyDebug.h"
 #include "PlayerIdentity.h"
 

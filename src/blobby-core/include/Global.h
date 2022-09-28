@@ -22,22 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-// Detect whether we have a desktop or mobile target
-#if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
-#define BLOBBY_ON_MOBILE true
-#define BLOBBY_ON_DESKTOP false
-#else
-#define BLOBBY_ON_MOBILE false
-#define BLOBBY_ON_DESKTOP true
-#endif
-
-// Detect features
-#if (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_IPHONE_SIMULATOR)
-#define BLOBBY_FEATURE_HAS_BACKBUTTON false
-#else
-#define BLOBBY_FEATURE_HAS_BACKBUTTON true
-#endif
-
 /*!	\def DEBUG
 	\brief Enable debugging support
 	\details when this marco is present, Blobby generates some additional debugging code
@@ -49,10 +33,6 @@ const int BLOBBY_PORT = 1234;
 const int BLOBBY_VERSION_MAJOR = 0;
 const int BLOBBY_VERSION_MINOR = 105;
 
-const char AppTitle[] = "Blobby Volley 2 Version 1.0";
-const int BASE_RESOLUTION_X = 800;
-const int BASE_RESOLUTION_Y = 600;
-
 const float ROUND_START_SOUND_VOLUME = 0.2;
 const float BALL_HIT_PLAYER_SOUND_VOLUME = 0.4;
 
@@ -61,17 +41,6 @@ const int RAKNET_THREAD_SLEEP_TIME = 1;
 extern int CURRENT_NETWORK_LAG;
 
 const std::string DEFAULT_RULES_FILE = "default.lua";
-
-enum PlayerSide
-{
-	NO_PLAYER = -1,
-	LEFT_PLAYER = 0,
-	RIGHT_PLAYER = 1,
-	//LEFT_PLAYER_2 = 2,
-	//RIGHT_PLAYER_2 = 3,
-	MAX_PLAYERS // This is always one more than the highest player enum
-	// and can be used to declare arrays
-};
 
 /// we need to define this constant to make it compile with strict c++98 mode
 #undef M_PI

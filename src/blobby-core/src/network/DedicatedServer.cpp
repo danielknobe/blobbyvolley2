@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "network/NetworkMessage.h"
 #include "network/NetworkGame.h"
 #include "io/GenericIO.h"
+#include "Global.h"
 
 #ifndef WIN32
 #ifndef __ANDROID__

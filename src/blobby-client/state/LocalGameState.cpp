@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "IUserConfigReader.h"
 #include "input/InputSourceFactory.h"
+#include "Global.h"
 
 /* implementation */
 LocalGameState::~LocalGameState() = default;
