@@ -47,7 +47,7 @@ ReplaySelectionState::ReplaySelectionState()
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
 
-	SpeedController::getMainInstance()->setGameSpeed(75);
+	SpeedController::getMainInstance()->setTargetFPS( 75 );
 }
 
 void ReplaySelectionState::step_impl()

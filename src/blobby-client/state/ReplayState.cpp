@@ -71,9 +71,9 @@ void ReplayState::loadReplay(const std::string& file)
 		mMatch->getPlayer(LEFT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
 		mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
 
-		SpeedController::getMainInstance()->setGameSpeed(
-				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
-			);
+	SpeedController::getMainInstance()->setTargetFPS(
+			(float) IUserConfigReader::createUserConfigReader( "config.xml" )->getInteger( "gamefps" )
+	);
 
 	//}
 	/*
@@ -213,9 +213,9 @@ void ReplayState::step_impl()
 
 			// do we really need this?
 			// maybe, users want to replay the game on the current speed
-			SpeedController::getMainInstance()->setGameSpeed(
-					(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
-				);
+			SpeedController::getMainInstance()->setTargetFPS(
+					(float) IUserConfigReader::createUserConfigReader( "config.xml" )->getInteger( "gamefps" )
+			);
 
 			mPaused = false;
 			mPositionJump = 0;

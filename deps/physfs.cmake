@@ -26,5 +26,5 @@ else ()
         option(${PHYSFS_OPT} "" OFF)
     endforeach()
 
-    add_subdirectory(physfs)
+    add_subdirectory(deps/physfs)
 endif ()

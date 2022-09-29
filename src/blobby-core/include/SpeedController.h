@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
+#include <chrono>
 #include "BlobbyDebug.h"
 
 /// \brief class controlling game speed
@@ -41,36 +42,49 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class SpeedController : public ObjectCounter<SpeedController>
 {
 	public:
+		using clock_t = std::chrono::steady_clock;
+
 		explicit SpeedController(float gameFPS);
 		~SpeedController();
 
-		void setGameSpeed(float fps);
-		float getGameSpeed() const{return mGameFPS;}
+		/// Set the target FPS
+		void setTargetFPS(float fps);
+		float getTargetFPS() const;
 
-	/// This reports whether a framedrop is necessary to hold the real FPS
+		///
+
+		/// This reports whether a framedrop is necessary to hold the real FPS
 		bool doFramedrop() const;
 
-	/// gives the caller the fps of the drawn frames:
+		/// gives the caller the fps of the drawn frames:
 		int getFPS() const { return mFPS; }
 		void setDrawFPS(bool draw) { mDrawFPS = draw; }  //help methods
 		bool getDrawFPS() const { return mDrawFPS; }
 
-	/// This updates everything and waits the necessary time
+		/// This updates everything and waits the necessary time
 		void update();
 
 		static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
 		static SpeedController* getMainInstance() { return mMainInstance; }
+
 	private:
-		float mGameFPS;
+		//! The FPS this SpeedController is trying to achieve
+		float mTargetFPS;
+		//! Estimate for the current FPS
 		int mFPS;
+
 		int mFPSCounter;
 		bool mFramedrop;
+
+		/// TODO This should really not be part of this class.
 		bool mDrawFPS;
+
 		static SpeedController* mMainInstance;
-		int mOldTicks;
+
+		clock_t::time_point mOldTicks;
 
 		// internal data
-		unsigned int mBeginSecond;
+		clock_t::time_point mBeginSecond;
 		int mCounter;
 };
 

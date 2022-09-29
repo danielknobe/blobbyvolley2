@@ -49,7 +49,7 @@ LocalGameState::LocalGameState()
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
 
 	// set speed
-	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
+	SpeedController::getMainInstance()->setTargetFPS((float) config->getInteger( "gamefps" ));
 
 
 	SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);

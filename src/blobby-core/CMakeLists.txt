@@ -53,7 +53,7 @@ add_library(blobby-core
         )
 
 # raknet is a public dependency, because NetworkPlayer.h includes its headers
-target_link_libraries(blobby-core PUBLIC raknet::raknet ${SDL2_LIBRARIES})
+target_link_libraries(blobby-core PUBLIC raknet::raknet)
 target_link_libraries(blobby-core PRIVATE tinyxml2::tinyxml2 PhysFS::PhysFS lua::lua)
 target_include_directories(blobby-core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(blobby-core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

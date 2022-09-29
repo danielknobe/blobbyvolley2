@@ -75,7 +75,7 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors(leftPlayer.getColor(), rightPlayer.getColor());
-	mRecorder->setGameSpeed(mSpeedController.getGameSpeed());
+	mRecorder->setGameSpeed( mSpeedController.getTargetFPS());
 	mRecorder->setGameRules(rules);
 
 	// read rulesfile into a string
@@ -293,7 +293,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				// writing data into leftStream
 				RakNet::BitStream leftStream;
 				leftStream.Write((unsigned char)ID_GAME_READY);
-				leftStream.Write((int)mSpeedController.getGameSpeed());
+				leftStream.Write((int) mSpeedController.getTargetFPS());
 				strncpy(name, mMatch->getPlayer(RIGHT_PLAYER).getName().c_str(), sizeof(name));
 				leftStream.Write(name, sizeof(name));
 				leftStream.Write(mMatch->getPlayer(RIGHT_PLAYER).getStaticColor().toInt());
@@ -301,7 +301,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				// writing data into rightStream
 				RakNet::BitStream rightStream;
 				rightStream.Write((unsigned char)ID_GAME_READY);
-				rightStream.Write((int)mSpeedController.getGameSpeed());
+				rightStream.Write((int) mSpeedController.getTargetFPS());
 				strncpy(name, mMatch->getPlayer(LEFT_PLAYER).getName().c_str(), sizeof(name));
 				rightStream.Write(name, sizeof(name));
 				rightStream.Write(mMatch->getPlayer(LEFT_PLAYER).getStaticColor().toInt());

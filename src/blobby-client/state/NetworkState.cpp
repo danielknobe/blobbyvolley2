@@ -208,7 +208,7 @@ void NetworkGameState::step_impl()
 				// read gamespeed
 				int speed;
 				stream.Read(speed);
-				SpeedController::getMainInstance()->setGameSpeed(speed);
+				SpeedController::getMainInstance()->setTargetFPS( speed );
 
 				// read playername
 				stream.Read(charName, sizeof(charName));

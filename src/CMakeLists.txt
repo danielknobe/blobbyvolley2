@@ -36,7 +36,6 @@ function(MakeHeaderTests TargetName HeaderDirectory)
 endfunction()
 
 find_package(Boost REQUIRED)
-find_package(SDL2 REQUIRED)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
 
@@ -44,31 +43,9 @@ if (SWITCH)
 	find_library(NX nx)
 endif (SWITCH)
 
-if ("${SDL2_LIBRARIES}" STREQUAL "")
-	set(SDL2_LIBRARIES "SDL2::SDL2")
-endif ()
-
 include_directories(
 	${Boost_INCLUDE_DIR}
-	${SDL2_INCLUDE_DIRS}
 )
-
-# sdl additional dependencies
-if (CMAKE_SYSTEM_NAME STREQUAL iOS)
-	set(SDL2_LIBRARIES ${SDL2_LIBRARIES}
-		"-framework AudioToolbox"
-		"-framework AVFoundation"
-		"-framework CoreAudio"
-		"-framework CoreAudioKit"
-		"-framework CoreGraphics"
-		"-framework CoreMotion"
-		"-framework Foundation"
-		"-framework GameController"
-		"-framework MediaPlayer"
-		"-framework OpenGLES"
-		"-framework QuartzCore"
-		"-framework UIKit")
-endif (CMAKE_SYSTEM_NAME STREQUAL iOS)
 
 add_subdirectory(blobby-core)
 add_subdirectory(blobby-client)
@@ -87,7 +64,7 @@ if (SWITCH)
 	add_custom_target(blobby ALL DEPENDS blobby.nro)
 else (SWITCH)
 	add_executable(blobby main.cpp)
-	target_link_libraries(blobby blobby-client)
+	target_link_libraries(blobby PRIVATE blobby-client SDL2::SDL2main)
 endif (SWITCH)
 
 
@@ -96,7 +73,7 @@ if (UNIX)
 	add_executable(blobby-server servermain.cpp)
 	target_link_libraries(blobby-server blobby-core Threads::Threads)
 	add_executable(blobby-runtest EXCLUDE_FROM_ALL runtest.cpp)
-	target_link_libraries(blobby-runtest blobby-client)
+	target_link_libraries(blobby-runtest PRIVATE blobby-client SDL2::SDL2main)
 endif (UNIX)
 
 if (WIN32)
