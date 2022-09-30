@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <SDL2/SDL_events.h>
+#include <SDL_events.h>
 #include "PlayerInput.h"
 #include "BlobbyDebug.h"
 
