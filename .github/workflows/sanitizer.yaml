@@ -23,7 +23,8 @@ jobs:
             libsdl2-dev \
             libphysfs-dev \
             libboost-dev \
-            xvfb
+            xvfb \ 
+            llvm
       - name: Get debug symbols
         # TODO figure this out also for ubuntu-20
         # TODO do these actually help?
@@ -59,12 +60,31 @@ jobs:
         # here, too.
         # We install llvm, because this contains the llvm-symbolizer executable.
         run: |
-          sudo apt-get install clang llvm
+          sudo apt-get install clang
           echo "CXX=clang++" >> $GITHUB_ENV
           echo "CC=clang" >> $GITHUB_ENV
           echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
           echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
           echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          
+          # from https://github.com/google/sanitizers/wiki/MemorySanitizerBootstrappingClang
+          git clone --depth=1 https://github.com/llvm/llvm-project
+          cd llvm-project
+
+          LIBCXX_DIR="$PWD/build_libcxx"
+          mkdir $LIBCXX_DIR
+          cd $LIBCXX_DIR
+          
+          cmake -GNinja ../llvm \
+          	-DCMAKE_BUILD_TYPE=Release \
+          	-DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
+          	-DCMAKE_C_COMPILER=clang \
+          	-DCMAKE_CXX_COMPILER=clang++ \
+          	-DLLVM_USE_SANITIZER=MemoryWithOrigins
+          
+          cmake --build . -- cxx cxxabi
+          echo "CXXFLAGS=${CXXFLAGS} -nostdinc++ -isystem $LIBCXX_DIR/include -isystem $LIBCXX_DIR/include/c++/v1" >> $GITHUB_ENV
+          echo "LDFLAGS=${LDFLAGS} -stdlib=libc++ -Wl,--rpath=$LIBCXX_DIR/lib -L$LIBCXX_DIR/lib -fsanitize=memory" >> $GITHUB_ENV
       - name: Configure CMake and Build
         run: |
           cmake . -DCMAKE_BUILD_TYPE=${{ matrix.build }}
