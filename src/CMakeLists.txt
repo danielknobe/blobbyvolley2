@@ -22,6 +22,7 @@ set(common_SRC
 	GameLogic.cpp GameLogic.h
 	GenericIO.cpp GenericIO.h
 	Global.h
+	Color.cpp Color.h
 	NetworkMessage.cpp NetworkMessage.h
 	PhysicWorld.cpp PhysicWorld.h
 	SpeedController.cpp SpeedController.h

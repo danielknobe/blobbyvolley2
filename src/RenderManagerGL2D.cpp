@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include "FileExceptions.h"
+#include "Color.h"
+#include "Global.h"
 
 /* implementation */
 RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) :
@@ -106,14 +108,14 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, bool specular)
 	targetRect.y = (paddedY - oldY) / 2;
 
 	SDL_SetColorKey(textureSurface, SDL_TRUE,
-			SDL_MapRGB(textureSurface->format, 0, 0, 0));
+	                SDL_MapRGB(textureSurface->format, 0, 0, 0));
 	convertedTexture =
-		SDL_CreateRGBSurface(SDL_SWSURFACE,
-			paddedX, paddedY, 32,
+	        SDL_CreateRGBSurface(SDL_SWSURFACE,
+	                             paddedX, paddedY, 32,
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	                0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
-			0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+	                0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 #endif
 	SDL_BlitSurface(textureSurface, nullptr, convertedTexture, &targetRect);
 
@@ -124,8 +126,8 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, bool specular)
 			for (int x = 0; x < convertedTexture->w; ++x)
 			{
 				SDL_Color* pixel =
-					&(((SDL_Color*)convertedTexture->pixels)
-					[y * convertedTexture->w +x]);
+				        &(((SDL_Color*)convertedTexture->pixels)
+				        [y * convertedTexture->w +x]);
 				int luminance = int(pixel->r) * 5 - 4 * 256 - 138;
 				luminance = luminance > 0 ? luminance : 0;
 				luminance = luminance < 255 ? luminance : 255;
@@ -142,8 +144,8 @@ GLuint RenderManagerGL2D::loadTexture(SDL_Surface *surface, bool specular)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
-			convertedTexture->w, convertedTexture->h, 0, GL_RGBA,
-			GL_UNSIGNED_BYTE, convertedTexture->pixels);
+	             convertedTexture->w, convertedTexture->h, 0, GL_RGBA,
+	             GL_UNSIGNED_BYTE, convertedTexture->pixels);
 	SDL_FreeSurface(textureSurface);
 	SDL_FreeSurface(convertedTexture);
 
@@ -219,15 +221,15 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Create window
 	mWindow = SDL_CreateWindow(AppTitle,
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		xResolution, yResolution,
-		screenFlags);
+	                           SDL_WINDOWPOS_UNDEFINED,
+	                           SDL_WINDOWPOS_UNDEFINED,
+	                           xResolution, yResolution,
+	                           screenFlags);
 
 	// Set icon
 	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,
-			SDL_MapRGB(icon->format, 0, 0, 0));
+	                SDL_MapRGB(icon->format, 0, 0, 0));
 	SDL_SetWindowIcon(mWindow, icon);
 	SDL_FreeSurface(icon);
 
@@ -411,7 +413,7 @@ void RenderManagerGL2D::draw()
 
 		Vector2& ballPosition = *iter;
 */
-		drawQuad(mBallPosition.x, mBallPosition.y, 64.0, 64.0);
+	drawQuad(mBallPosition.x, mBallPosition.y, 64.0, 64.0);
 
 /*
 		opacity += 0.1;
@@ -424,12 +426,12 @@ void RenderManagerGL2D::draw()
 	// blob normal
 	// left blob
 	glBindTexture(mBlob[int(mLeftBlobAnimationState)  % 5]);
-	glColor3ubv(mLeftBlobColor.val);
+	glColor3ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b);
 	drawQuad(mLeftBlobPosition.x, mLeftBlobPosition.y, 128.0, 128.0);
 
 	// right blob
 	glBindTexture(mBlob[int(mRightBlobAnimationState)  % 5]);
-	glColor3ubv(mRightBlobColor.val);
+	glColor3ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b);
 	drawQuad(mRightBlobPosition.x, mRightBlobPosition.y, 128.0, 128.0);
 
 	// blob specular
@@ -615,10 +617,10 @@ void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, C
 	glColor4f(col.r, col.g, col.b, opacity);
 	//glLoadIdentity();
 	glBegin(GL_QUADS);
-		glVertex2f(pos1.x, pos1.y);
-		glVertex2f(pos1.x, pos2.y);
-		glVertex2f(pos2.x, pos2.y);
-		glVertex2f(pos2.x, pos1.y);
+	glVertex2f(pos1.x, pos1.y);
+	glVertex2f(pos1.x, pos2.y);
+	glVertex2f(pos2.x, pos2.y);
+	glVertex2f(pos2.x, pos1.y);
 	glEnd();
 }
 
@@ -633,7 +635,7 @@ void RenderManagerGL2D::drawBlob(const Vector2& pos, const Color& col)
 	//glLoadIdentity();
 	//glTranslatef(pos.x, pos.y, 0.6);
 	glBindTexture(mBlob[0]);
-	glColor3ubv(col.val);
+	glColor3ub(col.r, col.g, col.b);
 	drawQuad(pos.x, pos.y, 128.0, 128.0);
 
 	glEnable(GL_BLEND);
@@ -660,11 +662,11 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	//glTranslatef(pos.x, pos.y, 0.6);
 
 	if (player == LEFT_PLAYER)
-		glColor3ubv(mLeftBlobColor.val);
+		glColor3ub(mLeftBlobColor.r, mLeftBlobColor.b, mLeftBlobColor.g);
 	if (player == RIGHT_PLAYER)
-		glColor3ubv(mRightBlobColor.val);
+		glColor3ub(mRightBlobColor.r, mRightBlobColor.b, mRightBlobColor.g);
 	if (player > 1)
-		glColor3ubv(Color(255, 0, 0).val);
+		glColor3ub(255, 0, 0);
 
 	float w = 16.0;
 	float h = 16.0;

@@ -23,12 +23,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <ctime>	// for time_t
 #include <memory>
 
-#include "Global.h"
 #include "ReplaySavePoint.h"
 #include "BlobbyDebug.h"
 #include "GenericIOFwd.h"
 
 struct PlayerInput;
+struct Color;
 class InputSource;
 
 /// \class IReplayLoader
