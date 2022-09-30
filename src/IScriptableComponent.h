@@ -21,10 +21,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include <string>
-#include "PhysicWorld.h"
+#include <memory>
 
 struct lua_State;
 class DuelMatch;
+class PhysicWorld;
 
 /*! \class IScriptableComponent
 	\brief Base class for lua scripted objects.
@@ -33,30 +34,30 @@ class DuelMatch;
 */
 class IScriptableComponent
 {
-public:
-	struct Access;
-protected:
-	IScriptableComponent();
-	virtual ~IScriptableComponent();
+	public:
+		struct Access;
+	protected:
+		IScriptableComponent();
+		virtual ~IScriptableComponent();
 
-	void openScript(const std::string& file);
-	void setLuaGlobal(const char* name, double value);
-	bool getLuaFunction(const char* name) const;
+		void openScript(const std::string& file);
+		void setLuaGlobal(const char* name, double value);
+		bool getLuaFunction(const char* name) const;
 
-	// calls a lua function that is on the stack and performs error handling
-	void callLuaFunction(int arg_count = 0);
+		// calls a lua function that is on the stack and performs error handling
+		void callLuaFunction(int arg_count = 0);
 
-	// load lua functions
-	void setGameConstants();
-	void setGameFunctions();
-	void setMatch( DuelMatch* m ) { mGame = m; };
-	DuelMatch* getMatch() const { return mGame; };
+		// load lua functions
+		void setGameConstants();
+		void setGameFunctions();
+		void setMatch( DuelMatch* m ) { mGame = m; };
+		DuelMatch* getMatch() const { return mGame; };
 
-	lua_State* mState;
+		lua_State* mState;
 
-private:
-	DuelMatch* mGame;
-	// we save a dummy physic world here to do simulations
-	PhysicWorld mDummyWorld;
+	private:
+		DuelMatch* mGame;
+		// we save a dummy physic world here to do simulations
+		std::unique_ptr<PhysicWorld> mDummyWorld;
 };
 

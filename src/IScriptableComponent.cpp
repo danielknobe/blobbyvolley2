@@ -7,6 +7,7 @@
 #include "DuelMatch.h"
 #include "DuelMatchState.h"
 #include "FileRead.h"
+#include "PhysicWorld.h"
 
 #include <iostream>
 
@@ -14,7 +15,7 @@
 int lua_print(lua_State* state);
 
 IScriptableComponent::IScriptableComponent() :
-	mState(luaL_newstate())
+		mState(luaL_newstate()), mDummyWorld(new PhysicWorld())
 {
 	// register this in the lua registry
 	lua_pushliteral(mState, "__C++_ScriptComponent__");
@@ -149,7 +150,7 @@ struct IScriptableComponent::Access
 	static PhysicWorld* getWorld( lua_State* state )
 	{
 		auto sc = getScriptComponent( state );
-		return &sc->mDummyWorld;
+		return sc->mDummyWorld.get();
 	}
 };
 
@@ -350,9 +351,9 @@ int lua_print(lua_State* state)
 		const char* str = lua_tostring(state, -1);
 		std::cout << (i != 1 ? ", " : "");
 		if(str)
-		 std::cout << str;
+			std::cout << str;
 		else
-		std::cout << "[" << lua_typename(state, lua_type(state, -1)) << "]";
+			std::cout << "[" << lua_typename(state, lua_type(state, -1)) << "]";
 	}
 	std::cout << "\n";
 	lua_pop(state, lua_gettop(state));
@@ -373,9 +374,9 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "simulate", simulate_steps);
 	lua_register(mState, "simulate_until", simulate_until);
 
-	#ifndef NDEBUG
+#ifndef NDEBUG
 	// only enable this function in debug builds.
 	lua_register(mState, "set_ball_data", set_ball_data);
 	lua_register(mState, "set_blob_data", set_blob_data);
-	#endif
+#endif
 }
