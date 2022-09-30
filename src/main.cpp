@@ -181,10 +181,9 @@ void setupPHYSFS()
 	#elif (defined __ANDROID__)
 		#undef main
 		extern "C"
-		int SDL_main(int argc, char* argv[])
+		int main(int argc, char* argv[])
 	#endif
 #else
-	extern "C"
 	int main(int argc, char* argv[])
 #endif
 {

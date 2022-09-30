@@ -44,6 +44,9 @@ extern int SWLS_PacketCount;
 extern int SWLS_Connections;
 extern int SWLS_Games;
 
+#ifdef __ANDROID__
+extern "C"
+#endif
 void syslog(int pri, const char* format, ...);
 
 DedicatedServer::DedicatedServer(ServerInfo info,
