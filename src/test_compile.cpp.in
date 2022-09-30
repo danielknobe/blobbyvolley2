@@ -1,0 +1,4 @@
+/// File template from which include checks for headers will be generated. This ensures that every header can be
+/// included separately without referring to undeclared symbols.
+
+#include "@HEADER@"

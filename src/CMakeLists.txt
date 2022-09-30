@@ -172,3 +172,25 @@ elseif (UNIX)
 elseif (SWITCH)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
 endif (WIN32)
+
+
+# Header Checks
+# Create a test target, consisting of one cpp file for each header, where the cpp file does nothing but
+# include its header. If this compiles, then all our headers are self-contained.
+
+# gather up the header files
+file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
+
+# create a new target for this test. We use a static library (instead of an executable), because then
+# we don't have to worry about things actually linking.
+add_library(test-compile-headers STATIC EXCLUDE_FROM_ALL test_compile_main.cpp)
+
+foreach(HEADER ${HEADERS})
+	# construct a new file name based on the headers name
+	string(MAKE_C_IDENTIFIER "${HEADER}" HEADER_TEST_FILE)
+	set(TEST_COMPILE_FILE "${CMAKE_CURRENT_BINARY_DIR}/test_compile/${HEADER_TEST_FILE}.cpp")
+
+	# create the test file and add to the target sources
+	configure_file(test_compile.cpp.in ${TEST_COMPILE_FILE} @ONLY)
+	target_sources(test-compile-headers PUBLIC ${TEST_COMPILE_FILE})
+endforeach()
