@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <map>
 #include <string>
 
-#include <SDL2/SDL_events.h>
+#include <SDL_events.h>
 
 #include "BlobbyDebug.h"
 
