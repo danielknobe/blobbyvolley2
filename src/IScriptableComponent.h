@@ -27,6 +27,13 @@ struct lua_State;
 class DuelMatch;
 class PhysicWorld;
 
+struct ScriptException : public std::exception
+{
+	std::string luaerror;
+	~ScriptException() noexcept override = default;
+};
+
+
 /*! \class IScriptableComponent
 	\brief Base class for lua scripted objects.
 	\details Use this class as base class for objects that support lua scripting. It defines some commonly used functions to make
