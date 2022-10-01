@@ -66,16 +66,6 @@ jobs:
           echo "LDFLAGS=-fsanitize=address,undefined,leak -lgcov" >> $GITHUB_ENV
           echo "CXXFLAGS=-fsanitize=address,undefined,leak -fno-omit-frame-pointer --coverage" >> $GITHUB_ENV
 
-      - name: Setup Memory Sanitizer
-        if: matrix.sanitizer == 'memory'
-        # TODO memory sanitizer requires that all libraries also be compiled with it
-        # to prevent false positives, so we should compile the c++ stdlib, sdl and libphysfs
-        # here, too.
-        run: |
-          echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
-          echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
-          echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
-
       - name: Build libcxx
         if: matrix.sanitizer == 'memory'
         # from https://github.com/google/sanitizers/wiki/MemorySanitizerBootstrappingClang
@@ -97,6 +87,18 @@ jobs:
           cmake --build . -- cxx cxxabi
           echo "CXXFLAGS=${CXXFLAGS} -nostdinc++ -isystem $LIBCXX_DIR/include -isystem $LIBCXX_DIR/include/c++/v1" >> $GITHUB_ENV
           echo "LDFLAGS=${LDFLAGS} -stdlib=libc++ -Wl,--rpath=$LIBCXX_DIR/lib -L$LIBCXX_DIR/lib -fsanitize=memory" >> $GITHUB_ENV
+          
+      - name: Setup Memory Sanitizer
+        if: matrix.sanitizer == 'memory'
+        # TODO memory sanitizer requires that all libraries also be compiled with it
+        # to prevent false positives, so we should compile the c++ stdlib, sdl and libphysfs
+        # here, too.
+        run: |
+          echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+      
+
       - name: Configure CMake and Build
         run: |
           cmake . -DCMAKE_BUILD_TYPE=${{ matrix.build }}
