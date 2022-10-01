@@ -32,7 +32,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplaySelectionState.h"
 #include "InputManager.h"
 #include "FileWrite.h"
-#include "Clock.h"
 
 /* implementation */
 
@@ -123,7 +122,7 @@ void ReplayState::step_impl()
 
 	}
 
-	mMatch->getClock().setTime( Clock::seconds{mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed()} );
+	mMatch->setMatchTimeMs( 1000 * mReplayPlayer->getReplayPosition() / mReplayPlayer->getGameSpeed() );
 
 	// draw the progress bar
 	Vector2 prog_pos = Vector2(50, 600-22);

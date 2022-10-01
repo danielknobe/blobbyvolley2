@@ -91,8 +91,10 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		Vector2 getBlobVelocity(PlayerSide player) const;
 
 		const PhysicWorld& getWorld() const{ return *mPhysicWorld; };
-		const Clock& getClock() const;
-		Clock& getClock();
+
+		// Timing
+		const std::string& getTimeString() const;
+		void setMatchTimeMs(int milliseconds);
 
 		bool getBallDown() const;
 		bool getBallActive() const;

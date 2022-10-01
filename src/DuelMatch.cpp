@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GameConstants.h"
 #include "InputSource.h"
 #include "IUserConfigReader.h"
+#include "Clock.h"
 
 /* implementation */
 
@@ -288,14 +289,14 @@ void DuelMatch::setServingPlayer(PlayerSide side)
 	mLogic->onServe( );
 }
 
-const Clock& DuelMatch::getClock() const
+const std::string& DuelMatch::getTimeString() const
 {
-	return mLogic->getClock();
+	return mLogic->getClock().getTimeString();
 }
 
-Clock& DuelMatch::getClock()
+void DuelMatch::setMatchTimeMs(int milliseconds)
 {
-	return mLogic->getClock();
+	mLogic->getClock().setTime( Clock::milliseconds(milliseconds) );
 }
 
 std::shared_ptr<InputSource> DuelMatch::getInputSource(PlayerSide player) const
