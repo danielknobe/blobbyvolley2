@@ -139,20 +139,6 @@ struct Color
 
 };
 
-
-struct ExtensionUnsupportedException : public std::exception
-{
-	std::string extension;
-	explicit ExtensionUnsupportedException(std::string name) : extension(std::move(name)) {}
-	~ExtensionUnsupportedException() noexcept override = default;
-};
-
-struct ScriptException : public std::exception
-{
-	std::string luaerror;
-	~ScriptException() noexcept override = default;
-};
-
 /// we need to define this constant to make it compile with strict c++98 mode
 #undef M_PI
 const double M_PI = 3.141592653589793238462643383279;

@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "SpeedController.h"
 #include "InputManager.h"
-
+#include "IScriptableComponent.h"
 
 /* implementation */
 
