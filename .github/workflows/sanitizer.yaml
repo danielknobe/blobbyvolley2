@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04]
         build: [Debug, RelWithDebInfo]
         sanitizer: [address, memory]
 
@@ -80,7 +80,7 @@ jobs:
         if: matrix.sanitizer == 'memory'
         # from https://github.com/google/sanitizers/wiki/MemorySanitizerBootstrappingClang
         run: |
-          git clone --depth=1 https://github.com/llvm/llvm-project
+          git clone --depth=1 --branch release/14.x https://github.com/llvm/llvm-project
           cd llvm-project
 
           LIBCXX_DIR="$PWD/build_libcxx"
