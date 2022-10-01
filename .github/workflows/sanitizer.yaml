@@ -85,8 +85,8 @@ jobs:
           	-DLLVM_USE_SANITIZER=MemoryWithOrigins
           
           cmake --build . -- cxx cxxabi
-          echo "CXXFLAGS=${CXXFLAGS} -nostdinc++ -isystem $LIBCXX_DIR/include -isystem $LIBCXX_DIR/include/c++/v1" >> $GITHUB_ENV
-          echo "LDFLAGS=${LDFLAGS} -stdlib=libc++ -Wl,--rpath=$LIBCXX_DIR/lib -L$LIBCXX_DIR/lib -fsanitize=memory" >> $GITHUB_ENV
+          echo "CXXFLAGS=$-nostdinc++ -isystem $LIBCXX_DIR/include -isystem $LIBCXX_DIR/include/c++/v1" >> $GITHUB_ENV
+          echo "LDFLAGS=-stdlib=libc++ -Wl,--rpath=$LIBCXX_DIR/lib -L$LIBCXX_DIR/lib -fsanitize=memory" >> $GITHUB_ENV
           
       - name: Setup Memory Sanitizer
         if: matrix.sanitizer == 'memory'
@@ -94,8 +94,8 @@ jobs:
         # to prevent false positives, so we should compile the c++ stdlib, sdl and libphysfs
         # here, too.
         run: |
-          echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
-          echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "LDFLAGS=${LDFLAGS} -fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
+          echo "CXXFLAGS={CXXFLAGS} -fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
           echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
       
 
