@@ -1,6 +1,12 @@
 name: Compilers
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
 
 jobs:
   Build:
@@ -40,7 +46,9 @@ jobs:
           CC="${{matrix.compiler.cc}}" 
           echo "CC=${CC}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
-      - name: Configure CMake and Build
-        run: |
-          cmake .
-          cmake --build .
+
+      - name: Configure
+        run:  cmake .
+
+      - name: Build
+        run: cmake --build .
