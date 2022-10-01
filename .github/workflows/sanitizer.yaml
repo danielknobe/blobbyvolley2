@@ -1,6 +1,14 @@
 name: Sanitizers
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - "master"
+      - "sanitizers"
+  pull_request:
+    branches:
+      - "master"
+  workflow_dispatch:
 
 jobs:
   Build:
@@ -14,6 +22,12 @@ jobs:
         build: [Debug, RelWithDebInfo]
         sanitizer: [address, memory]
 
+    # memory sanitizer is not available for GCC, so we run it with clang
+    # We install llvm too, because this contains the llvm-symbolizer executable.
+    env:
+      CXX: "clang++"
+      CC: "clang"
+
     steps:
       - name: Setup
         run: |
@@ -23,8 +37,8 @@ jobs:
             libsdl2-dev \
             libphysfs-dev \
             libboost-dev \
-            xvfb \ 
-            llvm
+            xvfb 
+          sudo apt-get install llvm clang
       - name: Get debug symbols
         # TODO figure this out also for ubuntu-20
         # TODO do these actually help?
@@ -54,20 +68,18 @@ jobs:
 
       - name: Setup Memory Sanitizer
         if: matrix.sanitizer == 'memory'
-        # memory sanitizer is not available for GCC, so we run it with clang
         # TODO memory sanitizer requires that all libraries also be compiled with it
         # to prevent false positives, so we should compile the c++ stdlib, sdl and libphysfs
         # here, too.
-        # We install llvm, because this contains the llvm-symbolizer executable.
         run: |
-          sudo apt-get install clang
-          echo "CXX=clang++" >> $GITHUB_ENV
-          echo "CC=clang" >> $GITHUB_ENV
           echo "LDFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
           echo "CXXFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
           echo "CCFLAGS=-fsanitize=memory -fno-omit-frame-pointer -fsanitize-memory-track-origins=1 -fsanitize-recover=memory" >> $GITHUB_ENV
-          
-          # from https://github.com/google/sanitizers/wiki/MemorySanitizerBootstrappingClang
+
+      - name: Build libcxx
+        if: matrix.sanitizer == 'memory'
+        # from https://github.com/google/sanitizers/wiki/MemorySanitizerBootstrappingClang
+        run: |
           git clone --depth=1 https://github.com/llvm/llvm-project
           cd llvm-project
 
@@ -78,8 +90,6 @@ jobs:
           cmake -GNinja ../llvm \
           	-DCMAKE_BUILD_TYPE=Release \
           	-DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
-          	-DCMAKE_C_COMPILER=clang \
-          	-DCMAKE_CXX_COMPILER=clang++ \
           	-DLLVM_USE_SANITIZER=MemoryWithOrigins
           
           cmake --build . -- cxx cxxabi
