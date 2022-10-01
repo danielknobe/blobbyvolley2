@@ -38,7 +38,7 @@ jobs:
             libphysfs-dev \
             libboost-dev \
             xvfb 
-          sudo apt-get install llvm clang
+          sudo apt-get install llvm clang ninja-build
       - name: Get debug symbols
         # TODO figure this out also for ubuntu-20
         # TODO do these actually help?
@@ -89,6 +89,8 @@ jobs:
           
           cmake -GNinja ../llvm \
           	-DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang \
+          	-DCMAKE_CXX_COMPILER=clang++ \
           	-DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
           	-DLLVM_USE_SANITIZER=MemoryWithOrigins
           
