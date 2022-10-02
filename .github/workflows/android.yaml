@@ -1,0 +1,62 @@
+# Build on android
+name: Android
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    env:
+      ABI: armeabi-v7a
+    steps:
+      - name: Setup Linux
+        run: |
+          sudo apt-get install ninja-build
+          TOOLCHAIN="${ANDROID_NDK}/build/cmake/android.toolchain.cmake"
+          echo "TOOLCHAIN=${TOOLCHAIN}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+      - name: Get Boost
+        # no need to build, we use only the header-only parts of boost
+        run: |
+          wget -q https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+          tar -xf boost_1_80_0.tar.gz
+          mv boost_1_80_0 boost
+
+      - name: Get and build SDL
+        run: |
+          wget -q https://codeload.github.com/libsdl-org/SDL/tar.gz/refs/tags/release-2.24.0
+          tar -xf release-2.24.0
+          mv SDL-release-2.24.0 SDL2
+          mkdir SDL2-build
+          cmake --toolchain="${TOOLCHAIN}" -S SDL2 -B SDL2-build
+          cmake --build SDL2-build
+          cmake --install SDL2-build --prefix "$(pwd)/built-deps"
+
+      - name: Get and build PhysFS
+        run: | 
+          wget -q https://codeload.github.com/icculus/physfs/tar.gz/refs/tags/release-3.2.0
+          tar -xf release-3.2.0
+          mv physfs-release-3.2.0 physfs
+          mkdir physfs-build
+          cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build
+          cmake --build physfs-build
+          cmake --install physfs-build --prefix "$(pwd)/built-deps"
+
+      - name: Configure
+        # according to the documentation, setting PHYSFSDIR as env variable should work for detecting physfs, but
+        # it fails here. So we're manually setting PHYSFS_INCLUDE_DIR and PHYSFS_LIBRARY
+        # use Ninja generator here, because for some reason with make CMake interprets physfs as a target instead of a library
+        # and then make cannot find a build rule.
+        run: |
+          mkdir build 
+          DEP_DIR="$(pwd)/built-deps/"
+          cmake --toolchain="${TOOLCHAIN}" -G Ninja -DANDROID_ABI=$ABI -DBoost_INCLUDE_DIR="$(pwd)"/boost/ -DSDL2_DIR="${DEP_DIR}/lib/cmake/SDL2/" \
+          -DPHYSFS_INCLUDE_DIR="${DEP_DIR}/include" -DPHYSFS_LIBRARY="${DEP_DIR}/lib/libphysfs.so" .
+      - name: Build
+        run: |
+          cmake --build .
