@@ -46,9 +46,11 @@ jobs:
           CC="${{matrix.compiler.cc}}" 
           echo "CC=${CC}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
-
       - name: Configure
         run:  cmake .
 
       - name: Build
         run: cmake --build .
+
+      - name: Header check
+        run: cmake --build . --target test-compile-headers
