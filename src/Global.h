@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <exception>
-#include <SDL2/SDL_stdinc.h>
+#include <SDL_stdinc.h>
 #include <cstring>
 #include <utility>
 
