@@ -33,52 +33,54 @@ class Clock
 	public:
 		using seconds = std::chrono::seconds;
 		using milliseconds = std::chrono::milliseconds;
+		using clock_t = std::chrono::steady_clock;
+		using duration_t = clock_t::duration;
 
 		/// default c'tor
 		Clock() = default;
-		
+
 		/// starts/unpauses the clock
 		void start();
 		/// pauses the clock
 		void stop();
-				
+
 		/// resets the clock. after this, the clock is paused.
 		void reset();
-		
+
 		/// gets whether the clock is currently running
 		bool isRunning() const;
-		
+
 		/// this function has to be called each frame. It calculates
 		///	the passed time;
 		void step();
-		
+
 		/// gets the time in seconds as an integer
 		seconds getTime() const;
-		
+
 		/// set the time to a specified value
-		/// \param newTime: new time in seconds
-		void setTime(seconds newTime);
-		
+		/// \param newTime: new time in milliseconds
+		void setTime(milliseconds newTime);
+
 		/// returns the time as a string
 		const std::string& getTimeString() const;
-		
+
 	private:
 		/// is the clock currently running?
 		bool mRunning{false};
-		
+
 		/// recorded time in milliseconds. Do not write to this directly, but use
 		/// `updateGameTime` to ensure synchronization with `mCurrentTimeString`
-		milliseconds mGameRunning{0};
-		
-		/// last time that step was called. 
+		duration_t mGameRunning{0};
+
+		/// last time that step was called.
 		/// needed to calculate the time difference.
-		milliseconds mLastTime{0};
+		clock_t::time_point mLastTime;
 
 		/// Currently formatted time text
 		std::string mCurrentTimeString;
 
 		/// Sets the new game time, and updates `mCurrentTimeString` if appropriate.
-		void updateGameTime(milliseconds newTime);
+		void updateGameTime(duration_t new_time);
 
 		/// Formats the given amount of seconds into a time string.
 		static std::string makeTimeString(seconds time);

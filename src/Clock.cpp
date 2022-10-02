@@ -24,42 +24,47 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include <sstream>
 
-#include <SDL.h>
-
 /* implementation */
+
+namespace {
+	template<class T>
+	Clock::seconds to_seconds(T input) {
+		return std::chrono::duration_cast<Clock::seconds>(input);
+	}
+}
 
 void Clock::reset()
 {
 	// set all variables to their default values
 	mRunning = false;
-	mGameRunning = milliseconds(0);
-	mLastTime = milliseconds{SDL_GetTicks()};
+	mGameRunning = duration_t(0);
+	mLastTime = clock_t::now();
 }
 
 void Clock::start()
 {
-	mLastTime = milliseconds{SDL_GetTicks()};
+	mLastTime = clock_t::now();
 	mRunning = true;
 }
 
-void Clock::stop() 
+void Clock::stop()
 {
 	mRunning = false;
 }
 
-bool Clock::isRunning() const 
+bool Clock::isRunning() const
 {
 	return mRunning;
 }
 
 Clock::seconds Clock::getTime() const
 {
-	return std::chrono::duration_cast<seconds>(mGameRunning);
+	return to_seconds(mGameRunning);
 }
 
-void Clock::setTime(seconds newTime)
+void Clock::setTime(milliseconds newTime)
 {
-	updateGameTime(newTime * 1000);
+	updateGameTime(newTime);
 }
 
 std::string Clock::makeTimeString(seconds time)
@@ -103,19 +108,16 @@ void Clock::step()
 {
 	if(mRunning)
 	{
-		milliseconds newTime{SDL_GetTicks()};
-		if(newTime > mLastTime)
-		{
-			updateGameTime(mGameRunning + newTime - mLastTime);
-		}
+		auto newTime = clock_t::now();
+		updateGameTime(mGameRunning + (newTime - mLastTime));
 		mLastTime = newTime;
 	}
 }
 
-void Clock::updateGameTime(std::chrono::milliseconds newTime) {
-	auto old_sec = std::chrono::duration_cast<seconds>(mGameRunning);
-	auto new_sec = std::chrono::duration_cast<seconds>(newTime);
-	mGameRunning = newTime;
+void Clock::updateGameTime(duration_t new_time) {
+	auto old_sec = to_seconds( mGameRunning );
+	auto new_sec = to_seconds( new_time);
+	mGameRunning = new_time;
 
 	// update time string only when the seconds change.
 	if(old_sec != new_sec) {
