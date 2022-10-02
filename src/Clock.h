@@ -77,7 +77,7 @@ class Clock
 		clock_t::time_point mLastTime;
 
 		/// Currently formatted time text
-		std::string mCurrentTimeString;
+		std::string mCurrentTimeString{"00:00"};
 
 		/// Sets the new game time, and updates `mCurrentTimeString` if appropriate.
 		void updateGameTime(duration_t new_time);
