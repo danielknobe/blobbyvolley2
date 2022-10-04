@@ -110,14 +110,23 @@ static_assert( length(translation_table) == 64, "error: need 64 characters in th
 // simple encoding function for 3 bytes
 void encode( const std::uint8_t*& byte_array, std::string::iterator& writer )
 {
-	const uint32_t* bits = reinterpret_cast<const uint32_t*>(byte_array);
-	for(int i = 0; i < 4; ++i)
-	{
-		unsigned index = bitmask & (*bits >> (6*i));
-		assert(index < 64);
-		*writer = translation_table[index];
-		++writer;
-	}
+	unsigned const index0 = bitmask & (byte_array[0] >> 2);
+	assert(index0 < 64);
+	writer[0] = translation_table[index0];
+
+	unsigned const index1 = bitmask & ((byte_array[0] << 4) | (byte_array[1] >> 4));
+	assert(index1 < 64);
+	writer[1] = translation_table[index1];
+
+	unsigned const index2 = bitmask & ((byte_array[1] << 2) | (byte_array[2] >> 6));
+	assert(index2 < 64);
+	writer[2] = translation_table[index2];
+
+	unsigned const index3 = bitmask & (byte_array[2]);
+	assert(index3 < 64);
+	writer[3] = translation_table[index3];
+
+	writer += 4;
 	std::advance(byte_array, 3);
 }
 
@@ -169,14 +178,26 @@ std::string encode( const char* begin, const char* end, int newlines)
 
 void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
 {
-	uint32_t* bits = reinterpret_cast<uint32_t*>(byte_array);
-	*bits &= 0;
-	for(int i = 0; i < 4; ++i)
-	{
-		uint8_t value = decode(*(reader++));
-		assert( (value & (~bitmask)) == 0 ); // check that it is valid
-		*bits |= value << (6*i);
-	}
+	uint8_t const value0 = decode(reader[0]);
+	uint8_t const value1 = decode(reader[1]);
+	uint8_t const value2 = decode(reader[2]);
+	uint8_t const value3 = decode(reader[3]);
+
+	assert( (value0 & (~bitmask)) == 0 );
+	assert( (value1 & (~bitmask)) == 0 );
+	assert( (value2 & (~bitmask)) == 0 );
+	assert( (value3 & (~bitmask)) == 0 );
+
+	byte_array[0] = (value0 << 2);
+	byte_array[0] |= value1 >> 4;
+
+	byte_array[1] = value1 << 4;
+	byte_array[1] |= value2 >> 2;
+
+	byte_array[2] = value2 << 6;
+	byte_array[2] |= value3;
+
+	reader += 4;
 	std::advance(byte_array, 3);
 }
 
