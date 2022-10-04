@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL.h>
 
 #include "Vector.h"
-#include "Global.h"
+#include "Color.h"
 #include "BlobbyDebug.h"
 
 
@@ -56,7 +56,7 @@ static const int TF_ALIGN_RIGHT = 0x10;	// Text aligned right
 /*! \struct BufferedImage
 	\brief image data
 	\details couples the raw image data with its size in a way that is
-			independend of the used renderer.
+			independent of the used renderer.
 */
 struct BufferedImage : public ObjectCounter<BufferedImage>
 {

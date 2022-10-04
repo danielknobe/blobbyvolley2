@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
-#include "Global.h"
+#include "Color.h"
 #include "ReplayDefs.h"
 #include "PlayerInput.h"
 #include "BlobbyDebug.h"

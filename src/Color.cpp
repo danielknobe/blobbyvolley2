@@ -1,7 +1,8 @@
 /*=============================================================================
 Blobby Volley 2
 Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
-Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2022 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2022 Erik Schultheis (erik-schultheis@freenet.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,33 +19,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#pragma once
-
-#include <string>
-
-#include "Global.h"
+/* header include */
 #include "Color.h"
 
-class PlayerIdentity
+/* includes */
+
+/* implementation */
+
+Color::Color(int red, int green, int blue)
+		: r(red)
+		, g(green)
+		, b(blue)
 {
-	public:
-		PlayerIdentity() = default;
-		explicit PlayerIdentity(std::string name);
-		PlayerIdentity(std::string name, Color color, bool osci, PlayerSide pref);
 
-		const std::string& getName() const;
-		Color getStaticColor() const;
-		bool getOscillating() const;
-		PlayerSide getPreferredSide() const;
+}
 
-		void setName(const std::string& nname);
-		void setStaticColor(Color ncol);
-		void setOscillating(bool oc);
-		void setPreferredSide(PlayerSide side);
+Color::Color(unsigned int col) : Color(col&0xff, (col>>8)&0xff, (col>>16)&0xff)
+{
 
-	private:
-		std::string mName;
-		Color mStaticColor;
-		bool mOscillating;
-		PlayerSide mPreferredSide;
-};
+}
+
+unsigned int Color::toInt() const
+{
+	int i = 0;
+	i |= r;
+	i |= g << 8;
+	i |= b << 16;
+	return i;
+}
