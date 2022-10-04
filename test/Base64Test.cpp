@@ -16,21 +16,24 @@ BOOST_AUTO_TEST_CASE( encode_empty )
 BOOST_AUTO_TEST_CASE( encode_one )
 {
     std::vector<uint8_t> text = { '1' };
-    BOOST_CHECK( encode(text) == "MQ==" );
+    std::string textEncoded = encode(text);
+    BOOST_CHECK_MESSAGE( textEncoded == "MQ==", textEncoded + " is not equal MQ==" );
 }
 
 BOOST_AUTO_TEST_CASE( encode_two )
 {
     std::vector<uint8_t> text = { '1', '2' };
-    BOOST_CHECK( encode(text) == "MTI=" );
+    std::string textEncoded = encode(text);
+    BOOST_CHECK_MESSAGE( textEncoded == "MTI=", textEncoded + " is not equal MTI=" );
 }
 
 BOOST_AUTO_TEST_CASE( encode_three )
 {
     std::vector<uint8_t> text = { '1', '2', '3' };
-    BOOST_CHECK( encode(text) == "MTIz" );
+    std::string textEncoded = encode(text);
+    BOOST_CHECK_MESSAGE( textEncoded == "MTIz", textEncoded + " is not equal MTIz" );
 }
-#include <iostream>
+
 BOOST_AUTO_TEST_CASE( encode_decode_empty )
 {
     std::vector<uint8_t> text = {};
