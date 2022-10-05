@@ -126,7 +126,7 @@ void encode( const std::uint8_t*& byte_array, std::string::iterator& writer )
 	assert(index3 < 64);
 	writer[3] = translation_table[index3];
 
-	writer += 4;
+	std::advance(writer, 4);
 	std::advance(byte_array, 3);
 }
 
@@ -137,11 +137,11 @@ std::string encode( const char* begin, const char* end, int newlines)
 	const unsigned tail       = length % 3;
 	const unsigned extra      = (tail != 0) ? 1 : 0;
 	const unsigned groups     = length / 3;
-	const unsigned total_data = (groups + extra) * 4 + tail;
+	const unsigned total_data = (groups + extra) * 4;
 	newlines -= newlines % 4;
 	const unsigned linefeeds = newlines > 0 ? total_data / newlines : 0;
 
-	std::string buffer(total_data + linefeeds, '=');
+	std::string buffer(total_data + linefeeds, '\0');
 
 	// iterate over sequence
 	auto write = buffer.begin();
@@ -161,18 +161,22 @@ std::string encode( const char* begin, const char* end, int newlines)
 	// add the partial group
 	if(extra)
 	{
-		uint32_t copy = 0;
-		uint8_t* bits = reinterpret_cast<uint8_t*>(&copy);
+		std::uint8_t partial_group[4] = { 0 };
 		for(unsigned i = 0; i < tail; ++i)
-			bits[i] = *(read++);
+			partial_group[i] = *(read++);
+		const uint8_t* const_partial_group = partial_group;
+		encode(const_partial_group, write);
 
-		const uint8_t* cp = bits;
-		encode(cp, write);
+		buffer[buffer.length() - 1] = '=';
+		if (tail == 1) 
+		{
+			buffer[buffer.length() - 2] = '=';
+		}
 	}
-
+	
 	assert( (char*)read == end );
-	assert( write == buffer.end() - tail );
-
+	assert( write == buffer.end());
+	
 	return buffer;
 }
 
@@ -197,7 +201,7 @@ void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
 	byte_array[2] = value2 << 6;
 	byte_array[2] |= value3;
 
-	reader += 4;
+	std::advance(reader, 4);
 	std::advance(byte_array, 3);
 }
 
