@@ -1,9 +1,10 @@
-#define BOOST_TEST_MODULE FileAbstraction
+#define BOOST_TEST_MODULE Blobby Tests
 #include <boost/test/unit_test.hpp>
 
 #include "FileRead.h"
 #include "FileWrite.h"
 #include "FileSystem.h"
+#include "Color.h"
 #include <iostream>
 #include <cstring>
 #include "GenericIO.h"
@@ -21,7 +22,7 @@
 //#define DISABLE_COMPILATION_TEST
 
 // helper
-void init_Physfs() 
+static void init_Physfs()
 {
 	static bool initialised = false;
 	if(!initialised) 

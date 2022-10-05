@@ -43,7 +43,7 @@ jobs:
             cmake \
             libsdl2-dev \
             libphysfs-dev \
-            libboost-dev
+            libboost-test-dev
       - name: Setup MacOS
         if: runner.os == 'macOS'
         run: |
@@ -58,6 +58,15 @@ jobs:
           cmake .
           cmake --build .
 
+      # On all systems, run the unit tests
+      - name: Run unit tests
+        # TODO make it compile on windows too.
+        if: matrix.platform.shell != 'msys2 {0}'
+        # configure again to build with test this time.
+        run: |
+          cmake . -DBUILD_TESTS=ON
+          cmake --build .
+          test/blobbytest
       # On linux, we can try to let blobby run in a virtual framebuffer
       # The runtest target produces an executable that performs a few actions
       # in blobby and then exists

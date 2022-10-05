@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE GameLogic
+// #define BOOST_TEST_MODULE GameLogic
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
@@ -6,7 +6,7 @@
 #include "GameLogic.h"
 #include "DuelMatch.h"
 #include "DuelMatchState.h"
-#include "IGenericIO.h"
+#include "GenericIO.h"
 #include "FileRead.h"
 #include <fstream>
 

@@ -21,6 +21,7 @@ set(SRC
 	../src/IScriptableComponent.cpp ../src/IScriptableComponent.h
 	../src/PlayerIdentity.cpp ../src/PlayerIdentity.h
 	../src/UserConfig.cpp     ../src/UserConfig.h
+	../src/Color.cpp          ../src/Color.h
 )
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)

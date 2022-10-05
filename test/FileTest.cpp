@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE FileAbstraction
+//#define BOOST_TEST_MODULE FileAbstraction
 #include <boost/test/unit_test.hpp>
 
 #include "FileRead.h"
@@ -8,10 +8,10 @@
 #include <cstring>
 #include <physfs.h>
 
-#define TEST_EXECUTION_PATH "C:\\Dokumente und Einstellungen\\Erik\\Eigene Dateien\\Blobby Volley 2\\test"
+#define TEST_EXECUTION_PATH "./test/"
 
 // helper
-void init_Physfs() 
+static void init_Physfs()
 {
 	static bool initialised = false;
 	if(!initialised) 
@@ -113,7 +113,6 @@ BOOST_AUTO_TEST_CASE( default_constructor )
 	
 	// no file is opened after default construction
 	BOOST_CHECK( default_constructed.is_open() == false );
-	BOOST_CHECK( default_constructed.getPHYSFS_file() == 0 );
 	BOOST_CHECK( default_constructed.getFileName() == "" );
 	
 	// all other operations should raise an assertion!
@@ -149,13 +148,11 @@ BOOST_AUTO_TEST_CASE( open_read_constructor )
 	
 		// now, a file is opened!
 		BOOST_REQUIRE( read_file.is_open() == true );
-		BOOST_CHECK( read_file.getPHYSFS_file() != 0 );
 		BOOST_CHECK( read_file.getFileName() == "test_open_read_constructor.tmp" );
 		BOOST_CHECK( read_file.length() == 4);
 	
 		read_file.close();
 		BOOST_CHECK( read_file.is_open() == false );
-		BOOST_CHECK( read_file.getPHYSFS_file() == 0 );
 		BOOST_CHECK( read_file.getFileName() == "" );
 		
 	} catch (std::exception& e)
@@ -259,7 +256,6 @@ BOOST_AUTO_TEST_CASE( default_constructor )
 	
 	// no file is opened after default construction
 	BOOST_CHECK( default_constructed.is_open() == false );
-	BOOST_CHECK( default_constructed.getPHYSFS_file() == 0 );
 	BOOST_CHECK( default_constructed.getFileName() == "" );
 	
 	// all other operations should raise an assertion!
@@ -283,7 +279,6 @@ BOOST_AUTO_TEST_CASE( open_write_constructor )
 	
 	// now, a file is opened!
 	BOOST_REQUIRE( write_file.is_open() == true );
-	BOOST_CHECK( write_file.getPHYSFS_file() != 0 );
 	BOOST_CHECK( write_file.getFileName() == "test_open_write_constructor.tmp" );
 	
 	// this file is new, so length should be 0
@@ -355,8 +350,8 @@ BOOST_AUTO_TEST_CASE( raw_data_test )
 	
 	BOOST_CHECK( std::memcmp(data, data2, sizeof(data)) == 0 );
 	reader.seek(0);
-	boost::shared_array<char> data3 = reader.readRawBytes(sizeof(data));
-	BOOST_CHECK( std::memcmp(data, data3.get(), sizeof(data)) == 0 );
+	auto data3 = reader.readRawBytes(sizeof(data));
+	BOOST_CHECK( std::memcmp(data, data3.data(), sizeof(data)) == 0 );
 	
 	PHYSFS_delete("cycle.tmp");
 }
@@ -366,8 +361,8 @@ BOOST_AUTO_TEST_CASE( string_test )
 	init_Physfs();
 	
 	std::string teststr = "hello world!";
-	
-	BOOST_CHECKPOINT( "string_test: writing test file" );
+
+	BOOST_TEST_CHECKPOINT( "string_test: writing test file" );
 	FileWrite writer("cycle.tmp");
 	BOOST_REQUIRE( writer.is_open() == true );
 
@@ -375,16 +370,16 @@ BOOST_AUTO_TEST_CASE( string_test )
 	writer.writeNullTerminated( teststr );
 	writer.write( teststr );
 	writer.close();
-	
-	BOOST_CHECKPOINT( "string_test: reading test file" );
+
+	BOOST_TEST_CHECKPOINT( "string_test: reading test file" );
 	FileRead reader("cycle.tmp");
 	
-	boost::shared_array<char> data = reader.readRawBytes(teststr.size());
+	auto data = reader.readRawBytes(teststr.size());
 	BOOST_CHECK_EQUAL (reader.tell(), teststr.size() );
 	std::string str2 = reader.readString();
 	BOOST_CHECK_EQUAL (reader.tell(), 2 * teststr.size() + 1 );
 	
-	BOOST_CHECK( std::memcmp(data.get(), teststr.data(), teststr.length()) == 0 );
+	BOOST_CHECK( std::memcmp(data.data(), teststr.data(), teststr.length()) == 0 );
 	BOOST_CHECK_EQUAL( teststr, str2 );
 	
 	// now, try to read as null terminated when it isn't
@@ -397,9 +392,9 @@ BOOST_AUTO_TEST_CASE( string_test )
 BOOST_AUTO_TEST_CASE( int_test )
 {
 	init_Physfs();
-	
-	
-	BOOST_CHECKPOINT( "int_test: writing test file" );
+
+
+	BOOST_TEST_CHECKPOINT( "int_test: writing test file" );
 	FileWrite writer("cycle.tmp");
 	BOOST_REQUIRE( writer.is_open() == true );
 
@@ -412,8 +407,8 @@ BOOST_AUTO_TEST_CASE( int_test )
 	writer.writeUInt32( TEST_INT_3 );
 	writer.writeByte( 5 );
 	writer.close();
-	
-	BOOST_CHECKPOINT( "int_test: reading test file" );
+
+	BOOST_TEST_CHECKPOINT( "int_test: reading test file" );
 	FileRead reader("cycle.tmp");
 	
 	int res = reader.readUInt32( );
