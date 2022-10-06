@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <array>
 #include <iterator>
 #include <stdexcept>
+#include <algorithm>
 
 #include "base64.h"
 
@@ -235,15 +236,21 @@ void decode( std::uint8_t*& byte_array, const char* reader )
 	std::advance(reader, 4);
 	std::advance(byte_array, 3);
 }
-
+#include <iostream>
 
 std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
 	const size_t dataSize = data.size();
 
+	// check input size
 	if (dataSize % 4 != 0) {
-		throw std::runtime_error("data length must be multiple of 4");
+		// check if we have any
+		int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return ch == '\n'; });
+		if (dataSize - linefeeds % 4 != 0)
+		{
+			throw std::runtime_error("data length must be multiple of 4");
+		}
 	}
 	
 	std::vector<uint8_t> buffer( dataSize / 4 * 3 );
@@ -252,6 +259,11 @@ std::vector<uint8_t> decode(const std::string& data )
 
 	while(reader != data.cend())
 	{
+		if( reader[0] == '\n') 
+		{
+			std::advance(reader, 1);
+		}
+
 		if( is_valid(reader[1]) ) 
 		{
 			*iter = decode_byte_one(&reader[0]);

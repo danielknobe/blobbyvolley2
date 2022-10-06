@@ -71,4 +71,10 @@ BOOST_AUTO_TEST_CASE( decode_wrong_length )
     BOOST_CHECK_THROW(decode(base64text), std::runtime_error);
 }
 
+BOOST_AUTO_TEST_CASE( encode_decode_multiline )
+{
+    std::vector<uint8_t> text = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    BOOST_CHECK( decode(encode(text, 8)) == text );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
