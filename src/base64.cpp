@@ -236,7 +236,6 @@ void decode( std::uint8_t*& byte_array, const char* reader )
 	std::advance(reader, 4);
 	std::advance(byte_array, 3);
 }
-#include <iostream>
 
 std::vector<uint8_t> decode(const std::string& data )
 {
@@ -247,7 +246,7 @@ std::vector<uint8_t> decode(const std::string& data )
 	if (dataSize % 4 != 0) {
 		// check if we have any
 		int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return ch == '\n'; });
-		if (dataSize - linefeeds % 4 != 0)
+		if ((dataSize - linefeeds) % 4 != 0)
 		{
 			throw std::runtime_error("data length must be multiple of 4");
 		}
