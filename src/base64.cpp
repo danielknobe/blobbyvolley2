@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <array>
 #include <iterator>
+#include <stdexcept>
 
 #include "base64.h"
 
@@ -184,8 +185,11 @@ std::uint8_t decode_byte_one(const char* reader) {
 	std::uint8_t res;
 	uint8_t const value0 = decode(reader[0]);
 	uint8_t const value1 = decode(reader[1]);
-	assert( (value0 & (~bitmask)) == 0 );
-	assert( (value1 & (~bitmask)) == 0 );
+	if( ((value0 & (~bitmask)) != 0 ) ||
+	    ((value1 & (~bitmask)) != 0 ) )
+	{
+		throw std::runtime_error("invalid base64 character");
+	}
 	res = (value0 << 2);
 	res |= value1 >> 4;
 
@@ -196,8 +200,11 @@ std::uint8_t decode_byte_two(const char* reader) {
 	std::uint8_t res;
 	uint8_t const value1 = decode(reader[1]);
 	uint8_t const value2 = decode(reader[2]);
-	assert( (value1 & (~bitmask)) == 0 );
-	assert( (value2 & (~bitmask)) == 0 );
+	if( ((value1 & (~bitmask)) != 0 ) ||
+	    ((value2 & (~bitmask)) != 0 ) )
+	{
+		throw std::runtime_error("invalid base64 character");
+	}
 	res = value1 << 4;
 	res |= value2 >> 2;
 
@@ -208,8 +215,11 @@ std::uint8_t decode_byte_three(const char* reader) {
 	std::uint8_t res;
 	uint8_t const value2 = decode(reader[2]);
 	uint8_t const value3 = decode(reader[3]);
-	assert( (value2 & (~bitmask)) == 0 );
-	assert( (value3 & (~bitmask)) == 0 );
+	if( ((value2 & (~bitmask)) != 0 ) ||
+	    ((value3 & (~bitmask)) != 0 ) )
+	{
+		throw std::runtime_error("invalid base64 character");
+	}
 	res = value2 << 6;
 	res |= value3;
 
@@ -231,7 +241,11 @@ std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
 	const size_t dataSize = data.size();
-	assert(dataSize % 4 == 0);
+
+	if (dataSize % 4 != 0) {
+		throw std::runtime_error("data length must be multiple of 4");
+	}
+	
 	std::vector<uint8_t> buffer( dataSize / 4 * 3 );
 	uint8_t* iter = buffer.data();
 	auto reader = data.cbegin();

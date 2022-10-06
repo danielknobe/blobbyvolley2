@@ -4,6 +4,7 @@
 #include "base64.h"
 
 #include <vector>
+#include <stdexcept>
 
 BOOST_AUTO_TEST_SUITE( Base64Test )
 
@@ -56,6 +57,18 @@ BOOST_AUTO_TEST_CASE( encode_decode_three )
 {
     std::vector<uint8_t> text = { '1', '2', '3' };
     BOOST_CHECK( decode(encode(text)) == text );
+}
+
+BOOST_AUTO_TEST_CASE( decode_wrong_chars )
+{
+    std::string base64text = "M=T=I=z=";
+    BOOST_CHECK_THROW(decode(base64text), std::runtime_error);
+}
+
+BOOST_AUTO_TEST_CASE( decode_wrong_length )
+{
+    std::string base64text = "MTI";
+    BOOST_CHECK_THROW(decode(base64text), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
