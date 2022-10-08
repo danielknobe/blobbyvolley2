@@ -102,7 +102,7 @@ void DuelMatch::step()
 	// do steps in physic and logic
 	mLogic->step( getState() );
 	mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER],
-											mLogic->isBallValid(), mLogic->isGameRunning() );
+						mLogic->isBallValid(), mLogic->isGameRunning() );
 
 	// check for all hit events
 
@@ -112,26 +112,26 @@ void DuelMatch::step()
 	{
 		switch( event.event )
 		{
-		case MatchEvent::BALL_HIT_BLOB:
-			mLogic->onBallHitsPlayer( event.side );
-			break;
-		case MatchEvent::BALL_HIT_GROUND:
-			mLogic->onBallHitsGround( event.side );
-			// if not valid, reduce velocity
-			if(!mLogic->isBallValid())
-				mPhysicWorld->setBallVelocity( mPhysicWorld->getBallVelocity().scale(0.6) );
-			break;
-		case MatchEvent::BALL_HIT_NET:
-			mLogic->onBallHitsNet( event.side );
-			break;
-		case MatchEvent::BALL_HIT_NET_TOP:
-			mLogic->onBallHitsNet( NO_PLAYER );
-			break;
-		case MatchEvent::BALL_HIT_WALL:
-			mLogic->onBallHitsWall( event.side );
-			break;
-		default:
-			break;
+			case MatchEvent::BALL_HIT_BLOB:
+				mLogic->onBallHitsPlayer( event.side );
+				break;
+			case MatchEvent::BALL_HIT_GROUND:
+				mLogic->onBallHitsGround( event.side );
+				// if not valid, reduce velocity
+				if(!mLogic->isBallValid())
+					mPhysicWorld->setBallVelocity( mPhysicWorld->getBallVelocity().scale(0.6) );
+				break;
+			case MatchEvent::BALL_HIT_NET:
+				mLogic->onBallHitsNet( event.side );
+				break;
+			case MatchEvent::BALL_HIT_NET_TOP:
+				mLogic->onBallHitsNet( NO_PLAYER );
+				break;
+			case MatchEvent::BALL_HIT_WALL:
+				mLogic->onBallHitsWall( event.side );
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -230,6 +230,14 @@ Vector2 DuelMatch::getBlobPosition(PlayerSide player) const
 		return {0.f, 0.f};
 }
 
+float DuelMatch::getBlobState(PlayerSide player) const
+{
+	if (player == LEFT_PLAYER || player == RIGHT_PLAYER)
+		return mPhysicWorld->getBlobState(player);
+	else
+		return 0.f;
+}
+
 Vector2 DuelMatch::getBlobVelocity(PlayerSide player) const
 {
 	if (player == LEFT_PLAYER || player == RIGHT_PLAYER)
@@ -246,6 +254,11 @@ Vector2 DuelMatch::getBallPosition() const
 Vector2 DuelMatch::getBallVelocity() const
 {
 	return mPhysicWorld->getBallVelocity();
+}
+
+float DuelMatch::getBallRotation() const
+{
+	return mPhysicWorld->getBallRotation();
 }
 
 PlayerSide DuelMatch::getServingPlayer() const
@@ -321,7 +334,7 @@ bool DuelMatch::canStartRound(PlayerSide servingPlayer) const
 {
 	Vector2 ballVelocity = mPhysicWorld->getBallVelocity();
 	return (mPhysicWorld->blobHitGround(servingPlayer) && ballVelocity.y < 1.5 &&
-				ballVelocity.y > -1.5 && mPhysicWorld->getBallPosition().y > 430);
+			ballVelocity.y > -1.5 && mPhysicWorld->getBallPosition().y > 430);
 }
 
 PlayerIdentity DuelMatch::getPlayer(PlayerSide player) const
@@ -340,4 +353,3 @@ void DuelMatch::updateEvents()
 	mLastEvents = mEvents;
 	mEvents.clear();
 }
-

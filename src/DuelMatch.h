@@ -87,8 +87,10 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 
 		Vector2 getBallPosition() const;
 		Vector2 getBallVelocity() const;
+		float getBallRotation() const;
 		Vector2 getBlobPosition(PlayerSide player) const;
 		Vector2 getBlobVelocity(PlayerSide player) const;
+		float getBlobState(PlayerSide player) const;
 
 		const PhysicWorld& getWorld() const{ return *mPhysicWorld; };
 

@@ -28,9 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "IMGUI.h"
 #include "Blood.h"
-#include "PhysicWorld.h"
 #include "FileWrite.h"
-#include "Clock.h"
 
 /* implementation */
 
@@ -53,8 +51,8 @@ void GameState::presentGame()
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
 
-	rmanager.setBlob(LEFT_PLAYER, mMatch->getBlobPosition(LEFT_PLAYER), mMatch->getWorld().getBlobState(LEFT_PLAYER));
-	rmanager.setBlob(RIGHT_PLAYER, mMatch->getBlobPosition(RIGHT_PLAYER),	mMatch->getWorld().getBlobState(RIGHT_PLAYER));
+	rmanager.setBlob(LEFT_PLAYER, mMatch->getBlobPosition(LEFT_PLAYER), mMatch->getBlobState(LEFT_PLAYER));
+	rmanager.setBlob(RIGHT_PLAYER, mMatch->getBlobPosition(RIGHT_PLAYER),	mMatch->getBlobState(RIGHT_PLAYER));
 
 	if(mMatch->getPlayer(LEFT_PLAYER).getOscillating())
 	{
@@ -74,7 +72,7 @@ void GameState::presentGame()
 		rmanager.setBlobColor(RIGHT_PLAYER, mMatch->getPlayer(RIGHT_PLAYER).getStaticColor());
 	}
 
-	rmanager.setBall(mMatch->getBallPosition(), mMatch->getWorld().getBallRotation());
+	rmanager.setBall(mMatch->getBallPosition(), mMatch->getBallRotation());
 
 	auto events = mMatch->getEvents( );
 	for(const auto& e : events )
@@ -235,7 +233,7 @@ void GameState::saveReplay(ReplayRecorder& recorder)
 		mErrorMessage = std::string("File already exists!:"+ ex.getFileName());
 		mSaveReplay = true;	// try again
 	}
-	 catch( std::exception& ex)
+	catch( std::exception& ex)
 	{
 		mErrorMessage = std::string("Could not save replay: ");
 		mSaveReplay = true;	// try again
