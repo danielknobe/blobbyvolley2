@@ -34,7 +34,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "ReplayDefs.h"
 #include "IReplayLoader.h"
-#include "PhysicState.h"
 #include "GenericIO.h"
 #include "FileRead.h"
 #include "FileWrite.h"
