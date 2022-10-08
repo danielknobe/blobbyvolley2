@@ -32,16 +32,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 
-#include "RenderManager.h"
+#include "render/RenderManager.h"
 #include "SoundManager.h"
-#include "InputManager.h"
+#include "input/InputManager.h"
 #include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
 #include "SpeedController.h"
-#include "Blood.h"
-#include "FileSystem.h"
+#include "render/Blood.h"
+#include "io/FileSystem.h"
 #include "state/State.h"
+#include "TargetDevice.h"
+
 
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;

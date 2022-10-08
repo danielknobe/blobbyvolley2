@@ -53,4 +53,4 @@ jobs:
         run: cmake --build .
 
       - name: Header check
-        run: cmake --build . --target test-compile-headers
+        run: cmake --build . --target test-headers-all
