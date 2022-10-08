@@ -155,4 +155,4 @@ foreach(HEADER ${HEADERS})
 	target_sources(test-compile-headers PUBLIC ${TEST_COMPILE_FILE})
 endforeach()
 
-target_link_libraries(test-compile-headers PRIVATE raknet::raknet)
+target_link_libraries(test-compile-headers PRIVATE ${BLOBBY_COMMON_LIBS})
