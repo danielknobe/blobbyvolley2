@@ -135,7 +135,7 @@ void File::seek(uint32_t target)
 {
 	check_file_open();
 
-	if(!PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(mHandle), target))
+	if(PHYSFS_seek( reinterpret_cast<PHYSFS_file*>(mHandle), target) == 0)
 	{
 		BOOST_THROW_EXCEPTION( PhysfsFileException(mFileName) );
 	}

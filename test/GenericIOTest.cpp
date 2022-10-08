@@ -21,18 +21,14 @@
 
 //#define DISABLE_COMPILATION_TEST
 
-// helper
-static void init_Physfs()
-{
-	static bool initialised = false;
-	if(!initialised) 
-	{
-		std::cout << "initialising physfs to " << TEST_EXECUTION_PATH << "\n";
-		static FileSystem fs( TEST_EXECUTION_PATH );
-		fs.setWriteDir(".");
-		initialised = true;
+struct FSFixture {
+	FSFixture() : mFS(TEST_EXECUTION_PATH) {
+		mFS.setWriteDir(".");
 	}
-}
+	FileSystem mFS;
+};
+
+// helper
 
 void generic_io_types_test_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
 void generic_io_types_test_generics_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
@@ -41,28 +37,13 @@ void generic_io_types_test_vector_f(std::shared_ptr<GenericIn> in, std::shared_p
 void generic_io_seek_tell_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
 void generic_io_types_test_special_f(std::shared_ptr<GenericIn> in, std::shared_ptr<GenericOut> out);
 
-#define CHECK_EXCEPTION_SAFETY(expr, excp) 	try { 	\
-											BOOST_TEST_CHECKPOINT("trying " #expr);		\
-											expr; \
-											BOOST_ERROR(#expr " does not cause " #excp " to be thrown");\
-											} \
-											catch(excp& e) {\
-												 \
-											} catch (std::exception& exp) 	\
-											{								\
-												BOOST_ERROR(std::string("unexpected exception ") + exp.what() + "instead of " #excp " caught from  "#expr);						\
-											};
-
-
 // Tests of common FileSystem functions
 // test init
 
-BOOST_AUTO_TEST_SUITE( GenericIOTest )
+BOOST_AUTO_TEST_SUITE(GenericIOTest)
 
-BOOST_AUTO_TEST_CASE( generic_io_create )
+BOOST_FIXTURE_TEST_CASE( generic_io_create, FSFixture )
 {
-	init_Physfs();
-	
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	RakNet::BitStream stream; 
@@ -74,8 +55,9 @@ BOOST_AUTO_TEST_CASE( generic_io_create )
 	createGenericWriter( &stream );
 }
 
-BOOST_AUTO_TEST_CASE( generic_io_types_test_file )
+BOOST_FIXTURE_TEST_CASE( generic_io_types_test_file, FSFixture )
 {
+
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
 	
@@ -88,12 +70,12 @@ BOOST_AUTO_TEST_CASE( generic_io_types_test_file )
 BOOST_AUTO_TEST_CASE( generic_io_types_test_stream )
 {
 	RakNet::BitStream stream;
-	std::shared_ptr<GenericIn>  ins = createGenericReader( &stream );
-	std::shared_ptr<GenericOut>  outs = createGenericWriter( &stream );
-	generic_io_types_test_f( ins, outs);
+	std::shared_ptr<GenericIn>  ins  = createGenericReader( &stream );
+	std::shared_ptr<GenericOut> outs = createGenericWriter( &stream );
+	generic_io_types_test_f( ins, outs );
 };
 
-BOOST_AUTO_TEST_CASE( generic_io_generic_types_file )
+BOOST_FIXTURE_TEST_CASE( generic_io_generic_types_file, FSFixture )
 {
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
@@ -113,7 +95,7 @@ BOOST_AUTO_TEST_CASE( generic_io_generic_types_stream )
 	generic_io_types_test_generics_f( ins, outs);
 };
 
-BOOST_AUTO_TEST_CASE( generic_io_seek_tell )
+BOOST_FIXTURE_TEST_CASE( generic_io_seek_tell, FSFixture )
 {
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
@@ -129,7 +111,7 @@ BOOST_AUTO_TEST_CASE( generic_io_seek_tell )
 	generic_io_seek_tell_f( ins, outs);
 };
 
-BOOST_AUTO_TEST_CASE( generic_io_generic_types_vector )
+BOOST_FIXTURE_TEST_CASE( generic_io_generic_types_vector, FSFixture )
 {
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
@@ -150,7 +132,7 @@ BOOST_AUTO_TEST_CASE( generic_io_generic_types_vector )
 };
 
 
-BOOST_AUTO_TEST_CASE( generic_io_special_types )
+BOOST_FIXTURE_TEST_CASE( generic_io_special_types, FSFixture )
 {
 	std::shared_ptr<FileWrite> write = std::make_shared<FileWrite>("test.tmp");
 	std::shared_ptr<FileRead> read = std::make_shared<FileRead>("test.tmp");
@@ -165,7 +147,6 @@ BOOST_AUTO_TEST_CASE( generic_io_special_types )
 	std::shared_ptr<GenericOut>  outs = createGenericWriter( &stream );
 	generic_io_types_test_special_f( ins, outs);
 };
-
 
 
 BOOST_AUTO_TEST_SUITE_END()

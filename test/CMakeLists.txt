@@ -32,7 +32,7 @@ if ("${SDL2_LIBRARIES}" STREQUAL "")
 	set(SDL2_LIBRARIES "SDL2::SDL2")
 endif ("${SDL2_LIBRARIES}" STREQUAL "")
 
-add_executable(blobbytest GenericIOTest.cpp ${SRC})
+add_executable(blobbytest GenericIOTest.cpp FileTest.cpp ${SRC})
 
 target_include_directories(blobbytest PRIVATE ${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ../src)
 target_compile_definitions(blobbytest PRIVATE "BOOST_TEST_DYN_LINK=1")
