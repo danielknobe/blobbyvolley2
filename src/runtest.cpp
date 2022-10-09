@@ -247,7 +247,6 @@ int main(int argc, char* argv[])
 
 			if (!scontroller.doFramedrop())
 			{
-				rmanager->draw();
 				IMGUI::getSingleton().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();

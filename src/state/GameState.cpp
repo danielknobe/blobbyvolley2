@@ -39,20 +39,12 @@ GameState::GameState(DuelMatch* match) : mMatch(match), mSaveReplay(false)
 
 GameState::~GameState()
 {
-	// disable game drawing
-	RenderManager::getSingleton().drawGame(false);
 }
 
 void GameState::presentGame()
 {
-	// enable game drawing
-	RenderManager::getSingleton().drawGame(true);
-
 	RenderManager& rmanager = RenderManager::getSingleton();
 	SoundManager& smanager = SoundManager::getSingleton();
-
-	rmanager.setBlob(LEFT_PLAYER, mMatch->getBlobPosition(LEFT_PLAYER), mMatch->getBlobState(LEFT_PLAYER));
-	rmanager.setBlob(RIGHT_PLAYER, mMatch->getBlobPosition(RIGHT_PLAYER),	mMatch->getBlobState(RIGHT_PLAYER));
 
 	if(mMatch->getPlayer(LEFT_PLAYER).getOscillating())
 	{
@@ -72,8 +64,6 @@ void GameState::presentGame()
 		rmanager.setBlobColor(RIGHT_PLAYER, mMatch->getPlayer(RIGHT_PLAYER).getStaticColor());
 	}
 
-	rmanager.setBall(mMatch->getBallPosition(), mMatch->getBallRotation());
-
 	auto events = mMatch->getEvents( );
 	for(const auto& e : events )
 	{
@@ -92,6 +82,8 @@ void GameState::presentGame()
 
 void GameState::presentGameUI()
 {
+	RenderManager::getSingleton().drawGame(mMatch->getState());
+
 	auto& imgui = IMGUI::getSingleton();
 
 	// Scores

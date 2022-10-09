@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 class BloodManager;
+struct DuelMatchState;
 
 // Text definitions
 static const int FONT_WIDTH_NORMAL 	=	24;	// Height and width of the normal font.
@@ -112,9 +113,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		Color getOscillationColor() const;
 		BloodManager& getBlood();
 
-		// Draws the stuff
-		virtual void draw() = 0;
-
 		// This swaps the screen buffers and should be called
 		// after all draw calls
 		virtual void refresh() {};
@@ -127,7 +125,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual void deinit() {};
 
 		// Set a background image by filename
-		// Note: There is a default, you dont need to do this
+		// Note: There is a default, you don't need to do this
 		// Returns true on success
 		virtual bool setBackground(const std::string& filename) { return true; };
 
@@ -135,14 +133,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual void setBlobColor(int player, Color color) {};
 
 		virtual void showShadow(bool shadow) {};
-
-		// Takes the new balls position and its rotation in radians
-		virtual void setBall(const Vector2& position, float rotation) {};
-
-		// Takes the new position and the animation state as a float,
-		// because some renderers may interpolate the animation
-		virtual void setBlob(int player, const Vector2& position,
-				float animationState) {};
 
 		virtual void setMouseMarker(float position);
 
@@ -158,8 +148,11 @@ class RenderManager : public ObjectCounter<RenderManager>
 		// This draws a greyed-out area
 		virtual void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col = Color(0,0,0)) {}
 
-		//Draws a blob
+		// Draws a blob
 		virtual void drawBlob(const Vector2& pos, const Color& col){};
+
+		// Draws the game
+		virtual void drawGame(const DuelMatchState& gameState) = 0;
 
 		// Enables particle drawing
 		virtual void startDrawParticles() {};
@@ -167,10 +160,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual void drawParticle(const Vector2& pos, int player){};
 		// Finishes drawing particles
 		virtual void endDrawParticles() {};
-
-		// This can disable the rendering of ingame graphics, for example for
-		// the main menu
-		void drawGame(bool draw);
 
 		// This function may be useful for displaying framerates
 		void setTitle(const std::string& title);
@@ -195,8 +184,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		SDL_Rect blobShadowRect(const Vector2& position);
 		SDL_Rect ballRect(const Vector2& position);
 		SDL_Rect ballShadowRect(const Vector2& position);
-
-		bool mDrawGame;
 
 		std::map<std::string, BufferedImage*> mImageMap;
 

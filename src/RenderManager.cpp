@@ -34,7 +34,6 @@ RenderManager* RenderManager::mSingleton = nullptr;
 RenderManager::~RenderManager() = default;
 
 RenderManager::RenderManager() :
-	mDrawGame(false),
 	mBloodMgr(new BloodManager(IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood")))
 {
 	//assert(!mSingleton);
@@ -334,11 +333,6 @@ SDL_Rect RenderManager::blobShadowRect(const Vector2& position)
 		32
 	};
 	return rect;
-}
-
-void RenderManager::drawGame(bool draw)
-{
-	mDrawGame = draw;
 }
 
 void RenderManager::setTitle(const std::string& title)

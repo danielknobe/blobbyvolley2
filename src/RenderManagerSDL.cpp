@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include "FileExceptions.h"
+#include "DuelMatchState.h"
 
 /* implementation */
 SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
@@ -70,12 +71,7 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 	return newSurface;
 }
 
-RenderManagerSDL::RenderManagerSDL()
-{
-	mBallRotation = 0.0;
-	mLeftBlobAnimationState = 0.0;
-	mRightBlobAnimationState = 0.0;
-}
+RenderManagerSDL::RenderManagerSDL() = default;
 
 RenderManager* RenderManager::createRenderManagerSDL()
 {
@@ -385,85 +381,6 @@ void RenderManagerSDL::deinit()
 	SDL_DestroyWindow(mWindow);
 }
 
-void RenderManagerSDL::draw()
-{
-	if (!mDrawGame)
-		return;
-
-	SDL_RenderCopy(mRenderer, mBackground, nullptr, nullptr);
-
-	int animationState;
-	SDL_Rect position;
-
-	// Ball marker
-	position.y = 5;
-	position.x = (int)lround(mBallPosition.x - 2.5);
-	position.w = 5;
-	position.h = 5;
-	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], nullptr, &position);
-
-	// Mouse marker
-	position.y = 590;
-	position.x = (int)lround(mMouseMarkerPosition - 2.5);
-	position.w = 5;
-	position.h = 5;
-	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], nullptr, &position);
-
-	if(mShowShadow)
-	{
-		// Ball Shadow
-		position = ballShadowRect(ballShadowPosition(mBallPosition));
-		SDL_RenderCopy(mRenderer, mBallShadow, nullptr, &position);
-
-		// Left blob shadow
-		position = blobShadowRect(blobShadowPosition(mLeftBlobPosition));
-		animationState = int(mLeftBlobAnimationState) % 5;
-		SDL_RenderCopy(mRenderer, mLeftBlobShadow[animationState].mSDLsf, nullptr, &position);
-
-		// Right blob shadow
-		position = blobShadowRect(blobShadowPosition(mRightBlobPosition));
-		animationState = int(mRightBlobAnimationState) % 5;
-		SDL_RenderCopy(mRenderer, mRightBlobShadow[animationState].mSDLsf, nullptr, &position);
-	}
-
-	// Restore the rod
-	position.x = 400 - 7;
-	position.y = 300;
-	SDL_Rect rodPosition;
-	rodPosition.x = 400 - 7;
-	rodPosition.y = 300;
-	rodPosition.w = 14;
-	rodPosition.h = 300;
-	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
-
-#if !BLOBBY_FEATURE_HAS_BACKBUTTON
-	position.x = 400 - 35;
-	position.y = 70;
-	position.w = 70;
-	position.h = 82;
-    SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
-#endif
-
-	// Drawing the Ball
-	position = ballRect(mBallPosition);
-	animationState = int(mBallRotation / M_PI / 2 * 16) % 16;
-	SDL_RenderCopy(mRenderer, mBall[animationState], nullptr, &position);
-
-	// update blob colors
-	colorizeBlobs(LEFT_PLAYER);
-	colorizeBlobs(RIGHT_PLAYER);
-
-	// Drawing left blob
-	position = blobRect(mLeftBlobPosition);
-	animationState = int(mLeftBlobAnimationState) % 5;
-	SDL_RenderCopy(mRenderer, mLeftBlob[animationState].mSDLsf, nullptr, &position);
-
-	// Drawing right blob
-	position = blobRect(mRightBlobPosition);
-	animationState = int(mRightBlobAnimationState) % 5;
-	SDL_RenderCopy(mRenderer, mRightBlob[animationState].mSDLsf, nullptr, &position);
-}
-
 bool RenderManagerSDL::setBackground(const std::string& filename)
 {
 	try
@@ -514,23 +431,20 @@ void RenderManagerSDL::setBlobColor(int player, Color color)
 }
 
 
-void RenderManagerSDL::colorizeBlobs(int player)
+void RenderManagerSDL::colorizeBlobs(int player, int frame)
 {
 	std::vector<DynamicColoredTexture> *handledBlob = nullptr;
 	std::vector<DynamicColoredTexture> *handledBlobShadow = nullptr;
-	int frame;
 
 	if (player == LEFT_PLAYER)
 	{
 		handledBlob = &mLeftBlob;
 		handledBlobShadow = &mLeftBlobShadow;
-		frame = mLeftBlobAnimationState;
 	}
 	if (player == RIGHT_PLAYER)
 	{
 		handledBlob = &mRightBlob;
 		handledBlobShadow = &mRightBlobShadow;
-		frame = mRightBlobAnimationState;
 	}
 
 	if( (*handledBlob)[frame].mColor != mBlobColor[player])
@@ -553,31 +467,9 @@ void RenderManagerSDL::showShadow(bool shadow)
 	mShowShadow = shadow;
 }
 
-void RenderManagerSDL::setBall(const Vector2& position, float rotation)
-{
-	mBallPosition = position;
-	mBallRotation = rotation;
-}
-
 void RenderManagerSDL::setMouseMarker(float position)
 {
 	mMouseMarkerPosition = position;
-}
-
-void RenderManagerSDL::setBlob(int player,
-		const Vector2& position, float animationState)
-{
-	if (player == LEFT_PLAYER)
-	{
-		mLeftBlobPosition = position;
-		mLeftBlobAnimationState = animationState;
-	}
-
-	if (player == RIGHT_PLAYER)
-	{
-		mRightBlobPosition = position;
-		mRightBlobAnimationState = animationState;
-	}
 }
 
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
@@ -694,13 +586,10 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 	static int toDraw = 0;
 
-	mLeftBlobAnimationState = 0;
-	mRightBlobAnimationState = 0;
-
 	setBlobColor(toDraw, col);
 	/// \todo this recolores the current frame (0)
 	/// + shadows; that's not exactly what we want
-	colorizeBlobs(toDraw);
+	colorizeBlobs(toDraw, 0);
 
 
 	//  Second dirty workaround in the function to have the right position of blobs in the GUI
@@ -709,14 +598,14 @@ void RenderManagerSDL::drawBlob(const Vector2& pos, const Color& col)
 
 	if(toDraw == 1)
 	{
-		SDL_QueryTexture(mRightBlob[mRightBlobAnimationState].mSDLsf, nullptr, nullptr, &position.w, &position.h);
-		SDL_RenderCopy(mRenderer, mRightBlob[mRightBlobAnimationState].mSDLsf, nullptr, &position);
+		SDL_QueryTexture(mRightBlob[0].mSDLsf, nullptr, nullptr, &position.w, &position.h);
+		SDL_RenderCopy(mRenderer, mRightBlob[0].mSDLsf, nullptr, &position);
 		toDraw = 0;
 	}
 	else
 	{
-		SDL_QueryTexture(mLeftBlob[mRightBlobAnimationState].mSDLsf, nullptr, nullptr, &position.w, &position.h);
-		SDL_RenderCopy(mRenderer, mLeftBlob[mRightBlobAnimationState].mSDLsf, nullptr, &position);
+		SDL_QueryTexture(mLeftBlob[0].mSDLsf, nullptr, nullptr, &position.w, &position.h);
+		SDL_RenderCopy(mRenderer, mLeftBlob[0].mSDLsf, nullptr, &position);
 		toDraw = 1;
 	}
 }
@@ -757,4 +646,79 @@ void RenderManagerSDL::refresh()
 	SDL_RenderCopy(mRenderer, mRenderTarget, nullptr, nullptr);
 	SDL_RenderPresent(mRenderer);
 	SDL_SetRenderTarget(mRenderer, mRenderTarget);
+}
+
+void RenderManagerSDL::drawGame(const DuelMatchState& gameState)
+{
+	SDL_RenderCopy(mRenderer, mBackground, nullptr, nullptr);
+
+	SDL_Rect position;
+
+	// Ball marker
+	position.y = 5;
+	position.x = (int)lround(gameState.getBallPosition().x - 2.5);
+	position.w = 5;
+	position.h = 5;
+	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], nullptr, &position);
+
+	// Mouse marker
+	position.y = 590;
+	position.x = (int)lround(mMouseMarkerPosition - 2.5);
+	position.w = 5;
+	position.h = 5;
+	SDL_RenderCopy(mRenderer, mMarker[(int)SDL_GetTicks() % 1000 >= 500], nullptr, &position);
+
+	if(mShowShadow)
+	{
+		// Ball Shadow
+		position = ballShadowRect(ballShadowPosition(gameState.getBallPosition()));
+		SDL_RenderCopy(mRenderer, mBallShadow, nullptr, &position);
+
+		// Left blob shadow
+		position = blobShadowRect(blobShadowPosition(gameState.getBlobPosition(LEFT_PLAYER)));
+		int animationState = int(gameState.getBlobState(LEFT_PLAYER)) % 5;
+		SDL_RenderCopy(mRenderer, mLeftBlobShadow[animationState].mSDLsf, nullptr, &position);
+
+		// Right blob shadow
+		position = blobShadowRect(blobShadowPosition(gameState.getBlobPosition(RIGHT_PLAYER)));
+		animationState = int(gameState.getBlobState(RIGHT_PLAYER)) % 5;
+		SDL_RenderCopy(mRenderer, mRightBlobShadow[animationState].mSDLsf, nullptr, &position);
+	}
+
+	// Restore the rod
+	position.x = 400 - 7;
+	position.y = 300;
+	SDL_Rect rodPosition;
+	rodPosition.x = 400 - 7;
+	rodPosition.y = 300;
+	rodPosition.w = 14;
+	rodPosition.h = 300;
+	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
+
+#if !BLOBBY_FEATURE_HAS_BACKBUTTON
+	position.x = 400 - 35;
+	position.y = 70;
+	position.w = 70;
+	position.h = 82;
+    SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
+#endif
+
+	// Drawing the Ball
+	position = ballRect(gameState.getBallPosition());
+	int animationState = int(gameState.getBallRotation() / M_PI / 2 * 16) % 16;
+	SDL_RenderCopy(mRenderer, mBall[animationState], nullptr, &position);
+
+	// update blob colors
+	int leftFrame = int(gameState.getBlobState(LEFT_PLAYER)) % 5;
+	int rightFrame = int(gameState.getBlobState(RIGHT_PLAYER)) % 5;
+	colorizeBlobs(LEFT_PLAYER, leftFrame);
+	colorizeBlobs(RIGHT_PLAYER, rightFrame);
+
+	// Drawing left blob
+	position = blobRect(gameState.getBlobPosition(LEFT_PLAYER));
+	SDL_RenderCopy( mRenderer, mLeftBlob[leftFrame].mSDLsf, nullptr, &position);
+
+	// Drawing right blob
+	position = blobRect(gameState.getBlobPosition(RIGHT_PLAYER));
+	SDL_RenderCopy(mRenderer, mRightBlob[rightFrame].mSDLsf, nullptr, &position);
 }
