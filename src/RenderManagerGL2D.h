@@ -50,16 +50,11 @@ class RenderManagerGL2D : public RenderManager
 
 		void init(int xResolution, int yResolution, bool fullscreen) override;
 		void deinit() override;
-		void draw() override;
 		void refresh() override;
 
 		bool setBackground(const std::string& filename) override;
 		void setBlobColor(int player, Color color) override;
 		void showShadow(bool shadow) override;
-
-		void setBall(const Vector2& position, float rotation) override;
-		void setBlob(int player, const Vector2& position,
-				float animationState) override;
 
 		void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) override;
 		void drawImage(const std::string& filename, Vector2 position, Vector2 size) override;
@@ -68,6 +63,7 @@ class RenderManagerGL2D : public RenderManager
 		void startDrawParticles() override;
 		void drawParticle(const Vector2& pos, int player) override;
 		void endDrawParticles() override;
+		void drawGame(const DuelMatchState& gameState) override;
 
 	private:
 		// Make sure this object is created before any opengl call
@@ -94,13 +90,6 @@ class RenderManagerGL2D : public RenderManager
 		GLuint mParticle;
 
 		std::list<Vector2> mLastBallStates;
-
-		Vector2 mBallPosition;
-		float mBallRotation;
-		Vector2 mLeftBlobPosition;
-		float mLeftBlobAnimationState;
-		Vector2 mRightBlobPosition;
-		float mRightBlobAnimationState;
 
 		bool mShowShadow;
 

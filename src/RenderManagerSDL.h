@@ -38,16 +38,11 @@ class RenderManagerSDL : public RenderManager
 
 		void init(int xResolution, int yResolution, bool fullscreen) override;
 		void deinit() override;
-		void draw() override;
 		void refresh() override;
 
 		bool setBackground(const std::string& filename) override;
 		void setBlobColor(int player, Color color) override;
 		void showShadow(bool shadow) override;
-
-		void setBall(const Vector2& position, float rotation) override;
-		void setBlob(int player, const Vector2& position,
-				float animationState) override;
 
 		void setMouseMarker(float position) override;
 
@@ -56,6 +51,7 @@ class RenderManagerSDL : public RenderManager
 		void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col) override;
 		void drawBlob(const Vector2& pos, const Color& col) override;
 		void drawParticle(const Vector2& pos, int player) override;
+		void drawGame(const DuelMatchState& gameState) override;
 
 	private:
 		struct DynamicColoredTexture
@@ -95,13 +91,6 @@ class RenderManagerSDL : public RenderManager
 
 		SDL_Renderer* mRenderer = nullptr;
 
-		Vector2 mBallPosition;
-		float mBallRotation;
-		Vector2 mLeftBlobPosition;
-		float mLeftBlobAnimationState;
-		Vector2 mRightBlobPosition;
-		float mRightBlobAnimationState;
-
 		bool mShowShadow;
 
 		// Store color for caching
@@ -115,7 +104,7 @@ class RenderManagerSDL : public RenderManager
 		SDL_Surface* colorSurface(SDL_Surface *surface, Color color);
 
 		void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags);
-		void colorizeBlobs(int player);
+		void colorizeBlobs(int player, int frame);
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON
         SDL_Texture* mBackFlag;

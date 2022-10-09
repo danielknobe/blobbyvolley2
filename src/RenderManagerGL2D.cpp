@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileExceptions.h"
 #include "Color.h"
 #include "Global.h"
+#include "DuelMatchState.h"
 
 /* implementation */
 RenderManagerGL2D::Texture::Texture( GLuint tex, int x, int y, int width, int height, int tw, int th ) :
@@ -351,119 +352,6 @@ void RenderManagerGL2D::deinit()
 	SDL_DestroyWindow(mWindow);
 }
 
-void RenderManagerGL2D::draw()
-{
-	if (!mDrawGame)
-		return;
-
-	// Background
-	glDisable(GL_ALPHA_TEST);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(mBackground);
-	glLoadIdentity();
-	drawQuad(400.0, 300.0, 1024.0, 1024.0);
-
-
-	if(mShowShadow)
-	{
-		// Generic shadow settings
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-
-		// Blob shadows
-		Vector2 pos;
-
-		pos = blobShadowPosition(mLeftBlobPosition);
-		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
-		glBindTexture(mBlobShadow[int(mLeftBlobAnimationState)  % 5]);
-		drawQuad(pos.x, pos.y, 128.0, 32.0);
-
-		pos = blobShadowPosition(mRightBlobPosition);
-		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
-		glBindTexture(mBlobShadow[int(mRightBlobAnimationState)  % 5]);
-		drawQuad(pos.x, pos.y, 128.0, 32.0);
-
-		// Ball shadow
-		pos = ballShadowPosition(mBallPosition);
-		glColor4f(1.0, 1.0, 1.0, 0.5);
-		glBindTexture(mBallShadow);
-		drawQuad(pos.x, pos.y, 128.0, 32.0);
-
-		glDisable(GL_BLEND);
-	}
-
-	glEnable(GL_ALPHA_TEST);
-
-	// General object settings
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	// The Ball
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glBindTexture(mBall[int(mBallRotation / M_PI / 2 * 16) % 16]);
-/*
-	float opacity = 0.0;
-	for (std::list<Vector2>::iterator iter = mLastBallStates.begin();
-		iter != mLastBallStates.end(); ++iter)
-	{
-//		glColor4f(1.0 / MotionBlurIterations,
-//			1.0 / MotionBlurIterations, 1.0 / MotionBlurIterations, 1.0 - opacity);
-		glColor4f(1.0, 1.0, 1.0, opacity);
-
-
-		Vector2& ballPosition = *iter;
-*/
-	drawQuad(mBallPosition.x, mBallPosition.y, 64.0, 64.0);
-
-/*
-		opacity += 0.1;
-	}
-	if (mLastBallStates.size() > MotionBlurIterations)
-			mLastBallStates.pop_back();
-	glDisable(GL_BLEND);
-*/
-
-	// blob normal
-	// left blob
-	glBindTexture(mBlob[int(mLeftBlobAnimationState)  % 5]);
-	glColor3ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b);
-	drawQuad(mLeftBlobPosition.x, mLeftBlobPosition.y, 128.0, 128.0);
-
-	// right blob
-	glBindTexture(mBlob[int(mRightBlobAnimationState)  % 5]);
-	glColor3ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b);
-	drawQuad(mRightBlobPosition.x, mRightBlobPosition.y, 128.0, 128.0);
-
-	// blob specular
-	glEnable(GL_BLEND);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	// left blob
-	glBindTexture(mBlobSpecular[int(mLeftBlobAnimationState)  % 5]);
-	drawQuad(mLeftBlobPosition.x, mLeftBlobPosition.y, 128.0, 128.0);
-
-	// right blob
-	glBindTexture(mBlobSpecular[int(mRightBlobAnimationState)  % 5]);
-	drawQuad(mRightBlobPosition.x, mRightBlobPosition.y, 128.0, 128.0);
-
-	glDisable(GL_BLEND);
-
-
-	// Ball marker
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_TEXTURE_2D);
-	GLubyte markerColor = SDL_GetTicks() % 1000 >= 500 ? 255 : 0;
-	glColor3ub(markerColor, markerColor, markerColor);
-	drawQuad(mBallPosition.x, 7.5, 5.0, 5.0);
-
-	// Mouse marker
-
-	// Position relativ zu BallMarker
-	drawQuad(mMouseMarkerPosition, 592.5, 5.0, 5.0);
-
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_ALPHA_TEST);
-}
-
 bool RenderManagerGL2D::setBackground(const std::string& filename)
 {
 	try
@@ -497,35 +385,6 @@ void RenderManagerGL2D::setBlobColor(int player, Color color)
 void RenderManagerGL2D::showShadow(bool shadow)
 {
 	mShowShadow = shadow;
-}
-
-void RenderManagerGL2D::setBall(const Vector2& position, float rotation)
-{
-	mBallPosition = position;
-	mBallRotation = rotation;
-
-	static int mbCounter = 0;
-	mbCounter++;
-	if (mbCounter > 1)
-	{
-		mLastBallStates.push_front(position);
-		mbCounter = 0;
-	}
-}
-
-void RenderManagerGL2D::setBlob(int player, const Vector2& position, float animationState)
-{
-	if (player == LEFT_PLAYER)
-	{
-		mLeftBlobPosition = position;
-		mLeftBlobAnimationState = animationState;
-	}
-
-	if (player == RIGHT_PLAYER)
-	{
-		mRightBlobPosition = position;
-		mRightBlobAnimationState = animationState;
-	}
 }
 
 void RenderManagerGL2D::drawText(const std::string& text, Vector2 position, unsigned int flags)
@@ -693,6 +552,116 @@ void RenderManagerGL2D::refresh()
 	//std::cerr << debugBindTextureCount << "\n";
 	debugBindTextureCount = 0;
 
+}
+
+void RenderManagerGL2D::drawGame(const DuelMatchState& gameState)
+{
+// Background
+	glDisable(GL_ALPHA_TEST);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBindTexture(mBackground);
+	glLoadIdentity();
+	drawQuad(400.0, 300.0, 1024.0, 1024.0);
+
+
+	if(mShowShadow)
+	{
+		// Generic shadow settings
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+
+		// Blob shadows
+		Vector2 pos;
+
+		pos = blobShadowPosition(gameState.getBlobPosition(LEFT_PLAYER));
+		glColor4ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b, 128);
+		glBindTexture(mBlobShadow[int(gameState.getBlobState(LEFT_PLAYER))  % 5]);
+		drawQuad(pos.x, pos.y, 128.0, 32.0);
+
+		pos = blobShadowPosition(gameState.getBlobPosition(RIGHT_PLAYER));
+		glColor4ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b, 128);
+		glBindTexture(mBlobShadow[int(gameState.getBlobState(RIGHT_PLAYER))  % 5]);
+		drawQuad(pos.x, pos.y, 128.0, 32.0);
+
+		// Ball shadow
+		pos = ballShadowPosition(gameState.getBallPosition());
+		glColor4f(1.0, 1.0, 1.0, 0.5);
+		glBindTexture(mBallShadow);
+		drawQuad(pos.x, pos.y, 128.0, 32.0);
+
+		glDisable(GL_BLEND);
+	}
+
+	glEnable(GL_ALPHA_TEST);
+
+	// General object settings
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	// The Ball
+
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glBindTexture(mBall[int(gameState.getBallRotation() / M_PI / 2 * 16) % 16]);
+/*
+	float opacity = 0.0;
+	for (std::list<Vector2>::iterator iter = mLastBallStates.begin();
+		iter != mLastBallStates.end(); ++iter)
+	{
+//		glColor4f(1.0 / MotionBlurIterations,
+//			1.0 / MotionBlurIterations, 1.0 / MotionBlurIterations, 1.0 - opacity);
+		glColor4f(1.0, 1.0, 1.0, opacity);
+
+
+		Vector2& ballPosition = *iter;
+*/
+	drawQuad(gameState.getBallPosition().x, gameState.getBallPosition().y, 64.0, 64.0);
+
+/*
+		opacity += 0.1;
+	}
+	if (mLastBallStates.size() > MotionBlurIterations)
+			mLastBallStates.pop_back();
+	glDisable(GL_BLEND);
+*/
+
+	// blob normal
+	// left blob
+	glBindTexture(mBlob[int(gameState.getBlobState(LEFT_PLAYER))  % 5]);
+	glColor3ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b);
+	drawQuad(gameState.getBlobPosition(LEFT_PLAYER).x,gameState.getBlobPosition(LEFT_PLAYER).y, 128.0, 128.0);
+
+	// right blob
+	glBindTexture(mBlob[int(gameState.getBlobState(RIGHT_PLAYER))  % 5]);
+	glColor3ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b);
+	drawQuad(gameState.getBlobPosition(RIGHT_PLAYER).x, gameState.getBlobPosition(RIGHT_PLAYER).y, 128.0, 128.0);
+
+	// blob specular
+	glEnable(GL_BLEND);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	// left blob
+	glBindTexture(mBlobSpecular[int(gameState.getBlobState(LEFT_PLAYER))  % 5]);
+	drawQuad(gameState.getBlobPosition(LEFT_PLAYER).x,gameState.getBlobPosition(LEFT_PLAYER).y, 128.0, 128.0);
+
+	// right blob
+	glBindTexture(mBlobSpecular[int(gameState.getBlobState(RIGHT_PLAYER))  % 5]);
+	drawQuad(gameState.getBlobPosition(RIGHT_PLAYER).x, gameState.getBlobPosition(RIGHT_PLAYER).y, 128.0, 128.0);
+
+	glDisable(GL_BLEND);
+
+
+	// Ball marker
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
+	GLubyte markerColor = SDL_GetTicks() % 1000 >= 500 ? 255 : 0;
+	glColor3ub(markerColor, markerColor, markerColor);
+	drawQuad(gameState.getBallPosition().x, 7.5, 5.0, 5.0);
+
+	// Mouse marker
+
+	// Position relativ zu BallMarker
+	drawQuad(mMouseMarkerPosition, 592.5, 5.0, 5.0);
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
 }
 
 #else
