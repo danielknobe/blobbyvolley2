@@ -22,6 +22,7 @@ set(SRC
 	../src/PlayerIdentity.cpp ../src/PlayerIdentity.h
 	../src/UserConfig.cpp     ../src/UserConfig.h
 	../src/Color.cpp          ../src/Color.h
+	../src/base64.cpp          ../src/base64.h
 )
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
@@ -32,7 +33,7 @@ if ("${SDL2_LIBRARIES}" STREQUAL "")
 	set(SDL2_LIBRARIES "SDL2::SDL2")
 endif ("${SDL2_LIBRARIES}" STREQUAL "")
 
-add_executable(blobbytest GenericIOTest.cpp FileTest.cpp ${SRC})
+add_executable(blobbytest GenericIOTest.cpp FileTest.cpp Base64Test.cpp ${SRC})
 
 target_include_directories(blobbytest PRIVATE ${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ../src)
 target_compile_definitions(blobbytest PRIVATE "BOOST_TEST_DYN_LINK=1")

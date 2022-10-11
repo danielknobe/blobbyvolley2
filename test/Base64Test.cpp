@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Base64
+//#define BOOST_TEST_MODULE Base64
 #include <boost/test/unit_test.hpp>
 
 #include "base64.h"

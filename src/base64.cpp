@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cstdint>
 #include <cassert>
+#include <cctype>
 #include <string>
 #include <array>
 #include <iterator>
@@ -227,16 +228,6 @@ std::uint8_t decode_byte_three(const char* reader) {
 	return res;
 }
 
-void decode( std::uint8_t*& byte_array, const char* reader )
-{
-	byte_array[0] = decode_byte_one(reader);
-	byte_array[1] = decode_byte_two(reader);
-	byte_array[2] = decode_byte_three(reader);
-
-	std::advance(reader, 4);
-	std::advance(byte_array, 3);
-}
-
 std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
@@ -245,7 +236,7 @@ std::vector<uint8_t> decode(const std::string& data )
 	// check input size
 	if (dataSize % 4 != 0) {
 		// check if we have any
-		int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return ch == '\n'; });
+		int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return std::isspace(ch); });
 		if ((dataSize - linefeeds) % 4 != 0)
 		{
 			throw std::runtime_error("data length must be multiple of 4");
@@ -258,9 +249,10 @@ std::vector<uint8_t> decode(const std::string& data )
 
 	while(reader != data.cend())
 	{
-		if( reader[0] == '\n') 
+		if( std::isspace(reader[0]) )
 		{
 			std::advance(reader, 1);
+			continue;
 		}
 
 		if( is_valid(reader[1]) ) 
