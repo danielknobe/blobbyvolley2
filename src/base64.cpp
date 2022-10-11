@@ -231,19 +231,21 @@ std::uint8_t decode_byte_three(const char* reader) {
 std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
-	const size_t dataSize = data.size();
+	const size_t incomingDataSize = data.size();
+
+	// count characters which do not belong to base64
+	int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return std::isspace(ch); });
+
+	// calculate character count which belongs to base64
+	int const base64DataSize = incomingDataSize - linefeeds;
 
 	// check input size
-	if (dataSize % 4 != 0) {
-		// check if we have any
-		int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return std::isspace(ch); });
-		if ((dataSize - linefeeds) % 4 != 0)
-		{
-			throw std::runtime_error("data length must be multiple of 4");
-		}
+	if (base64DataSize % 4)
+	{
+		throw std::runtime_error("data length must be multiple of 4");
 	}
 	
-	std::vector<uint8_t> buffer( dataSize / 4 * 3 );
+	std::vector<uint8_t> buffer(base64DataSize / 4 * 3 );
 	uint8_t* iter = buffer.data();
 	auto reader = data.cbegin();
 

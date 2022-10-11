@@ -71,6 +71,19 @@ BOOST_AUTO_TEST_CASE( decode_wrong_length )
     BOOST_CHECK_THROW(decode(base64text), std::runtime_error);
 }
 
+BOOST_AUTO_TEST_CASE( decode_right_length_wrong_chars )
+{
+    std::string base64text = "MTI\n";
+    BOOST_CHECK_THROW(decode(base64text), std::runtime_error);
+}
+
+BOOST_AUTO_TEST_CASE( decode_ends_with_newline )
+{
+    std::vector<uint8_t> text = { '1' };
+    std::string textEncoded = encode(text);
+    BOOST_CHECK( text == decode(textEncoded + "\n") );
+}
+
 BOOST_AUTO_TEST_CASE( encode_decode_multiline )
 {
     std::vector<uint8_t> text = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
