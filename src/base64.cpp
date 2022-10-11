@@ -20,9 +20,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cstdint>
 #include <cassert>
+#include <cctype>
 #include <string>
 #include <array>
 #include <iterator>
+#include <stdexcept>
+#include <algorithm>
 
 #include "base64.h"
 
@@ -110,14 +113,23 @@ static_assert( length(translation_table) == 64, "error: need 64 characters in th
 // simple encoding function for 3 bytes
 void encode( const std::uint8_t*& byte_array, std::string::iterator& writer )
 {
-	const uint32_t* bits = reinterpret_cast<const uint32_t*>(byte_array);
-	for(int i = 0; i < 4; ++i)
-	{
-		unsigned index = bitmask & (*bits >> (6*i));
-		assert(index < 64);
-		*writer = translation_table[index];
-		++writer;
-	}
+	unsigned const index0 = bitmask & (byte_array[0] >> 2);
+	assert(index0 < 64);
+	writer[0] = translation_table[index0];
+
+	unsigned const index1 = bitmask & ((byte_array[0] << 4) | (byte_array[1] >> 4));
+	assert(index1 < 64);
+	writer[1] = translation_table[index1];
+
+	unsigned const index2 = bitmask & ((byte_array[1] << 2) | (byte_array[2] >> 6));
+	assert(index2 < 64);
+	writer[2] = translation_table[index2];
+
+	unsigned const index3 = bitmask & (byte_array[2]);
+	assert(index3 < 64);
+	writer[3] = translation_table[index3];
+
+	std::advance(writer, 4);
 	std::advance(byte_array, 3);
 }
 
@@ -128,11 +140,11 @@ std::string encode( const char* begin, const char* end, int newlines)
 	const unsigned tail       = length % 3;
 	const unsigned extra      = (tail != 0) ? 1 : 0;
 	const unsigned groups     = length / 3;
-	const unsigned total_data = (groups + extra) * 4 + tail;
+	const unsigned total_data = (groups + extra) * 4;
 	newlines -= newlines % 4;
 	const unsigned linefeeds = newlines > 0 ? total_data / newlines : 0;
 
-	std::string buffer(total_data + linefeeds, '=');
+	std::string buffer(total_data + linefeeds, '\0');
 
 	// iterate over sequence
 	auto write = buffer.begin();
@@ -152,60 +164,121 @@ std::string encode( const char* begin, const char* end, int newlines)
 	// add the partial group
 	if(extra)
 	{
-		uint32_t copy = 0;
-		uint8_t* bits = reinterpret_cast<uint8_t*>(&copy);
+		std::uint8_t partial_group[4] = { 0 };
 		for(unsigned i = 0; i < tail; ++i)
-			bits[i] = *(read++);
+			partial_group[i] = *(read++);
+		const uint8_t* const_partial_group = partial_group;
+		encode(const_partial_group, write);
 
-		const uint8_t* cp = bits;
-		encode(cp, write);
+		buffer[buffer.length() - 1] = '=';
+		if (tail == 1) 
+		{
+			buffer[buffer.length() - 2] = '=';
+		}
 	}
-
+	
 	assert( (char*)read == end );
-	assert( write == buffer.end() - tail );
-
+	assert( write == buffer.end());
+	
 	return buffer;
 }
 
-void decode( std::uint8_t*& byte_array, std::string::const_iterator& reader )
-{
-	uint32_t* bits = reinterpret_cast<uint32_t*>(byte_array);
-	*bits &= 0;
-	for(int i = 0; i < 4; ++i)
+std::uint8_t decode_byte_one(const char* reader) {
+	std::uint8_t res;
+	uint8_t const value0 = decode(reader[0]);
+	uint8_t const value1 = decode(reader[1]);
+	if( ((value0 & (~bitmask)) != 0 ) ||
+	    ((value1 & (~bitmask)) != 0 ) )
 	{
-		uint8_t value = decode(*(reader++));
-		assert( (value & (~bitmask)) == 0 ); // check that it is valid
-		*bits |= value << (6*i);
+		throw std::runtime_error("invalid base64 character");
 	}
-	std::advance(byte_array, 3);
+	res = (value0 << 2);
+	res |= value1 >> 4;
+
+	return res;
 }
 
+std::uint8_t decode_byte_two(const char* reader) {
+	std::uint8_t res;
+	uint8_t const value1 = decode(reader[1]);
+	uint8_t const value2 = decode(reader[2]);
+	if( ((value1 & (~bitmask)) != 0 ) ||
+	    ((value2 & (~bitmask)) != 0 ) )
+	{
+		throw std::runtime_error("invalid base64 character");
+	}
+	res = value1 << 4;
+	res |= value2 >> 2;
+
+	return res;
+}
+
+std::uint8_t decode_byte_three(const char* reader) {
+	std::uint8_t res;
+	uint8_t const value2 = decode(reader[2]);
+	uint8_t const value3 = decode(reader[3]);
+	if( ((value2 & (~bitmask)) != 0 ) ||
+	    ((value3 & (~bitmask)) != 0 ) )
+	{
+		throw std::runtime_error("invalid base64 character");
+	}
+	res = value2 << 6;
+	res |= value3;
+
+	return res;
+}
 
 std::vector<uint8_t> decode(const std::string& data )
 {
 	// pre-allocate buffer
-	const size_t dataSize = data.size();
-	std::vector<uint8_t> buffer( dataSize / 4 * 3 + 4 );
+	const size_t incomingDataSize = data.size();
+
+	// count characters which do not belong to base64
+	int const linefeeds = std::count_if(data.cbegin(), data.cend(), [](char ch){return std::isspace(ch); });
+
+	// calculate character count which belongs to base64
+	int const base64DataSize = incomingDataSize - linefeeds;
+
+	// check input size
+	if (base64DataSize % 4)
+	{
+		throw std::runtime_error("data length must be multiple of 4");
+	}
+	
+	std::vector<uint8_t> buffer(base64DataSize / 4 * 3 );
 	uint8_t* iter = buffer.data();
 	auto reader = data.cbegin();
 
-	// read block by block
 	while(reader != data.cend())
 	{
-		// decode the valid group
-		if( is_valid(*reader) )
+		if( std::isspace(reader[0]) )
 		{
-			decode( iter, reader );
-		// correct fill bytes
-		} else if( *reader == '=' )
-		{
-			--iter;
-			++reader;
+			std::advance(reader, 1);
+			continue;
 		}
-		// ignore line feeds
-		else ++reader;
+
+		if( is_valid(reader[1]) ) 
+		{
+			*iter = decode_byte_one(&reader[0]);
+			std::advance(iter, 1);
+		}
+
+		if( is_valid(reader[2]) ) 
+		{
+			*iter = decode_byte_two(&reader[0]);
+			std::advance(iter, 1);
+		}
+
+		if( is_valid(reader[3]) ) 
+		{
+			*iter = decode_byte_three(&reader[0]);
+			std::advance(iter, 1);
+		}
+
+		std::advance(reader, 4);
 	}
 
-	buffer.resize( std::distance(buffer.data(), iter) + 1 );
+	buffer.resize(std::distance(buffer.data(), iter));
+
 	return buffer;
 }
