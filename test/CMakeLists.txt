@@ -22,7 +22,7 @@ set(SRC
 	../src/PlayerIdentity.cpp ../src/PlayerIdentity.h
 	../src/UserConfig.cpp     ../src/UserConfig.h
 	../src/Color.cpp          ../src/Color.h
-	../src/base64.cpp          ../src/base64.h
+	../src/base64.cpp         ../src/base64.h
 )
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
