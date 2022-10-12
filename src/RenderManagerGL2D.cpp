@@ -662,9 +662,9 @@ void RenderManagerGL2D::drawParticle(const Vector2& pos, int player)
 	//glTranslatef(pos.x, pos.y, 0.6);
 
 	if (player == LEFT_PLAYER)
-		glColor3ub(mLeftBlobColor.r, mLeftBlobColor.b, mLeftBlobColor.g);
+		glColor3ub(mLeftBlobColor.r, mLeftBlobColor.g, mLeftBlobColor.b);
 	if (player == RIGHT_PLAYER)
-		glColor3ub(mRightBlobColor.r, mRightBlobColor.b, mRightBlobColor.g);
+		glColor3ub(mRightBlobColor.r, mRightBlobColor.g, mRightBlobColor.b);
 	if (player > 1)
 		glColor3ub(255, 0, 0);
 
