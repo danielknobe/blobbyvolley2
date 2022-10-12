@@ -9,7 +9,7 @@ namespace Layer {
 void HttpRequestHeader::addAuthorization(const std::string& name, const std::string& password)
 {
 	std::string const authorization = name + ":" + password;
-	mHeaderEntries.push_back(encode(authorization.c_str(), authorization.c_str() + authorization.length()));
+	mHeaderEntries.push_back("Authorization: Basic " + encode(authorization.c_str(), authorization.c_str() + authorization.length()));
 }
 
 std::string HttpRequestHeader::getHeaderString() const
