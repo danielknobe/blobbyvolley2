@@ -134,7 +134,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 		virtual void showShadow(bool shadow) {};
 
-		virtual void setMouseMarker(float position);
+		void setMouseMarker(float position);
 
 		// This simply draws the given text with its top left corner at the
 		// given position and doesn't care about line feeds.

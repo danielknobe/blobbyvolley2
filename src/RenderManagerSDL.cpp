@@ -467,11 +467,6 @@ void RenderManagerSDL::showShadow(bool shadow)
 	mShowShadow = shadow;
 }
 
-void RenderManagerSDL::setMouseMarker(float position)
-{
-	mMouseMarkerPosition = position;
-}
-
 void RenderManagerSDL::drawText(const std::string& text, Vector2 position, unsigned int flags)
 {
 	drawTextImpl(text, position, flags);
