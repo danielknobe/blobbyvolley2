@@ -66,7 +66,7 @@ typedef std::queue<QueueObject> RenderQueue;
 IMGUI* IMGUI::mSingleton = nullptr;
 RenderQueue *mQueue;
 
-IMGUI::IMGUI()
+IMGUI::IMGUI(InputManager* inputMgr) : mInputManager(inputMgr)
 {
 	mQueue = new RenderQueue;
 	mActiveButton = -1;
@@ -86,7 +86,7 @@ IMGUI::~IMGUI()
 IMGUI& IMGUI::getSingleton()
 {
 	if (!mSingleton)
-		mSingleton = new IMGUI;
+		mSingleton = new IMGUI(InputManager::getSingleton());
 	return *mSingleton;
 }
 
@@ -101,22 +101,22 @@ void IMGUI::begin()
 
 	mLastKeyAction = KeyAction::NONE;
 
-	if (InputManager::getSingleton()->up())
+	if (mInputManager->up())
 		mLastKeyAction = KeyAction::UP;
 
-	if (InputManager::getSingleton()->down())
+	if (mInputManager->down())
 		mLastKeyAction = KeyAction::DOWN;
 
-	if (InputManager::getSingleton()->left())
+	if (mInputManager->left())
 		mLastKeyAction = KeyAction::LEFT;
 
-	if (InputManager::getSingleton()->right())
+	if (mInputManager->right())
 		mLastKeyAction = KeyAction::RIGHT;
 
-	if (InputManager::getSingleton()->select())
+	if (mInputManager->select())
 		mLastKeyAction = KeyAction::SELECT;
 
-	if (InputManager::getSingleton()->exit())
+	if (mInputManager->exit())
 		mLastKeyAction = KeyAction::BACK;
 
 	mIdCounter = 0;
@@ -204,12 +204,12 @@ void IMGUI::end(RenderManager& renderer)
 #if BLOBBY_ON_DESKTOP
 	if (mDrawCursor)
 	{
-		renderer.drawImage( "gfx/cursor.bmp", InputManager::getSingleton()->position() + Vector2( 24.0, 24.0));
+		renderer.drawImage( "gfx/cursor.bmp", mInputManager->position() + Vector2( 24.0, 24.0));
 		mDrawCursor = false;
 	}
 #endif
 	static bool lastCursor = false;
-	bool relativeCursor = !mUsingCursor && InputManager::getSingleton()->isMouseCaptured();
+	bool relativeCursor = !mUsingCursor && mInputManager->isMouseCaptured();
 	if( relativeCursor != lastCursor  )
 	{
 		lastCursor = relativeCursor;
@@ -369,7 +369,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 			const int tolerance = 0;
 		#endif
 		// React to mouse input.
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = mInputManager->position();
 		if (mousepos.x + tolerance >= obj.pos1.x &&
 			mousepos.y + tolerance * 2 >= obj.pos1.y &&
 			mousepos.x - tolerance <= obj.pos1.x + textLength * fontSize &&
@@ -380,7 +380,7 @@ bool IMGUI::doButton(int id, const Vector2& position, const std::string& text, u
 				| TF_HIGHLIGHT
 			#endif
 			;
-			if (InputManager::getSingleton()->click())
+			if (mInputManager->click())
 			{
 				clicked = true;
 				mActiveButton = id;
@@ -398,9 +398,9 @@ bool IMGUI::doImageButton(int id, const Vector2& position, const Vector2& size, 
 	doImage(id, position, image);
 
 	// React to mouse input.
-	if (InputManager::getSingleton()->click())
+	if (mInputManager->click())
 	{
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = mInputManager->position();
 		Vector2 btnpos = position - size * 0.5;
 		if (mousepos.x > btnpos.x && mousepos.y > btnpos.y &&
 				mousepos.x < btnpos.x + size.x &&	mousepos.y < btnpos.y + size.y)
@@ -421,7 +421,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 
 	bool deselected = false;
 
-	if (InputManager::getSingleton()->unclick())
+	if (mInputManager->unclick())
 	{
 		if (id == mHeldWidget)
 			deselected = true;
@@ -493,7 +493,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 		#endif
 
 		// React to mouse input.
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = mInputManager->position();
 		if (mousepos.x + 5 > position.x &&
 			mousepos.y + tolerance * 2 > position.y &&
 			mousepos.x < position.x + 205 &&
@@ -501,7 +501,7 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 		{
 			obj.type = ACTIVESCROLLBAR;
 
-			if (InputManager::getSingleton()->click())
+			if (mInputManager->click())
 			{
 				mHeldWidget = id;
 			}
@@ -512,10 +512,10 @@ bool IMGUI::doScrollbar(int id, const Vector2& position, float& value)
 				mActiveButton = id;
 			}
 
-			if(InputManager::getSingleton()->mouseWheelUp())
+			if(mInputManager->mouseWheelUp())
 				value += 0.1;
 
-			if(InputManager::getSingleton()->mouseWheelDown())
+			if(mInputManager->mouseWheelDown())
 				value -= 0.1;
 		}
 	}
@@ -558,14 +558,14 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 	}
 
 	// React to mouse input.
-	Vector2 mousepos = InputManager::getSingleton()->position();
+	Vector2 mousepos = mInputManager->position();
 	if (mousepos.x > obj.pos1.x &&
 		mousepos.y > obj.pos1.y &&
 		mousepos.x < obj.pos1.x + width &&
 		mousepos.y < obj.pos1.y + height)
 	{
 		obj.flags = obj.flags | TF_HIGHLIGHT;
-		if (InputManager::getSingleton()->click())
+		if (mInputManager->click())
 		{
 			// Handle click on the text.
 			if (mousepos.x < obj.pos1.x + text.length() * FontSize)
@@ -645,7 +645,7 @@ bool IMGUI::doEditbox(int id, const Vector2& position, unsigned int length, std:
 				default:
 					break;
 			}
-			std::string input = InputManager::getSingleton()->getLastTextKey();
+			std::string input = mInputManager->getLastTextKey();
 
 			if (input == "backspace" && text.length() > 0 && cpos > 0)
 			{
@@ -856,11 +856,11 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 		}
 
 		// React to mouse input.
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = mInputManager->position();
 		if (mousepos.x > pos1.x && mousepos.y > pos1.y && mousepos.x < pos2.x && mousepos.y < pos2.y)
 		{
 			obj.type = ACTIVESELECTBOX;
-			if (InputManager::getSingleton()->click())
+			if (mInputManager->click())
 				mActiveButton = id;
 		}
 		//entries mouseclick:
@@ -869,12 +869,12 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 			mousepos.x < pos2.x-35 &&
 			mousepos.y < pos1.y+5+FontSize*itemsPerPage)
 		{
-			if (InputManager::getSingleton()->click())
+			if (mInputManager->click())
 			{
 				int tmp = (int)((mousepos.y - pos1.y - 5) / FontSize) + first;
 				/// \todo well, it's not really a doulbe click...
 				/// we need to do this in inputmanager
-				if( selected == static_cast<unsigned int>(tmp) && InputManager::getSingleton()->doubleClick() )
+				if( selected == static_cast<unsigned int>(tmp) && mInputManager->doubleClick() )
 					changed = SBA_DBL_CLICK;
 
 				if (tmp >= 0 && static_cast<unsigned int>(tmp) < entries.size())
@@ -882,19 +882,19 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 
 				mActiveButton = id;
 			}
-			if ((InputManager::getSingleton()->mouseWheelUp()) && (selected > 0))
+			if ((mInputManager->mouseWheelUp()) && (selected > 0))
 			{
 				selected--;
 				changed = SBA_SELECT;
 			}
-			if ((InputManager::getSingleton()->mouseWheelDown()) && (selected + 1 < entries.size()))
+			if ((mInputManager->mouseWheelDown()) && (selected + 1 < entries.size()))
 			{
 				selected++;
 				changed = SBA_SELECT;
 			}
 		}
 		//arrows mouseclick:
-		if (mousepos.x > pos2.x-30 && mousepos.x < pos2.x-30+24 && InputManager::getSingleton()->click())
+		if (mousepos.x > pos2.x-30 && mousepos.x < pos2.x-30+24 && mInputManager->click())
 		{
 			if (mousepos.y > pos1.y+3 && mousepos.y < pos1.y+3+24 && selected > 0)
 			{
@@ -1009,10 +1009,10 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 		}
 
 		// React to mouse input.
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = mInputManager->position();
 		if (mousepos.x > pos1.x && mousepos.y > pos1.y && mousepos.x < pos2.x && mousepos.y < pos2.y)
 		{
-			if (InputManager::getSingleton()->click())
+			if (mInputManager->click())
 				mActiveButton = id;
 		}
 		//entries mouseclick:
@@ -1021,18 +1021,18 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 			mousepos.x < pos2.x-35 &&
 			mousepos.y < pos1.y+5+FontSize*itemsPerPage)
 		{
-			if ((InputManager::getSingleton()->mouseWheelUp()) && (selected > 0))
+			if ((mInputManager->mouseWheelUp()) && (selected > 0))
 			{
 				selected--;
 			}
 
-			if ((InputManager::getSingleton()->mouseWheelDown()) && (selected + 1 < entries.size()))
+			if ((mInputManager->mouseWheelDown()) && (selected + 1 < entries.size()))
 			{
 				selected++;
 			}
 		}
 		//arrows mouseclick:
-		if (mousepos.x > pos2.x-30 && mousepos.x < pos2.x-30+24 && InputManager::getSingleton()->click())
+		if (mousepos.x > pos2.x-30 && mousepos.x < pos2.x-30+24 && mInputManager->click())
 		{
 			if (mousepos.y > pos1.y+3 && mousepos.y < pos1.y+3+24 && selected > 0)
 			{

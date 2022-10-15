@@ -85,8 +85,9 @@ class IMGUI : public ObjectCounter<IMGUI>
 		const TextManager& textMgr() const;
 		const std::string& getText(TextManager::STRING id) const;
 		void setTextMgr(std::string lang);
+
 	private:
-		IMGUI();
+		IMGUI(InputManager* inputMgr);
 		~IMGUI();
 
 		static IMGUI* mSingleton;
@@ -103,5 +104,6 @@ class IMGUI : public ObjectCounter<IMGUI>
 		int mIdCounter;
 
 		std::unique_ptr<TextManager> mTextManager;
+		InputManager* mInputManager;
 };
 
