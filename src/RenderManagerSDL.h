@@ -44,8 +44,6 @@ class RenderManagerSDL : public RenderManager
 		void setBlobColor(int player, Color color) override;
 		void showShadow(bool shadow) override;
 
-		void setMouseMarker(float position) override;
-
 		void drawText(const std::string& text, Vector2 position, unsigned int flags = TF_NORMAL) override;
 		void drawImage(const std::string& filename, Vector2 position, Vector2 size) override;
 		void drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col) override;
