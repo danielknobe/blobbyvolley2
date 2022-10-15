@@ -64,6 +64,8 @@ protected:
 	/// generic state constructor. automatically resets imgui selection
 	State();
 
+	void playSound(const std::string& sound, float volume);
+
 	static void switchState(State* newState);
 
 private:

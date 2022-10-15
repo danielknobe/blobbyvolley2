@@ -990,14 +990,14 @@ void MiscOptionsState::step_impl()
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
 		SoundManager::getSingleton().setVolume(mVolume);
-		SoundManager::getSingleton().playSound(SoundManager::IMPACT, 1.0);
+		playSound(SoundManager::IMPACT, 1.0);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), TextManager::OP_MUTE))
 	{
 		mMute = !mMute;
 		SoundManager::getSingleton().setMute(mMute);
 		if (!mMute)
-			SoundManager::getSingleton().playSound(SoundManager::IMPACT, 1.0);
+			playSound(SoundManager::IMPACT, 1.0);
 	}
 	if (mMute)
 	{
