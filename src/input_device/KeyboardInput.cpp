@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputDevice.h"
 
 /* other includes */
+#include "InputManager.h"
 
 // ********************************************************************************************************
 // 		Interface Definition
@@ -38,7 +39,7 @@ class KeyboardInputDevice : public InputDevice
 		SDL_Keycode mJumpKey;
 	public:
 		~KeyboardInputDevice() override = default;
-		KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
+		KeyboardInputDevice(InputManager* inputMgr, SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey);
 		PlayerInputAbs transferInput() override;
 };
 
@@ -50,25 +51,25 @@ class KeyboardInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-std::unique_ptr<InputDevice> createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump)
+std::unique_ptr<InputDevice> createKeyboardInput(InputManager* inputMgr, SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump)
 {
-	return std::unique_ptr<InputDevice>{new KeyboardInputDevice(left, right, jump)};
+	return std::unique_ptr<InputDevice>{new KeyboardInputDevice(inputMgr, left, right, jump)};
 }
 
 // -------------------------------------------------------------------------------------------------
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
 
-KeyboardInputDevice::KeyboardInputDevice(SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey)
-	: InputDevice(), mLeftKey(leftKey), mRightKey(rightKey), mJumpKey(jumpKey)
+KeyboardInputDevice::KeyboardInputDevice(InputManager* inputMgr, SDL_Keycode leftKey, SDL_Keycode rightKey, SDL_Keycode jumpKey)
+	: InputDevice(inputMgr), mLeftKey(leftKey), mRightKey(rightKey), mJumpKey(jumpKey)
 {
 }
 
 PlayerInputAbs KeyboardInputDevice::transferInput()
 {
-	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
-
-	return PlayerInputAbs(keyState[SDL_GetScancodeFromKey(mLeftKey)], keyState[SDL_GetScancodeFromKey(mRightKey)], keyState[SDL_GetScancodeFromKey(mJumpKey)]);
+	return {mInputManager->isKeyPressed(mLeftKey),
+		    mInputManager->isKeyPressed(mRightKey),
+		    mInputManager->isKeyPressed(mJumpKey)};
 }
 
 
