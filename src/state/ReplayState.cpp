@@ -62,7 +62,7 @@ void ReplayState::loadReplay(const std::string& file)
 		rulesFile.close();
 		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
 
-		SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
+		playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
                            PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
@@ -208,7 +208,7 @@ void ReplayState::step_impl()
 		{
 			// we don't have to reset the match, because we don't use lua rules
 			// we just have to jump to the beginning
-			SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
+			playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 			// do we really need this?
 			// maybe, users want to replay the game on the current speed

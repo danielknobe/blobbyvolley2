@@ -235,7 +235,7 @@ void NetworkGameState::step_impl()
 				mMatch->unpause();
 
 				// game ready whistle
-				SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
+				playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_RULES_CHECKSUM:
@@ -296,7 +296,7 @@ void NetworkGameState::step_impl()
 				mChatlog.push_back((std::string) message);
 				mChatOrigin.push_back(false);
 				mSelectedChatmessage = mChatlog.size() - 1;
-				SoundManager::getSingleton().playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
+				playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
 				break;
 			}
 			case ID_REPLAY:
@@ -539,7 +539,7 @@ void NetworkGameState::step_impl()
 					mSelectedChatmessage = mChatlog.size() - 1;
 					mChattext = "";
 					mChatCursorPosition = 0;
-					SoundManager::getSingleton().playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
+					playSound(SoundManager::CHAT, ROUND_START_SOUND_VOLUME);
 				}
 			}
 			imgui.doCursor();

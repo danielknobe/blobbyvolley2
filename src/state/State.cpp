@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkSearchState.h"
 #include "OptionsState.h"
 
+#include "SoundManager.h"
 #include "IMGUI.h"
 #include "TextManager.h"
 #include "SpeedController.h"
@@ -92,6 +93,10 @@ State::State()
 void State::switchState(State* newState)
 {
 	mStateToSwitchTo.reset(newState);
+}
+
+void State::playSound(const std::string& sound, float volume) {
+	SoundManager::getSingleton().playSound(sound, volume);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------

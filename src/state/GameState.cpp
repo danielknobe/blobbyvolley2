@@ -44,7 +44,6 @@ GameState::~GameState()
 void GameState::presentGame()
 {
 	RenderManager& rmanager = RenderManager::getSingleton();
-	SoundManager& smanager = SoundManager::getSingleton();
 
 	if(mMatch->getPlayer(LEFT_PLAYER).getOscillating())
 	{
@@ -69,14 +68,14 @@ void GameState::presentGame()
 	{
 		if( e.event == MatchEvent::BALL_HIT_BLOB )
 		{
-			smanager.playSound(SoundManager::IMPACT, e.intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
+			playSound(SoundManager::IMPACT, e.intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 			/// \todo save that position inside the event
 			Vector2 hitPos = mMatch->getBallPosition() + (mMatch->getBlobPosition(e.side) - mMatch->getBallPosition()).normalise().scale(31.5);
 			RenderManager::getSingleton().getBlood().spillBlood(hitPos, e.intensity, e.side);
 		}
 
 		if( e.event == MatchEvent::PLAYER_ERROR )
-			smanager.playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
+			playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 	}
 }
 

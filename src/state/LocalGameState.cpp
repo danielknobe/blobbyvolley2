@@ -50,8 +50,7 @@ LocalGameState::LocalGameState()
 	// set speed
 	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
 
-
-	SoundManager::getSingleton().playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
+	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 	mMatch.reset(new DuelMatch( false, config->getString("rules")));
 	mMatch->setPlayers(leftPlayer, rightPlayer);
