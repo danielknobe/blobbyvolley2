@@ -95,7 +95,7 @@ std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 		SDL_Keycode lkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_left")).c_str());
 		SDL_Keycode rkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_right")).c_str());
 		SDL_Keycode jkey = SDL_GetKeyFromName((config.getString(prefix + "keyboard_jump")).c_str());
-		return createKeyboardInput(lkey, rkey, jkey);
+		return createKeyboardInput(this, lkey, rkey, jkey);
 	}
 	// load config for joystick
 	else if (device == "joystick")
@@ -108,7 +108,7 @@ std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 	// load config for touch
 	else if (device == "touch")
 	{
-		return createTouchInput(side, config.getInteger("blobby_touch_type"));
+		return createTouchInput(this, side, config.getInteger("blobby_touch_type"));
 	}
 	else
 		std::cerr << "Error: unknown input device: " << device << std::endl;
@@ -372,13 +372,13 @@ Vector2 InputManager::position()
 	int windowX = 0;
 	int windowY = 0;
 
-	SDL_GetMouseState(&mMouseX,&mMouseY);
+	SDL_GetMouseState(&mMouseX, &mMouseY);
 
 	SDL_GetWindowSize(RenderManager::getSingleton().getWindow(), &windowX, &windowY);
 	mMouseX = (int)((((float)mMouseX) * ((float)BASE_RESOLUTION_X)) / windowX);
 	mMouseY = (int)((((float)mMouseY) * ((float)BASE_RESOLUTION_Y)) / windowY);
 
-	return Vector2(mMouseX,mMouseY);
+	return Vector2(mMouseX, mMouseY);
 }
 
 bool InputManager::click() const
@@ -455,4 +455,43 @@ bool InputManager::isMouseCaptured() const
 SDL_Joystick* InputManager::getJoystickById(int joyId)
 {
 	return mJoystickPool->getJoystick(joyId);
+}
+
+void InputManager::setMouseMarker(int target)
+{
+	RenderManager::getSingleton().setMouseMarker(target);
+}
+
+bool InputManager::isKeyPressed(SDL_Keycode code) const
+{
+	const Uint8* keyState = SDL_GetKeyboardState(nullptr);
+	return keyState[SDL_GetScancodeFromKey(code)];
+}
+
+bool InputManager::isJoyActionActive(const JoystickAction& action) const
+{
+	SDL_Joystick* joystick = mJoystickPool->getJoystick(action.joyid);
+
+	if (joystick != nullptr)
+	{
+		switch (action.type)
+		{
+			case JoystickAction::AXIS:
+				if (action.number < 0)
+				{
+					return (SDL_JoystickGetAxis(joystick, -action.number - 1) < -15000);
+				}
+				else if (action.number > 0)
+				{
+					return (SDL_JoystickGetAxis(joystick, action.number - 1) > 15000);
+				}
+				break;
+
+			case JoystickAction::BUTTON:
+				return SDL_JoystickGetButton(joystick, action.number);
+			default:
+				break;
+		}
+	}
+	return false;
 }

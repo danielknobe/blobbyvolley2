@@ -22,7 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputDevice.h"
 
 /* other includes */
-#include "RenderManager.h"
+#include <SDL_touch.h>
+#include "InputManager.h"
 
 // ********************************************************************************************************
 // 		Interface Definition
@@ -33,15 +34,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class TouchInputDevice : public InputDevice
 {
+	public:
+		~TouchInputDevice() override = default;
+		TouchInputDevice(InputManager* inputMgr, PlayerSide player, int type);
+		PlayerInputAbs transferInput() override;
+
 	private:
 		PlayerSide mPlayer;
 		int mMarkerX;
 		int mTouchXPos;
 		int mTouchType;
-	public:
-		~TouchInputDevice() override = default;
-		TouchInputDevice(PlayerSide player, int type);
-		PlayerInputAbs transferInput() override;
 };
 
 // ********************************************************************************************************
@@ -52,16 +54,16 @@ class TouchInputDevice : public InputDevice
 //		Creator Function
 // -------------------------------------------------------------------------------------------------
 
-std::unique_ptr<InputDevice> createTouchInput(PlayerSide player, int type)
+std::unique_ptr<InputDevice> createTouchInput(InputManager* inputMgr, PlayerSide player, int type)
 {
-	return std::unique_ptr<InputDevice>{new TouchInputDevice(player, type)};
+	return std::unique_ptr<InputDevice>{new TouchInputDevice(inputMgr, player, type)};
 }
 
 // -------------------------------------------------------------------------------------------------
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
-TouchInputDevice::TouchInputDevice(PlayerSide player, int type)
-	: InputDevice()
+TouchInputDevice::TouchInputDevice(InputManager* inputMgr, PlayerSide player, int type)
+	: InputDevice(inputMgr)
 {
 	mPlayer = player;
 	mTouchXPos = 400;
@@ -123,7 +125,7 @@ PlayerInputAbs TouchInputDevice::transferInput()
 		mMarkerX = mTouchXPos + playerOffset;
 		input.setTarget( mMarkerX, mPlayer );
 
-		RenderManager::getSingleton().setMouseMarker(mMarkerX);
+		mInputManager->setMouseMarker(mMarkerX);
 		break;
 	}
 

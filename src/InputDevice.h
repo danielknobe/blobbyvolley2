@@ -20,9 +20,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include <SDL_events.h>
+#include "SDL_keycode.h"
 #include "PlayerInput.h"
 #include "BlobbyDebug.h"
+
+class InputManager;
 
 /*! \class InputDevice
 	\brief Abstract base class for game input methods
@@ -30,16 +32,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class InputDevice : public ObjectCounter<InputDevice>
 {
 	public:
-		InputDevice() = default;
+		explicit InputDevice(InputManager* inputMgr) : mInputManager(inputMgr) {}
 		virtual ~InputDevice() = default;
 
 		virtual PlayerInputAbs transferInput() = 0;
+
+	protected:
+		InputManager* mInputManager;
 };
 
 struct JoystickAction;
-class InputManager;
 
-std::unique_ptr<InputDevice> createKeyboardInput(SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
+
+std::unique_ptr<InputDevice> createKeyboardInput(InputManager* inputMgr, SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump);
 std::unique_ptr<InputDevice> createJoystickInput(InputManager* inputMgr, JoystickAction left, JoystickAction right, JoystickAction jump);
-std::unique_ptr<InputDevice> createTouchInput(PlayerSide side, int type);
+std::unique_ptr<InputDevice> createTouchInput(InputManager* inputMgr, PlayerSide side, int type);
 std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity);

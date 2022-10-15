@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <memory>
 
-#include <SDL.h>
+#include <SDL_keycode.h>
 
 #include "PlayerInput.h"
 #include "Vector.h"
@@ -41,6 +41,9 @@ enum class KeyAction
 
 class JoystickPool;
 class InputDevice;
+struct _SDL_Joystick;
+typedef struct _SDL_Joystick SDL_Joystick;
+struct JoystickAction;
 
 /// \brief class for managing input
 class InputManager : public ObjectCounter<InputManager>
@@ -80,13 +83,16 @@ class InputManager : public ObjectCounter<InputManager>
 		bool mouseWheelDown() const;
 		bool unclick() const;
 
+		// In-game input visualization (Mouse)
+		void setMouseMarker(int target);
+
+		// In-game input
+		bool isKeyPressed(SDL_Keycode code) const;
+		bool isJoyActionActive(const JoystickAction& action) const;
+
 		bool windowFocus() const;
 
 		SDL_Joystick* getJoystickById(int joyId);
-
-		// config conversion methods
-		//std::string keyToString(const SDL_keysym& key) const;
-
 	private:
 		static InputManager* mSingleton;
 

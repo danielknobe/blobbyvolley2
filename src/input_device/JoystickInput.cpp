@@ -34,20 +34,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 class JoystickInputDevice : public InputDevice
 {
-	private:
-		bool getAction(const JoystickAction& action);
-
-		JoystickAction mLeftAction;
-		JoystickAction mRightAction;
-		JoystickAction mJumpAction;
-		
-		InputManager* mInputManager;
 	public:
 		~JoystickInputDevice() override = default;
 		JoystickInputDevice(InputManager* inputMgr, JoystickAction laction, JoystickAction raction,
 				JoystickAction jaction);
 
 		PlayerInputAbs transferInput() override;
+
+	private:
+
+		JoystickAction mLeftAction;
+		JoystickAction mRightAction;
+		JoystickAction mJumpAction;
 };
 
 // ********************************************************************************************************
@@ -68,48 +66,17 @@ std::unique_ptr<InputDevice> createJoystickInput(InputManager* inputMgr, Joystic
 // -------------------------------------------------------------------------------------------------
 
 JoystickInputDevice::JoystickInputDevice(InputManager* inputMgr, JoystickAction laction, JoystickAction raction, JoystickAction jaction)
-	: mLeftAction(laction)
+	: InputDevice(inputMgr)
+	, mLeftAction(laction)
 	, mRightAction(raction)
 	, mJumpAction(jaction)
-	, mInputManager(inputMgr)
 {
 }
 
 PlayerInputAbs JoystickInputDevice::transferInput()
 {
-	return { getAction(mLeftAction), getAction(mRightAction), getAction(mJumpAction) };
+	return { mInputManager->isJoyActionActive(mLeftAction),
+			 mInputManager->isJoyActionActive(mRightAction),
+			 mInputManager->isJoyActionActive(mJumpAction) };
 }
 
-bool JoystickInputDevice::getAction(const JoystickAction& action)
-{
-	SDL_Joystick* joystick = mInputManager->getJoystickById(action.joyid);
-	if (joystick != nullptr)
-	{
-		switch (action.type)
-		{
-			case JoystickAction::AXIS:
-				if (action.number < 0)
-				{
-					if (SDL_JoystickGetAxis(joystick,
-						-action.number - 1) < -15000)
-						return true;
-				}
-				else if (action.number > 0)
-				{
-					if (SDL_JoystickGetAxis(joystick,
-						action.number - 1) > 15000)
-						return true;
-				}
-				break;
-
-			case JoystickAction::BUTTON:
-				if (SDL_JoystickGetButton(joystick,
-							action.number))
-					return true;
-				break;
-			default:
-				break;
-		}
-	}
-	return false;
-}

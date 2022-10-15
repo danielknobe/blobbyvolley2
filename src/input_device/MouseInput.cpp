@@ -23,8 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* includes */
 #include <algorithm>
+#include <cmath>
 
-#include "RenderManager.h"
+#include <SDL_mouse.h>
+
 #include "InputManager.h"
 
 // ********************************************************************************************************
@@ -47,7 +49,6 @@ class MouseInputDevice : public InputDevice
 		int mMarkerX;
 		bool mDelay; // The pressed button of the mainmenu must be ignored
 		float mSensitivity;
-		InputManager* mInputManager;
 };
 
 // ********************************************************************************************************
@@ -78,8 +79,7 @@ std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide
 // 		Keyboard Input Device
 // -------------------------------------------------------------------------------------------------
 MouseInputDevice::MouseInputDevice(InputManager* inputMgr, PlayerSide player, int jumpbutton, float sensitivity)
-	: InputDevice(), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity ),
-	mInputManager(inputMgr)
+	: InputDevice(inputMgr), mPlayer(player), mJumpButton(jumpbutton), mMarkerX(0), mSensitivity( sensitivity )
 {
 	if (SDL_GetMouseState(nullptr, nullptr))
 		mDelay = true;
@@ -115,7 +115,7 @@ PlayerInputAbs MouseInputDevice::transferInput()
 
 	input.setTarget( mMarkerX + playerOffset, mPlayer );
 
-	RenderManager::getSingleton().setMouseMarker(mMarkerX + playerOffset);
+	mInputManager->setMouseMarker(mMarkerX + playerOffset);
 
 	return input;
 }
