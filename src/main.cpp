@@ -239,6 +239,8 @@ void setupPHYSFS()
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
+		InputManager* inputmgr = InputManager::createInputManager();
+		IMGUI::createIMGUI(inputmgr);
 		IMGUI::getSingleton().setTextMgr(gameConfig.getString("language"));
 
 		if(gameConfig.getString("device") == "SDL")
@@ -279,7 +281,6 @@ void setupPHYSFS()
 		if ( FileSystem::getSingleton().exists(bg) )
 			rmanager->setBackground(bg);
 
-		InputManager* inputmgr = InputManager::createInputManager();
 		int running = 1;
 
 		DEBUG_STATUS("starting mainloop");

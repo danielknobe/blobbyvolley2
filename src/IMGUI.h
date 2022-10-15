@@ -52,6 +52,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 {
 	public:
 		static IMGUI& getSingleton();
+		static void createIMGUI(InputManager* inputMgr);
 
 		void begin();
 		void end(RenderManager& renderer);

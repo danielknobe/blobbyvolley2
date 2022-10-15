@@ -118,8 +118,12 @@ int main(int argc, char* argv[])
 	RenderManager *rmanager = nullptr;
 	SoundManager *smanager = nullptr;
 
+
 	try
 	{
+		InputManager* inputmgr = InputManager::createInputManager();
+		IMGUI::createIMGUI(inputmgr);
+
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
@@ -165,7 +169,6 @@ int main(int argc, char* argv[])
 		if ( FileSystem::getSingleton().exists(bg) )
 			rmanager->setBackground(bg);
 
-		InputManager* inputmgr = InputManager::createInputManager();
 		int running = 1;
 
 		DEBUG_STATUS("starting mainloop");

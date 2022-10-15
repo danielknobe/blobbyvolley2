@@ -68,6 +68,7 @@ RenderQueue *mQueue;
 
 IMGUI::IMGUI(InputManager* inputMgr) : mInputManager(inputMgr)
 {
+	assert(mInputManager);
 	mQueue = new RenderQueue;
 	mActiveButton = -1;
 	mHeldWidget = 0;
@@ -85,10 +86,16 @@ IMGUI::~IMGUI()
 
 IMGUI& IMGUI::getSingleton()
 {
-	if (!mSingleton)
-		mSingleton = new IMGUI(InputManager::getSingleton());
+	assert(mSingleton);
 	return *mSingleton;
 }
+
+void IMGUI::createIMGUI(InputManager* inputMgr)
+{
+	assert(!mSingleton);
+	mSingleton = new IMGUI(InputManager::getSingleton());
+}
+
 
 void IMGUI::begin()
 {
