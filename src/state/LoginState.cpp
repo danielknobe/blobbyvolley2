@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "blobnet/layer/Http.hpp"
 #include "blobnet/layer/HttpRequestHeader.hpp"
 
+#include <SDL_misc.h>
+
 #include "RankedState.h"
 
 #include "tinyxml2.h"
