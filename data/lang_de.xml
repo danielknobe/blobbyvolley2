@@ -52,6 +52,13 @@
 	<string english = "server full" translation = "server voll" />
 	<string english = " by " translation = " von " />
 	<string english = "challenger: " translation = "Forderer: " />
+	<string english = "name: " translation = "Name: " />
+	<string english = "password: " translation = "Passwort: " />
+	<string english = "login" translation = "Einloggen" />
+	<string english = "reset password" translation = "Passwort zurücksetzen" />
+	<string english = "register" translation = "Registrieren" />
+	<string english = "login failed" translation = "Einloggen fehlgeschlagen" />
+	<string english = "ranked game" translation = "Ranglistenspiel" />
 	<string english = "games: " translation = "Spiele: " />
 	<string english = "random" translation = "beliebig" />
 	<string english = "rules: " translation = "Regeln: " />
