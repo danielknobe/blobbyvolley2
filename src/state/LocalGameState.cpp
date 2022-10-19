@@ -29,7 +29,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "SpeedController.h"
 #include "IUserConfigReader.h"
-#include "InputSourceFactory.h"
+
+#include "LocalInputSource.h"
+#include "ScriptedInputSource.h"
+
+namespace {
+
+	std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side )
+	{
+		std::string prefix = side == LEFT_PLAYER ? "left" : "right";
+		try
+		{
+			// these operations may throw, i.e., when the script is not found (should not happen)
+			//  or has errors
+			if (config.getBool(prefix + "_player_human"))
+			{
+				return std::make_shared<LocalInputSource>(side);
+			}
+			else
+			{
+				return std::make_shared<ScriptedInputSource>("scripts/" + config.getString(prefix + "_script_name"),
+															 side, config.getInteger(prefix + "_script_strength"));
+			}
+		} catch (std::exception& e)
+		{
+			/// \todo REWORK ERROR REPORTING
+			std::cerr << e.what() << std::endl;
+			return std::make_shared<InputSource>();
+		}
+	}
+}
 
 /* implementation */
 LocalGameState::~LocalGameState() = default;
@@ -41,8 +70,8 @@ LocalGameState::LocalGameState()
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
 
-	std::shared_ptr<InputSource> leftInput = InputSourceFactory::createInputSource( *config, LEFT_PLAYER);
-	std::shared_ptr<InputSource> rightInput = InputSourceFactory::createInputSource( *config, RIGHT_PLAYER);
+	std::shared_ptr<InputSource> leftInput = createInputSource(*config, LEFT_PLAYER);
+	std::shared_ptr<InputSource> rightInput = createInputSource(*config, RIGHT_PLAYER);
 
 	// create default replay name
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
