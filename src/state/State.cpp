@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkSearchState.h"
 #include "OptionsState.h"
 
+#include "BlobbyApp.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
 #include "TextManager.h"
@@ -41,62 +42,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-// static state functions
-std::unique_ptr<State> State::mCurrentState(nullptr);
-std::unique_ptr<State> State::mStateToSwitchTo(nullptr);
-
-
-void State::deinit()
-{
-	mCurrentState.reset( nullptr );
-	mStateToSwitchTo.reset( nullptr );
-}
-
-void State::step()
-{
-	// check that we are in a valid state
-	if(mCurrentState == nullptr )
-	{
-		// otherwise, create one
-		mCurrentState.reset( new MainMenuState );
-	}
-
-
-	// perform a state step
-	mCurrentState->step_impl();
-
-	// check if we should switch to a new state
-	if( mStateToSwitchTo != nullptr )
-	{
-		// maybe this debug statuses will help pinpointing crashes faster
-		DEBUG_STATUS( std::string("switching to state ") + mStateToSwitchTo->getStateName());
-
-		// if yes, set that new state
-		// use swap so the states do not get destroyed here
-		mCurrentState.swap( mStateToSwitchTo );
-
-		// now destroy the old state, which is saved in mStateToSwitchTo at this point
-		mStateToSwitchTo.reset(nullptr);
-	}
-}
-
-const char* State::getCurrenStateName()
-{
-	return mCurrentState->getStateName();
-}
-
 State::State()
 {
 	IMGUI::getSingleton().resetSelection();
 }
 
-void State::switchState(State* newState)
-{
-	mStateToSwitchTo.reset(newState);
-}
-
 void State::playSound(const std::string& sound, float volume) {
 	SoundManager::getSingleton().playSound(sound, volume);
+}
+
+void State::setApp(BlobbyApp* app) {
+	assert(app);
+	m_App = app;
+}
+
+void State::switchState(State* newState)
+{
+	m_App->switchToState(std::unique_ptr<State>(newState));
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------

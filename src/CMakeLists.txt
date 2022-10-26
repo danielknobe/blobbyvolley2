@@ -66,6 +66,7 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	input_device/KeyboardInput.cpp
 	input_device/MouseInput.cpp
 	input_device/TouchInput.cpp
+	BlobbyApp.h BlobbyApp.cpp
 	)
 
 set (blobby-server_SRC ${common_SRC}

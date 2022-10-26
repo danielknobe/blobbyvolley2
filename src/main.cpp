@@ -56,6 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 #include "FileSystem.h"
 #include "state/State.h"
+#include "BlobbyApp.h"
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR
@@ -73,7 +74,6 @@ void deinit()
 {
 	RenderManager::getSingleton().deinit();
 	SoundManager::getSingleton().deinit();
-	State::deinit();
 	SDL_Quit();
 
 #if (defined __SWITCH__) && (defined DEBUG)
@@ -285,13 +285,15 @@ void setupPHYSFS()
 
 		DEBUG_STATUS("starting mainloop");
 
+		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()) );
+
 		while (running)
 		{
 			inputmgr->updateInput();
 			running = inputmgr->running();
 
 			IMGUI::getSingleton().begin();
-			State::step();
+			app.step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
 			static int lastfps = 0;
