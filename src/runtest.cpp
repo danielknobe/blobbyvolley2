@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 #include "FileSystem.h"
 #include "state/State.h"
+#include "BlobbyApp.h"
 
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
@@ -52,8 +53,6 @@ extern std::shared_ptr<std::thread> gHostedServerThread;
 void deinit()
 {
 	RenderManager::getSingleton().deinit();
-	SoundManager::getSingleton().deinit();
-	State::deinit();
 	SDL_Quit();
 }
 
@@ -122,12 +121,9 @@ int main(int argc, char* argv[])
 	try
 	{
 		InputManager* inputmgr = InputManager::createInputManager();
-		IMGUI::createIMGUI(inputmgr);
 
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
-
-		getIMGUI().setTextMgr(gameConfig.getString("language"));
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
@@ -157,14 +153,6 @@ int main(int argc, char* argv[])
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
 
-		smanager = SoundManager::createSoundManager();
-		smanager->init();
-		smanager->setVolume(gameConfig.getFloat("global_volume"));
-		smanager->setMute(gameConfig.getBool("mute"));
-		/// \todo play sound is misleading. what we actually want to do is load the sound
-		smanager->playSound("sounds/bums.wav", 0.0);
-		smanager->playSound("sounds/pfiff.wav", 0.0);
-
 		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
 		if ( FileSystem::getSingleton().exists(bg) )
 			rmanager->setBackground(bg);
@@ -172,6 +160,8 @@ int main(int argc, char* argv[])
 		int running = 1;
 
 		DEBUG_STATUS("starting mainloop");
+
+		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()), gameConfig );
 
 		// Default Usage:
 		std::vector<SDL_Event> simulation_queue;
@@ -244,13 +234,13 @@ int main(int argc, char* argv[])
 
 			inputmgr->updateInput();
 			running = inputmgr->running();
-			getIMGUI().begin();
-			State::step();
+			app.getIMGUI().begin();
+			app.step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 
 			if (!scontroller.doFramedrop())
 			{
-				getIMGUI().end(*rmanager);
+				app.getIMGUI().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}
