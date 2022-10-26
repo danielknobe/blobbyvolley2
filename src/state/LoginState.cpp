@@ -61,7 +61,7 @@ void LoginState::step_impl()
 	imgui.doText(GEN_ID, Vector2(290.0, 260.0), TextManager::NET_PASSWORD, TF_ALIGN_RIGHT);
 
 	imgui.doEditbox(GEN_ID, Vector2(300.0, 200.0), 15, mUsername, mUsernamePos);
-	imgui.doEditbox(GEN_ID, Vector2(300.0, 260.0), 15, mPassword, mPasswordPos);
+	imgui.doEditbox(GEN_ID, Vector2(300.0, 260.0), 15, mPassword, mPasswordPos, TF_OBFUSCATE);
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 350.0), TextManager::LBL_OK))
 	{
