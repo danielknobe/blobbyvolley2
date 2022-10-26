@@ -25,13 +25,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cassert>
 
 #include "state/State.h"
+#include "SoundManager.h"
 #include "BlobbyDebug.h"
+#include "IUserConfigReader.h"
+#include "IMGUI.h"
 
 /* implementation */
 void BlobbyApp::switchToState(std::unique_ptr<State> newState)
 {
 	assert(newState != nullptr);
 	mStateToSwitchTo = std::move(newState);
+	mStateToSwitchTo->setApp(this);
 }
 
 State& BlobbyApp::getCurrentState() const
@@ -58,10 +62,26 @@ void BlobbyApp::step()
 		// if yes, set that new state
 		// use swap so the states do not get destroyed here
 		mCurrentState = std::move( mStateToSwitchTo );
+		IMGUI::getSingleton().resetSelection();
+		mCurrentState->init();
 	}
 }
 
-BlobbyApp::BlobbyApp(std::unique_ptr<State> initState) : mCurrentState(std::move(initState))
+BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config) :
+	mCurrentState(std::move(initState)),
+	mSoundManager( new SoundManager )
 {
+	mCurrentState->setApp(this);
 
+	mSoundManager->init();
+	mSoundManager->setVolume(config.getFloat("global_volume"));
+	mSoundManager->setMute(config.getBool("mute"));
+	/// \todo play sound is misleading. what we actually want to do is load the sound
+	mSoundManager->playSound(SoundManager::IMPACT, 0.0);
+	mSoundManager->playSound(SoundManager::WHISTLE, 0.0);
+}
+
+SoundManager& BlobbyApp::getSoundManager() const
+{
+	return *mSoundManager;
 }

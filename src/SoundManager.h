@@ -54,8 +54,8 @@ struct Sound : public ObjectCounter<Sound>
 class SoundManager : public ObjectCounter<SoundManager>
 {
 	public:
-		static SoundManager* createSoundManager();
-		static SoundManager& getSingleton();
+		SoundManager();
+		~SoundManager();
 
 		bool init();
 		void deinit();
@@ -67,11 +67,8 @@ class SoundManager : public ObjectCounter<SoundManager>
 		static constexpr const char* IMPACT  = "sounds/bums.wav";
 		static constexpr const char* WHISTLE = "sounds/pfiff.wav";
 		static constexpr const char* CHAT    = "sounds/chat.wav";
-	private:
-		SoundManager();
-		~SoundManager();
 
-		static SoundManager* mSingleton;
+	private:
 
 		SDL_AudioDeviceID mAudioDevice;
 

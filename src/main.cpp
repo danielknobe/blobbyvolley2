@@ -73,7 +73,6 @@ extern std::shared_ptr<std::thread> gHostedServerThread;
 void deinit()
 {
 	RenderManager::getSingleton().deinit();
-	SoundManager::getSingleton().deinit();
 	SDL_Quit();
 
 #if (defined __SWITCH__) && (defined DEBUG)
@@ -210,7 +209,6 @@ void setupPHYSFS()
 	// Default is OpenGL and false
 	// choose renderer
 	RenderManager *rmanager = nullptr;
-	SoundManager *smanager = nullptr;
 
 
 	// Test Version Startup Warning
@@ -269,14 +267,6 @@ void setupPHYSFS()
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
 
-		smanager = SoundManager::createSoundManager();
-		smanager->init();
-		smanager->setVolume(gameConfig.getFloat("global_volume"));
-		smanager->setMute(gameConfig.getBool("mute"));
-		/// \todo play sound is misleading. what we actually want to do is load the sound
-		smanager->playSound(SoundManager::IMPACT, 0.0);
-		smanager->playSound(SoundManager::WHISTLE, 0.0);
-
 		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
 		if ( FileSystem::getSingleton().exists(bg) )
 			rmanager->setBackground(bg);
@@ -285,7 +275,7 @@ void setupPHYSFS()
 
 		DEBUG_STATUS("starting mainloop");
 
-		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()) );
+		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()), gameConfig );
 
 		while (running)
 		{
@@ -343,8 +333,6 @@ void setupPHYSFS()
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), nullptr);
 		if (rmanager)
 			rmanager->deinit();
-		if (smanager)
-			smanager->deinit();
 		SDL_Quit();
 #if (defined __SWITCH__) && (defined DEBUG)
 	socketExit();

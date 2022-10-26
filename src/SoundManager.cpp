@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 
 /* implementation */
-SoundManager* SoundManager::mSingleton = nullptr;
 
 namespace {
 	struct WavDeleter
@@ -175,7 +174,7 @@ bool SoundManager::init()
 	desiredSpec.channels = 2;
 	desiredSpec.samples = 1024;
 	desiredSpec.callback = playCallback;
-	desiredSpec.userdata = mSingleton;
+	desiredSpec.userdata = this;
 
 	mAudioDevice = SDL_OpenAudioDevice(nullptr, 0, &desiredSpec, &mAudioSpec, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 
@@ -228,15 +227,9 @@ void SoundManager::deinit()
 	mInitialised = false;
 }
 
-SoundManager* SoundManager::createSoundManager()
-{
-	return new SoundManager();
-}
-
 SoundManager::SoundManager()
 {
 	mMute = false;
-	mSingleton = this;
 	mInitialised = false;
 	mAudioDevice = 0;
 }
@@ -247,12 +240,6 @@ SoundManager::~SoundManager()
 	{
 		deinit();
 	}
-}
-
-SoundManager& SoundManager::getSingleton()
-{
-	assert(mSingleton);
-	return *mSingleton;
 }
 
 void SoundManager::setVolume(float volume)

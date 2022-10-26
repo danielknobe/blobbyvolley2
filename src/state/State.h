@@ -45,6 +45,8 @@ public:
 
 	// step function defines the steps actual work
 	virtual void step_impl() = 0;
+	// this is called just before the step function is invoked for the first time.
+	virtual void init() {}
 	virtual const char* getStateName() const = 0;
 
 protected:
@@ -52,6 +54,7 @@ protected:
 	State();
 
 	void playSound(const std::string& sound, float volume);
+	BlobbyApp& getApp() const;
 
 	void switchState(State* newState);
 private:

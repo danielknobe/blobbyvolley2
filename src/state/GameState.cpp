@@ -37,9 +37,7 @@ GameState::GameState(DuelMatch* match) : mMatch(match), mSaveReplay(false)
 {
 }
 
-GameState::~GameState()
-{
-}
+GameState::~GameState() = default;
 
 void GameState::presentGame()
 {

@@ -35,13 +35,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 /* implementation */
-ReplaySelectionState::ReplaySelectionState()
+ReplaySelectionState::ReplaySelectionState() :
+	mSelectedReplay(0),
+	mShowReplayInfo(false),
+	mChecksumError(false),
+	mVersionError(false)
 {
-	mChecksumError = false;
-	mVersionError = false;
-	mShowReplayInfo = false;
+}
 
-	mSelectedReplay = 0;
+void ReplaySelectionState::init()
+{
 	mReplayFiles = FileSystem::getSingleton().enumerateFiles("replays", ".bvr");
 	if (mReplayFiles.empty())
 		mSelectedReplay = -1;
@@ -222,4 +225,3 @@ const char* ReplaySelectionState::getStateName() const
 {
 	return "ReplaySelectionState";
 }
-

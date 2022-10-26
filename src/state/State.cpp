@@ -42,13 +42,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-State::State()
-{
-	IMGUI::getSingleton().resetSelection();
-}
+State::State() = default;
 
 void State::playSound(const std::string& sound, float volume) {
-	SoundManager::getSingleton().playSound(sound, volume);
+	assert(m_App);
+	m_App->getSoundManager().playSound(sound, volume);
 }
 
 void State::setApp(BlobbyApp* app) {
@@ -58,7 +56,14 @@ void State::setApp(BlobbyApp* app) {
 
 void State::switchState(State* newState)
 {
+	assert(m_App);
 	m_App->switchToState(std::unique_ptr<State>(newState));
+}
+
+BlobbyApp& State::getApp() const
+{
+	assert(m_App);
+	return *m_App;
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------

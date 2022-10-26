@@ -30,12 +30,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "InputManager.h"
 #include "SpeedController.h"
 #include "SoundManager.h"
+#include "BlobbyApp.h"
 #include "Blood.h"
 #include "IMGUI.h"
 #include "FileSystem.h"
 
 /* implementation */
-OptionState::OptionState()
+OptionState::OptionState() = default;
+OptionState::~OptionState() = default;
+
+void OptionState::init()
 {
 	mOptionConfig.loadFile("config.xml");
 	mPlayerOptions[LEFT_PLAYER] = 0;
@@ -70,8 +74,6 @@ OptionState::OptionState()
 	mBotStrength[LEFT_PLAYER] = mOptionConfig.getInteger("left_script_strength");
 	mBotStrength[RIGHT_PLAYER] = mOptionConfig.getInteger("right_script_strength");
 }
-
-OptionState::~OptionState() = default;
 
 void OptionState::save()
 {
@@ -165,7 +167,9 @@ const char* OptionState::getStateName() const
 	return "OptionState";
 }
 
-GraphicOptionsState::GraphicOptionsState()
+GraphicOptionsState::GraphicOptionsState() = default;
+
+void GraphicOptionsState::init()
 {
 	mOptionConfig.loadFile("config.xml");
 	mFullscreen = mOptionConfig.getBool("fullscreen");
@@ -390,42 +394,7 @@ const char* GraphicOptionsState::getStateName() const
 	return "GraphicOptionsState";
 }
 
-InputOptionsState::InputOptionsState()
-{
-	mSetKeyboard = 0;
-	mOptionConfig.loadFile("inputconfig.xml");
-	//left data:
-#ifdef __SWITCH__
-	mLeftDevice = "joystick";
-#else
-	mLeftDevice = mOptionConfig.getString("left_blobby_device");
-#endif
-	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
-	mLeftMouseSensitivity = mOptionConfig.getFloat("left_blobby_mouse_sensitivity");
-	mLeftKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
-	mLeftKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
-	mLeftKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
-	mLeftJoystick[IA_LEFT] = mOptionConfig.getString("left_blobby_joystick_left");
-	mLeftJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
-	mLeftJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
-	//right data:
-#ifdef __SWITCH__
-	mRightDevice = "joystick";
-#else
-	mRightDevice = mOptionConfig.getString("right_blobby_device");
-#endif
-	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
-	mRightMouseSensitivity = mOptionConfig.getFloat("right_blobby_mouse_sensitivity");
-	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
-	mRightKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
-	mRightKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
-	mRightJoystick[IA_LEFT] = mOptionConfig.getString("right_blobby_joystick_left");
-	mRightJoystick[IA_RIGHT] = mOptionConfig.getString("right_blobby_joystick_right");
-	mRightJoystick[IA_JUMP] = mOptionConfig.getString("right_blobby_joystick_jump");
-	//global data:
-	mBlobbyTouchType = mOptionConfig.getInteger("blobby_touch_type");
-}
-
+InputOptionsState::InputOptionsState() = default;
 InputOptionsState::~InputOptionsState() = default;
 
 void InputOptionsState::save()
@@ -902,48 +871,43 @@ const char* InputOptionsState::getStateName() const
 	return "InputOptionsState";
 }
 
-MiscOptionsState::MiscOptionsState()
+void InputOptionsState::init()
 {
-	mOptionConfig.loadFile("config.xml");
-
-	std::string currentBackground = mOptionConfig.getString("background");
-	mBackground = -1;
-
-	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp", true);
-
-	for(unsigned int i = 0; i < mBackgrounds.size(); ++i)
-	{
-		if (mBackgrounds[i] == currentBackground)
-		{
-			mBackground = i;
-			break;
-		}
-	}
-
-	std::string currentRules = mOptionConfig.getString("rules");
-	currentRules = currentRules.substr(0, currentRules.length() - 4);
-	mRule = -1;
-
-	mRules = FileSystem::getSingleton().enumerateFiles("rules", ".lua", false);
-
-	for(unsigned int i = 0; i < mRules.size(); ++i)
-	{
-		if (mRules[i] == currentRules)
-		{
-			mRule = i;
-			break;
-		}
-	}
-
-	mShowFPS = mOptionConfig.getBool("showfps");
-	mShowBlood = mOptionConfig.getBool("blood");
-	mVolume = mOptionConfig.getFloat("global_volume");
-	mMute = mOptionConfig.getBool("mute");
-	mGameFPS = mOptionConfig.getInteger("gamefps");
-	mNetworkSide = mOptionConfig.getInteger("network_side");
-	mLanguage = mOptionConfig.getString("language");
+	mSetKeyboard = 0;
+	mOptionConfig.loadFile("inputconfig.xml");
+	//left data:
+#ifdef __SWITCH__
+	mLeftDevice = "joystick";
+#else
+	mLeftDevice = mOptionConfig.getString("left_blobby_device");
+#endif
+	mLeftMouseJumpbutton = mOptionConfig.getInteger("left_blobby_mouse_jumpbutton");
+	mLeftMouseSensitivity = mOptionConfig.getFloat("left_blobby_mouse_sensitivity");
+	mLeftKeyboard[IA_LEFT] = mOptionConfig.getString("left_blobby_keyboard_left");
+	mLeftKeyboard[IA_RIGHT] = mOptionConfig.getString("left_blobby_keyboard_right");
+	mLeftKeyboard[IA_JUMP] = mOptionConfig.getString("left_blobby_keyboard_jump");
+	mLeftJoystick[IA_LEFT] = mOptionConfig.getString("left_blobby_joystick_left");
+	mLeftJoystick[IA_RIGHT] = mOptionConfig.getString("left_blobby_joystick_right");
+	mLeftJoystick[IA_JUMP] = mOptionConfig.getString("left_blobby_joystick_jump");
+	//right data:
+#ifdef __SWITCH__
+	mRightDevice = "joystick";
+#else
+	mRightDevice = mOptionConfig.getString("right_blobby_device");
+#endif
+	mRightMouseJumpbutton = mOptionConfig.getInteger("right_blobby_mouse_jumpbutton");
+	mRightMouseSensitivity = mOptionConfig.getFloat("right_blobby_mouse_sensitivity");
+	mRightKeyboard[IA_LEFT] = mOptionConfig.getString("right_blobby_keyboard_left");
+	mRightKeyboard[IA_RIGHT] = mOptionConfig.getString("right_blobby_keyboard_right");
+	mRightKeyboard[IA_JUMP] = mOptionConfig.getString("right_blobby_keyboard_jump");
+	mRightJoystick[IA_LEFT] = mOptionConfig.getString("right_blobby_joystick_left");
+	mRightJoystick[IA_RIGHT] = mOptionConfig.getString("right_blobby_joystick_right");
+	mRightJoystick[IA_JUMP] = mOptionConfig.getString("right_blobby_joystick_jump");
+	//global data:
+	mBlobbyTouchType = mOptionConfig.getInteger("blobby_touch_type");
 }
 
+MiscOptionsState::MiscOptionsState() = default;
 MiscOptionsState::~MiscOptionsState() = default;
 
 void MiscOptionsState::save()
@@ -961,8 +925,8 @@ void MiscOptionsState::save()
 
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	RenderManager::getSingleton().getBlood().enable(mOptionConfig.getBool("blood"));
-	SoundManager::getSingleton().setVolume(mOptionConfig.getFloat("global_volume"));
-	SoundManager::getSingleton().setMute(mOptionConfig.getBool("mute"));
+	getApp().getSoundManager().setVolume(mOptionConfig.getFloat("global_volume"));
+	getApp().getSoundManager().setMute(mOptionConfig.getBool("mute"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 	IMGUI::getSingleton().setTextMgr(mOptionConfig.getString("language"));
 }
@@ -989,13 +953,13 @@ void MiscOptionsState::step_impl()
 	imgui.doText(GEN_ID, Vector2(484.0, 10.0), TextManager::OP_VOLUME);
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
 	{
-		SoundManager::getSingleton().setVolume(mVolume);
+		getApp().getSoundManager().setVolume(mVolume);
 		playSound(SoundManager::IMPACT, 1.0);
 	}
 	if (imgui.doButton(GEN_ID, Vector2(531.0, 80.0), TextManager::OP_MUTE))
 	{
 		mMute = !mMute;
-		SoundManager::getSingleton().setMute(mMute);
+		getApp().getSoundManager().setMute(mMute);
 		if (!mMute)
 			playSound(SoundManager::IMPACT, 1.0);
 	}
@@ -1083,4 +1047,46 @@ void MiscOptionsState::step_impl()
 const char* MiscOptionsState::getStateName() const
 {
 	return "MiscOptionsState";
+}
+
+void MiscOptionsState::init()
+{
+	mOptionConfig.loadFile("config.xml");
+
+	std::string currentBackground = mOptionConfig.getString("background");
+	mBackground = -1;
+
+	mBackgrounds = FileSystem::getSingleton().enumerateFiles("backgrounds", ".bmp", true);
+
+	for(unsigned int i = 0; i < mBackgrounds.size(); ++i)
+	{
+		if (mBackgrounds[i] == currentBackground)
+		{
+			mBackground = i;
+			break;
+		}
+	}
+
+	std::string currentRules = mOptionConfig.getString("rules");
+	currentRules = currentRules.substr(0, currentRules.length() - 4);
+	mRule = -1;
+
+	mRules = FileSystem::getSingleton().enumerateFiles("rules", ".lua", false);
+
+	for(unsigned int i = 0; i < mRules.size(); ++i)
+	{
+		if (mRules[i] == currentRules)
+		{
+			mRule = i;
+			break;
+		}
+	}
+
+	mShowFPS = mOptionConfig.getBool("showfps");
+	mShowBlood = mOptionConfig.getBool("blood");
+	mVolume = mOptionConfig.getFloat("global_volume");
+	mMute = mOptionConfig.getBool("mute");
+	mGameFPS = mOptionConfig.getInteger("gamefps");
+	mNetworkSide = mOptionConfig.getInteger("network_side");
+	mLanguage = mOptionConfig.getString("language");
 }

@@ -43,10 +43,15 @@ LobbySubstate::~LobbySubstate() = default;
 
 
 LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
-		mClient(new RakClient(), [](RakClient* client) { client->Disconnect(25); delete client; }),
 		mInfo(std::move(info)), mPrevious( previous ),
 		mLobbyState(ConnectionState::CONNECTING)
 {
+}
+
+void LobbyState::init()
+{
+	mClient = std::shared_ptr<RakClient>(new RakClient(), [](RakClient* client) { client->Disconnect(25); delete client; });
+
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
 
@@ -67,6 +72,7 @@ LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 		mLocalPlayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
 	}
 }
+
 
 LobbyState::~LobbyState() = default;
 
@@ -267,6 +273,7 @@ const char* LobbyState::getStateName() const
 {
 	return "LobbyState";
 }
+
 
 // ----------------------------------------------------------------------------
 // 				M a i n     S u b s t a t e

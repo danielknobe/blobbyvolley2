@@ -23,10 +23,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <memory>
 
 class State;
+class SoundManager;
+class IUserConfigReader;
 
 class BlobbyApp {
 	public:
-		explicit BlobbyApp(std::unique_ptr<State> initState);
+		explicit BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config);
 
 		void step();
 
@@ -35,9 +37,19 @@ class BlobbyApp {
 		/// gets the currently active state
 		State& getCurrentState() const;
 
+		/// gets the sound manager
+		SoundManager& getSoundManager() const;
+
 		/// gets the name of the currently active state
 		const char* getCurrenStateName() const;
+
 	private:
+		// We keep two references to states: One for the currently active one, and one
+		// that is set to the new state if we want to switch states. This is because we
+		// want to make sure that the current state, which called switchState, is not
+		// destroyed while its `step` member function is still running.
 		std::unique_ptr<State> mCurrentState;
 		std::unique_ptr<State> mStateToSwitchTo;
+
+		std::unique_ptr<SoundManager> mSoundManager;
 };

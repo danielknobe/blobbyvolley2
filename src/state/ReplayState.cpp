@@ -39,14 +39,17 @@ extern const std::string DUMMY_RULES_NAME;
 
 ReplayState::ReplayState()
 {
-	IMGUI::getSingleton().resetSelection();
-
 	mPositionJump = -1;
 	mPaused = false;
 
 	mSpeedValue = 8;
 	mSpeedTimer = 0;
 }
+
+void ReplayState::init()
+{
+}
+
 
 ReplayState::~ReplayState() = default;
 

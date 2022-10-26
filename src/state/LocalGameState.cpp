@@ -66,6 +66,11 @@ LocalGameState::~LocalGameState() = default;
 LocalGameState::LocalGameState()
 	: mWinner(false), mRecorder(new ReplayRecorder())
 {
+
+}
+
+void LocalGameState::init()
+{
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
@@ -90,6 +95,8 @@ LocalGameState::LocalGameState()
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
 	mRecorder->setGameRules( config->getString("rules") );
 }
+
+
 
 void LocalGameState::step_impl()
 {
@@ -170,4 +177,3 @@ const char* LocalGameState::getStateName() const
 {
 	return "LocalGameState";
 }
-
