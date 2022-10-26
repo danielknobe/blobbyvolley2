@@ -162,19 +162,15 @@ void Http::readHeader(int inOutSocket, std::stringstream& response)
 
 void Http::readBody(int inOutSocket, std::stringstream& response, int contentSize)
 {
-	// Parser variables
-	int counter = 0;
-
 	// Read body
-	for(char c; recv(inOutSocket, &c, 1, 0) > 0; response << c)
+	for(char c; (contentSize != 0) && (recv(inOutSocket, &c, 1, 0) > 0); response << c, contentSize--)
 	{
-		counter += 1;
-		if(counter == contentSize)
-		{
-			return;
-		}
 	}
-	throw Exception::HttpException("Can't read response.");
+
+	if (contentSize != 0) 
+	{
+		throw Exception::HttpException("Can't read all bytes of response declared in headers content-length field.");
+	}
 }
 
 int Http::getContentSize(std::stringstream& response)
