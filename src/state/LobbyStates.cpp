@@ -209,7 +209,7 @@ void LobbyState::step_impl()
 	}
 
 
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -252,7 +252,7 @@ void LobbyState::step_impl()
 		}
 
 
-		mSubState->step( mStatus );
+		mSubState->step( imgui, mStatus );
 	}
 
 
@@ -290,10 +290,9 @@ LobbyMainSubstate::LobbyMainSubstate(std::shared_ptr<RakClient> client,
 
 }
 
-void LobbyMainSubstate::step(const ServerStatusData& status)
+#define GEN_ID imgui.getNextId()
+void LobbyMainSubstate::step(IMGUI& imgui, const ServerStatusData& status)
 {
-	IMGUI& imgui = IMGUI::getSingleton();
-
 	// player list
 	std::vector<std::string> gamelist;
 	gamelist.push_back( imgui.getText(TextManager::NET_OPEN_GAME) );
@@ -461,9 +460,8 @@ LobbyGameSubstate::LobbyGameSubstate(std::shared_ptr<RakClient> client, std::sha
 	in->generic<std::vector<std::string>>(mOtherPlayerNames);
 }
 
-void LobbyGameSubstate::step( const ServerStatusData& status )
+void LobbyGameSubstate::step( IMGUI& imgui, const ServerStatusData& status )
 {
-	IMGUI& imgui = IMGUI::getSingleton();
 	bool no_players = mOtherPlayers.empty();
 	if(mOtherPlayerNames.empty())
 	{

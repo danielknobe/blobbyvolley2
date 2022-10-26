@@ -55,7 +55,7 @@ void ReplaySelectionState::init()
 
 void ReplaySelectionState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 
 	imgui.doCursor();

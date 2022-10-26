@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class State;
 class SoundManager;
 class IUserConfigReader;
+class IMGUI;
 
 class BlobbyApp {
 	public:
@@ -40,6 +41,9 @@ class BlobbyApp {
 		/// gets the sound manager
 		SoundManager& getSoundManager() const;
 
+		/// gets the gui manager
+		IMGUI& getIMGUI() const;
+
 		/// gets the name of the currently active state
 		const char* getCurrenStateName() const;
 
@@ -52,4 +56,5 @@ class BlobbyApp {
 		std::unique_ptr<State> mStateToSwitchTo;
 
 		std::unique_ptr<SoundManager> mSoundManager;
+		std::unique_ptr<IMGUI> mIMGUI;
 };

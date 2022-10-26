@@ -107,7 +107,7 @@ void OptionState::step_impl()
 {
 	const int MAX_BOT_DELAY = 25;		// 25 frames = 0.33s (gamespeed: normal)
 
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -219,7 +219,7 @@ void GraphicOptionsState::save()
 
 void GraphicOptionsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -428,7 +428,7 @@ void InputOptionsState::save()
 #if BLOBBY_ON_DESKTOP
 void InputOptionsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -490,7 +490,7 @@ void InputOptionsState::step_impl()
 
 void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastActionKey, int& mouse, std::string keyboard[], std::string joystick[])
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	TextManager::STRING p_str = (player == LEFT_PLAYER) ? TextManager::OP_LEFT_PLAYER : TextManager::OP_RIGHT_PLAYER;
 	std::string& device = (player == LEFT_PLAYER) ? mLeftDevice : mRightDevice;
@@ -540,7 +540,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastAc
 
 void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionKey, std::string input[])
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	if (imgui.doButton(GEN_ID, Vector2(base_x + 34, 350.0), TextManager::OP_SET_ALL))
 		mSetKeyboard = base_x + 1;
@@ -590,7 +590,7 @@ void InputOptionsState::handleKeyboardInput(int base_x, std::string& lastActionK
 
 void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_LEFT_BUTTON);
 	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), input[IA_LEFT]))
@@ -614,7 +614,7 @@ void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
 
 void InputOptionsState::handleMouseInput(int base_x, int& input, float& sens)
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_JUMP_BUTTON);
 	std::ostringstream text;
@@ -636,7 +636,7 @@ void InputOptionsState::handleMouseInput(int base_x, int& input, float& sens)
 
 void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 	imgui.doText(GEN_ID, Vector2(400.0, 250.0), prompt, TF_ALIGN_CENTER);
@@ -694,7 +694,7 @@ TextManager::STRING InputOptionsState::getDeviceName(const std::string& device) 
 #elif (defined __SWITCH__)
 void InputOptionsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -741,7 +741,7 @@ void InputOptionsState::step_impl()
 
 void InputOptionsState::handlePlayerInput(PlayerSide player, std::string joystick[])
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	TextManager::STRING p_str = (player == LEFT_PLAYER) ? TextManager::OP_LEFT_PLAYER : TextManager::OP_RIGHT_PLAYER;
 	std::string& device = (player == LEFT_PLAYER) ? mLeftDevice : mRightDevice;
@@ -752,7 +752,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string joystic
 
 void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doText(GEN_ID, Vector2(base_x + 34.0, 120.0), TextManager::OP_LEFT_BUTTON);
 	if (imgui.doButton(GEN_ID, Vector2(base_x + 50, 150.0), input[IA_LEFT]))
@@ -779,7 +779,7 @@ void InputOptionsState::handleJoystickInput(int base_x, std::string input[])
 
 void InputOptionsState::getInputPrompt(TextManager::STRING prompt, TextManager::STRING input)
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doOverlay(GEN_ID, Vector2(100.0, 150.0), Vector2(700.0, 450.0));
 	imgui.doText(GEN_ID, Vector2(400.0, 250.0), prompt, TF_ALIGN_CENTER);
@@ -811,7 +811,7 @@ void InputOptionsState::getJoystickInput(std::string& action, TextManager::STRIN
 
 void InputOptionsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
@@ -928,12 +928,12 @@ void MiscOptionsState::save()
 	getApp().getSoundManager().setVolume(mOptionConfig.getFloat("global_volume"));
 	getApp().getSoundManager().setMute(mOptionConfig.getBool("mute"));
 	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
-	IMGUI::getSingleton().setTextMgr(mOptionConfig.getString("language"));
+	getIMGUI().setTextMgr(mOptionConfig.getString("language"));
 }
 
 void MiscOptionsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));

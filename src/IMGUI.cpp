@@ -61,15 +61,10 @@ struct QueueObject
 	unsigned int flags;
 };
 
-typedef std::queue<QueueObject> RenderQueue;
-
-IMGUI* IMGUI::mSingleton = nullptr;
-RenderQueue *mQueue;
-
 IMGUI::IMGUI(InputManager* inputMgr) : mInputManager(inputMgr)
 {
 	assert(mInputManager);
-	mQueue = new RenderQueue;
+	mQueue.reset(new RenderQueue);
 	mActiveButton = -1;
 	mHeldWidget = 0;
 	mLastKeyAction = KeyAction::NONE;
@@ -79,23 +74,7 @@ IMGUI::IMGUI(InputManager* inputMgr) : mInputManager(inputMgr)
 	mIdCounter = 0;
 }
 
-IMGUI::~IMGUI()
-{
-	delete mQueue;
-}
-
-IMGUI& IMGUI::getSingleton()
-{
-	assert(mSingleton);
-	return *mSingleton;
-}
-
-void IMGUI::createIMGUI(InputManager* inputMgr)
-{
-	assert(!mSingleton);
-	mSingleton = new IMGUI(InputManager::getSingleton());
-}
-
+IMGUI::~IMGUI() = default;
 
 void IMGUI::begin()
 {
@@ -916,8 +895,8 @@ SelectBoxAction IMGUI::doSelectbox(int id, const Vector2& pos1, const Vector2& p
 			}
 		}
 	}
-	doImage(GEN_ID, Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
-	doImage(GEN_ID, Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
+	doImage(getNextId(), Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
+	doImage(getNextId(), Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
 
 	first = (selected / itemsPerPage)*itemsPerPage; //recalc first
 	if ( !entries.empty() )
@@ -1052,8 +1031,8 @@ void IMGUI::doChatbox(int id, const Vector2& pos1, const Vector2& pos2, const st
 			}
 		}
 	}
-	doImage(GEN_ID, Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
-	doImage(GEN_ID, Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
+	doImage(getNextId(), Vector2(pos2.x-15, pos1.y+15), "gfx/pfeil_oben.bmp");
+	doImage(getNextId(), Vector2(pos2.x-15, pos2.y-15), "gfx/pfeil_unten.bmp");
 
 	unsigned int first = (selected / itemsPerPage) * itemsPerPage; //recalc first
 	if ( !entries.empty() )

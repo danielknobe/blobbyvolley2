@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include <string>
+#include <queue>
 
 #include "Vector.h"
 #include "Global.h"
@@ -31,16 +32,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h" /// needed because we can't forward declare that enum
 #include "BlobbyDebug.h"
 
-
-
-#define GEN_ID IMGUI::getSingleton().getNextId()
-
 enum SelectBoxAction
 {
 	SBA_NONE = 0,
 	SBA_SELECT,
 	SBA_DBL_CLICK
 };
+
+struct QueueObject;
+
+typedef std::queue<QueueObject> RenderQueue;
 
 /*! \class IMGUI
 	\brief GUI Manager
@@ -51,8 +52,8 @@ enum SelectBoxAction
 class IMGUI : public ObjectCounter<IMGUI>
 {
 	public:
-		static IMGUI& getSingleton();
-		static void createIMGUI(InputManager* inputMgr);
+		explicit IMGUI(InputManager* inputMgr);
+		~IMGUI();
 
 		void begin();
 		void end(RenderManager& renderer);
@@ -88,11 +89,6 @@ class IMGUI : public ObjectCounter<IMGUI>
 		void setTextMgr(std::string lang);
 
 	private:
-		IMGUI(InputManager* inputMgr);
-		~IMGUI();
-
-		static IMGUI* mSingleton;
-
 		int mActiveButton;
 		int mHeldWidget;
 		KeyAction mLastKeyAction;
@@ -106,5 +102,7 @@ class IMGUI : public ObjectCounter<IMGUI>
 
 		std::unique_ptr<TextManager> mTextManager;
 		InputManager* mInputManager;
+
+		std::unique_ptr<RenderQueue> mQueue;
 };
 

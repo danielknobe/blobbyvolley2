@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class DuelMatch;
 class ReplayRecorder;
 class BlobbyApp;
+class IMGUI;
+
+#define GEN_ID getIMGUI().getNextId()
 
 /*! \class State
 	\brief Base class for all programme states.
@@ -55,6 +58,7 @@ protected:
 
 	void playSound(const std::string& sound, float volume);
 	BlobbyApp& getApp() const;
+	IMGUI& getIMGUI() const;
 
 	void switchState(State* newState);
 private:

@@ -62,7 +62,7 @@ void BlobbyApp::step()
 		// if yes, set that new state
 		// use swap so the states do not get destroyed here
 		mCurrentState = std::move( mStateToSwitchTo );
-		IMGUI::getSingleton().resetSelection();
+		mIMGUI->resetSelection();
 		mCurrentState->init();
 	}
 }
@@ -79,9 +79,17 @@ BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& 
 	/// \todo play sound is misleading. what we actually want to do is load the sound
 	mSoundManager->playSound(SoundManager::IMPACT, 0.0);
 	mSoundManager->playSound(SoundManager::WHISTLE, 0.0);
+
+	mIMGUI.reset(new IMGUI(InputManager::getSingleton()));
+	mIMGUI->setTextMgr(config.getString("language"));
 }
 
 SoundManager& BlobbyApp::getSoundManager() const
 {
 	return *mSoundManager;
+}
+
+IMGUI& BlobbyApp::getIMGUI() const
+{
+	return *mIMGUI;
 }

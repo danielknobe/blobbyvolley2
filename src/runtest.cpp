@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		IMGUI::getSingleton().setTextMgr(gameConfig.getString("language"));
+		getIMGUI().setTextMgr(gameConfig.getString("language"));
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
@@ -244,13 +244,13 @@ int main(int argc, char* argv[])
 
 			inputmgr->updateInput();
 			running = inputmgr->running();
-			IMGUI::getSingleton().begin();
+			getIMGUI().begin();
 			State::step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 
 			if (!scontroller.doFramedrop())
 			{
-				IMGUI::getSingleton().end(*rmanager);
+				getIMGUI().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}

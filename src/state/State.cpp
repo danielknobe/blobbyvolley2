@@ -66,6 +66,10 @@ BlobbyApp& State::getApp() const
 	return *m_App;
 }
 
+IMGUI& State::getIMGUI() const {
+	return getApp().getIMGUI();
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 //  concrete implementation of MainMenuState and CreditsState
 // -----------------------------------------------------------
@@ -80,7 +84,7 @@ MainMenuState::~MainMenuState() = default;
 
 void MainMenuState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -142,7 +146,7 @@ CreditsState::CreditsState()
 
 void CreditsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));

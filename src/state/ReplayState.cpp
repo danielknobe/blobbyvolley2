@@ -90,7 +90,7 @@ void ReplayState::loadReplay(const std::string& file)
 
 void ReplayState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	// only draw cursor when mouse moved or clicked in the last second
 	if(mLastMousePosition != InputManager::getSingleton()->position() || InputManager::getSingleton()->click())

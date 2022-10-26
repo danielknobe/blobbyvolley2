@@ -122,7 +122,7 @@ NetworkGameState::~NetworkGameState()
 
 void NetworkGameState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	packet_ptr packet;
 	while (nullptr != (packet = mClient->Receive()))
@@ -376,7 +376,7 @@ void NetworkGameState::step_impl()
 	else if (InputManager::getSingleton()->exit() && mSaveReplay)
 	{
 		mSaveReplay = false;
-		IMGUI::getSingleton().resetSelection();
+		getIMGUI().resetSelection();
 	}
 	else if (!mErrorMessage.empty())
 	{

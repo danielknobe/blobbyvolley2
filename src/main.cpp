@@ -238,8 +238,6 @@ void setupPHYSFS()
 		gameConfig.loadFile("config.xml");
 
 		InputManager* inputmgr = InputManager::createInputManager();
-		IMGUI::createIMGUI(inputmgr);
-		IMGUI::getSingleton().setTextMgr(gameConfig.getString("language"));
 
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
@@ -282,7 +280,7 @@ void setupPHYSFS()
 			inputmgr->updateInput();
 			running = inputmgr->running();
 
-			IMGUI::getSingleton().begin();
+			app.getIMGUI().begin();
 			app.step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
@@ -320,7 +318,7 @@ void setupPHYSFS()
 
 			if (!scontroller.doFramedrop())
 			{
-				IMGUI::getSingleton().end(*rmanager);
+				app.getIMGUI().end(*rmanager);
 				rmanager->getBlood().step(*rmanager);
 				rmanager->refresh();
 			}

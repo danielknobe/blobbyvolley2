@@ -51,9 +51,9 @@ enum class PreviousState
 
 class LobbySubstate
 {
-public:
-	virtual ~LobbySubstate();
-	virtual void step(const ServerStatusData& status ) = 0;
+	public:
+		virtual ~LobbySubstate();
+		virtual void step(IMGUI& imgui, const ServerStatusData& status) = 0;
 };
 
 class LobbyState : public State
@@ -88,7 +88,7 @@ class LobbyMainSubstate : public LobbySubstate
 {
 public:
 	LobbyMainSubstate(std::shared_ptr<RakClient> client, unsigned speed, unsigned rules, unsigned score);
-	void step( const ServerStatusData& status ) override;
+	void step( IMGUI& imgui, const ServerStatusData& status ) override;
 private:
 	std::shared_ptr<RakClient> mClient;
 
@@ -111,7 +111,7 @@ class LobbyGameSubstate : public LobbySubstate
 public:
 	LobbyGameSubstate(std::shared_ptr<RakClient> client, std::shared_ptr<GenericIn>);
 
-	void step( const ServerStatusData& status ) override;
+	void step( IMGUI& imgui, const ServerStatusData& status ) override;
 private:
 	std::shared_ptr<RakClient> mClient;
 

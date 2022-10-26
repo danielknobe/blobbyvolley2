@@ -100,7 +100,8 @@ void LocalGameState::init()
 
 void LocalGameState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
+
 	if(!mErrorMessage.empty())
 	{
 		displayErrorMessageBox();
@@ -144,7 +145,7 @@ void LocalGameState::step_impl()
 		if (mSaveReplay)
 		{
 			mSaveReplay = false;
-			IMGUI::getSingleton().resetSelection();
+			getIMGUI().resetSelection();
 		}
 		else if (mMatch->isPaused())
 		{
