@@ -62,6 +62,7 @@ set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
 	replays/ReplayPlayer.cpp replays/ReplayPlayer.h
 	replays/ReplayLoader.cpp
 	state/State.cpp state/State.h
+	state/LastMatchesState.cpp state/LastMatchesState.h
 	state/LoginState.cpp state/LoginState.h
 	state/RankedState.cpp state/RankedState.h
 	state/GameState.cpp state/GameState.h

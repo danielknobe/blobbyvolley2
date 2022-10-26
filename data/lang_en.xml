@@ -59,6 +59,7 @@
 	<string english = "register" translation = "register" />
 	<string english = "login failed" translation = "login failed" />
 	<string english = "ranked game" translation = "ranked game" />
+	<string english = "refresh" translation = "refresh" />
 	<string english = "games: " translation = "games: " />
 	<string english = "random" translation = "random" />
 	<string english = "rules: " translation = "rules: " />

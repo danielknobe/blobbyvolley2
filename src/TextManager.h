@@ -113,6 +113,7 @@ class TextManager
 			NET_REGISTER,
 			NET_LOGIN_FAILED,
 			NET_RANKED_GAME,
+			NET_REFRESH,
 
 			// options
 			OP_TOUCH_TYPE,

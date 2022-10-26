@@ -219,6 +219,7 @@ void TextManager::setDefault()
 	mStrings[NET_REGISTER] = "register";
 	mStrings[NET_LOGIN_FAILED] = "login failed";
 	mStrings[NET_RANKED_GAME] = "ranked game";
+	mStrings[NET_REFRESH] = "refresh";
 
 	mStrings[OP_TOUCH_TYPE] = "touch input type:";
 	mStrings[OP_TOUCH_ARROWS] = "arrow keys";
