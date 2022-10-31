@@ -115,7 +115,6 @@ int main(int argc, char* argv[])
 	// Default is OpenGL and false
 	// choose renderer
 	RenderManager *rmanager = nullptr;
-	SoundManager *smanager = nullptr;
 
 
 	try
@@ -252,8 +251,6 @@ int main(int argc, char* argv[])
 		std::cerr << e.what() << std::endl;
 		if (rmanager)
 			rmanager->deinit();
-		if (smanager)
-			smanager->deinit();
 		SDL_Quit();
 		exit (EXIT_FAILURE);
 	}

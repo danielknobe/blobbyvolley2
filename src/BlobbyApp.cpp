@@ -73,7 +73,6 @@ BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& 
 {
 	mCurrentState->setApp(this);
 
-	mSoundManager->init();
 	mSoundManager->setVolume(config.getFloat("global_volume"));
 	mSoundManager->setMute(config.getBool("mute"));
 	/// \todo play sound is misleading. what we actually want to do is load the sound

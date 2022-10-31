@@ -54,11 +54,9 @@ struct Sound : public ObjectCounter<Sound>
 class SoundManager : public ObjectCounter<SoundManager>
 {
 	public:
-		SoundManager();
+		explicit SoundManager();
 		~SoundManager();
 
-		bool init();
-		void deinit();
 		bool playSound(const std::string& filename, float volume);
 		void setVolume(float volume);
 		void setMute(bool mute);
@@ -70,14 +68,14 @@ class SoundManager : public ObjectCounter<SoundManager>
 
 	private:
 
-		SDL_AudioDeviceID mAudioDevice;
+		SDL_AudioDeviceID mAudioDevice = 0;
 
 		/// This maps filenames to sound buffers, which are always in
 		/// target format
 		std::map<std::string, std::vector<Uint8>> mSoundCache;
 		std::vector<Sound> mPlayingSound;
 		SDL_AudioSpec mAudioSpec;
-		bool mInitialised;
+
 		float mVolume;
 		bool mMute;
 
