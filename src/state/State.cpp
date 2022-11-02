@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkSearchState.h"
 #include "OptionsState.h"
 
+#include "BlobbyApp.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
 #include "TextManager.h"
@@ -41,62 +42,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-// static state functions
-std::unique_ptr<State> State::mCurrentState(nullptr);
-std::unique_ptr<State> State::mStateToSwitchTo(nullptr);
+State::State() = default;
 
-
-void State::deinit()
-{
-	mCurrentState.reset( nullptr );
-	mStateToSwitchTo.reset( nullptr );
+void State::playSound(const std::string& sound, float volume) {
+	assert(m_App);
+	m_App->getSoundManager().playSound(sound, volume);
 }
 
-void State::step()
-{
-	// check that we are in a valid state
-	if(mCurrentState == nullptr )
-	{
-		// otherwise, create one
-		mCurrentState.reset( new MainMenuState );
-	}
-
-
-	// perform a state step
-	mCurrentState->step_impl();
-
-	// check if we should switch to a new state
-	if( mStateToSwitchTo != nullptr )
-	{
-		// maybe this debug statuses will help pinpointing crashes faster
-		DEBUG_STATUS( std::string("switching to state ") + mStateToSwitchTo->getStateName());
-
-		// if yes, set that new state
-		// use swap so the states do not get destroyed here
-		mCurrentState.swap( mStateToSwitchTo );
-
-		// now destroy the old state, which is saved in mStateToSwitchTo at this point
-		mStateToSwitchTo.reset(nullptr);
-	}
-}
-
-const char* State::getCurrenStateName()
-{
-	return mCurrentState->getStateName();
-}
-
-State::State()
-{
-	IMGUI::getSingleton().resetSelection();
+void State::setApp(BlobbyApp* app) {
+	assert(app);
+	m_App = app;
 }
 
 void State::switchState(State* newState)
 {
-	mStateToSwitchTo.reset(newState);
+	assert(m_App);
+	m_App->switchToState(std::unique_ptr<State>(newState));
 }
 
-void State::playSound(const std::string& sound, float volume) {
-	SoundManager::getSingleton().playSound(sound, volume);
+BlobbyApp& State::getApp() const
+{
+	assert(m_App);
+	return *m_App;
+}
+
+IMGUI& State::getIMGUI() const {
+	return getApp().getIMGUI();
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -113,7 +84,7 @@ MainMenuState::~MainMenuState() = default;
 
 void MainMenuState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -175,7 +146,7 @@ CreditsState::CreditsState()
 
 void CreditsState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));

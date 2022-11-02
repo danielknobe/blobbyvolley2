@@ -35,6 +35,7 @@ public:
 	OptionState();
 	~OptionState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 
 private:
@@ -58,6 +59,7 @@ public:
 	GraphicOptionsState();
 	~GraphicOptionsState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 private:
 	/// writes current settings to disk
@@ -80,6 +82,7 @@ public:
 	InputOptionsState();
 	~InputOptionsState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 private:
 
@@ -148,6 +151,7 @@ public:
 	MiscOptionsState();
 	~MiscOptionsState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 private:
 	/// writes current settings to disk

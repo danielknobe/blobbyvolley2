@@ -66,6 +66,11 @@ LocalGameState::~LocalGameState() = default;
 LocalGameState::LocalGameState()
 	: mWinner(false), mRecorder(new ReplayRecorder())
 {
+
+}
+
+void LocalGameState::init()
+{
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
@@ -91,9 +96,12 @@ LocalGameState::LocalGameState()
 	mRecorder->setGameRules( config->getString("rules") );
 }
 
+
+
 void LocalGameState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
+
 	if(!mErrorMessage.empty())
 	{
 		displayErrorMessageBox();
@@ -137,7 +145,7 @@ void LocalGameState::step_impl()
 		if (mSaveReplay)
 		{
 			mSaveReplay = false;
-			IMGUI::getSingleton().resetSelection();
+			getIMGUI().resetSelection();
 		}
 		else if (mMatch->isPaused())
 		{
@@ -170,4 +178,3 @@ const char* LocalGameState::getStateName() const
 {
 	return "LocalGameState";
 }
-

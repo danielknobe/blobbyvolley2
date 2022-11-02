@@ -37,9 +37,7 @@ GameState::GameState(DuelMatch* match) : mMatch(match), mSaveReplay(false)
 {
 }
 
-GameState::~GameState()
-{
-}
+GameState::~GameState() = default;
 
 void GameState::presentGame()
 {
@@ -83,7 +81,7 @@ void GameState::presentGameUI()
 {
 	RenderManager::getSingleton().drawGame(mMatch->getState());
 
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	// Scores
 	char textBuffer[64];
@@ -101,7 +99,7 @@ void GameState::presentGameUI()
 
 void GameState::displayQueryPrompt(const int height, TextManager::STRING title, const QueryOption& opt1, const QueryOption& opt2, const QueryOption& opt3)
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doOverlay(GEN_ID, Vector2(0, height), Vector2(800, height + 200));
 	imgui.doText(GEN_ID, Vector2(400, height + 30), title, TF_ALIGN_CENTER);
@@ -123,7 +121,7 @@ void GameState::displayQueryPrompt(const int height, TextManager::STRING title, 
 
 bool GameState::displaySaveReplayPrompt()
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doCursor();
 
@@ -154,7 +152,7 @@ bool GameState::displaySaveReplayPrompt()
 
 bool GameState::displayErrorMessageBox()
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	imgui.doCursor();
 
@@ -174,7 +172,7 @@ bool GameState::displayErrorMessageBox()
 
 bool GameState::displayWinningPlayerScreen(PlayerSide winner)
 {
-	auto& imgui = IMGUI::getSingleton();
+	auto& imgui = getIMGUI();
 
 	std::string tmp = mMatch->getPlayer(winner).getName();
 	imgui.doOverlay(GEN_ID, Vector2(0, 150), Vector2(800, 450));

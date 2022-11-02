@@ -56,6 +56,11 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 	, mWinningPlayer(NO_PLAYER)
 	, mSelectedChatmessage(0)
 	, mChatCursorPosition(0)
+	, mRulesChecksum(rule_checksum)
+{
+}
+
+void NetworkGameState::init()
 {
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");
@@ -89,7 +94,7 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 
 	// check the rules
 	int ourChecksum = 0;
-	if (rule_checksum != 0)
+	if (mRulesChecksum != 0)
 	{
 		try
 		{
@@ -105,7 +110,7 @@ NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_
 
 	RakNet::BitStream stream2;
 	stream2.Write((unsigned char)ID_RULES);
-	stream2.Write(bool(rule_checksum != 0 && rule_checksum != ourChecksum));
+	stream2.Write(bool(mRulesChecksum != 0 && mRulesChecksum != ourChecksum));
 	mClient->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 }
 
@@ -117,7 +122,7 @@ NetworkGameState::~NetworkGameState()
 
 void NetworkGameState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	packet_ptr packet;
 	while (nullptr != (packet = mClient->Receive()))
@@ -371,7 +376,7 @@ void NetworkGameState::step_impl()
 	else if (InputManager::getSingleton()->exit() && mSaveReplay)
 	{
 		mSaveReplay = false;
-		IMGUI::getSingleton().resetSelection();
+		getIMGUI().resetSelection();
 	}
 	else if (!mErrorMessage.empty())
 	{
@@ -551,6 +556,7 @@ const char* NetworkGameState::getStateName() const
 {
 	return "NetworkGameState";
 }
+
 // definition of syslog for client hosted games
 void syslog(int pri, const char* format, ...)
 {

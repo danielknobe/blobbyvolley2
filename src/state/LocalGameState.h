@@ -35,6 +35,7 @@ class LocalGameState : public GameState
 
 		// implementation of the State Interface
 		void step_impl() override;
+		void init() override;
 		const char* getStateName() const override;
 
 	private:

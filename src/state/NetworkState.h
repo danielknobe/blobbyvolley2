@@ -49,6 +49,7 @@ public:
 
 	~NetworkGameState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 
 private:
@@ -83,4 +84,7 @@ private:
 	unsigned mSelectedChatmessage;
 	unsigned mChatCursorPosition;
 	std::string mChattext;
+
+	// somewhat ugly: we need to keep the rules checksum until we actually initialize the state
+	int mRulesChecksum;
 };

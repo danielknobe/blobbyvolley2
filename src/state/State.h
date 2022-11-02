@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class DuelMatch;
 class ReplayRecorder;
+class BlobbyApp;
+class IMGUI;
+
+#define GEN_ID getIMGUI().getNextId()
 
 /*! \class State
 	\brief Base class for all programme states.
@@ -44,33 +48,25 @@ public:
 
 	// step function defines the steps actual work
 	virtual void step_impl() = 0;
+	// this is called just before the step function is invoked for the first time.
+	virtual void init() {}
 	virtual const char* getStateName() const = 0;
-
-	// static functions
-	/// performs a step in the current state
-	static void step();
-
-	/// deinits the state system, deleting the current state.
-	/// this is necessary for now to ensure correct destruction order, so the debug counters are destroyed after the
-	/// state is uncounted.
-	static void deinit();
-
-	/// gets the currently active state
-	static std::unique_ptr<State>& getCurrentState();
-	/// gets the name of the currently active state
-	static const char* getCurrenStateName();
 
 protected:
 	/// generic state constructor. automatically resets imgui selection
 	State();
 
 	void playSound(const std::string& sound, float volume);
+	BlobbyApp& getApp() const;
+	IMGUI& getIMGUI() const;
 
-	static void switchState(State* newState);
-
+	void switchState(State* newState);
 private:
-	static std::unique_ptr<State> mCurrentState;
-	static std::unique_ptr<State> mStateToSwitchTo;
+
+	friend class BlobbyApp;
+	void setApp(BlobbyApp* app);
+
+	BlobbyApp* m_App;
 
 };
 

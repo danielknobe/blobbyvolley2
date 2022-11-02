@@ -43,10 +43,15 @@ LobbySubstate::~LobbySubstate() = default;
 
 
 LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
-		mClient(new RakClient(), [](RakClient* client) { client->Disconnect(25); delete client; }),
 		mInfo(std::move(info)), mPrevious( previous ),
 		mLobbyState(ConnectionState::CONNECTING)
 {
+}
+
+void LobbyState::init()
+{
+	mClient = std::shared_ptr<RakClient>(new RakClient(), [](RakClient* client) { client->Disconnect(25); delete client; });
+
 	if (!mClient->Connect(mInfo.hostname, mInfo.port, 0, 0, RAKNET_THREAD_SLEEP_TIME))
 		throw( std::runtime_error(std::string("Could not connect to server ") + mInfo.hostname) );
 
@@ -67,6 +72,7 @@ LobbyState::LobbyState(ServerInfo info, PreviousState previous) :
 		mLocalPlayer = config.loadPlayerIdentity(RIGHT_PLAYER, true);
 	}
 }
+
 
 LobbyState::~LobbyState() = default;
 
@@ -203,7 +209,7 @@ void LobbyState::step_impl()
 	}
 
 
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -246,7 +252,7 @@ void LobbyState::step_impl()
 		}
 
 
-		mSubState->step( mStatus );
+		mSubState->step( imgui, mStatus );
 	}
 
 
@@ -268,6 +274,7 @@ const char* LobbyState::getStateName() const
 	return "LobbyState";
 }
 
+
 // ----------------------------------------------------------------------------
 // 				M a i n     S u b s t a t e
 // ----------------------------------------------------------------------------
@@ -283,10 +290,9 @@ LobbyMainSubstate::LobbyMainSubstate(std::shared_ptr<RakClient> client,
 
 }
 
-void LobbyMainSubstate::step(const ServerStatusData& status)
+#define GEN_ID imgui.getNextId()
+void LobbyMainSubstate::step(IMGUI& imgui, const ServerStatusData& status)
 {
-	IMGUI& imgui = IMGUI::getSingleton();
-
 	// player list
 	std::vector<std::string> gamelist;
 	gamelist.push_back( imgui.getText(TextManager::NET_OPEN_GAME) );
@@ -454,9 +460,8 @@ LobbyGameSubstate::LobbyGameSubstate(std::shared_ptr<RakClient> client, std::sha
 	in->generic<std::vector<std::string>>(mOtherPlayerNames);
 }
 
-void LobbyGameSubstate::step( const ServerStatusData& status )
+void LobbyGameSubstate::step( IMGUI& imgui, const ServerStatusData& status )
 {
-	IMGUI& imgui = IMGUI::getSingleton();
 	bool no_players = mOtherPlayers.empty();
 	if(mOtherPlayerNames.empty())
 	{

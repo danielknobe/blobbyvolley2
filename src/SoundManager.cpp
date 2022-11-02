@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileRead.h"
 
 /* implementation */
-SoundManager* SoundManager::mSingleton = nullptr;
 
 namespace {
 	struct WavDeleter
@@ -139,7 +138,7 @@ std::vector<Uint8> SoundManager::loadSound(const std::string& filename) const
 
 bool SoundManager::playSound(const std::string& filename, float volume)
 {
-	if (!mInitialised)
+	if (mAudioDevice == 0)
 		return false;
 
 	// everything is fine, so we return true,
@@ -167,37 +166,6 @@ bool SoundManager::playSound(const std::string& filename, float volume)
 	return true;
 }
 
-bool SoundManager::init()
-{
-	SDL_AudioSpec desiredSpec;
-	desiredSpec.freq = 44100;
-	desiredSpec.format = AUDIO_S16LSB;
-	desiredSpec.channels = 2;
-	desiredSpec.samples = 1024;
-	desiredSpec.callback = playCallback;
-	desiredSpec.userdata = mSingleton;
-
-	mAudioDevice = SDL_OpenAudioDevice(nullptr, 0, &desiredSpec, &mAudioSpec, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
-
-	if (desiredSpec.format != mAudioSpec.format)
-	{
-		std::cerr << "Warning: Can't create device with desired audio spec!" << std::endl;
-		std::cerr << "Reason: " << SDL_GetError() << std::endl;
-	}
-
-	if (mAudioDevice == 0)
-	{
-		std::cerr << "Warning: Couldn't open audio Device!" << std::endl;
-		std::cerr << "Reason: " << SDL_GetError() << std::endl;
-		return false;
-	}
-
-	SDL_PauseAudioDevice(mAudioDevice, 0);
-	mInitialised = true;
-	mVolume = 1.0;
-	return true;
-}
-
 void SoundManager::playCallback(void* sound_mgr, Uint8* stream, int length)
 {
 	reinterpret_cast<SoundManager*>(sound_mgr)->handleCallback(stream, length);
@@ -219,40 +187,44 @@ void SoundManager::handleCallback(Uint8* stream, int length) {
 	mPlayingSound.erase(new_end, mPlayingSound.end());
 }
 
-
-void SoundManager::deinit()
-{
-	mSoundCache.clear();
-	SDL_UnlockAudioDevice(mAudioDevice);
-	SDL_CloseAudioDevice(mAudioDevice);
-	mInitialised = false;
-}
-
-SoundManager* SoundManager::createSoundManager()
-{
-	return new SoundManager();
-}
-
 SoundManager::SoundManager()
 {
 	mMute = false;
-	mSingleton = this;
-	mInitialised = false;
-	mAudioDevice = 0;
+
+	SDL_AudioSpec desiredSpec;
+	desiredSpec.freq = 44100;
+	desiredSpec.format = AUDIO_S16LSB;
+	desiredSpec.channels = 2;
+	desiredSpec.samples = 1024;
+	desiredSpec.callback = playCallback;
+	desiredSpec.userdata = this;
+
+	mAudioDevice = SDL_OpenAudioDevice(nullptr, 0, &desiredSpec, &mAudioSpec, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
+
+	if (mAudioDevice == 0)
+	{
+		std::cerr << "Warning: Couldn't open audio Device!" << std::endl;
+		std::cerr << "Reason: " << SDL_GetError() << std::endl;
+		return;
+	}
+
+	if (desiredSpec.format != mAudioSpec.format)
+	{
+		std::cerr << "Warning: Can't create device with desired audio spec!" << std::endl;
+		std::cerr << "Reason: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_PauseAudioDevice(mAudioDevice, 0);
+	mVolume = 1.0;
 }
 
 SoundManager::~SoundManager()
 {
-	if (mInitialised)
+	if (mAudioDevice != 0)
 	{
-		deinit();
+		SDL_UnlockAudioDevice(mAudioDevice);
+		SDL_CloseAudioDevice(mAudioDevice);
 	}
-}
-
-SoundManager& SoundManager::getSingleton()
-{
-	assert(mSingleton);
-	return *mSingleton;
 }
 
 void SoundManager::setVolume(float volume)

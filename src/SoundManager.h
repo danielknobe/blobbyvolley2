@@ -54,11 +54,9 @@ struct Sound : public ObjectCounter<Sound>
 class SoundManager : public ObjectCounter<SoundManager>
 {
 	public:
-		static SoundManager* createSoundManager();
-		static SoundManager& getSingleton();
+		explicit SoundManager();
+		~SoundManager();
 
-		bool init();
-		void deinit();
 		bool playSound(const std::string& filename, float volume);
 		void setVolume(float volume);
 		void setMute(bool mute);
@@ -67,20 +65,17 @@ class SoundManager : public ObjectCounter<SoundManager>
 		static constexpr const char* IMPACT  = "sounds/bums.wav";
 		static constexpr const char* WHISTLE = "sounds/pfiff.wav";
 		static constexpr const char* CHAT    = "sounds/chat.wav";
+
 	private:
-		SoundManager();
-		~SoundManager();
 
-		static SoundManager* mSingleton;
-
-		SDL_AudioDeviceID mAudioDevice;
+		SDL_AudioDeviceID mAudioDevice = 0;
 
 		/// This maps filenames to sound buffers, which are always in
 		/// target format
 		std::map<std::string, std::vector<Uint8>> mSoundCache;
 		std::vector<Sound> mPlayingSound;
 		SDL_AudioSpec mAudioSpec;
-		bool mInitialised;
+
 		float mVolume;
 		bool mMute;
 

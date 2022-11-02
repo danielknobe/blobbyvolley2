@@ -37,6 +37,7 @@ public:
 	ReplayState();
 	~ReplayState() override;
 	void step_impl() override;
+	void init() override;
 	const char* getStateName() const override;
 	void loadReplay(const std::string& replay);
 
