@@ -93,7 +93,7 @@ void ReplayState::step_impl()
 	IMGUI& imgui = getIMGUI();
 
 	// only draw cursor when mouse moved or clicked in the last second
-	if(mLastMousePosition != InputManager::getSingleton()->position() || InputManager::getSingleton()->click())
+	if(mLastMousePosition != getInputMgr().position() || clicked())
 	{
 		/// \todo we must do this framerate independent
 		mMouseShowTimer = 75;
@@ -105,7 +105,7 @@ void ReplayState::step_impl()
 		mMouseShowTimer--;
 	}
 
-	mLastMousePosition = InputManager::getSingleton()->position();
+	mLastMousePosition = getInputMgr().position();
 
 
 	if(mPositionJump != -1)
@@ -156,12 +156,12 @@ void ReplayState::step_impl()
 	if(side == NO_PLAYER)
 	{
 		// control replay position
-		Vector2 mousepos = InputManager::getSingleton()->position();
+		Vector2 mousepos = getInputMgr().position();
 		if (mousepos.x + 5 > prog_pos.x && mousepos.y > prog_pos.y &&
 			mousepos.x < prog_pos.x + 700 && mousepos.y < prog_pos.y + 24.0)
 		{
 
-			if (InputManager::getSingleton()->click())
+			if (clicked())
 			{
 				float pos = (mousepos.x - prog_pos.x) / 700.f;
 				mPositionJump = pos * mReplayPlayer->getReplayLength();
@@ -192,7 +192,7 @@ void ReplayState::step_impl()
 				mSpeedValue = 1;
 		}
 
-		if ((InputManager::getSingleton()->exit()))
+		if (is_exiting())
 		{
 			switchState(new ReplaySelectionState());
 			return;

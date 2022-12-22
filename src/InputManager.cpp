@@ -34,8 +34,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-InputManager* InputManager::mSingleton = nullptr;
-
 const unsigned int DOUBLE_CLICK_TIME = 200;
 
 InputManager::InputManager()
@@ -46,8 +44,6 @@ InputManager::InputManager()
 	mJoystickPool = std::unique_ptr<JoystickPool>{new JoystickPool()};
 	mJoystickPool->probeJoysticks();
 
-	assert (mSingleton == nullptr);
-	mSingleton = this;
 	mRunning = true;
 	mWindowFocus = true;
 
@@ -57,9 +53,7 @@ InputManager::InputManager()
 	mMouseCaptured = false;
 }
 
-InputManager::~InputManager()
-{
-}
+InputManager::~InputManager() = default;
 
 std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 {
@@ -114,17 +108,6 @@ std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 		std::cerr << "Error: unknown input device: " << device << std::endl;
 
 	return nullptr;
-}
-
-InputManager* InputManager::getSingleton()
-{
-	assert(mSingleton);
-	return mSingleton;
-}
-
-InputManager* InputManager::createInputManager()
-{
-	return new InputManager();
 }
 
 void InputManager::updateInput()

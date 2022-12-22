@@ -237,8 +237,6 @@ void setupPHYSFS()
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		InputManager* inputmgr = InputManager::createInputManager();
-
 		if(gameConfig.getString("device") == "SDL")
 			rmanager = RenderManager::createRenderManagerSDL();
 		else if (gameConfig.getString("device") == "OpenGL")
@@ -277,8 +275,8 @@ void setupPHYSFS()
 
 		while (running)
 		{
-			inputmgr->updateInput();
-			running = inputmgr->running();
+			app.getInputManager().updateInput();
+			running = app.getInputManager().running();
 
 			app.getIMGUI().begin();
 			app.step();

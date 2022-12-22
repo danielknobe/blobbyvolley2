@@ -28,7 +28,7 @@ class InputDevice;
 class LocalInputSource : public InputSource
 {
 	public:
-		explicit LocalInputSource(PlayerSide player);
+		explicit LocalInputSource(std::unique_ptr<InputDevice> device);
 		~LocalInputSource() override;
 
 		PlayerInputAbs getNextInput() override;

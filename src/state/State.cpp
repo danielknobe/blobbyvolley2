@@ -49,6 +49,14 @@ void State::playSound(const std::string& sound, float volume) {
 	m_App->getSoundManager().playSound(sound, volume);
 }
 
+bool State::is_exiting() const {
+    return getInputMgr().exit();
+}
+
+bool State::clicked() const {
+    return getInputMgr().click();
+}
+
 void State::setApp(BlobbyApp* app) {
 	assert(app);
 	m_App = app;
@@ -68,6 +76,10 @@ BlobbyApp& State::getApp() const
 
 IMGUI& State::getIMGUI() const {
 	return getApp().getIMGUI();
+}
+
+InputManager& State::getInputMgr() const {
+	return getApp().getInputManager();
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -130,7 +142,7 @@ void MainMenuState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 540.0), TextManager::MNU_LABEL_EXIT))
 	{
-		InputManager::getSingleton()->setEndBlobby();
+        getInputMgr().setEndBlobby();
 	}
 }
 

@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "SoundManager.h"
 #include "LocalInputSource.h"
+#include "InputDevice.h"
 #include "UserConfig.h"
 #include "FileExceptions.h"
 #include "GenericIO.h"
@@ -65,7 +66,7 @@ void NetworkGameState::init()
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");
 	mUseRemoteColor = config->getBool("use_remote_color");
-	mLocalInput.reset(new LocalInputSource(mOwnSide));
+	mLocalInput.reset(new LocalInputSource(getInputMgr().beginGame(mOwnSide)));
 	mLocalInput->setMatch(mMatch.get());
 
 	// game is not started until two players are connected
@@ -359,7 +360,7 @@ void NetworkGameState::step_impl()
 	presentGame();
 	presentGameUI();
 
-	if (InputManager::getSingleton()->exit() && mNetworkState != PLAYING)
+	if (is_exiting() && mNetworkState != PLAYING)
 	{
 		if(mNetworkState == PAUSING)
 		{
@@ -373,7 +374,7 @@ void NetworkGameState::step_impl()
 			switchState(new MainMenuState);
 		}
 	}
-	else if (InputManager::getSingleton()->exit() && mSaveReplay)
+	else if (is_exiting() && mSaveReplay)
 	{
 		mSaveReplay = false;
 		getIMGUI().resetSelection();
@@ -483,7 +484,7 @@ void NetworkGameState::step_impl()
 			mLocalInput->updateInput();
 			PlayerInputAbs input = mLocalInput->getRealInput();
 
-			if (InputManager::getSingleton()->exit())
+			if (is_exiting())
 			{
 				RakNet::BitStream stream;
 				stream.Write((unsigned char)ID_PAUSE);
@@ -530,7 +531,7 @@ void NetworkGameState::step_impl()
 			{
 
 				// GUI-Hack, so that we can send messages
-				if ((InputManager::getSingleton()->getLastActionKey() == "Return") && (!mChattext.empty()))
+				if ((getInputMgr().getLastActionKey() == "Return") && (!mChattext.empty()))
 				{
 					RakNet::BitStream stream;
 					char message[31];

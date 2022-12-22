@@ -28,9 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-LocalInputSource::LocalInputSource(PlayerSide player)
+LocalInputSource::LocalInputSource(std::unique_ptr<InputDevice> device) : mInputDevice(std::move(device))
 {
-	mInputDevice = InputManager::getSingleton()->beginGame(player);
 }
 
 LocalInputSource::~LocalInputSource()

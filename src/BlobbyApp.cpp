@@ -69,7 +69,8 @@ void BlobbyApp::step()
 
 BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config) :
 	mCurrentState(std::move(initState)),
-	mSoundManager( new SoundManager )
+	mSoundManager( new SoundManager ),
+    mInputMgr( new InputManager() )
 {
 	mCurrentState->setApp(this);
 
@@ -79,13 +80,17 @@ BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& 
 	mSoundManager->playSound(SoundManager::IMPACT, 0.0);
 	mSoundManager->playSound(SoundManager::WHISTLE, 0.0);
 
-	mIMGUI.reset(new IMGUI(InputManager::getSingleton()));
+	mIMGUI.reset(new IMGUI(mInputMgr.get()));
 	mIMGUI->setTextMgr(config.getString("language"));
 }
 
 SoundManager& BlobbyApp::getSoundManager() const
 {
 	return *mSoundManager;
+}
+
+InputManager& BlobbyApp::getInputManager() const {
+    return *mInputMgr;
 }
 
 IMGUI& BlobbyApp::getIMGUI() const
