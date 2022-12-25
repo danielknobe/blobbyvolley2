@@ -119,8 +119,6 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		InputManager* inputmgr = InputManager::createInputManager();
-
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
@@ -231,8 +229,8 @@ int main(int argc, char* argv[])
 			}
 			++step;
 
-			inputmgr->updateInput();
-			running = inputmgr->running();
+			app.getInputManager().updateInput();
+			running = app.getInputManager().running();
 			app.getIMGUI().begin();
 			app.step();
 			rmanager = &RenderManager::getSingleton(); //RenderManager may change
