@@ -16,7 +16,7 @@ Name: "{group}\{#FullyQualifiedAppName}"; Filename: "{app}\blobby.exe"; WorkingD
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
-LanguageDetectionMethod=none
+LanguageDetectionMethod=locale
 AppName={#FullyQualifiedAppName}
 AppVerName={#FullyQualifiedAppName}
 DefaultDirName={pf}\{#FullyQualifiedAppName}
