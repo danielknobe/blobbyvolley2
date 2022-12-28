@@ -68,7 +68,7 @@ void ReplayState::loadReplay(const std::string& file)
 		playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
-                           PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
+		                   PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
 
 		mMatch->getPlayer(LEFT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
 		mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));

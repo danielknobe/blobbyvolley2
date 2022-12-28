@@ -259,7 +259,7 @@ void NetworkGameState::step_impl()
 				stream.Read(rulesLength);
 				if (rulesLength)
 				{
-                    std::vector<char> rulesString(rulesLength + 1, '\0');
+					std::vector<char> rulesString(rulesLength + 1, '\0');
 					stream.Read(rulesString.data(), rulesLength);
 					FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
 					rulesFile.write(rulesString.data(), rulesLength);

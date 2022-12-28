@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 struct lua_State;
 namespace tinyxml2
 {
-    class XMLDocument;
+	class XMLDocument;
 }
 
 using XMLDocumentPtr = std::shared_ptr<tinyxml2::XMLDocument>;

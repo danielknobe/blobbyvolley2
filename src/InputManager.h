@@ -49,7 +49,7 @@ struct JoystickAction;
 class InputManager : public ObjectCounter<InputManager>
 {
 	public:
-        InputManager();
+		InputManager();
 		~InputManager();
 
 		std::unique_ptr<InputDevice> beginGame(PlayerSide side);

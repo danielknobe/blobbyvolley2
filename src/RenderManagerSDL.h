@@ -105,7 +105,7 @@ class RenderManagerSDL : public RenderManager
 		void colorizeBlobs(int player, int frame);
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON
-        SDL_Texture* mBackFlag;
+		SDL_Texture* mBackFlag;
 #endif
 };
 

@@ -39,8 +39,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 std::map<std::string, std::shared_ptr<IUserConfigReader> >& userConfigCache()
 {
-     static std::map<std::string, std::shared_ptr<IUserConfigReader> > cache;
-     return cache;
+	static std::map<std::string, std::shared_ptr<IUserConfigReader> > cache;
+	return cache;
 }
 
 std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(const std::string& file)
@@ -115,8 +115,8 @@ bool UserConfig::loadFile(const std::string& filename)
 		const char* v = varElem->Attribute("value");
 		if(c && v) {
             createVar(c, v);
-        } else {
-		    std::cerr << "name of value missing for <var>" << std::endl;
+		} else {
+			std::cerr << "name of value missing for <var>" << std::endl;
 		}
 	}
 
@@ -139,7 +139,7 @@ bool UserConfig::saveFile(const std::string& filename) const
 		printer.PushAttribute("value", variable.Value.c_str());
 		printer.CloseElement();
 	}
-    printer.CloseElement();
+	printer.CloseElement();
 
 	file.write(printer.CStr(), printer.CStrSize() - 1);  // do not write terminating \0 character
 	file.close();

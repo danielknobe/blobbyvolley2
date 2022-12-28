@@ -58,13 +58,13 @@ protected:
 	State();
 
 	BlobbyApp& getApp() const;
-    IMGUI& getIMGUI() const;
-    InputManager& getInputMgr() const;
+	IMGUI& getIMGUI() const;
+	InputManager& getInputMgr() const;
 
-    // shortcuts
-    void playSound(const std::string& sound, float volume);
-    bool is_exiting() const;
-    bool clicked() const;
+	// shortcuts
+	void playSound(const std::string& sound, float volume);
+	bool is_exiting() const;
+	bool clicked() const;
 
 	void switchState(State* newState);
 private:

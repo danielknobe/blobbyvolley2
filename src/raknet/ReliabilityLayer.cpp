@@ -1972,7 +1972,7 @@ InternalPacket * ReliabilityLayer::BuildPacketFromSplitPacketList( unsigned int 
 
 					else
 					{
-                        if (splitPacketList[ indexList[ j ] ]->splitPacketIndex * (unsigned int) maxDataSize + (unsigned int) maxDataSize > (unsigned int) allocatedLength )
+						if (splitPacketList[ indexList[ j ] ]->splitPacketIndex * (unsigned int) maxDataSize + (unsigned int) maxDataSize > (unsigned int) allocatedLength )
 						{
 							// Watch for buffer overruns
 #ifdef _DEBUG

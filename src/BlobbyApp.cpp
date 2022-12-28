@@ -70,7 +70,7 @@ void BlobbyApp::step()
 BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config) :
 	mCurrentState(std::move(initState)),
 	mSoundManager( new SoundManager ),
-    mInputMgr( new InputManager() )
+	mInputMgr( new InputManager() )
 {
 	mCurrentState->setApp(this);
 
@@ -90,7 +90,7 @@ SoundManager& BlobbyApp::getSoundManager() const
 }
 
 InputManager& BlobbyApp::getInputManager() const {
-    return *mInputMgr;
+	return *mInputMgr;
 }
 
 IMGUI& BlobbyApp::getIMGUI() const

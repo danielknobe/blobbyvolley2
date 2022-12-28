@@ -88,7 +88,7 @@ bool FileSystem::exists(const std::string& filename) const
 
 bool FileSystem::isDirectory(const std::string& dirname) const
 {
-    if(!exists(dirname)) { return false; }
+	if(!exists(dirname)) { return false; }
 
 	PHYSFS_Stat stat;
 	if ( !PHYSFS_stat(dirname.c_str(), &stat) )

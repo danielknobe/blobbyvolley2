@@ -50,11 +50,11 @@ void State::playSound(const std::string& sound, float volume) {
 }
 
 bool State::is_exiting() const {
-    return getInputMgr().exit();
+	return getInputMgr().exit();
 }
 
 bool State::clicked() const {
-    return getInputMgr().click();
+	return getInputMgr().click();
 }
 
 void State::setApp(BlobbyApp* app) {
@@ -142,7 +142,7 @@ void MainMenuState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 540.0), TextManager::MNU_LABEL_EXIT))
 	{
-        getInputMgr().setEndBlobby();
+		getInputMgr().setEndBlobby();
 	}
 }
 
