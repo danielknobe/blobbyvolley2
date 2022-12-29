@@ -145,6 +145,11 @@ std::string FileSystem::getUserDir()
 	return PHYSFS_getUserDir();
 }
 
+std::string FileSystem::getPrefDir()
+{
+	return PHYSFS_getPrefDir("org.dk", "blobby");
+}
+
 void FileSystem::probeDir(const std::string& dirname)
 {
 	if ( !isDirectory(dirname) )

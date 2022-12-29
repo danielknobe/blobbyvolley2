@@ -94,6 +94,23 @@ void setupPHYSFS()
 		std::string baseSearchPath(PHYSFS_getBaseDir());
 	#endif
 
+	/*
+	set write dir (desktop)
+	*/
+	#if BLOBBY_ON_DESKTOP
+		std::string prefDir = fs.getPrefDir();
+		fs.setWriteDir(prefDir);
+		fs.probeDir(prefDir + "replays");
+		fs.probeDir(prefDir + "gfx");
+		fs.probeDir(prefDir + "sounds");
+		fs.probeDir(prefDir + "scripts");
+		fs.probeDir(prefDir + "backgrounds");
+		fs.probeDir(prefDir + "rules");
+	#endif
+
+	/*
+	set read dir (local files next to application)
+	*/
 	fs.addToSearchPath(baseSearchPath);
 	fs.addToSearchPath(baseSearchPath + "gfx.zip");
 	fs.addToSearchPath(baseSearchPath + "sounds.zip");
@@ -101,75 +118,61 @@ void setupPHYSFS()
 	fs.addToSearchPath(baseSearchPath + "backgrounds.zip");
 	fs.addToSearchPath(baseSearchPath + "rules.zip");
 
-	#if defined(WIN32)
-		// Just write in installation directory
-		fs.setWriteDir("data");
-	#else
-		#if (!defined __ANDROID__)
-			// Create a search path in the home directory and ensure that
-			// all paths exist and are actually directories
-			#if (defined __APPLE__) || (defined __SWITCH__)
-				#if TARGET_OS_SIMULATOR
-					// The simulator doesn't create documentsfolder anymore, we create it if necessary
-					fs.setWriteDir(baseSearchPath + "../");
-					fs.probeDir("Documents");
-				#endif
-				#if TARGET_OS_IPHONE
-					std::string userdir = baseSearchPath + "../Documents/";
-				#else
-					std::string userdir = fs.getUserDir();
-				#endif
-			#else
-				// Linux
-				std::string userdir = fs.getUserDir();
+	/*
+	set read dir (unix-like when installed)
+	*/
+	#if BLOBBY_ON_DESKTOP && (!defined WIN32)
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
+	#endif
 
-				// handle the case when it is installed
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
+	/// \todo the following lines must be refactored!!!!
+	#if (!defined __ANDROID__) && (!BLOBBY_ON_DESKTOP)
+		// Create a search path in the home directory and ensure that
+		// all paths exist and are actually directories
+		#if (defined __APPLE__) || (defined __SWITCH__)
+			#if TARGET_OS_SIMULATOR
+				// The simulator doesn't create documentsfolder anymore, we create it if necessary
+				fs.setWriteDir(baseSearchPath + "../");
+				fs.probeDir("Documents");
 			#endif
-			std::string userAppend = ".blobby";
-			std::string homedir = userdir + userAppend;
-			/// \todo please review this code and determine if we really need to add userdir to search path
-			/// only to remove it later
-			fs.setWriteDir(userdir);
-			fs.probeDir(userAppend);
-			/// \todo why do we need separator here?
-			fs.probeDir(userAppend + separator + "replays");
-			fs.probeDir(userAppend + separator + "gfx");
-			fs.probeDir(userAppend + separator + "sounds");
-			fs.probeDir(userAppend + separator + "scripts");
-			fs.probeDir(userAppend + separator + "backgrounds");
-			fs.probeDir(userAppend + separator + "rules");
-			fs.removeFromSearchPath(userdir);
-			// here we set the write dir anew!
-			fs.setWriteDir(homedir);
-			#if defined(GAMEDATADIR)
-			{
-				// A global installation path makes only sense on non-Windows
-				// platforms
-				std::string basedir = GAMEDATADIR;
-				fs.addToSearchPath(basedir);
-				fs.addToSearchPath(basedir + separator + "gfx.zip");
-				fs.addToSearchPath(basedir + separator + "sounds.zip");
-				fs.addToSearchPath(basedir + separator + "scripts.zip");
-				fs.addToSearchPath(basedir + separator + "backgrounds.zip");
-				fs.addToSearchPath(basedir + separator + "rules.zip");
-			}
+			#if TARGET_OS_IPHONE
+				std::string userdir = baseSearchPath + "../Documents/";
+			#else
+				std::string userdir = fs.getUserDir();
 			#endif
 		#else
-			fs.setWriteDir(baseSearchPath);
-			fs.probeDir("replays");
-			fs.probeDir("gfx");
-			fs.probeDir("sounds");
-			fs.probeDir("scripts");
-			fs.probeDir("backgrounds");
-			fs.probeDir("rules");
+			std::string userdir = fs.getUserDir();
 		#endif
-
+		std::string userAppend = ".blobby";
+		std::string homedir = userdir + userAppend;
+		/// \todo please review this code and determine if we really need to add userdir to search path
+		/// only to remove it later
+		fs.setWriteDir(userdir);
+		fs.probeDir(userAppend);
+		/// \todo why do we need separator here?
+		fs.probeDir(userAppend + separator + "replays");
+		fs.probeDir(userAppend + separator + "gfx");
+		fs.probeDir(userAppend + separator + "sounds");
+		fs.probeDir(userAppend + separator + "scripts");
+		fs.probeDir(userAppend + separator + "backgrounds");
+		fs.probeDir(userAppend + separator + "rules");
+		fs.removeFromSearchPath(userdir);
+		// here we set the write dir anew!
+		fs.setWriteDir(homedir);
+	#endif
+	#if (defined __ANDROID__)
+		fs.setWriteDir(baseSearchPath);
+		fs.probeDir("replays");
+		fs.probeDir("gfx");
+		fs.probeDir("sounds");
+		fs.probeDir("scripts");
+		fs.probeDir("backgrounds");
+		fs.probeDir("rules");
 	#endif
 }
 

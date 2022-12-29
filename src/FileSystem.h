@@ -80,4 +80,8 @@ class FileSystem : public ObjectCounter<FileSystem>
 
 		/// \todo ideally, this method would never be needed by client code!!
 		std::string getUserDir();
+
+		/// \brief Get the user-and-app-specific path where files can be written.
+		/// \todo ideally, this method would never be needed by client code!!
+		std::string getPrefDir();
 };
