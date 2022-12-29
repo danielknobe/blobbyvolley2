@@ -48,6 +48,7 @@ ReplayState::ReplayState()
 
 void ReplayState::init()
 {
+	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 }
 
 
@@ -64,8 +65,6 @@ void ReplayState::loadReplay(const std::string& file)
 		rulesFile.write(mReplayPlayer->getRules());
 		rulesFile.close();
 		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
-
-		playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
 		                   PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});

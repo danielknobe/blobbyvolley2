@@ -72,7 +72,7 @@ private:
 	friend class BlobbyApp;
 	void setApp(BlobbyApp* app);
 
-	BlobbyApp* m_App;
+	BlobbyApp* m_App = nullptr;
 
 };
 
