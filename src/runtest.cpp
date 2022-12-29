@@ -237,8 +237,8 @@ int main(int argc, char* argv[])
 		add_key_event(SDLK_DOWN);
 		add_key_event(SDLK_RETURN);
 
-		// let the replay run: effectively NOPS
-		add_key_event(SDLK_LEFT, 200);
+		// let the replay run, but shorter than the game before
+		add_key_event(SDLK_LEFT, 100);
 
 		// end replay and game
 		add_key_event(SDLK_ESCAPE);
