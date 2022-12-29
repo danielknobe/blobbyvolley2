@@ -243,7 +243,7 @@ XMLDocumentPtr FileRead::readXMLDocument(const std::string& filename)
 	fileBuffer[fileLength] = 0;
 
 	// parse file
-    XMLDocumentPtr xml = std::make_shared<tinyxml2::XMLDocument>();
+	XMLDocumentPtr xml = std::make_shared<tinyxml2::XMLDocument>();
 	xml->Parse(fileBuffer.data());
 
 	/// \todo do error handling here?

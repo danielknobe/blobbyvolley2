@@ -433,7 +433,7 @@ void InputOptionsState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
+	std::string lastActionKey = getInputMgr().getLastActionKey();
 
 	// left player side:
 	handlePlayerInput(LEFT_PLAYER, lastActionKey, mLeftMouseJumpbutton, mLeftKeyboard, mLeftJoystick);
@@ -524,7 +524,7 @@ void InputOptionsState::handlePlayerInput(PlayerSide player, std::string& lastAc
 	{
 		handleMouseInput(base_x, mouse, player == LEFT_PLAYER ? mLeftMouseSensitivity : mRightMouseSensitivity);
 	}
-	if ((mouse == -2) && (InputManager::getSingleton()->getLastMouseButton() == -1))
+	if ((mouse == -2) && (getInputMgr().getLastMouseButton() == -1))
 		mouse = -1;
 	//if keyboard device is selected:
 	if (device == "keyboard")
@@ -650,8 +650,8 @@ void InputOptionsState::getMouseInput(int& action, TextManager::STRING input)
 		return;
 
 	getInputPrompt(TextManager::OP_PRESS_MOUSE_BUTTON, input);
-	action = InputManager::getSingleton()->getLastMouseButton();
-	if (InputManager::getSingleton()->exit())
+	action = getInputMgr().getLastMouseButton();
+	if (is_exiting())
 		action = mOldInteger;
 }
 
@@ -663,7 +663,7 @@ void InputOptionsState::getKeyboardInput(std::string& action, TextManager::STRIN
 
 	getInputPrompt(TextManager::OP_PRESS_KEY_FOR, input);
 	action = std::move(lastActionKey);
-	if (InputManager::getSingleton()->exit())
+	if (is_exiting())
 		action = mOldString;
 }
 
@@ -674,8 +674,8 @@ void InputOptionsState::getJoystickInput(std::string& action, TextManager::STRIN
 		return;
 
 	getInputPrompt(TextManager::OP_PRESS_BUTTON_FOR, input);
-	action = InputManager::getSingleton()->getLastJoyAction();
-	if (InputManager::getSingleton()->exit())
+	action = getInputMgr().getLastJoyAction();
+	if (is_exiting())
 		action = mOldString;
 
 }

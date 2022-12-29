@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GameState.h"
 
 class ReplayRecorder;
+class InputSource;
+class IUserConfigReader;
 
 /*! \class LocalGameState
 	\brief state for singleplayer game
@@ -39,6 +41,8 @@ class LocalGameState : public GameState
 		const char* getStateName() const override;
 
 	private:
+		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side );
+
 		bool mWinner;
 
 		std::unique_ptr<ReplayRecorder> mRecorder;

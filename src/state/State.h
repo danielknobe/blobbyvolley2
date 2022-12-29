@@ -26,6 +26,7 @@ class DuelMatch;
 class ReplayRecorder;
 class BlobbyApp;
 class IMGUI;
+class InputManager;
 
 #define GEN_ID getIMGUI().getNextId()
 
@@ -56,9 +57,14 @@ protected:
 	/// generic state constructor. automatically resets imgui selection
 	State();
 
-	void playSound(const std::string& sound, float volume);
 	BlobbyApp& getApp() const;
 	IMGUI& getIMGUI() const;
+	InputManager& getInputMgr() const;
+
+	// shortcuts
+	void playSound(const std::string& sound, float volume);
+	bool is_exiting() const;
+	bool clicked() const;
 
 	void switchState(State* newState);
 private:

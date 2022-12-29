@@ -102,7 +102,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		virtual ~RenderManager();
 
 		static RenderManager* createRenderManagerSDL();
-        static RenderManager* createRenderManagerGL2D();
+		static RenderManager* createRenderManagerGL2D();
 		static RenderManager* createRenderManagerNull();
     
 		static RenderManager& getSingleton()

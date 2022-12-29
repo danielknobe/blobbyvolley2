@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include "DuelMatch.h"
 #include "InputManager.h"
+#include "InputDevice.h"
 #include "IMGUI.h"
 #include "replays/ReplayRecorder.h"
 #include "SoundManager.h"
@@ -33,33 +34,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "LocalInputSource.h"
 #include "ScriptedInputSource.h"
 
-namespace {
-
-	std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side )
-	{
-		std::string prefix = side == LEFT_PLAYER ? "left" : "right";
-		try
-		{
-			// these operations may throw, i.e., when the script is not found (should not happen)
-			//  or has errors
-			if (config.getBool(prefix + "_player_human"))
-			{
-				return std::make_shared<LocalInputSource>(side);
-			}
-			else
-			{
-				return std::make_shared<ScriptedInputSource>("scripts/" + config.getString(prefix + "_script_name"),
-															 side, config.getInteger(prefix + "_script_strength"));
-			}
-		} catch (std::exception& e)
-		{
-			/// \todo REWORK ERROR REPORTING
-			std::cerr << e.what() << std::endl;
-			return std::make_shared<InputSource>();
-		}
-	}
-}
-
 /* implementation */
 LocalGameState::~LocalGameState() = default;
 
@@ -67,6 +41,29 @@ LocalGameState::LocalGameState()
 	: mWinner(false), mRecorder(new ReplayRecorder())
 {
 
+}
+
+std::shared_ptr<InputSource> LocalGameState::createInputSource( IUserConfigReader& config, PlayerSide side ) {
+	std::string prefix = side == LEFT_PLAYER ? "left" : "right";
+	try
+	{
+		// these operations may throw, i.e., when the script is not found (should not happen)
+		//  or has errors
+		if (config.getBool(prefix + "_player_human"))
+		{
+			return std::make_shared<LocalInputSource>(getInputMgr().beginGame(side));
+		}
+		else
+		{
+			return std::make_shared<ScriptedInputSource>("scripts/" + config.getString(prefix + "_script_name"),
+														 side, config.getInteger(prefix + "_script_strength"));
+		}
+	} catch (std::exception& e)
+	{
+		/// \todo REWORK ERROR REPORTING
+		std::cerr << e.what() << std::endl;
+		return std::make_shared<InputSource>();
+	}
 }
 
 void LocalGameState::init()
@@ -140,7 +137,7 @@ void LocalGameState::step_impl()
 			imgui.resetSelection();
 		}
 	}
-	else if (InputManager::getSingleton()->exit())
+	else if (is_exiting())
 	{
 		if (mSaveReplay)
 		{

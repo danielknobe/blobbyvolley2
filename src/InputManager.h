@@ -49,8 +49,7 @@ struct JoystickAction;
 class InputManager : public ObjectCounter<InputManager>
 {
 	public:
-		static InputManager* createInputManager();
-		static InputManager* getSingleton();
+		InputManager();
 		~InputManager();
 
 		std::unique_ptr<InputDevice> beginGame(PlayerSide side);
@@ -59,7 +58,7 @@ class InputManager : public ObjectCounter<InputManager>
 		void setEndBlobby();	// call to trigger the event that ends blobby, i.e. running will return false after this call.
 		void updateInput();
 
-		void captureMouse( bool c );		// sets whether the mouse should be captures
+		void captureMouse( bool c );		// sets whether the mouse should be captured
 		bool isMouseCaptured() const;
 
 		// For GUI navigation (Gamepad, Joystick or Keyboard)
@@ -94,8 +93,6 @@ class InputManager : public ObjectCounter<InputManager>
 
 		SDL_Joystick* getJoystickById(int joyId);
 	private:
-		static InputManager* mSingleton;
-
 		// Keyboard
 		//static InputKeyMap mKeyMap[];	// Type for String <-convert-> SDLKey
 
@@ -129,7 +126,4 @@ class InputManager : public ObjectCounter<InputManager>
 		bool mMouseCaptured;
 
 		std::unique_ptr<JoystickPool> mJoystickPool;
-
-		InputManager();
-
 };

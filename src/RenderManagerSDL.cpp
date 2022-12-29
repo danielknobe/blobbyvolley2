@@ -374,7 +374,7 @@ void RenderManagerSDL::deinit()
 	}
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON
-    SDL_DestroyTexture(mBackFlag);
+	SDL_DestroyTexture(mBackFlag);
 #endif
 
 	SDL_DestroyRenderer(mRenderer);
@@ -695,7 +695,7 @@ void RenderManagerSDL::drawGame(const DuelMatchState& gameState)
 	position.y = 70;
 	position.w = 70;
 	position.h = 82;
-    SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
+	SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
 #endif
 
 	// Drawing the Ball
