@@ -9,7 +9,7 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Name: "it"; MessagesFile: "compiler:Languages\Czech.isl"
 Name: "cz"; MessagesFile: "compiler:Languages\Italian.isl"
 Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl"
-
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Icons]
 Name: "{group}\{#FullyQualifiedAppName}"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
