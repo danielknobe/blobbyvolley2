@@ -213,9 +213,36 @@ int main(int argc, char* argv[])
 		// let the bots play: effectively NOPS
 		add_key_event(SDLK_LEFT, 200);
 
+		// save the replay and back to main menu
 		add_key_event(SDLK_ESCAPE);
 		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
 		add_key_event(SDLK_RETURN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_RETURN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_RETURN);
+
+		// go to replay
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_RETURN);
+
+		// start replay
+		add_key_event(SDLK_DOWN);
+		add_key_event(SDLK_RETURN);
+
+		// let the replay run: effectively NOPS
+		add_key_event(SDLK_LEFT, 200);
+
+		// end replay and game
+		add_key_event(SDLK_ESCAPE);
+		add_key_event(SDLK_ESCAPE);
 		add_key_event(SDLK_ESCAPE);
 
 		int step = 0;
