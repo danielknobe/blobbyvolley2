@@ -1,34 +1,30 @@
 ; Problems: README must have .txt ending, so that it could be opened
+#define FullyQualifiedAppName "Blobby Volley 2 Version 1.1RC1"
+
 [Languages]
-Name: "de"; MessagesFile: "languages\German.isl"
-;Name: "nl"; MessagesFile: "languages\Dutch.isl"
-;Name: "ru"; MessagesFile: "languages\Russian.isl"
-;Name: "pt"; MessagesFile: "languages\Portuguese.isl"
-;Name: "sk"; MessagesFile: "languages\Slovak.isl"
-Name: "pl"; MessagesFile: "languages\Polish.isl"
-;Name: "no"; MessagesFile: "languages\Norwegian.isl"
-Name: "it"; MessagesFile: "languages\Italian.isl"
-;Name: "hu"; MessagesFile: "languages\Hungarian.isl"
-;Name: "fr"; MessagesFile: "languages\French.isl"
-;Name: "fi"; MessagesFile: "languages\Finnish.isl"
-;Name: "dk"; MessagesFile: "languages\Danish.isl"
-;Name: "cz"; MessagesFile: "languages\Czech.isl"
-;Name: "es"; MessagesFile: "languages\Catalan.isl"
-Name: "en"; MessagesFile: "languages\English.isl"
+// Languages which are also supported by the game
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+Name: "it"; MessagesFile: "compiler:Languages\Czech.isl"
+Name: "cz"; MessagesFile: "compiler:Languages\Italian.isl"
+Name: "pl"; MessagesFile: "compiler:Languages\Polish.isl"
+Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Icons]
-Name: "{group}\Blobby Volley 2 Version 1.0RC3"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
+Name: "{group}\{#FullyQualifiedAppName}"; Filename: "{app}\blobby.exe"; WorkingDir: "{app}"
 Name: "{group}\Uninstall"; Filename: "{uninstallexe}"
 
 [Setup]
 LanguageDetectionMethod=locale
-AppName=Blobby Volley 2 Version 1.0RC3
-AppVerName=Blobby Volley 2 Version 1.0RC3
-DefaultDirName={pf}\Blobby Volley 2 Version 1.0RC3
-DefaultGroupName=Blobby Volley 2 Version 1.0RC3
+AppName={#FullyQualifiedAppName}
+AppVerName={#FullyQualifiedAppName}
+DefaultDirName={pf}\{#FullyQualifiedAppName}
+DefaultGroupName={#FullyQualifiedAppName}
 UninstallDisplayIcon={app}\blobby.exe
 Compression=lzma
 SolidCompression=yes
+SourceDir="../"
 
 [dirs]
 Name:"{app}/data/replays"
