@@ -100,12 +100,12 @@ void setupPHYSFS()
 	#if BLOBBY_ON_DESKTOP
 		std::string prefDir = fs.getPrefDir();
 		fs.setWriteDir(prefDir);
-		fs.probeDir(prefDir + "replays");
-		fs.probeDir(prefDir + "gfx");
-		fs.probeDir(prefDir + "sounds");
-		fs.probeDir(prefDir + "scripts");
-		fs.probeDir(prefDir + "backgrounds");
-		fs.probeDir(prefDir + "rules");
+		fs.probeDir("replays");
+		fs.probeDir("gfx");
+		fs.probeDir("sounds");
+		fs.probeDir("scripts");
+		fs.probeDir("backgrounds");
+		fs.probeDir("rules");
 	#endif
 
 	/*
