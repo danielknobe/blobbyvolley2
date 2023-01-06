@@ -88,6 +88,7 @@ void setupPHYSFS()
 	#if BLOBBY_ON_DESKTOP
 		std::string baseSearchPath("data" + separator);
 	#elif (defined __ANDROID__)
+		/// TODO: This seems to be wrong
 		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
 	#elif (defined __APPLE__) || (defined __SWITCH__)
 		// iOS
@@ -95,11 +96,21 @@ void setupPHYSFS()
 	#endif
 
 	/*
-	set write dir (desktop)
+	set write dir
 	*/
-	#if BLOBBY_ON_DESKTOP
-		std::string prefDir = fs.getPrefDir();
-		fs.setWriteDir(prefDir);
+	#if BLOBBY_ON_DESKTOP || (defined __APPLE__ && TARGET_OS_IPHONE)
+		std::string writeDir = fs.getPrefDir();
+		fs.setWriteDir(writeDir);
+		fs.probeDir("replays");
+		fs.probeDir("gfx");
+		fs.probeDir("sounds");
+		fs.probeDir("scripts");
+		fs.probeDir("backgrounds");
+		fs.probeDir("rules");
+	#elif (defined __ANDROID__)
+		/// TODO: Check if we can use PrefDir on Android, too.
+		std::string writeDir(SDL_AndroidGetExternalStoragePath() + separator);
+		fs.setWriteDir(writeDir);
 		fs.probeDir("replays");
 		fs.probeDir("gfx");
 		fs.probeDir("sounds");
@@ -131,23 +142,10 @@ void setupPHYSFS()
 	#endif
 
 	/// \todo the following lines must be refactored!!!!
-	#if (!defined __ANDROID__) && (!BLOBBY_ON_DESKTOP)
+	#if (!defined __ANDROID__) && !(defined __APPLE__ && TARGET_OS_IPHONE) && (!BLOBBY_ON_DESKTOP)
 		// Create a search path in the home directory and ensure that
 		// all paths exist and are actually directories
-		#if (defined __APPLE__) || (defined __SWITCH__)
-			#if TARGET_OS_SIMULATOR
-				// The simulator doesn't create documentsfolder anymore, we create it if necessary
-				fs.setWriteDir(baseSearchPath + "../");
-				fs.probeDir("Documents");
-			#endif
-			#if TARGET_OS_IPHONE
-				std::string userdir = baseSearchPath + "../Documents/";
-			#else
-				std::string userdir = fs.getUserDir();
-			#endif
-		#else
-			std::string userdir = fs.getUserDir();
-		#endif
+		std::string userdir = fs.getUserDir();
 		std::string userAppend = ".blobby";
 		std::string homedir = userdir + userAppend;
 		/// \todo please review this code and determine if we really need to add userdir to search path
@@ -164,15 +162,6 @@ void setupPHYSFS()
 		fs.removeFromSearchPath(userdir);
 		// here we set the write dir anew!
 		fs.setWriteDir(homedir);
-	#endif
-	#if (defined __ANDROID__)
-		fs.setWriteDir(baseSearchPath);
-		fs.probeDir("replays");
-		fs.probeDir("gfx");
-		fs.probeDir("sounds");
-		fs.probeDir("scripts");
-		fs.probeDir("backgrounds");
-		fs.probeDir("rules");
 	#endif
 }
 
