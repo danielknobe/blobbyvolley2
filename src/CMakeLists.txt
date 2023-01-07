@@ -116,9 +116,11 @@ else (SWITCH)
 endif (SWITCH)
 
 
-if (UNIX)
+if (UNIX OR WIN32)
 	add_executable(blobby-server ${blobby-server_SRC})
 	target_link_libraries(blobby-server ${BLOBBY_COMMON_LIBS})
+endif (UNIX OR WIN32)	
+if (UNIX)
 	add_executable(blobby-runtest EXCLUDE_FROM_ALL runtest.cpp ${blobby_SRC})
 	target_link_libraries(blobby-runtest ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
 endif (UNIX)

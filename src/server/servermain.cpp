@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
+#include <SDL.h>
+
 #include "DedicatedServer.h"
 #include "SpeedController.h"
 #include "FileSystem.h"
@@ -59,7 +61,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 
 #ifdef WIN32
-#undef main
 
 // function for logging to replacing syslog
 void syslog(int pri, const char* format, ...);
@@ -190,6 +191,8 @@ int main(int argc, char** argv)
 	#ifndef WIN32
 	closelog();
 	#endif
+
+	return 0;
 }
 
 // -----------------------------------------------------------------------------------------
@@ -315,7 +318,6 @@ void setup_physfs(char* argv0)
 
 
 #ifdef WIN32
-#undef main
 
 void syslog(int pri, const char* format, ...)
 {
