@@ -116,10 +116,10 @@ else (SWITCH)
 endif (SWITCH)
 
 
-if (UNIX OR WIN32)
+if (UNIX AND (NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android) OR WIN32)
 	add_executable(blobby-server ${blobby-server_SRC})
 	target_link_libraries(blobby-server ${BLOBBY_COMMON_LIBS})
-endif (UNIX OR WIN32)	
+endif ()
 if (UNIX)
 	add_executable(blobby-runtest EXCLUDE_FROM_ALL runtest.cpp ${blobby_SRC})
 	target_link_libraries(blobby-runtest ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
@@ -127,8 +127,8 @@ endif (UNIX)
 
 if (WIN32)
 	set_target_properties(blobby PROPERTIES LINK_FLAGS "-mwindows") # disable the console window
-	install(TARGETS blobby DESTINATION .)
-elseif (UNIX)
+	install(TARGETS blobby blobby-server DESTINATION .)
+elseif (UNIX AND (NOT ${CMAKE_SYSTEM_NAME} STREQUAL Android))
 	install(TARGETS blobby blobby-server DESTINATION bin)
 elseif (SWITCH)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
