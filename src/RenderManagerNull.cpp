@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RenderManagerNull.h"
 
 
-RenderManager* RenderManager::createRenderManagerNull()
+std::unique_ptr<RenderManager> RenderManager::createRenderManagerNull()
 {
-	return new RenderManagerNull();
+	return std::unique_ptr<RenderManager>{new RenderManagerNull()};
 }

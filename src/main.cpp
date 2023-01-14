@@ -72,7 +72,6 @@ extern std::shared_ptr<std::thread> gHostedServerThread;
 
 void deinit()
 {
-	RenderManager::getSingleton().deinit();
 	SDL_Quit();
 
 #if (defined __SWITCH__) && (defined DEBUG)
@@ -206,10 +205,6 @@ void setupPHYSFS()
 	atexit(SDL_Quit);
 	atexit([](){gKillHostThread=true; if(gHostedServerThread) gHostedServerThread->join();});
 	srand(SDL_GetTicks());
-	// Default is OpenGL and false
-	// choose renderer
-	RenderManager *rmanager = nullptr;
-
 
 	// Test Version Startup Warning
 	#ifdef TEST_VERSION
@@ -237,35 +232,9 @@ void setupPHYSFS()
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		if(gameConfig.getString("device") == "SDL")
-			rmanager = RenderManager::createRenderManagerSDL();
-		else if (gameConfig.getString("device") == "OpenGL")
-			rmanager = RenderManager::createRenderManagerGL2D();
-		else
-		{
-			std::cerr << "Warning: Unknown renderer selected!";
-			std::cerr << "Falling back to SDL" << std::endl;
-			rmanager = RenderManager::createRenderManagerSDL();
-		}
-
-		// fullscreen?
-		if(gameConfig.getString("fullscreen") == "true")
-			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, true);
-		else
-			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, false);
-
-		if(gameConfig.getString("show_shadow") == "true")
-			rmanager->showShadow(true);
-		else
-			rmanager->showShadow(false);
-
 		SpeedController scontroller(gameConfig.getFloat("gamefps"));
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
-
-		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
-		if ( FileSystem::getSingleton().exists(bg) )
-			rmanager->setBackground(bg);
 
 		int running = 1;
 
@@ -280,7 +249,6 @@ void setupPHYSFS()
 
 			app.getIMGUI().begin();
 			app.step();
-			rmanager = &RenderManager::getSingleton(); //RenderManager may change
 			//draw FPS:
 			static int lastfps = 0;
 			static int lastlag = -1;
@@ -299,7 +267,7 @@ void setupPHYSFS()
 					tmp << AppTitle << "  FPS: " << newfps;
 					if( CURRENT_NETWORK_LAG != -1)
 						tmp << "  LAG: " << CURRENT_NETWORK_LAG;
-					rmanager->setTitle(tmp.str());
+					app.getRenderManager().setTitle(tmp.str());
 					lastlag = CURRENT_NETWORK_LAG;
 				}
 				lastfps = newfps;
@@ -309,16 +277,16 @@ void setupPHYSFS()
 			{
 				std::stringstream tmp;
 				tmp << AppTitle;
-				rmanager->setTitle(tmp.str());
+				app.getRenderManager().setTitle(tmp.str());
 
 				lastfps = -1;
 			}
 
 			if (!scontroller.doFramedrop())
 			{
-				app.getIMGUI().end(*rmanager);
-				rmanager->getBlood().step(*rmanager);
-				rmanager->refresh();
+				app.getIMGUI().end(app.getRenderManager());
+				app.getRenderManager().getBlood().step(app.getRenderManager());
+				app.getRenderManager().refresh();
 			}
 			scontroller.update();
 		}
@@ -327,8 +295,6 @@ void setupPHYSFS()
 	{
 		std::cerr << e.what() << std::endl;
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", (std::string("An error occurred, blobby will close: ") + e.what()).c_str(), nullptr);
-		if (rmanager)
-			rmanager->deinit();
 		SDL_Quit();
 #if (defined __SWITCH__) && (defined DEBUG)
 	socketExit();

@@ -101,14 +101,9 @@ class RenderManager : public ObjectCounter<RenderManager>
 	public:
 		virtual ~RenderManager();
 
-		static RenderManager* createRenderManagerSDL();
-		static RenderManager* createRenderManagerGL2D();
-		static RenderManager* createRenderManagerNull();
-    
-		static RenderManager& getSingleton()
-		{
-			return *mSingleton;
-		}
+		static std::unique_ptr<RenderManager> createRenderManagerSDL();
+		static std::unique_ptr<RenderManager> createRenderManagerGL2D();
+		static std::unique_ptr<RenderManager> createRenderManagerNull();
 
 		Color getOscillationColor() const;
 		BloodManager& getBlood();
@@ -120,9 +115,6 @@ class RenderManager : public ObjectCounter<RenderManager>
 		// Init with the desired Resolution.
 		// Note: It is not guaranteed that this resolution will be selected
 		virtual void init(int xResolution, int yResolution, bool fullscreen) {};
-
-		// Frees all internal data
-		virtual void deinit() {};
 
 		// Set a background image by filename
 		// Note: There is a default, you don't need to do this
@@ -191,6 +183,4 @@ class RenderManager : public ObjectCounter<RenderManager>
 
 	private:
 		std::unique_ptr<BloodManager> mBloodMgr;
-		static RenderManager *mSingleton;
-
 };

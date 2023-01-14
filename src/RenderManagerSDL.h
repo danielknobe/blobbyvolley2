@@ -35,9 +35,9 @@ class RenderManagerSDL : public RenderManager
 {
 	public:
 		RenderManagerSDL();
+		~RenderManagerSDL();
 
 		void init(int xResolution, int yResolution, bool fullscreen) override;
-		void deinit() override;
 		void refresh() override;
 
 		bool setBackground(const std::string& filename) override;

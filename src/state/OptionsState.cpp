@@ -194,15 +194,11 @@ void GraphicOptionsState::save()
 	{
 		mOptionConfig.setBool("fullscreen", mFullscreen);
 		mOptionConfig.setString("device", mRenderer);
-		if (mRenderer == "OpenGL")
-			RenderManager::createRenderManagerGL2D()->init(800, 600, mFullscreen);
-		else
-			RenderManager::createRenderManagerSDL()->init(800, 600, mFullscreen);
-		RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
+		getApp().setupRenderManager(mOptionConfig);
 	}
 #endif
 
-	RenderManager::getSingleton().showShadow(mShowShadow);
+	getApp().getRenderManager().showShadow(mShowShadow);
 	mOptionConfig.setBool("show_shadow", mShowShadow);
 
 	mOptionConfig.setInteger("left_blobby_color_r", mR1);
@@ -924,10 +920,10 @@ void MiscOptionsState::save()
 	mOptionConfig.saveFile("config.xml");
 
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
-	RenderManager::getSingleton().getBlood().enable(mOptionConfig.getBool("blood"));
+	getApp().getRenderManager().getBlood().enable(mOptionConfig.getBool("blood"));
 	getApp().getSoundManager().setVolume(mOptionConfig.getFloat("global_volume"));
 	getApp().getSoundManager().setMute(mOptionConfig.getBool("mute"));
-	RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
+	getApp().getRenderManager().setBackground(std::string("backgrounds/") + mOptionConfig.getString("background"));
 	getIMGUI().setTextMgr(mOptionConfig.getString("language"));
 }
 
@@ -945,7 +941,7 @@ void MiscOptionsState::step_impl()
 	if (tmp != mBackground)
 	{
 		mBackground = tmp;
-		RenderManager::getSingleton().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
+		getApp().getRenderManager().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
 	imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RULES);
 	imgui.doSelectbox(GEN_ID, Vector2(34.0, 220.0), Vector2(400.0, 354.0), mRules, mRule);
@@ -982,8 +978,8 @@ void MiscOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 160.0), TextManager::OP_BLOOD))
 	{
 		mShowBlood = !mShowBlood;
-		RenderManager::getSingleton().getBlood().enable(mShowBlood);
-		RenderManager::getSingleton().getBlood().spillBlood(Vector2(484.0, 160.0), 1.5, 2);
+		getApp().getRenderManager().getBlood().enable(mShowBlood);
+		getApp().getRenderManager().getBlood().spillBlood(Vector2(484.0, 160.0), 1.5, 2);
 	}
 	if (mShowBlood)
 	{

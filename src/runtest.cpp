@@ -52,7 +52,6 @@ extern std::shared_ptr<std::thread> gHostedServerThread;
 
 void deinit()
 {
-	RenderManager::getSingleton().deinit();
 	SDL_Quit();
 }
 
@@ -112,47 +111,15 @@ int main(int argc, char* argv[])
 	atexit(SDL_Quit);
 	atexit([](){gKillHostThread=true; if(gHostedServerThread) gHostedServerThread->join();});
 	srand(SDL_GetTicks());
-	// Default is OpenGL and false
-	// choose renderer
-	RenderManager *rmanager = nullptr;
-
 
 	try
 	{
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		if(gameConfig.getString("device") == "SDL")
-			rmanager = RenderManager::createRenderManagerSDL();
-			/*else if (gameConfig.getString("device") == "GP2X")
-				rmanager = RenderManager::createRenderManagerGP2X();*/
-		else if (gameConfig.getString("device") == "OpenGL")
-			rmanager = RenderManager::createRenderManagerGL2D();
-		else
-		{
-			std::cerr << "Warning: Unknown renderer selected!";
-			std::cerr << "Falling back to SDL" << std::endl;
-			rmanager = RenderManager::createRenderManagerSDL();
-		}
-
-		// fullscreen?
-		if(gameConfig.getString("fullscreen") == "true")
-			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, true);
-		else
-			rmanager->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, false);
-
-		if(gameConfig.getString("show_shadow") == "true")
-			rmanager->showShadow(true);
-		else
-			rmanager->showShadow(false);
-
 		SpeedController scontroller(gameConfig.getFloat("gamefps"));
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
-
-		std::string bg = std::string("backgrounds/") + gameConfig.getString("background");
-		if ( FileSystem::getSingleton().exists(bg) )
-			rmanager->setBackground(bg);
 
 		int running = 1;
 
@@ -260,7 +227,7 @@ int main(int argc, char* argv[])
 			running = app.getInputManager().running();
 			app.getIMGUI().begin();
 			app.step();
-			rmanager = &RenderManager::getSingleton(); //RenderManager may change
+			auto* rmanager = &app.getRenderManager(); //RenderManager may change
 
 			if (!scontroller.doFramedrop())
 			{
@@ -274,8 +241,6 @@ int main(int argc, char* argv[])
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
-		if (rmanager)
-			rmanager->deinit();
 		SDL_Quit();
 		exit (EXIT_FAILURE);
 	}

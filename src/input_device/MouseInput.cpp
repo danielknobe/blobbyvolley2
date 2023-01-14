@@ -94,6 +94,7 @@ MouseInputDevice::~MouseInputDevice()
 {
 	assert(mInputManager->isMouseCaptured() == true);
 	mInputManager->captureMouse( false );
+	mInputManager->setMouseMarker( -6 );
 }
 
 PlayerInputAbs MouseInputDevice::transferInput()
