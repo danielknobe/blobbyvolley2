@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 		config.loadFile(g_config_file);
 		maxClients = config.getInteger("maximum_clients");
 		rulesFile  = config.getString("rules", DEFAULT_RULES_FILE);
-		gameSpeeds = config.getString("speed", gameSpeeds);
+		gameSpeeds = config.getString("speeds", gameSpeeds);
 
 		// bring that value into a sane range
 		if(maxClients <= 0 || maxClients > 150)
