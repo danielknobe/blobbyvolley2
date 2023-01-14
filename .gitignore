@@ -39,3 +39,4 @@ src/blobby.nacp
 #project platform independent
 *.zip
 config.h
+test_compile
