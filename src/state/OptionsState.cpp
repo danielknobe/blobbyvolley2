@@ -699,7 +699,7 @@ void InputOptionsState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 
-	std::string lastActionKey = InputManager::getSingleton()->getLastActionKey();
+	std::string lastActionKey = getInputMgr().getLastActionKey();
 
 	// left player side:
 	handlePlayerInput(LEFT_PLAYER, mLeftJoystick);
