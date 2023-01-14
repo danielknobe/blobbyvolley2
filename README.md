@@ -2,8 +2,6 @@
 **The head-to-head multiplayer ball game**
 
 ### Website
- http://blobby.sourceforge.net
-
  http://blobbyvolley.de
 
 ### System requirements

@@ -104,5 +104,5 @@
 	<string english = "medium" translation = "normale" />
 	<string english = "strong" translation = "intelligente" />
 	
-	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "visita http://blobby.sourceforge.net/ per le nuove versioni di blobby volley" />
+	<string english = "please visit https://blobbyvolley.de for a new version of blobby volley" translation = "visita https://blobbyvolley.de per le nuove versioni di blobby volley" />
 </language>

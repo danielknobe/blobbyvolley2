@@ -221,7 +221,7 @@ void setupPHYSFS()
 	{
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "TEST VERISON OUTDATED",
 									(std::string("This is a test version of ") + AppTitle + " which expired on "
-									"1.12.2015. Please visit blobby.sourceforge.net for a newer version").c_str(), 0);
+									"1.12.2015. Please visit https://blobbyvolley.de for a newer version").c_str(), 0);
 		return -1;
 	}
 
@@ -229,7 +229,7 @@ void setupPHYSFS()
 								(std::string("This is a test version of ") + AppTitle + " for testing only.\n"
 								"It might be unstable and/or incompatible to the current release. "
 								"Use of this version is limited to 1.12.2015.\n"
-								"Visit blobby.sourceforge.net for more information or bug reporting.").c_str(), 0);
+								"Visit https://blobbyvolley.de for more information or bug reporting.").c_str(), 0);
 	#endif
 
 	try
