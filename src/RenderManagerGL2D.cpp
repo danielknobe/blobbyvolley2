@@ -668,7 +668,7 @@ void RenderManagerGL2D::drawGame(const DuelMatchState& gameState)
 
 #include "RenderManager.h"
 
-RenderManager* RenderManager::createRenderManagerGL2D()
+std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 {
 	std::cerr << "OpenGL not available! Falling back to SDL renderer" <<
 		std::endl;
