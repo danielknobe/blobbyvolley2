@@ -29,8 +29,8 @@
 	<string english = "checksum error" translation = "erreur de la somme de controle" />
 	<string english = "file is corrupt" translation = "fichier endommage" />
 	<string english = "version error" translation = "erreur de version" />
-	<string english = "file is outdated" translation = "fichier obsolète" />
-	<string english = "receiving replay..." translation = "recevant la vidéo..." />
+	<string english = "file is outdated" translation = "fichier obsolÃ¨te" />
+	<string english = "receiving replay..." translation = "recevant la vidÃ©o..." />
 	<string english = "name of the replay:" translation = "nom de la video:" />
 	<string english = "save replay" translation = "sauvegarder la video" />
 	
@@ -108,5 +108,5 @@
 	<string english = "medium" translation = "moyen" />
 	<string english = "strong" translation = "fort" />
 	
-	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "veuillez visiter http://blobby.sourceforge.net/ for a new version of blobby volley" />
+	<string english = "please visit https://blobbyvolley.de for a new version of blobby volley" translation = "veuillez visiter https://blobbyvolley.de for a new version of blobby volley" />
 </language>

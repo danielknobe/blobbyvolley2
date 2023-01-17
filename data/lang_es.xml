@@ -117,5 +117,5 @@
 	<string english = "strong" translation = "fuerte" />
 	<string english = "rules:" translation = "reglas:" />
 	
-	<string english = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley" translation = "Por favor visite http://blobby.sourceforge.net/ para una nueva versión de blobby volley" />
+	<string english = "please visit https://blobbyvolley.de for a new version of blobby volley" translation = "Por favor visite https://blobbyvolley.de para una nueva versión de blobby volley" />
 </language>

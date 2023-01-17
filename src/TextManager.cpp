@@ -268,7 +268,7 @@ void TextManager::setDefault()
 	mStrings[OP_STRONG] = "strong";
 	mStrings[OP_RULES] = "rules:";
 
-	mStrings[UPDATE_NOTIFICATION] = "please visit http://blobby.sourceforge.net/ for a new version of blobby volley";
+	mStrings[UPDATE_NOTIFICATION] = "please visit https://blobbyvolley.de for a new version of blobby volley";
 }
 
 /// map to map abbreviations to full name (e.g. de to deutsch)
