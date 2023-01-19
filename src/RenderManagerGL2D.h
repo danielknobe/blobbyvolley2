@@ -47,9 +47,9 @@ class RenderManagerGL2D : public RenderManager
 {
 	public:
 		RenderManagerGL2D();
+		~RenderManagerGL2D();
 
 		void init(int xResolution, int yResolution, bool fullscreen) override;
-		void deinit() override;
 		void refresh() override;
 
 		bool setBackground(const std::string& filename) override;

@@ -27,6 +27,8 @@ class SoundManager;
 class InputManager;
 class IUserConfigReader;
 class IMGUI;
+class RenderManager;
+struct SDL_Window;
 
 class BlobbyApp {
 	public:
@@ -51,6 +53,14 @@ class BlobbyApp {
 		/// gets the name of the currently active state
 		const char* getCurrenStateName() const;
 
+		/// gets the render manager
+		RenderManager& getRenderManager() const;
+
+		/// Gets the game window
+		SDL_Window* getWindow() const;
+
+		void setupRenderManager(const IUserConfigReader& config);
+
 	private:
 		// We keep two references to states: One for the currently active one, and one
 		// that is set to the new state if we want to switch states. This is because we
@@ -62,4 +72,5 @@ class BlobbyApp {
 		std::unique_ptr<SoundManager> mSoundManager;
 		std::unique_ptr<IMGUI> mIMGUI;
 		std::unique_ptr<InputManager> mInputMgr;
+		std::unique_ptr<RenderManager> mRenderMgr;
 };

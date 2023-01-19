@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* include  */
 #include "InputManager.h"
-#include "RenderManager.h"
 #include "InputDevice.h"
 
 /* implementation */
@@ -32,10 +31,7 @@ LocalInputSource::LocalInputSource(std::unique_ptr<InputDevice> device) : mInput
 {
 }
 
-LocalInputSource::~LocalInputSource()
-{
-	RenderManager::getSingleton().setMouseMarker(-6);
-}
+LocalInputSource::~LocalInputSource() = default;
 
 
 PlayerInputAbs LocalInputSource::getNextInput()

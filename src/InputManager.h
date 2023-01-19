@@ -41,6 +41,7 @@ enum class KeyAction
 
 class JoystickPool;
 class InputDevice;
+class BlobbyApp;
 struct _SDL_Joystick;
 typedef struct _SDL_Joystick SDL_Joystick;
 struct JoystickAction;
@@ -49,7 +50,7 @@ struct JoystickAction;
 class InputManager : public ObjectCounter<InputManager>
 {
 	public:
-		InputManager();
+		InputManager(BlobbyApp* app);
 		~InputManager();
 
 		std::unique_ptr<InputDevice> beginGame(PlayerSide side);
@@ -125,5 +126,6 @@ class InputManager : public ObjectCounter<InputManager>
 
 		bool mMouseCaptured;
 
+		BlobbyApp* mApp;
 		std::unique_ptr<JoystickPool> mJoystickPool;
 };

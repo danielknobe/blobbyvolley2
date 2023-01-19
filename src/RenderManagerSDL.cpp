@@ -73,9 +73,9 @@ SDL_Surface* RenderManagerSDL::colorSurface(SDL_Surface *surface, Color color)
 
 RenderManagerSDL::RenderManagerSDL() = default;
 
-RenderManager* RenderManager::createRenderManagerSDL()
+std::unique_ptr<RenderManager> RenderManager::createRenderManagerSDL()
 {
-	return new RenderManagerSDL();
+	return std::unique_ptr<RenderManager>{new RenderManagerSDL()};
 }
 
 void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
@@ -334,7 +334,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 }
 
-void RenderManagerSDL::deinit()
+RenderManagerSDL::~RenderManagerSDL()
 {
 	SDL_DestroyTexture(mOverlayTexture);
 	SDL_DestroyTexture(mRenderTarget);

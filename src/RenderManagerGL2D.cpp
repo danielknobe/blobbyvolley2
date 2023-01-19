@@ -200,9 +200,9 @@ void RenderManagerGL2D::drawQuad(float x, float y, const Texture& tex) {
 
 RenderManagerGL2D::RenderManagerGL2D() = default;
 
-RenderManager* RenderManager::createRenderManagerGL2D()
+std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 {
-	return new RenderManagerGL2D();
+	return std::unique_ptr<RenderManager>{new RenderManagerGL2D()};
 }
 
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
@@ -330,7 +330,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	glEnable(GL_ALPHA_TEST);
 }
 
-void RenderManagerGL2D::deinit()
+RenderManagerGL2D::~RenderManagerGL2D()
 {
 	glDeleteTextures(1, &mBackground);
 	glDeleteTextures(mBall.size(), &mBall[0]);
@@ -668,7 +668,7 @@ void RenderManagerGL2D::drawGame(const DuelMatchState& gameState)
 
 #include "RenderManager.h"
 
-RenderManager* RenderManager::createRenderManagerGL2D()
+std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 {
 	std::cerr << "OpenGL not available! Falling back to SDL renderer" <<
 		std::endl;

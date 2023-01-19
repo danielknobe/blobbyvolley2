@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* includes */
 #include "replays/ReplayRecorder.h"
 #include "DuelMatch.h"
+#include "BlobbyApp.h"
 #include "SoundManager.h"
 #include "IMGUI.h"
 #include "Blood.h"
@@ -41,7 +42,7 @@ GameState::~GameState() = default;
 
 void GameState::presentGame()
 {
-	RenderManager& rmanager = RenderManager::getSingleton();
+	RenderManager& rmanager = getApp().getRenderManager();
 
 	if(mMatch->getPlayer(LEFT_PLAYER).getOscillating())
 	{
@@ -69,7 +70,7 @@ void GameState::presentGame()
 			playSound(SoundManager::IMPACT, e.intensity + BALL_HIT_PLAYER_SOUND_VOLUME);
 			/// \todo save that position inside the event
 			Vector2 hitPos = mMatch->getBallPosition() + (mMatch->getBlobPosition(e.side) - mMatch->getBallPosition()).normalise().scale(31.5);
-			RenderManager::getSingleton().getBlood().spillBlood(hitPos, e.intensity, e.side);
+			getApp().getRenderManager().getBlood().spillBlood(hitPos, e.intensity, e.side);
 		}
 
 		if( e.event == MatchEvent::PLAYER_ERROR )
@@ -79,7 +80,7 @@ void GameState::presentGame()
 
 void GameState::presentGameUI()
 {
-	RenderManager::getSingleton().drawGame(mMatch->getState());
+	getApp().getRenderManager().drawGame(mMatch->getState());
 
 	auto& imgui = getIMGUI();
 

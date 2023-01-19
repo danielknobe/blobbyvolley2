@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL.h>
 
+#include "BlobbyApp.h"
 #include "UserConfig.h"
 #include "RenderManager.h"
 #include "InputDevice.h"
@@ -36,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 const unsigned int DOUBLE_CLICK_TIME = 200;
 
-InputManager::InputManager()
+InputManager::InputManager(BlobbyApp* app) : mApp(app)
 {
 	// joystick
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
@@ -57,10 +58,11 @@ InputManager::~InputManager() = default;
 
 std::unique_ptr<InputDevice> InputManager::beginGame(PlayerSide side)
 {
-	SDL_Window* window = RenderManager::getSingleton().getWindow();
-
-	// Move Mouse to default position
-	SDL_WarpMouseInWindow(window, 400, 300);
+	// Move Mouse to center of window
+	int windowX = 0;
+	int windowY = 0;
+	SDL_GetWindowSize(mApp->getWindow(), &windowX, &windowY);
+	SDL_WarpMouseInWindow(mApp->getWindow(), windowX / 2, windowY / 2);
 
 	std::string prefix;
 	if (side == LEFT_PLAYER)
@@ -357,7 +359,7 @@ Vector2 InputManager::position()
 
 	SDL_GetMouseState(&mMouseX, &mMouseY);
 
-	SDL_GetWindowSize(RenderManager::getSingleton().getWindow(), &windowX, &windowY);
+	SDL_GetWindowSize(mApp->getWindow(), &windowX, &windowY);
 	mMouseX = (int)((((float)mMouseX) * ((float)BASE_RESOLUTION_X)) / windowX);
 	mMouseY = (int)((((float)mMouseY) * ((float)BASE_RESOLUTION_Y)) / windowY);
 
@@ -442,7 +444,7 @@ SDL_Joystick* InputManager::getJoystickById(int joyId)
 
 void InputManager::setMouseMarker(int target)
 {
-	RenderManager::getSingleton().setMouseMarker(target);
+	mApp->getRenderManager().setMouseMarker(target);
 }
 
 bool InputManager::isKeyPressed(SDL_Keycode code) const

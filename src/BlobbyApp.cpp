@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "BlobbyDebug.h"
 #include "IUserConfigReader.h"
 #include "IMGUI.h"
+#include "FileSystem.h"
 
 /* implementation */
 void BlobbyApp::switchToState(std::unique_ptr<State> newState)
@@ -70,7 +71,7 @@ void BlobbyApp::step()
 BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config) :
 	mCurrentState(std::move(initState)),
 	mSoundManager( new SoundManager ),
-	mInputMgr( new InputManager() )
+	mInputMgr( new InputManager(this) )
 {
 	mCurrentState->setApp(this);
 
@@ -82,6 +83,8 @@ BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& 
 
 	mIMGUI.reset(new IMGUI(mInputMgr.get()));
 	mIMGUI->setTextMgr(config.getString("language"));
+
+	setupRenderManager(config);
 }
 
 SoundManager& BlobbyApp::getSoundManager() const
@@ -96,4 +99,39 @@ InputManager& BlobbyApp::getInputManager() const {
 IMGUI& BlobbyApp::getIMGUI() const
 {
 	return *mIMGUI;
+}
+
+SDL_Window* BlobbyApp::getWindow() const
+{
+	return mRenderMgr->getWindow();
+}
+
+RenderManager& BlobbyApp::getRenderManager() const
+{
+	return *mRenderMgr;
+}
+
+void BlobbyApp::setupRenderManager(const IUserConfigReader& config) {
+	std::string device_name = config.getString("device");
+	if(device_name == "SDL")
+		mRenderMgr = RenderManager::createRenderManagerSDL();
+	else if (device_name == "OpenGL")
+		mRenderMgr = RenderManager::createRenderManagerGL2D();
+	else if (device_name == "Null")
+		mRenderMgr = RenderManager::createRenderManagerNull();
+	else
+	{
+		std::cerr << "Warning: Unknown renderer selected!";
+		std::cerr << "Falling back to SDL" << std::endl;
+		mRenderMgr = RenderManager::createRenderManagerSDL();
+	}
+
+	bool fullscreen = config.getBool("fullscreen");
+	bool shadows = config.getBool("show_shadow");
+	mRenderMgr->init(BASE_RESOLUTION_X, BASE_RESOLUTION_Y, fullscreen);
+	mRenderMgr->showShadow(shadows);
+
+	std::string bg = std::string("backgrounds/") + config.getString("background");
+	if ( FileSystem::getSingleton().exists(bg) )
+		mRenderMgr->setBackground(bg);
 }

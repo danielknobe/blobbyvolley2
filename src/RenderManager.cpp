@@ -29,21 +29,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* implementation */
 #define INVALID_FONT_INDEX -1
 
-RenderManager* RenderManager::mSingleton = nullptr;
-
 RenderManager::~RenderManager() = default;
 
 RenderManager::RenderManager() :
 	mBloodMgr(new BloodManager(IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood")))
 {
-	//assert(!mSingleton);
-	if (mSingleton)
-	{
-		mSingleton->deinit();
-		delete mSingleton;
-	}
-
-	mSingleton = this;
 	mMouseMarkerPosition = -100.0;
 }
 
