@@ -98,7 +98,7 @@ void setupPHYSFS()
 	/*
 	set write dir
 	*/
-	#if BLOBBY_ON_DESKTOP || (defined __APPLE__ && TARGET_OS_IPHONE)
+	#if !(defined __ANDROID__)
 		std::string writeDir = fs.getPrefDir();
 		fs.setWriteDir(writeDir);
 		fs.probeDir("replays");
@@ -107,7 +107,7 @@ void setupPHYSFS()
 		fs.probeDir("scripts");
 		fs.probeDir("backgrounds");
 		fs.probeDir("rules");
-	#elif (defined __ANDROID__)
+	#else
 		/// TODO: Check if we can use PrefDir on Android, too.
 		std::string writeDir(SDL_AndroidGetExternalStoragePath() + separator);
 		fs.setWriteDir(writeDir);
@@ -139,29 +139,6 @@ void setupPHYSFS()
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
 		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
-	#endif
-
-	/// \todo the following lines must be refactored!!!!
-	#if (!defined __ANDROID__) && !(defined __APPLE__ && TARGET_OS_IPHONE) && (!BLOBBY_ON_DESKTOP)
-		// Create a search path in the home directory and ensure that
-		// all paths exist and are actually directories
-		std::string userdir = fs.getUserDir();
-		std::string userAppend = ".blobby";
-		std::string homedir = userdir + userAppend;
-		/// \todo please review this code and determine if we really need to add userdir to search path
-		/// only to remove it later
-		fs.setWriteDir(userdir);
-		fs.probeDir(userAppend);
-		/// \todo why do we need separator here?
-		fs.probeDir(userAppend + separator + "replays");
-		fs.probeDir(userAppend + separator + "gfx");
-		fs.probeDir(userAppend + separator + "sounds");
-		fs.probeDir(userAppend + separator + "scripts");
-		fs.probeDir(userAppend + separator + "backgrounds");
-		fs.probeDir(userAppend + separator + "rules");
-		fs.removeFromSearchPath(userdir);
-		// here we set the write dir anew!
-		fs.setWriteDir(homedir);
 	#endif
 }
 
