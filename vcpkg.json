@@ -1,0 +1,5 @@
+{
+    "name": "blobby",
+    "version-string": "0.1",
+    "dependencies": ["sdl2", "physfs", "boost-smart-ptr", "boost-exception", "boost-crc", "boost-algorithm"]
+  }

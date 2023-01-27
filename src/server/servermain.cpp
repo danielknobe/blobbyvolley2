@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <future>
 
 #include <cerrno>
-#include <unistd.h>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -46,6 +45,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef WIN32
 #include <sys/syslog.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #else
 #include <cstdarg>
 #endif
