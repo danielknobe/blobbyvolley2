@@ -9,5 +9,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          cmake -B . -S . -DCMAKE_TOOLCHAIN_FILE="${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          cmake -B . -S . -DCMAKE_TOOLCHAIN_FILE="c:/vcpkg/scripts/buildsystems/vcpkg.cmake"
           cmake --build . 
