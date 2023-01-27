@@ -208,7 +208,7 @@ std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 {
 	glDisable(GL_DEPTH_TEST);
-	mCurrentFlags.insert(GL_MULTISAMPLE);
+	//mCurrentFlags.insert(GL_MULTISAMPLE);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -238,7 +238,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	mGlContext = SDL_GL_CreateContext(mWindow);
 
 	SDL_ShowCursor(0);
-	glDisable(GL_MULTISAMPLE);
+	//glDisable(GL_MULTISAMPLE);
 
 	mLeftBlobColor = Color(255, 0, 0);
 	mRightBlobColor = Color(0, 255, 0);

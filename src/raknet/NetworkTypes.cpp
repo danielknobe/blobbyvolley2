@@ -31,6 +31,8 @@
 #include "NetworkTypes.h"
 #include "BitStream.h"
 
+#include <ostream>
+
 int operator==( const PlayerID& left, const PlayerID& right )
 {
 	return left.binaryAddress == right.binaryAddress && left.port == right.port;

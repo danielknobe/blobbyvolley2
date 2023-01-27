@@ -108,7 +108,7 @@ SDL_Surface* RenderManager::createEmptySurface(unsigned int width, unsigned int 
 int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 {
 	int index = INVALID_FONT_INDEX;
-	wchar_t testChar = *iter;
+	char testChar = *iter;
 	++iter;
 	if (testChar >= '0' && testChar <= '9')
 		index = testChar - '0';

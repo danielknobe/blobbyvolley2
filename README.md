@@ -46,13 +46,14 @@ src/blobby
 1. Install vcpkg by following the instructions:
 https://github.com/microsoft/vcpkg/blob/master/README.md
 
-2. Install dependencies:
+2. Install dependencies in project directory:
 ```powershell
-.\vcpkg install sdl2 boost physfs
+.\vcpkg install
 ```
-3. Use dependencies by following the instructions:
-https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md
-4. Compile and run
+
+3. Configure, build and run:
+https://github.com/microsoft/vcpkg/blob/master/docs/users/buildsystems/cmake-integration.md
+
 
 ### Build under MacOS
 1. Install homebrew by following the instructions:

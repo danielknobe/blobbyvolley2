@@ -420,6 +420,8 @@ inline short set_fpu_single_precision()
 		cw = cw & 0xfcff;
 		asm fldcw cw;
 	#endif
+	#elif WIN32
+	#pragma message ( "FPU precision may not conform to IEEE 754" )
 	#else
 	#warning FPU precision may not conform to IEEE 754
 	#endif
@@ -434,6 +436,8 @@ void reset_fpu_flags(short flags)
 	#elif defined(_MSC_VER)
 		asm fldcw flags;
 	#endif
+	#elif WIN32
+	#pragma message ( "FPU precision may not conform to IEEE 754" )
 	#else
 	#warning FPU precision may not conform to IEEE 754
 	#endif
