@@ -2,7 +2,15 @@ set(APP_NAME "Blobby Volley 2")
 set(APP_AUTHOR "")
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+if (MSVC)
+	add_compile_options(/utf-8)
+	# When building for MSVC with CMake,
+	# the compiler warning flags (like /W3) are added by default.
+else()
+	add_compile_options(-Wall)
+endif()
+
 include_directories(.)
 
 set(common_SRC
