@@ -221,6 +221,10 @@ int RenderManager::getNextFontIndex(std::string::const_iterator& iter)
 			index = 23; // Map to N
 		else if (testChar == std::string("Ñ")[1])
 			index = 23; // Map to N
+		else if (testChar == std::string("ç")[1])
+			index = 12; // Map to C
+		else if (testChar == std::string("Ç")[1])
+			index = 12; // Map to C
 	}
 	else if (testChar == std::string("Ć")[0]) // UTF-8 escape (c4xx)
 	{
