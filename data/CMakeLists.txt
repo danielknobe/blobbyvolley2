@@ -31,8 +31,10 @@ set(install_files
 	config.xml
 	inputconfig.xml
 	server.xml
+	lang_cs.xml
 	lang_de.xml
 	lang_en.xml
+	lang_es.xml
 	lang_fr.xml
 	lang_it.xml)
 
