@@ -147,6 +147,11 @@ elseif (SWITCH)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
 endif ()
 
+if (MSVC)
+	# set application icon
+	target_sources(blobby PRIVATE ../win/res.rc)
+	target_sources(blobby-server PRIVATE ../win/res.rc)
+endif(MSVC)
 
 # Header Checks
 # Create a test target, consisting of one cpp file for each header, where the cpp file does nothing but
