@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream> /// \todo remove this? currently needed for that probeDir error messages
 #include <utility>
 
+#if (defined __ANDROID__)
+#include <SDL.h>
+#endif
 #include <physfs.h>
 
 /* implementation */
@@ -35,7 +38,16 @@ FileSystem* mFileSystemSingleton = nullptr;
 FileSystem::FileSystem(const std::string& path)
 {
 	assert(mFileSystemSingleton == nullptr);
+#if (defined __ANDROID__)
+	PHYSFS_AndroidInit androidArgv0 = {
+		SDL_AndroidGetJNIEnv(),
+		SDL_AndroidGetActivity()
+	};
+
+	if(PHYSFS_init((char*)&androidArgv0) == 0) {
+#else
 	if(PHYSFS_init(path.c_str()) == 0) {
+#endif
 		BOOST_THROW_EXCEPTION(PhysfsInitException(path));
 	}
 	mFileSystemSingleton = this;

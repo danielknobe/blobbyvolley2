@@ -173,17 +173,7 @@ void setupPHYSFS()
 	#endif
 }
 
-#if BLOBBY_ON_MOBILE
-	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || (defined __SWITCH__)
-		int main(int argc, char* argv[])
-	#elif (defined __ANDROID__)
-		#undef main
-		extern "C"
-		int main(int argc, char* argv[])
-	#endif
-#else
-	int main(int argc, char* argv[])
-#endif
+int main(int argc, char* argv[])
 {
 #if (defined __SWITCH__) && (defined DEBUG)
 	socketInitializeDefault();   
