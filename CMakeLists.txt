@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.7)
 
 # Work around older versions of CMake not providing the ANDROID variable
 if(${CMAKE_VERSION} VERSION_LESS "3.7")

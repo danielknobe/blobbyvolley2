@@ -20,7 +20,8 @@ git clone https://github.com/danielknobe/blobbyvolley2.git
 
 ### Build under Linux
 Blobby Volley compiles with GCC 5 or newer, or Clang 10 or newer.
-Other compilers may work but are currently untested.
+Other compilers may work but are currently untested. The minimum supported
+CMake version is 3.7.
 
 1. Install dependencies:
 
