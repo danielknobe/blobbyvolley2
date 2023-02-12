@@ -91,16 +91,12 @@ if (SWITCH)
 	find_library(NX nx)
 endif (SWITCH)
 
-include_directories(
-	${Boost_INCLUDE_DIR}
-)
-
 if (OPENGL_FOUND)
 	include_directories(${OPENGL_INCLUDE_DIR})
 	add_definitions(-DHAVE_LIBGL)
 endif (OPENGL_FOUND)
 
-set(BLOBBY_COMMON_LIBS lua::lua blobnet::blobnet tinyxml2::tinyxml2 PhysFS::PhysFS SDL2::SDL2main SDL2::SDL2)
+set(BLOBBY_COMMON_LIBS lua::lua blobnet::blobnet tinyxml2::tinyxml2 PhysFS::PhysFS SDL2::SDL2main SDL2::SDL2 Boost::boost)
 
 # other additional dependencies
 if (NOT WIN32)
