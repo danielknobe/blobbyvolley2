@@ -62,7 +62,7 @@ std::shared_ptr<IUserConfigReader> IUserConfigReader::createUserConfigReader(con
 	return config;
 }
 
-PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human)
+PlayerIdentity UserConfig::loadPlayerIdentity(PlayerSide side, bool force_human) const
 {
 	std::string prefix = side == LEFT_PLAYER ? "left" : "right";
 	std::string name;

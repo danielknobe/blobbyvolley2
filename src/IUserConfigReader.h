@@ -42,5 +42,5 @@ class IUserConfigReader : public ObjectCounter<IUserConfigReader>
 		virtual bool getBool(const std::string& name, bool default_value = false) const = 0;
 		virtual int getInteger(const std::string& name, int default_value = 0) const = 0;
 
-		virtual PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) = 0;
+		virtual PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) const = 0;
 };

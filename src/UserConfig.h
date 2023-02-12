@@ -63,7 +63,7 @@ class UserConfig: public IUserConfigReader, public ObjectCounter<UserConfig>
 		bool getBool(const std::string& name, bool default_value = false) const override;
 		int getInteger(const std::string& name, int default_value = 0) const override;
 
-		PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) override;
+		PlayerIdentity loadPlayerIdentity(PlayerSide player, bool force_human) const override;
 
 		void setFloat(const std::string& name, float value);
 		void setString(const std::string& name, std::string value);
