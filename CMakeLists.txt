@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.3)
 
+# Work around older versions of CMake not providing the ANDROID variable
+if(${CMAKE_VERSION} VERSION_LESS "3.7")
+	if (UNIX AND "${CMAKE_SYSTEM_NAME}" STREQUAL "Android")
+		set(ANDROID ON)
+	endif()
+endif()
+
 include(CPack)
 
 project(Blobby)
