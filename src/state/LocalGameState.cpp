@@ -77,9 +77,6 @@ void LocalGameState::init()
 	// create default replay name
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
 
-	// set speed
-	mRateController.start(config->getInteger("gamefps"));
-
 	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 	mMatch.reset(new DuelMatch( false, config->getString("rules")));
@@ -90,6 +87,9 @@ void LocalGameState::init()
 	mRecorder->setPlayerColors( leftPlayer.getStaticColor(), rightPlayer.getStaticColor() );
 	mRecorder->setGameSpeed((float)config->getInteger("gamefps"));
 	mRecorder->setGameRules( config->getString("rules") );
+
+	// set speed
+	mRateController.start(config->getInteger("gamefps"));
 }
 
 

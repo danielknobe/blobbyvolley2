@@ -28,7 +28,6 @@ set(common_SRC
 	Color.cpp Color.h
 	NetworkMessage.cpp NetworkMessage.h
 	PhysicWorld.cpp PhysicWorld.h
-	SpeedController.cpp SpeedController.h
 	RateController.cpp RateController.h
 	UserConfig.cpp UserConfig.h
 	PhysicState.cpp PhysicState.h
