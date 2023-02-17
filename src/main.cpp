@@ -234,11 +234,7 @@ int main(int argc, char* argv[])
 
 		while (running)
 		{
-			app.getInputManager().updateInput();
-			running = app.getInputManager().running();
-
-			app.getIMGUI().begin();
-			app.step();
+			running = app.step();
 			//draw FPS:
 			static int lastfps = 0;
 			static int lastlag = -1;
@@ -272,13 +268,14 @@ int main(int argc, char* argv[])
 				lastfps = -1;
 			}
 
-			if (!scontroller.doFramedrop())
-			{
-				app.getIMGUI().end(app.getRenderManager());
-				app.getRenderManager().getBlood().step(app.getRenderManager());
-				app.getRenderManager().refresh();
-			}
-			scontroller.update();
+			//if (!scontroller.doFramedrop())
+			//{
+			app.getIMGUI().end(app.getRenderManager());
+			app.getRenderManager().getBlood().step(app.getRenderManager());
+			app.getRenderManager().refresh();
+			//}
+			//scontroller.update();
+			scontroller.countFPS();
 		}
 	}
 	catch (std::exception& e)

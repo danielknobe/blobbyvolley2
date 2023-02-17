@@ -121,4 +121,20 @@ void SpeedController::update()
 	lastTicks = SDL_GetTicks();
 }
 
+void SpeedController::countFPS()
+{
+	//calculate the FPS of drawn frames:
+	if (mDrawFPS)
+	{
+		if (SDL_GetTicks() >= mOldTicks + 1000)
+		{
+			mOldTicks = SDL_GetTicks();
+			mFPS = mFPSCounter;
+			mFPSCounter = 0;
+		}
+
+		mFPSCounter++;
+	}
+}
+
 

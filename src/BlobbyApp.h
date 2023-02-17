@@ -34,7 +34,7 @@ class BlobbyApp {
 	public:
 		explicit BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config);
 
-		void step();
+		bool step();
 
 		void switchToState(std::unique_ptr<State> newState);
 

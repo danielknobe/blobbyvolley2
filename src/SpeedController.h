@@ -57,6 +57,7 @@ class SpeedController : public ObjectCounter<SpeedController>
 
 	/// This updates everything and waits the necessary time
 		void update();
+		void countFPS();
 
 		static void setMainInstance(SpeedController* inst) { mMainInstance = inst; }
 		static SpeedController* getMainInstance() { return mMainInstance; }

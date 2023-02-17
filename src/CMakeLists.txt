@@ -29,6 +29,7 @@ set(common_SRC
 	NetworkMessage.cpp NetworkMessage.h
 	PhysicWorld.cpp PhysicWorld.h
 	SpeedController.cpp SpeedController.h
+	RateController.cpp RateController.h
 	UserConfig.cpp UserConfig.h
 	PhysicState.cpp PhysicState.h
 	DuelMatchState.cpp DuelMatchState.h
