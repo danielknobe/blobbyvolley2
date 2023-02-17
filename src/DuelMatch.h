@@ -128,6 +128,9 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		void setServingPlayer(PlayerSide side);
 
 		const std::vector<MatchEvent>& getEvents() const { return mLastEvents; }
+		std::vector<MatchEvent> fetchEvents() {
+			return std::move(mLastEvents);
+		}
 		// this function will move all events into mLastEvents, so they will be returned by get events.
 		// use this if no match step is performed, but external events have to be processed.
 		void updateEvents();
@@ -146,7 +149,7 @@ class DuelMatch : public ObjectCounter<DuelMatch>
 		bool mPaused;
 
 		// accumulation of physic events since last event processing
-		std::vector<MatchEvent> mEvents;
+		std::vector<MatchEvent> mNewEvents;
 		std::vector<MatchEvent> mLastEvents;	// events that were generated in the last processed frame
 
 		bool mRemote;

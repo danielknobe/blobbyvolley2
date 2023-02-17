@@ -51,7 +51,8 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
 	mMatch(new DuelMatch(false, rules, scoreToWin)),
-	mSpeedController(speed),
+	mGameFps(speed),
+	mRateController(),
 	mLeftInput (new InputSource()),
 	mRightInput(new InputSource()),
 	mLeftLastTime(-1),
@@ -79,7 +80,7 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 
 	mRecorder->setPlayerNames(leftPlayer.getName(), rightPlayer.getName());
 	mRecorder->setPlayerColors(leftPlayer.getColor(), rightPlayer.getColor());
-	mRecorder->setGameSpeed(mSpeedController.getGameSpeed());
+	mRecorder->setGameSpeed(mGameFps);
 	mRecorder->setGameRules(rules);
 
 	// read rulesfile into a string
@@ -108,7 +109,6 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 				processPackets();
 				step();
 				SWLS_GameSteps++;
-				mSpeedController.update();
 			}
 		}					);
 }
@@ -297,7 +297,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				// writing data into leftStream
 				RakNet::BitStream leftStream;
 				leftStream.Write((unsigned char)ID_GAME_READY);
-				leftStream.Write((int)mSpeedController.getGameSpeed());
+				leftStream.Write((int)mGameFps);
 				strncpy(name, mMatch->getPlayer(RIGHT_PLAYER).getName().c_str(), sizeof(name));
 				leftStream.Write(name, sizeof(name));
 				leftStream.Write(mMatch->getPlayer(RIGHT_PLAYER).getStaticColor().toInt());
@@ -305,7 +305,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				// writing data into rightStream
 				RakNet::BitStream rightStream;
 				rightStream.Write((unsigned char)ID_GAME_READY);
-				rightStream.Write((int)mSpeedController.getGameSpeed());
+				rightStream.Write((int)mGameFps);
 				strncpy(name, mMatch->getPlayer(LEFT_PLAYER).getName().c_str(), sizeof(name));
 				rightStream.Write(name, sizeof(name));
 				rightStream.Write(mMatch->getPlayer(LEFT_PLAYER).getStaticColor().toInt());
@@ -338,31 +338,32 @@ void NetworkGame::step()
 	// don't record the pauses
 	if(!mMatch->isPaused())
 	{
-		mRecorder->record(mMatch->getState());
-
-		mMatch->step();
-
-		broadcastGameEvents();
-
-		PlayerSide winning = mMatch->winningPlayer();
-		if (winning != NO_PLAYER)
+		while(mRateController.handle_next_frame())
 		{
-			// if someone has won, the game is paused
-			mMatch->pause();
-			mRecorder->record(mMatch->getState());
-			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+			mRecorder->record( mMatch->getState());
+			mMatch->step();
+			PlayerSide winning = mMatch->winningPlayer();
+			if (winning != NO_PLAYER)
+			{
+				// if someone has won, the game is paused
+				mMatch->pause();
+				mRecorder->record(mMatch->getState());
+				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
 
-			RakNet::BitStream stream;
-			stream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			stream.Write(winning);
+				RakNet::BitStream stream;
+				stream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				stream.Write(winning);
 
-			RakNet::BitStream switchStream;
-			switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
-			switchStream.Write(winning == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
+				RakNet::BitStream switchStream;
+				switchStream.Write((unsigned char)ID_WIN_NOTIFICATION);
+				switchStream.Write(winning == LEFT_PLAYER ? RIGHT_PLAYER : LEFT_PLAYER);
 
-			broadcastBitstream(stream, switchStream);
+				broadcastBitstream(stream, switchStream);
+				break;
+			}
 		}
 
+		broadcastGameEvents();
 		broadcastPhysicState(mMatch->getState());
 	}
 }
@@ -416,7 +417,7 @@ void NetworkGame::broadcastGameEvents() const
 {
 	RakNet::BitStream stream;
 
-	auto events = mMatch->getEvents();
+	auto events = mMatch->fetchEvents();
 	// send the events
 	if( events.empty() )
 		return;

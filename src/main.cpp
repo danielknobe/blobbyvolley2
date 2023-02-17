@@ -57,6 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileSystem.h"
 #include "state/State.h"
 #include "BlobbyApp.h"
+#include "RateController.h"
 
 #if defined(WIN32)
 #ifndef GAMEDATADIR
@@ -225,6 +226,8 @@ int main(int argc, char* argv[])
 		SpeedController scontroller(gameConfig.getFloat("gamefps"));
 		SpeedController::setMainInstance(&scontroller);
 		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
+		RateController controller;
+		controller.start(144);
 
 		int running = 1;
 
@@ -270,9 +273,17 @@ int main(int argc, char* argv[])
 
 			//if (!scontroller.doFramedrop())
 			//{
-			app.getIMGUI().end(app.getRenderManager());
-			app.getRenderManager().getBlood().step(app.getRenderManager());
-			app.getRenderManager().refresh();
+			controller.handle_next_frame();
+			// TODO make sure we do not drop too many consecutive frames
+			if(!controller.wants_next_frame())
+			{
+				app.getIMGUI().end( app.getRenderManager());
+				app.getRenderManager().getBlood().step( app.getRenderManager());
+				app.getRenderManager().refresh();
+			}
+			while(!controller.wants_next_frame()) {
+				std::this_thread::yield();
+			}
 			//}
 			//scontroller.update();
 			scontroller.countFPS();

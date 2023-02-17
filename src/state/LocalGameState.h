@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "GameState.h"
+#include "RateController.h"
 
 class ReplayRecorder;
 class InputSource;
@@ -46,5 +47,6 @@ class LocalGameState : public GameState
 		bool mWinner;
 
 		std::unique_ptr<ReplayRecorder> mRecorder;
+		RateController mRateController;
 };
 

@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "replays/ReplayRecorder.h"
 #include "SoundManager.h"
-#include "SpeedController.h"
 #include "IUserConfigReader.h"
 
 #include "LocalInputSource.h"
@@ -79,7 +78,7 @@ void LocalGameState::init()
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
 
 	// set speed
-	SpeedController::getMainInstance()->setGameSpeed( (float)config->getInteger("gamefps") );
+	mRateController.start(config->getInteger("gamefps"));
 
 	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
@@ -155,14 +154,17 @@ void LocalGameState::step_impl()
 	}
 	else
 	{
-		mRecorder->record(mMatch->getState());
-		mMatch->step();
-
-		if (mMatch->winningPlayer() != NO_PLAYER)
+		while(mRateController.handle_next_frame())
 		{
-			mWinner = true;
-			mRecorder->record(mMatch->getState());
-			mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+			mRecorder->record( mMatch->getState());
+			mMatch->step();
+			if (mMatch->winningPlayer() != NO_PLAYER)
+			{
+				mWinner = true;
+				mRecorder->record(mMatch->getState());
+				mRecorder->finalize( mMatch->getScore(LEFT_PLAYER), mMatch->getScore(RIGHT_PLAYER) );
+				break;
+			}
 		}
 
 		presentGame();

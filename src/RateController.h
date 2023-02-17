@@ -24,11 +24,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class RateController {
 	public:
-		RateController(int frames_per_second);
+		RateController();
 		using clock_t = std::chrono::steady_clock;
 
-		void start();
-		bool has_next_frame();
+		void start(int frames_per_second);
+		bool handle_next_frame();
+		bool wants_next_frame() const;
 
 	private:
 		std::chrono::nanoseconds mFrameDuration;

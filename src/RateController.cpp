@@ -22,21 +22,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "RateController.h"
 
 /* includes */
+#include <cassert>
 
 /* implementation */
+using namespace std::chrono;
 
-RateController::RateController(int frames_per_second) : mFrameDuration(std::chrono::seconds(1) / frames_per_second){
+RateController::RateController() : mFrameDuration(0) {
 
 }
 
-void RateController::start() {
+void RateController::start(int frames_per_second) {
+	mFrameDuration = duration_cast<nanoseconds>(seconds(1)) / frames_per_second;
 	mLastTicks = clock_t::now();
 }
 
-bool RateController::has_next_frame() {
-	if(clock_t::now() > mLastTicks + mFrameDuration) {
+bool RateController::handle_next_frame() {
+	assert(mFrameDuration.count() != 0);
+	if(wants_next_frame()) {
 		mLastTicks += mFrameDuration;
 		return true;
 	}
 	return false;
+}
+
+bool RateController::wants_next_frame() const
+{
+	assert(mFrameDuration.count() != 0);
+	return clock_t::now() > mLastTicks + mFrameDuration;
 }

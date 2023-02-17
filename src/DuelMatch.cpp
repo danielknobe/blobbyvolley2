@@ -47,7 +47,7 @@ DuelMatch::DuelMatch(bool remote, const std::string& rules, int score_to_win) :
 	setInputSources(std::make_shared<InputSource>(), std::make_shared<InputSource>());
 
 	if(!mRemote)
-		mPhysicWorld->setEventCallback( [this]( const MatchEvent& event ) { mEvents.push_back(event); } );
+		mPhysicWorld->setEventCallback( [this]( const MatchEvent& event ) { mNewEvents.push_back(event); } );
 }
 
 void DuelMatch::setPlayers(PlayerIdentity left_player, PlayerIdentity right_player)
@@ -108,7 +108,7 @@ void DuelMatch::step()
 
 	// process events
 	// process all physics events and relay them to logic
-	for( const auto& event : mEvents )
+	for( const auto& event : mNewEvents )
 	{
 		switch( event.event )
 		{
@@ -138,7 +138,7 @@ void DuelMatch::step()
 	auto errorside = mLogic->getLastErrorSide();
 	if(errorside != NO_PLAYER)
 	{
-		mEvents.emplace_back( MatchEvent::PLAYER_ERROR, errorside, 0 );
+		mNewEvents.emplace_back( MatchEvent::PLAYER_ERROR, errorside, 0 );
 		mPhysicWorld->setBallVelocity( mPhysicWorld->getBallVelocity().scale(0.6) );
 	}
 
@@ -150,12 +150,12 @@ void DuelMatch::step()
 	{
 		resetBall( mLogic->getServingPlayer() );
 		mLogic->onServe();
-		mEvents.emplace_back( MatchEvent::RESET_BALL, NO_PLAYER, 0 );
+		mNewEvents.emplace_back( MatchEvent::RESET_BALL, NO_PLAYER, 0 );
 	}
 
 	// reset events
-	mLastEvents = mEvents;
-	mEvents.clear();
+	std::move(begin(mNewEvents), end(mNewEvents), std::back_inserter(mLastEvents));
+	mNewEvents.clear();
 }
 
 void DuelMatch::setScore(int left, int right)
@@ -280,7 +280,7 @@ void DuelMatch::setState(const DuelMatchState& state)
 
 void DuelMatch::trigger( const MatchEvent& event )
 {
-	mEvents.push_back( event );
+	mNewEvents.push_back( event );
 }
 
 DuelMatchState DuelMatch::getState() const
@@ -350,6 +350,6 @@ PlayerIdentity& DuelMatch::getPlayer(PlayerSide player)
 void DuelMatch::updateEvents()
 {
 	/// \todo more economical with a swap?
-	mLastEvents = mEvents;
-	mEvents.clear();
+	mLastEvents = mNewEvents;
+	mNewEvents.clear();
 }
