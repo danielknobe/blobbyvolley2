@@ -133,6 +133,9 @@ endif ()
 if (UNIX AND (NOT ANDROID))
 	add_executable(blobby-runtest EXCLUDE_FROM_ALL runtest.cpp ${blobby_SRC})
 	target_link_libraries(blobby-runtest ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
+
+	add_executable(botbench EXCLUDE_FROM_ALL botbench.cpp ${blobby_SRC})
+	target_link_libraries(botbench ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
 endif ()
 
 if (WIN32)

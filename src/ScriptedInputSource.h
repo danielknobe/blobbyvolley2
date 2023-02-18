@@ -56,11 +56,14 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty, const DuelMatch* match);
 		~ScriptedInputSource() override;
 
+		void setWaitTime(int wait_in_ms);
+
 		PlayerInputAbs getNextInput() override;
 
 	private:
 
 		unsigned int mStartTime;
+		unsigned int mWaitTime = WAITING_TIME;
 
 		// ki strength values
 		int mDifficulty;

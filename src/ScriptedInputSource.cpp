@@ -82,6 +82,10 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 
 ScriptedInputSource::~ScriptedInputSource() = default;
 
+void ScriptedInputSource::setWaitTime(int wait_in_ms) {
+	mWaitTime = wait_in_ms;
+}
+
 PlayerInputAbs ScriptedInputSource::getNextInput()
 {
 	bool serving = false;
@@ -120,7 +124,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 		lua_pop(mState, stacksize);
 	}
 
-	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
+	if (mStartTime + mWaitTime > SDL_GetTicks() && serving)
 		return {};
 
 	// random jump delay depending on difficulty
