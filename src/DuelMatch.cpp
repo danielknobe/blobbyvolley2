@@ -63,9 +63,6 @@ void DuelMatch::setInputSources(std::shared_ptr<InputSource> left_input, std::sh
 
 	if(right_input)
 		mInputSources[RIGHT_PLAYER] = std::move(right_input);
-
-	mInputSources[LEFT_PLAYER]->setMatch(this);
-	mInputSources[RIGHT_PLAYER]->setMatch(this);
 }
 
 void DuelMatch::reset()
@@ -90,8 +87,8 @@ void DuelMatch::step()
 	if(mPaused)
 		return;
 
-	mTransformedInput[LEFT_PLAYER] = mInputSources[LEFT_PLAYER]->updateInput();
-	mTransformedInput[RIGHT_PLAYER] = mInputSources[RIGHT_PLAYER]->updateInput();
+	mTransformedInput[LEFT_PLAYER] = mInputSources[LEFT_PLAYER]->updateInput().toPlayerInput(this);
+	mTransformedInput[RIGHT_PLAYER] = mInputSources[RIGHT_PLAYER]->updateInput().toPlayerInput(this);
 
 	if(!mRemote)
 	{

@@ -35,10 +35,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty)
+ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty,
+										 const DuelMatch* match)
 : mDifficulty(difficulty)
 , mSide(playerside)
 , mDelayDistribution( difficulty/3, difficulty/2 )
+, mMatch(match)
 {
 	mStartTime = SDL_GetTicks();
 
@@ -74,6 +76,8 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 
 	// clean up stack
 	lua_pop(mState, lua_gettop(mState));
+
+	IScriptableComponent::setMatch(const_cast<DuelMatch*>(match));
 }
 
 ScriptedInputSource::~ScriptedInputSource() = default;
@@ -88,14 +92,6 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	lua_setglobal(mState, "__WANT_RIGHT");
 	lua_pushboolean(mState, false);
 	lua_setglobal(mState, "__WANT_JUMP");
-
-	if (getMatch() == nullptr)
-	{
-		return {};
-	} else
-	{
-		IScriptableComponent::setMatch( const_cast<DuelMatch*>(getMatch()) );
-	}
 	lua_getglobal(mState, "__OnStep");
 	callLuaFunction();
 
@@ -143,3 +139,4 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 
 	return {wantleft, wantright, wantjump};
 }
+

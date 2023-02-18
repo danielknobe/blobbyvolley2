@@ -53,11 +53,10 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		/// The constructor automatically loads and initializes the script
 		/// with the given filename. The side parameter tells the script
 		/// which side is it on.
-		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty);
+		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty, const DuelMatch* match);
 		~ScriptedInputSource() override;
 
 		PlayerInputAbs getNextInput() override;
-		using InputSource::getMatch;
 
 	private:
 
@@ -73,4 +72,7 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		double mJumpDelay = 0;
 		std::normal_distribution<double> mDelayDistribution;
 		std::default_random_engine mRandom;
+
+		/// match connected with this source
+		const DuelMatch* mMatch = nullptr;
 };
