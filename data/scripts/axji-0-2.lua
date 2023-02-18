@@ -8,7 +8,7 @@ end
 -- Flags und runners
 wait = 0
 aggro = true -- evtl Variablennamen wechseln
-aggroservice = 50 -- versetzung zum Ball je gr�sser desto tiefer fliegt der Service 0-64(  64 ist ca CONST_BALLRADIUS + CONST_BLOBBY_BAUCH_RADIUS) 
+aggroservice = 50 -- versetzung zum Ball je grösser desto tiefer fliegt der Service 0-64(  64 ist ca CONST_BALLRADIUS + CONST_BLOBBY_BAUCH_RADIUS)
 
 -- Konstanten
 function OnServe(ballready)
@@ -33,13 +33,13 @@ function OnGame()
 		return
 	end
 
-	-- Zielbestimmung --> optimierung weniger CPU power n�tig ;)
+	-- Zielbestimmung --> optimierung weniger CPU power nötig ;)
 	if (hit == CONST_BALL_LEFT_BORDER) then -- ball wird hinten apprallen
 		vonhinten(target)
 		return
 	end
 	
-	-- nun k�mmern wir uns um die B�lle die ans netz prallen
+	-- nun kümmern wir uns um die Bälle die ans netz prallen
 	if hit == CONST_BALL_LEFT_NET then
 		netzappraller(target)
 	end
@@ -84,7 +84,7 @@ function aggroflagtesten()
 		return true
 	end
 	
-	if (ballx() < (CONST_FIELD_MIDDLE - CONST_BALL_RADIUS)) and (bally() < 210) then -- der ball k�nnte nohc dr�ber fliegen ** noch optimieren
+	if (ballx() < (CONST_FIELD_MIDDLE - CONST_BALL_RADIUS)) and (bally() < 210) then -- der ball könnte nohc drüber fliegen ** noch optimieren
 		return true
 	end
 	

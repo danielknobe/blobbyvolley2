@@ -1,13 +1,16 @@
-g= -CONST_BALL_GRAVITY
-pg= -CONST_BLOBBY_GRAVITY
-v0=14.5
-v_p=4.5
-pj= pg/2
-r1= CONST_BALL_RADIUS 
-h=31.5+19+25
-estt=0
-p=0.654
-s=math.random()
+-- 18.02.23 - ngc92: some cleanup
+
+g = -CONST_BALL_GRAVITY
+pg = -CONST_BLOBBY_GRAVITY
+v0 = 14.5
+y0 = CONST_BLOBBY_GROUND_HEIGHT
+pj = pg/2
+r1 = CONST_BALL_RADIUS
+h = 31.5+19+25
+estt = 0
+p = 0.654
+s = math.random()
+
 function reset()
 
 	est=0
@@ -79,18 +82,18 @@ function pos(x)
 end
 
 function yp(t)
-	return 144.5+(14.5+pj/2+pg/10)*t-1/2*(pg-pj)*t^2
+	return y0+(v0+pj/2+pg/10)*t-1/2*(pg-pj)*t^2
 end
 
 function tp(y)
-	return (14.5+pj/2+pg/10)/(pg-pj)-math.sqrt(((14.5+pj/2+pg/10)/(pg-pj))^2-(y-144.5)/(1/2*(pg-pj)))
+	return (v0+pj/2+pg/10)/(pg-pj)-math.sqrt(((v0+pj/2+pg/10)/(pg-pj))^2-(y-y0)/(1/2*(pg-pj)))
 end
 
 function tp2(y1p,v1p)
 	if (y1p>146) then
-	return (v1p/0.88-1/2+math.sqrt((v1p/0.88-1/2)^2-(144.5-y1p)/0.44))
+		return (v1p/0.88-1/2+math.sqrt((v1p/0.88-1/2)^2-(y0-y1p)/0.44))
 	else
-	return 0
+		return 0
 	end
 end
 

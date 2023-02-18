@@ -32,5 +32,6 @@
 	<var name="right_script_strength" value="13"/>
 	<var name="additional_network_server" value="0.0.0.0"/>
 	<var name="rules" value="default.lua"/>
+	<var name="bot_debug" value="false"/>
 </userconfig>
 

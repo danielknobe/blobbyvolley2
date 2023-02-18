@@ -19,7 +19,7 @@ serve=false
 --define world constants
 blobbyheadheight = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT + CONST_BALL_RADIUS
 blobbymaxjump = 393.625
-blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
+blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2
 netheight = CONST_NET_HEIGHT + CONST_NET_RADIUS -- height is just the rod. for total height, we have to add the net-sphere-radius too
 
 --Hauptfunktionen
@@ -82,9 +82,9 @@ function OnGame()
   serve=false --Aufschlagende erzwingen
               --Make an end to the serve
  end
- if (touches()~=oldtouches) or (math.abs(oldbspeedx)~=math.abs(bspeedx())) then --Hat sich die Situation ge‰ndert
+ if (touches()~=oldtouches) or (math.abs(oldbspeedx)~=math.abs(bspeedx())) then --Hat sich die Situation ge√§ndert
                                                                                 --If the situation has changed
-  OGinit=false --gleich Entscheidung neu f‰llen
+  OGinit=false --gleich Entscheidung neu f√§llen
                --redo decision
   oldtouches=touches()
   oldbspeedx=bspeedx()
@@ -98,7 +98,7 @@ function decide (funcno)
  t1=1
  chosen=1
  chosenret=0
- --Alle Funktionen abfragen und die mit dem grˆﬂten Return w‰hlen
+ --Alle Funktionen abfragen und die mit dem gr√∂√üten Return w√§hlen
  --test all functions and take the one with the highest return value
  while (t1 <= funcs) do
   temp=dofunc(funcno,t1,false)
@@ -108,7 +108,7 @@ function decide (funcno)
   end
   t1=t1+1
  end
- --print (chosenret) --Sagt, f¸r wie gut sich die gew‰hlte Funktion h‰lt
+ --print (chosenret) --Sagt, f√ºr wie gut sich die gew√§hlte Funktion h√§lt
                    --tells how good the chosen function says to fit
  return chosen
 end
@@ -130,11 +130,11 @@ function dofunc (funcno, actionno, action) --Weist jeder Aktionsnummer den echte
  return false
 end
 
---Ausf¸hrbare Funktionen
+--Ausf√ºhrbare Funktionen
 --executable functions
 
-function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45∞ Winkel an
-                                   --plays ball in the air at height maxjump with 45∞ angle
+function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45¬∞ Winkel an
+                                   --plays ball in the air at height maxjump with 45¬∞ angle
                                    --funcno(s)=2,3
  local maxjump  = blobbymaxjump
  local distance = 32.25
@@ -224,7 +224,7 @@ function wait (funcno, action) --Auf guter Position auf eine gegnerische Aktion 
  end
  if (action==true) then
   moveto (180)
- end  
+ end
 end
 
 function twohitserve1 (funcno, action) --Aufschlag: Stellen (bspeedx()=0), rueber
@@ -257,7 +257,7 @@ end
 --mathematische Hilfsfunktionen
 --mathematical helpers
 
-function estimatex(destY) --gibt mˆglichst genaue Angabe der X-Koordinate zur¸ck, bei der sich der Ball befindet, wenn er sich bei der angegebenen Y Koordinate befindet
+function estimatex(destY) --gibt m√∂glichst genaue Angabe der X-Koordinate zur√ºck, bei der sich der Ball befindet, wenn er sich bei der angegebenen Y Koordinate befindet
                           --returns exact ballx when bally will be given destY
  if (bspeedy()==0) and (bspeedx()==0) then
   return ballx()
@@ -268,7 +268,7 @@ function estimatex(destY) --gibt mˆglichst genaue Angabe der X-Koordinate zur¸ck
 	return time1
  end
  local resultX, hit, estimbspeedx = estimx(time1)
- 
+
  if (resultX > CONST_BALL_LEFT_NET) and (estimatey(CONST_BALL_LEFT_NET) <= netheight) and (estimbspeedx > 0) then
   resultX = mirror(resultX, CONST_BALL_LEFT_NET)
  end

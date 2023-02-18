@@ -32,9 +32,9 @@ end
 
 function OnGame()
    -- try high play
-   if(estimImpactHigh()) then
+   if estimImpactHigh() then
 		if naivetarget < CONST_FIELD_MIDDLE and target < CONST_FIELD_MIDDLE
-			and (modeLock == true or timeto > math.abs(posx()-highPlayPos())/4.5 + 26)
+			and (modeLock == true or timeto > blob_time_to_x(highPlayPos()) + 26)
 			and touches() < 3
 		then
 			modeLock = timeto < 30
@@ -53,7 +53,7 @@ function OnGame()
 	local balldir = estimbspeedx > 0 and 1 or -1
 	
 	if(estimImpactLow()) then
-		if (timeto > (balldir*(target-posx()) - 10)/CONST_BLOBBY_SPEED
+		if (timeto > (balldir*(target-posx()) - 10) / CONST_BLOBBY_SPEED
 			or naivetarget >= CONST_FIELD_MIDDLE) 
 		then
 			lowPlay()
