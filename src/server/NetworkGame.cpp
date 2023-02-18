@@ -261,7 +261,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 			RakNet::BitStream stream;
 			stream.Write((unsigned char)ID_REPLAY);
 			std::shared_ptr<GenericOut> out = createGenericWriter( &stream );
-			mRecorder->send( out );
+			mRecorder->send( *out );
 			assert( stream.GetData()[0] == ID_REPLAY );
 
 			mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
