@@ -318,7 +318,7 @@ void NetworkGameState::step_impl()
 				// read stream into a dummy replay recorder
 				std::shared_ptr<GenericIn> reader = createGenericReader( &stream );
 				ReplayRecorder dummyRec;
-				dummyRec.receive( reader );
+				dummyRec.receive( *reader );
 				// and save that
 				saveReplay(dummyRec);
 

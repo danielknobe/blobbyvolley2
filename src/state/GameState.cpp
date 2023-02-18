@@ -206,10 +206,9 @@ void GameState::saveReplay(ReplayRecorder& recorder)
 		{
 			std::string repFileName = std::string("replays/") + mFilename + std::string(".bvr");
 
-			std::shared_ptr<FileWrite> savetarget = std::make_shared<FileWrite>(repFileName);
+			FileWrite savetarget(repFileName);
 			/// \todo add a check whether we overwrite a file
 			recorder.save(savetarget);
-			savetarget->close();
 			mSaveReplay = false;
 		}
 	}

@@ -81,7 +81,7 @@ void writeAttribute(tinyxml2::XMLPrinter& printer, const char* name, const T& va
 	printer.CloseElement();
 }
 
-void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
+void ReplayRecorder::save(FileWrite& file) const
 {
 	tinyxml2::XMLPrinter printer;
 	printer.PushHeader(false, true);
@@ -131,43 +131,43 @@ void ReplayRecorder::save( const std::shared_ptr<FileWrite>& file) const
 	printer.CloseElement();
 
 	printer.CloseElement();  // </replay>
-	file->write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
+	file.write(printer.CStr(), printer.CStrSize() - 1); // do not save the terminating \0 character
 }
 
-void ReplayRecorder::send(const std::shared_ptr<GenericOut>& target) const
+void ReplayRecorder::send(GenericOut& target) const
 {
-	target->string(mPlayerNames[LEFT_PLAYER]);
-	target->string(mPlayerNames[RIGHT_PLAYER]);
+	target.string(mPlayerNames[LEFT_PLAYER]);
+	target.string(mPlayerNames[RIGHT_PLAYER]);
 
-	target->generic<Color> (mPlayerColors[LEFT_PLAYER]);
-	target->generic<Color> (mPlayerColors[RIGHT_PLAYER]);
+	target.generic<Color> (mPlayerColors[LEFT_PLAYER]);
+	target.generic<Color> (mPlayerColors[RIGHT_PLAYER]);
 
-	target->uint32( mGameSpeed );
-	target->uint32( mEndScore[LEFT_PLAYER] );
-	target->uint32( mEndScore[RIGHT_PLAYER] );
+	target.uint32( mGameSpeed );
+	target.uint32( mEndScore[LEFT_PLAYER] );
+	target.uint32( mEndScore[RIGHT_PLAYER] );
 
-	target->string(mGameRules);
+	target.string(mGameRules);
 
-	target->generic<std::vector<unsigned char> >(mSaveData);
-	target->generic<std::vector<ReplaySavePoint> > (mSavePoints);
+	target.generic<std::vector<unsigned char> >(mSaveData);
+	target.generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
-void ReplayRecorder::receive(const std::shared_ptr<GenericIn>& source)
+void ReplayRecorder::receive(GenericIn& source)
 {
-	source->string(mPlayerNames[LEFT_PLAYER]);
-	source->string(mPlayerNames[RIGHT_PLAYER]);
+	source.string(mPlayerNames[LEFT_PLAYER]);
+	source.string(mPlayerNames[RIGHT_PLAYER]);
 
-	source->generic<Color> (mPlayerColors[LEFT_PLAYER]);
-	source->generic<Color> (mPlayerColors[RIGHT_PLAYER]);
+	source.generic<Color> (mPlayerColors[LEFT_PLAYER]);
+	source.generic<Color> (mPlayerColors[RIGHT_PLAYER]);
 
-	source->uint32( mGameSpeed );
-	source->uint32( mEndScore[LEFT_PLAYER] );
-	source->uint32( mEndScore[RIGHT_PLAYER] );
+	source.uint32( mGameSpeed );
+	source.uint32( mEndScore[LEFT_PLAYER] );
+	source.uint32( mEndScore[RIGHT_PLAYER] );
 
-	source->string(mGameRules);
+	source.string(mGameRules);
 
-	source->generic<std::vector<unsigned char> >(mSaveData);
-	source->generic<std::vector<ReplaySavePoint> > (mSavePoints);
+	source.generic<std::vector<unsigned char> >(mSaveData);
+	source.generic<std::vector<ReplaySavePoint> > (mSavePoints);
 }
 
 void ReplayRecorder::record(const DuelMatchState& state)
