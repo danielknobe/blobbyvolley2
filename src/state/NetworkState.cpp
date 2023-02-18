@@ -67,7 +67,6 @@ void NetworkGameState::init()
 	mOwnSide = (PlayerSide)config->getInteger("network_side");
 	mUseRemoteColor = config->getBool("use_remote_color");
 	mLocalInput.reset(new LocalInputSource(getInputMgr().beginGame(mOwnSide)));
-	mLocalInput->setMatch(mMatch.get());
 
 	// game is not started until two players are connected
 	mMatch->pause();

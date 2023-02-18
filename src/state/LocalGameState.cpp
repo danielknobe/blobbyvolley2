@@ -43,7 +43,7 @@ LocalGameState::LocalGameState()
 
 }
 
-std::shared_ptr<InputSource> LocalGameState::createInputSource( IUserConfigReader& config, PlayerSide side ) {
+std::shared_ptr<InputSource> LocalGameState::createInputSource( IUserConfigReader& config, PlayerSide side, const DuelMatch* match ) {
 	std::string prefix = side == LEFT_PLAYER ? "left" : "right";
 	try
 	{
@@ -56,7 +56,7 @@ std::shared_ptr<InputSource> LocalGameState::createInputSource( IUserConfigReade
 		else
 		{
 			return std::make_shared<ScriptedInputSource>("scripts/" + config.getString(prefix + "_script_name"),
-														 side, config.getInteger(prefix + "_script_strength"));
+														 side, config.getInteger(prefix + "_script_strength"), match);
 		}
 	} catch (std::exception& e)
 	{
@@ -72,9 +72,6 @@ void LocalGameState::init()
 	PlayerIdentity leftPlayer = config->loadPlayerIdentity(LEFT_PLAYER, false);
 	PlayerIdentity rightPlayer = config->loadPlayerIdentity(RIGHT_PLAYER, false);
 
-	std::shared_ptr<InputSource> leftInput = createInputSource(*config, LEFT_PLAYER);
-	std::shared_ptr<InputSource> rightInput = createInputSource(*config, RIGHT_PLAYER);
-
 	// create default replay name
 	setDefaultReplayName(leftPlayer.getName(), rightPlayer.getName());
 
@@ -84,6 +81,8 @@ void LocalGameState::init()
 	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
 	mMatch.reset(new DuelMatch( false, config->getString("rules")));
+	std::shared_ptr<InputSource> leftInput = createInputSource(*config, LEFT_PLAYER, mMatch.get());
+	std::shared_ptr<InputSource> rightInput = createInputSource(*config, RIGHT_PLAYER, mMatch.get());
 	mMatch->setPlayers(leftPlayer, rightPlayer);
 	mMatch->setInputSources(leftInput, rightInput);
 

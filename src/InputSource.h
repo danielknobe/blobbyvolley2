@@ -41,10 +41,7 @@ class InputSource : public ObjectCounter<InputSource>
 		virtual ~InputSource();
 
 		/// forces a recalculation of the input
-		PlayerInput updateInput();
-
-		/// gets the current input
-		PlayerInput getInput() const;
+		PlayerInputAbs updateInput();
 
 		/// get original input data
 		PlayerInputAbs getRealInput() const;
@@ -57,19 +54,10 @@ class InputSource : public ObjectCounter<InputSource>
 		/// of getInput
 		void setInput(PlayerInputAbs ip);
 
-		/// gets  match associated with this InputSource
-		const DuelMatch* getMatch() const;
-		/// sets match associated with this InputSource
-		/// should only be called once!
-		void setMatch(const DuelMatch* match);
-
 	private:
 		/// method that actually calculates the new input
 		virtual PlayerInputAbs getNextInput();
 
 		/// cached input
 		PlayerInputAbs mInput;
-
-		/// match connected with this source
-		const DuelMatch* mMatch;
 };

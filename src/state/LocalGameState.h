@@ -41,7 +41,7 @@ class LocalGameState : public GameState
 		const char* getStateName() const override;
 
 	private:
-		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side );
+		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side, const DuelMatch* match );
 
 		bool mWinner;
 
