@@ -63,6 +63,11 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		PlayerInputAbs getNextInput() override;
 
 	private:
+
+		void setInputDelay(int delay);
+		void setBallError(int duration, float amount);
+		int getCurrentDifficulty() const;
+
 		unsigned int mStartTime;
 		unsigned int mWaitTime = WAITING_TIME;
 
@@ -71,6 +76,17 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 
 		// Difficulty setting of the AI. Small values mean stronger AI
 		int mDifficulty;
+
+		// artificial reaction delay data
+		int mReactionTime = 0;
+		int mRoundStepCounter = 0;
+		int mOldOppTouches = 0;
+		float mOldBallVx = 0;
+
+		// artificial ball position error
+		Vector2 mBallPosError{0, 0};
+		Vector2 mBallVelError{0, 0};
+		int mBallPosErrorTimer = 0;
 
 		std::default_random_engine mRandom;
 		const DuelMatch* mMatch;

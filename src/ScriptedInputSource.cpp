@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 /* implementation */
 
-ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty, 
+ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty,
 										 const DuelMatch* match)
 : mSide(playerside)
 , mDifficulty(difficulty)
@@ -84,6 +84,40 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 		state.swapSides();
 	}
 
+	// if the ball is on the bots side, decrease the error timers more quickly.
+	// if we did not do this, then the difficulty would have almost no effect on
+	// any plays made by the player from the back of their half, as the counters
+	// would have reached zero by the time the ball arrives at the bot's half. This
+	// way, we can give the counters larger initial values, and still don't get completely
+	// stupid play.
+	if(state.getBallPosition().x < 400) {
+		--mBallPosErrorTimer;
+		--mReactionTime;
+	}
+
+	// decrement counters regularly
+	--mReactionTime;
+	--mBallPosErrorTimer;
+
+	// bot has not reacted yet
+	if( mReactionTime > 0 && mDifficulty > 0 ) {
+		return {false, false, false};
+	}
+
+	// mis-estimated ball velocity handling
+	if(mBallPosErrorTimer > 0)
+	{
+		mBallPosError += mBallVelError;
+	}
+	else
+	{
+		mBallPosError.clear();
+		mBallVelError.clear();
+	}
+
+	state.worldState.ballPosition += mBallPosError;
+	state.worldState.ballVelocity += mBallVelError;
+
 	setMatchState( state );
 
 
@@ -127,9 +161,81 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	if (mStartTime + mWaitTime > SDL_GetTicks() && serving)
 		return {};
 
+	if(!mMatch->getBallActive())
+	{
+		mRoundStepCounter = 0;
+		setInputDelay( 0 );
+	}
+	else
+	{
+		mRoundStepCounter += 1;
+	}
+
+	// whenever the opponent touches the ball, the bot pauses for a short, random amount of time
+	// to orient itself. This time depends on the current difficulty level, and increases as the game
+	// progresses.
+	int opp_touches = state.getHitcount(RIGHT_PLAYER);
+	if( opp_touches != mOldOppTouches)
+	{
+		mOldOppTouches = opp_touches;
+		if(opp_touches != 0)
+		{
+			int base_difficulty = std::max( 0, 2 * mDifficulty - 30 );
+			int max_difficulty = std::min(75, base_difficulty + 2 * getCurrentDifficulty());
+			std::uniform_int_distribution<int> dist{base_difficulty, max_difficulty};
+			setInputDelay( dist(mRandom) );
+		}
+	}
+
+	// important: get the actual speed, not the simulated one
+	float bv_x = mMatch->getBallVelocity().x;
+	if(bv_x != mOldBallVx) {
+		mOldBallVx = bv_x;
+		std::uniform_int_distribution<int> dist{0, 100};
+		if( dist( mRandom ) < mDifficulty ) {
+			float amount = std::min(25, getCurrentDifficulty()) / 50.f + std::max(0, mDifficulty - 5) / 25.f;
+			int err_time = 25 + mDifficulty + std::min(75, getCurrentDifficulty());
+			setBallError(err_time, amount);
+		}
+	}
+
 	PlayerInputAbs raw_input{wantleft, wantright, wantjump};
 	if(mSide == RIGHT_PLAYER) {
 		raw_input.swapSides();
 	}
 	return raw_input;
+}
+
+void ScriptedInputSource::setInputDelay(int delay)
+{
+	if(delay <= 0)
+	{
+		delay = 0;
+	} else {
+		delay = std::max(delay, mReactionTime);
+	}
+
+	mReactionTime = delay;
+}
+
+int ScriptedInputSource::getCurrentDifficulty() const
+{
+	int exchange_seconds = mRoundStepCounter / 75;
+	float difficulty_effect = std::sqrt( mDifficulty );
+	// minimum game time until the bot starts making mistakes:
+	// ~5 minutes at highest difficulty, 10 seconds for very easy.
+	int min_duration = 300 - static_cast<int>(difficulty_effect * 57);
+	int offset_seconds = std::max( 0, exchange_seconds - min_duration );
+	int diff_mod = (offset_seconds * mDifficulty) / 25;
+	return diff_mod;
+}
+
+void ScriptedInputSource::setBallError(int duration, float amount)
+{
+	mBallPosErrorTimer = duration;
+	std::uniform_real_distribution<float> f_dist{};
+	float angle = 2 * M_PI * f_dist(mRandom);
+	mBallVelError.x = std::sin(angle) * amount;
+	mBallVelError.y = std::cos(angle) * amount;
+	mBallPosError = mBallVelError * 5;
 }
