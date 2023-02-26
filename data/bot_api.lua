@@ -158,12 +158,11 @@ end
 function blob_time_to_y (destination) 
 	-- TODO allow specifying whether upward or downward!
 	-- TODO error handling
-	local blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
-	local y = posy()
-	grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
-	time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
-	time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
-	timemin = math.min(time1,time2)
+	local blobby_pos = posy()
+	local grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
+	local time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(destination-blobby_pos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	local time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(destination-blobby_pos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	local timemin = math.min(time1, time2)
 	return timemin
 end
 
