@@ -147,7 +147,7 @@ function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45Â
    return math.random(10, 100)
   end
   if (funcno==3) and (action==false) then
-   if target ~= math.huge and (bspeedx() <= 3) and (math.max(balltimetox(targetx), ball_time_to_y(maxjump)) >= math.max(blobtimetoy(maxjump), blob_time_to_x(targetx))) then
+   if target ~= math.huge and (bspeedx() <= 3) and (math.max(ball_time_to_x(targetx), ball_time_to_y(maxjump)) >= math.max(blobtimetoy(maxjump), blob_time_to_x(targetx))) then
     if (estimhitnet()==true) and (blob_time_to_x(CONST_BALL_LEFT_NET)<=ball_time_to_y(netheight)) then
      return 190
     end
