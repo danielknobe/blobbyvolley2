@@ -272,7 +272,7 @@ int simulate_steps( lua_State* state )
 	PhysicWorld* world = getWorld( state );
 	// get the initial ball settings
 	lua_checkstack(state, 5);
-	int steps = lua_tointeger( state, 1);
+	int steps = lua_to_int( state, 1);
 	float x = lua_tonumber( state, 2);
 	float y = lua_tonumber( state, 3);
 	float vx = lua_tonumber( state, 4);
