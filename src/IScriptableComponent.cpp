@@ -193,7 +193,7 @@ int set_blob_data(lua_State* state)
 {
 	auto s = getMatch( state );
 	lua_checkstack(state, 5);
-	int side = lua_tointeger(state, 1);
+	int side = luaL_checkinteger(state, 1);
 	float x = lua_tonumber( state, 2);
 	float y = lua_tonumber( state, 3);
 	float vx = lua_tonumber( state, 4);
@@ -210,7 +210,7 @@ int set_blob_data(lua_State* state)
 int get_blob_pos(lua_State* state)
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
+	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	return lua_pushvector(state, s->getBlobPosition(side), VectorType::POSITION);
@@ -219,7 +219,7 @@ int get_blob_pos(lua_State* state)
 int get_blob_vel(lua_State* state)
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
+	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	return lua_pushvector(state, s->getBlobVelocity(side), VectorType::VELOCITY);
@@ -228,7 +228,7 @@ int get_blob_vel(lua_State* state)
 int get_score( lua_State* state )
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
+	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	lua_pushinteger(state, s->getScore(side));
@@ -238,7 +238,7 @@ int get_score( lua_State* state )
 int get_touches( lua_State* state )
 {
 	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
+	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
 	lua_pushinteger(state, s->getTouches(side));
