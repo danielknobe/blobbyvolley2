@@ -1,0 +1,36 @@
+\documentclass{article}
+\begin{document}
+
+\noindent
+Short description of how to get from \textbf{constant acceleration motion} formula to \textbf{blob\_time\_to\_y} lua helper function.
+\\\\
+\noindent
+Let's get started with the formula for constant acceleration motion:
+\[ s = \frac{1}{2}a \cdot t^2 + v \cdot t + s_0 \]
+
+\noindent
+To get the time between two points we need the zero crossings of this function:
+\[ 0 = \frac{1}{2}a \cdot t^2 + v \cdot t + (s_0 - s) \]
+
+\noindent
+Devide with $ \frac{1}{2}a $:
+\[ 0 = t^2 + \frac{2 \cdot v \cdot t}{a} + 2 \cdot \frac{(s_0 - s)}{a} \]
+
+\noindent
+Applying the pq formula:
+\[ t_{1,2} = -\frac{v}{a} \pm \sqrt{ (\frac{v}{a})^2 - 2 \cdot \frac{(s_0 - s)}{a} } \]
+
+\noindent
+Formula transform:
+\[ t_{1,2} = -\frac{v}{a} \pm \sqrt{ (\frac{v^2}{a^2}) - 2 \cdot \frac{(s_0 - s)}{a} } \]
+
+\noindent
+Formula transform:
+\[ t_{1,2} = -\frac{v}{a} \pm \sqrt{ \frac{v^2 - 2 \cdot (s_0 - s) \cdot a}{a^2} } \]
+
+\noindent
+Finally we get:
+\[ t_{1,2} = -\frac{v}{a} \pm \frac{\sqrt{ v^2 - 2 \cdot (s_0 - s) \cdot a }}{a} \]
+
+
+\end{document}
