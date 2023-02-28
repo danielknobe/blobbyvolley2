@@ -154,7 +154,7 @@ void DedicatedServer::processPackets()
 			case ID_NEW_INCOMING_CONNECTION:
 				mConnectedClients++;
 				SWLS_Connections++;
-				syslog(LOG_DEBUG, "New incoming connection from %s, %d clients connected now", packet->playerId.toString().c_str(), mConnectedClients);
+				syslog(LOG_DEBUG, "Connection incoming (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
 
 				if ( !mAcceptNewPlayers )
 				{
@@ -163,7 +163,7 @@ void DedicatedServer::processPackets()
 					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 					mServer->CloseConnection( packet->playerId, true );
 					mConnectedClients--;
-					syslog(LOG_DEBUG, "Connection not accepted, %d clients connected now", mConnectedClients);
+					syslog(LOG_DEBUG, "Connection not accepted (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
 				}
 
 				break;
@@ -176,7 +176,7 @@ void DedicatedServer::processPackets()
 				// delete the disconnectiong player
 				if( player != mPlayerMap.end() )
 				{
-					syslog(LOG_DEBUG, "Disconnected player %s", player->second->getName().c_str());
+					const std::string playerName = player->second->getName();
 					if( player->second->getGame() )
 						player->second->getGame()->injectPacket( packet );
 
@@ -187,13 +187,13 @@ void DedicatedServer::processPackets()
 						// player iterator is invalid after erase
 					}
 					mMatchMaker.removePlayer(packet->playerId);
+					syslog(LOG_DEBUG, "Player removed (%d) from %s (%s), %d players available", packet->data[0], packet->playerId.toString().c_str(), player->second->getName().c_str(), (int)mPlayerMap.size());
 				}
 				else
 				{
 				}
 
-				int pid = packet->data[0];
-				syslog(LOG_DEBUG, "Connection %s closed via %d, %d clients connected now", packet->playerId.toString().c_str(),  pid, mConnectedClients);
+				syslog(LOG_DEBUG, "Connection closed (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
 				break;
 			}
 			// player connects to server
@@ -211,7 +211,7 @@ void DedicatedServer::processPackets()
 					mPlayerMap[packet->playerId] = newplayer;
 				}
 				mMatchMaker.addPlayer(packet->playerId, newplayer);
-				syslog(LOG_DEBUG, "New player \"%s\" connected from %s ", newplayer->getName().c_str(), packet->playerId.toString().c_str());
+				syslog(LOG_DEBUG, "Player added (%d) from %s (%s), %d players available", packet->data[0], packet->playerId.toString().c_str(), newplayer->getName().c_str(), (int)mPlayerMap.size());
 
 				// if this is a locally hosted server, any player that connects automatically joins an
 				// open game
