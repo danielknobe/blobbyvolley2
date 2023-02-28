@@ -472,8 +472,8 @@ function blobtimetoy (y) --Zeit, die ein Blob braucht, um eine Y Position zu err
   y=383
  end
  local grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
- local time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-posy()) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
- local time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-posy()) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+ local time1 = -CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-posy()) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+ local time2 = -CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-posy()) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
  local timemin=math.min(time1,time2)
  if timemin <0 then
 	return math.max(time1,time2)

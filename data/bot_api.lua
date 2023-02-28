@@ -159,11 +159,17 @@ function blob_time_to_y (destination)
 	-- TODO allow specifying whether upward or downward!
 	-- TODO error handling
 	local blobby_pos = posy()
+	-- if we are standing on the ground, assume we start jumping right now, otherwise
+	-- use current vertical velocity
+	local blobby_vel = speedy(LEFT_PLAYER)
+	if blobby_pos == CONST_BLOBBY_GROUND_HEIGHT then
+		blobby_vel = CONST_BLOBBY_JUMP
+	end
+
+	-- solve the quadratic equation
 	local grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
-	local time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(destination-blobby_pos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
-	local time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(destination-blobby_pos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
-	local timemin = math.min(time1, time2)
-	return timemin
+	local t1, t2 = parabola_time_first(blobby_pos, blobby_vel, grav, destination)
+	return t1
 end
 
 -- checks whether a certain position can be reached by the blob in a certain time frame
