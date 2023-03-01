@@ -300,16 +300,40 @@ function linear_time_first(pos, vel, destination)
 	end
 end
 
--- debug function: capture situational information
-function capture_situation_data()
+------------------------------------------------------------------------------------------------------------------------
+-- functions to emulate the old bot api
+-----------------------------------------
+--- Estimate ball position after `time`, ignoring any collisions
+function simple_estimx(time)
+	return ballx() + time * bspeedx()
+end
+
+--- Estimate ball position after `time`, ignoring any collisions
+function simple_estimy(time)
+	return bally() + time * bspeedy() + 0.5 * time^2 * CONST_BALL_GRAVITY
+end
+
+--- Estimate where the ball will hit the ground, ignoring any collisions.
+function simple_estimate()
+	local target = CONST_GROUND_HEIGHT + CONST_BALL_RADIUS
 	local x, y, vx, vy = balldata()
-	local data = {}
-	data['ballx'] = x
-	data['bally'] = y
-	data['bspeedx'] = vx
-	data['bspeedy'] = vy
-	data['posx'] = posx()
-	data['posy'] = posy()
-	data['touches'] = touches()
-	return data
+	local d = vy * vy + 2.0 * CONST_BALL_GRAVITY * (target - y)
+	if d < 0 then
+		return x
+	end
+	local steps = (-vy - math.sqrt(d)) / CONST_BALL_GRAVITY
+	return vx * steps + x
+end
+
+--- Overwrite the `estimx`, `estimy`, and `estimate` functions with their simple counterparts,
+--- to restore old bot API behaviour. Also defines the old `debug` function, to just perform
+--- printing.
+function enable_legacy_functions()
+	estimx = simple_estimx
+    estimy = simple_estimy
+	estimate = simple_estimate
+
+	debug = function(x)
+		print(x)
+	end
 end
