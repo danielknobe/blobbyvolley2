@@ -237,7 +237,11 @@ void DedicatedServer::processPackets()
 			}
 			case ID_LOBBY:
 			{
-				/// \todo assert that the player send an ID_ENTER_SERVER before
+				if( !mMatchMaker.hasPlayer(packet->playerId) ) {
+					syslog(LOG_NOTICE, "Received Lobby packet (%d) from %s, who is not in the lobby. Ignoring.",
+						   packet_id, packet->playerId.toString().c_str());
+					break;
+				}
 
 				// which player is wanted as opponent
 				RakNet::BitStream stream(packet->data, packet->length, false);

@@ -462,3 +462,8 @@ void MatchMaker::setAllowNewGames( bool allow )
 {
 	mAllowNewGames = allow;
 }
+
+bool MatchMaker::hasPlayer(PlayerID id) const
+{
+	return mPlayerMap.find(id) != mPlayerMap.end();
+}
