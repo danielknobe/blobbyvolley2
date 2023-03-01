@@ -275,7 +275,6 @@ void MatchMaker::receiveLobbyPacket( PlayerID player, RakNet::BitStream& stream 
 	unsigned char byte;
 	auto reader = createGenericReader(&stream);
 	reader->byte(byte);
-	reader->byte(byte);
 	LobbyPacketType type = LobbyPacketType(byte);
 
 	if( type == LobbyPacketType::OPEN_GAME )
