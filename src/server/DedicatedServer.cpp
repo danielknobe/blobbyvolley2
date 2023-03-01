@@ -53,8 +53,7 @@ DedicatedServer::DedicatedServer(ServerInfo info,
 								const std::vector<std::string>& rulefiles,
 								const std::vector<float>& gamespeeds,
 								int max_clients, bool local_server)
-: mConnectedClients(0)
-, mServer(new RakServer())
+: mServer(new RakServer())
 , mAcceptNewPlayers(true)
 , mPlayerHosted( local_server )
 , mServerInfo(std::move(info))
@@ -148,32 +147,41 @@ void DedicatedServer::processPackets()
 		}
 		SWLS_PacketCount++;
 
-		switch(packet->data[0])
+		int packet_id = packet->data[0];
+		if(packet_id != ID_NEW_INCOMING_CONNECTION && !isConnected(packet->playerId)) {
+			syslog(LOG_NOTICE, "Incoming packet (%d) from %s, which is not connected. Ignoring packet.",
+				   packet_id, packet->playerId.toString().c_str());
+			continue;
+		}
+
+		switch(packet_id)
 		{
 			// connection status changes
 			case ID_NEW_INCOMING_CONNECTION:
-				mConnectedClients++;
 				SWLS_Connections++;
-				syslog(LOG_DEBUG, "Connection incoming (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
-
 				if ( !mAcceptNewPlayers )
 				{
 					RakNet::BitStream stream;
 					stream.Write( (char)ID_NO_FREE_INCOMING_CONNECTIONS );
 					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
 					mServer->CloseConnection( packet->playerId, true );
-					mConnectedClients--;
-					syslog(LOG_DEBUG, "Connection not accepted (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
+					syslog(LOG_DEBUG, "Connection not accepted (%d) from %s.",
+						   packet_id, packet->playerId.toString().c_str());
+				} else if( addConnection(packet->playerId) ) {
+					syslog(LOG_DEBUG, "Connection incoming (%d) from %s, %d clients connected now",
+						   packet_id, packet->playerId.toString().c_str(), getConnectedClients());
+				} else {
+					syslog(LOG_NOTICE, "Connection incoming (%d) from %s, but is already connected.",
+						   packet_id, packet->playerId.toString().c_str());
 				}
-
 				break;
 			case ID_CONNECTION_LOST:
 			case ID_DISCONNECTION_NOTIFICATION:
 			{
-				mConnectedClients--;
+				mActiveConnections.erase(packet->playerId);
 
 				auto player = mPlayerMap.find(packet->playerId);
-				// delete the disconnectiong player
+				// delete the disconnecting player.
 				if( player != mPlayerMap.end() )
 				{
 					const std::string playerName = player->second->getName();
@@ -187,13 +195,12 @@ void DedicatedServer::processPackets()
 						// player iterator is invalid after erase
 					}
 					mMatchMaker.removePlayer(packet->playerId);
-					syslog(LOG_DEBUG, "Player removed (%d) from %s (%s), %d players available", packet->data[0], packet->playerId.toString().c_str(), player->second->getName().c_str(), (int)mPlayerMap.size());
-				}
-				else
-				{
+					syslog(LOG_DEBUG, "Player removed (%d) from %s (%s), %d players available",
+						   packet_id, packet->playerId.toString().c_str(), player->second->getName().c_str(), (int)mPlayerMap.size());
 				}
 
-				syslog(LOG_DEBUG, "Connection closed (%d) from %s, %d clients connected now", packet->data[0], packet->playerId.toString().c_str(), mConnectedClients);
+				syslog(LOG_DEBUG, "Connection closed (%d) from %s, %d clients connected now",
+					   packet_id, packet->playerId.toString().c_str(), getConnectedClients());
 				break;
 			}
 			// player connects to server
@@ -211,7 +218,7 @@ void DedicatedServer::processPackets()
 					mPlayerMap[packet->playerId] = newplayer;
 				}
 				mMatchMaker.addPlayer(packet->playerId, newplayer);
-				syslog(LOG_DEBUG, "Player added (%d) from %s (%s), %d players available", packet->data[0], packet->playerId.toString().c_str(), newplayer->getName().c_str(), (int)mPlayerMap.size());
+				syslog(LOG_DEBUG, "Player added (%d) from %s (%s), %d players available", packet_id, packet->playerId.toString().c_str(), newplayer->getName().c_str(), (int)mPlayerMap.size());
 
 				// if this is a locally hosted server, any player that connects automatically joins an
 				// open game
@@ -243,7 +250,7 @@ void DedicatedServer::processPackets()
 				break;
 			}
 			default:
-				syslog(LOG_DEBUG, "Unknown packet %d received\n", int(packet->data[0]));
+				syslog(LOG_DEBUG, "Unknown packet %d received\n", packet_id);
 		}
 	}
 }
@@ -309,7 +316,7 @@ const ServerInfo& DedicatedServer::getServerInfo() const
 
 int DedicatedServer::getConnectedClients() const
 {
-	return mConnectedClients;
+	return mActiveConnections.size();
 }
 
 void DedicatedServer::allowNewPlayers( bool allow )
@@ -410,3 +417,12 @@ void DedicatedServer::createGame(NetworkPlayer& left,
 	mGameList.push_back(newgame);
 }
 
+
+bool DedicatedServer::isConnected(PlayerID player) const {
+	return mActiveConnections.count(player) != 0;
+}
+
+bool DedicatedServer::addConnection(PlayerID player) {
+	auto result = mActiveConnections.insert(player);
+	return result.second;
+}

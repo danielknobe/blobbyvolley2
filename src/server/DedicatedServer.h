@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <deque>
 #include <iosfwd>
 #include <memory>
+#include <set>
 
 #include "NetworkPlayer.h"
 #include "NetworkMessage.h"
@@ -84,12 +85,7 @@ class DedicatedServer
 		// does not add the game to the active game list
 		void createGame(NetworkPlayer& left, NetworkPlayer& right,
 						PlayerSide switchSide, const std::string& rules, int scoreToWin, float gamespeed);
-		// broadcasts the current server  status to all waiting clients
 
-		// member variables
-		// number of currently connected clients
-		/// \todo is this already counted by raknet?
-		unsigned int mConnectedClients;
 		// raknet server used
 		const std::unique_ptr<RakServer> mServer;
 
@@ -104,6 +100,13 @@ class DedicatedServer
 		std::list< std::shared_ptr<NetworkGame> > mGameList;
 		std::map< PlayerID, std::shared_ptr<NetworkPlayer>> mPlayerMap;
 		std::mutex mPlayerMapMutex;
+
+		// Keeps track of all open connections, so we can discard packets that arrive
+		// for non-connected players
+		std::set<PlayerID> mActiveConnections;
+
+		bool isConnected(PlayerID player) const;
+		bool addConnection(PlayerID player);
 
 		// packet queue
 		std::deque<packet_ptr> mPacketQueue;
