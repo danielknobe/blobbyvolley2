@@ -201,7 +201,8 @@ void DedicatedServer::processPackets()
 					}
 					mMatchMaker.removePlayer(packet->playerId);
 					syslog(LOG_DEBUG, "Player removed (%d) from %s (%s), %d players available",
-						   packet_id, packet->playerId.toString().c_str(), player->second->getName().c_str(), (int)mPlayerMap.size());
+						   packet_id, packet->playerId.toString().c_str(),
+						   player->second->getName().c_str(), (int)mPlayerMap.size());
 				}
 
 				syslog(LOG_DEBUG, "Connection closed (%d) from %s, %d clients connected now",
@@ -339,7 +340,9 @@ void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitSt
 
 	if (wrongPackageSize)
 	{
-		std::cerr << "outdated client tried to connect! Unable to determine client version due to packet size mismatch : " << stream.GetNumberOfBitsUsed() << "\n" ;
+		syslog(LOG_NOTICE, "Outdated client tried to connect! "
+						   "Unable to determine client version due to packet size mismatch: %d",
+						   stream.GetNumberOfBitsUsed());
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
@@ -446,7 +449,8 @@ void DedicatedServer::createGame(NetworkPlayer& left,
 	SWLS_Games++;
 
 	/// \todo add some logging?
-	syslog(LOG_DEBUG, "Created game \"%s\" vs. \"%s\", rules:%s", left.getName().c_str(), right.getName().c_str(), rules.c_str());
+	syslog(LOG_DEBUG, "Created game '%s' vs. '%s', rules: '%s'",
+		   left.getName().c_str(), right.getName().c_str(), rules.c_str());
 	mGameList.push_back(newgame);
 }
 
