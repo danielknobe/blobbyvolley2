@@ -70,6 +70,9 @@ public:
 	unsigned getOpenGamesCount() const;
 	std::vector<unsigned> getOpenGameIDs() const;
 
+	/// checks whether the player with the given `id` is in the lobby.
+	bool hasPlayer(PlayerID id) const;
+
 private:
 	struct OpenGame;
 
