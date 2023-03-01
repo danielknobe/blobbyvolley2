@@ -79,7 +79,7 @@ private:
 	/// add a new game to the gamelist
 	unsigned addGame( OpenGame game );
 	void joinGame(PlayerID player, unsigned gameID, const std::string& password = "");
-	void startGame(PlayerID host, PlayerID client);
+	void startGame(PlayerID host_id, PlayerID client_id);
 
 	void removeGame( unsigned id );
 	void removePlayerFromAllGames( PlayerID player );

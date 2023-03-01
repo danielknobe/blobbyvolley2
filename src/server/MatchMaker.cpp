@@ -211,50 +211,54 @@ void MatchMaker::joinGame(PlayerID player, unsigned gameID, const std::string& p
 }
 
 // start a game
-void MatchMaker::startGame(PlayerID host, PlayerID client)
+void MatchMaker::startGame(PlayerID host_id, PlayerID client_id)
 {
-	auto first = mPlayerMap.find(host);
-	auto second = mPlayerMap.find(client);
-	assert( first != mPlayerMap.end() );
-	assert( second != mPlayerMap.end() );
+	auto host_player = mPlayerMap.find( host_id );
+	auto client_player = mPlayerMap.find( client_id );
+	if( host_player == mPlayerMap.end() ) {
+		throw std::runtime_error("Cannot start game, because host player does not exist.");
+	}
+	if( client_player == mPlayerMap.end() ) {
+		throw std::runtime_error("Cannot start game, because client player does not exist.");
+	}
 
 	// find game of host
 	auto game = std::find_if(mOpenGames.begin(), mOpenGames.end(),
-							[host](const std::pair<unsigned, OpenGame>& g) { return g.second.creator == host; } );
+							[host_id](const std::pair<unsigned, OpenGame>& g) { return g.second.creator == host_id; } );
 	if( game == mOpenGames.end() )
 	{
-		std::cerr << "Trying to start game of player " << host << ", but no such game was found.\n";
+		std::cerr << "Trying to start game of player " << host_id << ", but no such game was found.\n";
 		return;
 	}
 
 	// check that client is a potential game client
 	auto conlist = game->second.connected;
-	if( std::find(conlist.begin(), conlist.end(), client) == conlist.end() )
+	if( std::find( conlist.begin(), conlist.end(), client_id) == conlist.end() )
 	{
-		std::cerr << "player " << host << " tried to start a game with player " << client
-					<< " who was not available!\n";
+		std::cerr << "player " << host_id << " tried to start a game with player " << client_id
+				  << " who was not available!\n";
 		return;
 	}
 
 	// ok, all tests passed, the request seems valid. we can start the game and remove both players
 	PlayerSide switchSide = NO_PLAYER;
 
-	auto leftPlayer = first;
-	auto rightPlayer = second;
+	auto leftPlayer = host_player;
+	auto rightPlayer = client_player;
 
 	// put first player on his desired side in game
-	if(RIGHT_PLAYER == first->second->getDesiredSide())
+	if( RIGHT_PLAYER == host_player->second->getDesiredSide())
 	{
 		std::swap(leftPlayer, rightPlayer);
 	}
 
 	// if both players want the same side, one of them is going to get inverted game data
-	if (first->second->getDesiredSide() == second->second->getDesiredSide())
+	if ( host_player->second->getDesiredSide() == client_player->second->getDesiredSide())
 	{
 		// if both wanted to play on the left, the right player is the inverted one, if both wanted right, the left
-		if (second->second->getDesiredSide() == LEFT_PLAYER)
+		if ( client_player->second->getDesiredSide() == LEFT_PLAYER)
 			switchSide = RIGHT_PLAYER;
-		if (second->second->getDesiredSide() == RIGHT_PLAYER)
+		if ( client_player->second->getDesiredSide() == RIGHT_PLAYER)
 			switchSide = LEFT_PLAYER;
 	}
 
@@ -264,8 +268,8 @@ void MatchMaker::startGame(PlayerID host, PlayerID client)
 				mPossibleGameSpeeds.at(game->second.speed) );
 
 	// remove players from available player list
-	removePlayer( host );
-	removePlayer( client );
+	removePlayer( host_id );
+	removePlayer( client_id );
 }
 
 
