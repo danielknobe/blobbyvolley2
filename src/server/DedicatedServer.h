@@ -59,6 +59,7 @@ class DedicatedServer
 
 		// server processing
 		void queuePackets(); // sort incoming packets into queues. called from raknet thread!
+		///! \brief This function handles the packet processing loop for any non-game packet.
 		void processPackets();
 		void updateGames();
 
@@ -79,12 +80,16 @@ class DedicatedServer
 		void allowNewPlayers( bool allow );
 
 	private:
-		// packet handling functions / utility functions
-		void processBlobbyServerPresent( const packet_ptr& packet );
 		// creates a new game with those players
 		// does not add the game to the active game list
 		void createGame(NetworkPlayer& left, NetworkPlayer& right,
 						PlayerSide switchSide, const std::string& rules, int scoreToWin, float gamespeed);
+
+		// packet handling functions / utility functions
+		/// This function encapsulates processing our custom packets from the server main loop.
+		void processSingleMessage(MessageType message_id, PlayerID source, RakNet::BitStream& data);
+		void processEnterServer(PlayerID source, RakNet::BitStream& stream);
+		void processBlobbyServerPresent(PlayerID source, RakNet::BitStream& stream);
 
 		// raknet server used
 		const std::unique_ptr<RakServer> mServer;

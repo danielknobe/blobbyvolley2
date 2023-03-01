@@ -135,6 +135,11 @@ void DedicatedServer::queuePackets()
 	}
 }
 
+/*!
+ * \details This function handles packets responsible for connections itself, but delegates the other message
+ * types to `processSingleMessage()`. This is both for readability, and also because we want to ensure that errors
+ * (in the sense of exceptions) raised by the other message processing does not crash the entire server.
+ */
 void DedicatedServer::processPackets()
 {
 	while (!mPacketQueue.empty())
@@ -203,56 +208,18 @@ void DedicatedServer::processPackets()
 					   packet_id, packet->playerId.toString().c_str(), getConnectedClients());
 				break;
 			}
-			// player connects to server
 			case ID_ENTER_SERVER:
-			{
-				RakNet::BitStream stream(packet->data, packet->length, false);
-
-				stream.IgnoreBytes(1);	//ID_ENTER_SERVER
-
-				auto newplayer = std::make_shared<NetworkPlayer>(packet->playerId, stream);
-
-				// add to player map. protect with mutex
-				{
-					std::lock_guard<std::mutex> lock( mPlayerMapMutex );
-					mPlayerMap[packet->playerId] = newplayer;
-				}
-				mMatchMaker.addPlayer(packet->playerId, newplayer);
-				syslog(LOG_DEBUG, "Player added (%d) from %s (%s), %d players available", packet_id, packet->playerId.toString().c_str(), newplayer->getName().c_str(), (int)mPlayerMap.size());
-
-				// if this is a locally hosted server, any player that connects automatically joins an
-				// open game
-				if (mPlayerHosted && 
-				    mMatchMaker.getOpenGamesCount() != 0)
-				{
-					RakNet::BitStream stream;
-					stream.Write((unsigned char)ID_LOBBY);
-					stream.Write((unsigned char)LobbyPacketType::JOIN_GAME);
-					auto writer = createGenericWriter(&stream);
-					writer->uint32(mMatchMaker.getOpenGameIDs().front());
-					writer->generic<std::string>("");
-					mMatchMaker.receiveLobbyPacket( packet->playerId, stream );
-				}
-				break;
-			}
 			case ID_LOBBY:
-			{
-				if( !mMatchMaker.hasPlayer(packet->playerId) ) {
-					syslog(LOG_NOTICE, "Received Lobby packet (%d) from %s, who is not in the lobby. Ignoring.",
-						   packet_id, packet->playerId.toString().c_str());
-					break;
+			case ID_BLOBBY_SERVER_PRESENT:
+				try {
+					RakNet::BitStream stream(packet->data, packet->length, false);
+					stream.IgnoreBytes(1);	// ignore the message id
+					processSingleMessage(static_cast<MessageType>(packet_id), packet->playerId, stream);
+				} catch (const std::exception& error) {
+					syslog(LOG_ERR, "An error occurred while processing packet (%d) from %s: %s",
+						   packet_id, packet->playerId.toString().c_str(), error.what());
 				}
 
-				// which player is wanted as opponent
-				RakNet::BitStream stream(packet->data, packet->length, false);
-				mMatchMaker.receiveLobbyPacket( packet->playerId, stream );
-				break;
-			}
-			case ID_BLOBBY_SERVER_PRESENT:
-			{
-				processBlobbyServerPresent( packet );
-				break;
-			}
 			default:
 				syslog(LOG_DEBUG, "Unknown packet %d received\n", packet_id);
 		}
@@ -353,20 +320,16 @@ void DedicatedServer::printAllGames(std::ostream& stream) const
 }
 
 // special packet processing
-void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
+void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitStream& stream )
 {
-	RakNet::BitStream stream(packet->data, packet->length, false);
-
 	// If the client knows nothing about versioning, the version is 0.0
 	int major = 0;
 	int minor = 0;
 	bool wrongPackageSize = true;
 
-	// current client has bitSize 72
-
-	if( stream.GetNumberOfBitsUsed() == 72)
+	// current client has bitSize 64
+	if( stream.GetNumberOfBitsUsed() == 64)
 	{
-		stream.IgnoreBytes(1);	//ID_BLOBBY_SERVER_PRESENT
 		stream.Read(major);
 		stream.Read(minor);
 		wrongPackageSize = false;
@@ -380,7 +343,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
-		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, source, false);
 	}
 	else if (major < BLOBBY_VERSION_MAJOR
 		|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
@@ -389,7 +352,7 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
-		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, source, false);
 	}
 	else
 	{
@@ -399,9 +362,75 @@ void DedicatedServer::processBlobbyServerPresent( const packet_ptr& packet)
 		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 		mServerInfo.writeToBitstream(stream2);
 
-		mServer->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0,	packet->playerId, false);
+		mServer->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0,	source, false);
 	}
 }
+
+void DedicatedServer::processEnterServer(PlayerID source, RakNet::BitStream& data) {
+	auto newplayer = std::make_shared<NetworkPlayer>(source, data);
+
+	// add to player map. protect with mutex
+	{
+		std::lock_guard<std::mutex> lock( mPlayerMapMutex );
+		mPlayerMap[source] = newplayer;
+	}
+
+	mMatchMaker.addPlayer(source, newplayer);
+
+	syslog(LOG_DEBUG, "Player added (%d) from %s (%s), %d players available",
+		   ID_ENTER_SERVER, source.toString().c_str(),
+		   newplayer->getName().c_str(), (int)mPlayerMap.size());
+
+	// if this is a locally hosted server, any player that connects automatically joins an
+	// open game
+	if (mPlayerHosted &&
+		mMatchMaker.getOpenGamesCount() != 0)
+	{
+		RakNet::BitStream stream;
+		stream.Write((unsigned char)ID_LOBBY);
+		stream.Write((unsigned char)LobbyPacketType::JOIN_GAME);
+		auto writer = createGenericWriter(&stream);
+		writer->uint32(mMatchMaker.getOpenGameIDs().front());
+		writer->generic<std::string>("");
+		mMatchMaker.receiveLobbyPacket( source, stream );
+	}
+}
+
+
+void DedicatedServer::processSingleMessage(MessageType message_id, PlayerID source, RakNet::BitStream& data)
+{
+	switch ( message_id )
+	{
+		// player connects to server
+		case ID_ENTER_SERVER:
+		{
+			processEnterServer(source, data);
+			break;
+		}
+		case ID_LOBBY:
+		{
+			if( !mMatchMaker.hasPlayer(source) )
+			{
+				syslog(LOG_NOTICE, "Received Lobby packet (%d) from %s, who is not in the lobby. Ignoring.",
+					   message_id, source.toString().c_str());
+				break;
+			}
+
+			// which player is wanted as opponent
+			mMatchMaker.receiveLobbyPacket( source, data );
+			break;
+		}
+		case ID_BLOBBY_SERVER_PRESENT:
+		{
+			processBlobbyServerPresent( source, data );
+			break;
+		}
+		default:
+			syslog(LOG_ERR, "Invalid message type (%d) passed into `processSingleMessage` function.", message_id);
+			throw std::logic_error("Invalid packet type passed into `processSingleMessage`");
+	}
+}
+
 
 void DedicatedServer::createGame(NetworkPlayer& left,
 								NetworkPlayer& right,
