@@ -328,8 +328,8 @@ void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitSt
 	int minor = 0;
 	bool wrongPackageSize = true;
 
-	// current client has bitSize 64
-	if( stream.GetNumberOfBitsUsed() == 64)
+	// current client has bitSize 72
+	if( stream.GetNumberOfBitsUsed() == 72)
 	{
 		stream.Read(major);
 		stream.Read(minor);
