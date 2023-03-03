@@ -220,7 +220,7 @@ void DedicatedServer::processPackets()
 					syslog(LOG_ERR, "An error occurred while processing packet (%d) from %s: %s",
 						   packet_id, packet->playerId.toString().c_str(), error.what());
 				}
-
+				break;
 			default:
 				syslog(LOG_DEBUG, "Unknown packet %d received\n", packet_id);
 		}
