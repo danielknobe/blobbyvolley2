@@ -421,29 +421,19 @@ void NetworkGameState::step_impl()
 		case OPPONENT_DISCONNECTED:
 		{
 			imgui.doCursor();
-			imgui.doOverlay(GEN_ID, Vector2(100.0, 210.0), Vector2(700.0, 390.0));
-			imgui.doText(GEN_ID, Vector2(140.0, 240.0),	TextManager::GAME_OPP_LEFT);
 
-			if (imgui.doButton(GEN_ID, Vector2(230.0, 290.0), TextManager::LBL_OK))
-			{
-				switchState(new MainMenuState);
-			}
-
-			if (imgui.doButton(GEN_ID, Vector2(350.0, 290.0), TextManager::RP_SAVE))
-			{
-				mSaveReplay = true;
-				imgui.resetSelection();
-			}
-
-			if (imgui.doButton(GEN_ID, Vector2(250.0, 340.0), TextManager::NET_STAY_ON_SERVER))
-			{
-				// Send a blobby server connection request
-				RakNet::BitStream stream;
-				stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
-				stream.Write(BLOBBY_VERSION_MAJOR);
-				stream.Write(BLOBBY_VERSION_MINOR);
-				mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
-			}
+			displayQueryPrompt(200,
+				TextManager::GAME_OPP_LEFT,
+				std::make_tuple(TextManager::LBL_OK, [&](){ switchState(new MainMenuState); }),
+				std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }),
+				std::make_tuple(TextManager::NET_STAY_ON_SERVER, [&](){
+					// Send a blobby server connection request
+					RakNet::BitStream stream;
+					stream.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
+					stream.Write(BLOBBY_VERSION_MAJOR);
+					stream.Write(BLOBBY_VERSION_MINOR);
+					mClient->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0);
+				 }));
 			break;
 		}
 		case DISCONNECTED:
