@@ -4,15 +4,11 @@
 
 #include "Global.h"
 #include "GameConstants.h"
-#include "DuelMatch.h"
 #include "DuelMatchState.h"
 #include "FileRead.h"
 #include "PhysicWorld.h"
 
 #include <iostream>
-
-// fwd decl
-int lua_print(lua_State* state);
 
 IScriptableComponent::IScriptableComponent() :
 		mState(luaL_newstate()), mDummyWorld(new PhysicWorld())
@@ -22,11 +18,17 @@ IScriptableComponent::IScriptableComponent() :
 	lua_pushlightuserdata(mState, (void*)this);
 	lua_settable(mState, LUA_REGISTRYINDEX);
 
-	lua_register(mState, "print", lua_print);
-
 	// open math lib
 	luaL_requiref(mState, "math", luaopen_math, 1);
 	luaL_requiref(mState, "base", luaopen_base, 1);
+
+	// disable potentially unsafe functions from base library
+	const char* hide_fns[] = {"dofile", "collectgarbage", "getmetatable", "loadfile", "load", "loadstring",
+							  "rawlen", "rawget", "rawset", "setmetatable"};
+	for(auto& fn : hide_fns) {
+		lua_pushnil(mState);
+		lua_setglobal(mState, fn);
+	}
 }
 
 IScriptableComponent::~IScriptableComponent()
@@ -141,12 +143,6 @@ static inline int lua_to_int(lua_State* state, int index)
 // Access struct to get to the privates of IScriptableComponent
 struct IScriptableComponent::Access
 {
-	static DuelMatch* getMatch( lua_State* state )
-	{
-		auto sc = getScriptComponent( state );
-		return sc->mGame;
-	}
-
 	static PhysicWorld* getWorld( lua_State* state )
 	{
 		auto sc = getScriptComponent( state );
@@ -154,115 +150,79 @@ struct IScriptableComponent::Access
 	}
 };
 
-inline DuelMatch* getMatch( lua_State* s )  { return IScriptableComponent::Access::getMatch(s); }
+inline const DuelMatchState getMatchState( lua_State* state )  {
+	auto sc = getScriptComponent( state );
+	return sc->getMatchState();
+}
 inline PhysicWorld* getWorld( lua_State* s )  { return IScriptableComponent::Access::getWorld(s); }
 
 // standard lua functions
 int get_ball_pos(lua_State* state)
 {
-	auto s = getMatch( state );
-	return lua_pushvector(state, s->getBallPosition(), VectorType::POSITION);
+	return lua_pushvector(state, getMatchState(state).getBallPosition(), VectorType::POSITION);
 }
 
 int get_ball_vel(lua_State* state)
 {
-	auto s = getMatch( state );
-	return lua_pushvector(state, s->getBallVelocity(), VectorType::VELOCITY);
-}
-
-int set_ball_data(lua_State* state)
-{
-	auto s = getMatch( state );
-	lua_checkstack(state, 4);
-	float x = lua_tonumber( state, 1);
-	float y = lua_tonumber( state, 2);
-	float vx = lua_tonumber( state, 3);
-	float vy = lua_tonumber( state, 4);
-	Vector2 p{x, 600 - y};
-	Vector2 v{vx, -vy};
-	DuelMatchState m = s->getState();
-	m.worldState.ballPosition = p;
-	m.worldState.ballVelocity = v;
-	m.logicState.isGameRunning = true;
-	m.logicState.isBallValid = true;
-	s->setState(m);
-	return 0;
-}
-
-int set_blob_data(lua_State* state)
-{
-	auto s = getMatch( state );
-	lua_checkstack(state, 5);
-	int side = luaL_checkinteger(state, 1);
-	float x = lua_tonumber( state, 2);
-	float y = lua_tonumber( state, 3);
-	float vx = lua_tonumber( state, 4);
-	float vy = lua_tonumber( state, 5);
-	Vector2 p{x, 600 - y};
-	Vector2 v{vx, -vy};
-	DuelMatchState m = s->getState();
-	m.worldState.blobPosition[side] = p;
-	m.worldState.blobVelocity[side] = v;
-	s->setState(m);
-	return 0;
+	return lua_pushvector(state, getMatchState(state).getBallVelocity(), VectorType::VELOCITY);
 }
 
 int get_blob_pos(lua_State* state)
 {
-	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
+	const auto& s = getMatchState(state);
+	auto side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	return lua_pushvector(state, s->getBlobPosition(side), VectorType::POSITION);
+	return lua_pushvector(state, s.getBlobPosition(side), VectorType::POSITION);
 }
 
 int get_blob_vel(lua_State* state)
 {
-	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
+	const auto& s = getMatchState(state);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	return lua_pushvector(state, s->getBlobVelocity(side), VectorType::VELOCITY);
+	return lua_pushvector(state, s.getBlobVelocity(side), VectorType::VELOCITY);
 }
 
 int get_score( lua_State* state )
 {
-	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
+	const auto& s = getMatchState(state);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	lua_pushinteger(state, s->getScore(side));
+	lua_pushinteger(state, s.getScore(side));
 	return 1;
 }
 
 int get_touches( lua_State* state )
 {
-	auto s = getMatch( state );
-	PlayerSide side = (PlayerSide)luaL_checkinteger( state, -1 );
+	const auto& s = getMatchState(state);
+	PlayerSide side = (PlayerSide) lua_to_int( state, -1 );
 	lua_pop(state, 1);
 	assert( side == LEFT_PLAYER || side == RIGHT_PLAYER );
-	lua_pushinteger(state, s->getTouches(side));
+	lua_pushinteger(state, s.getHitcount(side));
 	return 1;
 }
 
 int get_ball_valid( lua_State* state )
 {
-	auto s = getMatch( state );
-	lua_pushboolean(state, !s->getBallDown());
+	const auto& s = getMatchState(state);
+	lua_pushboolean(state, !s.getBallDown());
 	return 1;
 }
 
 int get_game_running( lua_State* state )
 {
-	auto s = getMatch( state );
-	lua_pushboolean(state, s->getBallActive());
+	const auto& s = getMatchState(state);
+	lua_pushboolean(state, s.getBallActive());
 	return 1;
 }
 
 int get_serving_player( lua_State* state )
 {
-	auto s = getMatch( state );
-	lua_pushinteger(state, s->getServingPlayer());
+	const auto& s = getMatchState(state);
+	lua_pushinteger(state, s.getServingPlayer());
 	return 1;
 }
 
@@ -272,7 +232,7 @@ int simulate_steps( lua_State* state )
 	PhysicWorld* world = getWorld( state );
 	// get the initial ball settings
 	lua_checkstack(state, 5);
-	int steps = lua_to_int( state, 1);
+	int steps = lua_tointeger( state, 1);
 	float x = lua_tonumber( state, 2);
 	float y = lua_tonumber( state, 3);
 	float vx = lua_tonumber( state, 4);
@@ -341,25 +301,6 @@ int simulate_until(lua_State* state)
 	return ret;
 }
 
-
-int lua_print(lua_State* state)
-{
-	int count = lua_gettop(state);
-	for( int i = 1; i <= count; ++i)
-	{
-		lua_pushvalue(state, i);
-		const char* str = lua_tostring(state, -1);
-		std::cout << (i != 1 ? ", " : "");
-		if(str)
-			std::cout << str;
-		else
-			std::cout << "[" << lua_typename(state, lua_type(state, -1)) << "]";
-	}
-	std::cout << "\n";
-	lua_pop(state, lua_gettop(state));
-	return 0;
-}
-
 void IScriptableComponent::setGameFunctions()
 {
 	lua_register(mState, "get_ball_pos", get_ball_pos);
@@ -373,10 +314,13 @@ void IScriptableComponent::setGameFunctions()
 	lua_register(mState, "get_serving_player", get_serving_player);
 	lua_register(mState, "simulate", simulate_steps);
 	lua_register(mState, "simulate_until", simulate_until);
+}
 
-#ifndef NDEBUG
-	// only enable this function in debug builds.
-	lua_register(mState, "set_ball_data", set_ball_data);
-	lua_register(mState, "set_blob_data", set_blob_data);
-#endif
+const DuelMatchState& IScriptableComponent::getMatchState() const
+{
+	return mCachedState;
+}
+
+void IScriptableComponent::setMatchState(const DuelMatchState& state) {
+	mCachedState = state;
 }

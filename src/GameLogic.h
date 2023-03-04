@@ -238,6 +238,6 @@ extern const std::string FALLBACK_RULES_NAME;
 extern const std::string TEMP_RULES_NAME;
 
 // functions for creating a game logic object
-GameLogicPtr createGameLogic(const std::string& rulefile, DuelMatch* match, int score_to_win);
+GameLogicPtr createGameLogic(const std::string& rulefile, int score_to_win);
 
 

@@ -441,7 +441,7 @@ void MatchMaker::addGameSpeedOption( int speed )
 
 void MatchMaker::addRuleOption( const std::string& file )
 {
-	auto gamelogic = createGameLogic(file, nullptr, 1);
+	auto gamelogic = createGameLogic(file, 1);
 	/// \todo check rule validity and load author and description
 	mPossibleGameRules.emplace_back(Rule{file, gamelogic->getTitle(), gamelogic->getAuthor(), ""});
 }

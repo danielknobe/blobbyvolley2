@@ -158,7 +158,7 @@ void LobbyState::step_impl()
 					mPreferedSpeed = std::distance( speeds.begin(), closest_speed );
 
 					// rules
-					auto gamelogic = createGameLogic(config->getString("rules"), nullptr, 1);
+					auto gamelogic = createGameLogic(config->getString("rules"), 1);
 					std::string rule = gamelogic->getTitle();
 					auto& rules = mStatus.mPossibleRules;
 					auto found = std::find( rules.begin(), rules.end(), rule);

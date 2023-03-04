@@ -397,7 +397,7 @@ protected:
 class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 {
 	public:
-		LuaGameLogic(std::string file, DuelMatch* match, int score_to_win);
+		LuaGameLogic(std::string file, int score_to_win);
 		~LuaGameLogic() override;
 
 		std::string getSourceFile() const override
@@ -407,7 +407,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 
 		GameLogicPtr clone() const override
 		{
-			return GameLogicPtr(new LuaGameLogic(mSourceFile, getMatch(), getScoreToWin()));
+			return GameLogicPtr(new LuaGameLogic(mSourceFile, getScoreToWin()));
 		}
 
 		std::string getAuthor() const override
@@ -450,10 +450,9 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 };
 
 
-LuaGameLogic::LuaGameLogic( std::string filename, DuelMatch* match, int score_to_win ) :
+LuaGameLogic::LuaGameLogic( std::string filename, int score_to_win ) :
 	FallbackGameLogic( score_to_win ), mSourceFile(std::move(filename))
 {
-	setMatch( match );
 	lua_pushlightuserdata(mState, this);
 	lua_setglobal(mState, "__GAME_LOGIC_POINTER");
 
@@ -465,7 +464,6 @@ LuaGameLogic::LuaGameLogic( std::string filename, DuelMatch* match, int score_to
 	setGameFunctions();
 
 	// add functions
-	luaL_requiref(mState, "math", luaopen_math, 1);
 	lua_register(mState, "score", luaScore);
 	lua_register(mState, "mistake", luaMistake);
 	lua_register(mState, "servingplayer", luaGetServingPlayer);
@@ -620,6 +618,7 @@ void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 
 void LuaGameLogic::OnGameHandler( const DuelMatchState& state )
 {
+	setMatchState(state);
 	if (!getLuaFunction( "OnGame" ))
 	{
 		FallbackGameLogic::OnGameHandler( state );
@@ -688,7 +687,7 @@ int LuaGameLogic::luaIsGameRunning(lua_State* state)
 	return 1;
 }
 
-GameLogicPtr createGameLogic(const std::string& file, DuelMatch* match, int score_to_win )
+GameLogicPtr createGameLogic(const std::string& file, int score_to_win )
 {
 	if (file == FALLBACK_RULES_NAME)
 	{
@@ -697,7 +696,7 @@ GameLogicPtr createGameLogic(const std::string& file, DuelMatch* match, int scor
 
 	try
 	{
-		return GameLogicPtr( new LuaGameLogic(file, match, score_to_win ) );
+		return GameLogicPtr( new LuaGameLogic(file, score_to_win ) );
 	}
 	catch( std::exception& exp)
 	{

@@ -41,7 +41,7 @@ DuelMatch::DuelMatch(bool remote, const std::string& rules, int score_to_win) :
 		score_to_win = IUserConfigReader::createUserConfigReader("config.xml")->getInteger("scoretowin");
 	}
 
-	mLogic = createGameLogic(rules, this, score_to_win);
+	mLogic = createGameLogic(rules, score_to_win);
 	mPhysicWorld.reset( new PhysicWorld() );
 
 	setInputSources(std::make_shared<InputSource>(), std::make_shared<InputSource>());
@@ -77,7 +77,7 @@ void DuelMatch::setRules(const std::string& rulesFile, int score_to_win)
 {
 	if( score_to_win == 0)
 		score_to_win = getScoreToWin();
-	mLogic = createGameLogic(rulesFile, this, score_to_win);
+	mLogic = createGameLogic(rulesFile, score_to_win);
 }
 
 
@@ -97,9 +97,9 @@ void DuelMatch::step()
 	}
 
 	// do steps in physic and logic
-	mLogic->step( getState() );
 	mPhysicWorld->step( mTransformedInput[LEFT_PLAYER], mTransformedInput[RIGHT_PLAYER],
 						mLogic->isBallValid(), mLogic->isGameRunning() );
+	mLogic->step( getState() );
 
 	// check for all hit events
 

@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ScriptedInputSource.h"
 
 /* includes */
-#include <algorithm>
-#include <iostream>
 #include <boost/exception/all.hpp>
 
 #include <SDL.h>
@@ -31,15 +29,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "lua.hpp"
 
 #include "DuelMatch.h"
-#include "IUserConfigReader.h"
+#include "DuelMatchState.h"
 
 /* implementation */
 
-ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty,
+ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide playerside, unsigned int difficulty, 
 										 const DuelMatch* match)
-: mDifficulty(difficulty)
-, mSide(playerside)
-, mDelayDistribution( difficulty/3, difficulty/2 )
+: mSide(playerside)
+, mDifficulty(difficulty)
 , mMatch(match)
 {
 	mStartTime = SDL_GetTicks();
@@ -51,10 +48,6 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 	// push infos into script
 	lua_pushnumber(mState, mDifficulty / 25.0);
 	lua_setglobal(mState, "__DIFFICULTY");
-	auto config = IUserConfigReader::createUserConfigReader("config.xml");
-	bool debug = config->getBool("bot_debug");
-	lua_pushboolean(mState, debug);
-	lua_setglobal(mState, "__DEBUG");
 	lua_pushinteger(mState, mSide);
 	lua_setglobal(mState, "__SIDE");
 
@@ -76,14 +69,20 @@ ScriptedInputSource::ScriptedInputSource(const std::string& filename, PlayerSide
 
 	// clean up stack
 	lua_pop(mState, lua_gettop(mState));
-
-	IScriptableComponent::setMatch(const_cast<DuelMatch*>(match));
 }
 
 ScriptedInputSource::~ScriptedInputSource() = default;
 
 PlayerInputAbs ScriptedInputSource::getNextInput()
 {
+	DuelMatchState state = mMatch->getState();
+	if(mSide == RIGHT_PLAYER) {
+		state.swapSides();
+	}
+
+	setMatchState( state );
+
+
 	bool serving = false;
 	// reset input
 	lua_pushboolean(mState, false);
@@ -92,12 +91,13 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	lua_setglobal(mState, "__WANT_RIGHT");
 	lua_pushboolean(mState, false);
 	lua_setglobal(mState, "__WANT_JUMP");
+
 	lua_getglobal(mState, "__OnStep");
 	callLuaFunction();
 
-	if (!getMatch()->getBallActive() && mSide ==
+	if (!mMatch->getBallActive() && mSide ==
 			// if no player is serving player, assume the left one is
-			(getMatch()->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : getMatch()->getServingPlayer() ))
+			(mMatch->getServingPlayer() == NO_PLAYER ? LEFT_PLAYER : mMatch->getServingPlayer() ))
 	{
 		serving = true;
 	}
@@ -123,20 +123,9 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	if (mStartTime + WAITING_TIME > SDL_GetTicks() && serving)
 		return {};
 
-	// random jump delay depending on difficulty
-	if( wantjump && !mLastJump )
-	{
-		mJumpDelay--;
-		if( mJumpDelay > 0 )
-			wantjump = false;
-		else
-		{
-			mJumpDelay = std::max(0.0, std::min( mDelayDistribution(mRandom) , (double)mDifficulty));
-		}
+	PlayerInputAbs raw_input{wantleft, wantright, wantjump};
+	if(mSide == RIGHT_PLAYER) {
+		raw_input.swapSides();
 	}
-
-	mLastJump = wantjump;
-
-	return {wantleft, wantright, wantjump};
+	return raw_input;
 }
-
