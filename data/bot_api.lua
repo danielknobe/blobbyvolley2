@@ -131,8 +131,8 @@ function blob_time_to_y (destination)
 	local blobbygroundpos = CONST_GROUND_HEIGHT + CONST_BLOBBY_HEIGHT / 2 
 	local y = posy()
 	grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
-	time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
-	time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	time1 = -CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+	time2 = -CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
 	timemin = math.min(time1,time2)
 	return timemin
 end
@@ -142,8 +142,8 @@ end
 function can_blob_reach( time, blobx, posx, posy )
 	local minx = blobx - CONST_BLOBBY_SPEED * time
 	local maxx = blobx + CONST_BLOBBY_SPEED * time
-	local maxy = CONST_BLOBBY_GROUND_HEIGHT + CONST_BLOBBY_JUMP * time + CONST_BLOBBY_GRAVITY/2 * time^2
-	local vel = CONST_BLOBBY_JUMP + CONST_BLOBBY_GRAVITY * time
+	local maxy = -CONST_BLOBBY_GROUND_HEIGHT + CONST_BLOBBY_JUMP * time + CONST_BLOBBY_GRAVITY/2 * time^2
+	local vel = -CONST_BLOBBY_JUMP + CONST_BLOBBY_GRAVITY * time
 	if vel < 0 then
 		maxy = CONST_BLOBBY_MAX_JUMP
 	end
