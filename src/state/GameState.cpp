@@ -105,11 +105,28 @@ void GameState::displayQueryPrompt(const int height, TextManager::STRING title, 
 	imgui.doOverlay(GEN_ID, Vector2(0, height), Vector2(800, height + 200));
 	imgui.doText(GEN_ID, Vector2(400, height + 30), title, TF_ALIGN_CENTER);
 
-	if (imgui.doButton(GEN_ID, Vector2(400 - 60, height + 90), std::get<0>(opt1), TF_ALIGN_RIGHT))
+	const std::string& leftOptionText = imgui.getText(std::get<0>(opt1));
+	const std::string& rightOptionText = imgui.getText(std::get<0>(opt2));
+
+	const int leftOptionTextLength = TextManager::getUTF8Length(leftOptionText);
+	const int rightOptionTextLength = TextManager::getUTF8Length(rightOptionText);
+
+	int textOffset = 0;
+	if ((leftOptionTextLength + rightOptionTextLength) <= 28)
+	{
+		if (leftOptionTextLength > 14) {
+			textOffset = (leftOptionTextLength - 14) * FONT_WIDTH_NORMAL;
+		}
+		if (rightOptionTextLength > 14) {
+			textOffset = (14 - rightOptionTextLength) * FONT_WIDTH_NORMAL;
+		}
+	}
+
+	if (imgui.doButton(GEN_ID, Vector2(400 - 40 + textOffset, height + 90), leftOptionText, TF_ALIGN_RIGHT))
 	{
 		std::get<1>(opt1)();
 	}
-	if (imgui.doButton(GEN_ID, Vector2(400 + 60, height + 90), std::get<0>(opt2), TF_ALIGN_LEFT))
+	if (imgui.doButton(GEN_ID, Vector2(400 + 40 + textOffset, height + 90), rightOptionText, TF_ALIGN_LEFT))
 	{
 		std::get<1>(opt2)();
 	}
