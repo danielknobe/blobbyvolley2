@@ -82,9 +82,9 @@ function OnGame()
   serve=false --Aufschlagende erzwingen
               --Make an end to the serve
  end
- if (touches()~=oldtouches) or (math.abs(oldbspeedx)~=math.abs(bspeedx())) then --Hat sich die Situation geändert
+ if (touches()~=oldtouches) or (math.abs(oldbspeedx)~=math.abs(bspeedx())) then --Hat sich die Situation geï¿½ndert
                                                                                 --If the situation has changed
-  OGinit=false --gleich Entscheidung neu fällen
+  OGinit=false --gleich Entscheidung neu fï¿½llen
                --redo decision
   oldtouches=touches()
   oldbspeedx=bspeedx()
@@ -98,7 +98,7 @@ function decide (funcno)
  t1=1
  chosen=1
  chosenret=0
- --Alle Funktionen abfragen und die mit dem größten Return wählen
+ --Alle Funktionen abfragen und die mit dem grï¿½ï¿½ten Return wï¿½hlen
  --test all functions and take the one with the highest return value
  while (t1 <= funcs) do
   temp=dofunc(funcno,t1,false)
@@ -108,7 +108,7 @@ function decide (funcno)
   end
   t1=t1+1
  end
- --print (chosenret) --Sagt, für wie gut sich die gewählte Funktion hält
+ --print (chosenret) --Sagt, fï¿½r wie gut sich die gewï¿½hlte Funktion hï¿½lt
                    --tells how good the chosen function says to fit
  return chosen
 end
@@ -130,11 +130,11 @@ function dofunc (funcno, actionno, action) --Weist jeder Aktionsnummer den echte
  return false
 end
 
---Ausführbare Funktionen
+--Ausfï¿½hrbare Funktionen
 --executable functions
 
-function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45° Winkel an
-                                   --plays ball in the air at height maxjump with 45° angle
+function std45deg (funcno, action) --spielt Ball aus der Luft bei maxjump im 45ï¿½ Winkel an
+                                   --plays ball in the air at height maxjump with 45ï¿½ angle
                                    --funcno(s)=2,3
  local maxjump  = blobbymaxjump
  local distance = 32.25
@@ -257,7 +257,7 @@ end
 --mathematische Hilfsfunktionen
 --mathematical helpers
 
-function estimatex(destY) --gibt möglichst genaue Angabe der X-Koordinate zurück, bei der sich der Ball befindet, wenn er sich bei der angegebenen Y Koordinate befindet
+function estimatex(destY) --gibt mï¿½glichst genaue Angabe der X-Koordinate zurï¿½ck, bei der sich der Ball befindet, wenn er sich bei der angegebenen Y Koordinate befindet
                           --returns exact ballx when bally will be given destY
  if (bspeedy()==0) and (bspeedx()==0) then
   return ballx()
@@ -284,8 +284,8 @@ function blobtimetoy (y) --Zeit, die ein Blob braucht, um eine Y Position zu err
   y=383
  end
  grav = CONST_BLOBBY_GRAVITY / 2    -- half, because we use jump buffer
- time1 = CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
- time2 = CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+ time1 = -CONST_BLOBBY_JUMP/grav + math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
+ time2 = -CONST_BLOBBY_JUMP/grav - math.sqrt(2*grav*(y-blobbygroundpos) + CONST_BLOBBY_JUMP*CONST_BLOBBY_JUMP) / grav
  timemin=math.min(time1,time2)
  return timemin
 end
