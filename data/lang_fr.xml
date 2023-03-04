@@ -80,7 +80,7 @@
 	<string english = "red" translation = "rouge" />
 	<string english = "green" translation = "vert" />
 	<string english = "blue" translation = "bleu" />
-	<string english = "morphing blob?" translation = "blob qui change de couleur?" />
+	<string english = "morphing blob?" translation = "change de couleur?" />
 	<string english = "keyboard" translation = "clavier" />
 	<string english = "mouse" translation = "souris" />
 	<string english = "joystick" translation = "joystick" />

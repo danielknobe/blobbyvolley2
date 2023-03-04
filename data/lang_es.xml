@@ -68,13 +68,13 @@
 	<string english = "graphic options" translation = "opciones gráficas" />
 	<string english = "misc options" translation = "opciones varias" />
 	<string english = "video settings" translation = "configuración de vídeo" />
-	<string english = "fullscreen mode" translation = "modo de pantalla completa" />
-	<string english = "window mode" translation = "modo de ventana" />
+	<string english = "fullscreen mode" translation = "pantalla completa" />
+	<string english = "window mode" translation = "ventana" />
 	<string english = "render device" translation = "Cambiar configuración de gráficos" />
 	<string english = "show shadow" translation = "mostrar sombra" />
 	<string english = "blob colors" translation = "colores de las manchas" />
-	<string english = "left player" translation = "reproductor izquierdo" />
-	<string english = "right player" translation = "jugador de la derecha" />
+	<string english = "left player" translation = "izquierda" />
+	<string english = "right player" translation = "derecha" />
 	
 	<string english = "red" translation = "rojo" />
 	<string english = "green" translation = "verde" />
