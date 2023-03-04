@@ -118,7 +118,7 @@ void OptionState::step_impl()
 	imgui.doSelectbox(GEN_ID, Vector2(5.0, 50.0), Vector2(375.0, 300.0), mScriptNames, mPlayerOptions[LEFT_PLAYER]);
 	imgui.doSelectbox(GEN_ID, Vector2(425.0, 50.0), Vector2(795.0, 300.0), mScriptNames, mPlayerOptions[RIGHT_PLAYER]);
 
-	imgui.doText(GEN_ID, Vector2(270.0, 310.0), TextManager::OP_DIFFICULTY );
+	imgui.doText(GEN_ID, Vector2(400, 310.0), TextManager::OP_DIFFICULTY, TF_ALIGN_CENTER );
 
 	float f = 1.f - (float)mBotStrength[0] / MAX_BOT_DELAY;
 	imgui.doScrollbar(GEN_ID, Vector2(15.0, 350.0), f);
@@ -269,7 +269,7 @@ void GraphicOptionsState::step_impl()
 	heightOfElement += standardLineHeight;
 
 	//Blob colors:
-	imgui.doText(GEN_ID, Vector2(280.0, heightOfElement), TextManager::OP_BLOB_COLORS);
+	imgui.doText(GEN_ID, Vector2(400.0, heightOfElement), TextManager::OP_BLOB_COLORS, TF_ALIGN_CENTER);
 	heightOfElement += 40.0;
 
 	float playerColorSettingsHeight = heightOfElement;
