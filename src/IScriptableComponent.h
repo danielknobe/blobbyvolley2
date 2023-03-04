@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <memory>
+#include "DuelMatchState.h"
 
 struct lua_State;
 class DuelMatch;
@@ -43,6 +44,9 @@ class IScriptableComponent
 {
 	public:
 		struct Access;
+
+		const DuelMatchState& getMatchState() const;
+
 	protected:
 		IScriptableComponent();
 		virtual ~IScriptableComponent();
@@ -57,14 +61,15 @@ class IScriptableComponent
 		// load lua functions
 		void setGameConstants();
 		void setGameFunctions();
-		void setMatch( DuelMatch* m ) { mGame = m; };
-		DuelMatch* getMatch() const { return mGame; };
+
+		void setMatchState(const DuelMatchState& state);
 
 		lua_State* mState;
 
 	private:
-		DuelMatch* mGame;
 		// we save a dummy physic world here to do simulations
 		std::unique_ptr<PhysicWorld> mDummyWorld;
+
+		DuelMatchState mCachedState;
 };
 

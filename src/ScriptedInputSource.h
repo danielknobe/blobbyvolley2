@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 #include <random>
+#include <deque>
 
 #include "Global.h"
 #include "InputSource.h"
@@ -53,7 +54,8 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		/// The constructor automatically loads and initializes the script
 		/// with the given filename. The side parameter tells the script
 		/// which side is it on.
-		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty, const DuelMatch* match);
+		ScriptedInputSource(const std::string& filename, PlayerSide side, unsigned int difficulty,
+							const DuelMatch* match);
 		~ScriptedInputSource() override;
 
 		void setWaitTime(int wait_in_ms);
@@ -61,21 +63,15 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		PlayerInputAbs getNextInput() override;
 
 	private:
-
 		unsigned int mStartTime;
 		unsigned int mWaitTime = WAITING_TIME;
 
-		// ki strength values
-		int mDifficulty;
 
 		PlayerSide mSide;
 
-		// error data
-		bool mLastJump = false;
-		double mJumpDelay = 0;
-		std::normal_distribution<double> mDelayDistribution;
-		std::default_random_engine mRandom;
+		// Difficulty setting of the AI. Small values mean stronger AI
+		int mDifficulty;
 
-		/// match connected with this source
-		const DuelMatch* mMatch = nullptr;
+		std::default_random_engine mRandom;
+		const DuelMatch* mMatch;
 };
