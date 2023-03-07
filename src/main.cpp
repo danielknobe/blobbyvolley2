@@ -30,12 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 
-#ifdef __APPLE__
-	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-		#include <physfs.h>
-	#endif
-#endif
-
 #if BLOBBY_ON_DESKTOP
 	#ifndef WIN32
 		#include "config.h"
@@ -82,42 +76,26 @@ void deinit()
 void setupPHYSFS()
 {
 	FileSystem& fs = FileSystem::getSingleton();
-	const std::string separator = fs.getDirSeparator();
+	
 	// Game should be playable out of the source package on all
 	// relevant platforms.
 	#if BLOBBY_ON_DESKTOP
-		std::string baseSearchPath("data" + separator);
-	#elif (defined __ANDROID__)
-		/// TODO: This seems to be wrong
-		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
-	#elif (defined __APPLE__) || (defined __SWITCH__)
-		// iOS
-		std::string baseSearchPath(PHYSFS_getBaseDir());
+		std::string baseSearchPath("data" + fs.getDirSeparator());
+	#else
+		std::string baseSearchPath(fs.getBaseDir());
 	#endif
 
 	/*
 	set write dir
 	*/
-	#if !(defined __ANDROID__)
-		std::string writeDir = fs.getPrefDir();
-		fs.setWriteDir(writeDir);
-		fs.probeDir("replays");
-		fs.probeDir("gfx");
-		fs.probeDir("sounds");
-		fs.probeDir("scripts");
-		fs.probeDir("backgrounds");
-		fs.probeDir("rules");
-	#else
-		/// TODO: Check if we can use PrefDir on Android, too.
-		std::string writeDir(SDL_AndroidGetExternalStoragePath() + separator);
-		fs.setWriteDir(writeDir);
-		fs.probeDir("replays");
-		fs.probeDir("gfx");
-		fs.probeDir("sounds");
-		fs.probeDir("scripts");
-		fs.probeDir("backgrounds");
-		fs.probeDir("rules");
-	#endif
+	std::string writeDir = fs.getPrefDir();
+	fs.setWriteDir(writeDir);
+	fs.probeDir("replays");
+	fs.probeDir("gfx");
+	fs.probeDir("sounds");
+	fs.probeDir("scripts");
+	fs.probeDir("backgrounds");
+	fs.probeDir("rules");
 
 	/*
 	set read dir (local files next to application)

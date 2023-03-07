@@ -75,13 +75,12 @@ class FileSystem : public ObjectCounter<FileSystem>
 		/// do. also, its uses should be looked at again.
 		void probeDir(const std::string& dir);
 
-		/// \todo ideally, this method would never be needed by client code!!
+		/// \brief Get path seperator
 		std::string getDirSeparator();
 
-		/// \todo ideally, this method would never be needed by client code!!
-		std::string getUserDir();
+		/// \brief Get the path where the application resides
+		std::string getBaseDir();
 
-		/// \brief Get the user-and-app-specific path where files can be written.
-		/// \todo ideally, this method would never be needed by client code!!
+		/// \brief Get the user-and-app-specific path where files can be written
 		std::string getPrefDir();
 };

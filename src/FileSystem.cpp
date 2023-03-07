@@ -140,9 +140,9 @@ std::string FileSystem::getDirSeparator()
 	return PHYSFS_getDirSeparator();
 }
 
-std::string FileSystem::getUserDir()
+std::string FileSystem::getBaseDir()
 {
-	return PHYSFS_getUserDir();
+	return PHYSFS_getBaseDir();
 }
 
 std::string FileSystem::getPrefDir()

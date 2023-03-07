@@ -73,7 +73,7 @@ void setupPHYSFS()
 	// Create a search path in the home directory and ensure that
 	// all paths exist and are actually directories
 	// Linux
-	std::string userdir = fs.getUserDir();
+	std::string userdir = fs.getPrefDir();
 
 	std::string userAppend = ".blobby";
 	std::string homedir = userdir + userAppend;
