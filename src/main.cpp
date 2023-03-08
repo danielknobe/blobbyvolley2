@@ -30,12 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 
-#if BLOBBY_ON_DESKTOP
-	#ifndef WIN32
-		#include "config.h"
-	#endif
-#endif
-
 #ifdef __SWITCH__
 	#include <switch.h>
 #endif
@@ -51,12 +45,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileSystem.h"
 #include "state/State.h"
 #include "BlobbyApp.h"
-
-#if defined(WIN32)
-#ifndef GAMEDATADIR
-#define GAMEDATADIR "data"
-#endif
-#endif
 
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
@@ -85,38 +73,33 @@ void setupPHYSFS()
 		std::string baseSearchPath(fs.getBaseDir());
 	#endif
 
-	/*
-	set write dir
-	*/
+	// List all the subdirectories / zip archives that we want to read from
+	std::initializer_list<std::string> subdirs = {"gfx",
+												  "sounds",
+												  "scripts",
+												  "backgrounds",
+												  "rules"};
+
+	// set write dir
 	std::string writeDir = fs.getPrefDir();
 	fs.setWriteDir(writeDir);
+	for(const auto& sub_dir : subdirs) {
+		fs.probeDir(sub_dir);
+	}
 	fs.probeDir("replays");
-	fs.probeDir("gfx");
-	fs.probeDir("sounds");
-	fs.probeDir("scripts");
-	fs.probeDir("backgrounds");
-	fs.probeDir("rules");
 
-	/*
-	set read dir (local files next to application)
-	*/
+	// set read dir (local files next to application)
 	fs.addToSearchPath(baseSearchPath);
-	fs.addToSearchPath(fs.join(baseSearchPath, "gfx.zip"));
-	fs.addToSearchPath(fs.join(baseSearchPath, "sounds.zip"));
-	fs.addToSearchPath(fs.join(baseSearchPath, "scripts.zip"));
-	fs.addToSearchPath(fs.join(baseSearchPath, "backgrounds.zip"));
-	fs.addToSearchPath(fs.join(baseSearchPath, "rules.zip"));
+	for(const auto& archive : subdirs) {
+		fs.addToSearchPath(fs.join(baseSearchPath, archive + ".zip"));
+	}
 
-	/*
-	set read dir (unix-like when installed)
-	*/
-	#if BLOBBY_ON_DESKTOP && (!defined WIN32)
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
-		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
+	// set read dir (unix-like when installed)
+	#ifdef BLOBBY_DATA_DIR
+		fs.addToSearchPath(BLOBBY_DATA_DIR);
+		for(const auto& archive : subdirs) {
+			fs.addToSearchPath(fs.join(BLOBBY_DATA_DIR, archive + ".zip"));
+		}
 	#endif
 }
 
