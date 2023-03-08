@@ -80,7 +80,7 @@ void setupPHYSFS()
 	// Game should be playable out of the source package on all
 	// relevant platforms.
 	#if BLOBBY_ON_DESKTOP
-		std::string baseSearchPath("data" + fs.getDirSeparator());
+		std::string baseSearchPath("data");
 	#else
 		std::string baseSearchPath(fs.getBaseDir());
 	#endif
@@ -101,11 +101,11 @@ void setupPHYSFS()
 	set read dir (local files next to application)
 	*/
 	fs.addToSearchPath(baseSearchPath);
-	fs.addToSearchPath(baseSearchPath + "gfx.zip");
-	fs.addToSearchPath(baseSearchPath + "sounds.zip");
-	fs.addToSearchPath(baseSearchPath + "scripts.zip");
-	fs.addToSearchPath(baseSearchPath + "backgrounds.zip");
-	fs.addToSearchPath(baseSearchPath + "rules.zip");
+	fs.addToSearchPath(fs.join(baseSearchPath, "gfx.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "sounds.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "scripts.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "backgrounds.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "rules.zip"));
 
 	/*
 	set read dir (unix-like when installed)

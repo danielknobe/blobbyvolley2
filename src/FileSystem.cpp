@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream> /// \todo remove this? currently needed for that probeDir error messages
 #include <utility>
 
+
+#include <boost/algorithm/string/predicate.hpp>
+
 #if (defined __ANDROID__)
 #include <SDL.h>
 #endif
@@ -174,6 +177,28 @@ void FileSystem::probeDir(const std::string& dirname)
 	}
 }
 
+std::string FileSystem::join(const std::string& first, const std::string& second)
+{
+	const std::string& separator = getDirSeparator();
+	
+	bool firstEndsWithSeparator = boost::algorithm::ends_with(first, separator);
+	bool secondStartsWithSeparator = boost::algorithm::starts_with(second, separator);
+
+	// remove one unnecessary separator
+	if (firstEndsWithSeparator && secondStartsWithSeparator)
+	{
+		return first.substr(0, first.length() - separator.length()) + second;
+	}
+	
+	// no need to add or remove any separator
+	if (firstEndsWithSeparator || secondStartsWithSeparator)
+	{
+		return first + second;
+	}
+
+	// add missing separator
+	return first + separator + second;
+}
 
 // exception implementations
 

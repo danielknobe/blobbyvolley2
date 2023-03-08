@@ -83,4 +83,7 @@ class FileSystem : public ObjectCounter<FileSystem>
 
 		/// \brief Get the user-and-app-specific path where files can be written
 		std::string getPrefDir();
+
+		/// \brief Concatenates two path components with exactly one directory separator
+		std::string join(const std::string& first, const std::string& second);
 };
