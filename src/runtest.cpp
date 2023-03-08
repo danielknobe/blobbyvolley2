@@ -58,39 +58,22 @@ void deinit()
 void setupPHYSFS()
 {
 	FileSystem& fs = FileSystem::getSingleton();
-	const std::string separator = fs.getDirSeparator();
-	// Game should be playable out of the source package on all
-	// relevant platforms.
-	std::string baseSearchPath("data" + separator);
 
+	// We run these tests out of the build tree, so `data` is where our assets reside.
+	std::string baseSearchPath("data");
+
+	// set write dir
+	std::string writeDir = fs.getPrefDir();
+	fs.setWriteDir(writeDir);
+	fs.probeDir("gfx");
+	fs.probeDir("sounds");
+	fs.probeDir("scripts");
+	fs.probeDir("backgrounds");
+	fs.probeDir("rules");
+	fs.probeDir("replays");
+
+	// set read dir (local files next to application)
 	fs.addToSearchPath(baseSearchPath);
-	fs.addToSearchPath(baseSearchPath + "gfx.zip");
-	fs.addToSearchPath(baseSearchPath + "sounds.zip");
-	fs.addToSearchPath(baseSearchPath + "scripts.zip");
-	fs.addToSearchPath(baseSearchPath + "backgrounds.zip");
-	fs.addToSearchPath(baseSearchPath + "rules.zip");
-
-	// Create a search path in the home directory and ensure that
-	// all paths exist and are actually directories
-	// Linux
-	std::string userdir = fs.getPrefDir();
-
-	std::string userAppend = ".blobby";
-	std::string homedir = userdir + userAppend;
-	/// \todo please review this code and determine if we really need to add userdir to search path
-	/// only to remove it later
-	fs.setWriteDir(userdir);
-	fs.probeDir(userAppend);
-	/// \todo why do we need separator here?
-	fs.probeDir(userAppend + separator + "replays");
-	fs.probeDir(userAppend + separator + "gfx");
-	fs.probeDir(userAppend + separator + "sounds");
-	fs.probeDir(userAppend + separator + "scripts");
-	fs.probeDir(userAppend + separator + "backgrounds");
-	fs.probeDir(userAppend + separator + "rules");
-	fs.removeFromSearchPath(userdir);
-	// here we set the write dir anew!
-	fs.setWriteDir(homedir);
 }
 
 extern "C"
