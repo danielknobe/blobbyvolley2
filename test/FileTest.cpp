@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( default_constructor )
 	FileSystem fs3("__SPAM__");
 }
 
-// the functions deleteFile, exists, isDirectory, addToSearchPath, removeFromSearchPath, setWriteDir and getUserDir
+// the functions deleteFile, exists, isDirectory, addToSearchPath, removeFromSearchPath, setWriteDir and getBaseDir
 // currently just wrap PHYSFS functions, so they actually don't do anything. Thus, these functions are not
 // tested here. Once we have a defined error reporting policy etc, tests will be added.
 

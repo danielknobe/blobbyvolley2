@@ -30,12 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Global.h"
 
-#ifdef __APPLE__
-	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-		#include <physfs.h>
-	#endif
-#endif
-
 #if BLOBBY_ON_DESKTOP
 	#ifndef WIN32
 		#include "config.h"
@@ -82,94 +76,47 @@ void deinit()
 void setupPHYSFS()
 {
 	FileSystem& fs = FileSystem::getSingleton();
-	const std::string separator = fs.getDirSeparator();
+	
 	// Game should be playable out of the source package on all
 	// relevant platforms.
 	#if BLOBBY_ON_DESKTOP
-		std::string baseSearchPath("data" + separator);
-	#elif (defined __ANDROID__)
-		std::string baseSearchPath(SDL_AndroidGetExternalStoragePath() + separator);
-	#elif (defined __APPLE__) || (defined __SWITCH__)
-		// iOS
-		std::string baseSearchPath(PHYSFS_getBaseDir());
+		std::string baseSearchPath("data");
+	#else
+		std::string baseSearchPath(fs.getBaseDir());
 	#endif
 
+	/*
+	set write dir
+	*/
+	std::string writeDir = fs.getPrefDir();
+	fs.setWriteDir(writeDir);
+	fs.probeDir("replays");
+	fs.probeDir("gfx");
+	fs.probeDir("sounds");
+	fs.probeDir("scripts");
+	fs.probeDir("backgrounds");
+	fs.probeDir("rules");
+
+	/*
+	set read dir (local files next to application)
+	*/
 	fs.addToSearchPath(baseSearchPath);
-	fs.addToSearchPath(baseSearchPath + "gfx.zip");
-	fs.addToSearchPath(baseSearchPath + "sounds.zip");
-	fs.addToSearchPath(baseSearchPath + "scripts.zip");
-	fs.addToSearchPath(baseSearchPath + "backgrounds.zip");
-	fs.addToSearchPath(baseSearchPath + "rules.zip");
+	fs.addToSearchPath(fs.join(baseSearchPath, "gfx.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "sounds.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "scripts.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "backgrounds.zip"));
+	fs.addToSearchPath(fs.join(baseSearchPath, "rules.zip"));
 
-	#if defined(WIN32)
-		// Just write in installation directory
-		fs.setWriteDir("data");
-	#else
-		#if (!defined __ANDROID__)
-			// Create a search path in the home directory and ensure that
-			// all paths exist and are actually directories
-			#if (defined __APPLE__) || (defined __SWITCH__)
-				#if TARGET_OS_SIMULATOR
-					// The simulator doesn't create documentsfolder anymore, we create it if necessary
-					fs.setWriteDir(baseSearchPath + "../");
-					fs.probeDir("Documents");
-				#endif
-				#if TARGET_OS_IPHONE
-					std::string userdir = baseSearchPath + "../Documents/";
-				#else
-					std::string userdir = fs.getUserDir();
-				#endif
-			#else
-				// Linux
-				std::string userdir = fs.getUserDir();
-
-				// handle the case when it is installed
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
-				fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
-			#endif
-			std::string userAppend = ".blobby";
-			std::string homedir = userdir + userAppend;
-			/// \todo please review this code and determine if we really need to add userdir to search path
-			/// only to remove it later
-			fs.setWriteDir(userdir);
-			fs.probeDir(userAppend);
-			/// \todo why do we need separator here?
-			fs.probeDir(userAppend + separator + "replays");
-			fs.probeDir(userAppend + separator + "gfx");
-			fs.probeDir(userAppend + separator + "sounds");
-			fs.probeDir(userAppend + separator + "scripts");
-			fs.probeDir(userAppend + separator + "backgrounds");
-			fs.probeDir(userAppend + separator + "rules");
-			fs.removeFromSearchPath(userdir);
-			// here we set the write dir anew!
-			fs.setWriteDir(homedir);
-			#if defined(GAMEDATADIR)
-			{
-				// A global installation path makes only sense on non-Windows
-				// platforms
-				std::string basedir = GAMEDATADIR;
-				fs.addToSearchPath(basedir);
-				fs.addToSearchPath(basedir + separator + "gfx.zip");
-				fs.addToSearchPath(basedir + separator + "sounds.zip");
-				fs.addToSearchPath(basedir + separator + "scripts.zip");
-				fs.addToSearchPath(basedir + separator + "backgrounds.zip");
-				fs.addToSearchPath(basedir + separator + "rules.zip");
-			}
-			#endif
-		#else
-			fs.setWriteDir(baseSearchPath);
-			fs.probeDir("replays");
-			fs.probeDir("gfx");
-			fs.probeDir("sounds");
-			fs.probeDir("scripts");
-			fs.probeDir("backgrounds");
-			fs.probeDir("rules");
-		#endif
-
+	/*
+	set read dir (unix-like when installed)
+	*/
+	#if BLOBBY_ON_DESKTOP && (!defined WIN32)
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/gfx.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/sounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/scripts.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/backgrounds.zip");
+		fs.addToSearchPath(BLOBBY_INSTALL_PREFIX  "/share/blobby/rules.zip");
 	#endif
 }
 
