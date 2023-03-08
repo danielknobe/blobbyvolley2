@@ -74,11 +74,7 @@ void setupPHYSFS()
 	#endif
 
 	// List all the subdirectories / zip archives that we want to read from
-	std::initializer_list<std::string> subdirs = {"gfx",
-												  "sounds",
-												  "scripts",
-												  "backgrounds",
-												  "rules"};
+	std::vector<std::string> subdirs = {"gfx", "sounds", "scripts", "backgrounds", "rules"};
 
 	// set write dir
 	std::string writeDir = fs.getPrefDir();
