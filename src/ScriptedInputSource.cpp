@@ -178,6 +178,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 	if( opp_touches != mOldOppTouches)
 	{
 		mOldOppTouches = opp_touches;
+		// the number of opponent touches get reset to zero if the bot touches the ball -- ignore these cases
 		if(opp_touches != 0)
 		{
 			int base_difficulty = std::max( 0, 2 * mDifficulty - 30 );
@@ -187,12 +188,19 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 		}
 	}
 
-	// important: get the actual speed, not the simulated one
+	// check if the x-velocity of the ball has changed. This only happens when the ball collides with something.
+	// as this results in a change of trajectory of the ball, this is a relatively natural place for the bot to
+	// change its estimated position and start moving the blob.
+	// important: get the actual speed, not the simulated one. Otherwise, applying the error would trigger this condition
+	// immediately again.
 	float bv_x = mMatch->getBallVelocity().x;
 	if(bv_x != mOldBallVx) {
 		mOldBallVx = bv_x;
+		// don't apply an error after every collision -- results in very jittery bot.
+		// instead, only do this in a fraction of the cases, up to 25% for very easy.
 		std::uniform_int_distribution<int> dist{0, 100};
 		if( dist( mRandom ) < mDifficulty ) {
+			// generate a random amount, and random duration, for the error effect.
 			float amount = std::min(25, getCurrentDifficulty()) / 50.f + std::max(0, mDifficulty - 5) / 25.f;
 			int err_time = 25 + mDifficulty + std::min(75, getCurrentDifficulty());
 			setBallError(err_time, amount);
@@ -224,7 +232,7 @@ int ScriptedInputSource::getCurrentDifficulty() const
 	float difficulty_effect = std::sqrt( mDifficulty );
 	// minimum game time until the bot starts making mistakes:
 	// ~5 minutes at highest difficulty, 10 seconds for very easy.
-	int min_duration = 300 - static_cast<int>(difficulty_effect * 57);
+	int min_duration = 300 - static_cast<int>(difficulty_effect * 58);
 	int offset_seconds = std::max( 0, exchange_seconds - min_duration );
 	int diff_mod = (offset_seconds * mDifficulty) / 25;
 	return diff_mod;
