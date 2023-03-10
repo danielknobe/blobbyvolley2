@@ -110,7 +110,7 @@ endif ()
 
 if (SWITCH)
 	add_executable(blobby.elf main.cpp ${blobby_SRC})
-	target_link_libraries(blobby.elf ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES} ${DEVKITPRO}/portlibs/switch/lib/libEGL.a ${DEVKITPRO}/portlibs/switch/lib/libdrm_nouveau.a ${DEVKITPRO}/portlibs/switch/lib/libglapi.a ${DEVKITPRO}/libnx/lib/libnx.a)
+	target_link_libraries(blobby.elf ${DEVKITPRO}/portlibs/switch/lib/libEGL.a ${DEVKITPRO}/portlibs/switch/lib/libdrm_nouveau.a ${DEVKITPRO}/portlibs/switch/lib/libglapi.a ${DEVKITPRO}/libnx/lib/libnx.a)
 	add_custom_command(
 		OUTPUT blobby.nro
 		COMMAND ${DEVKITPRO}/tools/bin/elf2nro blobby.elf blobby.nro --icon=${CMAKE_SOURCE_DIR}/data/Icon.jpg --nacp=blobby.nacp
@@ -128,8 +128,9 @@ else ()
 	else ()
 		add_executable(blobby main.cpp ${blobby_SRC})
 	endif ()
-	target_link_libraries(blobby ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
 endif ()
+
+target_link_libraries(blobby ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
 
 
 if (UNIX AND (NOT ANDROID) OR WIN32)
@@ -144,9 +145,12 @@ if (UNIX AND (NOT ANDROID))
 	target_link_libraries(botbench ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
 endif ()
 
-if (WIN32)
+if (MSYS)
 	set_target_properties(blobby PROPERTIES LINK_FLAGS "-mwindows") # disable the console window
 	set_target_properties(blobby-server PROPERTIES LINK_FLAGS "-mconsole") # enable the console window
+endif()
+
+if (WIN32)
 	install(TARGETS blobby blobby-server DESTINATION .)
 elseif (ANDROID)
 	install(TARGETS blobby DESTINATION bin)
