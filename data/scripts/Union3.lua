@@ -22,6 +22,20 @@ OldDecisions[2] = {}
 --define world constants
 netheight = CONST_NET_HEIGHT + CONST_NET_RADIUS -- height is just the rod. for total height, we have to add the net-sphere-radius too
 
+-- capture situational information
+function capture_situation_data()
+	local x, y, vx, vy = balldata
+	local data = {}
+	data['ballx'] = x
+	data['bally'] = y
+	data['bspeedx'] = vx
+	data['bspeedy'] = vy
+	data['posx'] = posx()
+	data['posy'] = posy()
+	data['touches'] = touches()
+	return data
+end
+
 -- called when opponent server
 function OnOpponentServe()
 	if ActiveMode ~= "oppserve" then 
