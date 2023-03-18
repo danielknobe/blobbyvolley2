@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "DuelMatch.h"
 #include "DuelMatchState.h"
+#include "GameConstants.h"
 
 /* implementation */
 
@@ -117,6 +118,7 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 
 	state.worldState.ballPosition += mBallPosError;
 	state.worldState.ballVelocity += mBallVelError;
+	state.worldState.blobPosition[LEFT_PLAYER].x += mBlobPosError;
 
 	setMatchState( state );
 
@@ -185,6 +187,27 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 			int max_difficulty = std::min(75, base_difficulty + 2 * getCurrentDifficulty());
 			std::uniform_int_distribution<int> dist{base_difficulty, max_difficulty};
 			setInputDelay( dist(mRandom) );
+		}
+	}
+
+	int own_touches = state.getHitcount(LEFT_PLAYER);
+	// for very easy difficulties, we modify the "perceived" x-coordinate of the bot's blob.
+	// This needs to happen whenever the bot's blob touches the ball - if we had it also based
+	// on `opp_touches`, then the errors while the ball is on the bot's side would be identical
+	// for all its attempts to play the ball, which can look a bit stupid. This way, it is less
+	// likely to lead directly to a point for the player, but still takes the "speed" out of the
+	// bot's game.
+	if(own_touches != mOldOwnTouches) {
+		mOldOwnTouches = own_touches;
+		// Note that this shift is one-sided, making the bot think it is closer to the wall than
+		// it really is. This will result in it standing further to the net in reality, and being
+		// less likely to play aggressive.
+		std::uniform_int_distribution<int> dice{0, 100};
+		if( dice(mRandom) < (mDifficulty - 15) * 8 && mSide == LEFT_PLAYER ) {
+			std::uniform_real_distribution<float> error_dist{0.f, BALL_RADIUS};
+			mBlobPosError = -error_dist( mRandom );
+		} else {
+			mBlobPosError = 0;
 		}
 	}
 

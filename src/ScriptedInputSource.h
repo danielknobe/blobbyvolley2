@@ -81,12 +81,15 @@ class ScriptedInputSource : public InputSource, public IScriptableComponent
 		int mReactionTime = 0;
 		int mRoundStepCounter = 0;
 		int mOldOppTouches = 0;
+		int mOldOwnTouches = 0;
 		float mOldBallVx = 0;
 
 		// artificial ball position error
 		Vector2 mBallPosError{0, 0};
 		Vector2 mBallVelError{0, 0};
 		int mBallPosErrorTimer = 0;
+
+		int mBlobPosError = 0;
 
 		std::default_random_engine mRandom;
 		const DuelMatch* mMatch;
