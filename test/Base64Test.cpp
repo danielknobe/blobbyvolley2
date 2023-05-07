@@ -90,4 +90,16 @@ BOOST_AUTO_TEST_CASE( encode_decode_multiline )
     BOOST_CHECK( decode(encode(text, 8)) == text );
 }
 
+BOOST_AUTO_TEST_CASE( encode_decode_multiline_data_multiple_of_newline )
+{
+    std::vector<uint8_t> text = { '1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4', '5', '6', '7', '8' };
+    BOOST_CHECK( decode(encode(text, 8)) == text );
+}
+
+BOOST_AUTO_TEST_CASE( encode_decode_multiline_data_multiple_of_newline_with_extra )
+{
+    std::vector<uint8_t> text = { '1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4', '5', '6', '7', '8' };
+    BOOST_CHECK( decode(encode(text, 8)) == text );
+}
+
 BOOST_AUTO_TEST_SUITE_END()

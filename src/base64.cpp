@@ -142,7 +142,7 @@ std::string encode( const char* begin, const char* end, int newlines)
 	const unsigned groups     = length / 3;
 	const unsigned total_data = (groups + extra) * 4;
 	newlines -= newlines % 4;
-	const unsigned linefeeds = newlines > 0 ? total_data / newlines : 0;
+	const unsigned linefeeds = newlines > 0 ? total_data / newlines - (total_data % newlines ? 0 : 1) : 0;
 
 	std::string buffer(total_data + linefeeds, '\0');
 
@@ -153,7 +153,7 @@ std::string encode( const char* begin, const char* end, int newlines)
 	for(unsigned i = 0; i < groups; ++i)
 	{
 		encode(read, write);
-		if( newlines > 0 && (i+1) * 4 >= static_cast<unsigned>(last_newline + newlines) )
+		if( newlines > 0 && (i+1) * 4 >= static_cast<unsigned>(last_newline + newlines) && write != buffer.end() )
 		{
 			*write = '\n';
 			write++;
