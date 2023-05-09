@@ -70,6 +70,7 @@ void printHelp();
 void process_arguments(int argc, char** argv);
 void fork_to_background();
 void setup_physfs(char* argv0);
+std::string statistics();
 
 // server workload statistics
 int SWLS_PacketCount = 0;
@@ -168,11 +169,7 @@ int main(int argc, char** argv)
 		}
 		else if ( cmd_vec[0] == "status" )
 		{
-			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
-			std::cout << " packet count: " << SWLS_PacketCount << "\n";
-			std::cout << " accepted connections: " << SWLS_Connections << "\n";
-			std::cout << " started games: " << SWLS_Games << "\n";
-			std::cout << " game steps: " << SWLS_GameSteps << "\n";
+			std::cout << statistics() << std::endl;
 		}
 
 	}
@@ -205,11 +202,7 @@ void main_loop( DedicatedServer& server)
 
 		if(SWLS_RunningTime % (UPDATE_FREQUENCY * 60 * 60 /*1h*/) == 0 )
 		{
-			std::cout << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
-			std::cout << " packet count: " << SWLS_PacketCount << "\n";
-			std::cout << " accepted connections: " << SWLS_Connections << "\n";
-			std::cout << " started games: " << SWLS_Games << "\n";
-			std::cout << " game steps: " << SWLS_GameSteps << "\n";
+			syslog(LOG_DEBUG, "%s", statistics().c_str());
 		}
 
 		server.processPackets();
@@ -307,6 +300,16 @@ void setup_physfs(char* argv0)
 	fs.addToSearchPath(fs.join("data", "rules.zip"));
 }
 
+std::string statistics()
+{
+	std::ostringstream oss;
+	oss << "Blobby Server Status Report " << (SWLS_RunningTime / UPDATE_FREQUENCY / 60 / 60) << "h running \n";
+	oss << " packet count: " << SWLS_PacketCount << "\n";
+	oss << " accepted connections: " << SWLS_Connections << "\n";
+	oss << " started games: " << SWLS_Games << "\n";
+	oss << " game steps: " << SWLS_GameSteps;
+	return oss.str();
+}
 
 #ifdef WIN32
 
