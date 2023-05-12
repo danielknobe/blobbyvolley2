@@ -437,7 +437,7 @@ function emergency_a() -- try to catch the ball by any means necessary
 	
 	-- this does not work if the ball goes to x using an indirect route!
 	-- we need to account for that!
-	local time_to_blob_direct = ball_time_to_x(posx())
+	local time_to_blob = ball_time_to_x(posx())
 	
 	-- if there is an impact along the way, and the ball does not reach the blobby directly
 	if time_to_blob == math.huge and estimbspeedx ~= bspeedx() then
