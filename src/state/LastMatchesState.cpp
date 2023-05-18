@@ -47,7 +47,7 @@ LastMatchesState::~LastMatchesState()
 
 void LastMatchesState::step_impl()
 {
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
@@ -68,7 +68,7 @@ void LastMatchesState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(620.0, 560.0), TextManager::LBL_CANCEL, TF_ALIGN_CENTER)) 
 	{
-		switchState(new RankedState(mUsername, mPassword));
+		switchState(new RankedState());
 	}
 }
 

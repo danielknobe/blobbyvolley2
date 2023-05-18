@@ -36,7 +36,7 @@ void RankedState::step_impl()
 {
 	// TODO
 	// This is just a dummy implementation
-	IMGUI& imgui = IMGUI::getSingleton();
+	IMGUI& imgui = getIMGUI();
 
 	imgui.doCursor();
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
