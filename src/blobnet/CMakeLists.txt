@@ -1,4 +1,4 @@
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set (blobnet_SRC
 	layer/Http.cpp layer/Http.hpp

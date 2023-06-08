@@ -1,6 +1,6 @@
 enable_testing()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(SRC
 	../src/BlobbyDebug.cpp    ../src/BlobbyDebug.h

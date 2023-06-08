@@ -1,7 +1,7 @@
 set(APP_NAME "Blobby Volley 2")
 set(APP_AUTHOR "")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 if (MSVC)
 	add_compile_options(/utf-8)
