@@ -62,7 +62,7 @@ IGameLogic::IGameLogic( int stw )
 , mIsBallValid(true)
 , mIsGameRunning(false)
 , mWinningPlayer(NO_PLAYER)
-, mClock(new Clock())
+, mClock(std::make_unique<Clock>())
 {
 	// init clock
 	mClock->reset();

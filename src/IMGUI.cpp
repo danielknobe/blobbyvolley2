@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 
 /* includes */
+#include <memory>
 #include <queue>
 #include <cassert>
 
@@ -64,7 +65,7 @@ struct QueueObject
 IMGUI::IMGUI(InputManager* inputMgr) : mInputManager(inputMgr)
 {
 	assert(mInputManager);
-	mQueue.reset(new RenderQueue);
+	mQueue = std::make_unique<RenderQueue>();
 	mActiveButton = -1;
 	mHeldWidget = 0;
 	mLastKeyAction = KeyAction::NONE;
@@ -1102,5 +1103,5 @@ const std::string& IMGUI::getText(TextManager::STRING id) const {
 }
 
 void IMGUI::setTextMgr(std::string lang) {
-	mTextManager.reset(new TextManager(std::move(lang)));
+	mTextManager = std::make_unique<TextManager>(std::move(lang));
 }

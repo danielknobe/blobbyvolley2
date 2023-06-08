@@ -53,7 +53,7 @@ class KeyboardInputDevice : public InputDevice
 
 std::unique_ptr<InputDevice> createKeyboardInput(InputManager* inputMgr, SDL_Keycode left, SDL_Keycode right, SDL_Keycode jump)
 {
-	return std::unique_ptr<InputDevice>{new KeyboardInputDevice(inputMgr, left, right, jump)};
+	return std::make_unique<KeyboardInputDevice>(inputMgr, left, right, jump);
 }
 
 // -------------------------------------------------------------------------------------------------
