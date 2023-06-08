@@ -58,7 +58,7 @@ class JoystickInputDevice : public InputDevice
 
 std::unique_ptr<InputDevice> createJoystickInput(InputManager* inputMgr, JoystickAction left, JoystickAction right, JoystickAction jump)
 {
-	return std::unique_ptr<InputDevice>{new JoystickInputDevice(inputMgr, left, right, jump)};
+	return std::make_unique<JoystickInputDevice>(inputMgr, left, right, jump);
 }
 
 // -------------------------------------------------------------------------------------------------

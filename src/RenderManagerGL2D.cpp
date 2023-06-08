@@ -202,7 +202,7 @@ RenderManagerGL2D::RenderManagerGL2D() = default;
 
 std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 {
-	return std::unique_ptr<RenderManager>{new RenderManagerGL2D()};
+	return std::make_unique<RenderManagerGL2D>();
 }
 
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)

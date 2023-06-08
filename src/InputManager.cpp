@@ -42,7 +42,7 @@ InputManager::InputManager(BlobbyApp* app) : mApp(app)
 	// joystick
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK);
 	SDL_JoystickEventState(SDL_ENABLE);
-	mJoystickPool = std::unique_ptr<JoystickPool>{new JoystickPool()};
+	mJoystickPool = std::make_unique<JoystickPool>();
 	mJoystickPool->probeJoysticks();
 
 	mRunning = true;
