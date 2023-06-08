@@ -72,7 +72,7 @@ std::unique_ptr<InputDevice> createMouseInput(InputManager* inputMgr, PlayerSide
 	float se = (s - 0.5) * 2;
 	float sensitivity = std::exp(std::log(maxFactor) * se);
 
-	return std::unique_ptr<InputDevice>{new MouseInputDevice(inputMgr, player, jumpbutton, sensitivity)};
+	return std::make_unique<MouseInputDevice>(inputMgr, player, jumpbutton, sensitivity);
 }
 
 // -------------------------------------------------------------------------------------------------

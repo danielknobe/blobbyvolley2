@@ -75,7 +75,7 @@ RenderManagerSDL::RenderManagerSDL() = default;
 
 std::unique_ptr<RenderManager> RenderManager::createRenderManagerSDL()
 {
-	return std::unique_ptr<RenderManager>{new RenderManagerSDL()};
+	return std::make_unique<RenderManagerSDL>();
 }
 
 void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
