@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
+#include <utility>
 
 #include "base64.h"
 
@@ -58,33 +59,12 @@ constexpr uint8_t find_in_table(uint8_t entry)
 template<>
 constexpr uint8_t find_in_table<0>(uint8_t entry) { return 0; }
 
-template <uint8_t ... Ns> struct index_seq
-{
-};
-
-template <uint8_t ... Ns> struct make_index_sq;
-
-template <uint8_t I, uint8_t ... Ns>
-struct make_index_sq<I, Ns...>
-{
-	using type = typename make_index_sq<I - 1, I - 1, Ns...>::type;
-};
-
-template <uint8_t ... Ns>
-struct make_index_sq<0, Ns...>
-{
-	using type = index_seq<Ns...>;
-};
-
-template <uint8_t N>
-using make_index_sq_t = typename make_index_sq<N>::type;
-
 template<class T>
 struct make_table_helper {
 };
 
-template<uint8_t... Ns>
-struct make_table_helper<index_seq<Ns...>>
+template<typename T, T... Ns>
+struct make_table_helper<std::integer_sequence<T, Ns...>>
 {
 	static constexpr auto make() -> std::array<uint8_t, sizeof...(Ns)>
 	{
@@ -94,7 +74,7 @@ struct make_table_helper<index_seq<Ns...>>
 
 
 // generate the decoding table
-constexpr auto decoding_table = make_table_helper<typename make_index_sq<255>::type>::make();
+constexpr auto decoding_table = make_table_helper<typename std::make_index_sequence<255>>::make();
 
 constexpr uint8_t decode( uint8_t byte )
 {
