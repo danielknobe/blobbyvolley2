@@ -1,5 +1,5 @@
 # We use the two-levels of directories so that from outside, the includes will be "raknet/..."
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set (raknet_SRC
         ArrayList.h
