@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "DuelMatch.h"
 
+#include <memory>
+
 /* includes */
 #include "DuelMatchState.h"
 #include "MatchEvents.h"
@@ -42,7 +44,7 @@ DuelMatch::DuelMatch(bool remote, const std::string& rules, int score_to_win) :
 	}
 
 	mLogic = createGameLogic(rules, score_to_win);
-	mPhysicWorld.reset( new PhysicWorld() );
+	mPhysicWorld = std::make_unique<PhysicWorld>( );
 
 	setInputSources(std::make_shared<InputSource>(), std::make_shared<InputSource>());
 
@@ -67,7 +69,7 @@ void DuelMatch::setInputSources(std::shared_ptr<InputSource> left_input, std::sh
 
 void DuelMatch::reset()
 {
-	mPhysicWorld.reset(new PhysicWorld());
+	mPhysicWorld = std::make_unique<PhysicWorld>();
 	mLogic = mLogic->clone();
 }
 

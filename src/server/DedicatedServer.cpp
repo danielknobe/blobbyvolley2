@@ -53,7 +53,7 @@ DedicatedServer::DedicatedServer(ServerInfo info,
 								const std::vector<std::string>& rulefiles,
 								const std::vector<float>& gamespeeds,
 								int max_clients, bool local_server)
-: mServer(new RakServer())
+: mServer(std::make_unique<RakServer>())
 , mAcceptNewPlayers(true)
 , mPlayerHosted( local_server )
 , mServerInfo(std::move(info))

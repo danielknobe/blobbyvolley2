@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 RenderManager::~RenderManager() = default;
 
 RenderManager::RenderManager() :
-	mBloodMgr(new BloodManager(IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood")))
+	mBloodMgr(std::make_unique<BloodManager>(IUserConfigReader::createUserConfigReader("config.xml")->getBool("blood")))
 {
 	mMouseMarkerPosition = -100.0;
 }

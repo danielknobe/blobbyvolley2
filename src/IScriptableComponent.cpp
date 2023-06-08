@@ -11,7 +11,7 @@
 #include <iostream>
 
 IScriptableComponent::IScriptableComponent() :
-		mState(luaL_newstate()), mDummyWorld(new PhysicWorld())
+		mState(luaL_newstate()), mDummyWorld(std::make_unique<PhysicWorld>())
 {
 	// register this in the lua registry
 	lua_pushliteral(mState, "__C++_ScriptComponent__");
