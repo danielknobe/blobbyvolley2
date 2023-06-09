@@ -40,12 +40,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Color.h"
 
 /* implementation */
-IReplayLoader* IReplayLoader::createReplayLoader(const std::string& filename)
+std::unique_ptr<IReplayLoader> IReplayLoader::createReplayLoader(const std::string& filename)
 {
-	std::unique_ptr<IReplayLoader> loader(createReplayLoader(0));
+	auto loader = createReplayLoader(0);
 	loader->initLoading(filename);
 
-	return loader.release();
+	return loader;
 }
 
 //
@@ -321,7 +321,7 @@ class ReplayLoader_V2X: public IReplayLoader
 };
 
 
-IReplayLoader* IReplayLoader::createReplayLoader(int major)
+std::unique_ptr<IReplayLoader> IReplayLoader::createReplayLoader(int major)
 {
-	return new ReplayLoader_V2X();
+	return std::make_unique<ReplayLoader_V2X>();
 }

@@ -39,7 +39,7 @@ bool ReplayPlayer::endOfFile() const
 
 void ReplayPlayer::load(const std::string& filename)
 {
-	loader.reset(IReplayLoader::createReplayLoader(filename));
+	loader = IReplayLoader::createReplayLoader(filename);
 
 	mPlayerNames[LEFT_PLAYER] = loader->getPlayerName(LEFT_PLAYER);
 	mPlayerNames[RIGHT_PLAYER] = loader->getPlayerName(RIGHT_PLAYER);
