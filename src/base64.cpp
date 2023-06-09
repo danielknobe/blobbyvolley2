@@ -68,7 +68,7 @@ struct make_table_helper<std::integer_sequence<T, Ns...>>
 {
 	static constexpr auto make() -> std::array<uint8_t, sizeof...(Ns)>
 	{
-		return {{find_in_table<length(translation_table)>(Ns)...}};
+		return {find_in_table<length(translation_table)>(Ns)...};
 	}
 };
 
