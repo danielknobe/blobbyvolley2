@@ -98,7 +98,7 @@ void ReplaySelectionState::step_impl()
 		{
 			try
 			{
-				mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+				mReplayLoader = IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
 				mShowReplayInfo = true;
 			}
 			catch (std::exception& e)
