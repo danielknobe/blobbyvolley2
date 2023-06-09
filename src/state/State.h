@@ -67,7 +67,7 @@ protected:
 	bool is_exiting() const;
 	bool clicked() const;
 
-	void switchState(State* newState);
+	void switchState(std::unique_ptr<State> newState);
 private:
 
 	friend class BlobbyApp;

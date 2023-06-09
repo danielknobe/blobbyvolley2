@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkSearchState.h"
 
 /* includes */
+#include <memory>
 #include <string>
 #include <vector>
 #include <utility>
@@ -56,7 +57,7 @@ std::atomic<bool> gKillHostThread{false};
 
 /* implementation */
 NetworkSearchState::NetworkSearchState() :
-		mPingClient(new RakClient)
+		mPingClient(std::make_unique<RakClient>())
 {
 	mSelectedServer = 0;
 	mServerBoxPosition = 0;
@@ -167,7 +168,7 @@ void NetworkSearchState::step_impl()
 					if( mHostedServer && std::string(info.hostname) == mHostedServer->hostname &&
 							info.port == mHostedServer->port)
 					{
-						switchState(new LobbyState(info,
+						switchState(std::make_unique<LobbyState>(info,
 									dynamic_cast<OnlineSearchState*>(this) == nullptr ? PreviousState::LAN : PreviousState::ONLINE)
 									);
 						return;
@@ -395,7 +396,7 @@ void NetworkSearchState::step_impl()
 		config.loadFile("config.xml");
 
 		PlayerIdentity local_player = config.loadPlayerIdentity((PlayerSide)config.getInteger("network_side"), true);
-		mHostedServer.reset(new ServerInfo( local_player.getName()));
+		mHostedServer = std::make_unique<ServerInfo>( local_player.getName());
 		std::strncpy(mHostedServer->hostname,
 					mPingClient->PlayerIDToDottedIP(mPingClient->GetInternalID()),
 					sizeof(mHostedServer->hostname));
@@ -405,11 +406,11 @@ void NetworkSearchState::step_impl()
 			|| doEnterServer)
 	{
 		ServerInfo server = mScannedServers[mSelectedServer];
-		switchState(new LobbyState(server, dynamic_cast<OnlineSearchState*>(this) == nullptr ? PreviousState::LAN : PreviousState::ONLINE));
+		switchState(std::make_unique<LobbyState>(server, dynamic_cast<OnlineSearchState*>(this) == nullptr ? PreviousState::LAN : PreviousState::ONLINE));
 	}
 	if (imgui.doButton(GEN_ID, Vector2(480, 530), TextManager::LBL_CANCEL))
 	{
-		switchState(new MainMenuState);
+		switchState(std::make_unique<MainMenuState>());
 	}
 
 	if(mDisplayUpdateNotification)

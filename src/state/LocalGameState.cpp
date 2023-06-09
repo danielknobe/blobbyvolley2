@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "LocalGameState.h"
 
+#include <memory>
+
 /* includes */
 #include "DuelMatch.h"
 #include "InputManager.h"
@@ -38,7 +40,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 LocalGameState::~LocalGameState() = default;
 
 LocalGameState::LocalGameState()
-	: mWinner(false), mRecorder(new ReplayRecorder())
+	: mWinner(false), mRecorder(std::make_unique<ReplayRecorder>())
 {
 
 }
@@ -80,7 +82,7 @@ void LocalGameState::init()
 
 	playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
 
-	mMatch.reset(new DuelMatch( false, config->getString("rules")));
+	mMatch = std::make_unique<DuelMatch>( false, config->getString("rules"));
 	std::shared_ptr<InputSource> leftInput = createInputSource(*config, LEFT_PLAYER, mMatch.get());
 	std::shared_ptr<InputSource> rightInput = createInputSource(*config, RIGHT_PLAYER, mMatch.get());
 	mMatch->setPlayers(leftPlayer, rightPlayer);
@@ -113,7 +115,7 @@ void LocalGameState::step_impl()
 	{
 		displayQueryPrompt(200,
 			TextManager::LBL_CONF_QUIT,
-			std::make_tuple(TextManager::LBL_YES, [&](){ switchState(new MainMenuState); }),
+			std::make_tuple(TextManager::LBL_YES, [&](){ switchState(std::make_unique<MainMenuState>()); }),
 			std::make_tuple(TextManager::LBL_NO,  [&](){ mMatch->unpause(); }),
 			std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
 
@@ -124,11 +126,11 @@ void LocalGameState::step_impl()
 		displayWinningPlayerScreen( mMatch->winningPlayer() );
 		if (imgui.doButton(GEN_ID, Vector2(310, 340), TextManager::LBL_OK))
 		{
-			switchState(new MainMenuState());
+			switchState(std::make_unique<MainMenuState>());
 		}
 		if (imgui.doButton(GEN_ID, Vector2(420, 340), TextManager::GAME_TRY_AGAIN))
 		{
-			switchState(new LocalGameState());
+			switchState(std::make_unique<LocalGameState>());
 		}
 		if (imgui.doButton(GEN_ID, Vector2(500, 390), TextManager::RP_SAVE, TF_ALIGN_CENTER))
 		{
@@ -145,7 +147,7 @@ void LocalGameState::step_impl()
 		}
 		else if (mMatch->isPaused())
 		{
-			switchState(new MainMenuState);
+			switchState(std::make_unique<MainMenuState>());
 		}
 		else
 		{

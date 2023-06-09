@@ -21,9 +21,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /* header include */
 #include "ReplayState.h"
 
+#include <memory>
+
 /* includes */
 #include "IMGUI.h"
 #include "replays/ReplayPlayer.h"
+#include "replays/IReplayLoader.h"
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "TextManager.h"
@@ -56,7 +59,7 @@ ReplayState::~ReplayState() = default;
 
 void ReplayState::loadReplay(const std::string& file)
 {
-	mReplayPlayer.reset( new ReplayPlayer() );
+	mReplayPlayer = std::make_unique<ReplayPlayer>();
 
 	//try
 	//{
@@ -64,7 +67,7 @@ void ReplayState::loadReplay(const std::string& file)
 		FileWrite rulesFile("rules/"+TEMP_RULES_NAME);
 		rulesFile.write(mReplayPlayer->getRules());
 		rulesFile.close();
-		mMatch.reset(new DuelMatch(false, TEMP_RULES_NAME));
+		mMatch = std::make_unique<DuelMatch>(false, TEMP_RULES_NAME);
 
 		mMatch->setPlayers(PlayerIdentity{mReplayPlayer->getPlayerName(LEFT_PLAYER)},
 		                   PlayerIdentity{mReplayPlayer->getPlayerName(RIGHT_PLAYER)});
@@ -193,7 +196,7 @@ void ReplayState::step_impl()
 
 		if (is_exiting())
 		{
-			switchState(new ReplaySelectionState());
+			switchState(std::make_unique<ReplaySelectionState>());
 			return;
 		}
 	}
@@ -203,7 +206,7 @@ void ReplayState::step_impl()
 
 		if (imgui.doButton(GEN_ID, Vector2(290, 350), TextManager::LBL_OK))
 		{
-			switchState(new ReplaySelectionState());
+			switchState(std::make_unique<ReplaySelectionState>());
 			return;
 		}
 		if (imgui.doButton(GEN_ID, Vector2(400, 350), TextManager::RP_SHOW_AGAIN))
