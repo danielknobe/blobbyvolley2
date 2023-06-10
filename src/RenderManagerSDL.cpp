@@ -148,12 +148,12 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 	// Load background
 	tmpSurface = loadSurface("backgrounds/strand2.bmp");
 	mBackground = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
-	BufferedImage* bgImage = new BufferedImage;
-	bgImage->w = tmpSurface->w;
-	bgImage->h = tmpSurface->h;
-	bgImage->sdlImage = mBackground;
+	BufferedImage bgImage;
+	bgImage.w = tmpSurface->w;
+	bgImage.h = tmpSurface->h;
+	bgImage.sdlImage = mBackground;
 	SDL_FreeSurface(tmpSurface);
-	mImageMap["background"] = bgImage;
+	mImageMap["background"] = std::move(bgImage);
 
 	// Load ball
 	for (int i = 1; i <= 16; ++i)
@@ -369,8 +369,7 @@ RenderManagerSDL::~RenderManagerSDL()
 	}
 
 	for(const auto& image : mImageMap) {
-		SDL_DestroyTexture(image.second->sdlImage);
-		delete image.second;
+		SDL_DestroyTexture(image.second.sdlImage);
 	}
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON
@@ -387,17 +386,16 @@ bool RenderManagerSDL::setBackground(const std::string& filename)
 	{
 		SDL_Surface *tempBackgroundSurface = loadSurface(filename);
 		SDL_Texture *tempBackgroundTexture = SDL_CreateTextureFromSurface(mRenderer, tempBackgroundSurface);
-		BufferedImage* oldBackground = mImageMap["background"];
-		SDL_DestroyTexture(oldBackground->sdlImage);
-		delete oldBackground;
+		BufferedImage oldBackground = mImageMap["background"];
+		SDL_DestroyTexture(oldBackground.sdlImage);
 
-		BufferedImage* newImage = new BufferedImage;
-		newImage->w = tempBackgroundSurface->w;
-		newImage->h = tempBackgroundSurface->h;
-		newImage->sdlImage = tempBackgroundTexture;
+		BufferedImage newImage;
+		newImage.w = tempBackgroundSurface->w;
+		newImage.h = tempBackgroundSurface->h;
+		newImage.sdlImage = tempBackgroundTexture;
 		SDL_FreeSurface(tempBackgroundSurface);
-		mBackground = newImage->sdlImage;
-		mImageMap["background"] = newImage;
+		mBackground = newImage.sdlImage;
+		mImageMap["background"] = std::move(newImage);
 	}
 	catch (const FileLoadException&)
 	{
@@ -521,31 +519,32 @@ void RenderManagerSDL::drawTextImpl(const std::string& text, Vector2 position, u
 
 void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position, Vector2 size)
 {
-	BufferedImage* imageBuffer = mImageMap[filename];
+	auto image_iter = mImageMap.find(filename);
 
-	if (!imageBuffer)
+	if (image_iter == mImageMap.end())
 	{
-		imageBuffer = new BufferedImage;
+		BufferedImage imageBuffer;
 		SDL_Surface* tmpSurface = loadSurface(filename);
 		SDL_SetColorKey(tmpSurface, SDL_TRUE,
 				SDL_MapRGB(tmpSurface->format, 0, 0, 0));
-		imageBuffer->sdlImage = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
-		imageBuffer->w = tmpSurface->w;
-		imageBuffer->h = tmpSurface->h;
+		imageBuffer.sdlImage = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
+		imageBuffer.w = tmpSurface->w;
+		imageBuffer.h = tmpSurface->h;
 		SDL_FreeSurface(tmpSurface);
-		mImageMap[filename] = imageBuffer;
+		mImageMap[filename] = std::move(imageBuffer);
+		image_iter = mImageMap.find(filename);
 	}
 
 	if (size == Vector2(0,0))
 	{
 		// No scaling
 		const SDL_Rect blitRect = {
-			(short)lround(position.x - float(imageBuffer->w) / 2.0),
-			(short)lround(position.y - float(imageBuffer->h) / 2.0),
-			(short)imageBuffer->w,
-			(short)imageBuffer->h
+			(short)lround(position.x - float(image_iter->second.w) / 2.0),
+			(short)lround(position.y - float(image_iter->second.h) / 2.0),
+			(short)image_iter->second.w,
+			(short)image_iter->second.h
 		};
-		SDL_RenderCopy(mRenderer, imageBuffer->sdlImage, nullptr, &blitRect);
+		SDL_RenderCopy(mRenderer, image_iter->second.sdlImage, nullptr, &blitRect);
 	}
 	else
 	{
@@ -556,7 +555,7 @@ void RenderManagerSDL::drawImage(const std::string& filename, Vector2 position, 
 			(short)size.x,
 			(short)size.y
 		};
-		SDL_RenderCopy(mRenderer, imageBuffer->sdlImage, nullptr, &blitRect);
+		SDL_RenderCopy(mRenderer, image_iter->second.sdlImage, nullptr, &blitRect);
 	}
 
 }

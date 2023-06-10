@@ -129,7 +129,7 @@ bool UserConfig::saveFile(const std::string& filename) const
 	FileWrite file(filename);
 
 	tinyxml2::XMLPrinter printer;
-    printer.PushHeader(false, true);
+	printer.PushHeader(false, true);
 	printer.OpenElement("userconfig");
 
 	for (const auto& variable : mVars)
