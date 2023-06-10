@@ -111,7 +111,7 @@
 	<string english = "default" translation = "normal" />
 	<string english = "fast" translation = "schnell" />
 	<string english = "very fast" translation = "sehr schnell" />
-	
+
 	<string english = "language" translation = "sprache" />
 	<string english = "bot strength" translation = "Spielstaerke" />
 	<string english = "weak" translation = "einfach" />
