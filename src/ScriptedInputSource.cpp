@@ -165,8 +165,10 @@ PlayerInputAbs ScriptedInputSource::getNextInput()
 
 	if(!mMatch->getBallActive())
 	{
-		mRoundStepCounter = 0;
-		setInputDelay( 0 );
+        if(!serving || mDifficulty < 15) {
+            mRoundStepCounter = 0;
+            setInputDelay(0);
+        }
 	}
 	else
 	{
