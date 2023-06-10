@@ -177,7 +177,7 @@ class RenderManager : public ObjectCounter<RenderManager>
 		SDL_Rect ballRect(const Vector2& position);
 		SDL_Rect ballShadowRect(const Vector2& position);
 
-		std::map<std::string, BufferedImage*> mImageMap;
+		std::map<std::string, BufferedImage> mImageMap;
 
 		float mMouseMarkerPosition;
 
