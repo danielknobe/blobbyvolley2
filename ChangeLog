@@ -1,8 +1,12 @@
-New in 1.1 (rev. 1???) since 1.0
-- reworked online game lobbby
-- different game settings (rules, final scores and speeds) possible on the same server
-- bot scripting overhaul (needs some work before release)
+New in 1.1 (rev. 1947) since 1.0
+- new languages added and some parts of old translations corrected
+- new high resolution icon
+- reworked online game lobby and matchmaking
+- added different game settings (rules, final scores and speeds) possible on the same server
+- bot scripting overhaul
 - new xml based replay file format
+- a lot of minor improvements and maintenance
+- bugfixes
 
 New in 1.0 (rev. 1516) since RC4:
 - small improvements to lua rules
