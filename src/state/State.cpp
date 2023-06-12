@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SpeedController.h"
 #include "InputManager.h"
 #include "IScriptableComponent.h"
+#include "replays/IReplayLoader.h"
 
 /* implementation */
 
@@ -62,10 +63,10 @@ void State::setApp(BlobbyApp* app) {
 	m_App = app;
 }
 
-void State::switchState(State* newState)
+void State::switchState(std::unique_ptr<State> newState)
 {
 	assert(m_App);
-	m_App->switchToState(std::unique_ptr<State>(newState));
+	m_App->switchToState(std::move(newState));
 }
 
 BlobbyApp& State::getApp() const
@@ -104,17 +105,17 @@ void MainMenuState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(400.0, 175.0), "gfx/titel.bmp");
 	if (imgui.doButton(GEN_ID, Vector2(34, 300.0), TextManager::MNU_LABEL_ONLINE))
 	{
-		switchState( new OnlineSearchState() );
+		switchState( std::make_unique<OnlineSearchState>() );
 	}
 	if (imgui.doButton(GEN_ID, Vector2(34, 340.0), TextManager::MNU_LABEL_LAN))
 	{
-		switchState( new LANSearchState() );
+		switchState( std::make_unique<LANSearchState>() );
 	}
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 380.0), TextManager::MNU_LABEL_START))
 	{
 		try
 		{
-			switchState(new LocalGameState());
+			switchState(std::make_unique<LocalGameState>());
 		}
 		catch (const ScriptException& except)
 		{
@@ -127,17 +128,17 @@ void MainMenuState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 420.0), TextManager::MNU_LABEL_OPTIONS))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 460.0), TextManager::MNU_LABEL_REPLAY))
 	{
-		switchState(new ReplaySelectionState());
+		switchState(std::make_unique<ReplaySelectionState>());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 500.0), TextManager::MNU_LABEL_CREDITS))
 	{
-		switchState(new CreditsState());
+		switchState(std::make_unique<CreditsState>());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(34.0, 540.0), TextManager::MNU_LABEL_EXIT))
@@ -190,7 +191,7 @@ void CreditsState::step_impl()
 
 	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new MainMenuState());
+		switchState(std::make_unique<MainMenuState>());
 	}
 }
 

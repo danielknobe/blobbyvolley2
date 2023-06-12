@@ -137,28 +137,28 @@ void OptionState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 390.0), TextManager::OP_INPUT_OP))
 	{
 		save();
-		switchState(new InputOptionsState());
+		switchState(std::make_unique<InputOptionsState>());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 430.0), TextManager::OP_GFX_OP))
 	{
 		save();
-		switchState(new GraphicOptionsState());
+		switchState(std::make_unique<GraphicOptionsState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(40.0, 470.0), TextManager::OP_MISC))
 	{
 		save();
-		switchState(new MiscOptionsState());
+		switchState(std::make_unique<MiscOptionsState>());
 	}
 
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new MainMenuState());
+		switchState(std::make_unique<MainMenuState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new MainMenuState());
+		switchState(std::make_unique<MainMenuState>());
 	}
 }
 
@@ -377,11 +377,11 @@ void GraphicOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 }
 
@@ -476,11 +476,11 @@ void InputOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 }
 
@@ -727,11 +727,11 @@ void InputOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 }
 
@@ -853,11 +853,11 @@ void InputOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 }
 #endif
@@ -1032,11 +1032,11 @@ void MiscOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(224.0, 530.0), TextManager::LBL_OK))
 	{
 		save();
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 	if (imgui.doButton(GEN_ID, Vector2(424.0, 530.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new OptionState());
+		switchState(std::make_unique<OptionState>());
 	}
 }
 

@@ -66,33 +66,27 @@ void ReplaySelectionState::step_impl()
 				(mSelectedReplay != -1u))
 	{
 		std::string loadrep = mReplayFiles[mSelectedReplay];
-
-		/// \todo we have to do something against this construction!
-		///		this is dangerous. we delete this state before it has done
-		///		all of its work.
-
-		ReplayState* rs = nullptr;
+        
 		try
 		{
-			rs = new ReplayState();
+			auto rs = std::make_unique<ReplayState>();
 			rs->loadReplay(loadrep);
 
 			imgui.resetSelection();
 			// at least make sure we end here!
 
-			switchState(rs);
+			switchState(std::move(rs));
 			return;
 		}
 		 catch (std::exception& exp)
 		{
-			delete rs;
 			std::cerr << exp.what() << "\n";
 		}
 		return;
 	}
 	else if (imgui.doButton(GEN_ID, Vector2(424.0, 10.0), TextManager::LBL_CANCEL))
 	{
-		switchState(new MainMenuState());
+		switchState(std::make_unique<MainMenuState>());
 		return;
 	}
 	else
@@ -104,7 +98,7 @@ void ReplaySelectionState::step_impl()
 		{
 			try
 			{
-				mReplayLoader.reset(IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr")));
+				mReplayLoader = IReplayLoader::createReplayLoader(std::string("replays/" + mReplayFiles[mSelectedReplay] + ".bvr"));
 				mShowReplayInfo = true;
 			}
 			catch (std::exception& e)

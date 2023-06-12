@@ -38,19 +38,18 @@ class IReplayLoader : public ObjectCounter<IReplayLoader>
 {
 	public:
 
-		/// \todo maybe we should use a safeptr here.
 		/// \brief create IReplayLoader by major version
 		/// \details creates a replay loader for replays with a
 		///			certain major version. The minor version of the
 		///			created loader is the highest one possible.
 		///	\return the replay loader or 0 is no sufficient loader has been found.
-		static IReplayLoader* createReplayLoader(int major);
+		static std::unique_ptr<IReplayLoader> createReplayLoader(int major);
 
 		/// \brief Creates an IReplayLoader for a certain file.
 		/// \details Determines the version of the file and creates a
 		///			corresponding IReplayLoader.
 		///  \exception \todo we have to add and document the exceptions
-		static IReplayLoader* createReplayLoader(const std::string& file);
+		static std::unique_ptr<IReplayLoader> createReplayLoader(const std::string& file);
 
 		/// \brief virtual destructor
 		/// \details

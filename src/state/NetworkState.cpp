@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <iostream>
 
+#include <memory>
 #include <utility>
 
 #include "raknet/RakClient.h"
@@ -50,7 +51,7 @@ int CURRENT_NETWORK_LAG = -1;
 
 /* implementation */
 NetworkGameState::NetworkGameState( std::shared_ptr<RakClient> client, int rule_checksum, int score_to_win)
-	: GameState(new DuelMatch(true, DEFAULT_RULES_FILE, score_to_win))
+	: GameState(std::make_unique<DuelMatch>(true, DEFAULT_RULES_FILE, score_to_win))
 	, mNetworkState(WAITING_FOR_OPPONENT)
 	, mWaitingForReplay(false)
 	, mClient(std::move(client))
@@ -66,7 +67,7 @@ void NetworkGameState::init()
 	std::shared_ptr<IUserConfigReader> config = IUserConfigReader::createUserConfigReader("config.xml");
 	mOwnSide = (PlayerSide)config->getInteger("network_side");
 	mUseRemoteColor = config->getBool("use_remote_color");
-	mLocalInput.reset(new LocalInputSource(getInputMgr().beginGame(mOwnSide)));
+	mLocalInput = std::make_unique<LocalInputSource>(getInputMgr().beginGame(mOwnSide));
 
 	// game is not started until two players are connected
 	mMatch->pause();
@@ -343,7 +344,7 @@ void NetworkGameState::step_impl()
 
 				if (packet->length == ServerInfo::BLOBBY_SERVER_PRESENT_PACKET_SIZE )
 				{
-					switchState(new LobbyState(info, PreviousState::MAIN));
+					switchState(std::make_unique<LobbyState>(info, PreviousState::MAIN));
 				}
 				break;
 			}
@@ -370,7 +371,7 @@ void NetworkGameState::step_impl()
 		}
 		else
 		{
-			switchState(new MainMenuState);
+			switchState(std::make_unique<MainMenuState>());
 		}
 	}
 	else if (is_exiting() && mSaveReplay)
@@ -424,7 +425,7 @@ void NetworkGameState::step_impl()
 
 			displayQueryPrompt(200,
 				TextManager::GAME_OPP_LEFT,
-				std::make_tuple(TextManager::LBL_OK, [&](){ switchState(new MainMenuState); }),
+				std::make_tuple(TextManager::LBL_OK, [&](){ switchState(std::make_unique<MainMenuState>()); }),
 				std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }),
 				std::make_tuple(TextManager::NET_STAY_ON_SERVER, [&](){
 					// Send a blobby server connection request
@@ -446,7 +447,7 @@ void NetworkGameState::step_impl()
 			if (imgui.doButton(GEN_ID, Vector2(230.0, 320.0),
 					TextManager::LBL_OK))
 			{
-				switchState(new MainMenuState);
+				switchState(std::make_unique<MainMenuState>());
 			}
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 320.0), TextManager::RP_SAVE))
 			{
@@ -462,7 +463,7 @@ void NetworkGameState::step_impl()
 			imgui.doText(GEN_ID, Vector2(200.0, 250.0),	TextManager::NET_SERVER_FULL);
 			if (imgui.doButton(GEN_ID, Vector2(350.0, 300.0), TextManager::LBL_OK))
 			{
-				switchState(new MainMenuState);
+				switchState(std::make_unique<MainMenuState>());
 			}
 			break;
 		}
@@ -492,7 +493,7 @@ void NetworkGameState::step_impl()
 			displayWinningPlayerScreen(mWinningPlayer);
 			if (imgui.doButton(GEN_ID, Vector2(290, 360), TextManager::LBL_OK))
 			{
-				switchState(new MainMenuState());
+				switchState(std::make_unique<MainMenuState>());
 			}
 			if (imgui.doButton(GEN_ID, Vector2(380, 360), TextManager::RP_SAVE))
 			{
@@ -511,7 +512,7 @@ void NetworkGameState::step_impl()
 					stream.Write((unsigned char)ID_UNPAUSE);
 					mClient->Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0);
 				}),
-				std::make_tuple(TextManager::GAME_QUIT,    [&](){ switchState(new MainMenuState); }),
+				std::make_tuple(TextManager::GAME_QUIT,    [&](){ switchState(std::make_unique<MainMenuState>()); }),
 				std::make_tuple(TextManager::RP_SAVE, [&](){ mSaveReplay = true; imgui.resetSelection(); }));
 
 			// Chat

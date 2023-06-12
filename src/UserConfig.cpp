@@ -129,7 +129,7 @@ bool UserConfig::saveFile(const std::string& filename) const
 	FileWrite file(filename);
 
 	tinyxml2::XMLPrinter printer;
-    printer.PushHeader(false, true);
+	printer.PushHeader(false, true);
 	printer.OpenElement("userconfig");
 
 	for (const auto& variable : mVars)
@@ -228,12 +228,11 @@ namespace
 	/// Helper function to find a `UserConfigVar` with a given name. Implemented
 	/// as a template to generate const and non-const versions.
 	template<class C>
-	auto findByName(C&& container, const std::string& name) -> decltype(&container.back())
+	auto findByName(C&& container, const std::string& name)
 	{
 		auto found = std::find_if(begin(container), end(container),
 								  [&](const UserConfigVar& var){ return var.Name == name; });
-		if(found == end(container)) return nullptr;
-		return &(*found);
+		return (found == end(container)) ? nullptr : &(*found);
 	}
 }
 

@@ -50,13 +50,13 @@ NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
 			NetworkPlayer& rightPlayer, PlayerSide switchedSide,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
-	mMatch(new DuelMatch(false, rules, scoreToWin)),
+	mMatch(std::make_unique<DuelMatch>(false, rules, scoreToWin)),
 	mSpeedController(speed),
-	mLeftInput (new InputSource()),
-	mRightInput(new InputSource()),
+	mLeftInput (std::make_unique<InputSource>()),
+	mRightInput(std::make_unique<InputSource>()),
 	mLeftLastTime(-1),
 	mRightLastTime(-1),
-	mRecorder(new ReplayRecorder()),
+	mRecorder(std::make_unique<ReplayRecorder>()),
 	mGameValid(true)
 {
 	// check that both players don't have an active game

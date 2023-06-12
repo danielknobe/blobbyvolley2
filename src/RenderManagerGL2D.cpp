@@ -202,7 +202,7 @@ RenderManagerGL2D::RenderManagerGL2D() = default;
 
 std::unique_ptr<RenderManager> RenderManager::createRenderManagerGL2D()
 {
-	return std::unique_ptr<RenderManager>{new RenderManagerGL2D()};
+	return std::make_unique<RenderManagerGL2D>();
 }
 
 void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
@@ -250,12 +250,12 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Load background
 	SDL_Surface* bgSurface = loadSurface("backgrounds/strand2.bmp");
-	BufferedImage* bgBufImage = new BufferedImage;
-	bgBufImage->w = getNextPOT(bgSurface->w);
-	bgBufImage->h = getNextPOT(bgSurface->h);
-	bgBufImage->glHandle = loadTexture(bgSurface, false);
-	mBackground = bgBufImage->glHandle;
-	mImageMap["background"] = bgBufImage;
+	BufferedImage bgBufImage;
+	bgBufImage.w = getNextPOT(bgSurface->w);
+	bgBufImage.h = getNextPOT(bgSurface->h);
+	bgBufImage.glHandle = loadTexture(bgSurface, false);
+	mBackground = bgBufImage.glHandle;
+	mImageMap["background"] = std::move(bgBufImage);
 
 	mBallShadow = loadTexture(loadSurface("gfx/schball.bmp"), false);
 
@@ -346,8 +346,7 @@ RenderManagerGL2D::~RenderManagerGL2D()
 	glDeleteTextures(/*mHighlightFont.size()*/1, &mHighlightFont[0].texture);
 
 	for (auto& iter : mImageMap) {
-		glDeleteTextures(1, &iter.second->glHandle);
-		delete iter.second;
+		glDeleteTextures(1, &iter.second.glHandle);
 	}
 
 	glDeleteTextures(1, &mParticle);
@@ -362,13 +361,12 @@ bool RenderManagerGL2D::setBackground(const std::string& filename)
 	{
 		SDL_Surface* newSurface = loadSurface(filename);
 		glDeleteTextures(1, &mBackground);
-		delete mImageMap["background"];
-		BufferedImage *imgBuffer = new BufferedImage;
-		imgBuffer->w = getNextPOT(newSurface->w);
-		imgBuffer->h = getNextPOT(newSurface->h);
-		imgBuffer->glHandle = loadTexture(newSurface, false);
-		mBackground = imgBuffer->glHandle;
-		mImageMap["background"] = imgBuffer;
+		BufferedImage imgBuffer;
+		imgBuffer.w = getNextPOT(newSurface->w);
+		imgBuffer.h = getNextPOT(newSurface->h);
+		imgBuffer.glHandle = loadTexture(newSurface, false);
+		mBackground = imgBuffer.glHandle;
+		mImageMap["background"] = std::move(imgBuffer);
 	}
 	catch (const FileLoadException&)
 	{
@@ -451,23 +449,24 @@ void RenderManagerGL2D::drawImage(const std::string& filename, Vector2 position,
 	glEnable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
 
-	BufferedImage* imageBuffer = mImageMap[filename];
-	if (!imageBuffer)
+	auto image_iter = mImageMap.find(filename);
+	if (image_iter == mImageMap.end())
 	{
-		imageBuffer = new BufferedImage;
+		BufferedImage imageBuffer;
 		SDL_Surface* newSurface = loadSurface(filename);
-		imageBuffer->w = getNextPOT(newSurface->w);
-		imageBuffer->h = getNextPOT(newSurface->h);
-		imageBuffer->glHandle = loadTexture(newSurface, false);
-		mImageMap[filename] = imageBuffer;
+		imageBuffer.w = getNextPOT(newSurface->w);
+		imageBuffer.h = getNextPOT(newSurface->h);
+		imageBuffer.glHandle = loadTexture(newSurface, false);
+		mImageMap[filename] = std::move(imageBuffer);
+		image_iter = mImageMap.find(filename);
 	}
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glDisable(GL_BLEND);
 	//glLoadIdentity();
 	//glTranslatef(position.x , position.y, 0.0);
-	glBindTexture(imageBuffer->glHandle);
-	drawQuad(position.x, position.y, imageBuffer->w, imageBuffer->h);
+	glBindTexture(image_iter->second.glHandle);
+	drawQuad(position.x, position.y, image_iter->second.w, image_iter->second.h);
 }
 
 void RenderManagerGL2D::drawOverlay(float opacity, Vector2 pos1, Vector2 pos2, Color col)

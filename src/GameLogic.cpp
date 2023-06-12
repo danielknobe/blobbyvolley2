@@ -62,7 +62,7 @@ IGameLogic::IGameLogic( int stw )
 , mIsBallValid(true)
 , mIsGameRunning(false)
 , mWinningPlayer(NO_PLAYER)
-, mClock(new Clock())
+, mClock(std::make_unique<Clock>())
 {
 	// init clock
 	mClock->reset();
@@ -329,7 +329,7 @@ class FallbackGameLogic : public IGameLogic
 
 		GameLogicPtr clone() const override
 		{
-			return GameLogicPtr(new FallbackGameLogic( getScoreToWin() ));
+			return std::make_unique<FallbackGameLogic>(getScoreToWin());
 		}
 
 		std::string getSourceFile() const override
@@ -407,7 +407,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 
 		GameLogicPtr clone() const override
 		{
-			return GameLogicPtr(new LuaGameLogic(mSourceFile, getScoreToWin()));
+			return std::make_unique<LuaGameLogic>(mSourceFile, getScoreToWin());
 		}
 
 		std::string getAuthor() const override
@@ -691,12 +691,12 @@ GameLogicPtr createGameLogic(const std::string& file, int score_to_win )
 {
 	if (file == FALLBACK_RULES_NAME)
 	{
-		return GameLogicPtr(new FallbackGameLogic( score_to_win ));
+		return std::make_unique<FallbackGameLogic>( score_to_win );
 	}
 
 	try
 	{
-		return GameLogicPtr( new LuaGameLogic(file, score_to_win ) );
+		return std::make_unique<LuaGameLogic>(file, score_to_win );
 	}
 	catch( std::exception& exp)
 	{
@@ -704,7 +704,7 @@ GameLogicPtr createGameLogic(const std::string& file, int score_to_win )
 		std::cerr << exp.what() << std::endl;
 		std::cerr << "              Using fallback ruleset";
 		std::cerr << std::endl;
-		return GameLogicPtr(new FallbackGameLogic( score_to_win ));
+		return std::make_unique<FallbackGameLogic>( score_to_win );
 	}
 
 }

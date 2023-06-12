@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 
 		DEBUG_STATUS("starting mainloop");
 
-		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()), gameConfig );
+		BlobbyApp app( std::make_unique<MainMenuState>(), gameConfig );
 
 		while (running)
 		{

@@ -56,7 +56,7 @@ class TouchInputDevice : public InputDevice
 
 std::unique_ptr<InputDevice> createTouchInput(InputManager* inputMgr, PlayerSide player, int type)
 {
-	return std::unique_ptr<InputDevice>{new TouchInputDevice(inputMgr, player, type)};
+	return std::make_unique<TouchInputDevice>(inputMgr, player, type);
 }
 
 // -------------------------------------------------------------------------------------------------

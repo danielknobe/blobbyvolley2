@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <functional>
 #include <tuple>
+#include <memory>
 
 /*! \class GameState
 	\brief base class for any game related state (Local, Network, Replay)
@@ -34,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class GameState : public State
 {
 public:
-	explicit GameState(DuelMatch* match = nullptr);
+	explicit GameState(std::unique_ptr<DuelMatch> match = nullptr);
 	~GameState() override;
 
 	// step function defines the steps actual work

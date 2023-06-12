@@ -200,7 +200,7 @@ void LobbyState::step_impl()
 				stream.Read(serverChecksum);
 				stream.Read(scoreToWin);
 
-				switchState( new NetworkGameState( mClient, serverChecksum, scoreToWin ) );
+				switchState( std::make_unique<NetworkGameState>( mClient, serverChecksum, scoreToWin ) );
 				}
 				break;
 			default:
@@ -261,11 +261,11 @@ void LobbyState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(50, 530), TextManager::LBL_CANCEL))
 	{
 		if( mPrevious == PreviousState::ONLINE )
-			switchState( new OnlineSearchState );
+			switchState( std::make_unique<OnlineSearchState>() );
 		else if ( mPrevious == PreviousState::LAN )
-			switchState( new LANSearchState );
+			switchState( std::make_unique<LANSearchState>() );
 		else
-			switchState( new MainMenuState );
+			switchState( std::make_unique<MainMenuState>() );
 	}
 }
 
