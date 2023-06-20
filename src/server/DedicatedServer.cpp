@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "raknet/PacketEnumerations.h"
 
 #include "NetworkMessage.h"
+#include "ThreadSafeRakServer.h"
 #include "NetworkGame.h"
 #include "GenericIO.h"
 
@@ -53,19 +54,19 @@ DedicatedServer::DedicatedServer(ServerInfo info,
 								const std::vector<std::string>& rulefiles,
 								const std::vector<float>& gamespeeds,
 								int max_clients, bool local_server)
-: mServer(new RakServer())
+: mServer(new ThreadSafeRakServer())
 , mAcceptNewPlayers(true)
 , mPlayerHosted( local_server )
 , mServerInfo(std::move(info))
 {
-	if (!mServer->Start(max_clients, 1, mServerInfo.port))
+	if (!mServer->access([&](RakServer& srv){ return srv.Start(max_clients, 1, mServerInfo.port);}))
 	{
 		syslog(LOG_ERR, "Couldn't bind to port %i, exiting", mServerInfo.port);
 		throw(2);
 	}
 
 	/// \todo this code should be places in ServerInfo
-	mMatchMaker.setSendFunction([&](const RakNet::BitStream& stream, PlayerID target){ mServer->Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, target, false); });
+	mMatchMaker.setSendFunction([&](const RakNet::BitStream& stream, PlayerID target){ mServer->Send(stream, LOW_PRIORITY, RELIABLE_ORDERED, target); });
 	mMatchMaker.setCreateGame([&](NetworkPlayer& left, NetworkPlayer& right,
 								PlayerSide switchSide, const std::string& rules, int stw, float sp){
 							createGame(left, right, switchSide, rules, stw, sp); });
@@ -78,18 +79,20 @@ DedicatedServer::DedicatedServer(ServerInfo info,
 	for( const auto& f : rulefiles )
 		mMatchMaker.addRuleOption( f );
 
-	mServer->setUpdateCallback([this](){ queuePackets(); });
+	mServer->access([&](RakServer& srv){
+		srv.setUpdateCallback([this](){ queuePackets(); }
+	);} );
 }
 
 DedicatedServer::~DedicatedServer()
 {
-	mServer->Disconnect(50);
+	mServer->access( [](RakServer& srv){ srv.Disconnect(50); } );
 }
 
 void DedicatedServer::queuePackets()
 {
 	packet_ptr packet;
-	while ((packet = mServer->Receive()))
+	while ((packet = mServer->access( [](RakServer& srv){ return srv.Receive(); })))
 	{
 		SWLS_PacketCount++;
 
@@ -168,8 +171,8 @@ void DedicatedServer::processPackets()
 				{
 					RakNet::BitStream stream;
 					stream.Write( (char)ID_NO_FREE_INCOMING_CONNECTIONS );
-					mServer->Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
-					mServer->CloseConnection( packet->playerId, true );
+					mServer->Send( stream, HIGH_PRIORITY, RELIABLE_ORDERED, packet->playerId);
+					mServer->access( [&](RakServer& srv){ srv.CloseConnection( packet->playerId, true ); } );
 					syslog(LOG_DEBUG, "Connection not accepted (%d) from %s.",
 						   packet_id, packet->playerId.toString().c_str());
 				} else if( addConnection(packet->playerId) ) {
@@ -346,7 +349,7 @@ void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitSt
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
-		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, source, false);
+		mServer->Send(stream2, LOW_PRIORITY, RELIABLE_ORDERED, source);
 	}
 	else if (major < BLOBBY_VERSION_MAJOR
 		|| (major == BLOBBY_VERSION_MAJOR && minor < BLOBBY_VERSION_MINOR))
@@ -355,7 +358,7 @@ void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitSt
 		stream2.Write((unsigned char)ID_VERSION_MISMATCH);
 		stream2.Write((int)BLOBBY_VERSION_MAJOR);
 		stream2.Write((int)BLOBBY_VERSION_MINOR);
-		mServer->Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, source, false);
+		mServer->Send(stream2, LOW_PRIORITY, RELIABLE_ORDERED, source);
 	}
 	else
 	{
@@ -365,7 +368,7 @@ void DedicatedServer::processBlobbyServerPresent( PlayerID source, RakNet::BitSt
 		stream2.Write((unsigned char)ID_BLOBBY_SERVER_PRESENT);
 		mServerInfo.writeToBitstream(stream2);
 
-		mServer->Send(&stream2, HIGH_PRIORITY, RELIABLE_ORDERED, 0,	source, false);
+		mServer->Send(stream2, HIGH_PRIORITY, RELIABLE_ORDERED, source);
 	}
 }
 
@@ -441,7 +444,7 @@ void DedicatedServer::createGame(NetworkPlayer& left,
 								const std::string& rules,
 								int scoreToWin, float gamespeed)
 {
-	auto newgame = std::make_shared<NetworkGame>(*mServer, left, right,
+	auto newgame = std::make_shared<NetworkGame>(mServer.get(), left, right,
 								switchSide, rules, scoreToWin, gamespeed);
 	left.setGame( newgame );
 	right.setGame( newgame );

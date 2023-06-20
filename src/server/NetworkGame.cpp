@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>
 #include <cassert>
 
-#include "raknet/RakServer.h"
+#include "ThreadSafeRakServer.h"
 #include "raknet/BitStream.h"
 #include "raknet/GetTime.h"
 
@@ -46,7 +46,7 @@ extern int SWLS_GameSteps;
 
 /* implementation */
 
-NetworkGame::NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
+NetworkGame::NetworkGame(ThreadSafeRakServer* server, NetworkPlayer& leftPlayer,
 			NetworkPlayer& rightPlayer, PlayerSide switchedSide,
 			std::string rules, int scoreToWin, float speed) :
 	mServer(server),
@@ -146,15 +146,15 @@ void NetworkGame::broadcastBitstream(const RakNet::BitStream& stream, const RakN
 	const RakNet::BitStream& leftStream = mSwitchedSide == LEFT_PLAYER ? switchedstream : stream;
 	const RakNet::BitStream& rightStream = mSwitchedSide == RIGHT_PLAYER ? switchedstream : stream;
 
-	mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
-	mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+	mServer->Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, mLeftPlayer);
+	mServer->Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, mRightPlayer);
 }
 
 void NetworkGame::broadcastBitstream(const RakNet::BitStream& stream)
 {
 
-	mServer.Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
-	mServer.Send(&stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+	mServer->Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, mLeftPlayer);
+	mServer->Send(stream, HIGH_PRIORITY, RELIABLE_ORDERED, mRightPlayer);
 }
 
 void NetworkGame::processPackets()
@@ -250,9 +250,9 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 			stream2.Write((unsigned char)ID_CHAT_MESSAGE);
 			stream2.Write(message, sizeof(message));
 			if (mLeftPlayer == packet->playerId)
-				mServer.Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+				mServer->Send(stream2, LOW_PRIORITY, RELIABLE_ORDERED, mRightPlayer);
 			else
-				mServer.Send(&stream2, LOW_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+				mServer->Send(stream2, LOW_PRIORITY, RELIABLE_ORDERED, mLeftPlayer);
 			break;
 		}
 
@@ -264,7 +264,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 			mRecorder->send( *out );
 			assert( stream.GetData()[0] == ID_REPLAY );
 
-			mServer.Send(&stream, LOW_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+			mServer->Send(stream, LOW_PRIORITY, RELIABLE_ORDERED, packet->playerId);
 
 			break;
 		}
@@ -286,7 +286,7 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				stream->Write( mRulesString.data(), mRulesString.size());
 				assert( stream->GetData()[0] == ID_RULES );
 
-				mServer.Send(stream.get(), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->playerId, false);
+				mServer->Send(*stream, HIGH_PRIORITY, RELIABLE_ORDERED, packet->playerId);
 			}
 
 			if (isGameStarted())
@@ -310,8 +310,8 @@ void NetworkGame::processPacket( const packet_ptr& packet )
 				rightStream.Write(name, sizeof(name));
 				rightStream.Write(mMatch->getPlayer(LEFT_PLAYER).getStaticColor().toInt());
 
-				mServer.Send(&leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
-				mServer.Send(&rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+				mServer->Send(leftStream, HIGH_PRIORITY, RELIABLE_ORDERED, mLeftPlayer);
+				mServer->Send(rightStream, HIGH_PRIORITY, RELIABLE_ORDERED, mRightPlayer);
 			}
 
 			break;
@@ -382,7 +382,7 @@ void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 		ms.swapSides();
 
 	out->generic<DuelMatchState> (ms);
-	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mLeftPlayer, false);
+	mServer->Send(stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, mLeftPlayer);
 
 	// reset state and stream
 	stream.Reset();
@@ -397,7 +397,7 @@ void NetworkGame::broadcastPhysicState(const DuelMatchState& state) const
 
 	out->generic<DuelMatchState> (ms);
 
-	mServer.Send(&stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, 0, mRightPlayer, false);
+	mServer->Send(stream, HIGH_PRIORITY, UNRELIABLE_SEQUENCED, mRightPlayer);
 }
 
 // helper function that writes a single event to bit stream in a space efficient way.
@@ -425,14 +425,14 @@ void NetworkGame::broadcastGameEvents() const
 	for(auto& e : events)
 		writeEventToStream(stream, e, mSwitchedSide == LEFT_PLAYER );
 	stream.Write((char)0);
-	mServer.Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mLeftPlayer, false);
+	mServer->Send( stream, HIGH_PRIORITY, RELIABLE_ORDERED, mLeftPlayer);
 
 	stream.Reset();
 	stream.Write( (unsigned char)ID_GAME_EVENTS );
 	for(auto& e : events)
 		writeEventToStream(stream, e, mSwitchedSide == RIGHT_PLAYER );
 	stream.Write((char)0);
-	mServer.Send( &stream, HIGH_PRIORITY, RELIABLE_ORDERED, 0, mRightPlayer, false);
+	mServer->Send( stream, HIGH_PRIORITY, RELIABLE_ORDERED, mRightPlayer);
 }
 
 PlayerID NetworkGame::getPlayerID( PlayerSide side ) const
