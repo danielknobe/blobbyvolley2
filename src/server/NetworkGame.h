@@ -83,7 +83,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		// process a single packet
 		void processPacket( const packet_ptr& packet );
 
-	    ThreadSafeRakServer* mServer;
+		ThreadSafeRakServer* mServer;
 		PlayerID mLeftPlayer;
 		PlayerID mRightPlayer;
 		PlayerSide mSwitchedSide;

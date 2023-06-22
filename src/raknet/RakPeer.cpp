@@ -1357,7 +1357,7 @@ void RakPeer::SendBuffered( const RakNet::BitStream * bitStream, PacketPriority 
 
 	bcs->data = new char[bitStream->GetNumberOfBytesUsed()]; // Making a copy doesn't lose efficiency because I tell the reliability layer to use this allocation for its own copy
 	memcpy(bcs->data, bitStream->GetData(), bitStream->GetNumberOfBytesUsed());
-    bcs->numberOfBitsToSend=bitStream->GetNumberOfBitsUsed();
+	bcs->numberOfBitsToSend=bitStream->GetNumberOfBitsUsed();
 	bcs->priority=priority;
 	bcs->reliability=reliability;
 	bcs->orderingChannel=orderingChannel;
@@ -1416,7 +1416,7 @@ void RakPeer::ClearBufferedCommands(void)
 		if (bcs->data)
 			delete [] bcs->data;
 
-        bufferedCommands.ReadUnlock();
+		bufferedCommands.ReadUnlock();
 	}
 	bufferedCommands.Clear();
 }
@@ -1735,7 +1735,7 @@ bool RakPeer::RunUpdateCycle( void )
 	// Process connection attempts
 	RequestedConnectionStruct *rcsFirst, *rcs;
 	bool condition1, condition2;
-    rcsFirst = requestedConnectionList.ReadLock();
+	rcsFirst = requestedConnectionList.ReadLock();
 	rcs=rcsFirst;
 	while (rcs)
 	{

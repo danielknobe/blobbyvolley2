@@ -114,7 +114,7 @@ bool UserConfig::loadFile(const std::string& filename)
 		const char* c = varElem->Attribute("name");
 		const char* v = varElem->Attribute("value");
 		if(c && v) {
-            createVar(c, v);
+			createVar(c, v);
 		} else {
 			std::cerr << "name of value missing for <var>" << std::endl;
 		}
@@ -129,7 +129,7 @@ bool UserConfig::saveFile(const std::string& filename) const
 	FileWrite file(filename);
 
 	tinyxml2::XMLPrinter printer;
-    printer.PushHeader(false, true);
+	printer.PushHeader(false, true);
 	printer.OpenElement("userconfig");
 
 	for (const auto& variable : mVars)
