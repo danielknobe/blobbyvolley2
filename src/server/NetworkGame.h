@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "BlobbyDebug.h"
 
-class RakServer;
+class ThreadSafeRakServer;
 class ReplayRecorder;
 class NetworkPlayer;
 
@@ -49,7 +49,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		// decides which player is switched.
 		/// \exception Throws FileLoadException, if the desired rules file could not be loaded
 		///	\exception Throws std::runtime_error, if \p leftPlayer or \p rightPlayer are already assigned to a game.
-		NetworkGame(RakServer& server, NetworkPlayer& leftPlayer,
+		NetworkGame(ThreadSafeRakServer* server, NetworkPlayer& leftPlayer,
 					NetworkPlayer& rightPlayer, PlayerSide switchedSide,
 					std::string rules, int scoreToWin, float speed);
 
@@ -83,7 +83,7 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		// process a single packet
 		void processPacket( const packet_ptr& packet );
 
-		RakServer& mServer;
+		ThreadSafeRakServer* mServer;
 		PlayerID mLeftPlayer;
 		PlayerID mRightPlayer;
 		PlayerSide mSwitchedSide;

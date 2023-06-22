@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "NetworkMessage.h"
 #include "server/MatchMaker.h"
 
-class RakServer;
+class ThreadSafeRakServer;
 
 // function for logging to replacing syslog
 enum {
@@ -92,7 +92,7 @@ class DedicatedServer
 		void processBlobbyServerPresent(PlayerID source, RakNet::BitStream& stream);
 
 		// raknet server used
-		const std::unique_ptr<RakServer> mServer;
+		const std::unique_ptr<ThreadSafeRakServer> mServer;
 
 		// true, if new players should be accepted
 		bool mAcceptNewPlayers;
