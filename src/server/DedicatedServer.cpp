@@ -194,7 +194,9 @@ void DedicatedServer::processPackets()
 				{
 					const std::string playerName = player->second->getName();
 					if( player->second->getGame() )
+					{
 						player->second->getGame()->injectPacket( packet );
+					}
 
 					// no longer count this player as connected. protect this change with a mutex
 					{
@@ -205,7 +207,7 @@ void DedicatedServer::processPackets()
 					mMatchMaker.removePlayer(packet->playerId);
 					syslog(LOG_DEBUG, "Player removed (%d) from %s (%s), %d players available",
 						   packet_id, packet->playerId.toString().c_str(),
-						   player->second->getName().c_str(), (int)mPlayerMap.size());
+						   playerName.c_str(), (int)mPlayerMap.size());
 				}
 
 				syslog(LOG_DEBUG, "Connection closed (%d) from %s, %d clients connected now",
