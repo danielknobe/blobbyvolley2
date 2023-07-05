@@ -434,6 +434,7 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 		static LuaGameLogic* getGameLogic(lua_State* state);
 
 	private:
+		void updateLuaLogicState();
 
 		// lua functions
 		static int luaMistake(lua_State* state);
@@ -553,6 +554,8 @@ PlayerInput LuaGameLogic::handleInput(PlayerInput ip, PlayerSide player)
 
 void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 {
+	updateLuaLogicState();
+
 	if (!getLuaFunction("OnBallHitsPlayer"))
 	{
 		FallbackGameLogic::OnBallHitsPlayerHandler(side);
@@ -568,6 +571,8 @@ void LuaGameLogic::OnBallHitsPlayerHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 {
+	updateLuaLogicState();
+
 	if (!getLuaFunction("OnBallHitsWall"))
 	{
 		FallbackGameLogic::OnBallHitsWallHandler(side);
@@ -584,6 +589,8 @@ void LuaGameLogic::OnBallHitsWallHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 {
+	updateLuaLogicState();
+
 	if (!getLuaFunction( "OnBallHitsNet" ))
 	{
 		FallbackGameLogic::OnBallHitsNetHandler(side);
@@ -601,6 +608,8 @@ void LuaGameLogic::OnBallHitsNetHandler(PlayerSide side)
 
 void LuaGameLogic::OnBallHitsGroundHandler(PlayerSide side)
 {
+	updateLuaLogicState();
+
 	if (!getLuaFunction( "OnBallHitsGround" ))
 	{
 		FallbackGameLogic::OnBallHitsGroundHandler(side);
@@ -637,6 +646,13 @@ LuaGameLogic* LuaGameLogic::getGameLogic(lua_State* state)
 	LuaGameLogic* gl = (LuaGameLogic*)lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	return gl;
+}
+
+void LuaGameLogic::updateLuaLogicState()
+{
+	DuelMatchState state = getMatchState();
+	state.logicState = getState();
+	setMatchState(state);
 }
 
 int LuaGameLogic::luaMistake(lua_State* state)
