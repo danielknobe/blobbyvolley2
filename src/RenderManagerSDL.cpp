@@ -103,7 +103,7 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 		xResolution, yResolution,
 		screenFlags);
 
-#ifndef __SWITCH__
+#if !(defined __SWITCH__) && !(defined BUILD_MACOS_BUNDLE)
 	// Set icon
 	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,

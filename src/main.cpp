@@ -67,11 +67,6 @@ void setupPHYSFS()
 	
 	// Game should be playable out of the source package on all
 	// relevant platforms.
-	#if BLOBBY_ON_DESKTOP
-		std::string baseSearchPath("data");
-	#else
-		std::string baseSearchPath(fs.getBaseDir());
-	#endif
 
 	// List all the subdirectories / zip archives that we want to read from
 	std::vector<std::string> subdirs = {"gfx", "sounds", "scripts", "backgrounds", "rules"};
@@ -84,11 +79,36 @@ void setupPHYSFS()
 	}
 	fs.probeDir("replays");
 
-	// set read dir (local files next to application)
-	fs.addToSearchPath(baseSearchPath);
-	for(const auto& archive : subdirs) {
-		fs.addToSearchPath(fs.join(baseSearchPath, archive + ".zip"));
+	// set read dir (files in datafolder next to working dir)
+	{
+		std::string dataDir = "data";
+		fs.addToSearchPath(dataDir);
+		for(const auto& archive : subdirs) {
+			fs.addToSearchPath(fs.join(dataDir, archive + ".zip"));
+		}
 	}
+
+	// set read dir (files next to application)
+	{
+		std::string dataDir = fs.getBaseDir();
+		fs.addToSearchPath(dataDir);
+		for(const auto& archive : subdirs) {
+			fs.addToSearchPath(fs.join(dataDir, archive + ".zip"));
+		}
+	}
+
+	// set read dir (files inside MacOS bundle)
+	#if (defined BUILD_MACOS_BUNDLE)
+	{
+		std::string dataDir = fs.join(fs.getBaseDir(), std::string("Contents") + 
+		                                               fs.getDirSeparator() +
+		                                               std::string("Resources"));
+		fs.addToSearchPath(dataDir);
+		for(const auto& archive : subdirs) {
+			fs.addToSearchPath(fs.join(dataDir, archive + ".zip"));
+		}
+	}
+	#endif
 
 	// set read dir (unix-like when installed)
 	#ifdef BLOBBY_DATA_DIR

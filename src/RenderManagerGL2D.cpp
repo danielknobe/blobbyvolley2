@@ -230,11 +230,13 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	                           screenFlags);
 
 	// Set icon
+#if !(defined BUILD_MACOS_BUNDLE)
 	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,
 	                SDL_MapRGB(icon->format, 0, 0, 0));
 	SDL_SetWindowIcon(mWindow, icon);
 	SDL_FreeSurface(icon);
+#endif
 
 	// Create gl context
 	mGlContext = SDL_GL_CreateContext(mWindow);

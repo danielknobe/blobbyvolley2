@@ -24,22 +24,24 @@ set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	${CMAKE_CURRENT_BINARY_DIR}/rules.zip
-	api.lua
-	bot_api.lua
-	rules_api.lua
-	Icon.bmp
-	config.xml
-	inputconfig.xml
-	server.xml
-	lang_cs.xml
-	lang_de.xml
-	lang_en.xml
-	lang_es.xml
-	lang_fr.xml
-	lang_it.xml)
+	${CMAKE_CURRENT_LIST_DIR}/api.lua
+	${CMAKE_CURRENT_LIST_DIR}/bot_api.lua
+	${CMAKE_CURRENT_LIST_DIR}/rules_api.lua
+	${CMAKE_CURRENT_LIST_DIR}/Icon.bmp
+	${CMAKE_CURRENT_LIST_DIR}/config.xml
+	${CMAKE_CURRENT_LIST_DIR}/inputconfig.xml
+	${CMAKE_CURRENT_LIST_DIR}/server.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_cs.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_de.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_en.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_es.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_fr.xml
+	${CMAKE_CURRENT_LIST_DIR}/lang_it.xml)
 
 if (WIN32 OR SWITCH)
 	install(FILES ${install_files} DESTINATION data)
 elseif (UNIX)
 	install(FILES ${install_files} DESTINATION share/blobby)
 endif (WIN32 OR SWITCH)
+
+set(data_files ${install_files} PARENT_SCOPE)
