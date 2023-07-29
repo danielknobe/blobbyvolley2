@@ -24,19 +24,19 @@ set(install_files
 	${CMAKE_CURRENT_BINARY_DIR}/scripts.zip
 	${CMAKE_CURRENT_BINARY_DIR}/backgrounds.zip
 	${CMAKE_CURRENT_BINARY_DIR}/rules.zip
-	${CMAKE_CURRENT_LIST_DIR}/api.lua
-	${CMAKE_CURRENT_LIST_DIR}/bot_api.lua
-	${CMAKE_CURRENT_LIST_DIR}/rules_api.lua
-	${CMAKE_CURRENT_LIST_DIR}/Icon.bmp
-	${CMAKE_CURRENT_LIST_DIR}/config.xml
-	${CMAKE_CURRENT_LIST_DIR}/inputconfig.xml
-	${CMAKE_CURRENT_LIST_DIR}/server.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_cs.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_de.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_en.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_es.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_fr.xml
-	${CMAKE_CURRENT_LIST_DIR}/lang_it.xml)
+	${CMAKE_CURRENT_SOURCE_DIR}/api.lua
+	${CMAKE_CURRENT_SOURCE_DIR}/bot_api.lua
+	${CMAKE_CURRENT_SOURCE_DIR}/rules_api.lua
+	${CMAKE_CURRENT_SOURCE_DIR}/Icon.bmp
+	${CMAKE_CURRENT_SOURCE_DIR}/config.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/inputconfig.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/server.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_cs.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_de.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_en.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_es.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_fr.xml
+	${CMAKE_CURRENT_SOURCE_DIR}/lang_it.xml)
 
 if (WIN32 OR SWITCH)
 	install(FILES ${install_files} DESTINATION data)

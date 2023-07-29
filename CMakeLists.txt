@@ -16,9 +16,7 @@ add_subdirectory(deps)
 
 add_subdirectory(linux)
 
-if(BUILD_MACOS_BUNDLE)
-	add_subdirectory(macos)
-endif()
+add_subdirectory(macos)
 
 if(BUILD_TESTS)
 	add_subdirectory(test)
