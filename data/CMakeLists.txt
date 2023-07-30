@@ -40,7 +40,7 @@ set(install_files
 
 if (WIN32 OR SWITCH)
 	install(FILES ${install_files} DESTINATION data)
-elseif (UNIX)
+elseif (UNIX AND NOT APPLE)
 	install(FILES ${install_files} DESTINATION share/blobby)
 endif (WIN32 OR SWITCH)
 

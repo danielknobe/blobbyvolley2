@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-include(CPack)
-
-project(Blobby)
+project(blobby VERSION 1.1.1)
 
 option(BUILD_TESTS "Build test programs" OFF)
 option(BUILD_MACOS_BUNDLE "Create a self-containing MacOS bundle" OFF)
@@ -21,3 +19,5 @@ add_subdirectory(macos)
 if(BUILD_TESTS)
 	add_subdirectory(test)
 endif()
+
+include(CPack)
