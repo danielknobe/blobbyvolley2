@@ -156,7 +156,7 @@ elseif (ANDROID)
 	install(TARGETS blobby DESTINATION bin)
 elseif (SWITCH)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
-elseif (UNIX)
+elseif (UNIX AND NOT APPLE)
 	install(TARGETS blobby blobby-server DESTINATION bin)
 endif ()
 
