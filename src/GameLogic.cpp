@@ -434,6 +434,9 @@ class LuaGameLogic : public FallbackGameLogic, public IScriptableComponent
 		static LuaGameLogic* getGameLogic(lua_State* state);
 
 	private:
+		// The lua interface gets its game (logic) state information from
+		// `IScriptableComponent::mCachedState`. This means that we need to sync up local changes to the state
+		// to this cache, before we run any callbacks, as achieved by this function.
 		void updateLuaLogicState();
 
 		// lua functions
