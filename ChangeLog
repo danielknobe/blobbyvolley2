@@ -1,4 +1,10 @@
-New in 1.1 (rev. 1947) since 1.0
+New in 1.1.1 (tag: v1.1.1) since 1.1
+- fix server crash
+- fix ruleset misbehavior (four ball touches possible)
+- improved server log
+- added official macos build support
+
+New in 1.1 (tag: v1.1) since 1.0
 - new languages added and some parts of old translations corrected
 - new high resolution icon
 - reworked online game lobby and matchmaking
@@ -13,7 +19,6 @@ New in 1.0 (rev. 1516) since RC4:
 - smoother loading of server list
 - improved mouse input in online games
 - lots of tiny fixes
-
 
 New in 1.0 RC 4 (rev. 1345) since RC3:
 - Added Lobby
@@ -87,7 +92,6 @@ New in 1.0 RC 1 (rev. 732) since Beta 9:
 - fixed some small and unlikely memleaks
 - fixed performance killer in "... has won" screen
 
-
 New in Beta 9 (rev. 622) since Alpha 8:
 - network game: reduced data transfer
 - fixed memleaks
@@ -103,13 +107,11 @@ New in Beta 9 (rev. 622) since Alpha 8:
 - improved bots: difficulty adjustable, better api, better documentation
 - customizable rules file
 
-
 New in Alpha 8 (rev. 469) since Alpha 6:
 - some graphics improvements
 - performance improvements
 - names
 - credits added
-
 
 New in Alpha 6 (rev. 335) since Alpha 5:
 - More options
@@ -127,4 +129,3 @@ Since Alpha 4:
 	estimate/estimx/estimy now work much better
 - Special cooperation with the OpenAnno team: Sven Rech will work for Blobby
 	until final release
-
