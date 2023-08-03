@@ -1,5 +1,5 @@
 ; Problems: README must have .txt ending, so that it could be opened
-#define FullyQualifiedAppName "Blobby Volley 2 Version 1.1RC1"
+#define FullyQualifiedAppName "Blobby Volley 2 Version 1.1.1"
 
 [Languages]
 // Languages which are also supported by the game
