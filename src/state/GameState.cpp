@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "IMGUI.h"
 #include "Blood.h"
 #include "FileWrite.h"
+#include "Global.h"
 
 /* implementation */
 
@@ -95,6 +96,16 @@ void GameState::presentGameUI()
 	imgui.doText(GEN_ID, Vector2(12, 550), mMatch->getPlayer(LEFT_PLAYER).getName());
 	imgui.doText(GEN_ID, Vector2(788, 550), mMatch->getPlayer(RIGHT_PLAYER).getName(), TF_ALIGN_RIGHT);
 	imgui.doText(GEN_ID, Vector2(400, 24), mMatch->getTimeString(), TF_ALIGN_CENTER);
+
+#if !BLOBBY_FEATURE_HAS_BACKBUTTON
+	if (imgui.doImageButton(GEN_ID, Vector2(400, 111), Vector2(70, 82), "gfx/flag.bmp") && !mMatch->isPaused())
+	{
+		SDL_Event sdlEvent;
+		sdlEvent.type = SDL_KEYDOWN;
+		sdlEvent.key.keysym.sym = SDLK_ESCAPE;
+		SDL_PushEvent(&sdlEvent);
+	}
+#endif
 }
 
 

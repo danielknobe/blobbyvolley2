@@ -22,6 +22,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <string>
 
+#if (defined __APPLE__)
+#include <TargetConditionals.h>
+#endif
+
 // Detect whether we have a desktop or mobile target
 #if (defined __ANDROID__) || (defined __APPLE__ && TARGET_OS_IPHONE) || (defined __APPLE__ && TARGET_OS_SIMULATOR) || (defined __SWITCH__)
 #define BLOBBY_ON_MOBILE true
