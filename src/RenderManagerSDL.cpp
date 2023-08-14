@@ -266,14 +266,6 @@ void RenderManagerSDL::init(int xResolution, int yResolution, bool fullscreen)
 				rightBlobShadowTex,
 				Color(255, 255, 255));
 		SDL_UpdateTexture(rightBlobShadowTex, nullptr, formatedBlobShadowImage->pixels, formatedBlobShadowImage->pitch);
-
-		// Load specific icon to cancel a game
-#if !BLOBBY_FEATURE_HAS_BACKBUTTON
-		tmpSurface = loadSurface("gfx/flag.bmp");
-		SDL_SetColorKey(tmpSurface, SDL_TRUE, SDL_MapRGB(tmpSurface->format, 0, 0, 0));
-		mBackFlag = SDL_CreateTextureFromSurface(mRenderer, tmpSurface);
-		SDL_FreeSurface(tmpSurface);
-#endif
 	}
 
 	// Load font
@@ -372,10 +364,6 @@ RenderManagerSDL::~RenderManagerSDL()
 		SDL_DestroyTexture(image.second->sdlImage);
 		delete image.second;
 	}
-
-#if !BLOBBY_FEATURE_HAS_BACKBUTTON
-	SDL_DestroyTexture(mBackFlag);
-#endif
 
 	SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
@@ -689,14 +677,6 @@ void RenderManagerSDL::drawGame(const DuelMatchState& gameState)
 	rodPosition.w = 14;
 	rodPosition.h = 300;
 	SDL_RenderCopy(mRenderer, mBackground, &rodPosition, &rodPosition);
-
-#if !BLOBBY_FEATURE_HAS_BACKBUTTON
-	position.x = 400 - 35;
-	position.y = 70;
-	position.w = 70;
-	position.h = 82;
-	SDL_RenderCopy(mRenderer, mBackFlag, 0, &position);
-#endif
 
 	// Drawing the Ball
 	position = ballRect(gameState.getBallPosition());

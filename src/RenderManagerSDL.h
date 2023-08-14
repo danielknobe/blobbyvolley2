@@ -103,9 +103,5 @@ class RenderManagerSDL : public RenderManager
 
 		void drawTextImpl(const std::string& text, Vector2 position, unsigned int flags);
 		void colorizeBlobs(int player, int frame);
-
-#if !BLOBBY_FEATURE_HAS_BACKBUTTON
-		SDL_Texture* mBackFlag;
-#endif
 };
 
