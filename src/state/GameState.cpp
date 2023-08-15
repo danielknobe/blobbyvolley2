@@ -98,7 +98,7 @@ void GameState::presentGameUI()
 	imgui.doText(GEN_ID, Vector2(400, 24), mMatch->getTimeString(), TF_ALIGN_CENTER);
 
 #if !BLOBBY_FEATURE_HAS_BACKBUTTON
-	if (imgui.doImageButton(GEN_ID, Vector2(400, 111), Vector2(70, 82), "gfx/flag.bmp") && !mMatch->isPaused())
+	if (imgui.doImageButton(GEN_ID, Vector2(400, 95), Vector2(100, 100), "gfx/flag.bmp") && !mMatch->isPaused())
 	{
 		SDL_Event sdlEvent;
 		sdlEvent.type = SDL_KEYDOWN;
