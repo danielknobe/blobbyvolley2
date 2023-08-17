@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Global.h"
 #include "raknet/NetworkTypes.h"
 #include "raknet/BitStream.h"
-#include "SpeedController.h"
+#include "RateController.h"
 #include "DuelMatch.h"
 #include "BlobbyDebug.h"
 
@@ -92,7 +92,8 @@ class NetworkGame : public ObjectCounter<NetworkGame>
 		std::mutex mPacketQueueMutex;
 
 		const std::unique_ptr<DuelMatch> mMatch;
-		SpeedController mSpeedController;
+		int mGameFps;
+		RateController mRateController;
 		std::shared_ptr<InputSource> mLeftInput;
 		std::shared_ptr<InputSource> mRightInput;
 		unsigned mLeftLastTime;

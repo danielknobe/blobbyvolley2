@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "DuelMatch.h"
 #include "SoundManager.h"
 #include "TextManager.h"
-#include "SpeedController.h"
 #include "IUserConfigReader.h"
 #include "ReplaySelectionState.h"
 #include "InputManager.h"
@@ -71,10 +70,6 @@ void ReplayState::loadReplay(const std::string& file)
 
 		mMatch->getPlayer(LEFT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(LEFT_PLAYER));
 		mMatch->getPlayer(RIGHT_PLAYER).setStaticColor(mReplayPlayer->getBlobColor(RIGHT_PLAYER));
-
-		SpeedController::getMainInstance()->setGameSpeed(
-				(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
-			);
 
 	//}
 	/*
@@ -211,12 +206,6 @@ void ReplayState::step_impl()
 			// we don't have to reset the match, because we don't use lua rules
 			// we just have to jump to the beginning
 			playSound(SoundManager::WHISTLE, ROUND_START_SOUND_VOLUME);
-
-			// do we really need this?
-			// maybe, users want to replay the game on the current speed
-			SpeedController::getMainInstance()->setGameSpeed(
-					(float)IUserConfigReader::createUserConfigReader("config.xml")->getInteger("gamefps")
-				);
 
 			mPaused = false;
 			mPositionJump = 0;
