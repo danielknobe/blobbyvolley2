@@ -81,15 +81,15 @@ void GameState::presentGame()
 
 void GameState::presentGameUI()
 {
-	getApp().getRenderManager().drawGame(mMatch->getState());
-
+	const DuelMatchState& state = mMatch->getState();
 	auto& imgui = getIMGUI();
+	imgui.drawGame(state);
 
 	// Scores
 	char textBuffer[64];
-	snprintf(textBuffer, 8, mMatch->getServingPlayer() == LEFT_PLAYER ? "%02d!" : "%02d ", mMatch->getScore(LEFT_PLAYER));
+	snprintf(textBuffer, 8, state.getServingPlayer() == LEFT_PLAYER ? "%02d!" : "%02d ", state.getScore(LEFT_PLAYER));
 	imgui.doText(GEN_ID, Vector2(24, 24), textBuffer);
-	snprintf(textBuffer, 8, mMatch->getServingPlayer() == RIGHT_PLAYER ? "%02d!" : "%02d ", mMatch->getScore(RIGHT_PLAYER));
+	snprintf(textBuffer, 8, state.getServingPlayer() == RIGHT_PLAYER ? "%02d!" : "%02d ", state.getScore(RIGHT_PLAYER));
 	imgui.doText(GEN_ID, Vector2(800-24, 24), textBuffer, TF_ALIGN_RIGHT);
 
 	// blob name / time textfields

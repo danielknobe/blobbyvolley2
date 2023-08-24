@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "Vector.h"
 #include "Global.h"
+#include "DuelMatchState.h"
 
 #include "RenderManager.h"
 #include "InputManager.h"
@@ -88,6 +89,8 @@ class IMGUI : public ObjectCounter<IMGUI>
 		const std::string& getText(TextManager::STRING id) const;
 		void setTextMgr(std::string lang);
 
+		void drawGame(const DuelMatchState& state);
+
 	private:
 		int mActiveButton;
 		int mHeldWidget;
@@ -104,5 +107,10 @@ class IMGUI : public ObjectCounter<IMGUI>
 		InputManager* mInputManager;
 
 		std::unique_ptr<RenderQueue> mQueue;
+		struct sGameStateInfo {
+			bool active;
+			DuelMatchState state;
+		};
+		sGameStateInfo mGameState;
 };
 
