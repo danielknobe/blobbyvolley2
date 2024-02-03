@@ -44,6 +44,8 @@ class TouchInputDevice : public InputDevice
 		int mMarkerX;
 		int mTouchXPos;
 		int mTouchType;
+
+		SDL_TouchID mTouchDevice;
 };
 
 // ********************************************************************************************************
@@ -64,18 +66,27 @@ std::unique_ptr<InputDevice> createTouchInput(InputManager* inputMgr, PlayerSide
 // -------------------------------------------------------------------------------------------------
 TouchInputDevice::TouchInputDevice(InputManager* inputMgr, PlayerSide player, int type)
 	: InputDevice(inputMgr)
+	, mPlayer(player)
+	, mMarkerX(-6)
+	, mTouchXPos(400)
+	, mTouchType(type)
 {
-	mPlayer = player;
-	mTouchXPos = 400;
-	mTouchType = type;
+	// Get the primary touch device
+	const int numTouchDevices = SDL_GetNumTouchDevices();
+	for (int i = 0; i < numTouchDevices; i++)
+	{
+		const SDL_TouchID touchDevice = SDL_GetTouchDevice(i);
+		if (touchDevice > 0)
+		{
+			mTouchDevice = touchDevice;
+			break;
+		}
+	}
 }
 
 PlayerInputAbs TouchInputDevice::transferInput()
 {
 	PlayerInputAbs input = PlayerInputAbs();
-
-	// Get the primary touch device
-	SDL_TouchID device = SDL_GetTouchDevice(0);
 
 	switch (mTouchType)
 	{
@@ -84,9 +95,9 @@ PlayerInputAbs TouchInputDevice::transferInput()
 	// ******************************************************************
 	case 0:
 	{
-		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
+		for (int i = 0; i < SDL_GetNumTouchFingers(mTouchDevice); i++)
 		{
-			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
+			SDL_Finger *finger = SDL_GetTouchFinger(mTouchDevice, i);
 
 			if (finger == nullptr)
 				continue;
@@ -135,9 +146,9 @@ PlayerInputAbs TouchInputDevice::transferInput()
 	// *********************************************************************************
 	case 1:
 	{
-		for (int i = 0; i < SDL_GetNumTouchFingers(device); i++)
+		for (int i = 0; i < SDL_GetNumTouchFingers(mTouchDevice); i++)
 		{
-			SDL_Finger *finger = SDL_GetTouchFinger(device, i);
+			SDL_Finger *finger = SDL_GetTouchFinger(mTouchDevice, i);
 
 			if (finger == nullptr)
 				continue;
