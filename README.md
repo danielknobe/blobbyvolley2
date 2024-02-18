@@ -87,8 +87,8 @@ src/blobby
 2. Compile:
 
 ```bash
-cmake . -DCMAKE_TOOLCHAIN_FILE=NintendoSwitchToolchain.cmake -DCMAKE_INSTALL_PREFIX=blobby -DSWITCH=true -DCMAKE_BUILD_TYPE=Debug
-make && make install
+/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -S .
+make blobby.nro
 ```
 
 3. Copy the `blobby` folder to the `/switch/` directory on your SD card.
