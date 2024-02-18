@@ -87,7 +87,7 @@ src/blobby
 2. Compile:
 
 ```bash
-/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -DCMAKE_INSTALL_PREFIX=./build-switch -S .
+/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -DCMAKE_INSTALL_PREFIX=./blobby -S .
 make && make install
 ```
 

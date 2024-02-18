@@ -36,7 +36,7 @@ src/blobby-server
 src/blobby.elf
 src/blobby.nro
 src/blobby.nacp
-/build-switch
+/blobby
 
 #project platform independent
 *.zip
