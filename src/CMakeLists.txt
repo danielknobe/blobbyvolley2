@@ -8,8 +8,8 @@ if (MSVC)
 	add_compile_options(/utf-8)
 	# When building for MSVC with CMake,
 	# the compiler warning flags (like /W3) are added by default.
-elseif (NINTENDO_SWITCH)
-	add_compile_options(-DLUA_32BITS)
+elseif	(NINTENDO_SWITCH)
+	add_compile_options(-DLUA_C89_NUMBERS)
 else()
 	add_compile_options(-Wall)
 endif()
