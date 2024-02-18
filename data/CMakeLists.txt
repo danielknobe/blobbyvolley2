@@ -38,10 +38,12 @@ set(install_files
 	${CMAKE_CURRENT_SOURCE_DIR}/lang_fr.xml
 	${CMAKE_CURRENT_SOURCE_DIR}/lang_it.xml)
 
-if (WIN32 OR NINTENDO_SWITCH)
+if (WIN32)
 	install(FILES ${install_files} DESTINATION .)
+elseif (NINTENDO_SWITCH)
+	install(FILES ${install_files} DESTINATION data)
 elseif (UNIX AND NOT APPLE)
 	install(FILES ${install_files} DESTINATION share/blobby)
-endif (WIN32 OR NINTENDO_SWITCH)
+endif (WIN32)
 
 set(data_files ${install_files} PARENT_SCOPE)

@@ -16,6 +16,8 @@ cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
 _deps
 
 #project linux
@@ -34,7 +36,7 @@ src/blobby-server
 src/blobby.elf
 src/blobby.nro
 src/blobby.nacp
-/blobby
+/build-switch
 
 #project platform independent
 *.zip

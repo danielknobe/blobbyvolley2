@@ -87,8 +87,8 @@ src/blobby
 2. Compile:
 
 ```bash
-/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -S .
-make blobby.nro
+/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -DCMAKE_INSTALL_PREFIX=./build-switch -S .
+make && make install
 ```
 
 3. Copy the `blobby` folder to the `/switch/` directory on your SD card.

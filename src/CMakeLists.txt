@@ -142,11 +142,13 @@ if (WIN32)
 elseif (ANDROID)
 	install(TARGETS blobby DESTINATION bin)
 elseif (NINTENDO_SWITCH)
-	add_custom_target(${PROJECT_NAME}.nro DEPENDS ${PROJECT_NAME}
-	COMMAND ${NX_NACPTOOL_EXE} --create "${APP_NAME}" "-" "1.0.0" ${PROJECT_NAME}.nacp
-	COMMAND ${NX_ELF2NRO_EXE} ${PROJECT_NAME}.elf ${PROJECT_NAME}.nro --icon=${PROJECT_ICON} --nacp=${PROJECT_NAME}.nacp
+	add_custom_target(${PROJECT_NAME}.nro
+		ALL
+		DEPENDS ${PROJECT_NAME}
+		COMMAND ${NX_NACPTOOL_EXE} --create "${APP_NAME}" "-" "1.0.0" ${PROJECT_NAME}.nacp
+		COMMAND ${NX_ELF2NRO_EXE} ${PROJECT_NAME}.elf ${PROJECT_NAME}.nro --icon=${PROJECT_ICON} --nacp=${PROJECT_NAME}.nacp
 	)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION bin)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blobby.nro DESTINATION .)
 elseif (UNIX AND NOT APPLE)
 	install(TARGETS blobby blobby-server DESTINATION bin)
 endif ()
