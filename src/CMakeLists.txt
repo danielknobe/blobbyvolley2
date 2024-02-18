@@ -103,8 +103,11 @@ set(BLOBBY_COMMON_LIBS lua::lua blobnet::blobnet tinyxml2::tinyxml2 PhysFS::Phys
 
 # other additional dependencies
 if (NINTENDO_SWITCH)
-	set(BLOBBY_COMMON_LIBS ${BLOBBY_COMMON_LIBS} PhysFS::PhysFS-static glad::glad)
-elseif (NOT WIN32)
+	set(BLOBBY_COMMON_LIBS ${BLOBBY_COMMON_LIBS} PhysFS::PhysFS-static)
+	set(OPENGL_LIBRARIES ${OPENGL_LIBRARIES} glad::glad)
+endif()
+
+if (NOT WIN32)
 	find_package(Threads REQUIRED)
 	set(BLOBBY_COMMON_LIBS ${BLOBBY_COMMON_LIBS} Threads::Threads)
 endif ()
