@@ -373,9 +373,6 @@ Vector2 InputManager::position()
 	mMouseY = (int)((((float)mMouseY) * ((float)BASE_RESOLUTION_Y)) / windowY);
 #endif
 
-	DEBUG_STATUS(mMouseX << " " << mMouseY);
-
-
 	return Vector2(mMouseX, mMouseY);
 }
 
