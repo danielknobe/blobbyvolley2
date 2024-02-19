@@ -230,6 +230,11 @@ void InputManager::updateInput()
 				}
 
 				mLastClickTime = SDL_GetTicks();
+
+#ifdef __SWITCH__
+				mFingerX = event.tfinger.x;
+				mFingerY = event.tfinger.y;
+#endif
 				break;
 #endif
 			case SDL_MOUSEWHEEL:
@@ -354,14 +359,22 @@ bool InputManager::exit() const
 
 Vector2 InputManager::position()
 {
+#ifdef __SWITCH__
+	mMouseX = (int)(mFingerX * (float)BASE_RESOLUTION_X);
+	mMouseY = (int)(mFingerY * (float)BASE_RESOLUTION_Y);
+#else
+	SDL_GetMouseState(&mMouseX, &mMouseY);
+
 	int windowX = 0;
 	int windowY = 0;
-
-	SDL_GetMouseState(&mMouseX, &mMouseY);
 
 	SDL_GetWindowSize(mApp->getWindow(), &windowX, &windowY);
 	mMouseX = (int)((((float)mMouseX) * ((float)BASE_RESOLUTION_X)) / windowX);
 	mMouseY = (int)((((float)mMouseY) * ((float)BASE_RESOLUTION_Y)) / windowY);
+#endif
+
+	DEBUG_STATUS(mMouseX << " " << mMouseY);
+
 
 	return Vector2(mMouseX, mMouseY);
 }
