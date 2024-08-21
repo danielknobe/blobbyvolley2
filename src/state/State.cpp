@@ -170,27 +170,33 @@ void CreditsState::step_impl()
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+60), "  (daniel-knobe(at)web.de)", TF_SMALL_FONT);
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+85), "Jonathan Sieber");
 	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+115), "  (jonathan_sieber(at)yahoo.de)", TF_SMALL_FONT);
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+140), "Sven Rech");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+170), "  (svenrech(at)gmx.de)", TF_SMALL_FONT);
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+195), "Erik Schultheis");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+225), "  (erik-schultheis(at)freenet.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+140), "Erik Schultheis");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+170), "  (erik-schultheis(at)freenet.de)", TF_SMALL_FONT);
 
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+255), TextManager::CRD_GRAPHICS);
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+285), "Silvio Mummert");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+315), "  (mummertathome(at)t-online.de)", TF_SMALL_FONT);
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+340), "Richard Bertrand");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+370), "  (ricbertrand(at)hotmail.com)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+210), TextManager::CRD_GRAPHICS);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+240), "Silvio Mummert");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+270), "  (mummertathome(at)t-online.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+295), "Richard Bertrand");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+325), "  (ricbertrand(at)hotmail.com)", TF_SMALL_FONT);
 
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+415), TextManager::CRD_THX);
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+445), "Daniel Skoraszewsky");
-	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+475), "  (skoraszewsky(at)t-online.de)", TF_SMALL_FONT);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+365), TextManager::CRD_THX);
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+395), "Daniel Skoraszewsky");
+	imgui.doText(GEN_ID, Vector2(xPosition, mYPosition+425), "  (skoraszewsky(at)t-online.de)", TF_SMALL_FONT);
 
 	if (mYPosition > 20)
 		mYPosition -= 2.5;
 
-	if (imgui.doButton(GEN_ID, Vector2(400.0, 560.0), TextManager::LBL_CANCEL))
+	if (imgui.doButton(GEN_ID, Vector2(74.0, 530.0), TextManager::LBL_OK))
 	{
 		switchState(new MainMenuState());
+	}
+
+	if (SDL_VERSIONNUM(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL) >= SDL_VERSIONNUM(2, 0, 14))
+	{
+		if (imgui.doButton(GEN_ID, Vector2(294.0, 530.0), "www.blobbyvolley.de"))
+		{
+			SDL_OpenURL("https://www.blobbyvolley.de");
+		}
 	}
 }
 
