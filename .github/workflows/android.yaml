@@ -37,7 +37,7 @@ jobs:
 
       - name: Get and build PhysFS
         run: | 
-          git clone -b f7d24ce8486d9229207cca1ff98858fe60ffe583 https://github.com/icculus/physfs.git physfs
+          git clone https://github.com/icculus/physfs.git physfs
           mkdir physfs-build
           cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build
           cmake --build physfs-build
