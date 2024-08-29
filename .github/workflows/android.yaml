@@ -41,7 +41,7 @@ jobs:
           tar -xf release-2.8.2
           mv SDL_image-release-2.8.2 SDL2_image
           mkdir SDL2_image-build
-          cmake --toolchain="${TOOLCHAIN}" -S SDL2_image -B SDL2_image-build
+          cmake --toolchain="${TOOLCHAIN}" -DSDL2_DIR="${DEP_DIR}/lib/cmake/SDL2/" -S SDL2_image -B SDL2_image-build
           cmake --build SDL2_image-build
           cmake --install SDL2_image-build --prefix "$(pwd)/built-deps"
 
