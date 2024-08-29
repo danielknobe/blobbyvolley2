@@ -35,6 +35,16 @@ jobs:
           cmake --build SDL2-build
           cmake --install SDL2-build --prefix "$(pwd)/built-deps"
 
+      - name: Get and build SDL image
+        run: |
+          wget -q https://codeload.github.com/libsdl-org/SDL_image/tar.gz/refs/tags/release-2.8.2
+          tar -xf SDL_image-release-2.8.2.tar.gz
+          mv SDL_image-release-2.8.2 SDL2_image
+          mkdir SDL2_image-build
+          cmake --toolchain="${TOOLCHAIN}" -S SDL2_image -B SDL2_image-build
+          cmake --build SDL2_image-build
+          cmake --install SDL2_image-build --prefix "$(pwd)/built-deps"
+
       - name: Get and build PhysFS
         run: | 
           git clone https://github.com/icculus/physfs.git physfs
@@ -52,7 +62,7 @@ jobs:
           mkdir build 
           DEP_DIR="$(pwd)/built-deps/"
           cmake --toolchain="${TOOLCHAIN}" -G Ninja -DANDROID_ABI=$ABI -DBoost_INCLUDE_DIR="$(pwd)"/boost/ -DSDL2_DIR="${DEP_DIR}/lib/cmake/SDL2/" \
-          -DPHYSFS_INCLUDE_DIR="${DEP_DIR}/include" -DPHYSFS_LIBRARY="${DEP_DIR}/lib/libphysfs.so" .
+          -DSDL2_image_DIR="${DEP_DIR}/lib/cmake/SDL2_image/" -DPHYSFS_INCLUDE_DIR="${DEP_DIR}/include" -DPHYSFS_LIBRARY="${DEP_DIR}/lib/libphysfs.so" .
       - name: Build
         run: |
           cmake --build .
