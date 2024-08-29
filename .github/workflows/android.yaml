@@ -29,19 +29,31 @@ jobs:
 
       - name: Get and build SDL
         run: |
-          wget -q https://codeload.github.com/libsdl-org/SDL/tar.gz/refs/tags/release-2.24.0
-          tar -xf release-2.24.0
-          mv SDL-release-2.24.0 SDL2
+          git clone -b release-2.30.x https://github.com/libsdl-org/SDL.git SDL2
           mkdir SDL2-build
           cmake --toolchain="${TOOLCHAIN}" -S SDL2 -B SDL2-build
           cmake --build SDL2-build
           cmake --install SDL2-build --prefix "$(pwd)/built-deps"
 
+      - name: Get and build SDL image
+        run: |
+          wget -q https://codeload.github.com/libsdl-org/SDL_image/tar.gz/refs/tags/release-2.8.2
+          tar -xf release-2.8.2
+          mv SDL_image-release-2.8.2 SDL2_image
+          mkdir SDL2_image-build
+          cmake --toolchain="${TOOLCHAIN}" -DSDL2_DIR="$(pwd)/built-deps/lib/cmake/SDL2/" \
+          -DSDL2IMAGE_AVIF=OFF -DSDL2IMAGE_BMP=OFF -DSDL2IMAGE_GIF=OFF -DSDL2IMAGE_JPG=OFF \
+          -DSDL2IMAGE_JXL=OFF -DSDL2IMAGE_LBM=OFF -DSDL2IMAGE_PCX=OFF -DSDL2IMAGE_PNG=OFF \
+          -DSDL2IMAGE_PNM=OFF -DSDL2IMAGE_QOI=OFF -DSDL2IMAGE_SVG=ON -DSDL2IMAGE_TGA=OFF \
+          -DSDL2IMAGE_TIF=OFF -DSDL2IMAGE_WEBP=OFF -DSDL2IMAGE_XCF=OFF -DSDL2IMAGE_XPM=OFF \
+          -DSDL2IMAGE_XV=OFF \
+          -S SDL2_image -B SDL2_image-build
+          cmake --build SDL2_image-build
+          cmake --install SDL2_image-build --prefix "$(pwd)/built-deps"
+
       - name: Get and build PhysFS
         run: | 
-          wget -q https://codeload.github.com/icculus/physfs/tar.gz/refs/tags/release-3.2.0
-          tar -xf release-3.2.0
-          mv physfs-release-3.2.0 physfs
+          git clone https://github.com/icculus/physfs.git physfs
           mkdir physfs-build
           cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build
           cmake --build physfs-build
@@ -56,7 +68,7 @@ jobs:
           mkdir build 
           DEP_DIR="$(pwd)/built-deps/"
           cmake --toolchain="${TOOLCHAIN}" -G Ninja -DANDROID_ABI=$ABI -DBoost_INCLUDE_DIR="$(pwd)"/boost/ -DSDL2_DIR="${DEP_DIR}/lib/cmake/SDL2/" \
-          -DPHYSFS_INCLUDE_DIR="${DEP_DIR}/include" -DPHYSFS_LIBRARY="${DEP_DIR}/lib/libphysfs.so" .
+          -DSDL2_image_DIR="${DEP_DIR}/lib/cmake/SDL2_image/" -DPHYSFS_INCLUDE_DIR="${DEP_DIR}/include" -DPHYSFS_LIBRARY="${DEP_DIR}/lib/libphysfs.so" .
       - name: Build
         run: |
           cmake --build .
