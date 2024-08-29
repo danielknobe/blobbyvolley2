@@ -38,8 +38,8 @@ jobs:
       - name: Get and build SDL image
         run: |
           wget -q https://codeload.github.com/libsdl-org/SDL_image/tar.gz/refs/tags/release-2.8.2
-          tar -xf release-2.8.2.tar.gz
-          mv release-2.8.2 SDL2_image
+          tar -xf release-2.8.2
+          mv SDL_image-release-2.8.2 SDL2_image
           mkdir SDL2_image-build
           cmake --toolchain="${TOOLCHAIN}" -S SDL2_image -B SDL2_image-build
           cmake --build SDL2_image-build
