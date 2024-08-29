@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "Blood.h"
 #include "IUserConfigReader.h"
 
+#include "SDL_image.h"
+
 /* implementation */
 #define INVALID_FONT_INDEX -1
 
@@ -89,7 +91,7 @@ SDL_Surface* RenderManager::loadSurface(const std::string& filename)
 	auto fileContent = file.readRawBytes(fileLength);
 
 	SDL_RWops* rwops = SDL_RWFromMem(fileContent.data(), fileLength);
-	SDL_Surface* newSurface = SDL_LoadBMP_RW(rwops , 1);
+	SDL_Surface* newSurface = IMG_Load_RW(rwops , 1);
 
 	if (!newSurface)
 		BOOST_THROW_EXCEPTION ( FileLoadException(filename) );
