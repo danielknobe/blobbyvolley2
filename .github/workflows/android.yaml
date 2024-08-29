@@ -41,7 +41,13 @@ jobs:
           tar -xf release-2.8.2
           mv SDL_image-release-2.8.2 SDL2_image
           mkdir SDL2_image-build
-          cmake --toolchain="${TOOLCHAIN}" -DSDL2_DIR="$(pwd)/built-deps/lib/cmake/SDL2/" -S SDL2_image -B SDL2_image-build
+          cmake --toolchain="${TOOLCHAIN}" -DSDL2_DIR="$(pwd)/built-deps/lib/cmake/SDL2/" \
+          -DSDL2IMAGE_AVIF==OFF -DSDL2IMAGE_BMP==OFF -DSDL2IMAGE_GIF==OFF -DSDL2IMAGE_JPG==OFF \
+          -DSDL2IMAGE_JXL==OFF -DSDL2IMAGE_LBM==OFF -DSDL2IMAGE_PCX==OFF -DSDL2IMAGE_PNG==OFF \
+          -DSDL2IMAGE_PNM==OFF -DSDL2IMAGE_QOI==OFF -DSDL2IMAGE_SVG=ON -DSDL2IMAGE_TGA==OFF \
+          -DSDL2IMAGE_TIF=OFF -DSDL2IMAGE_WEBP=OFF -DSDL2IMAGE_XCF=OFF -DSDL2IMAGE_XPM=OFF \
+          -DSDL2IMAGE_XV=OFF \
+          -S SDL2_image -B SDL2_image-build
           cmake --build SDL2_image-build
           cmake --install SDL2_image-build --prefix "$(pwd)/built-deps"
 
