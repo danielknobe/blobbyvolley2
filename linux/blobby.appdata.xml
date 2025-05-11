@@ -9,6 +9,9 @@
   </releases>
   <name>Blobby Volley 2</name>
   <summary>The head-to-head multiplayer volley-ball game.</summary>
+  <developer id="de.blobbyvolley">
+    <name>Daniel Knobe</name>
+  </developer>
   <description>
     <p>
         Blobby Volley is one of the most popular freeware games where
