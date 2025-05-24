@@ -1,4 +1,5 @@
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image)
 
 if(NOT TARGET SDL2::SDL2)
     message(STATUS "Could not find SDL2 imported library, defining our own")

@@ -130,7 +130,7 @@ else ()
 	endif ()
 endif ()
 
-target_link_libraries(blobby ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES})
+target_link_libraries(blobby ${BLOBBY_COMMON_LIBS} ${OPENGL_LIBRARIES} SDL2_image::SDL2_image)
 
 
 if (UNIX AND (NOT ANDROID) OR WIN32)
