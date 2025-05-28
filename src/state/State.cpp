@@ -36,7 +36,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "SoundManager.h"
 #include "IMGUI.h"
 #include "TextManager.h"
-#include "SpeedController.h"
 #include "InputManager.h"
 #include "IScriptableComponent.h"
 
@@ -88,8 +87,6 @@ InputManager& State::getInputMgr() const {
 
 MainMenuState::MainMenuState()
 {
-	// set main menu fps
-	SpeedController::getMainInstance()->setGameSpeed(75);
 }
 
 MainMenuState::~MainMenuState() = default;

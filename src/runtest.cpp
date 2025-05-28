@@ -206,10 +206,7 @@ int main(int argc, char* argv[])
 			}
 			++step;
 
-			app.getInputManager().updateInput();
-			running = app.getInputManager().running();
-			app.getIMGUI().begin();
-			app.step();
+			running = app.step();
 			auto* rmanager = &app.getRenderManager(); //RenderManager may change
 
 			if (!scontroller.doFramedrop())
