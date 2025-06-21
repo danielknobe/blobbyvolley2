@@ -17,15 +17,20 @@ jobs:
       fail-fast: false
       matrix:
         compiler:
-          - { name: "Clang 10", cxx: "clang++-10", cc: "clang-10", install: "clang-10",        os: "ubuntu-20.04"}
           - { name: "Clang 12", cxx: "clang++-12", cc: "clang-12", install: "clang-12",        os: "ubuntu-22.04"}
           - { name: "Clang 13", cxx: "clang++-13", cc: "clang-13", install: "clang-13",        os: "ubuntu-22.04"}
           - { name: "Clang 14", cxx: "clang++-14", cc: "clang-14", install: "clang-14",        os: "ubuntu-22.04"}
-          - { name: "GCC 7",    cxx: "g++-7",      cc: "gcc-7",    install: "g++-7 gcc-7",     os: "ubuntu-20.04"}
+          - { name: "Clang 15", cxx: "clang++-15", cc: "clang-15", install: "clang-15",        os: "ubuntu-24.04"}
+          - { name: "Clang 16", cxx: "clang++-16", cc: "clang-16", install: "clang-16",        os: "ubuntu-24.04"}
+          - { name: "Clang 17", cxx: "clang++-17", cc: "clang-17", install: "clang-17",        os: "ubuntu-24.04"}
+          - { name: "Clang 18", cxx: "clang++-18", cc: "clang-18", install: "clang-18",        os: "ubuntu-24.04"}
+          - { name: "Clang 19", cxx: "clang++-19", cc: "clang-19", install: "clang-19",        os: "ubuntu-24.04"}
           - { name: "GCC 9",    cxx: "g++-9",      cc: "gcc-9",    install: "g++-9 gcc-9",     os: "ubuntu-22.04"}
           - { name: "GCC 10",   cxx: "g++-10",     cc: "gcc-10",   install: "g++-10 gcc-10",   os: "ubuntu-22.04"}
           - { name: "GCC 11",   cxx: "g++-11",     cc: "gcc-11",   install: "g++-11 gcc-11",   os: "ubuntu-22.04"}
           - { name: "GCC 12",   cxx: "g++-12",     cc: "gcc-12",   install: "g++-12 gcc-12",   os: "ubuntu-22.04"}
+          - { name: "GCC 13",   cxx: "g++-13",     cc: "gcc-13",   install: "g++-13 gcc-13",   os: "ubuntu-24.04"}
+          - { name: "GCC 14",   cxx: "g++-14",     cc: "gcc-14",   install: "g++-14 gcc-14",   os: "ubuntu-24.04"}
 
     steps:
       - name: Install Packages

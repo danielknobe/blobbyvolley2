@@ -23,15 +23,13 @@ jobs:
       - name: Get Boost
         # no need to build, we use only the header-only parts of boost
         run: |
-          wget -q https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
-          tar -xf boost_1_80_0.tar.gz
-          mv boost_1_80_0 boost
+          wget -q https://archives.boost.io/release/1.88.0/source/boost_1_88_0.tar.gz
+          tar -xf boost_1_88_0.tar.gz
+          mv boost_1_88_0 boost
 
       - name: Get and build SDL
         run: |
-          wget -q https://codeload.github.com/libsdl-org/SDL/tar.gz/refs/tags/release-2.24.0
-          tar -xf release-2.24.0
-          mv SDL-release-2.24.0 SDL2
+          git clone -b release-2.32.x https://github.com/libsdl-org/SDL.git SDL2
           mkdir SDL2-build
           cmake --toolchain="${TOOLCHAIN}" -S SDL2 -B SDL2-build
           cmake --build SDL2-build
@@ -39,9 +37,7 @@ jobs:
 
       - name: Get and build PhysFS
         run: | 
-          wget -q https://codeload.github.com/icculus/physfs/tar.gz/refs/tags/release-3.2.0
-          tar -xf release-3.2.0
-          mv physfs-release-3.2.0 physfs
+          git clone https://github.com/icculus/physfs.git physfs
           mkdir physfs-build
           cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build
           cmake --build physfs-build
