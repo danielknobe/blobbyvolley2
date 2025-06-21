@@ -23,9 +23,9 @@ jobs:
       - name: Get Boost
         # no need to build, we use only the header-only parts of boost
         run: |
-          wget -q https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
-          tar -xf boost_1_80_0.tar.gz
-          mv boost_1_80_0 boost
+          wget -q https://archives.boost.io/release/1.88.0/source/boost_1_88_0.tar.gz
+          tar -xf boost_1_88_0.tar.gz
+          mv boost_1_88_0 boost
 
       - name: Get and build SDL
         run: |
