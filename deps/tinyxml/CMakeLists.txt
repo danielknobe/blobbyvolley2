@@ -1,6 +1,6 @@
 # This is mostly copied from tinyxml's CMakeLists.txt file, removing all test/install related things.
 # Furthermore, that file requires a more recent cmake than we promise to support in blobby.
-project(tinyxml2 VERSION 9.0.0)
+project(tinyxml2 VERSION 11.0.0)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)

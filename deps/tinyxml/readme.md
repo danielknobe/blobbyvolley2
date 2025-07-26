@@ -1,11 +1,7 @@
 TinyXML-2
 =========
 
-[![TravisCI Status](https://travis-ci.org/leethomason/tinyxml2.svg?branch=master)](https://travis-ci.org/leethomason/tinyxml2) [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/leethomason/tinyxml2?branch=master&svg=true)](https://ci.appveyor.com/project/leethomason/tinyxml2)
-
-![C/C++ CI Unixish](https://github.com/leethomason/tinyxml2/workflows/C/C++%20CI%20Unixish/badge.svg)
-
-![TinyXML-2 Logo](http://www.grinninglizard.com/tinyxml2/TinyXML2_small.png)
+[![Test](https://github.com/leethomason/tinyxml2/actions/workflows/test.yml/badge.svg)](https://github.com/leethomason/tinyxml2/actions/workflows/test.yml)
 
 TinyXML-2 is a simple, small, efficient, C++ XML parser that can be
 easily integrated into other programs.
@@ -63,18 +59,15 @@ browsers or have more complete XML needs, TinyXML-2 is not the parser for you.
 TinyXML-1 vs. TinyXML-2
 -----------------------
 
-TinyXML-2 is now the focus of all development, well tested, and your
-best choice between the two APIs. At this point, unless you are maintaining
-legacy code, you should choose TinyXML-2.
+TinyXML-2 long been the focus of all development. It is well tested 
+and should be used instead of TinyXML-1.
 
 TinyXML-2 uses a similar API to TinyXML-1 and the same
 rich test cases. But the implementation of the parser is completely re-written
 to make it more appropriate for use in a game. It uses less memory, is faster,
 and uses far fewer memory allocations.
 
-TinyXML-2 has no requirement or support for STL. By returning `const char*`
-TinyXML-2 can be much more efficient with memory usage. (TinyXML-1 did support
-and use STL, but consumed much more memory for the DOM representation.)
+TinyXML-2 has no requirement or support for STL.
 
 Features
 --------
@@ -98,7 +91,7 @@ by the Document. When the Document is deleted, so are all the nodes it contains.
 
 ### White Space
 
-#### Whitespace Preservation (default)
+#### Whitespace Preservation (default, PRESERVE_WHITESPACE)
 
 Microsoft has an excellent article on white space: http://msdn.microsoft.com/en-us/library/ms256097.aspx
 
@@ -130,7 +123,7 @@ valuable. TinyXML-2 sees these as the same XML:
 
 	<document><data>1</data><data>2</data><data>3</data></document>
 
-#### Whitespace Collapse
+#### Whitespace Collapse (COLLAPSE_WHITESPACE)
 
 For some applications, it is preferable to collapse whitespace. Collapsing
 whitespace gives you "HTML-like" behavior, which is sometimes more suitable
@@ -148,7 +141,15 @@ However, you may also use COLLAPSE_WHITESPACE, which will:
 Note that (currently) there is a performance impact for using COLLAPSE_WHITESPACE.
 It essentially causes the XML to be parsed twice.
 
-#### Error Reporting
+#### Pedantic Whitespace (PEDANTIC_WHITESPACE)
+
+For applications that need to know about text nodes that are composed entirely of 
+whitespace, PEDANTIC_WHITESPACE is available. PEDANTIC_WHITESPACE maintains all the
+whilespace between elements. 
+
+PEDANTIC_WHITESPACE is a new mode and not as tested as the other whitespace modes.
+
+### Error Reporting
 
 TinyXML-2 reports the line number of any errors in an XML document that
 cannot be parsed correctly. In addition, all nodes (elements, declarations,
@@ -264,10 +265,13 @@ There are 2 files in TinyXML-2:
 And additionally a test file:
 * xmltest.cpp
 
-Simply compile and run. There is a visual studio 2019 project included, a simple Makefile,
-an Xcode project, a Code::Blocks project, and a cmake CMakeLists.txt included to help you.
-The top of tinyxml.h even has a simple g++ command line if you are using Unix/Linux/BSD and
-don't want to use a build system.
+Generally speaking, the intent is that you simply include the tinyxml2.cpp and 
+tinyxml2.h files in your project and build with your other source code.
+
+There is also a CMake build included. CMake is the general build for TinyXML-2.
+
+(Additional build systems are costly to maintain, and tend to bit-rot. They are
+being removed over time.)
 
 Building TinyXML-2 - Using vcpkg
 --------------------------------
@@ -289,12 +293,6 @@ TinyXML-2 uses semantic versioning. http://semver.org/ Releases are now tagged i
 
 Note that the major version will (probably) change fairly rapidly. API changes are fairly
 common.
-
-Documentation
--------------
-
-The documentation is built with Doxygen, using the 'dox'
-configuration file.
 
 License
 -------
