@@ -82,7 +82,7 @@ set (blobby-server_SRC ${common_SRC}
 	server/servermain.cpp
 	)
 
-find_package(Boost REQUIRED)
+find_package(Boost 1.70 REQUIRED CONFIG)
 find_package(OpenGL)
 add_subdirectory(raknet)
 add_subdirectory(blobnet)
