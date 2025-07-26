@@ -360,7 +360,7 @@ void NetworkSearchState::step_impl()
 			std::vector<std::string> rule_vec{config.getString("rules")};
 
 
-			DedicatedServer server(info, rule_vec, std::vector<float>{ SpeedController::getMainInstance()->getGameSpeed() }, 4, true);
+			DedicatedServer server(info, rule_vec, std::vector<float>{ config.getFloat("gamefps") }, 4, true);
 			SpeedController scontroller( 10 );
 			gKillHostThread = false;
 			while(!gKillHostThread)
