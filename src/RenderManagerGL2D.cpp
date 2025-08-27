@@ -219,8 +219,13 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Set modesetting
 	Uint32 screenFlags = SDL_WINDOW_OPENGL;
-	if (fullscreen)
+
+	#ifdef __SWITCH__
 		screenFlags |= SDL_WINDOW_FULLSCREEN;
+	#else
+		if (fullscreen)
+			screenFlags |= SDL_WINDOW_FULLSCREEN;
+	#endif
 
 	// Create window
 	mWindow = SDL_CreateWindow(AppTitle,
@@ -230,7 +235,7 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 	                           screenFlags);
 
 	// Set icon
-#if !(defined BUILD_MACOS_BUNDLE)
+#if !(defined __SWITCH__) && !(defined BUILD_MACOS_BUNDLE)
 	SDL_Surface* icon = loadSurface("Icon.bmp");
 	SDL_SetColorKey(icon, SDL_TRUE,
 	                SDL_MapRGB(icon->format, 0, 0, 0));
@@ -240,6 +245,10 @@ void RenderManagerGL2D::init(int xResolution, int yResolution, bool fullscreen)
 
 	// Create gl context
 	mGlContext = SDL_GL_CreateContext(mWindow);
+
+#ifdef __SWITCH__
+	int version = gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress);
+#endif
 
 	SDL_ShowCursor(0);
 #if !(defined _MSC_VER)

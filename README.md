@@ -87,7 +87,7 @@ src/blobby
 2. Compile:
 
 ```bash
-cmake . -DCMAKE_TOOLCHAIN_FILE=NintendoSwitchToolchain.cmake -DCMAKE_INSTALL_PREFIX=blobby -DSWITCH=true -DCMAKE_BUILD_TYPE=Debug
+/opt/devkitpro/portlibs/switch/bin/aarch64-none-elf-cmake -DCMAKE_INSTALL_PREFIX=./blobby -S .
 make && make install
 ```
 
