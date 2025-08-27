@@ -1,7 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
-Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
-Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2023 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2023 Erik Schultheis (erik-schultheis@freenet.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,35 +18,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 =============================================================================*/
 
-#pragma once
-
-#include "GameState.h"
+/* header include */
 #include "RateController.h"
 
-class ReplayRecorder;
-class InputSource;
-class IUserConfigReader;
+/* includes */
+#include <cassert>
 
-/*! \class LocalGameState
-	\brief state for singleplayer game
-*/
-class LocalGameState : public GameState
+/* implementation */
+using namespace std::chrono;
+
+RateController::RateController() : mFrameDuration(0) {
+
+}
+
+void RateController::start(int frames_per_second) {
+	mFrameDuration = duration_cast<nanoseconds>(seconds(1)) / frames_per_second;
+	mLastTicks = clock_t::now();
+}
+
+bool RateController::handle_next_frame() {
+	assert(mFrameDuration.count() != 0);
+	if(wants_next_frame()) {
+		mLastTicks += mFrameDuration;
+		return true;
+	}
+	return false;
+}
+
+bool RateController::wants_next_frame() const
 {
-	public:
-		LocalGameState();
-		~LocalGameState() override;
-
-		// implementation of the State Interface
-		void step_impl() override;
-		void init() override;
-		const char* getStateName() const override;
-
-	private:
-		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side, const DuelMatch* match );
-
-		bool mWinner;
-
-		std::unique_ptr<ReplayRecorder> mRecorder;
-		RateController mRateController;
-};
-
+	assert(mFrameDuration.count() != 0);
+	return clock_t::now() > mLastTicks + mFrameDuration;
+}

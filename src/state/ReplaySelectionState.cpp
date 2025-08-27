@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ReplayState.h"
 #include "IMGUI.h"
 #include "TextManager.h"
-#include "SpeedController.h"
 #include "FileSystem.h"
 #include "replays/IReplayLoader.h"
 
@@ -49,8 +48,6 @@ void ReplaySelectionState::init()
 	if (mReplayFiles.empty())
 		mSelectedReplay = -1;
 	std::sort(mReplayFiles.rbegin(), mReplayFiles.rend());
-
-	SpeedController::getMainInstance()->setGameSpeed(75);
 }
 
 void ReplaySelectionState::step_impl()
