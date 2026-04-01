@@ -111,7 +111,7 @@ namespace ADT {
 
 	template <class QueueType> bool Queue<QueueType>::operator= (const Queue& original_copy)
 	{
-		return this->array = original_copy->array;
+		return this->array = original_copy.array;
 	}
 
 	template <class QueueType> inline const unsigned int Queue<QueueType>::size() const
