@@ -96,7 +96,7 @@ namespace ADT {
 
 	template <class QueueType> Queue<QueueType>::Queue(const Queue& original_copy)
 	{
-		this->array = original_copy->array;
+		this->array = original_copy.array;
 	}
 
 	template <class QueueType> inline const QueueType& Queue<QueueType>::operator[] (unsigned int position) const
