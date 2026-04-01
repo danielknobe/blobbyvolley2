@@ -39,7 +39,7 @@ jobs:
         run: | 
           git clone https://github.com/icculus/physfs.git physfs
           mkdir physfs-build
-          cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build
+          cmake --toolchain="${TOOLCHAIN}" -S physfs -B physfs-build -DPHYSFS_BUILD_TEST=OFF
           cmake --build physfs-build
           cmake --install physfs-build --prefix "$(pwd)/built-deps"
 
