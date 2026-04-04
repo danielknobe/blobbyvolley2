@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /**
  * Macros for primitive platform independent logging and debugging
  *
- * This header include the the logging macros for debugging. 
+ * This header include the logging macros for debugging. 
  * You can log information by calling the LOG(class, message) macro.
  * There are the following log-modes available which you can set by changing the 
  * definition of the LOGGER_MODE macro:
@@ -43,16 +43,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #if LOGGER_MODE == LOGGER_CONSOLE
 #include <iostream>
 #include <ctime>
+#include <iomanip>
 
-#define LOG(class, message) \
+#define LOG(className, message) \
 	{ \
-		time_t timeRaw; \
-		struct tm * timeInfo; \
-		char* timeAsc; \
-		time(&timeRaw); \
-		timeInfo = localtime(&timeRaw); \
-		timeAsc = asctime(timeInfo); \
-		timeAsc[strlen(timeAsc)-1] = '\0'; \
-		std::cout << timeAsc << " " << class << ": " << message << std::endl; \
+		std::time_t timeRaw = std::time(nullptr); \
+		std::tm* timeInfo = std::localtime(&timeRaw); \
+		std::cout << std::put_time(timeInfo, "[%F %T]") << " " << className << ": " << message << std::endl; \
 	}
 #endif
