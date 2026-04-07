@@ -63,7 +63,7 @@ void GameState::presentGame()
 		rmanager.setBlobColor(RIGHT_PLAYER, mMatch->getPlayer(RIGHT_PLAYER).getStaticColor());
 	}
 
-	auto events = mMatch->getEvents( );
+	auto events = mMatch->fetchEvents( );
 	for(const auto& e : events )
 	{
 		if( e.event == MatchEvent::BALL_HIT_BLOB )

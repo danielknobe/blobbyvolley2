@@ -1,7 +1,7 @@
 /*=============================================================================
 Blobby Volley 2
-Copyright (C) 2006 Jonathan Sieber (jonathan_sieber@yahoo.de)
-Copyright (C) 2006 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2023 Daniel Knobe (daniel-knobe@web.de)
+Copyright (C) 2023 Erik Schultheis (erik-schultheis@freenet.de)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,33 +20,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "GameState.h"
-#include "RateController.h"
+#include <chrono>
 
-class ReplayRecorder;
-class InputSource;
-class IUserConfigReader;
-
-/*! \class LocalGameState
-	\brief state for singleplayer game
-*/
-class LocalGameState : public GameState
-{
+class RateController {
 	public:
-		LocalGameState();
-		~LocalGameState() override;
+		RateController();
+		using clock_t = std::chrono::steady_clock;
 
-		// implementation of the State Interface
-		void step_impl() override;
-		void init() override;
-		const char* getStateName() const override;
+		void start(int frames_per_second);
+		bool handle_next_frame();
+		bool wants_next_frame() const;
 
 	private:
-		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side, const DuelMatch* match );
-
-		bool mWinner;
-
-		std::unique_ptr<ReplayRecorder> mRecorder;
-		RateController mRateController;
+		std::chrono::nanoseconds mFrameDuration;
+		clock_t::time_point mLastTicks;
 };
-
