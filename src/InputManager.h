@@ -114,6 +114,8 @@ class InputManager : public ObjectCounter<InputManager>
 
 		int mMouseX;
 		int mMouseY;
+		float mFingerX;
+		float mFingerY;
 		int mLastClickTime;
 
 		SDL_Keycode mLastActionKey;
