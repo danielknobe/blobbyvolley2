@@ -19,7 +19,7 @@ jobs:
           sudo apt-get install ninja-build
           TOOLCHAIN="${ANDROID_NDK}/build/cmake/android.toolchain.cmake"
           echo "TOOLCHAIN=${TOOLCHAIN}" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Get Boost
         # no need to build, we use only the header-only parts of boost
         run: |

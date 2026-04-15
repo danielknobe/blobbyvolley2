@@ -22,7 +22,7 @@ jobs:
             libsdl2-dev \
             libphysfs-dev \
             libboost-dev
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Get CMake
         # note: newer versions of cmake have changed the naming scheme to use lower-case 'linux',
         # which will break this script
