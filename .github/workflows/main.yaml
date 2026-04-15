@@ -50,7 +50,7 @@ jobs:
             sdl2 \
             physfs \
             boost
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       # Check that blobby builds
       - name: Configure CMake and Build
         run: |
