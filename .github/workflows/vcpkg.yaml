@@ -6,8 +6,8 @@ jobs:
   Build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Build
         run: |
           cmake -B . -S . -DCMAKE_TOOLCHAIN_FILE="c:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          cmake --build . 
+          cmake --build .
