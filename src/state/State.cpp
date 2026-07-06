@@ -191,13 +191,21 @@ void CreditsState::step_impl()
 		switchState(new MainMenuState());
 	}
 
-	if (SDL_VERSIONNUM(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL) >= SDL_VERSIONNUM(2, 0, 14))
+#if SDL_VERSION_ATLEAST(2, 0, 14)
 	{
-		if (imgui.doButton(GEN_ID, Vector2(294.0, 530.0), "www.blobbyvolley.de"))
+		SDL_version linked;
+		SDL_GetVersion(&linked);
+
+		if (SDL_VERSIONNUM(linked.major, linked.minor, linked.patch) >=
+			SDL_VERSIONNUM(2, 0, 14))
 		{
-			SDL_OpenURL("https://www.blobbyvolley.de");
+			if (imgui.doButton(GEN_ID, Vector2(294.0, 530.0), "www.blobbyvolley.de"))
+			{
+				SDL_OpenURL("https://www.blobbyvolley.de");
+			}
 		}
 	}
+#endif
 }
 
 const char* CreditsState::getStateName() const
