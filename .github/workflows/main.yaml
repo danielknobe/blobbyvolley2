@@ -11,8 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (mingw32), os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Windows (UCRT64),  os: windows-latest, shell: 'msys2 {0}', msystem: ucrt64,  msys-env: mingw-w64-ucrt-x86_64 }
+        - { name: Windows (MINGW64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
         - { name: Ubuntu 22.04,      os: ubuntu-22.04,   shell: sh }
         - { name: Ubuntu 24.04,      os: ubuntu-24.04,   shell: sh }
         - { name: MacOS Sequoia,     os: macos-15,       shell: sh }
