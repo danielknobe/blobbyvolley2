@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.11)
 
 project(blobby VERSION 1.1.1)
 
 option(BUILD_TESTS "Build test programs" OFF)
 option(BUILD_MACOS_BUNDLE "Create a self-containing MacOS bundle" OFF)
 
-if (POLICY CMP0072)
-  cmake_policy(SET CMP0072 NEW)
+# use FindBoost.cmake instead of BoostConfig.cmake
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)
 endif()
 
 include(deps/sdl2.cmake)

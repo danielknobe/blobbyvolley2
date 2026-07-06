@@ -175,7 +175,7 @@ file(GLOB_RECURSE HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
 
 # create a new target for this test. We use a static library (instead of an executable), because then
 # we don't have to worry about things actually linking.
-add_library(test-compile-headers STATIC EXCLUDE_FROM_ALL test_compile_main.cpp)
+add_library(test-compile-headers STATIC EXCLUDE_FROM_ALL)
 
 foreach(HEADER ${HEADERS})
 	# construct a new file name based on the headers name
