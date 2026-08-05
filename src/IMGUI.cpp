@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <SDL.h>
 
+#include "DuelMatchState.h"
+
 /* implementation */
 
 enum ObjectType
@@ -106,11 +108,17 @@ void IMGUI::begin()
 		mLastKeyAction = KeyAction::BACK;
 
 	mIdCounter = 0;
+	mGameState.active = false;
 }
 
 void IMGUI::end(RenderManager& renderer)
 {
 	int FontSize;
+
+	if(mGameState.active) {
+		renderer.drawGame(mGameState.state);
+	}
+
 	while (!mQueue->empty())
 	{
 		QueueObject& obj = mQueue->front();
@@ -1103,4 +1111,10 @@ const std::string& IMGUI::getText(TextManager::STRING id) const {
 
 void IMGUI::setTextMgr(std::string lang) {
 	mTextManager.reset(new TextManager(std::move(lang)));
+}
+
+void IMGUI::drawGame(const DuelMatchState& state)
+{
+	mGameState.active = true;
+	mGameState.state = state;
 }
