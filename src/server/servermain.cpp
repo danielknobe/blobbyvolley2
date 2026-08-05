@@ -36,7 +36,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL.h>
 
 #include "DedicatedServer.h"
-#include "SpeedController.h"
 #include "FileSystem.h"
 #include "UserConfig.h"
 #include "Global.h"
@@ -190,8 +189,6 @@ int main(int argc, char** argv)
 // ------------------------------
 void main_loop( DedicatedServer& server)
 {
-	SpeedController scontroller( UPDATE_FREQUENCY );
-
 	while ( g_run_server )
 	{
 		// -------------------------------------------------------------------------------
@@ -208,7 +205,7 @@ void main_loop( DedicatedServer& server)
 		server.processPackets();
 		server.updateGames();
 
-		scontroller.update();
+		std::this_thread::yield();
 	}
 }
 

@@ -49,8 +49,13 @@ const char* BlobbyApp::getCurrenStateName() const
 	return mCurrentState->getStateName();
 }
 
-void BlobbyApp::step()
+bool BlobbyApp::step()
 {
+	mInputMgr->updateInput();
+	bool running = mInputMgr->running();
+
+	mIMGUI->begin();
+
 	// perform a state step
 	mCurrentState->step_impl();
 
@@ -66,6 +71,8 @@ void BlobbyApp::step()
 		mIMGUI->resetSelection();
 		mCurrentState->init();
 	}
+
+	return running;
 }
 
 BlobbyApp::BlobbyApp(std::unique_ptr<State> initState, const IUserConfigReader& config) :

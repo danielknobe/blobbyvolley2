@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "State.h"
 #include "RenderManager.h"
 #include "InputManager.h"
-#include "SpeedController.h"
 #include "SoundManager.h"
 #include "BlobbyApp.h"
 #include "Blood.h"
@@ -919,7 +918,6 @@ void MiscOptionsState::save()
 	mOptionConfig.setString("rules", mRules[mRule] + ".lua");
 	mOptionConfig.saveFile("config.xml");
 
-	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
 	getApp().getRenderManager().getBlood().enable(mOptionConfig.getBool("blood"));
 	getApp().getSoundManager().setVolume(mOptionConfig.getFloat("global_volume"));
 	getApp().getSoundManager().setMute(mOptionConfig.getBool("mute"));
@@ -968,7 +966,6 @@ void MiscOptionsState::step_impl()
 	if (imgui.doButton(GEN_ID, Vector2(484.0, 120.0), TextManager::OP_FPS))
 	{
 		mShowFPS = !mShowFPS;
-		SpeedController::getMainInstance()->setDrawFPS(mShowFPS);
 	}
 	if (mShowFPS)
 	{

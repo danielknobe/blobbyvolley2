@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "GenericIO.h"
 #include "FileRead.h"
 #include "FileWrite.h"
-#include "SpeedController.h"
 #include "LobbyStates.h"
 
 // global variable to save the lag
@@ -212,7 +211,7 @@ void NetworkGameState::step_impl()
 				// read gamespeed
 				int speed;
 				stream.Read(speed);
-				SpeedController::getMainInstance()->setGameSpeed(speed);
+				mRateController.start(speed);
 
 				// read playername
 				stream.Read(charName, sizeof(charName));
@@ -465,10 +464,14 @@ void NetworkGameState::step_impl()
 				switchState(new MainMenuState);
 			}
 			break;
+			break;
 		}
 		case PLAYING:
 		{
-			mMatch->step();
+			while(mRateController.handle_next_frame())
+			{
+				mMatch->step();
+			}
 
 			mLocalInput->updateInput();
 			PlayerInputAbs input = mLocalInput->getRealInput();

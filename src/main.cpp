@@ -40,11 +40,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "TextManager.h"
 #include "UserConfig.h"
 #include "IMGUI.h"
-#include "SpeedController.h"
 #include "Blood.h"
 #include "FileSystem.h"
 #include "state/State.h"
 #include "BlobbyApp.h"
+#include "RateController.h"
 
 // this global allows the host game thread to be killed
 extern std::atomic<bool> gKillHostThread;
@@ -168,63 +168,32 @@ int main(int argc, char* argv[])
 		UserConfig gameConfig;
 		gameConfig.loadFile("config.xml");
 
-		SpeedController scontroller(gameConfig.getFloat("gamefps"));
-		SpeedController::setMainInstance(&scontroller);
-		scontroller.setDrawFPS(gameConfig.getBool("showfps"));
+		RateController controller;
 
 		int running = 1;
 
 		DEBUG_STATUS("starting mainloop");
 
 		BlobbyApp app( std::unique_ptr<State>(new MainMenuState()), gameConfig );
+		controller.start(144);
 
 		while (running)
 		{
-			app.getInputManager().updateInput();
-			running = app.getInputManager().running();
+			running = app.step();
 
-			app.getIMGUI().begin();
-			app.step();
-			//draw FPS:
-			static int lastfps = 0;
-			static int lastlag = -1;
-			if (scontroller.getDrawFPS())
+			controller.handle_next_frame();
+			// TODO make sure we do not drop too many consecutive frames
+			if(!controller.wants_next_frame())
 			{
-				// We need to ensure that the title bar is only set
-				// when the framerate changed, because setting the
-				// title can be quite resource intensive on some
-				// windows manager, like for example metacity.
-				// we only update lag information if lag changed at least by
-				// 5 ms, for the same reason.
-				int newfps = scontroller.getFPS();
-				if (newfps != lastfps || std::abs(CURRENT_NETWORK_LAG - lastlag) > 4)
-				{
-					std::stringstream tmp;
-					tmp << AppTitle << "  FPS: " << newfps;
-					if( CURRENT_NETWORK_LAG != -1)
-						tmp << "  LAG: " << CURRENT_NETWORK_LAG;
-					app.getRenderManager().setTitle(tmp.str());
-					lastlag = CURRENT_NETWORK_LAG;
-				}
-				lastfps = newfps;
-			}
-			// Dirty workarround for hiding fps in title
-			if (!scontroller.getDrawFPS() && (lastfps != -1))
-			{
-				std::stringstream tmp;
-				tmp << AppTitle;
-				app.getRenderManager().setTitle(tmp.str());
-
-				lastfps = -1;
-			}
-
-			if (!scontroller.doFramedrop())
-			{
-				app.getIMGUI().end(app.getRenderManager());
-				app.getRenderManager().getBlood().step(app.getRenderManager());
+				app.getIMGUI().end( app.getRenderManager());
+				app.getRenderManager().getBlood().step( app.getRenderManager());
 				app.getRenderManager().refresh();
+			} else {
+				std::cout << "FRAME DROP\n";
 			}
-			scontroller.update();
+			while(!controller.wants_next_frame()) {
+				std::this_thread::yield();
+			}
 		}
 	}
 	catch (std::exception& e)

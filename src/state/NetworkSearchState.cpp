@@ -46,7 +46,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "FileWrite.h"
 #include "FileRead.h"
 #include "UserConfig.h"
-#include "SpeedController.h"
 #include "server/DedicatedServer.h"
 
 
@@ -360,8 +359,8 @@ void NetworkSearchState::step_impl()
 			std::vector<std::string> rule_vec{config.getString("rules")};
 
 
-			DedicatedServer server(info, rule_vec, std::vector<float>{ SpeedController::getMainInstance()->getGameSpeed() }, 4, true);
-			SpeedController scontroller( 10 );
+			DedicatedServer server(info, rule_vec, std::vector<float>{ 75 }, 4, true);
+			//SpeedController scontroller( 10 );
 			gKillHostThread = false;
 			while(!gKillHostThread)
 			{
@@ -370,7 +369,8 @@ void NetworkSearchState::step_impl()
 
 				server.processPackets();
 				server.updateGames();
-				scontroller.update();
+				std::this_thread::yield();
+				//scontroller.update();
 			}
 		};
 
