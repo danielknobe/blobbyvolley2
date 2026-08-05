@@ -191,6 +191,8 @@ void TextManager::setDefault()
 	mStrings[GAME_OPP_LEFT] = "opponent left the game";
 	mStrings[GAME_PAUSED] = "game paused";
 	mStrings[GAME_QUIT] = "quit";
+	mStrings[GAME_WINS_SET] = "wins set";
+	mStrings[GAME_NEXT_SET] = "next set";
 
 	mStrings[NET_SERVER_SCAN] = "scan for servers";
 	mStrings[NET_DIRECT_CONNECT] = "direct connect";
@@ -267,6 +269,7 @@ void TextManager::setDefault()
 	mStrings[OP_MEDIUM] = "medium";
 	mStrings[OP_STRONG] = "strong";
 	mStrings[OP_RULES] = "rules:";
+	mStrings[OP_PLAY_SETS] = "play sets";
 
 	mStrings[UPDATE_NOTIFICATION] = "please visit https://blobbyvolley.de for a new version of blobby volley";
 }

@@ -84,6 +84,8 @@ class TextManager
 			GAME_OPP_LEFT,
 			GAME_PAUSED,
 			GAME_QUIT,
+			GAME_WINS_SET,
+			GAME_NEXT_SET,
 
 			// network texts
 			NET_SERVER_SCAN,
@@ -162,6 +164,7 @@ class TextManager
 			OP_MEDIUM,
 			OP_STRONG,
 			OP_RULES,
+			OP_PLAY_SETS,
 
 			UPDATE_NOTIFICATION,
 

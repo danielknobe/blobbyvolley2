@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 #include "GameState.h"
+#include "MatchSeries.h"
 
 class ReplayRecorder;
 class InputSource;
@@ -41,9 +42,21 @@ class LocalGameState : public GameState
 		const char* getStateName() const override;
 
 	private:
-		std::shared_ptr<InputSource> createInputSource( IUserConfigReader& config, PlayerSide side, const DuelMatch* match );
+		std::shared_ptr<InputSource> createInputSource(IUserConfigReader& config, PlayerSide player,
+		                                               PlayerSide side, const DuelMatch* match);
+		void startNextSet();
+		void presentSeriesUI();
+		void displaySetWinnerScreen();
+		void displaySeriesQuitPrompt();
 
 		bool mWinner;
+		bool mSetFinished;
+		PlayerSide mSetWinner;
+		int mFinishedSetNumber;
+		int mFinishedLeftScore;
+		int mFinishedRightScore;
+		MatchSeries mSeries;
+		std::string mBlobbyRules;
 
 		std::unique_ptr<ReplayRecorder> mRecorder;
 };

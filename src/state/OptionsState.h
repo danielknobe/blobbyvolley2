@@ -167,6 +167,7 @@ private:
 	int mGameFPS;
 	bool mShowFPS;
 	bool mShowBlood;
+	bool mSetsEnabled;
 	int mNetworkSide;
 	std::string mLanguage;
 };
