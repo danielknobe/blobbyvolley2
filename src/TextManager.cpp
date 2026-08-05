@@ -212,6 +212,14 @@ void TextManager::setDefault()
 	mStrings[NET_RULES_TITLE] = "rules: ";
 	mStrings[NET_RULES_BY] = " by ";
 	mStrings[NET_CHALLENGER] = "challenger: ";
+	mStrings[NET_NAME] = "name: ";
+	mStrings[NET_PASSWORD] = "password: ";
+	mStrings[NET_LOGIN] = "login";
+	mStrings[NET_RESET_PASSWORD] = "reset password";
+	mStrings[NET_REGISTER] = "register";
+	mStrings[NET_LOGIN_FAILED] = "login failed";
+	mStrings[NET_RANKED_GAME] = "ranked game";
+	mStrings[NET_REFRESH] = "refresh";
 
 	mStrings[OP_TOUCH_TYPE] = "touch input type:";
 	mStrings[OP_TOUCH_ARROWS] = "arrow keys";

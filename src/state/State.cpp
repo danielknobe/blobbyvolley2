@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <algorithm>
 #include <cstdio>
 
+#include "LoginState.h"
 #include "LocalGameState.h"
 #include "ReplaySelectionState.h"
 #include "NetworkState.h"
@@ -102,6 +103,10 @@ void MainMenuState::step_impl()
 	imgui.doImage(GEN_ID, Vector2(400.0, 300.0), "background");
 	imgui.doOverlay(GEN_ID, Vector2(0.0, 0.0), Vector2(800.0, 600.0));
 	imgui.doImage(GEN_ID, Vector2(400.0, 175.0), "gfx/titel.bmp");
+	if (imgui.doButton(GEN_ID, Vector2(34, 260.0), TextManager::NET_RANKED_GAME))
+	{
+		switchState( new LoginState() );
+	}
 	if (imgui.doButton(GEN_ID, Vector2(34, 300.0), TextManager::MNU_LABEL_ONLINE))
 	{
 		switchState( new OnlineSearchState() );
