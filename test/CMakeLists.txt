@@ -17,6 +17,7 @@ set(SRC
 	../src/Clock.cpp          ../src/Clock.h
 	../src/PhysicWorld.cpp    ../src/PhysicWorld.h 
 	../src/GameLogic.cpp      ../src/GameLogic.h
+	../src/MatchSeries.cpp    ../src/MatchSeries.h
 	../src/InputSource.cpp    ../src/InputSource.h
 	../src/IScriptableComponent.cpp ../src/IScriptableComponent.h
 	../src/PlayerIdentity.cpp ../src/PlayerIdentity.h
@@ -33,7 +34,7 @@ if ("${SDL2_LIBRARIES}" STREQUAL "")
 	set(SDL2_LIBRARIES "SDL2::SDL2")
 endif ("${SDL2_LIBRARIES}" STREQUAL "")
 
-add_executable(blobbytest GenericIOTest.cpp FileTest.cpp Base64Test.cpp ${SRC})
+add_executable(blobbytest GenericIOTest.cpp FileTest.cpp Base64Test.cpp MatchSeriesTest.cpp ${SRC})
 
 target_include_directories(blobbytest PRIVATE ${Boost_INCLUDE_DIR} ${PHYSFS_INCLUDE_DIR} ${SDL2_INCLUDE_DIRS} ../src)
 target_compile_definitions(blobbytest PRIVATE "BOOST_TEST_DYN_LINK=1")

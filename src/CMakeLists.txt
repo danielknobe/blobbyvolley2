@@ -46,6 +46,7 @@ set(common_SRC
 	)
 
 set (blobby_SRC ${common_SRC} ${inputdevice_SRC}
+	MatchSeries.cpp MatchSeries.h
 	Blood.cpp Blood.h
 	TextManager.cpp TextManager.h
 	IMGUI.cpp IMGUI.h

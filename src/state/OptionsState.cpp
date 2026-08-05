@@ -917,6 +917,7 @@ void MiscOptionsState::save()
 	mOptionConfig.setString("language", mLanguage);
 	mOptionConfig.setString("background", mBackgrounds[mBackground]);
 	mOptionConfig.setString("rules", mRules[mRule] + ".lua");
+	mOptionConfig.setBool("sets_enabled", mSetsEnabled);
 	mOptionConfig.saveFile("config.xml");
 
 	SpeedController::getMainInstance()->setDrawFPS(mOptionConfig.getBool("showfps"));
@@ -944,7 +945,11 @@ void MiscOptionsState::step_impl()
 		getApp().getRenderManager().setBackground(std::string("backgrounds/") + mBackgrounds[mBackground]);
 	}
 	imgui.doText(GEN_ID, Vector2(34.0, 190.0), TextManager::OP_RULES);
-	imgui.doSelectbox(GEN_ID, Vector2(34.0, 220.0), Vector2(400.0, 354.0), mRules, mRule);
+	imgui.doSelectbox(GEN_ID, Vector2(34.0, 220.0), Vector2(400.0, 334.0), mRules, mRule);
+	if (imgui.doButton(GEN_ID, Vector2(34.0, 350.0), TextManager::OP_PLAY_SETS))
+		mSetsEnabled = !mSetsEnabled;
+	if (mSetsEnabled)
+		imgui.doImage(GEN_ID, Vector2(16.0, 362.0), "gfx/pfeil_rechts.bmp");
 
 	imgui.doText(GEN_ID, Vector2(484.0, 10.0), TextManager::OP_VOLUME);
 	if (imgui.doScrollbar(GEN_ID, Vector2(484.0, 50.0), mVolume))
@@ -1080,6 +1085,7 @@ void MiscOptionsState::init()
 
 	mShowFPS = mOptionConfig.getBool("showfps");
 	mShowBlood = mOptionConfig.getBool("blood");
+	mSetsEnabled = mOptionConfig.getBool("sets_enabled", false);
 	mVolume = mOptionConfig.getFloat("global_volume");
 	mMute = mOptionConfig.getBool("mute");
 	mGameFPS = mOptionConfig.getInteger("gamefps");

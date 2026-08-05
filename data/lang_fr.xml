@@ -40,6 +40,8 @@
 	<string english = "opponent left the game" translation = "l'adversaire a quitte le match" />
 	<string english = "game paused" translation = "pause" />
 	<string english = "quit" translation = "quitter" />
+	<string english = "wins set" translation = "gagne le set" />
+	<string english = "next set" translation = "set suivant" />
 	
 	<string english = "scan for servers" translation = "recherche des serveurs" />
 	<string english = "direct connect" translation = "connexion directe" />
@@ -118,6 +120,7 @@
 	<string english = "medium" translation = "moyen" />
 	<string english = "strong" translation = "fort" />
 	<string english = "rules:" translation = "règles:" />
+	<string english = "play sets" translation = "jouer en sets" />
 	
 	<string english = "please visit https://blobbyvolley.de for a new version of blobby volley" translation = "veuillez visiter https://blobbyvolley.de for a new version of blobby volley" />
 </language>
