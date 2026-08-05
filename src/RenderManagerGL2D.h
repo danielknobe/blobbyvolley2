@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #elif (defined _MSC_VER)
 #include <windows.h>
 #include <GL/gl.h>
+#elif __SWITCH__
+#include "glad.h"
 #else
 #include <GL/gl.h>
 #include <GL/glext.h>

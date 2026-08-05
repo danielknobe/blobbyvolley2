@@ -1,0 +1,5 @@
+include_directories(${DEVKITPRO}/portlibs/switch/include/)
+set(GLAD_SRC glad.h glad.c)
+add_library(glad STATIC ${GLAD_SRC})
+add_library(glad::glad ALIAS glad)
+target_include_directories(glad PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
